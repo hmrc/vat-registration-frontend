@@ -1,0 +1,24 @@
+## Global
+app.title                               = Register your company
+app.phaseBannerFeedback                 = This is a new service – your <a href= {0}>feedback</a> will help us to improve it.
+app.common.yes                          = Yes
+app.common.no                           = No
+app.common.continue                     = Continue
+app.common.saveAndContinue              = Save and continue
+app.common.errorSummaryLabel            = There are errors on this page.
+
+## Welcome Page
+pages.welcome.title                     = Before you register for VAT
+pages.welcome.heading                   = Before you register for VAT
+pages.welcome.heading.register          = To register for VAT you'll need:
+pages.welcome.bullet.details.person     = details of the person registering your company for VAT (for example, National Insurance number)
+pages.welcome.bullet.details.company    = details of what your company does
+pages.welcome.bullet.details.sales      = your company''s total estimated sales that are subject to VAT (or <a href="https://www.gov.uk/vat-registration/calculate-turnover">VAT taxable turnover</a>) for the next 12 months
+
+## Taxable Turnover Page
+pages.taxable.turnover.heading          = Do you expect your company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered?
+
+## Error Pages
+errorPages.title                        = Something went wrong
+errorPages.restart.heading              = Sorry, we''re having technical issues.
+errorPages.restart.p1                   = You can try again by <a href={0}>restarting</a> your PAYE registration.
