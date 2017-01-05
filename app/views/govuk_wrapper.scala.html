@@ -1,0 +1,83 @@
+@(appConfig: config.AppConfig,
+        title: String,
+        mainClass: Option[String] = None,
+        mainDataAttributes: Option[Html] = None,
+        bodyClasses: Option[String] = None,
+        sidebar: Html = HtmlFormat.empty,
+        contentHeader: Option[Html] = None,
+        mainContent: Html = HtmlFormat.empty,
+        serviceInfoContent: Html = HtmlFormat.empty,
+        pageScripts: Option[Html] = None)(implicit request: Request[_], messages: Messages)
+
+    @import layouts.{govuk_template => hmrcGovUkTemplate}
+    @import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
+    @import uk.gov.hmrc.play.views.html.{helpers => uiHelpers}
+    @import views.html.helpers.phaseBanner
+
+    @head = {
+    @uiLayouts.head(
+        linkElem = None,
+        headScripts = None)
+        <meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" href="@routes.Assets.at("stylesheets/main.css")">
+    }
+
+    @headerNavLinks = {
+        <li><a id="homeNavHref" href="http://www.google.com"
+        data-journey-click="primary-navigation:Click:Home">Home</a></li>
+    }
+
+    @insideHeader = {
+    @uiLayouts.header_nav(
+        navTitle = Some(Messages("app.title")),
+        navTitleLink = None,
+        showBetaLink = false,
+        navLinks = Some(headerNavLinks))
+    }
+
+    @afterHeader = {}
+
+
+
+    @scriptElement = {
+        <script type="text/javascript" src='@routes.Assets.at("javascripts/main.js")'></script>
+    }
+
+    @scripts = {
+    @scriptElement
+    @pageScripts
+    }
+
+
+    @bodyEnd = {
+    @uiLayouts.footer(
+        analyticsToken = Some(appConfig.analyticsToken),
+        analyticsHost = appConfig.analyticsHost,
+        ssoUrl = None,
+        scriptElem = Some(scripts),
+        gaCalls = None)
+    }
+
+    @footerTop = {}
+    @footerLinks = {}
+
+    @serviceInfo = {
+    @uiLayouts.serviceInfo(
+        betaBanner = phaseBanner("ALPHA"),
+        includeGridWrapper = false,
+        serviceInfoContent = Some(serviceInfoContent))
+    }
+
+    @getHelpForm = @{uiHelpers.reportAProblemLink(appConfig.reportAProblemPartialUrl, appConfig.reportAProblemNonJSUrl)}
+
+    @content = {
+    @uiLayouts.main_content(
+        article = mainContent,
+        mainClass = mainClass,
+        mainDataAttributes = mainDataAttributes,
+        serviceInfo = serviceInfo,
+        getHelpForm = getHelpForm,
+        sidebar = sidebar)
+    }
+
+    @hmrcGovUkTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(uiLayouts.footer_links()), true)(content)

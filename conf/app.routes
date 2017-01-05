@@ -1,3 +1,13 @@
 # microservice specific routes
 
-GET        /hello-world             uk.gov.hmrc.vatregistrationfrontend.controllers.HelloWorld.helloWorld
+GET         /assets/*file           controllers.Assets.at(path="/public", file)
+
+## WELCOME PAGE
+GET         /                       controllers.userJourney.WelcomeController.show
+GET         /start                  controllers.userJourney.WelcomeController.show
+
+## TAXABLE TURNOVER PAGE
+GET         /taxable/turnover       controllers.userJourney.TaxableTurnoverController.show
+
+## FEEDBACK
+GET         /feedback               controllers.feedback.FeedbackController.show

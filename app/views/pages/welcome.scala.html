@@ -1,0 +1,76 @@
+@()(implicit request: Request[_], messages: Messages)
+
+@import uk.gov.hmrc.play.views.html.helpers.form
+
+@main_template(title = Messages("pages.welcome.title")) {
+
+
+<div class="grid-row">
+    <div class="column-one-third">
+
+        <header class="page-header">
+            <h1 class="form-title heading-xlarge" id="pageHeading">@Messages("pages.welcome.heading")</h1>
+        </header>
+
+        <h2 class="heading-medium" id="subHeading">@Messages("pages.welcome.heading.register")</h2>
+
+        <div class="form-group">
+            <ul class="list list-bullet">
+                <li>@Messages("pages.welcome.bullet.details.person")</li>
+                <li>@Messages("pages.welcome.bullet.details.company")</li>
+                <li>@Html(Messages("pages.welcome.bullet.details.sales"))</li>
+            </ul>
+        </div>
+
+        @form(action = controllers.userJourney.routes.TaxableTurnoverController.show()) {
+            <div class="form-group">
+                <button class="button-get-started" role="button" id="continue">@Messages("app.common.continue")</button>
+            </div>
+        }
+
+        <div class="form-group">
+            <details role="group">
+                <summary role="button" aria-controls="details-content-0" aria-expanded="false">
+                    <span class="summary">Do you need to register for VAT?</span>
+                </summary>
+                <div class="panel panel-border-narrow" id="details-content-0" aria-hidden="true">
+                    <p>You need to register for VAT if you expect your company's VAT taxable turnover to be more than £83,000 in the 30 days after it's registered.</p>
+                </div>
+            </details>
+        </div>
+
+        <div class="form-group">
+            <details role="group">
+                <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">Can you register voluntarily for VAT?</span></summary>
+                <div class="panel panel-border-narrow" id="details-content-1" aria-hidden="true">
+                    <p>You can register voluntarily if your company's VAT taxable turnover is less than £83,000, unless everything you sell is <a href="https://www.gov.uk/vat-businesses/when-not-to-charge-vat">exempt from VAT</a>.</p>
+                    <p>If your company is registered for VAT you:</p>
+                    <ul class="list list-bullet">
+                        <li>can <a href="https://www.gov.uk/vat-businesses/how-vat-works">charge VAT</a> on the goods or services you sell</li>
+                        <li>can <a href="https://www.gov.uk/reclaim-vat">reclaim VAT</a> on your business-related purchases</li>
+                    </ul>
+                    <p>VAT-registered companies can appear larger and more established to customers. However, customers that aren't VAT registered (and can't reclaim VAT) may be put off by the increased prices that come with VAT registration.</p>
+                    <p>You can cancel your VAT registration at any time if it turns out to be the wrong decision.</p>
+                </div>
+            </details>
+        </div>
+
+        <div class="form-group">
+            <details role="group">
+                <summary role="button" aria-controls="details-content-2" aria-expanded="false"><span class="summary">What are your VAT responsibilities?</span></summary>
+                <div class="panel panel-border-narrow" id="details-content-2" aria-hidden="true">
+                    <p>From the effective date of registration you must:</p>
+                    <ul class="list list-bullet">
+                        <li>charge the <a href="https://www.gov.uk/vat-businesses/when-to-charge-vat">right amount of VAT</a></li>
+                        <li>pay any VAT due to HMRC</li>
+                        <li>submit VAT Returns</li>
+                        <li>keep VAT records and a VAT account</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+
+    </div>
+
+</div>
+}
