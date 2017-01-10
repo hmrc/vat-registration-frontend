@@ -22,13 +22,9 @@ import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import scala.concurrent.Future
 
-object FeedbackController extends FeedbackController
+class FeedbackController extends FrontendController {
 
-trait FeedbackController extends FrontendController {
-
-  // TODO: Implement feedback controller
-  val show = Action.async { implicit request =>
+  def show = Action.async { implicit request =>
     Future.successful(Ok(views.html.pages.welcome()))
   }
-
 }
