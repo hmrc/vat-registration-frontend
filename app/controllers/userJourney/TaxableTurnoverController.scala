@@ -20,18 +20,11 @@ import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-
 import scala.concurrent.Future
 
-object TaxableTurnoverController extends TaxableTurnoverController {
+class TaxableTurnoverController extends FrontendController {
 
-}
-
-
-trait TaxableTurnoverController extends FrontendController {
-
-  val show = Action.async { implicit request =>
+  def show = Action.async { implicit request =>
     Future.successful(Ok(views.html.pages.taxable_turnover()))
   }
-
 }
