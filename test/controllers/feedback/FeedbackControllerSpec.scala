@@ -16,16 +16,25 @@
 
 package controllers.feedback
 
-import play.api.mvc._
-import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import scala.concurrent.Future
+import play.api.test.FakeRequest
+import play.api.http.Status
+import play.api.test.Helpers._
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-// TODO: need to implement proper feedback controller?
-class FeedbackController extends FrontendController {
+class FeedbackControllerSpec extends UnitSpec with WithFakeApplication {
 
-  def show: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.pages.welcome()))
+  val fakeRequest = FakeRequest("GET", "/feedback")
+
+  "GET /feedback" should {
+    "return 200" in {
+      val result = new FeedbackController().show(fakeRequest)
+      status(result) shouldBe Status.OK
+    }
+
+    "return HTML" in {
+      val result = new FeedbackController().show(fakeRequest)
+      contentType(result) shouldBe Some("text/html")
+      charset(result) shouldBe Some("utf-8")
+    }
   }
 }

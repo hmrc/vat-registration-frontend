@@ -24,7 +24,7 @@ import scala.concurrent.Future
 
 class TaxableTurnoverController extends FrontendController {
 
-  def show = Action.async { implicit request =>
+  def show: Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(views.html.pages.taxable_turnover()))
   }
 }
