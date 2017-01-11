@@ -19,9 +19,9 @@ sm --start SCRS_ALL -f
 Then enter the following command:
 
 ```
-sbt run
+sbt run -Dhttp.port=9895
 ```
 
 And open your browser to open the following page:
 
-http://local.tax.service.gov.uk:9000/vat-registration/start
+http://local.tax.service.gov.uk:9895/vat-registration/start
