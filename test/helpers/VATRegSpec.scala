@@ -26,7 +26,9 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 class VATRegSpec extends PlaySpec with OneAppPerSuite {
-  implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
+  // Placeholder for custom configuration
+  // Use this if you want to configure the app
+  // implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
 
   @Inject
   var ds: CommonPlayDependencies = app.injector.instanceOf[CommonPlayDependencies]
