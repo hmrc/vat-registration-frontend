@@ -16,25 +16,25 @@
 
 package controllers.userJourney
 
-import play.api.test.FakeRequest
+import helpers.VATRegSpec
 import play.api.http.Status
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class TaxableTurnoverControllerSpec extends UnitSpec with WithFakeApplication {
+class TaxableTurnoverControllerSpec extends VATRegSpec {
 
   val fakeRequest = FakeRequest("GET", "/taxable/turnover")
 
-  "GET /taxable/turnover" should {
+  "GET /taxable/turnover" must {
     "return 200" in {
-      val result = new TaxableTurnoverController().show(fakeRequest)
-      status(result) shouldBe Status.OK
+      val result = new TaxableTurnoverController(ds).show(fakeRequest)
+      status(result) mustBe Status.OK
     }
 
     "return HTML" in {
-      val result = new TaxableTurnoverController().show(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
+      val result = new TaxableTurnoverController(ds).show(fakeRequest)
+      contentType(result) mustBe Some("text/html")
+      charset(result) mustBe Some("utf-8")
     }
   }
 }

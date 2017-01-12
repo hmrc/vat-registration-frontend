@@ -16,29 +16,25 @@
 
 package controllers.feedback
 
-import controllers.{CommonPlayDependencies}
-import javax.inject.Inject
-import play.api.test.FakeRequest
+import helpers.VATRegSpec
 import play.api.http.Status
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class FeedbackControllerSpec extends UnitSpec with WithFakeApplication {
+class FeedbackControllerSpec extends VATRegSpec {
 
   val fakeRequest = FakeRequest("GET", "/feedback")
-  @Inject
-  var ds: CommonPlayDependencies = _
 
-  "GET /feedback" should {
+  "GET /feedback" must {
     "return 200" in {
       val result = new FeedbackController(ds).show(fakeRequest)
-      status(result) shouldBe Status.OK
+      status(result) mustBe Status.OK
     }
 
     "return HTML" in {
       val result = new FeedbackController(ds).show(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
+      contentType(result) mustBe Some("text/html")
+      charset(result) mustBe Some("utf-8")
     }
   }
 }

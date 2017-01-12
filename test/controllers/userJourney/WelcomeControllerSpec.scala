@@ -16,40 +16,40 @@
 
 package controllers.userJourney
 
-import play.api.test.FakeRequest
+import helpers.VATRegSpec
 import play.api.http.Status
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 
-class WelcomeControllerSpec extends UnitSpec with WithFakeApplication{
+class WelcomeControllerSpec extends VATRegSpec {
 
   val fakeRequest = FakeRequest("GET", "/")
   val fakeRequestStart = FakeRequest("GET", "/start")
 
   "GET /" should {
     "return 200" in {
-      val result = new WelcomeController().show(fakeRequest)
-      status(result) shouldBe Status.OK
+      val result = new WelcomeController(ds).show(fakeRequest)
+      status(result) mustBe Status.OK
     }
 
     "return HTML" in {
-      val result = new WelcomeController().show(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
+      val result = new WelcomeController(ds).show(fakeRequest)
+      contentType(result) mustBe Some("text/html")
+      charset(result) mustBe Some("utf-8")
     }
   }
 
   "GET /start" should {
     "return 200" in {
-      val result = new WelcomeController().show(fakeRequestStart)
-      status(result) shouldBe Status.OK
+      val result = new WelcomeController(ds).show(fakeRequestStart)
+      status(result) mustBe Status.OK
     }
 
     "return HTML" in {
-      val result = new WelcomeController().show(fakeRequestStart)
-      contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
+      val result = new WelcomeController(ds).show(fakeRequestStart)
+      contentType(result) mustBe Some("text/html")
+      charset(result) mustBe Some("utf-8")
     }
   }
 
