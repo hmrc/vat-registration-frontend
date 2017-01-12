@@ -2,29 +2,29 @@
 
 @import uk.gov.hmrc.play.views.html.helpers.form
 
-@main_template(title = Messages("pages.welcome.title")) {
+@main_template(title = messages("pages.welcome.title")) {
 
 
 <div class="grid-row">
     <div class="column-one-third">
 
         <header class="page-header">
-            <h1 class="form-title heading-xlarge" id="pageHeading">@Messages("pages.welcome.heading")</h1>
+            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.welcome.heading")</h1>
         </header>
 
-        <h2 class="heading-medium" id="subHeading">@Messages("pages.welcome.heading.register")</h2>
+        <h2 class="heading-medium" id="subHeading">@messages("pages.welcome.heading.register")</h2>
 
         <div class="form-group">
             <ul class="list list-bullet">
-                <li>@Messages("pages.welcome.bullet.details.person")</li>
-                <li>@Messages("pages.welcome.bullet.details.company")</li>
-                <li>@Html(Messages("pages.welcome.bullet.details.sales"))</li>
+                <li>@messages("pages.welcome.bullet.details.person")</li>
+                <li>@messages("pages.welcome.bullet.details.company")</li>
+                <li>@Html(messages("pages.welcome.bullet.details.sales"))</li>
             </ul>
         </div>
 
         @form(action = controllers.userJourney.routes.TaxableTurnoverController.show()) {
             <div class="form-group">
-                <button class="button-get-started" role="button" id="continue">@Messages("app.common.continue")</button>
+                <button class="button-get-started" role="button" id="continue">@messages("app.common.continue")</button>
             </div>
         }
 

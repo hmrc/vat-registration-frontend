@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package controllers.userJourney
+package controllers
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc._
+import play.api.Configuration
+import play.api.i18n.{I18nSupport, MessagesApi}
+import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-import scala.concurrent.Future
+abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController with I18nSupport {
 
-class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+  lazy val conf = ds.conf
+  implicit lazy val messagesApi = ds.messagesApi
 
-  def show: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.pages.taxable_turnover()))
-  }
 }
+
+@Singleton
+final class CommonPlayDependencies @Inject()(val conf: Configuration, val messagesApi: MessagesApi)

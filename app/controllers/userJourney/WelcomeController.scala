@@ -16,16 +16,15 @@
 
 package controllers.userJourney
 
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+import javax.inject.Inject
+
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc._
-import uk.gov.hmrc.play.frontend.controller.FrontendController
-import scala.concurrent.Future
 
-class WelcomeController extends FrontendController {
+class WelcomeController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.pages.welcome()))
+  def show: Action[AnyContent] = Action { implicit request =>
+    Ok(views.html.pages.welcome())
   }
 
 }
