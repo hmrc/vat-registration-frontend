@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package controllers.feedback
+package auth
 
-import javax.inject.Inject
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
+import uk.gov.hmrc.play.frontend.auth.{AuthenticationProvider, TaxRegime}
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc._
-
-class FeedbackController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
-
-  def show: Action[AnyContent] = Action(implicit request => Ok(views.html.pages.welcome()))
-
+class VATRegime extends TaxRegime {
+  override def isAuthorised(accounts: Accounts): Boolean = true
+  override def authenticationType: AuthenticationProvider = VATAuthenticationProvider
 }

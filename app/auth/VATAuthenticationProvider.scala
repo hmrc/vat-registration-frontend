@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package controllers.feedback
+package auth
 
-import javax.inject.Inject
+import uk.gov.hmrc.play.frontend.auth.GovernmentGateway
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc._
-
-class FeedbackController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
-
-  def show: Action[AnyContent] = Action(implicit request => Ok(views.html.pages.welcome()))
-
+object VATAuthenticationProvider extends GovernmentGateway {
+  override val continueURL: String = VATExternalUrls.continueURL
+  override val loginURL: String = VATExternalUrls.loginURL
 }

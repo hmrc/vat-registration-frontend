@@ -18,14 +18,18 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
+import config.FrontendAuthConnector
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, MessagesApi}
+import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController with I18nSupport {
+abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController with I18nSupport with Actions {
 
   lazy val conf = ds.conf
   implicit lazy val messagesApi = ds.messagesApi
+  override val authConnector = FrontendAuthConnector
+
 
 }
 

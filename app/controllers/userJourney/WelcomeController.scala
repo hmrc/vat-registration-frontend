@@ -18,13 +18,20 @@ package controllers.userJourney
 
 import javax.inject.Inject
 
+import auth.VATRegime
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc._
 
 class WelcomeController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = Action { implicit request =>
-    Ok(views.html.pages.welcome())
+  //  def show: Action[AnyContent] = Action { implicit request =>
+  //    Ok(views.html.pages.welcome())
+  //  }
+
+  def show: Action[AnyContent] = AuthorisedFor(taxRegime = new VATRegime, pageVisibility = GGConfidence) {
+    implicit user =>
+      implicit request =>
+        Ok(views.html.pages.welcome())
   }
 
 }
