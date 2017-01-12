@@ -16,14 +16,14 @@
 
 package controllers.feedback
 
+import javax.inject.Inject
+
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc._
-import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+
 import scala.concurrent.Future
 
-// TODO: need to implement proper feedback controller?
-class FeedbackController extends FrontendController {
+class FeedbackController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(views.html.pages.welcome()))
