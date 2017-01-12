@@ -21,11 +21,8 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc._
 
-import scala.concurrent.Future
-
 class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.pages.taxable_turnover()))
-  }
+  def show: Action[AnyContent] = Action(implicit request => Ok(views.html.pages.taxable_turnover()))
+
 }
