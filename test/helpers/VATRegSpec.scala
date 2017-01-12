@@ -23,13 +23,13 @@ import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.i18n.MessagesApi
 import play.api.{Application, Configuration}
 import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.play.test.WithFakeApplication
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class VATRegSpec extends PlaySpec with WithFakeApplication with OneAppPerSuite {
+class VATRegSpec extends PlaySpec with OneAppPerSuite {
   implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
 
   @Inject
-  var ds: CommonPlayDependencies = fakeApplication.injector.instanceOf[CommonPlayDependencies]
+  var ds: CommonPlayDependencies = app.injector.instanceOf[CommonPlayDependencies]
   @Inject
-  val messagesApi: MessagesApi = fakeApplication.injector.instanceOf[MessagesApi]
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 }
