@@ -18,7 +18,7 @@ package controllers.userJourney
 
 import javax.inject.Inject
 
-import auth.VATRegime
+import auth.VatRegime
 import config.FrontendAuthConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
@@ -30,7 +30,7 @@ class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegis
   override val authConnector = FrontendAuthConnector
   //$COVERAGE-ON$
 
-  def postSignIn: Action[AnyContent] = AuthorisedFor(taxRegime = new VATRegime, pageVisibility = GGConfidence).async {
+  def postSignIn: Action[AnyContent] = authorisedForVatReg.async {
     implicit user =>
       implicit request =>
         Future.successful(Redirect(controllers.userJourney.routes.WelcomeController.show()))

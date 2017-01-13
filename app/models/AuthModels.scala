@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package controllers.userJourney
+package models
 
-import javax.inject.Inject
+import play.api.libs.json.Json
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc._
+trait AuthResponse
+case class Authority(ids: String, userDetailsLink: String) extends AuthResponse
 
-class WelcomeController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+object Authority {
+  implicit val format = Json.format[Authority]
+}
 
-  def show: Action[AnyContent] = authorisedForVatReg {
-    implicit user =>
-      implicit request =>
-        Ok(views.html.pages.welcome())
-  }
+case class UserIDs(internalId: String, externalId: String) extends AuthResponse
 
-  def start: Action[AnyContent] = authorisedForVatReg { implicit request => implicit user => Redirect(routes.WelcomeController.show()) }
-
+object UserIDs {
+  implicit val formats = Json.format[UserIDs]
 }

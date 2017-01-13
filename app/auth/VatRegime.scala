@@ -16,9 +16,10 @@
 
 package auth
 
-import uk.gov.hmrc.play.frontend.auth.GovernmentGateway
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
+import uk.gov.hmrc.play.frontend.auth.{AuthenticationProvider, TaxRegime}
 
-object VATAuthenticationProvider extends GovernmentGateway {
-  override val continueURL: String = VATExternalUrls.continueURL
-  override val loginURL: String = VATExternalUrls.loginURL
+class VatRegime extends TaxRegime {
+  override def isAuthorised(accounts: Accounts): Boolean = true
+  override def authenticationType: AuthenticationProvider = VatAuthenticationProvider
 }

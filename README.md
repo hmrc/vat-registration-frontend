@@ -8,6 +8,13 @@ This is a placeholder README.md for a new repository
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html")
 
+## Before committing
+```
+sbt clean coverage test scalastyle coverageReport
+```
+
+## NOTE: Only commit if test coverage report is above or equal to 95%, scalastyle warnings are corrected and tests green.
+
 ## Running locally
 
 Ensure to run the following command to start the service managed services required locally:

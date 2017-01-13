@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package controllers.userJourney
+package mocks
 
-import javax.inject.Inject
+import org.mockito.Mockito._
+import org.scalatest.mock.MockitoSugar
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.audit.model.Audit
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc._
+trait VatRegMocks {
+  this: MockitoSugar =>
 
-class WelcomeController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+  lazy val mockAuthConnector = mock[AuthConnector]
+  lazy val mockAudit = mock[Audit]
+  lazy val mockAuditConnector = mock[AuditConnector]
 
-  def show: Action[AnyContent] = authorisedForVatReg {
-    implicit user =>
-      implicit request =>
-        Ok(views.html.pages.welcome())
+  def resetMocks(): Unit = {
+    reset(mockAuthConnector, mockAuditConnector, mockAudit)
   }
-
-  def start: Action[AnyContent] = authorisedForVatReg { implicit request => implicit user => Redirect(routes.WelcomeController.show()) }
-
 }
