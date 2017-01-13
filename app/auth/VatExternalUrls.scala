@@ -16,10 +16,16 @@
 
 package auth
 
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
-import uk.gov.hmrc.play.frontend.auth.{AuthenticationProvider, TaxRegime}
+import controllers.userJourney.routes
+import uk.gov.hmrc.play.config.{RunMode, ServicesConfig}
 
-class VATRegime extends TaxRegime {
-  override def isAuthorised(accounts: Accounts): Boolean = true
-  override def authenticationType: AuthenticationProvider = VATAuthenticationProvider
+object VatExternalUrls extends RunMode with ServicesConfig {
+
+  private[VatExternalUrls] val companyAuthHost = getConfString("auth.company-auth.url","")
+  private[VatExternalUrls] val loginCallback = getConfString("auth.login-callback.url","")
+  private[VatExternalUrls] val loginPath = getConfString("auth.login_path","")
+
+  val loginURL = s"$companyAuthHost$loginPath"
+  val continueURL = s"$loginCallback${routes.SignInOutController.postSignIn()}"
+
 }

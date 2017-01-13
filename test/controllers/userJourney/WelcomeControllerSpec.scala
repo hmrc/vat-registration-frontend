@@ -16,41 +16,41 @@
 
 package controllers.userJourney
 
-import play.api.test.FakeRequest
-import play.api.http.Status
+
+import builders.AuthBuilder
+import controllers.CommonPlayDependencies
+import helpers.VatRegSpec
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 
-class WelcomeControllerSpec extends UnitSpec with WithFakeApplication{
+class WelcomeControllerSpec extends VatRegSpec {
 
-  val fakeRequest = FakeRequest("GET", "/")
-  val fakeRequestStart = FakeRequest("GET", "/start")
+  class Setup(ds:CommonPlayDependencies) {
+    object TestController extends WelcomeController(ds) {
+     override val authConnector = mockAuthConnector
+    }
+  }
 
   "GET /" should {
-    "return 200" in {
-      val result = new WelcomeController().show(fakeRequest)
-      status(result) shouldBe Status.OK
+    "redirect to GG sign in" in {
+      val controller = new WelcomeController(ds)
+      AuthBuilder.showWithUnauthorisedUser(controller.show) {
+        result =>
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(authUrl)
+      }
     }
 
-    "return HTML" in {
-      val result = new WelcomeController().show(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
+    "return HTML" in new Setup(ds) {
+      AuthBuilder.showWithAuthorisedUser(TestController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+      }
     }
   }
 
-  "GET /start" should {
-    "return 200" in {
-      val result = new WelcomeController().show(fakeRequestStart)
-      status(result) shouldBe Status.OK
-    }
-
-    "return HTML" in {
-      val result = new WelcomeController().show(fakeRequestStart)
-      contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
-    }
-  }
 
 }
+

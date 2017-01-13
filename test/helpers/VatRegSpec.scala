@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package controllers.userJourney
+package helpers
 
 import javax.inject.Inject
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc._
+import controllers.CommonPlayDependencies
+import fixtures.LoginFixture
+import mocks.VatRegMocks
+import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 
-class WelcomeController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class VatRegSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with VatRegMocks with LoginFixture {
+  // Placeholder for custom configuration
+  // Use this if you want to configure the app
+  // implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
 
-  def show: Action[AnyContent] = authorisedForVatReg {
-    implicit user =>
-      implicit request =>
-        Ok(views.html.pages.welcome())
-  }
-
-  def start: Action[AnyContent] = authorisedForVatReg { implicit request => implicit user => Redirect(routes.WelcomeController.show()) }
+  @Inject
+  var ds: CommonPlayDependencies = app.injector.instanceOf[CommonPlayDependencies]
 
 }

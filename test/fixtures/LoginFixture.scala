@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package auth
+package fixtures
 
-import controllers.userJourney.routes
-import uk.gov.hmrc.play.config.{RunMode, ServicesConfig}
+import java.net.URLEncoder
 
-object VATExternalUrls extends RunMode with ServicesConfig {
-
-  private[VATExternalUrls] val companyAuthHost = getConfString("auth.company-auth.url","")
-  private[VATExternalUrls] val loginCallback = getConfString("auth.login-callback.url","")
-  private[VATExternalUrls] val loginPath = getConfString("auth.login_path","")
-
-  val loginURL = s"$companyAuthHost$loginPath"
-  val continueURL = s"$loginCallback${routes.SignInOutController.postSignIn()}"
-
+trait LoginFixture {
+  val signInUri: String = """http://localhost:9025/gg/sign-in"""
+  val continueUrlHtmlEncoded: String = URLEncoder.encode(s"http://localhost:9895/vat-registration/post-sign-in", "UTF-8")
+  lazy val authUrl = s"$signInUri?accountType=organisation&continue=$continueUrlHtmlEncoded&origin=vat-registration-frontend"
 }

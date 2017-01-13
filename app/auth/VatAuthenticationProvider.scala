@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-package controllers.userJourney
+package auth
 
-import javax.inject.Inject
+import uk.gov.hmrc.play.frontend.auth.GovernmentGateway
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc._
-
-class WelcomeController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
-
-  def show: Action[AnyContent] = authorisedForVatReg {
-    implicit user =>
-      implicit request =>
-        Ok(views.html.pages.welcome())
-  }
-
-  def start: Action[AnyContent] = authorisedForVatReg { implicit request => implicit user => Redirect(routes.WelcomeController.show()) }
-
+object VatAuthenticationProvider extends GovernmentGateway {
+  override val continueURL: String = VatExternalUrls.continueURL
+  override val loginURL: String = VatExternalUrls.loginURL
 }

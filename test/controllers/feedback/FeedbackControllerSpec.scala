@@ -16,25 +16,25 @@
 
 package controllers.feedback
 
-import play.api.test.FakeRequest
+import helpers.VatRegSpec
 import play.api.http.Status
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class FeedbackControllerSpec extends UnitSpec with WithFakeApplication {
+class FeedbackControllerSpec extends VatRegSpec {
 
   val fakeRequest = FakeRequest("GET", "/feedback")
 
-  "GET /feedback" should {
+  "GET /feedback" must {
     "return 200" in {
-      val result = new FeedbackController().show(fakeRequest)
-      status(result) shouldBe Status.OK
+      val result = new FeedbackController(ds).show(fakeRequest)
+      status(result) mustBe Status.OK
     }
 
     "return HTML" in {
-      val result = new FeedbackController().show(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
+      val result = new FeedbackController(ds).show(fakeRequest)
+      contentType(result) mustBe Some("text/html")
+      charset(result) mustBe Some("utf-8")
     }
   }
 }
