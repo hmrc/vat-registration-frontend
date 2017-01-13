@@ -32,55 +32,8 @@ class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegis
 
   def postSignIn: Action[AnyContent] = AuthorisedFor(taxRegime = new VATRegime, pageVisibility = GGConfidence).async {
     implicit user =>
-
       implicit request =>
         Future.successful(Redirect(controllers.userJourney.routes.WelcomeController.show()))
   }
 
 }
-
-//trait SignInOutController extends FrontendController with Actions {
-
-
-//  def postSignIn: Action[AnyContent] = AuthorisedFor(taxRegime = new VATRegime, pageVisibility = GGConfidence).async {
-//    implicit user =>
-//      implicit request =>
-//        checkAndStoreCurrentProfile {
-//          checkAndStoreCompanyDetails {
-//            fetchAndStorePAYERegistration {
-//              Redirect(controllers.userJourney.routes.WelcomeController.show())
-//            }
-//          }
-//        }
-//  }
-//
-//  private def checkAndStoreCurrentProfile(f: => Future[Result])(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[Result] = {
-//    currentProfileService.fetchAndStoreCurrentProfile flatMap {
-//      case DownstreamOutcome.Success => f
-//      case DownstreamOutcome.Failure => Future.successful(InternalServerError(views.html.pages.error.restart()))
-//    }
-//  }
-//
-//  private def checkAndStoreCompanyDetails(f: => Future[Result])(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[Result] = {
-//    coHoAPIService.fetchAndStoreCoHoCompanyDetails flatMap {
-//      case DownstreamOutcome.Success => f
-//      case DownstreamOutcome.Failure => Future.successful(InternalServerError(views.html.pages.error.restart()))
-//    }
-//  }
-//
-//  private def fetchAndStorePAYERegistration(f: => Result)(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[Result] = {
-//    payeRegistrationService.fetchAndStoreCurrentRegistration() flatMap {
-//      case regOpt => regOpt match {
-//        case Some(reg) => Future.successful(f)
-//        case _ => payeRegistrationService.createNewRegistration() map {
-//          case DownstreamOutcome.Success => f
-//          case DownstreamOutcome.Failure => InternalServerError(views.html.pages.error.restart())
-//        }
-//      }
-//    } recover {
-//      case e =>
-//        Logger.warn(s"[SignInOutController] [fetchAndStorePAYERegistration] Unable to fetch/store current registration. Error: ${e.getMessage}")
-//        InternalServerError(views.html.pages.error.restart())
-//    }
-//  }
-//}
