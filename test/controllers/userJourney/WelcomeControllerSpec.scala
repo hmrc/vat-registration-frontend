@@ -20,33 +20,47 @@ package controllers.userJourney
 import builders.AuthBuilder
 import controllers.CommonPlayDependencies
 import helpers.VatRegSpec
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
 
 class WelcomeControllerSpec extends VatRegSpec {
 
-  class Setup(ds:CommonPlayDependencies) {
+  class Setup(ds: CommonPlayDependencies) {
+
     object TestController extends WelcomeController(ds) {
-     override val authConnector = mockAuthConnector
+      override val authConnector = mockAuthConnector
     }
+
   }
 
-  "GET /" should {
-    "redirect to GG sign in" in {
+  "GET /start" should {
+    "redirect to GG sign in when not authorized" in {
       val controller = new WelcomeController(ds)
-      AuthBuilder.showWithUnauthorisedUser(controller.show) {
+      AuthBuilder.showWithUnauthorisedUser(controller.start) {
         result =>
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(authUrl)
       }
     }
 
-    "return HTML" in new Setup(ds) {
-      AuthBuilder.showWithAuthorisedUser(TestController.show, mockAuthConnector) {
+    "return HTML when user is authorized to access" in new Setup(ds) {
+      AuthBuilder.showWithAuthorisedUser(TestController.start, mockAuthConnector) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
+      }
+    }
+  }
+
+  "GET /" should {
+    "redirect the user to start page" in {
+      val controller = new WelcomeController(ds)
+      val result = controller.show(FakeRequest("GET", "/"))
+      status(result) mustBe SEE_OTHER
+      inside(redirectLocation(result)) {
+        case Some(redirectUri) => redirectUri mustBe routes.WelcomeController.start().toString
       }
     }
   }
