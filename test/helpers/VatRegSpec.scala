@@ -21,10 +21,11 @@ import javax.inject.Inject
 import controllers.CommonPlayDependencies
 import fixtures.LoginFixture
 import mocks.VatRegMocks
+import org.scalatest.Inside
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 
-class VatRegSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with VatRegMocks with LoginFixture {
+class VatRegSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with VatRegMocks with LoginFixture with Inside {
   // Placeholder for custom configuration
   // Use this if you want to configure the app
   // implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
