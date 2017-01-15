@@ -4,10 +4,14 @@ GET         /assets/*file           controllers.Assets.at(path="/public", file)
 
 ## WELCOME PAGE
 GET         /                       controllers.userJourney.WelcomeController.show
-GET         /start                  controllers.userJourney.WelcomeController.show
+GET         /start                  controllers.userJourney.WelcomeController.start
 
 ## TAXABLE TURNOVER PAGE
 GET         /taxable/turnover       controllers.userJourney.TaxableTurnoverController.show
 
 ## FEEDBACK
 GET         /feedback               controllers.feedback.FeedbackController.show
+
+
+## POST SIGN IN
+GET         /post-sign-in            controllers.userJourney.SignInOutController.postSignIn

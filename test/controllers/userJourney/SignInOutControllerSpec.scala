@@ -16,13 +16,26 @@
 
 package controllers.userJourney
 
-import javax.inject.Inject
+import helpers.VatRegSpec
+import play.api.test.Helpers._
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc._
+class SignInOutControllerSpec extends VatRegSpec {
 
-class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+  object TestController extends SignInOutController(ds) {
+    override val authConnector = mockAuthConnector
+  }
 
-  def show: Action[AnyContent] = authorised(implicit user => implicit request => Ok(views.html.pages.taxable_turnover()))
+  "Post-sign-in" should {
+    "redirect to start of the journey when authorized" in {
+      callAuthorised(TestController.postSignIn, mockAuthConnector) {
+        result =>
+          status(result) mustBe SEE_OTHER
+          inside(redirectLocation(result)) {
+            case Some(redirectUri) => redirectUri mustBe routes.WelcomeController.start().toString
+          }
+      }
+    }
+  }
+
 
 }
