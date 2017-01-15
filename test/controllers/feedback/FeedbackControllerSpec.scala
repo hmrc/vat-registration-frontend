@@ -17,24 +17,33 @@
 package controllers.feedback
 
 import helpers.VatRegSpec
-import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
 class FeedbackControllerSpec extends VatRegSpec {
 
-  val fakeRequest = FakeRequest("GET", "/feedback")
+  object TestController extends FeedbackController(ds) {
+    override val authConnector = mockAuthConnector
+  }
 
-  "GET /feedback" must {
-    "return 200" in {
-      val result = new FeedbackController(ds).show(fakeRequest)
-      status(result) mustBe Status.OK
+  val fakeRequest = FakeRequest(routes.FeedbackController.show())
+
+  "GET /feedback" should {
+
+    "redirect to GG sign in when not authorized" in {
+      val result = new FeedbackController(ds).show()(fakeRequest)
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(authUrl)
     }
 
-    "return HTML" in {
-      val result = new FeedbackController(ds).show(fakeRequest)
-      contentType(result) mustBe Some("text/html")
-      charset(result) mustBe Some("utf-8")
+    "return HTML when user is authorized to access" in {
+      callAuthorised(TestController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+      }
     }
   }
+
 }

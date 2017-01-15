@@ -39,12 +39,7 @@ trait AuthBuilder {
     }
   }
 
-  def showWithUnauthorisedUser(action: Action[AnyContent])(test: Future[Result] => Any) {
-    val result = action.apply()(FakeRequest())
-    test(result)
-  }
-
-  def showWithAuthorisedUser(action: Action[AnyContent], mockAuthConnector: AuthConnector)(test: Future[Result] => Any) {
+  def withAuthorisedUser(action: Action[AnyContent], mockAuthConnector: AuthConnector)(test: Future[Result] => Any) {
     val userId = "testUserId"
     mockAuthorisedUser(userId, mockAuthConnector)
     val result = action(SessionBuilder.buildRequestWithSession(userId))

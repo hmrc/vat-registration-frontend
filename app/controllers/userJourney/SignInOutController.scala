@@ -18,22 +18,21 @@ package controllers.userJourney
 
 import javax.inject.Inject
 
-import auth.VatRegime
 import config.FrontendAuthConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
-
-import scala.concurrent.Future
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+
   //$COVERAGE-OFF$
-  override val authConnector = FrontendAuthConnector
+  override val authConnector: AuthConnector = FrontendAuthConnector
   //$COVERAGE-ON$
 
-  def postSignIn: Action[AnyContent] = authorisedForVatReg.async {
+  def postSignIn: Action[AnyContent] = authorised {
     implicit user =>
       implicit request =>
-        Future.successful(Redirect(controllers.userJourney.routes.WelcomeController.show()))
+        Redirect(controllers.userJourney.routes.WelcomeController.start())
   }
 
 }

@@ -17,35 +17,30 @@
 package controllers.userJourney
 
 
-import builders.AuthBuilder
-import controllers.CommonPlayDependencies
 import helpers.VatRegSpec
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
 
 class WelcomeControllerSpec extends VatRegSpec {
 
-  class Setup(ds: CommonPlayDependencies) {
-
-    object TestController extends WelcomeController(ds) {
-      override val authConnector = mockAuthConnector
-    }
-
+  object TestController extends WelcomeController(ds) {
+    override val authConnector = mockAuthConnector
   }
+
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.show())
+  val fakeRequestStart: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.start())
 
   "GET /start" should {
     "redirect to GG sign in when not authorized" in {
-      val controller = new WelcomeController(ds)
-      AuthBuilder.showWithUnauthorisedUser(controller.start) {
-        result =>
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(authUrl)
-      }
+      val result = new WelcomeController(ds).start()(fakeRequestStart)
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(authUrl)
     }
 
-    "return HTML when user is authorized to access" in new Setup(ds) {
-      AuthBuilder.showWithAuthorisedUser(TestController.start, mockAuthConnector) {
+    "return HTML when user is authorized to access" in {
+      callAuthorised(TestController.start, mockAuthConnector) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -56,8 +51,7 @@ class WelcomeControllerSpec extends VatRegSpec {
 
   "GET /" should {
     "redirect the user to start page" in {
-      val controller = new WelcomeController(ds)
-      val result = controller.show(FakeRequest("GET", "/"))
+      val result = new WelcomeController(ds).show(fakeRequest)
       status(result) mustBe SEE_OTHER
       inside(redirectLocation(result)) {
         case Some(redirectUri) => redirectUri mustBe routes.WelcomeController.start().toString
@@ -65,6 +59,4 @@ class WelcomeControllerSpec extends VatRegSpec {
     }
   }
 
-
 }
-

@@ -23,6 +23,6 @@ import play.api.mvc._
 
 class FeedbackController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = Action(implicit request => Ok(views.html.pages.welcome()))
+  def show: Action[AnyContent] = authorised(implicit user => implicit request => Ok(views.html.pages.welcome()))
 
 }
