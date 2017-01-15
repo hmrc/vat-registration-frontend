@@ -23,10 +23,10 @@ Ensure to run the following command to start the service managed services requir
 sm --start SCRS_ALL -f
 ```
 
-Then enter the following command:
+To run, just cd to cloned directory and execute:
 
 ```
-sbt run -Dhttp.port=9895
+sbt run
 ```
 
 And open your browser to open the following page:

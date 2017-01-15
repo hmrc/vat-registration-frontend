@@ -16,40 +16,46 @@
 
 package controllers.userJourney
 
-import helpers.VATRegSpec
-import play.api.http.Status
+
+import helpers.VatRegSpec
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
 
-class WelcomeControllerSpec extends VATRegSpec {
+class WelcomeControllerSpec extends VatRegSpec {
 
-  val fakeRequest = FakeRequest("GET", "/")
-  val fakeRequestStart = FakeRequest("GET", "/start")
+  object TestController extends WelcomeController(ds) {
+    override val authConnector = mockAuthConnector
+  }
 
-  "GET /" should {
-    "return 200" in {
-      val result = new WelcomeController(ds).show(fakeRequest)
-      status(result) mustBe Status.OK
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.show())
+  val fakeRequestStart: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.start())
+
+  "GET /start" should {
+    "redirect to GG sign in when not authorized" in {
+      val result = new WelcomeController(ds).start()(fakeRequestStart)
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(authUrl)
     }
 
-    "return HTML" in {
-      val result = new WelcomeController(ds).show(fakeRequest)
-      contentType(result) mustBe Some("text/html")
-      charset(result) mustBe Some("utf-8")
+    "return HTML when user is authorized to access" in {
+      callAuthorised(TestController.start, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+      }
     }
   }
 
-  "GET /start" should {
-    "return 200" in {
-      val result = new WelcomeController(ds).show(fakeRequestStart)
-      status(result) mustBe Status.OK
-    }
-
-    "return HTML" in {
-      val result = new WelcomeController(ds).show(fakeRequestStart)
-      contentType(result) mustBe Some("text/html")
-      charset(result) mustBe Some("utf-8")
+  "GET /" should {
+    "redirect the user to start page" in {
+      val result = new WelcomeController(ds).show(fakeRequest)
+      status(result) mustBe SEE_OTHER
+      inside(redirectLocation(result)) {
+        case Some(redirectUri) => redirectUri mustBe routes.WelcomeController.start().toString
+      }
     }
   }
 

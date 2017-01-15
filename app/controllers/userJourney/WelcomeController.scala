@@ -23,8 +23,9 @@ import play.api.mvc._
 
 class WelcomeController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = Action { implicit request =>
-    Ok(views.html.pages.welcome())
-  }
+  //access to root of application should by default direct the user to the proper URL for start of VAT registration
+  def show: Action[AnyContent] = Action(implicit request => Redirect(routes.WelcomeController.start()))
+
+  def start: Action[AnyContent] = authorised(implicit user => implicit request => Ok(views.html.pages.welcome()))
 
 }

@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package controllers.userJourney
+package auth
 
-import javax.inject.Inject
+import controllers.userJourney.routes
+import uk.gov.hmrc.play.config.{RunMode, ServicesConfig}
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc._
+object VatExternalUrls extends RunMode with ServicesConfig {
 
-class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+  private[VatExternalUrls] val companyAuthHost = getConfString("auth.company-auth.url","")
+  private[VatExternalUrls] val loginCallback = getConfString("auth.login-callback.url","")
+  private[VatExternalUrls] val loginPath = getConfString("auth.login_path","")
 
-  def show: Action[AnyContent] = authorised(implicit user => implicit request => Ok(views.html.pages.taxable_turnover()))
+  val loginURL = s"$companyAuthHost$loginPath"
+  val continueURL = s"$loginCallback${routes.SignInOutController.postSignIn()}"
 
 }

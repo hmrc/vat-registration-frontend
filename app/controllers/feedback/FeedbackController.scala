@@ -21,11 +21,8 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc._
 
-import scala.concurrent.Future
-
 class FeedbackController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.pages.welcome()))
-  }
+  def show: Action[AnyContent] = authorised(implicit user => implicit request => Ok(views.html.pages.welcome()))
+
 }

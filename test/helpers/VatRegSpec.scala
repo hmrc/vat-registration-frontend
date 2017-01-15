@@ -16,22 +16,26 @@
 
 package helpers
 
-import javax.inject.Inject
-
+import builders.AuthBuilder
 import controllers.CommonPlayDependencies
+import fixtures.LoginFixture
+import mocks.VatRegMocks
+import org.scalatest.Inside
+import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import play.api.i18n.MessagesApi
-import play.api.{Application, Configuration}
-import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import play.api.mvc.{Action, AnyContent, Result}
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class VATRegSpec extends PlaySpec with OneAppPerSuite {
+import scala.concurrent.Future
+
+class VatRegSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with VatRegMocks with LoginFixture with Inside {
+
   // Placeholder for custom configuration
   // Use this if you want to configure the app
   // implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
-
-  @Inject
   var ds: CommonPlayDependencies = app.injector.instanceOf[CommonPlayDependencies]
-  @Inject
-  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
+  def callAuthorised(a: Action[AnyContent], ac: AuthConnector)(test: Future[Result] => Any): Unit =
+    AuthBuilder.withAuthorisedUser(a, ac)(test)
+
 }

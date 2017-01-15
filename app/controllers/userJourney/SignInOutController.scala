@@ -18,11 +18,21 @@ package controllers.userJourney
 
 import javax.inject.Inject
 
+import config.FrontendAuthConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc._
+import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = authorised(implicit user => implicit request => Ok(views.html.pages.taxable_turnover()))
+  //$COVERAGE-OFF$
+  override val authConnector: AuthConnector = FrontendAuthConnector
+  //$COVERAGE-ON$
+
+  def postSignIn: Action[AnyContent] = authorised {
+    implicit user =>
+      implicit request =>
+        Redirect(controllers.userJourney.routes.WelcomeController.start())
+  }
 
 }
