@@ -21,12 +21,12 @@ pages.welcome.panels.vatNeeded.title                    = Do you need to registe
 pages.welcome.panels.vatNeeded.para1                    = You need to register for VAT if you expect the company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered with Companies House.
 
 pages.welcome.panels.vatVoluntarily.title               = Can you register voluntarily for VAT?
-pages.welcome.panels.vatVoluntarily.para1               = You can register voluntarily if the company''s VAT taxable turnover is less than £83,000 in the 30 days after it's registered with Companies House.
+pages.welcome.panels.vatVoluntarily.para1               = You can register voluntarily if the company''s VAT taxable turnover is less than £83,000 in the 30 days after it''s registered with Companies House.
 pages.welcome.panels.vatVoluntarily.para2               = If you''re registered for VAT you:
 pages.welcome.panels.vatVoluntarily.bullet.charge       = must <a href="https://www.gov.uk/vat-businesses/how-vat-works">charge VAT</a> on the goods or services you sell
 pages.welcome.panels.vatVoluntarily.bullet.reclaim      = can <a href="https://www.gov.uk/reclaim-vat">reclaim VAT</a> on your business-related purchases
 pages.welcome.panels.vatVoluntarily.bullet.invoices     = must send VAT invoices to VAT-registered customers
-pages.welcome.panels.vatVoluntarily.para3               = Smaller companies that are registered for VAT can appear larger and more established to customers. However, charging VAT on goods and services may put off customers who aren't VAT registered and can't reclaim VAT.
+pages.welcome.panels.vatVoluntarily.para3               = Smaller companies that are registered for VAT can appear larger and more established to customers. However, charging VAT on goods and services may put off customers who aren''t VAT registered and can''t reclaim VAT.
 pages.welcome.panels.vatVoluntarily.para4               = You can apply to cancel your VAT registration at any time if it turns out to be the wrong decision.
 
 pages.welcome.panels.vatResponsibilities.title          = What are your VAT responsibilities?
