@@ -18,10 +18,11 @@ package controllers.userJourney
 
 import javax.inject.Inject
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.VatRegistrationController
+import play.api.Application
 import play.api.mvc._
 
-class WelcomeController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class WelcomeController @Inject()(implicit app: Application) extends VatRegistrationController {
 
   //access to root of application should by default direct the user to the proper URL for start of VAT registration
   def show: Action[AnyContent] = Action(implicit request => Redirect(routes.WelcomeController.start()))
