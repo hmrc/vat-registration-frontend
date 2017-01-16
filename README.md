@@ -6,10 +6,11 @@
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html")
 
-## Before committing
+## Prior to committing
 ```
 sbt clean coverage test scalastyle coverageReport
 ```
+
 alternatively, create an alias for the above line, and get in the habit of running it before checking in:
 
 ```bash
@@ -40,7 +41,7 @@ sbt run
 
 And open your browser to open the following page:
 
-http://local.tax.service.gov.uk:9895/vat-registration/start
+http://localhost/vat-registration/
 
 ### Nginx
 if you want to avoid having to include the service port number in the URL, add an nginx rule in your `hmrc.conf` file located under `/usr/local/etc/nginx/servers`
