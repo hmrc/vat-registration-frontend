@@ -22,7 +22,7 @@ import play.api.test.Helpers._
 
 class FeedbackControllerSpec extends VatRegSpec {
 
-  object TestController extends FeedbackController(ds) {
+  object TestController extends FeedbackController {
     override val authConnector = mockAuthConnector
   }
 
@@ -31,7 +31,7 @@ class FeedbackControllerSpec extends VatRegSpec {
   "GET /feedback" should {
 
     "redirect to GG sign in when not authorized" in {
-      val result = new FeedbackController(ds).show()(fakeRequest)
+      val result = new FeedbackController().show()(fakeRequest)
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(authUrl)
     }

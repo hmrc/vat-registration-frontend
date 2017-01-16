@@ -18,10 +18,11 @@ package controllers.feedback
 
 import javax.inject.Inject
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.VatRegistrationController
+import play.api.Application
 import play.api.mvc._
 
-class FeedbackController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class FeedbackController @Inject()(implicit app: Application) extends VatRegistrationController {
 
   def show: Action[AnyContent] = authorised(implicit user => implicit request => Ok(views.html.pages.welcome()))
 
