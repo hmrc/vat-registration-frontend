@@ -22,6 +22,8 @@
             </ul>
         </div>
 
+        <p>@messages("pages.welcome.note.registrationTime")</p>
+
         @form(action = controllers.userJourney.routes.TaxableTurnoverController.show()) {
             <div class="form-group">
                 <button class="button-get-started" role="button" id="continue">@messages("app.common.continue")</button>
@@ -31,40 +33,37 @@
         <div class="form-group">
             <details role="group">
                 <summary role="button" aria-controls="details-content-0" aria-expanded="false">
-                    <span class="summary">Do you need to register for VAT?</span>
+                    <span class="summary">@messages("pages.welcome.panels.vatNeeded.title")</span>
                 </summary>
-                <div class="panel panel-border-narrow" id="details-content-0" aria-hidden="true">
-                    <p>You need to register for VAT if you expect your company's VAT taxable turnover to be more than £83,000 in the 30 days after it's registered.</p>
+                <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
+                    <p>@messages("pages.welcome.panels.vatNeeded.para1")</p>
                 </div>
             </details>
-        </div>
 
-        <div class="form-group">
             <details role="group">
-                <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">Can you register voluntarily for VAT?</span></summary>
-                <div class="panel panel-border-narrow" id="details-content-1" aria-hidden="true">
-                    <p>You can register voluntarily if your company's VAT taxable turnover is less than £83,000, unless everything you sell is <a href="https://www.gov.uk/vat-businesses/when-not-to-charge-vat">exempt from VAT</a>.</p>
-                    <p>If your company is registered for VAT you:</p>
+                <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">@messages("pages.welcome.panels.vatVoluntarily.title")</span></summary>
+                <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
+                    <p>@messages("pages.welcome.panels.vatVoluntarily.para1")</p>
+                    <p>@messages("pages.welcome.panels.vatVoluntarily.para2")</p>
                     <ul class="list list-bullet">
-                        <li>can <a href="https://www.gov.uk/vat-businesses/how-vat-works">charge VAT</a> on the goods or services you sell</li>
-                        <li>can <a href="https://www.gov.uk/reclaim-vat">reclaim VAT</a> on your business-related purchases</li>
+                        <li>@Html(messages("pages.welcome.panels.vatVoluntarily.bullet.charge"))</li>
+                        <li>@Html(messages("pages.welcome.panels.vatVoluntarily.bullet.reclaim"))</li>
+                        <li>@messages("pages.welcome.panels.vatVoluntarily.bullet.invoices")</li>
                     </ul>
-                    <p>VAT-registered companies can appear larger and more established to customers. However, customers that aren't VAT registered (and can't reclaim VAT) may be put off by the increased prices that come with VAT registration.</p>
-                    <p>You can cancel your VAT registration at any time if it turns out to be the wrong decision.</p>
+                    <p>@messages("pages.welcome.panels.vatVoluntarily.para3")</p>
+                    <p>@messages("pages.welcome.panels.vatVoluntarily.para4")</p>
                 </div>
             </details>
-        </div>
 
-        <div class="form-group">
             <details role="group">
-                <summary role="button" aria-controls="details-content-2" aria-expanded="false"><span class="summary">What are your VAT responsibilities?</span></summary>
-                <div class="panel panel-border-narrow" id="details-content-2" aria-hidden="true">
-                    <p>From the effective date of registration you must:</p>
+                <summary role="button" aria-controls="details-content-2" aria-expanded="false"><span class="summary">@messages("pages.welcome.panels.vatResponsibilities.title")</span></summary>
+                <div class="panel panel-indent" id="details-content-2" aria-hidden="true">
+                    <p>@messages("pages.welcome.panels.vatResponsibilities.para1")</p>
                     <ul class="list list-bullet">
-                        <li>charge the <a href="https://www.gov.uk/vat-businesses/when-to-charge-vat">right amount of VAT</a></li>
-                        <li>pay any VAT due to HMRC</li>
-                        <li>submit VAT Returns</li>
-                        <li>keep VAT records and a VAT account</li>
+                        <li>@Html(messages("pages.welcome.panels.vatResponsibilities.bullet.charge"))</li>
+                        <li>@messages("pages.welcome.panels.vatResponsibilities.bullet.pay")</li>
+                        <li>@messages("pages.welcome.panels.vatResponsibilities.bullet.submit")</li>
+                        <li>@messages("pages.welcome.panels.vatResponsibilities.bullet.records")</li>
                     </ul>
                 </div>
             </details>
