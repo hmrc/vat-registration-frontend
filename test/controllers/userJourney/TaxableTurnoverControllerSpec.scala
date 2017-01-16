@@ -28,20 +28,15 @@ class TaxableTurnoverControllerSpec extends VatRegSpec {
 
   val fakeRequest = FakeRequest(routes.TaxableTurnoverController.show())
 
-  "GET /taxable/turnover" should {
+  s"GET ${routes.TaxableTurnoverController.show()}" should {
 
-    "redirect to GG sign in when not authorized" in {
-      val result = new TaxableTurnoverController(ds).show()(fakeRequest)
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(authUrl)
-    }
-
-    "return HTML when user is authorized to access" in {
+    "return HTML" in {
       callAuthorised(TestController.show, mockAuthConnector) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("VAT taxable turnover")
       }
     }
   }

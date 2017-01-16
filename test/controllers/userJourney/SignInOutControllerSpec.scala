@@ -26,6 +26,7 @@ class SignInOutControllerSpec extends VatRegSpec {
   }
 
   "Post-sign-in" should {
+
     "redirect to start of the journey when authorized" in {
       callAuthorised(TestController.postSignIn, mockAuthConnector) {
         result =>
@@ -35,6 +36,7 @@ class SignInOutControllerSpec extends VatRegSpec {
           }
       }
     }
+
   }
 
 
