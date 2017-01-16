@@ -17,7 +17,6 @@
 package helpers
 
 import builders.AuthBuilder
-import controllers.CommonPlayDependencies
 import fixtures.LoginFixture
 import mocks.VatRegMocks
 import org.scalatest.Inside
@@ -33,7 +32,6 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with Vat
   // Placeholder for custom configuration
   // Use this if you want to configure the app
   // implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
-  var ds: CommonPlayDependencies = app.injector.instanceOf[CommonPlayDependencies]
 
   def callAuthorised(a: Action[AnyContent], ac: AuthConnector)(test: Future[Result] => Any): Unit =
     AuthBuilder.withAuthorisedUser(a, ac)(test)

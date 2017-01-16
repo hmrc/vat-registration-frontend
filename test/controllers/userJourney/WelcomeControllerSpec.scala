@@ -25,7 +25,7 @@ import play.api.test.Helpers._
 
 class WelcomeControllerSpec extends VatRegSpec {
 
-  object TestController extends WelcomeController(ds) {
+  object TestController extends WelcomeController {
     override val authConnector = mockAuthConnector
   }
 
@@ -47,7 +47,7 @@ class WelcomeControllerSpec extends VatRegSpec {
   "GET /" should {
 
     "redirect the user to start page" in {
-      val result = new WelcomeController(ds).show(fakeRequest)
+      val result = new WelcomeController().show(fakeRequest)
       status(result) mustBe SEE_OTHER
       inside(redirectLocation(result)) {
         case Some(redirectUri) => redirectUri mustBe routes.WelcomeController.start().toString

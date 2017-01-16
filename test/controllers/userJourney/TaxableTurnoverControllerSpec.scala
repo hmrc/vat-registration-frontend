@@ -22,7 +22,7 @@ import play.api.test.Helpers._
 
 class TaxableTurnoverControllerSpec extends VatRegSpec {
 
-  object TestController extends TaxableTurnoverController(ds) {
+  object TestController extends TaxableTurnoverController {
     override val authConnector = mockAuthConnector
   }
 
