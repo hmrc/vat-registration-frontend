@@ -30,14 +30,8 @@ class WelcomeControllerSpec extends VatRegSpec {
   }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.show())
-  val fakeRequestStart: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.start())
 
   "GET /start" should {
-    "redirect to GG sign in when not authorized" in {
-      val result = new WelcomeController(ds).start()(fakeRequestStart)
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(authUrl)
-    }
 
     "return HTML when user is authorized to access" in {
       callAuthorised(TestController.start, mockAuthConnector) {
@@ -47,9 +41,11 @@ class WelcomeControllerSpec extends VatRegSpec {
           charset(result) mustBe Some("utf-8")
       }
     }
+
   }
 
   "GET /" should {
+
     "redirect the user to start page" in {
       val result = new WelcomeController(ds).show(fakeRequest)
       status(result) mustBe SEE_OTHER
@@ -57,6 +53,7 @@ class WelcomeControllerSpec extends VatRegSpec {
         case Some(redirectUri) => redirectUri mustBe routes.WelcomeController.start().toString
       }
     }
+
   }
 
 }

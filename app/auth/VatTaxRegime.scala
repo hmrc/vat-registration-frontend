@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package controllers.userJourney
+package auth
 
-import javax.inject.Inject
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
+import uk.gov.hmrc.play.frontend.auth.{AuthenticationProvider, TaxRegime}
 
-import config.FrontendAuthConnector
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+object VatTaxRegime extends TaxRegime {
 
-class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+  override def isAuthorised(accounts: Accounts): Boolean = true
 
-  def postSignIn: Action[AnyContent] = authorised {
-    implicit user =>
-      implicit request =>
-        Redirect(controllers.userJourney.routes.WelcomeController.start())
-  }
+  override def authenticationType: AuthenticationProvider = VatAuthenticationProvider
 
 }

@@ -18,34 +18,38 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import auth.VatAuthenticationProvider
+import auth.VatTaxRegime
 import config.FrontendAuthConnector
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, MessagesApi}
+import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
-import uk.gov.hmrc.play.frontend.auth.{Actions, AuthenticationProvider, TaxRegime}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController with I18nSupport with Actions {
-  //$COVERAGE-OFF$
 
+  //$COVERAGE-OFF$
   lazy val conf: Configuration = ds.conf
   implicit lazy val messagesApi: MessagesApi = ds.messagesApi
   override val authConnector: AuthConnector = FrontendAuthConnector
   //$COVERAGE-ON$
 
-  protected def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatRegime, pageVisibility = GGConfidence)
+  /**
+    * Use this to obtain an [[uk.gov.hmrc.play.frontend.auth.UserActions.AuthenticatedBy]] action builder.
+    * Usage of an `AuthenticatedBy` is similar to standard [[play.api.mvc.Action]]. Just like you would do this:
+    * {{{Action ( implicit request => Ok(...))}}}
+    * or
+    * {{{Action.async( implicit request => ??? // generates a Future Result )}}}
+    * With `AuthenticatedBy` you would do the same but you get a handle on the current user's [[uk.gov.hmrc.play.frontend.auth.AuthContext]] too:
+    * {{{authorised( implicit user => implicit request => Ok(...))}}}
+    * or
+    * {{{authorised.async( implicit user => imlicit request => ??? // generates a Future Result )}}}
+    *
+    * @return an AuthenticatedBy action builder that is specific to VatTaxRegime and GGConfidence confidence level
+    */
+  protected def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
 
 }
 
 @Singleton
 final class CommonPlayDependencies @Inject()(val conf: Configuration, val messagesApi: MessagesApi)
-
-object VatRegime extends TaxRegime {
-
-  override def isAuthorised(accounts: Accounts): Boolean = true
-
-  override def authenticationType: AuthenticationProvider = VatAuthenticationProvider
-
-}
