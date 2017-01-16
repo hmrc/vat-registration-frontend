@@ -18,7 +18,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import auth.VatRegime
+import auth.VatTaxRegime
 import config.FrontendAuthConnector
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -34,7 +34,20 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
   override val authConnector: AuthConnector = FrontendAuthConnector
   //$COVERAGE-ON$
 
-  protected def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatRegime, pageVisibility = GGConfidence)
+  /**
+    * Use this to obtain an [[uk.gov.hmrc.play.frontend.auth.UserActions.AuthenticatedBy]] action builder.
+    * Usage of an `AuthenticatedBy` is similar to standard [[play.api.mvc.Action]]. Just like you would do this:
+    * {{{Action ( implicit request => Ok(...))}}}
+    * or
+    * {{{Action.async( implicit request => ??? // generates a Future Result )}}}
+    * With `AuthenticatedBy` you would do the same but you get a handle on the current user's [[uk.gov.hmrc.play.frontend.auth.AuthContext]] too:
+    * {{{authorised( implicit user => implicit request => Ok(...))}}}
+    * or
+    * {{{authorised.async( implicit user => imlicit request => ??? // generates a Future Result )}}}
+    *
+    * @return an AuthenticatedBy action builder that is specific to VatTaxRegime and GGConfidence confidence level
+    */
+  protected def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
 
 }
 
