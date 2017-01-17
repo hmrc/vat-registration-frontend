@@ -37,12 +37,12 @@ pages.welcome.panels.vatResponsibilities.bullet.submit  = submit VAT Returns
 pages.welcome.panels.vatResponsibilities.bullet.records = keep VAT records and a VAT account
 
 ## Start Date Page
-pages.startDate.title = Start Date
-pages.startDate.heading = What do you want your VAT start date to be?
-pages.startDate.para1 = You can choose the date the company becomes VAT registered when you register voluntarily.
-pages.startDate.bullet.dateCompaniesHouse = The date the company is registered with Companies House
-pages.startDate.bullet.dateTrading = The same date you start doing business
-pages.startDate.bullet.dateOther = A different date
+pages.startDate.title                       = Start Date
+pages.startDate.heading                     = What do you want your VAT start date to be?
+pages.startDate.para1                       = You can choose the date the company becomes VAT registered when you register voluntarily.
+pages.startDate.radio1.whenRegistered       = The date the company is registered with Companies House
+pages.startDate.radio2.whenTrading          = The same date you start doing business
+pages.startDate.radio3.futureDate           = A different date
 
 ## Taxable Turnover Page
 pages.taxable.turnover.title    = Before you register for VAT
