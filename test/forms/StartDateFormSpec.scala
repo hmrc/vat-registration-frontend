@@ -18,7 +18,7 @@ package forms
 
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class StartDateFormSpec extends UnitSpec with WithFakeApplication{
+class StartDateFormSpec extends UnitSpec with WithFakeApplication {
 
   val testForm = StartDateForm.form
 
