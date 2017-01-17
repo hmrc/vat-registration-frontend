@@ -49,11 +49,9 @@ class WelcomeControllerSpec extends VatRegSpec {
     "redirect the user to start page" in {
       val result = new WelcomeController(ds).show(fakeRequest)
       status(result) mustBe SEE_OTHER
-      inside(redirectLocation(result)) {
-        case Some(redirectUri) => redirectUri mustBe routes.WelcomeController.start().toString
-      }
+      redirectLocation(result) mustBe Some(routes.WelcomeController.start().toString)
     }
-
   }
+
 
 }
