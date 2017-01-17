@@ -39,9 +39,6 @@ To run the service, just `cd` to cloned directory and execute:
 sbt run
 ```
 
-And open your browser to open the following page:
-
-http://localhost/vat-registration/
 
 ### Nginx
 if you want to avoid having to include the service port number in the URL, add an nginx rule in your `hmrc.conf` file located under `/usr/local/etc/nginx/servers`
@@ -51,3 +48,8 @@ location /vat-registration {
   proxy_pass                http://localhost:9895;
 }
 ```
+
+Link to app running locally:
+
+http://local.tax.service.gov.uk/vat-registration/
+

@@ -1,6 +1,6 @@
 ## Global
 app.title                               = Register your company
-app.phaseBannerFeedback                 = This is a new service – your <a href= {0}>feedback</a> will help us to improve it.
+app.phaseBannerFeedback                 = This is a new service – your <a href="{0}">feedback</a> will help us to improve it.
 app.common.yes                          = Yes
 app.common.no                           = No
 app.common.continue                     = Continue
@@ -43,4 +43,4 @@ pages.taxable.turnover.heading          = Do you expect your company''s VAT taxa
 ## Error Pages
 errorPages.title                        = Something went wrong
 errorPages.restart.heading              = Sorry, we''re having technical issues.
-errorPages.restart.p1                   = You can try again by <a href={0}>restarting</a> your PAYE registration.
+errorPages.restart.p1                   = You can try again by <a href="{0}" >restarting</a> your PAYE registration.
