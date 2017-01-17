@@ -18,11 +18,10 @@ package controllers.userJourney
 
 import javax.inject.Inject
 
-import controllers.VatRegistrationController
-import play.api.Application
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc._
 
-class TaxableTurnoverController @Inject()(implicit app: Application) extends VatRegistrationController {
+class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised(implicit user => implicit request => Ok(views.html.pages.taxable_turnover()))
 
