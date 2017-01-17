@@ -19,10 +19,15 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
+import forms.StartDateForm
+import models.StartDateModel
 import play.api.mvc._
 
 class StartDateController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = authorised(implicit user => implicit request => Ok(views.html.pages.start_date()))
+  def show: Action[AnyContent] = authorised(implicit user => implicit request => {
+    val form = StartDateForm.form.fill(StartDateModel.empty)
+    Ok(views.html.pages.start_date(form))
+  })
 
 }
