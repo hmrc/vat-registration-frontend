@@ -1,5 +1,6 @@
-@()(implicit request: Request[_], messages: Messages)
-
+@(startDateForm: Form[StartDateModel])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import models.StartDateModel
 @main_template(title = messages("pages.startDate.title")) {
 
   <div class="grid-row">
@@ -9,26 +10,23 @@
 
       <p>@messages("pages.startDate.para1")</p>
 
-
-
+      @govHelpers.form(action = controllers.userJourney.routes.WelcomeController.show()) {
       <div class="form-group">
         <fieldset>
           <legend class="visuallyhidden">What do you want your VAT start date to be?</legend>
 
           <div class="form-group">
-
-            <label class="block-label" data-target="example-ni-yes" for="radio-indent-1">
-              <input id="radio-indent-1" type="radio" name="stpayvat" value="Yes" aria-controls="example-ni-yes">The date the company is registered with Companies House
-            </label>
-
-            <label id="q1" class="block-label" data-target="example-ni-other" for="radio-indent-2">
-              <input id="radio-indent-2" type="radio" name="stpayvat" value="Other" aria-controls="example-ni-other">The same date you start doing business:
-            </label>
-
-
-            <label class="block-label" data-target="example-ni-no" for="radio-indent-3">
-              <input id="radio-indent-3" type="radio" name="stpayvat" value="No" aria-controls="example-ni-no">A different date
-            </label>
+            @govHelpers.inputRadioGroup(
+              field = startDateForm("vatStartDate"),
+              Seq(
+                StartDateModel.WHEN_REGISTERED -> Messages("pages.startDate.radio.whenRegistered"),
+                StartDateModel.FUTURE_DATE -> Messages("pages.startDate.radio.futureDate")
+              ),
+              '_labelAfter -> true,
+              '_legend -> Messages("pages.startDate.para1"),
+              '_labelClass -> "block-label",
+              '_legendClass -> "visuallyhidden"
+            )
 
             <div class="panel panel-border-narrow js-hidden" id="example-ni-no">
               <p>This must be:</p>
@@ -54,7 +52,7 @@
             </div>
           </div></fieldset>
       </div>
-
+      }
 
       <div class="form-group">
         <button class="btn button" type="next">Save and continue</button>
