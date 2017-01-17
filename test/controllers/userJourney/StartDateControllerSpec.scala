@@ -36,7 +36,7 @@ class StartDateControllerSpec extends VatRegSpec {
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("VAT taxable turnover")
+          contentAsString(result) must include("start date")
       }
     }
   }

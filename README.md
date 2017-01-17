@@ -41,7 +41,7 @@ sbt run
 
 
 ### Nginx
-if you want to avoid having to include the service port number in the URL, add an nginx rule in your `hmrc.conf` file located under `/usr/local/etc/nginx/servers`
+if you want to avoid having to include the service port number in the URL, add a rule to your nginx config.
 
 ```
 location /vat-registration {
@@ -51,5 +51,5 @@ location /vat-registration {
 
 Link to app running locally:
 
-http://local.tax.service.gov.uk/vat-registration/
+http://localhost/vat-registration/
 

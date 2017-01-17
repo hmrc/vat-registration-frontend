@@ -1,9 +1,64 @@
 @()(implicit request: Request[_], messages: Messages)
 
-@main_template(title = messages("pages.welcome.title")) {
+@main_template(title = messages("pages.startDate.title")) {
 
   <div class="grid-row">
     <div class="column-two-thirds">
+
+      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.startDate.heading")</h1>
+
+      <p>@messages("pages.startDate.para1")</p>
+
+
+
+      <div class="form-group">
+        <fieldset>
+          <legend class="visuallyhidden">What do you want your VAT start date to be?</legend>
+
+          <div class="form-group">
+
+            <label class="block-label" data-target="example-ni-yes" for="radio-indent-1">
+              <input id="radio-indent-1" type="radio" name="stpayvat" value="Yes" aria-controls="example-ni-yes">The date the company is registered with Companies House
+            </label>
+
+            <label id="q1" class="block-label" data-target="example-ni-other" for="radio-indent-2">
+              <input id="radio-indent-2" type="radio" name="stpayvat" value="Other" aria-controls="example-ni-other">The same date you start doing business:
+            </label>
+
+
+            <label class="block-label" data-target="example-ni-no" for="radio-indent-3">
+              <input id="radio-indent-3" type="radio" name="stpayvat" value="No" aria-controls="example-ni-no">A different date
+            </label>
+
+            <div class="panel panel-border-narrow js-hidden" id="example-ni-no">
+              <p>This must be:</p>
+              <ul class="list list-bullet">
+                <li>more than 2 working days in the future</li>
+                <li>within the next 3 months</li>
+              </ul>
+
+              <span class="form-hint">For example, 31 6 2017</span>
+              <div class="form-date">
+                <div class="form-group form-group-day">
+                  <label class="form-label" for="dob-day">Day</label> <input aria-describedby="dob-hint" class="form-control" id="dob-day" max="31" min="0" name="StPVDay" pattern="[0-9]*" type="number">
+                </div>
+
+                <div class="form-group form-group-month">
+                  <label class="form-label" for="dob-month">Month</label> <input class="form-control" id="dob-month" max="12" min="0" name="StPVMonth" pattern="[0-9]*" type="number">
+                </div>
+
+                <div class="form-group form-group-year">
+                  <label class="form-label" for="dob-year">Year</label> <input class="form-control" id="dob-year" max="2017" min="0" name="StPVYear" pattern="[0-9]*" type="number">
+                </div>
+              </div>
+            </div>
+          </div></fieldset>
+      </div>
+
+
+      <div class="form-group">
+        <button class="btn button" type="next">Save and continue</button>
+      </div>
 
 
     </div>
