@@ -38,6 +38,7 @@ class VatRegistrationControllerSpec extends VatRegSpec {
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(authUrl)
     }
+
   }
 
 
