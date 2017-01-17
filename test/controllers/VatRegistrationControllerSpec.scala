@@ -24,7 +24,7 @@ import play.api.test.Helpers.{redirectLocation, status, _}
 
 class VatRegistrationControllerSpec extends VatRegSpec {
 
-  object TestController extends VatRegistrationController {
+  object TestController extends VatRegistrationController(ds) {
 
     override val authConnector = mockAuthConnector
 
