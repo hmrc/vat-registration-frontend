@@ -18,11 +18,12 @@ package controllers.userJourney
 
 import javax.inject.Inject
 
-import controllers.VatRegistrationController
-import play.api.Application
+import config.FrontendAuthConnector
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class SignInOutController @Inject()(implicit app: Application) extends VatRegistrationController {
+class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def postSignIn: Action[AnyContent] = authorised {
     implicit user =>

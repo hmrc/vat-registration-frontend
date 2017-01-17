@@ -16,18 +16,21 @@
 
 package controllers
 
+import javax.inject.{Inject, Singleton}
+
 import auth.VatTaxRegime
 import config.FrontendAuthConnector
-import play.api.Application
+import play.api.Configuration
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-abstract class VatRegistrationController(implicit app: Application) extends FrontendController with I18nSupport with Actions {
+abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController with I18nSupport with Actions {
 
   //$COVERAGE-OFF$
-  implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy val conf: Configuration = ds.conf
+  implicit lazy val messagesApi: MessagesApi = ds.messagesApi
   override val authConnector: AuthConnector = FrontendAuthConnector
   //$COVERAGE-ON$
 
@@ -47,3 +50,6 @@ abstract class VatRegistrationController(implicit app: Application) extends Fron
   protected def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
 
 }
+
+@Singleton
+final class CommonPlayDependencies @Inject()(val conf: Configuration, val messagesApi: MessagesApi)
