@@ -22,7 +22,7 @@ import play.api.test.Helpers._
 
 class StartDateControllerSpec extends VatRegSpec {
 
-  object TestController extends StartDateController {
+  object TestController extends StartDateController(ds) {
     override val authConnector = mockAuthConnector
   }
 
