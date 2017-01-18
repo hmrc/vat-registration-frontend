@@ -10,53 +10,57 @@
 
       <p>@messages("pages.startDate.para1")</p>
 
-        <div class="form-group">
-          <fieldset>
-            <legend class="visuallyhidden">What do you want your VAT start date to be?</legend>
+        @govHelpers.form(action = controllers.userJourney.routes.StartDateController.submit()) {
+            <div class="form-group">
+                <fieldset>
+
+                    @govHelpers.inputRadioGroup(
+                        field = startDateForm("startDate"),
+                        Seq(
+                            StartDateModel.WHEN_REGISTERED -> Messages("pages.startDate.radio.whenRegistered"),
+                            StartDateModel.FUTURE_DATE -> Messages("pages.startDate.radio.futureDate")
+                        ),
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label"
+                    )
+
+                    <div class="panel panel-indent hidden" id="future_date_hidden">
+                        <p>@messages("pages.startDate.panels.futureDate.para1")</p>
+                        <ul class="list list-bullet">
+                            <li>@messages("pages.startDate.panels.futureDate.bullet.2days")</li>
+                            <li>@messages("pages.startDate.panels.futureDate.bullet.3months")</li>
+                        </ul>
+
+                        <span class="form-hint">@messages("pages.startDate.panels.futureDate.hint")</span>
+
+                        <div class="form-date">
+                            @govHelpers.input(
+                                startDateForm("startDate.day"),
+                                '_label -> Messages("pages.startDate.panels.futureDate.inputField.day"),
+                                '_labelClass -> "inline-block",
+                                '_inputClass -> "input--xxsmall"
+                            )
+                            @govHelpers.input(
+                                startDateForm("startDate.month"),
+                                '_label -> Messages("pages.startDate.panels.futureDate.inputField.month"),
+                                '_labelClass -> "inline-block",
+                                '_inputClass -> "input--xxsmall"
+                            )
+                            @govHelpers.input(
+                                startDateForm("startDate.year"),
+                                '_label -> Messages("pages.startDate.panels.futureDate.inputField.year"),
+                                '_labelClass -> "inline-block",
+                                '_inputClass -> "form-input"
+                            )
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
 
             <div class="form-group">
-              @govHelpers.inputRadioGroup(
-                field = startDateForm("startDate"),
-                Seq(
-                  StartDateModel.WHEN_REGISTERED -> Messages("pages.startDate.radio.whenRegistered"),
-                  StartDateModel.FUTURE_DATE -> Messages("pages.startDate.radio.futureDate")
-                ),
-                '_labelAfter -> true,
-                '_legend -> Messages("pages.startDate.para1"),
-                '_labelClass -> "block-label",
-                '_legendClass -> "visuallyhidden"
-              )
-
-              <div class="panel panel-indent hidden" id="future_date_hidden">
-                <p>@messages("pages.startDate.panels.futureDate.para1")</p>
-                <ul class="list list-bullet">
-                  <li>@messages("pages.startDate.panels.futureDate.bullet.2days")</li>
-                  <li>@messages("pages.startDate.panels.futureDate.bullet.3months")</li>
-                </ul>
-
-                <span class="form-hint">@messages("pages.startDate.panels.futureDate.hint")</span>
-                <div class="form-date">
-                  <div class="form-group form-group-day">
-                    <label class="form-label" for="dob-day">@messages("pages.startDate.panels.futureDate.inputField.day")</label> <input aria-describedby="dob-hint" class="form-control" id="dob-day" max="31" min="0" name="StPVDay" pattern="[0-9]*" type="number">
-                  </div>
-
-                  <div class="form-group form-group-month">
-                    <label class="form-label" for="dob-month">@messages("pages.startDate.panels.futureDate.inputField.month")</label> <input class="form-control" id="dob-month" max="12" min="0" name="StPVMonth" pattern="[0-9]*" type="number">
-                  </div>
-
-                  <div class="form-group form-group-year">
-                    <label class="form-label" for="dob-year">@messages("pages.startDate.panels.futureDate.inputField.year")</label> <input class="form-control" id="dob-year" max="2017" min="0" name="StPVYear" pattern="[0-9]*" type="number">
-                  </div>
-                </div>
-              </div>
-            </div></fieldset>
-        </div>
-
-
-      <div class="form-group">
-        <button class="btn button" type="next">Save and continue</button>
-      </div>
-
+                <button class="btn button" type="next">Save and continue</button>
+            </div>
+        }
 
     </div>
   </div>

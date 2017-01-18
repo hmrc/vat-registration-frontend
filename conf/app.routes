@@ -8,6 +8,7 @@ GET         /start                  controllers.userJourney.WelcomeController.st
 
 ## START DATE PAGE
 GET         /start-date             controllers.userJourney.StartDateController.show
+POST        /start-date             controllers.userJourney.StartDateController.submit
 
 ## TAXABLE TURNOVER PAGE
 GET         /taxable-turnover       controllers.userJourney.TaxableTurnoverController.show
