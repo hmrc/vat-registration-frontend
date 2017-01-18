@@ -1,45 +1,20 @@
 $(document).ready($(function() {
 
-    $('*[data-hidden]').each(function() {
+    var startDateRadioGroup = $("input[name='startDate']:radio");
+    var futureDateRadio = $("#startDate-future_date");
+    var futureDateHidden = $("#future_date_hidden");
 
-        var $self = $(this);
-        var $hidden = $('#hidden')
-        var $input = $self.find('input');
+    startDateRadioGroup.on("change", function () {
 
-        if ($input.val() === 'yes' && $input.prop('checked')) {
-            $hidden.show();
+
+        if(futureDateRadio.is(":checked")) {
+            console.log("future radio changed! -> " + JSON.stringify(this.value));
+            futureDateHidden.show();
         } else {
-            $hidden.hide();
-        }
-
-        $input.change(function() {
-
-            var $this = $(this);
-
-            if ($this.val() === 'yes') {
-                $hidden.show();
-            } else if($this.val() === 'no') {
-                $hidden.hide();
-            }
-        });
-    });
-
-    var radioOptions = $('input[type="radio"]');
-
-    radioOptions.each(function() {
-        var o = $(this).parent().next('.additional-option-block');
-        if ($(this).prop('checked')) {
-            o.show();
-        } else {
-            o.hide();
+            console.log("future radio changed! -> " + JSON.stringify(this.value));
+            futureDateHidden.hide();
         }
     });
 
-    radioOptions.on('click', function(e){
-        var o = $(this).parent().next('.additional-option-block');
-        if(o.index() == 1){
-            $('.additional-option-block').hide();
-            o.show();
-        }
-    });
+
 }));
