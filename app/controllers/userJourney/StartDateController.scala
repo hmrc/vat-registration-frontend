@@ -23,6 +23,8 @@ import forms.StartDateForm
 import models.StartDateModel
 import play.api.mvc._
 
+import scala.concurrent.Future
+
 class StartDateController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised(implicit user => implicit request => {
@@ -30,4 +32,23 @@ class StartDateController @Inject()(ds: CommonPlayDependencies) extends VatRegis
     Ok(views.html.pages.start_date(form))
   })
 
+  val submit = authorised.async {
+    implicit user =>
+      implicit request => {
+        StartDateForm.form.bindFromRequest().fold(
+          formWithErrors => {
+            Future.successful(BadRequest(views.html.pages.start_date(formWithErrors)))
+          }, {
+            data => {
+              val updatedData = data.dateType match {
+                case StartDateModel.WHEN_REGISTERED => data.copy(dateType = StartDateModel.WHEN_REGISTERED, day = None, month = None, year = None)
+                case StartDateModel.WHEN_TRADING => data.copy(dateType = StartDateModel.WHEN_TRADING, day = None, month = None, year = None)
+              }
+              //call to service
+              Future.successful(Redirect(routes.TaxableTurnoverController.show()))
+            }
+          }
+        )
+      }
+  }
 }
