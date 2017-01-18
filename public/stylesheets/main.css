@@ -14,3 +14,7 @@ label.cascading span {
 .error-summary--show  {
 	display: block;
 }
+
+.hidden {
+	display: none;
+}
