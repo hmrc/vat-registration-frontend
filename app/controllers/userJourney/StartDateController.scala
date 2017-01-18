@@ -41,8 +41,8 @@ class StartDateController @Inject()(ds: CommonPlayDependencies) extends VatRegis
           }, {
             data => {
               val updatedData = data.dateType match {
-                case StartDateModel.WHEN_REGISTERED => data.copy(dateType = StartDateModel.WHEN_REGISTERED, day = None, month = None, year = None)
-                case StartDateModel.WHEN_TRADING => data.copy(dateType = StartDateModel.WHEN_TRADING, day = None, month = None, year = None)
+                case _ :String  if (StartDateModel.FUTURE_DATE != data.dateType) => data.copy(day = None, month = None, year = None)
+                case _ => data
               }
               //call to service
               Future.successful(Redirect(routes.TaxableTurnoverController.show()))
