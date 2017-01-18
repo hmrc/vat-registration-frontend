@@ -24,10 +24,10 @@ object StartDateForm {
 
   val form = Form(
     mapping(
-      "vatStartDate" -> nonEmptyText,
-      "vatStartDate.year" -> optional(text),
-      "vatStartDate.month" -> optional(text),
-      "vatStartDate.day" -> optional(text)
+      "startDate" -> nonEmptyText,
+      "startDate.year" -> optional(text),
+      "startDate.month" -> optional(text),
+      "startDate.day" -> optional(text)
     )(StartDateModel.apply)(StartDateModel.unapply)
   )
 }
