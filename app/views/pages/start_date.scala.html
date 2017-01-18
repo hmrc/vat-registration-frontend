@@ -33,25 +33,28 @@
 
                         <span class="form-hint">@messages("pages.startDate.panels.futureDate.hint")</span>
 
+
                         <div class="form-date">
-                            @govHelpers.input(
-                                startDateForm("startDate.day"),
-                                '_label -> Messages("pages.startDate.panels.futureDate.inputField.day"),
-                                '_labelClass -> "inline-block",
-                                '_inputClass -> "input--xxsmall"
-                            )
-                            @govHelpers.input(
-                                startDateForm("startDate.month"),
-                                '_label -> Messages("pages.startDate.panels.futureDate.inputField.month"),
-                                '_labelClass -> "inline-block",
-                                '_inputClass -> "input--xxsmall"
-                            )
-                            @govHelpers.input(
-                                startDateForm("startDate.year"),
-                                '_label -> Messages("pages.startDate.panels.futureDate.inputField.year"),
-                                '_labelClass -> "inline-block",
-                                '_inputClass -> "form-input"
-                            )
+                            <div class="form-group form-group-day">
+                                <label class="form-label" for="dob-day">@messages("pages.startDate.panels.futureDate.inputField.day")</label>
+                                @govHelpers.input(
+                                    startDateForm("startDate.day")
+                                )
+                            </div>
+
+                            <div class="form-group form-group-month">
+                                <label class="form-label" for="dob-month">@messages("pages.startDate.panels.futureDate.inputField.month")</label>
+                                @govHelpers.input(
+                                    startDateForm("startDate.month")
+                                )
+                            </div>
+
+                            <div class="form-group form-group-year">
+                                <label class="form-label" for="dob-year">@messages("pages.startDate.panels.futureDate.inputField.year")</label>
+                                @govHelpers.input(
+                                    startDateForm("startDate.year")
+                                )
+                            </div>
                         </div>
                     </div>
                 </fieldset>
