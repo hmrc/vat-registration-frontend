@@ -19,13 +19,9 @@ package controllers.userJourney
 import builders.AuthBuilder
 import helpers.VatRegSpec
 import models.StartDateModel
-import org.mockito.Matchers
-import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-
-import scala.concurrent.Future
 
 class StartDateControllerSpec extends VatRegSpec {
 
