@@ -16,13 +16,20 @@
 
 package controllers.userJourney
 
+import builders.AuthBuilder
 import helpers.VatRegSpec
+import models.StartDateModel
+import org.mockito.Matchers
+import org.mockito.Mockito._
+import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
+import scala.concurrent.Future
+
 class StartDateControllerSpec extends VatRegSpec {
 
-  object TestController extends StartDateController(ds) {
+  object TestStartDateController extends StartDateController(ds) {
     override val authConnector = mockAuthConnector
   }
 
@@ -31,13 +38,38 @@ class StartDateControllerSpec extends VatRegSpec {
   s"GET ${routes.StartDateController.show()}" should {
 
     "return HTML" in {
-      callAuthorised(TestController.show, mockAuthConnector) {
+      callAuthorised(TestStartDateController.show, mockAuthConnector) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
           contentAsString(result) must include("start date")
       }
+    }
+  }
+
+  s"POST ${routes.StartDateController.submit()} with Empty data" should {
+
+    "return 400" in {
+      AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      )) {
+        result =>
+          status(result) mustBe Status.BAD_REQUEST
+      }
+
+    }
+  }
+
+  s"POST ${routes.StartDateController.submit()} with valid data" should {
+
+    "return 303" in {
+      AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        "startDate" -> StartDateModel.WHEN_REGISTERED
+      )) {
+        result =>
+          status(result) mustBe Status.SEE_OTHER
+      }
+
     }
   }
 
