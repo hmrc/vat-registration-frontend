@@ -18,6 +18,7 @@ package controllers.userJourney
 
 import javax.inject.Inject
 
+import auth.VatTaxRegime
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.StartDateForm
 import models.StartDateModel
@@ -32,7 +33,7 @@ class StartDateController @Inject()(ds: CommonPlayDependencies) extends VatRegis
     Ok(views.html.pages.start_date(form))
   })
 
-  val submit = authorised.async {
+  def submit: Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request => {
         StartDateForm.form.bindFromRequest().fold(
@@ -45,7 +46,7 @@ class StartDateController @Inject()(ds: CommonPlayDependencies) extends VatRegis
                 case _ => data
               }
               //call to service
-              Future.successful(Redirect(routes.TaxableTurnoverController.show()))
+              Future.successful(Redirect(controllers.userJourney.routes.TaxableTurnoverController.show()))
             }
           }
         )
