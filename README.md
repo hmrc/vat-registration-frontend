@@ -52,4 +52,3 @@ location /vat-registration {
 Link to app running locally:
 
 http://localhost/vat-registration/
-
