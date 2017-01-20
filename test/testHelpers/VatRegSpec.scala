@@ -14,24 +14,12 @@
  * limitations under the License.
  */
 
-package models
+package testHelpers
 
-import play.api.libs.json.Json
-import scala.language.implicitConversions
+import mocks.VatMocks
+import org.scalatest.mockito.MockitoSugar
+import uk.gov.hmrc.play.test.{WithFakeApplication, UnitSpec}
 
-case class StartDateModel(dateType: String,
-                          year: Option[String],
-                          month: Option[String],
-                          day: Option[String]) {
-}
-
-object StartDateModel {
-  val WHEN_REGISTERED = "WHEN_REGISTERED"
-  val WHEN_TRADING = "WHEN_TRADING"
-  val FUTURE_DATE = "FUTURE_DATE"
-
-  implicit val format = Json.format[StartDateModel]
-
-  def empty :StartDateModel = StartDateModel("", None, None, None)
+trait VatRegSpec extends UnitSpec with WithFakeApplication with MockitoSugar with VatMocks {
 
 }

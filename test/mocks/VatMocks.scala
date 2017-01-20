@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package forms
+package mocks
 
-import models.StartDateModel
-import play.api.data.Form
-import play.api.data.Forms._
+import org.scalatest.mockito.MockitoSugar
+import uk.gov.hmrc.http.cache.client.SessionCache
+import uk.gov.hmrc.play.audit.model.Audit
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-object StartDateForm {
+trait VatMocks
+  extends SaveForLaterMock
+    with KeystoreMock
+    with WSHTTPMock {
 
-  val form = Form(
-    mapping(
-      "startDate" -> nonEmptyText,
-      "startDate.year" -> optional(text),
-      "startDate.month" -> optional(text),
-      "startDate.day" -> optional(text)
-    )(StartDateModel.apply)(StartDateModel.unapply)
-  )
+  this: MockitoSugar =>
+  lazy val mockAuthConnector = mock[AuthConnector]
+  lazy val mockSessionCache = mock[SessionCache]
+  lazy val mockAudit = mock[Audit]
+
 }

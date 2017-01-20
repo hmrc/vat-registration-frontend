@@ -18,7 +18,7 @@ package controllers.userJourney
 
 import builders.AuthBuilder
 import helpers.VatRegSpec
-import models.StartDateModel
+import models.view.StartDate
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -60,7 +60,7 @@ class StartDateControllerSpec extends VatRegSpec {
 
     "return 303" in {
       AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "startDate" -> StartDateModel.WHEN_REGISTERED
+        "startDate" -> StartDate.WHEN_REGISTERED
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
