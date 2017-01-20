@@ -33,17 +33,19 @@ object FrontendBuild extends Build with MicroService {
     "uk.gov.hmrc" %% "logback-json-logger" % "3.1.0",
     "uk.gov.hmrc" %% "govuk-template" % "5.0.0",
     "uk.gov.hmrc" %% "play-health" % "2.0.0",
-    "uk.gov.hmrc" %% "play-ui" % "5.3.0"
+    "uk.gov.hmrc" %% "play-ui" % "5.3.0",
+    "uk.gov.hmrc" %% "http-caching-client" % "6.1.0"
   )
 
   def test(scope: String = "test"): Seq[ModuleID] = Seq(
     "uk.gov.hmrc" %% "hmrctest" % "2.2.0" % scope,
-    "org.mockito" % "mockito-all" % "1.10.19" % scope,
-    "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % scope,
+    "org.scalatest" %% "scalatest" % "3.0.0" % scope,
+    "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0-M1" % scope,
     "org.pegdown" % "pegdown" % "1.6.0" % scope,
     "org.scoverage" % "scalac-scoverage-runtime_2.11" % "1.3.0" % scope,
     "org.jsoup" % "jsoup" % "1.8.1" % scope,
-    "com.typesafe.play" %% "play-test" % PlayVersion.current % scope
+    "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
+    "org.mockito" % "mockito-core" % "1.9.5" % scope
   )
 
 }

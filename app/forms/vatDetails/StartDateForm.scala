@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-package mocks
+package forms.vatDetails
 
-import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.audit.model.Audit
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import models.view.StartDate
+import play.api.data.Form
+import play.api.data.Forms._
 
-trait VatRegMocks {
-  this: MockitoSugar =>
+object StartDateForm {
 
-  lazy val mockAuthConnector = mock[AuthConnector]
-  lazy val mockAudit = mock[Audit]
-  lazy val mockAuditConnector = mock[AuditConnector]
-
-  def resetMocks(): Unit = {
-    reset(mockAuthConnector, mockAuditConnector, mockAudit)
-  }
+  val form = Form(
+    mapping(
+      "startDate" -> nonEmptyText,
+      "startDate.year" -> optional(text),
+      "startDate.month" -> optional(text),
+      "startDate.day" -> optional(text)
+    )(StartDate.apply)(StartDate.unapply)
+  )
 }
