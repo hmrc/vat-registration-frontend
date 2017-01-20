@@ -16,6 +16,8 @@ GET         /taxable-turnover       controllers.userJourney.TaxableTurnoverContr
 ## FEEDBACK
 GET         /feedback               controllers.feedback.FeedbackController.show
 
+## SUMMARY
+GET         /summary                controllers.userJourney.SummaryController.show
 
 ## POST SIGN IN
-GET         /post-sign-in            controllers.userJourney.SignInOutController.postSignIn
+GET         /post-sign-in           controllers.userJourney.SignInOutController.postSignIn
