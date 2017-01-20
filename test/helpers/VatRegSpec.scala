@@ -19,16 +19,16 @@ package helpers
 import builders.AuthBuilder
 import controllers.CommonPlayDependencies
 import fixtures.LoginFixture
-import mocks.VatRegMocks
+import mocks.VatMocks
 import org.scalatest.Inside
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
-class VatRegSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with VatRegMocks with LoginFixture with Inside {
+class VatRegSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with VatMocks with LoginFixture with Inside {
 
   // Placeholder for custom configuration
   // Use this if you want to configure the app

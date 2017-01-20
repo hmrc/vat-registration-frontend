@@ -1,6 +1,7 @@
-@(startDateForm: Form[StartDateModel])(implicit request: Request[_], messages: Messages)
+@import models.view.StartDate
+@(startDateForm: Form[StartDate])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import models.StartDateModel
+@import models.view.StartDate
 @main_template(title = messages("pages.startDate.title")) {
 
   <div class="grid-row">
@@ -17,8 +18,8 @@
                     @govHelpers.inputRadioGroup(
                         field = startDateForm("startDate"),
                         Seq(
-                            StartDateModel.WHEN_REGISTERED -> Messages("pages.startDate.radio.whenRegistered"),
-                            StartDateModel.FUTURE_DATE -> Messages("pages.startDate.radio.futureDate")
+                            StartDate.WHEN_REGISTERED -> Messages("pages.startDate.radio.whenRegistered"),
+                            StartDate.FUTURE_DATE -> Messages("pages.startDate.radio.futureDate")
                         ),
                         '_labelAfter -> true,
                         '_labelClass -> "block-label"

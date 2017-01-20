@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package models
+package models.view
 
-import models.view.StartDate
-import uk.gov.hmrc.play.test.UnitSpec
+import play.api.libs.json.Json
 
-class StartDateModelSpec extends UnitSpec {
+case class StartDate(dateType: String,
+                     year: Option[String],
+                     month: Option[String],
+                     day: Option[String]) {
+}
 
-  "empty" should {
-    "create an empty StartDateModel" in {
-      StartDate.empty shouldBe StartDate("", None, None, None)
-    }
-  }
+object StartDate {
+  val WHEN_REGISTERED = "WHEN_REGISTERED"
+  val WHEN_TRADING = "WHEN_TRADING"
+  val FUTURE_DATE = "FUTURE_DATE"
+
+  implicit val format = Json.format[StartDate]
+
+  def empty: StartDate = StartDate("", None, None, None)
 
 }

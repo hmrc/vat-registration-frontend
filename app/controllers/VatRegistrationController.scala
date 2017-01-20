@@ -45,7 +45,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
     * or
     * {{{authorised.async( implicit user => imlicit request => ??? // generates a Future Result )}}}
     *
-    * @return an AuthenticatedBy action builder that is specific to VatTaxRegime and GGConfidence confidence level
+    * @return an AuthenticatedBy action builder that is specific to VATTaxRegime and GGConfidence confidence level
     */
   protected def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
 
