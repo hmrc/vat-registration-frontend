@@ -36,9 +36,26 @@ pages.welcome.panels.vatResponsibilities.bullet.pay     = pay any VAT due to HMR
 pages.welcome.panels.vatResponsibilities.bullet.submit  = submit VAT Returns
 pages.welcome.panels.vatResponsibilities.bullet.records = keep VAT records and a VAT account
 
+## Start Date Page
+pages.startDate.title                               = Start Date
+pages.startDate.heading                             = What do you want your VAT start date to be?
+pages.startDate.para1                               = You can choose the date the company becomes VAT registered when you register voluntarily.
+pages.startDate.radio.whenRegistered                = The date the company is registered with Companies House
+pages.startDate.radio.whenTrading                   = The same date you start doing business
+pages.startDate.radio.futureDate                    = A different date
+pages.startDate.panels.futureDate.para1             = This must be:
+pages.startDate.panels.futureDate.bullet.2days      = more than 2 working days in the future
+pages.startDate.panels.futureDate.bullet.3months    = within the next 3 months
+pages.startDate.panels.futureDate.hint              = For example, 31 6 2017
+pages.startDate.panels.futureDate.inputField.day    = Day
+pages.startDate.panels.futureDate.inputField.month  = Month
+pages.startDate.panels.futureDate.inputField.year   = Year
+
+
 
 ## Taxable Turnover Page
-pages.taxable.turnover.heading          = Do you expect your company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered?
+pages.taxable.turnover.title    = Before you register for VAT
+pages.taxable.turnover.heading  = Do you expect the company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered with Companies House?
 
 ## Error Pages
 errorPages.title                        = Something went wrong
