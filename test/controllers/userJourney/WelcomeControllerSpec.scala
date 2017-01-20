@@ -16,12 +16,10 @@
 
 package controllers.userJourney
 
-
 import helpers.VatRegSpec
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-
 
 class WelcomeControllerSpec extends VatRegSpec {
 
