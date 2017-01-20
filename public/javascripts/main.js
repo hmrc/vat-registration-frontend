@@ -1,22 +1,29 @@
-$(document).ready($(function() {
+$(document).ready($(function () {
 
+}));
+
+// UI module
+(function (UI, $, undefined) {
+    UI.show = function (selector) {
+        $(selector).removeClass("hidden");
+    };
+
+    UI.hide = function (selector) {
+        $(selector).addClass("hidden");
+    };
+}(window.UI = window.UI || {}, jQuery));
+
+// StartDatePage module
+(function (StartDatePage, $, undefined) {
     var startDateRadioGroup = $("input[name='startDate']:radio");
     var futureDateRadio = $("#startDate-future_date");
     var futureDateHidden = $("#future_date_hidden");
 
-    var show = function(selector) {
-        $(selector).removeClass("hidden");
-    }
-
-    var hide = function(selector) {
-        $(selector).addClass("hidden");
-    }
-
-    var updateState = function() {
-        if(futureDateRadio.is(":checked")) {
-            show(futureDateHidden);
+    function updateState() {
+        if (futureDateRadio.is(":checked")) {
+            UI.show(futureDateHidden);
         } else {
-            hide(futureDateHidden);
+            UI.hide(futureDateHidden);
         }
     }
 
@@ -24,5 +31,4 @@ $(document).ready($(function() {
     startDateRadioGroup.on("change", function () {
         updateState();
     });
-
-}));
+}(window.StartDatePage = window.StartDatePage || {}, jQuery));
