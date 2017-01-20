@@ -1,0 +1,71 @@
+@(startDateForm: Form[StartDateModel])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import models.StartDateModel
+@main_template(title = messages("pages.startDate.title")) {
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.startDate.heading")</h1>
+
+      <p>@messages("pages.startDate.para1")</p>
+
+        @govHelpers.form(action = controllers.userJourney.routes.StartDateController.submit()) {
+            <div class="form-group">
+                <fieldset>
+
+                    @govHelpers.inputRadioGroup(
+                        field = startDateForm("startDate"),
+                        Seq(
+                            StartDateModel.WHEN_REGISTERED -> Messages("pages.startDate.radio.whenRegistered"),
+                            StartDateModel.FUTURE_DATE -> Messages("pages.startDate.radio.futureDate")
+                        ),
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label"
+                    )
+
+                    <div class="panel panel-indent hidden" id="future_date_hidden">
+                        <p>@messages("pages.startDate.panels.futureDate.para1")</p>
+                        <ul class="list list-bullet">
+                            <li>@messages("pages.startDate.panels.futureDate.bullet.2days")</li>
+                            <li>@messages("pages.startDate.panels.futureDate.bullet.3months")</li>
+                        </ul>
+
+                        <span class="form-hint">@messages("pages.startDate.panels.futureDate.hint")</span>
+
+
+                        <div class="form-date">
+                            <div class="form-group form-group-day">
+                                <label class="form-label" for="dob-day">@messages("pages.startDate.panels.futureDate.inputField.day")</label>
+                                @govHelpers.input(
+                                    startDateForm("startDate.day")
+                                )
+                            </div>
+
+                            <div class="form-group form-group-month">
+                                <label class="form-label" for="dob-month">@messages("pages.startDate.panels.futureDate.inputField.month")</label>
+                                @govHelpers.input(
+                                    startDateForm("startDate.month")
+                                )
+                            </div>
+
+                            <div class="form-group form-group-year">
+                                <label class="form-label" for="dob-year">@messages("pages.startDate.panels.futureDate.inputField.year")</label>
+                                @govHelpers.input(
+                                    startDateForm("startDate.year")
+                                )
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="form-group">
+                <button class="btn button" type="next">Save and continue</button>
+            </div>
+        }
+
+    </div>
+  </div>
+
+}
