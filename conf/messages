@@ -6,6 +6,7 @@ app.common.no                           = No
 app.common.continue                     = Continue
 app.common.saveAndContinue              = Save and continue
 app.common.errorSummaryLabel            = There are errors on this page.
+app.common.change                       = Change
 
 ## Welcome Page
 pages.welcome.title                     = Before you register for VAT
@@ -15,11 +16,8 @@ pages.welcome.bullet.details.person     = details of the person making the appli
 pages.welcome.bullet.details.company    = details of what the company does
 pages.welcome.bullet.details.sales      = the company''s total estimated sales that are subject to VAT (or <a href="https://www.gov.uk/vat-registration/calculate-turnover">''VAT taxable turnover''</a>) for the next 12 months
 pages.welcome.note.registrationTime     = This application should take no more than 30 minutes.
-
-
 pages.welcome.panels.vatNeeded.title                    = Do you need to register for VAT?
 pages.welcome.panels.vatNeeded.para1                    = You need to register for VAT if you expect the company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered with Companies House.
-
 pages.welcome.panels.vatVoluntarily.title               = Can you register voluntarily for VAT?
 pages.welcome.panels.vatVoluntarily.para1               = You can register voluntarily if the company''s VAT taxable turnover is less than £83,000 in the 30 days after it''s registered with Companies House.
 pages.welcome.panels.vatVoluntarily.para2               = If you''re registered for VAT you:
@@ -28,7 +26,6 @@ pages.welcome.panels.vatVoluntarily.bullet.reclaim      = can <a href="https://w
 pages.welcome.panels.vatVoluntarily.bullet.invoices     = must send VAT invoices to VAT-registered customers
 pages.welcome.panels.vatVoluntarily.para3               = Smaller companies that are registered for VAT can appear larger and more established to customers. However, charging VAT on goods and services may put off customers who aren''t VAT registered and can''t reclaim VAT.
 pages.welcome.panels.vatVoluntarily.para4               = You can apply to cancel your VAT registration at any time if it turns out to be the wrong decision.
-
 pages.welcome.panels.vatResponsibilities.title          = What are your VAT responsibilities?
 pages.welcome.panels.vatResponsibilities.para1          = From the date you''re registered for VAT you must:
 pages.welcome.panels.vatResponsibilities.bullet.charge  = charge the <a href="https://www.gov.uk/vat-businesses/when-to-charge-vat">right amount of VAT</a>
@@ -51,11 +48,17 @@ pages.startDate.panels.futureDate.inputField.day    = Day
 pages.startDate.panels.futureDate.inputField.month  = Month
 pages.startDate.panels.futureDate.inputField.year   = Year
 
-
-
 ## Taxable Turnover Page
 pages.taxable.turnover.title    = Before you register for VAT
 pages.taxable.turnover.heading  = Do you expect the company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered with Companies House?
+
+## Summary Page
+pages.summary.title                                     = Summary
+pages.summary.heading                                   = Check your answers
+pages.summary.vatDetails.sectionHeading                 = VAT details
+pages.summary.vatDetails.taxableTurnover.question       = Will earn more than £83,000 in the next 30 days
+pages.summary.vatDetails.registerVoluntarily.question   = Register voluntarily
+pages.summary.vatDetails.startDate.question             = VAT start date
 
 ## Error Pages
 errorPages.title                        = Something went wrong
