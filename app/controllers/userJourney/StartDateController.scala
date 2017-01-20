@@ -33,23 +33,14 @@ class StartDateController @Inject()(ds: CommonPlayDependencies) extends VatRegis
     Ok(views.html.pages.start_date(form))
   })
 
-  def submit: Action[AnyContent] = authorised.async {
-    implicit user =>
-      implicit request => {
-        StartDateForm.form.bindFromRequest().fold(
-          formWithErrors => {
-            Future.successful(BadRequest(views.html.pages.start_date(formWithErrors)))
-          }, {
-            data => {
-              val updatedData = data.dateType match {
-                case _ :String  if (StartDateModel.FUTURE_DATE != data.dateType) => data.copy(day = None, month = None, year = None)
-                case _ => data
-              }
-              //call to service
-              Future.successful(Redirect(controllers.userJourney.routes.TaxableTurnoverController.show()))
-            }
-          }
-        )
-      }
-  }
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    StartDateForm.form.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(views.html.pages.start_date(formWithErrors)))
+      }, {
+        _ => {
+          Future.successful(Redirect(controllers.userJourney.routes.TaxableTurnoverController.show()))
+        }
+      })
+  })
 }
