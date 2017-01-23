@@ -20,18 +20,22 @@ import javax.inject.{Inject, Singleton}
 
 import auth.VatTaxRegime
 import config.FrontendAuthConnector
+import connectors.{KeystoreConnector, S4LConnector}
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, MessagesApi}
+import services.S4LService
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController with I18nSupport with Actions {
+abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController with S4LService with I18nSupport with Actions {
 
   //$COVERAGE-OFF$
   lazy val conf: Configuration = ds.conf
   implicit lazy val messagesApi: MessagesApi = ds.messagesApi
   override val authConnector: AuthConnector = FrontendAuthConnector
+  override val keystoreConnector: KeystoreConnector = KeystoreConnector
+  val s4LConnector: S4LConnector = S4LConnector
   //$COVERAGE-ON$
 
   /**
