@@ -28,7 +28,7 @@ trait CommonService {
 
   def fetchRegistrationID(implicit hc: HeaderCarrier): Future[String] = {
     // Should return a registration id
-    Future("")
+    Future("registration-id-1234")
   }
 
 }

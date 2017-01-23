@@ -32,7 +32,14 @@ trait RegistrationService {
 class VatRegistrationService extends RegistrationService {
 
   override def getRegistrationSummary()(implicit ec: ExecutionContext): Future[Option[Summary]] = {
-    Future.successful(Option(registrationToSummary(new VatRegistrationAPI("VAT123456", "2017-01-11T15:10:12", new VatDetails(Option("No"), Option("Yes"), Option("1 February 2017"))))))
+    Future.successful(
+      Option(
+        registrationToSummary(
+          new VatRegistrationAPI("VAT123456", "2017-01-11T15:10:12",
+            new VatDetails(Option("No"), Option("Yes"), Option("1 February 2017")))
+        )
+      )
+    )
   }
 
   def registrationToSummary(apiModel: VatRegistrationAPI): Summary = {
