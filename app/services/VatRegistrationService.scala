@@ -23,8 +23,9 @@ import models.view.{Summary, SummaryRow, SummarySection}
 import scala.concurrent.{ExecutionContext, Future}
 
 class VatRegistrationServiceImpl extends VatRegistrationService {
-  def getRegistrationSummary()(implicit ec: ExecutionContext): Future[Option[Summary]] = {
-    Future.successful(Option(registrationToSummary(new VatRegistrationAPI("ID", "TIMESTAMP", new VatDetails(Option("No"), Option("Yes"), Option("The date the company is registered with Companies House"))))))
+
+  override def getRegistrationSummary()(implicit ec: ExecutionContext): Future[Option[Summary]] = {
+    Future.successful(Option(registrationToSummary(new VatRegistrationAPI("VAT123456", "2017-01-11T15:10:12", new VatDetails(Option("No"), Option("Yes"), Option("1 February 2017"))))))
   }
 
   private[services] def registrationToSummary(apiModel: VatRegistrationAPI): Summary = {
@@ -35,7 +36,6 @@ class VatRegistrationServiceImpl extends VatRegistrationService {
           id = "vatDetails.taxableTurnover",
           answer = apiModel.vatDetails.taxableTurnover match {
             case Some(name) => Right(name)
-            case _ => Left("noAnswerGiven")
           },
           changeLink = Some(controllers.userJourney.routes.TaxableTurnoverController.show())
         ),
@@ -43,7 +43,6 @@ class VatRegistrationServiceImpl extends VatRegistrationService {
             id = "vatDetails.registerVoluntarily",
             answer = apiModel.vatDetails.registerVoluntarily match {
               case Some(name) => Right(name)
-              case _ => Left("noAnswerGiven")
             },
             changeLink = Some(controllers.userJourney.routes.SummaryController.show())
           ),
@@ -51,7 +50,6 @@ class VatRegistrationServiceImpl extends VatRegistrationService {
             id = "vatDetails.startDate",
             answer = apiModel.vatDetails.startDate match {
               case Some(name) => Right(name)
-              case _ => Left("noAnswerGiven")
             },
             changeLink = Some(controllers.userJourney.routes.StartDateController.show())
           )

@@ -38,7 +38,7 @@ class StartDateController @Inject()(ds: CommonPlayDependencies) extends VatRegis
         Future.successful(BadRequest(views.html.pages.start_date(formWithErrors)))
       }, {
         _ => {
-          Future.successful(Redirect(controllers.userJourney.routes.TaxableTurnoverController.show()))
+          Future.successful(Redirect(controllers.userJourney.routes.SummaryController.show()))
         }
       })
   })

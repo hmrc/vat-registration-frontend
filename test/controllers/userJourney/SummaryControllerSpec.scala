@@ -16,27 +16,47 @@
 
 package controllers.userJourney
 
+import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import play.api.test.FakeRequest
+import org.mockito.Matchers
+import org.mockito.Mockito.when
+import play.api.http.Status
+import play.api.mvc.Result
+import services.VatRegistrationService
 import play.api.test.Helpers._
 
-class SummaryControllerSpec extends VatRegSpec {
+import scala.concurrent.Future
 
-  object TestSummaryController extends SummaryController(ds) {
+class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
+
+  val mockVatRegistrationService = mock[VatRegistrationService]
+  implicit val materializer = app.materializer
+
+  object TestSummaryController extends SummaryController(mockVatRegistrationService, ds) {
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.TestSummaryController.show())
-
   s"GET ${routes.SummaryController.show()}" should {
-
     "return HTML" in {
+      when(mockVatRegistrationService.getRegistrationSummary()(Matchers.any())).thenReturn(Future.successful(Some(validSummaryView)))
+
       callAuthorised(TestSummaryController.show, mockAuthConnector) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
           contentAsString(result) must include("Check your answers")
+      }
+    }
+  }
+
+  s"GET ${routes.SummaryController.show()}" should {
+    "return internal server error" in {
+      when(mockVatRegistrationService.getRegistrationSummary()(Matchers.any())).thenReturn(Future.successful(None))
+
+      callAuthorised(TestSummaryController.show, mockAuthConnector) {
+        (response: Future[Result]) =>
+          status(response) mustBe Status.INTERNAL_SERVER_ERROR
       }
     }
   }

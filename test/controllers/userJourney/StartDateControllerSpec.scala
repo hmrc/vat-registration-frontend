@@ -29,7 +29,7 @@ class StartDateControllerSpec extends VatRegSpec {
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.TestStartDateController.show())
+  val fakeRequest = FakeRequest(routes.StartDateController.show())
 
   s"GET ${routes.StartDateController.show()}" should {
 
