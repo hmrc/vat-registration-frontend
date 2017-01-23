@@ -18,8 +18,6 @@
 package controllers.test
 
 import javax.inject.Inject
-
-import connectors.KeystoreConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
 import services.S4LService
