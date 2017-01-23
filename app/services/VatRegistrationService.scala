@@ -22,13 +22,20 @@ import models.view.{Summary, SummaryRow, SummarySection}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class VatRegistrationServiceImpl extends VatRegistrationService {
+@ImplementedBy(classOf[VatRegistrationService])
+trait RegistrationService {
+
+  def getRegistrationSummary()(implicit executionContext: ExecutionContext): Future[Option[Summary]]
+
+}
+
+class VatRegistrationService extends RegistrationService {
 
   override def getRegistrationSummary()(implicit ec: ExecutionContext): Future[Option[Summary]] = {
     Future.successful(Option(registrationToSummary(new VatRegistrationAPI("VAT123456", "2017-01-11T15:10:12", new VatDetails(Option("No"), Option("Yes"), Option("1 February 2017"))))))
   }
 
-  private[services] def registrationToSummary(apiModel: VatRegistrationAPI): Summary = {
+  def registrationToSummary(apiModel: VatRegistrationAPI): Summary = {
     Summary(
       Seq(SummarySection(
         id = "vatDetails",
@@ -59,9 +66,4 @@ class VatRegistrationServiceImpl extends VatRegistrationService {
   }
 }
 
-@ImplementedBy(classOf[VatRegistrationServiceImpl])
-trait VatRegistrationService {
 
-  def getRegistrationSummary()(implicit executionContext: ExecutionContext): Future[Option[Summary]]
-
-}
