@@ -1,0 +1,2 @@
+
+GET        /s4l-teardown                     controllers.test.TestCacheController.tearDownS4L
