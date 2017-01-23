@@ -19,7 +19,7 @@ package models
 import models.view.StartDate
 import uk.gov.hmrc.play.test.UnitSpec
 
-class StartDateModelSpec extends UnitSpec {
+class StartDateSpec extends UnitSpec {
 
   "empty" should {
     "create an empty StartDateModel" in {
