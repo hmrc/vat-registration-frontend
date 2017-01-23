@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package fixtures
+package enums
 
-import models.view.StartDate
-
-trait S4LFixture {
-
-  lazy val validFutureDate = StartDate("FUTURE_DATE", Some("2017"), Some("03"), Some("10"))
-
+object CacheKeys extends Enumeration {
+  val StartDate = Value
 }
