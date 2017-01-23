@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-package models
+package fixtures
 
-import models.view.StartDate
-import uk.gov.hmrc.play.test.UnitSpec
-
-class StartDateModelSpec extends UnitSpec {
-
-  "empty" should {
-    "create an empty StartDateModel" in {
-      StartDate.empty shouldBe StartDate("", None, None, None)
-    }
-  }
+trait VatRegistrationFixture {
 
 }
