@@ -24,6 +24,7 @@ import org.scalatest.Inside
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.mvc.{Action, AnyContent, Result}
+import services.VatRegistrationServiceImpl
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
@@ -34,6 +35,7 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with Vat
   // Use this if you want to configure the app
   // implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
   var ds: CommonPlayDependencies = app.injector.instanceOf[CommonPlayDependencies]
+  var vatRegistrationService = app.injector.instanceOf[VatRegistrationServiceImpl]
 
   def callAuthorised(a: Action[AnyContent], ac: AuthConnector)(test: Future[Result] => Any): Unit =
     AuthBuilder.withAuthorisedUser(a, ac)(test)
