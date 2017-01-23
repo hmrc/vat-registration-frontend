@@ -19,6 +19,7 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
+import enums.CacheKeys
 import forms.vatDetails.StartDateForm
 import models.view.StartDate
 import play.api.mvc._
@@ -37,9 +38,12 @@ class StartDateController @Inject()(ds: CommonPlayDependencies) extends VatRegis
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.start_date(formWithErrors)))
       }, {
-        _ => {
+        data: StartDate => {
+          // Save to S4L
+          saveForm[StartDate](CacheKeys.StartDate.toString, data)
           Future.successful(Redirect(controllers.userJourney.routes.SummaryController.show()))
         }
       })
   })
+
 }

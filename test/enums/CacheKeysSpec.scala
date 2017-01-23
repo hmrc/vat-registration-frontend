@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package fixtures
+package enums
 
-import models.view.StartDate
+import uk.gov.hmrc.play.test.UnitSpec
 
-trait S4LFixture {
+class CacheKeysSpec extends UnitSpec {
 
-  lazy val validFutureDate = StartDate("FUTURE_DATE", Some("2017"), Some("03"), Some("10"))
+  "CacheKeys enum" should {
+    "'StartDate' is correctly ordered" in {
+      CacheKeys.StartDate.id shouldBe 0
+    }
+  }
 
 }
