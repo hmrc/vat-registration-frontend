@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-package fixtures
+package services
 
-import models.api.{VatDetails, VatRegistration}
+import helpers.VatRegSpec
+import models.api.{VatDetails, VatRegistration => VatRegistrationAPI}
 import models.view.{Summary, SummaryRow, SummarySection}
 
-trait VatRegistrationFixture {
+import scala.concurrent.ExecutionContext.Implicits.global
 
-  val validVatDetailsAPI = VatDetails(
-    taxableTurnover = Some("No"),
-    registerVoluntarily = Some("Yes"),
-    startDate = Some("1 February 2017")
-  )
+class VatRegistrationServiceSpec extends VatRegSpec {
 
-  val validVatRegistrationAPI = VatRegistration(
-    registrationID = "AC123456",
+  val apiRegistration = VatRegistrationAPI(
+    registrationID = "VAT123456",
     formCreationTimestamp = "2017-01-11T15:10:12",
-    vatDetails = validVatDetailsAPI
+    vatDetails = VatDetails(
+      taxableTurnover = Some("No"),
+      registerVoluntarily = Some("Yes"),
+      startDate = Some("1 February 2017")
+    )
   )
 
-  lazy val validSummaryView = Summary(
+  lazy val summary = Summary(
     Seq(SummarySection(
       id = "vatDetails",
       Seq(SummaryRow(
@@ -53,4 +54,17 @@ trait VatRegistrationFixture {
         ))
     ))
   )
+
+  "convert a VAT Registration API Model to a summary model with VAT details" should {
+    "return success" in {
+      vatRegistrationService.registrationToSummary(apiRegistration) mustBe summary
+    }
+  }
+
+  "get a registration summary" should {
+    "return success" in {
+      vatRegistrationService.getRegistrationSummary()
+    }
+  }
+
 }

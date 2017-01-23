@@ -1,0 +1,22 @@
+@import models.view.Summary
+@import helpers.templates.summaryRow
+
+@(summaryModel: Summary)(implicit request: Request[_], messages: Messages)
+
+@main_template(title = messages("pages.summary.title")) {
+
+    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.summary.heading")</h1>
+
+
+    @for(section <- summaryModel.sections) {
+        <section>
+            <h2 class="heading-medium">@Messages(s"pages.summary.${section.id}.sectionHeading")</h2>
+            <table class="check-your-answers form-group">
+            @for(row <- section.rows) {
+                @summaryRow(row)
+            }
+            </table>
+        </section>
+    }
+
+}
