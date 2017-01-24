@@ -23,11 +23,7 @@ import play.api.mvc.{Action, AnyContent}
 import services.S4LService
 
 
-class TestCacheController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
-
-
-  val s4LService = S4LService
-
+class TestCacheController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def tearDownS4L: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     s4LService.clear() map {
@@ -35,7 +31,5 @@ class TestCacheController @Inject()(ds: CommonPlayDependencies) extends VatRegis
     }
   })
 
-
 }
-
 //$COVERAGE-ON$

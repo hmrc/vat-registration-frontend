@@ -17,15 +17,22 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import enums.CacheKeys
 import helpers.VatRegSpec
 import models.view.StartDate
+import org.mockito.Matchers
+import org.mockito.Mockito._
 import play.api.http.Status
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.cache.client.CacheMap
+
+import scala.concurrent.Future
 
 class StartDateControllerSpec extends VatRegSpec {
 
-  object TestStartDateController extends StartDateController(ds) {
+  object TestStartDateController extends StartDateController(mockS4LService, ds) {
     override val authConnector = mockAuthConnector
   }
 
@@ -33,7 +40,25 @@ class StartDateControllerSpec extends VatRegSpec {
 
   s"GET ${routes.StartDateController.show()}" should {
 
-    "return HTML" in {
+    "return HTML when there's a start date in S4L" in {
+      val startDate = StartDate(StartDate.FUTURE_DATE, Some("2017"), Some("01"), Some("30"))
+
+      when(mockS4LService.fetchAndGet[StartDate](Matchers.eq(CacheKeys.StartDate.toString))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(startDate)))
+
+      callAuthorised(TestStartDateController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("start date")
+      }
+    }
+
+    "return HTML when there's nothing in S4L" in {
+      when(mockS4LService.fetchAndGet[StartDate](Matchers.eq(CacheKeys.StartDate.toString))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+
       callAuthorised(TestStartDateController.show, mockAuthConnector) {
         result =>
           status(result) mustBe OK
@@ -59,6 +84,11 @@ class StartDateControllerSpec extends VatRegSpec {
   s"POST ${routes.StartDateController.submit()} with valid data" should {
 
     "return 303" in {
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDate.empty)))
+
+      when(mockS4LService.saveForm[StartDate](Matchers.eq(CacheKeys.StartDate.toString), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(returnCacheMap))
+
       AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "startDate" -> StartDate.WHEN_REGISTERED
       )) {

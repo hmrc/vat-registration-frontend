@@ -32,5 +32,4 @@ object StartDate {
   implicit val format = Json.format[StartDate]
 
   def empty: StartDate = StartDate("", None, None, None)
-
 }

@@ -16,7 +16,9 @@
 
 package services
 
+import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, S4LConnector}
+import controllers.userJourney.StartDateController
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
@@ -24,13 +26,7 @@ import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object S4LService extends S4LService {
-  //$COVERAGE-OFF$
-  override val s4LConnector = S4LConnector
-  override val keystoreConnector = KeystoreConnector
-  //$COVERAGE-ON$
-}
-
+@ImplementedBy(classOf[PersistenceService])
 trait S4LService extends CommonService {
 
   val s4LConnector: S4LConnector
@@ -64,4 +60,11 @@ trait S4LService extends CommonService {
     } yield cacheMap
   }
 
+}
+
+class PersistenceService extends S4LService {
+  //$COVERAGE-OFF$
+  override val s4LConnector = S4LConnector
+  override val keystoreConnector = KeystoreConnector
+  //$COVERAGE-ON$
 }
