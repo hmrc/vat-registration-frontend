@@ -41,7 +41,6 @@ To run the service, just `cd` to cloned directory and execute:
 sbt run
 ```
 
-
 ### Nginx
 if you want to avoid having to include the service port number in the URL, add a rule to your nginx config.
 
