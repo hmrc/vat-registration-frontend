@@ -17,6 +17,7 @@
 package mocks
 
 import org.scalatest.mockito.MockitoSugar
+import services.S4LService
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
@@ -30,5 +31,5 @@ trait VatMocks
   lazy val mockAuthConnector = mock[AuthConnector]
   lazy val mockSessionCache = mock[SessionCache]
   lazy val mockAudit = mock[Audit]
-
+  lazy val mockS4LService = mock[S4LService]
 }

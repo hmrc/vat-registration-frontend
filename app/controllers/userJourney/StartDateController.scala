@@ -23,14 +23,17 @@ import enums.CacheKeys
 import forms.vatDetails.StartDateForm
 import models.view.StartDate
 import play.api.mvc._
+import services.S4LService
 
 import scala.concurrent.Future
 
-class StartDateController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class StartDateController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = authorised(implicit user => implicit request => {
-    val form = StartDateForm.form.fill(StartDate.empty)
-    Ok(views.html.pages.start_date(form))
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    s4LService.fetchAndGet[StartDate](CacheKeys.StartDate.toString) map { date =>
+      val form = StartDateForm.form.fill(date.getOrElse(StartDate.empty))
+      Ok(views.html.pages.start_date(form))
+    }
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
@@ -40,8 +43,9 @@ class StartDateController @Inject()(ds: CommonPlayDependencies) extends VatRegis
       }, {
         data: StartDate => {
           // Save to S4L
-          saveForm[StartDate](CacheKeys.StartDate.toString, data)
-          Future.successful(Redirect(controllers.userJourney.routes.SummaryController.show()))
+          s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, data) map { _ =>
+            Redirect(controllers.userJourney.routes.SummaryController.show())
+          }
         }
       })
   })
