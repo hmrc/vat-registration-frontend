@@ -48,6 +48,11 @@ pages.startDate.panels.futureDate.inputField.day    = Day
 pages.startDate.panels.futureDate.inputField.month  = Month
 pages.startDate.panels.futureDate.inputField.year   = Year
 
+## Trading Name Page
+pages.tradingName.title                             = Trading Name
+pages.tradingName.heading                           = Does the company trade under any other name?
+pages.tradingName.panels.tradingName                = Trading name
+
 ## Taxable Turnover Page
 pages.taxable.turnover.title    = Before you register for VAT
 pages.taxable.turnover.heading  = Do you expect the company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered with Companies House?
@@ -64,3 +69,4 @@ pages.summary.vatDetails.startDate.question             = VAT start date
 errorPages.title                        = Something went wrong
 errorPages.restart.heading              = Sorry, we''re having technical issues.
 errorPages.restart.p1                   = You can try again by <a href="{0}" >restarting</a> your PAYE registration.
+

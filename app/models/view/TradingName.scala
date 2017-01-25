@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-package enums
+package models.view
 
-object CacheKeys extends Enumeration {
-  val StartDate = Value
-  val TradingName = Value
+import play.api.libs.json.Json
+
+case class TradingName(yesNo: String,
+                       tradingName: Option[String]) {
+}
+
+object TradingName {
+  val TRADING_NAME_YES = "TRADING_NAME_YES"
+  val TRADING_NAME_NO = "TRADING_NAME_NO"
+
+  implicit val format = Json.format[TradingName]
+
+  def empty: TradingName = TradingName("", None)
 }

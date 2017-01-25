@@ -32,3 +32,23 @@ $(document).ready($(function () {
         updateState();
     });
 }(window.StartDatePage = window.StartDatePage || {}, jQuery));
+
+// TradingName module
+(function (TradingNamePage, $, undefined) {
+    var tradingNameRadioGroup = $("input[name='tradingName.yesNo']:radio");
+    var tradingNameRadio = $("#tradingName\\.yesNo-trading_name_yes");
+    var tradingNameHidden = $("#trading_name_hidden");
+
+    function updateState() {
+        if (tradingNameRadio.is(":checked")) {
+            UI.show(tradingNameHidden);
+        } else {
+            UI.hide(tradingNameHidden);
+        }
+    }
+
+    updateState();
+    tradingNameRadioGroup.on("change", function () {
+        updateState();
+    });
+}(window.TradingNamePage = window.TradingNamePage || {}, jQuery));
