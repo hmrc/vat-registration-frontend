@@ -13,11 +13,12 @@
         messageKey => Messages(s"pages.summary.${row.id}.answers.$messageKey"),
         answer => answer
     )
+    </td>
     <td class="change-answer">
     @row.changeLink.map { linkLocation =>
-        <b><a href="@linkLocation" id="@{
+        <a href="@linkLocation" id="@{
             row.id
-        }ChangeLink">@Messages("app.common.change")</a></b>
+        }ChangeLink">@Messages("app.common.change")</a>
     }
     </td>
 </tr>
