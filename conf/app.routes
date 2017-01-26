@@ -10,6 +10,10 @@ GET         /start                  controllers.userJourney.WelcomeController.st
 GET         /start-date             controllers.userJourney.StartDateController.show
 POST        /start-date             controllers.userJourney.StartDateController.submit
 
+## TRADING NAME PAGE
+GET         /trading-name             controllers.userJourney.TradingNameController.show
+POST        /trading-name             controllers.userJourney.TradingNameController.submit
+
 ## TAXABLE TURNOVER PAGE
 GET         /taxable-turnover       controllers.userJourney.TaxableTurnoverController.show
 
