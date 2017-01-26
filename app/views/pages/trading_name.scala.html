@@ -1,0 +1,56 @@
+@import models.view.TradingName
+@(tradingNameForm: Form[TradingName])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+
+@main_template(title = messages("pages.tradingName.title")) {
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+
+            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.tradingName.heading")</h1>
+
+            @govHelpers.form(action = controllers.userJourney.routes.TradingNameController.submit()) {
+                <div class="form-group">
+                    <fieldset class="inline">
+
+                        @tradingNameForm.globalError.map { error =>
+                            <span class="error">@messages(error.message)</span>
+                        }
+
+                        @govHelpers.inputRadioGroup(
+                            field = tradingNameForm("tradingName.yesNo"),
+                            Seq(
+                                TradingName.TRADING_NAME_YES -> Messages("app.common.yes"),
+                                TradingName.TRADING_NAME_NO -> Messages("app.common.no")
+                            ),
+                            '_labelAfter -> true,
+                            '_labelClass -> "block-label"
+                        )
+
+                        <div class="panel panel-indent hidden" id="trading_name_hidden">
+
+                            <div class="form-group">
+                            @govHelpers.input(
+                                tradingNameForm("tradingName"),
+                                '_label -> Messages("pages.tradingName.panels.tradingName"),
+                                '_labelClass -> "form-label",
+                                '_showConstraints -> true,
+                                '_error -> "Force an error",
+                                '_showErrors -> true,
+                                '_title -> ""
+                            )
+                            </div>
+
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn button" type="next">Save and continue</button>
+                </div>
+            }
+
+        </div>
+    </div>
+
+}
