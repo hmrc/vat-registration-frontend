@@ -21,36 +21,39 @@ $(document).ready($(function () {
         var futureDateRadio = $("#startDate-future_date");
         var futureDateHidden = $("#future_date_hidden");
 
-    function updateState() {
-        if (futureDateRadio.is(":checked")) {
-            UI.show(futureDateHidden);
-        } else {
-            UI.hide(futureDateHidden);
+        function updateState() {
+            if (futureDateRadio.is(":checked")) {
+                UI.show(futureDateHidden);
+            } else {
+                UI.hide(futureDateHidden);
+            }
         }
-    }
 
-    updateState();
-    startDateRadioGroup.on("change", function () {
         updateState();
-    });
+        startDateRadioGroup.on("change", function () {
+            updateState();
+        });
+    }
 }(window.StartDatePage = window.StartDatePage || {}, jQuery));
 
 // TradingName module
 (function (TradingNamePage, $, undefined) {
-    var tradingNameRadioGroup = $("input[name='tradingName.yesNo']:radio");
-    var tradingNameRadio = $("#tradingName\\.yesNo-trading_name_yes");
-    var tradingNameHidden = $("#trading_name_hidden");
+    TradingNamePage.init = function() {
+        var tradingNameRadioGroup = $("input[name='tradingName.yesNo']:radio");
+        var tradingNameRadio = $("#tradingName\\.yesNo-trading_name_yes");
+        var tradingNameHidden = $("#trading_name_hidden");
 
-    function updateState() {
-        if (tradingNameRadio.is(":checked")) {
-            UI.show(tradingNameHidden);
-        } else {
-            UI.hide(tradingNameHidden);
+        function updateState() {
+            if (tradingNameRadio.is(":checked")) {
+                UI.show(tradingNameHidden);
+            } else {
+                UI.hide(tradingNameHidden);
+            }
         }
-    }
 
-    updateState();
-    tradingNameRadioGroup.on("change", function () {
         updateState();
-    });
+        tradingNameRadioGroup.on("change", function () {
+            updateState();
+        });
+    }
 }(window.TradingNamePage = window.TradingNamePage || {}, jQuery));
