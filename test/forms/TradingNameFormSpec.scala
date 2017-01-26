@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package models
+package forms
 
-import models.view.StartDate
-import uk.gov.hmrc.play.test.UnitSpec
+import forms.vatDetails.TradingNameForm
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class StartDateSpec extends UnitSpec {
+class TradingNameFormSpec extends UnitSpec with WithFakeApplication {
 
-  "empty" should {
-    "create an empty StartDate model" in {
-      StartDate.empty shouldBe StartDate("", None, None, None)
+  val testForm = TradingNameForm.form
+
+  "Creating a form using an empty model" should {
+    "return an empty string for the trading name" in {
+      testForm.data.isEmpty shouldBe true
     }
   }
-
 }
