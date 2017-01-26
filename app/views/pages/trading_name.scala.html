@@ -25,15 +25,13 @@
 
                         <div class="panel panel-indent hidden" id="trading_name_hidden">
 
-                            <div class="form-group">
                             @govHelpers.input(
                                 tradingNameForm("tradingName"),
+                                '_divClass -> "form-group",
+                                '_inputClass -> "form-control",
                                 '_label -> Messages("pages.tradingName.panels.tradingName"),
-                                '_labelClass -> "form-label",
-                                '_title -> "",
-                                '_pattern -> "[A-Za-z0-9.,\\-()/!\"%&*;'<>][A-Za-z0-9 .,\\-()/!\"%&*;'<>]{0,55}"
+                                '_labelClass -> "form-label"
                             )
-                            </div>
 
                         </div>
                     </fieldset>
@@ -48,3 +46,9 @@
     </div>
 
 }
+
+<script type="text/javascript">
+        $(document).ready($(function () {
+            TradingNamePage.init()
+        }));
+</script>
