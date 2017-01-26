@@ -15,20 +15,23 @@ $(document).ready($(function () {
 
 // StartDatePage module
 (function (StartDatePage, $, undefined) {
-    var startDateRadioGroup = $("input[name='startDate']:radio");
-    var futureDateRadio = $("#startDate-future_date");
-    var futureDateHidden = $("#future_date_hidden");
+    StartDatePage.init = function() {
+        console.log("StartDatePage init()");
+        var startDateRadioGroup = $("input[name='startDate']:radio");
+        var futureDateRadio = $("#startDate-future_date");
+        var futureDateHidden = $("#future_date_hidden");
 
-    function updateState() {
-        if (futureDateRadio.is(":checked")) {
-            UI.show(futureDateHidden);
-        } else {
-            UI.hide(futureDateHidden);
+        function updateState() {
+            if (futureDateRadio.is(":checked")) {
+                UI.show(futureDateHidden);
+            } else {
+                UI.hide(futureDateHidden);
+            }
         }
-    }
 
-    updateState();
-    startDateRadioGroup.on("change", function () {
         updateState();
-    });
+        startDateRadioGroup.on("change", function () {
+            updateState();
+        });
+    }
 }(window.StartDatePage = window.StartDatePage || {}, jQuery));
