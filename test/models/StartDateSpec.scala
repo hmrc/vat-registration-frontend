@@ -22,7 +22,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 class StartDateSpec extends UnitSpec {
 
   "empty" should {
-    "create an empty StartDateModel" in {
+    "create an empty StartDate model" in {
       StartDate.empty shouldBe StartDate("", None, None, None)
     }
   }

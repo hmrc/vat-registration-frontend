@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-package enums
+package forms
 
-object CacheKeys extends Enumeration {
-  val StartDate = Value
-  val TradingName = Value
+import forms.vatDetails.TradingNameForm
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+
+class TradingNameFormSpec extends UnitSpec with WithFakeApplication {
+
+  val testForm = TradingNameForm.form
+
+  "Creating a form using an empty model" should {
+    "return an empty string for the trading name" in {
+      testForm.data.isEmpty shouldBe true
+    }
+  }
 }

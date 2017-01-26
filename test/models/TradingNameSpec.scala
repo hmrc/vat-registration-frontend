@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-package enums
+package models
 
-object CacheKeys extends Enumeration {
-  val StartDate = Value
-  val TradingName = Value
+import models.view.TradingName
+import uk.gov.hmrc.play.test.UnitSpec
+
+class TradingNameSpec extends UnitSpec {
+
+  "empty" should {
+    "create an empty TradingName model" in {
+      TradingName.empty shouldBe TradingName("", None)
+    }
+  }
+
 }
