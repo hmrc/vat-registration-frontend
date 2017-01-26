@@ -1,0 +1,54 @@
+@import models.view.TradingName
+@(tradingNameForm: Form[TradingName])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+
+@main_template(title = messages("pages.tradingName.title")) {
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+
+            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.tradingName.heading")</h1>
+
+            @govHelpers.form(action = controllers.userJourney.routes.TradingNameController.submit()) {
+                <div class="form-group">
+                    <fieldset class="inline">
+
+                        @govHelpers.inputRadioGroup(
+                            field = tradingNameForm("tradingName.yesNo"),
+                            Seq(
+                                TradingName.TRADING_NAME_YES -> Messages("app.common.yes"),
+                                TradingName.TRADING_NAME_NO -> Messages("app.common.no")
+                            ),
+                            '_labelAfter -> true,
+                            '_labelClass -> "block-label"
+                        )
+
+                        <div class="panel panel-indent hidden" id="trading_name_hidden">
+
+                            @govHelpers.input(
+                                tradingNameForm("tradingName"),
+                                '_divClass -> "form-group",
+                                '_inputClass -> "form-control",
+                                '_label -> Messages("pages.tradingName.panels.tradingName"),
+                                '_labelClass -> "form-label"
+                            )
+
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn button" type="next">Save and continue</button>
+                </div>
+            }
+
+        </div>
+    </div>
+
+}
+
+<script type="text/javascript">
+        $(document).ready($(function () {
+            TradingNamePage.init()
+        }));
+</script>

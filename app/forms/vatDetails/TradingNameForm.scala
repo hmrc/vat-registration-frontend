@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-package enums
+package forms.vatDetails
 
-object CacheKeys extends Enumeration {
-  val StartDate = Value
-  val TradingName = Value
+import models.view.TradingName
+import play.api.data.Form
+import play.api.data.Forms._
+
+object TradingNameForm {
+
+  val form = Form(
+    mapping(
+      "tradingName.yesNo" -> nonEmptyText,
+      "tradingName" -> optional(text)
+    )(TradingName.apply)(TradingName.unapply)
+  )
 }
