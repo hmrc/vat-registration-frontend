@@ -16,14 +16,14 @@
 
 package models
 
-import models.view.StartDate
+import models.view.TradingName
 import uk.gov.hmrc.play.test.UnitSpec
 
-class StartDateSpec extends UnitSpec {
+class TradingNameSpec extends UnitSpec {
 
   "empty" should {
-    "create an empty StartDate model" in {
-      StartDate.empty shouldBe StartDate("", None, None, None)
+    "create an empty TradingName model" in {
+      TradingName.empty shouldBe TradingName("", None)
     }
   }
 
