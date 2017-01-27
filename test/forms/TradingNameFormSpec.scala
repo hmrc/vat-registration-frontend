@@ -14,31 +14,18 @@
  * limitations under the License.
  */
 
-package forms.vatDetails
+package forms
 
-import models.view.TradingName
-import play.api.data.Form
-import play.api.data.Forms._
-<<<<<<< HEAD
-import utils.VatValidators._
-object TradingNameForm {
-=======
+import forms.vatDetails.TradingNameForm
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-object TradingNameForm {
+class TradingNameFormSpec extends UnitSpec with WithFakeApplication {
 
->>>>>>> 68389128ff149d08fa07b972605c658b63604b55
-  val form = Form(
-    mapping(
-      "tradingName.yesNo" -> nonEmptyText,
-      "tradingName" -> optional(text)
-<<<<<<< HEAD
-    )(TradingName.apply)(TradingName.unapply).verifying(tradingNameValidation)
-  )
+  val testForm = TradingNameForm.form
 
+  "Creating a form using an empty model" should {
+    "return an empty string for the trading name" in {
+      testForm.data.isEmpty shouldBe true
+    }
+  }
 }
-
-=======
-    )(TradingName.apply)(TradingName.unapply)
-  )
-}
->>>>>>> 68389128ff149d08fa07b972605c658b63604b55
