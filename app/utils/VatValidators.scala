@@ -17,7 +17,9 @@
 package utils
 
 import models.view.TradingName
-import play.api.data.validation._
+import play.api.data.validation.{ValidationError, _}
+import play.api.i18n.Messages
+import play.api.i18n.Messages.Message
 
 object VatValidators {
 
@@ -32,7 +34,7 @@ object VatValidators {
         case _ if text.yesNo == TradingName.TRADING_NAME_YES && !text.tradingName.get.matches(nonEmptyRegex)
         => Seq(ValidationError(EMPTY_TRADING_NAME_MSG_KEY))
         case _ if text.yesNo == TradingName.TRADING_NAME_YES && !text.tradingName.get.matches(tradingNameRegex)
-        => Seq(ValidationError(IN_VALID_TRADING_NAME_MSG_KEY))
+        => Seq(ValidationError(Messages(IN_VALID_TRADING_NAME_MSG_KEY)))
         case _ => Nil
       }
       if (errors.isEmpty) Valid else Invalid(errors)
