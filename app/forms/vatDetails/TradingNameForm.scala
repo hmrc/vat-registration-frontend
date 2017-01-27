@@ -19,26 +19,16 @@ package forms.vatDetails
 import models.view.TradingName
 import play.api.data.Form
 import play.api.data.Forms._
-<<<<<<< HEAD
 import utils.VatValidators._
-object TradingNameForm {
-=======
 
 object TradingNameForm {
-
->>>>>>> 68389128ff149d08fa07b972605c658b63604b55
+  val RADIO_YES_NO: String = "tradingName.yesNo"
+  val INPUT_TRADING_NAME: String = "tradingName"
   val form = Form(
     mapping(
-      "tradingName.yesNo" -> nonEmptyText,
-      "tradingName" -> optional(text)
-<<<<<<< HEAD
+      RADIO_YES_NO -> nonEmptyText,
+      INPUT_TRADING_NAME -> optional(text)
     )(TradingName.apply)(TradingName.unapply).verifying(tradingNameValidation)
   )
 
 }
-
-=======
-    )(TradingName.apply)(TradingName.unapply)
-  )
-}
->>>>>>> 68389128ff149d08fa07b972605c658b63604b55
