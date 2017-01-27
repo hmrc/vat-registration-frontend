@@ -1,6 +1,8 @@
 @import models.view.TradingName
 @(tradingNameForm: Form[TradingName])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+@fieldSetClasses =  @{if(tradingNameForm.hasErrors && (tradingNameForm.errors.exists(_.args.nonEmpty))) "form-field--error" else "" }
 
 @main_template(title = messages("pages.tradingName.title")) {
 
@@ -9,12 +11,16 @@
 
             <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.tradingName.heading")</h1>
 
+            @errorSummary(
+                Messages("app.common.errorSummaryLabel"),
+                tradingNameForm,
+                Seq("tradingName")
+            )
+
             @govHelpers.form(action = controllers.userJourney.routes.TradingNameController.submit()) {
                 <div class="form-group">
-                    <fieldset class="inline">
-                        @tradingNameForm.globalError.map { error =>
-                            <span class="error">@messages(error.message)</span>
-                        }
+                 <fieldset class="inline">
+
 
                         @govHelpers.inputRadioGroup(
                             field = tradingNameForm("tradingName.yesNo"),
@@ -26,7 +32,13 @@
                             '_labelClass -> "block-label"
                         )
 
-                        <div class="panel panel-indent hidden" id="trading_name_hidden">
+
+
+                     <div class="panel panel-indent hidden @fieldSetClasses" id="trading_name_hidden">
+
+                            @tradingNameForm.globalError.find( _.args.contains("tradingName")).map{ error =>
+                                @govHelpers.errorInline("tradingName", Messages(error.message))
+                            }
 
                             @govHelpers.input(
                                 tradingNameForm("tradingName"),
