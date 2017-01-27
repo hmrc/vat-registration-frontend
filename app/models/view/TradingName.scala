@@ -14,31 +14,19 @@
  * limitations under the License.
  */
 
-package forms.vatDetails
+package models.view
 
-import models.view.TradingName
-import play.api.data.Form
-import play.api.data.Forms._
-<<<<<<< HEAD
-import utils.VatValidators._
-object TradingNameForm {
-=======
+import play.api.libs.json.Json
 
-object TradingNameForm {
-
->>>>>>> 68389128ff149d08fa07b972605c658b63604b55
-  val form = Form(
-    mapping(
-      "tradingName.yesNo" -> nonEmptyText,
-      "tradingName" -> optional(text)
-<<<<<<< HEAD
-    )(TradingName.apply)(TradingName.unapply).verifying(tradingNameValidation)
-  )
-
+case class TradingName(yesNo: String,
+                       tradingName: Option[String]) {
 }
 
-=======
-    )(TradingName.apply)(TradingName.unapply)
-  )
+object TradingName {
+  val TRADING_NAME_YES = "TRADING_NAME_YES"
+  val TRADING_NAME_NO = "TRADING_NAME_NO"
+
+  implicit val format = Json.format[TradingName]
+
+  def empty: TradingName = TradingName("", None)
 }
->>>>>>> 68389128ff149d08fa07b972605c658b63604b55
