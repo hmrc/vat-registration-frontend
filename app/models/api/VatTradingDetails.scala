@@ -23,6 +23,7 @@ case class VatTradingDetails(tradingName: String)
 
 object VatTradingDetails {
   val r = (__ \ "trading-name").read[String]
+
   val w = (__ \ "trading-name").write[String]
 
   val apiReads: Reads[VatTradingDetails] = r(VatTradingDetails.apply _)
