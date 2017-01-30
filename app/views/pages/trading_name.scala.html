@@ -14,7 +14,7 @@
                     <fieldset class="inline">
 
                         @govHelpers.inputRadioGroup(
-                            field = tradingNameForm("tradingName.yesNo"),
+                            field = tradingNameForm("tradingName"),
                             Seq(
                                 TradingName.TRADING_NAME_YES -> Messages("app.common.yes"),
                                 TradingName.TRADING_NAME_NO -> Messages("app.common.no")
@@ -23,10 +23,10 @@
                             '_labelClass -> "block-label"
                         )
 
-                        <div class="panel panel-indent hidden" id="trading_name_hidden">
+                        <div class="panel panel-indent hidden" id="trading_name_panel">
 
                             @govHelpers.input(
-                                tradingNameForm("tradingName"),
+                                tradingNameForm("tradingName.name"),
                                 '_divClass -> "form-group",
                                 '_inputClass -> "form-control",
                                 '_label -> Messages("pages.tradingName.panels.tradingName"),
