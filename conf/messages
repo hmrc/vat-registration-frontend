@@ -56,7 +56,7 @@ pages.startDate.panels.futureDate.inputField.year   = Year
 pages.tradingName.title                             = Trading Name
 pages.tradingName.heading                           = Does the company trade under any other name?
 pages.tradingName.panels.tradingName                = Trading name
-pages.tradingName.validation.invalid.tradingName    = Please enter valid trading name
+pages.tradingName.validation.invalid.tradingName    = Please enter a valid trading name
 pages.tradingName.validation.empty.tradingName      = Please enter a trading name
 
 ## Taxable Turnover Page
