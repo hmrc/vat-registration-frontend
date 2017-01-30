@@ -17,7 +17,7 @@
 package services
 
 import helpers.VatRegSpec
-import models.api.{VatDetails, VatRegistration => VatRegistrationAPI}
+import models.api.{VatChoice$, VatRegistration => VatRegistrationAPI}
 import models.view.{Summary, SummaryRow, SummarySection}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -27,7 +27,7 @@ class VatRegistrationServiceSpec extends VatRegSpec {
   val apiRegistration = VatRegistrationAPI(
     registrationID = "VAT123456",
     formCreationTimestamp = "2017-01-11T15:10:12",
-    vatDetails = VatDetails(
+    vatDetails = VatChoice(
       taxableTurnover = Some("No"),
       registerVoluntarily = Some("Yes"),
       startDate = Some("1 February 2017")

@@ -17,7 +17,7 @@
 package services
 
 import com.google.inject.ImplementedBy
-import models.api.{VatDetails, VatRegistration => VatRegistrationAPI}
+import models.api.{VatChoice$, VatRegistration => VatRegistrationAPI}
 import models.view.{Summary, SummaryRow, SummarySection}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,7 +36,7 @@ class VatRegistrationService extends RegistrationService {
       Option(
         registrationToSummary(
           new VatRegistrationAPI("VAT123456", "2017-01-11T15:10:12",
-            new VatDetails(Option("No"), Option("Yes"), Option("1 February 2017")))
+            new VatChoice(Option("No"), Option("Yes"), Option("1 February 2017")))
         )
       )
     )
