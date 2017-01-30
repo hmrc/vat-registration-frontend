@@ -33,8 +33,8 @@ $(document).ready($(function () {
 // StartDatePage module
 (function (StartDatePage) {
     StartDatePage.init = function() {
-        UI.hideShowOnRadioButton("startDate",
-            { "#startDate-future_date": "#future_date_panel" });
+        UI.hideShowOnRadioButton("startDateRadio",
+            { "#startDateRadio-future_date": "#future_date_panel" });
     }
 }(window.StartDatePage = window.StartDatePage || {}));
 
