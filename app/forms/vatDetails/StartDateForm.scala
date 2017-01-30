@@ -23,7 +23,6 @@ import play.api.data.validation.{Constraint, Constraints, Valid, ValidationError
 
 object StartDateForm {
 
-
   val form = Form(
     mapping(
       "startDate" -> nonEmptyText,
