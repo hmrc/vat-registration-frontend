@@ -44,7 +44,7 @@ class StartDateController @Inject()(s4LService: S4LService, ds: CommonPlayDepend
         data: StartDate => {
           // Save to S4L
           s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, data) map { _ =>
-            Redirect(controllers.userJourney.routes.SummaryController.show())
+            Redirect(controllers.userJourney.routes.TradingNameController.show())
           }
         }
       })
