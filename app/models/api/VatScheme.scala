@@ -18,27 +18,26 @@ package models.api
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import play.data.format.Formats.DateTime
 
-case class VatChoice(
-                      startDate: DateTime,
-                      necessity: String, // "obligatory" or "voluntary"
-                      reason: Option[String]
+case class VatScheme(
+                      id: String,
+                      tradingDetails: VatTradingDetails,
+                      vatChoice: VatChoice
                     )
 
-object VatChoice {
+object VatScheme {
   val r =
-    (__ \ "start-date").read[String] and
-      (__ \ "necessity").read[String] and
-      (__ \ "reason").read[String]
+    (__ \ "ID").read[String] and
+      (__ \ "trading-details").read[VatTradingDetails] and
+      (__ \ "vat-choice").read[VatChoice]
 
   val w =
-    (__ \ "start-date").write[String] and
-      (__ \ "necessity").write[String] and
-      (__ \ "reason").write[String]
+    (__ \ "ID").write[String] and
+      (__ \ "trading-details").write[VatTradingDetails] and
+      (__ \ "vat-choice").write[VatChoice]
 
-  val apiReads: Reads[VatChoice] = r(VatChoice.apply _)
-  val apiWrites: Writes[VatChoice] = w(unlift(VatChoice.unapply))
+  val apiReads: Reads[VatScheme] = r(VatScheme.apply _)
+  val apiWrites: Writes[VatScheme] = w(unlift(VatScheme.unapply))
 
   implicit val format = Format(apiReads, apiWrites)
 }

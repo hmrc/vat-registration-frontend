@@ -25,52 +25,52 @@ import scala.concurrent.{ExecutionContext, Future}
 @ImplementedBy(classOf[VatRegistrationService])
 trait RegistrationService {
 
-  def getRegistrationSummary()(implicit executionContext: ExecutionContext): Future[Option[Summary]]
+//  def getRegistrationSummary()(implicit executionContext: ExecutionContext): Future[Option[Summary]]
 
 }
 
 class VatRegistrationService extends RegistrationService {
 
-  override def getRegistrationSummary()(implicit ec: ExecutionContext): Future[Option[Summary]] = {
-    Future.successful(
-      Option(
-        registrationToSummary(
-          new VatRegistrationAPI("VAT123456", "2017-01-11T15:10:12",
-            new VatChoice(Option("No"), Option("Yes"), Option("1 February 2017")))
-        )
-      )
-    )
-  }
-
-  def registrationToSummary(apiModel: VatRegistrationAPI): Summary = {
-    Summary(
-      Seq(SummarySection(
-        id = "vatDetails",
-        Seq(SummaryRow(
-          id = "vatDetails.taxableTurnover",
-          answer = apiModel.vatDetails.taxableTurnover match {
-            case Some(name) => Right(name)
-          },
-          changeLink = Some(controllers.userJourney.routes.TaxableTurnoverController.show())
-        ),
-          SummaryRow(
-            id = "vatDetails.registerVoluntarily",
-            answer = apiModel.vatDetails.registerVoluntarily match {
-              case Some(name) => Right(name)
-            },
-            changeLink = Some(controllers.userJourney.routes.SummaryController.show())
-          ),
-          SummaryRow(
-            id = "vatDetails.startDate",
-            answer = apiModel.vatDetails.startDate match {
-              case Some(name) => Right(name)
-            },
-            changeLink = Some(controllers.userJourney.routes.StartDateController.show())
-          )
-        )
-      ))
-    )
-  }
+//  override def getRegistrationSummary()(implicit ec: ExecutionContext): Future[Option[Summary]] = {
+//    Future.successful(
+//      Option(
+//        registrationToSummary(
+//          new VatRegistrationAPI("VAT123456", "2017-01-11T15:10:12",
+//            new VatChoice(Option("No"), Option("Yes"), Option("1 February 2017")))
+//        )
+//      )
+//    )
+//  }
+//
+//  def registrationToSummary(apiModel: VatRegistrationAPI): Summary = {
+//    Summary(
+//      Seq(SummarySection(
+//        id = "vatDetails",
+//        Seq(SummaryRow(
+//          id = "vatDetails.taxableTurnover",
+//          answer = apiModel.vatDetails.taxableTurnover match {
+//            case Some(name) => Right(name)
+//          },
+//          changeLink = Some(controllers.userJourney.routes.TaxableTurnoverController.show())
+//        ),
+//          SummaryRow(
+//            id = "vatDetails.registerVoluntarily",
+//            answer = apiModel.vatDetails.registerVoluntarily match {
+//              case Some(name) => Right(name)
+//            },
+//            changeLink = Some(controllers.userJourney.routes.SummaryController.show())
+//          ),
+//          SummaryRow(
+//            id = "vatDetails.startDate",
+//            answer = apiModel.vatDetails.startDate match {
+//              case Some(name) => Right(name)
+//            },
+//            changeLink = Some(controllers.userJourney.routes.StartDateController.show())
+//          )
+//        )
+//      ))
+//    )
+//  }
 }
 
 
