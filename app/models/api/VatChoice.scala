@@ -18,24 +18,21 @@ package models.api
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import play.data.format.Formats.DateTime
+import org.joda.time.DateTime
 
 case class VatChoice(
                       startDate: DateTime,
-                      necessity: String, // "obligatory" or "voluntary"
-                      reason: Option[String]
+                      necessity: String // "obligatory" or "voluntary"
                     )
 
 object VatChoice {
   val r =
-    (__ \ "start-date").read[String] and
-      (__ \ "necessity").read[String] and
-      (__ \ "reason").read[String]
+    (__ \ "start-date").read[DateTime] and
+      (__ \ "necessity").read[String]
 
   val w =
-    (__ \ "start-date").write[String] and
-      (__ \ "necessity").write[String] and
-      (__ \ "reason").write[String]
+    (__ \ "start-date").write[DateTime] and
+      (__ \ "necessity").write[String]
 
   val apiReads: Reads[VatChoice] = r(VatChoice.apply _)
   val apiWrites: Writes[VatChoice] = w(unlift(VatChoice.unapply))

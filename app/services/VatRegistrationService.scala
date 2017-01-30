@@ -17,7 +17,6 @@
 package services
 
 import com.google.inject.ImplementedBy
-import models.api.{VatChoice$, VatRegistration => VatRegistrationAPI}
 import models.view.{Summary, SummaryRow, SummarySection}
 
 import scala.concurrent.{ExecutionContext, Future}
