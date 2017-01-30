@@ -36,7 +36,7 @@
 
                      <div class="panel panel-indent hidden @fieldSetClasses" id="trading_name_hidden">
 
-                            @tradingNameForm.globalError.find( _.args.contains("tradingName")).map{ error =>
+                            @tradingNameForm.errors.find( _.args.contains("tradingName")).map{ error =>
                                 @govHelpers.errorInline("tradingName", Messages(error.message))
                             }
 
