@@ -8,6 +8,10 @@ app.common.saveAndContinue              = Save and continue
 app.common.errorSummaryLabel            = There are errors on this page.
 app.common.change                       = Change
 
+
+speciallyCraftedMessage = Some very special validation message
+
+
 ## Welcome Page
 pages.welcome.title                     = Before you register for VAT
 pages.welcome.heading                   = Before you register for VAT
@@ -52,6 +56,8 @@ pages.startDate.panels.futureDate.inputField.year   = Year
 pages.tradingName.title                             = Trading Name
 pages.tradingName.heading                           = Does the company trade under any other name?
 pages.tradingName.panels.tradingName                = Trading name
+pages.tradingName.validation.invalid.tradingName    = Please enter valid trader name
+pages.tradingName.validation.empty.tradingName      = Please enter trader name
 
 ## Taxable Turnover Page
 pages.taxable.turnover.title    = Before you register for VAT
