@@ -1,0 +1,40 @@
+@(heading: String,
+  form: Form[_],
+  errorArgs: Seq[String] = Seq.empty,
+  classes: Seq[String] = Seq.empty,
+  dataJourney: Option[String] = None)(implicit request: Request[_], messages: Messages)
+
+<div class="flash error-summary@if(form.hasErrors) { error-summary--show} @classes.mkString(" ")"
+     id="error-summary-display"
+     role="alert"
+     aria-labelledby="error-summary-heading"
+     tabindex="-1">
+    <h2 id="error-summary-heading" class="h3-heading">@heading</h2>
+    <ul class="js-error-summary-messages">
+    @if(form.hasErrors) {
+        @form.errors.map { error =>
+            @if(!error.key == ""){
+                <li role="tooltip" @dataJourney.map(page => Html(s"""data-journey="${page}:error:${error.key}""""))>
+                    <a href="#@error.key"
+                       id="@{error.key}-error-summary"
+                       data-focuses="@error.key">
+                    @messages(error.message, error.args: _*)
+                    </a>
+                </li>
+            } else {
+                @if(error.args.nonEmpty){
+                    @if(errorArgs.filter(_ == error.args(0)).nonEmpty){
+                        <li role="tooltip" @dataJourney.map(page => Html(s"""data-journey="${page}:error:${error.args(0)}""""))>
+                            <a href="#@error.args(0)"
+                               id="@{error.args(0)}-error-summary"
+                               data-focuses="@error.args(0)">
+                                @messages(error.message, error.args: _*)
+                            </a>
+                        </li>
+                    }
+                }
+            }
+        }
+    }
+    </ul>
+</div>
