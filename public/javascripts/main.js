@@ -41,8 +41,8 @@ $(document).ready($(function () {
 // TradingName module
 (function (TradingNamePage) {
     TradingNamePage.init = function() {
-        UI.hideShowOnRadioButton("tradingName",
-            { "#tradingName-trading_name_yes": "#trading_name_panel" });
+        UI.hideShowOnRadioButton("tradingNameRadio",
+            { "#tradingNameRadio-trading_name_yes": "#trading_name_panel" });
     }
 }(window.TradingNamePage = window.TradingNamePage || {}));
 
