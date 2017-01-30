@@ -21,7 +21,7 @@ import play.api.libs.json.Json
 case class VatRegistration(
                             registrationID: String,
                             formCreationTimestamp: String,
-                            vatDetails: VatDetails
+                            vatDetails: VatChoice
                           )
 
 object VatRegistration {

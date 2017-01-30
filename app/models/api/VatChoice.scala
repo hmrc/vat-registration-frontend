@@ -18,12 +18,12 @@ package models.api
 
 import play.api.libs.json.Json
 
-case class VatDetails(
+case class VatChoice(
                        taxableTurnover: Option[String],
                        registerVoluntarily: Option[String],
                        startDate: Option[String]
                      )
 
-object VatDetails {
-  implicit val format = Json.format[VatDetails]
+object VatChoice {
+  implicit val format = Json.format[VatChoice]
 }

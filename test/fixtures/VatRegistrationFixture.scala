@@ -16,12 +16,12 @@
 
 package fixtures
 
-import models.api.{VatDetails, VatRegistration}
+import models.api.{VatChoice$, VatRegistration}
 import models.view.{Summary, SummaryRow, SummarySection}
 
 trait VatRegistrationFixture {
 
-  val validVatDetailsAPI = VatDetails(
+  val validVatDetailsAPI = VatChoice(
     taxableTurnover = Some("No"),
     registerVoluntarily = Some("Yes"),
     startDate = Some("1 February 2017")
