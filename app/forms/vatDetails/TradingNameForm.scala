@@ -22,8 +22,9 @@ import play.api.data.Forms._
 import utils.VatValidators._
 
 object TradingNameForm {
-  val RADIO_YES_NO: String = "tradingName.yesNo"
+  val RADIO_YES_NO: String = "tradingNameRadio"
   val INPUT_TRADING_NAME: String = "tradingName"
+
   val form = Form(
     mapping(
       RADIO_YES_NO -> nonEmptyText,

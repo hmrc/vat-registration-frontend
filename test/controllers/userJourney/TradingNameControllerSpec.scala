@@ -90,8 +90,7 @@ class TradingNameControllerSpec extends VatRegSpec {
         .thenReturn(Future.successful(returnCacheMap))
 
       AuthBuilder.submitWithAuthorisedUser(TestTradingNameController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "tradingName.yesNo" -> TradingName.TRADING_NAME_YES,
-        "tradingName" -> "Test"
+        "tradingNameRadio" -> TradingName.TRADING_NAME_NO
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
