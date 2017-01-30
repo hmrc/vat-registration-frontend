@@ -22,17 +22,20 @@ import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc._
 import services.VatRegistrationService
 
+import scala.concurrent.Future
+
 class SummaryController @Inject()(vatRegistrationService: VatRegistrationService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   //access to root of application should by default direct the user to the proper URL for start of VAT registration
   def show: Action[AnyContent] = authorised.async {
     implicit user => implicit request =>
-      for {
-        oSummaryModel <- vatRegistrationService.getRegistrationSummary
-      } yield oSummaryModel match {
-        case Some(summaryModel) => Ok(views.html.pages.summary(summaryModel))
-        case None => InternalServerError(views.html.pages.error.restart())
-      }
+        Future.successful(Ok("hello"))
+//      for {
+//        oSummaryModel <- vatRegistrationService.getRegistrationSummary
+//      } yield oSummaryModel match {
+//        case Some(summaryModel) => Ok(views.html.pages.summary(summaryModel))
+//        case None => InternalServerError(views.html.pages.error.restart())
+//      }
   }
 
 }
