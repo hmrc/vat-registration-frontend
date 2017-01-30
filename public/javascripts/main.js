@@ -3,7 +3,7 @@ $(document).ready($(function () {
 }));
 
 // UI module (common code)
-(function (UI, $) {
+(function (UI, $, undefined) {
     UI.show = function (selector) {
         $(selector).removeClass("hidden");
     };
@@ -31,20 +31,20 @@ $(document).ready($(function () {
 }(window.UI = window.UI || {}, jQuery));
 
 // StartDatePage module
-(function (StartDatePage) {
+(function (StartDatePage, $, undefined) {
     StartDatePage.init = function() {
         UI.hideShowOnRadioButton("startDateRadio",
             { "#startDateRadio-future_date": "#future_date_panel" });
     }
-}(window.StartDatePage = window.StartDatePage || {}));
+}(window.StartDatePage = window.StartDatePage || {}, jQuery));
 
 // TradingName module
-(function (TradingNamePage) {
+(function (TradingNamePage, $, undefined) {
     TradingNamePage.init = function() {
         UI.hideShowOnRadioButton("tradingNameRadio",
             { "#tradingNameRadio-trading_name_yes": "#trading_name_panel" });
     }
-}(window.TradingNamePage = window.TradingNamePage || {}));
+}(window.TradingNamePage = window.TradingNamePage || {}, jQuery));
 
 /*
  example of multiple hide/show areas
