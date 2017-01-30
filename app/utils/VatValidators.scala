@@ -22,7 +22,7 @@ import play.api.data.validation.{ValidationError, _}
 
 object VatValidators {
 
-  private val tradingNameRegex = """^[A-Za-z0-9.,\-()/!"%&*;'<>][A-Za-z0-9.,\-()/!"%&*;'<>]{0,55}$"""
+  private val tradingNameRegex = """^[A-Za-z0-9.,\-()/!"%&*;'<>][A-Za-z0-9 .,\-()/!"%&*;'<>]{0,55}$"""
   private val nonEmptyRegex = """^(?=\s*\S).*$"""
   val IN_VALID_TRADING_NAME_MSG_KEY = "pages.tradingName.validation.invalid.tradingName"
   val EMPTY_TRADING_NAME_MSG_KEY = "pages.tradingName.validation.empty.tradingName"
@@ -30,9 +30,9 @@ object VatValidators {
   def tradingNameValidation : Constraint[TradingName] = Constraint("constraint.tradingName")({
     text =>
       val errors = text match {
-        case _ if text.yesNo == TradingName.TRADING_NAME_YES && !text.tradingName.get.matches(nonEmptyRegex)
+        case _ if text.yesNo == TradingName.TRADING_NAME_YES && !text.tradingName.getOrElse("").matches(nonEmptyRegex)
         => Seq(ValidationError(EMPTY_TRADING_NAME_MSG_KEY, TradingNameForm.INPUT_TRADING_NAME))
-        case _ if text.yesNo == TradingName.TRADING_NAME_YES && !text.tradingName.get.matches(tradingNameRegex)
+        case _ if text.yesNo == TradingName.TRADING_NAME_YES && !text.tradingName.getOrElse("").matches(tradingNameRegex)
         => Seq(ValidationError(IN_VALID_TRADING_NAME_MSG_KEY, TradingNameForm.INPUT_TRADING_NAME))
         case _ => Nil
       }

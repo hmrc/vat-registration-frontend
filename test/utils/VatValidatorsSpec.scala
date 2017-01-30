@@ -28,7 +28,7 @@ class VatValidatorsSpec extends VatRegSpec {
     "return an error when user enters a empty trading name and selected Yes " in {
       val data : Map[String, String] =
         Map(
-          "tradingName.yesNo" -> TradingName.TRADING_NAME_YES,
+          "tradingNameRadio" -> TradingName.TRADING_NAME_YES,
           "tradingName" -> ""
         )
 
@@ -41,7 +41,7 @@ class VatValidatorsSpec extends VatRegSpec {
   "return an error when user enters a Invalid trading name and selected Yes " in {
     val data : Map[String, String] =
       Map(
-        "tradingName.yesNo" -> TradingName.TRADING_NAME_YES,
+        "tradingNameRadio" -> TradingName.TRADING_NAME_YES,
         "tradingName" -> "££££$$$$$"
       )
 
@@ -53,7 +53,7 @@ class VatValidatorsSpec extends VatRegSpec {
   "return success when user selected No " in {
     val data : Map[String, String] =
       Map(
-        "tradingName.yesNo" -> TradingName.TRADING_NAME_NO,
+        "tradingNameRadio" -> TradingName.TRADING_NAME_NO,
         "tradingName" -> ""
       )
 
