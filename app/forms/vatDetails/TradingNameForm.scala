@@ -24,8 +24,8 @@ object TradingNameForm {
 
   val form = Form(
     mapping(
-      "tradingName.yesNo" -> nonEmptyText,
-      "tradingName" -> optional(text)
+      "tradingName" -> nonEmptyText,
+      "tradingName.name" -> optional(text)
     )(TradingName.apply)(TradingName.unapply)
   )
 }
