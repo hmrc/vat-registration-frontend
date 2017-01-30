@@ -2,7 +2,9 @@
 @(tradingNameForm: Form[TradingName])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
-@fieldSetClasses =  @{if(tradingNameForm.hasErrors && (tradingNameForm.errors.exists(_.args.nonEmpty))) "form-field--error" else "" }
+@fieldSetClasses = @{
+    if(tradingNameForm.hasErrors && (tradingNameForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
+}
 
 @main_template(title = messages("pages.tradingName.title")) {
 
@@ -19,11 +21,10 @@
 
             @govHelpers.form(action = controllers.userJourney.routes.TradingNameController.submit()) {
                 <div class="form-group">
-                 <fieldset class="inline">
-
+                    <fieldset class="inline">
 
                         @govHelpers.inputRadioGroup(
-                            field = tradingNameForm("tradingName.yesNo"),
+                            field = tradingNameForm("tradingNameRadio"),
                             Seq(
                                 TradingName.TRADING_NAME_YES -> Messages("app.common.yes"),
                                 TradingName.TRADING_NAME_NO -> Messages("app.common.no")
@@ -32,11 +33,9 @@
                             '_labelClass -> "block-label"
                         )
 
+                        <div class="panel panel-indent hidden @fieldSetClasses" id="trading_name_panel">
 
-
-                     <div class="panel panel-indent hidden @fieldSetClasses" id="trading_name_hidden">
-
-                            @tradingNameForm.errors.find( _.args.contains("tradingName")).map{ error =>
+                            @tradingNameForm.errors.find(_.args.contains("tradingName")).map { error =>
                                 @govHelpers.errorInline("tradingName", Messages(error.message))
                             }
 

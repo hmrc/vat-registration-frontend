@@ -2,7 +2,7 @@ $(document).ready($(function () {
 
 }));
 
-// UI module
+// UI module (common code)
 (function (UI, $, undefined) {
     UI.show = function (selector) {
         $(selector).removeClass("hidden");
@@ -11,49 +11,44 @@ $(document).ready($(function () {
     UI.hide = function (selector) {
         $(selector).addClass("hidden");
     };
+
+    UI.hideShowOnRadioButton = function(radioGroupName, buttonToAreaMap) {
+        var updateState = function(buttonMap) {
+            for (var b in buttonMap) {
+                if ($(b).is(":checked")) {
+                    UI.show($(buttonMap[b]));
+                } else {
+                    UI.hide($(buttonMap[b]));
+                }
+            }
+        };
+        // on state change handler
+        var radioGroup = $("input[name='"+radioGroupName+"']:radio");
+        radioGroup.on("change", function () {
+            updateState(buttonToAreaMap);
+        }).trigger("change");
+    }
 }(window.UI = window.UI || {}, jQuery));
 
 // StartDatePage module
 (function (StartDatePage, $, undefined) {
     StartDatePage.init = function() {
-        console.log("StartDatePage init()");
-        var startDateRadioGroup = $("input[name='startDate']:radio");
-        var futureDateRadio = $("#startDate-future_date");
-        var futureDateHidden = $("#future_date_hidden");
-
-        function updateState() {
-            if (futureDateRadio.is(":checked")) {
-                UI.show(futureDateHidden);
-            } else {
-                UI.hide(futureDateHidden);
-            }
-        }
-
-        updateState();
-        startDateRadioGroup.on("change", function () {
-            updateState();
-        });
+        UI.hideShowOnRadioButton("startDateRadio",
+            { "#startDateRadio-future_date": "#future_date_panel" });
     }
 }(window.StartDatePage = window.StartDatePage || {}, jQuery));
 
 // TradingName module
 (function (TradingNamePage, $, undefined) {
     TradingNamePage.init = function() {
-        var tradingNameRadioGroup = $("input[name='tradingName.yesNo']:radio");
-        var tradingNameRadio = $("#tradingName\\.yesNo-trading_name_yes");
-        var tradingNameHidden = $("#trading_name_hidden");
-
-        function updateState() {
-            if (tradingNameRadio.is(":checked")) {
-                UI.show(tradingNameHidden);
-            } else {
-                UI.hide(tradingNameHidden);
-            }
-        }
-
-        updateState();
-        tradingNameRadioGroup.on("change", function () {
-            updateState();
-        });
+        UI.hideShowOnRadioButton("tradingNameRadio",
+            { "#tradingNameRadio-trading_name_yes": "#trading_name_panel" });
     }
 }(window.TradingNamePage = window.TradingNamePage || {}, jQuery));
+
+/*
+ example of multiple hide/show areas
+ UI.hideShowOnRadioButton("startDate",
+ {   "#startDate-future_date": "#future_date_panel",
+     "#startDate-when_registered": "#other_panel"   });
+ */

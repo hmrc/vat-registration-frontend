@@ -25,10 +25,10 @@ object StartDateForm {
 
   val form = Form(
     mapping(
-      "startDate" -> nonEmptyText,
-      "startDate.year" -> optional(text),
-      "startDate.month" -> optional(text),
-      "startDate.day" -> optional(text)
+      "startDateRadio" -> nonEmptyText,
+      "year" -> optional(text),
+      "month" -> optional(text),
+      "day" -> optional(text)
     )(StartDate.apply)(StartDate.unapply)
   )
 }
