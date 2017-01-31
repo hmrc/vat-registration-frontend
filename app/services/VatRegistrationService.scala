@@ -16,60 +16,90 @@
 
 package services
 
+import javax.inject.Inject
+
 import com.google.inject.ImplementedBy
+import connectors.VatRegistrationConnector
+import enums.DownstreamOutcome
+import models.api.{VatChoice, VatScheme, VatTradingDetails}
 import models.view.{Summary, SummaryRow, SummarySection}
+import org.joda.time.DateTime
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[VatRegistrationService])
 trait RegistrationService {
 
-//  def getRegistrationSummary()(implicit executionContext: ExecutionContext): Future[Option[Summary]]
+  def getRegistrationSummary()(implicit executionContext: ExecutionContext): Future[Summary]
 
 }
 
-class VatRegistrationService extends RegistrationService {
+class VatRegistrationService @Inject()(vatRegistrationConnector: VatRegistrationConnector) extends RegistrationService {
 
-//  override def getRegistrationSummary()(implicit ec: ExecutionContext): Future[Option[Summary]] = {
-//    Future.successful(
-//      Option(
-//        registrationToSummary(
-//          new VatRegistrationAPI("VAT123456", "2017-01-11T15:10:12",
-//            new VatChoice(Option("No"), Option("Yes"), Option("1 February 2017")))
-//        )
-//      )
-//    )
-//  }
-//
-//  def registrationToSummary(apiModel: VatRegistrationAPI): Summary = {
-//    Summary(
-//      Seq(SummarySection(
-//        id = "vatDetails",
-//        Seq(SummaryRow(
-//          id = "vatDetails.taxableTurnover",
-//          answer = apiModel.vatDetails.taxableTurnover match {
-//            case Some(name) => Right(name)
-//          },
-//          changeLink = Some(controllers.userJourney.routes.TaxableTurnoverController.show())
-//        ),
-//          SummaryRow(
-//            id = "vatDetails.registerVoluntarily",
-//            answer = apiModel.vatDetails.registerVoluntarily match {
-//              case Some(name) => Right(name)
-//            },
-//            changeLink = Some(controllers.userJourney.routes.SummaryController.show())
-//          ),
-//          SummaryRow(
-//            id = "vatDetails.startDate",
-//            answer = apiModel.vatDetails.startDate match {
-//              case Some(name) => Right(name)
-//            },
-//            changeLink = Some(controllers.userJourney.routes.StartDateController.show())
-//          )
-//        )
-//      ))
-//    )
-//  }
+  def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] = {
+    vatRegistrationConnector.createNewRegistration()
+  }
+
+  override def getRegistrationSummary()(implicit ec: ExecutionContext): Future[Summary] = {
+    Future.successful(
+      registrationToSummary(
+        VatScheme("VAT123456",
+          VatTradingDetails("ACME INC"),
+          VatChoice(DateTime.now, VatChoice.NECESSITY_VOLUNTARY)
+        )
+      )
+    )
+  }
+
+  def registrationToSummary(apiModel: VatScheme): Summary = {
+    Summary(
+      Seq(
+        getVatDetailsSection(apiModel.vatChoice),
+        getCompanyDetailsSection(apiModel.tradingDetails)
+      )
+    )
+  }
+
+  private def getVatDetailsSection(vatDetails: VatChoice) = {
+
+    def getRegisterVoluntarily: SummaryRow = {
+      SummaryRow(
+        "vatDetails.registerVoluntarily",
+        vatDetails.necessity match {
+          case VatChoice.NECESSITY_VOLUNTARY => Right("Yes")
+          case _ => Left("No")
+        },
+        Some(controllers.userJourney.routes.SummaryController.show())
+      )
+    }
+
+    def getStartDate: SummaryRow = {
+      SummaryRow("vatDetails.startDate",
+        Right(vatDetails.startDate.toString("d M y")),
+        Some(controllers.userJourney.routes.StartDateController.show())
+      )
+    }
+
+    SummarySection(
+      id = "vatDetails",
+      Seq(
+        getRegisterVoluntarily,
+        getStartDate
+      )
+    )
+  }
+
+  private def getCompanyDetailsSection(companyDetails: VatTradingDetails) = SummarySection(
+    id = "companyDetails",
+    Seq(
+      SummaryRow(
+        "companyDetails.tradingName",
+        Right(companyDetails.tradingName),
+        Some(controllers.userJourney.routes.TradingNameController.show())
+      )
+    )
+  )
 }
 
 

@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package models.api
+package enums
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+object DownstreamOutcome extends Enumeration {
 
-case class VatTradingDetails(tradingName: String)
+  val Success = Value
+  val Failure  = Value
 
-object VatTradingDetails {
-  val apiReads: Reads[VatTradingDetails] =
-    (__ \ "trading-name").read[String].map(VatTradingDetails(_))
-
-  val apiWrites: Writes[VatTradingDetails] =
-    (__ \ "trading-name").write[String].contramap(_.tradingName)
-
-  implicit val format = Format(apiReads, apiWrites)
 }

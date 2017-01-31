@@ -20,15 +20,29 @@ import javax.inject.Inject
 
 import config.FrontendAuthConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc.{Action, AnyContent}
+import enums.DownstreamOutcome
+import play.api.mvc.{Action, AnyContent, Request, Result}
+import services.VatRegistrationService
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.play.http.HeaderCarrier
 
-class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+import scala.concurrent.Future
 
-  def postSignIn: Action[AnyContent] = authorised {
+class SignInOutController @Inject()(vatRegistrationService: VatRegistrationService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+
+  def postSignIn: Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request =>
-        Redirect(controllers.userJourney.routes.WelcomeController.start())
+        assertVatRegistrationFootprint {
+          Redirect(controllers.userJourney.routes.WelcomeController.start())
+        }
+  }
+
+  private def assertVatRegistrationFootprint(f: => Result)(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[Result] = {
+    vatRegistrationService.assertRegistrationFootprint() map {
+      case DownstreamOutcome.Success => f
+      case DownstreamOutcome.Failure => InternalServerError(views.html.pages.error.restart())
+    }
   }
 
 }
