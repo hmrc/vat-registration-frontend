@@ -22,12 +22,15 @@ import play.api.libs.json._
 case class VatTradingDetails(tradingName: String)
 
 object VatTradingDetails {
-  val r = (__ \ "trading-name").read[String]
+  val apiReads: Reads[VatTradingDetails] =
+    (__ \ "trading-name")
+    .read[String]
+    .map[VatTradingDetails](VatTradingDetails(_))
 
-  val w = (__ \ "trading-name").write[String]
-
-  val apiReads: Reads[VatTradingDetails] = r(VatTradingDetails.apply _)
-  val apiWrites: Writes[VatTradingDetails] = w(unlift(VatTradingDetails.unapply))
+  val apiWrites: Writes[VatTradingDetails] =
+    (__ \ "trading-name")
+    .write[String]
+    .contramap[VatTradingDetails](_.tradingName)
 
   implicit val format = Format(apiReads, apiWrites)
 }
