@@ -16,12 +16,27 @@
 
 package models.view
 
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.Json
 
 case class StartDate(dateType: String,
                      year: Option[String],
                      month: Option[String],
                      day: Option[String]) {
+
+  override def toString: String = {
+    val d = day.getOrElse("")
+    val m = month.getOrElse("")
+    val y = year.getOrElse("")
+    s"$d/$m/$y"
+  }
+
+  def toDate: DateTime = {
+    val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
+    formatter.parseDateTime(toString)
+  }
+
 }
 
 object StartDate {

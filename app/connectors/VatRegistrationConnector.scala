@@ -19,7 +19,7 @@ package connectors
 import com.google.inject.ImplementedBy
 import config.WSHttp
 import enums.DownstreamOutcome
-import models.api.{VatChoice, VatScheme, VatTradingDetails}
+import models.api._
 import play.api.Logger
 import play.api.http.Status
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -52,20 +52,21 @@ trait VatRegistrationConnector {
     }
   }
 
-  def getRegistration(regID: String)(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[VatScheme] = {
-    http.GET[VatScheme](s"$vatRegUrl/vatreg/$regID") recover {
+  def getRegistration(regId: String)(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[VatScheme] = {
+    http.GET[VatScheme](s"$vatRegUrl/vatreg/$regId") recover {
       case e: Exception => throw logResponse(e, "getRegistration", "getting registration")
     }
   }
 
-  def upsertVatChoice(regID: String, vatChoice: VatChoice)(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[VatScheme] = {
-    http.PATCH[VatChoice, VatScheme](s"$vatRegUrl/vatreg/$regID/vat-choice", vatChoice) recover {
+  def upsertVatChoice(regId: String, vatChoice: VatChoice)(implicit hc: HeaderCarrier, rds: HttpReads[VatChoice]): Future[VatChoice] = {
+    http.PATCH[VatChoice, VatChoice](s"$vatRegUrl/vatreg/$regId/vat-choice", vatChoice) recover {
       case e: Exception => throw logResponse(e, "upsertVatChoice", "upserting vat choice")
     }
   }
 
-  def upsertVatTradingDetails(regID: String, vatTradingDetails: VatTradingDetails)(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[VatScheme] = {
-    http.PATCH[VatTradingDetails, VatScheme](s"$vatRegUrl/vatreg/$regID/trading-details", vatTradingDetails) recover {
+  def upsertVatTradingDetails(regId: String, vatTradingDetails: VatTradingDetails)
+                             (implicit hc: HeaderCarrier, rds: HttpReads[VatTradingDetails]): Future[VatTradingDetails] = {
+    http.PATCH[VatTradingDetails, VatTradingDetails](s"$vatRegUrl/vatreg/$regId/trading-details", vatTradingDetails) recover {
       case e: Exception => throw logResponse(e, "upsertVatTradingDetails", "upserting trading details")
     }
   }

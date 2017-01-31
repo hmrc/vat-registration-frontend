@@ -26,7 +26,7 @@ trait CommonService {
 
   val keystoreConnector: KeystoreConnector
 
-  def fetchRegistrationID(implicit hc: HeaderCarrier): Future[String] = {
+  def fetchRegistrationId(implicit hc: HeaderCarrier): Future[String] = {
     // Should return a registration id
     Future("registration-id-1234")
   }
