@@ -26,6 +26,9 @@ case class VatChoice(
                     )
 
 object VatChoice {
+  val NECESSITY_OBLIGATORY = "obligatory"
+  val NECESSITY_VOLUNTARY = "voluntary"
+
   val r =
     (__ \ "start-date").read[DateTime] and
       (__ \ "necessity").read[String]
