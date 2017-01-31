@@ -23,14 +23,10 @@ case class VatTradingDetails(tradingName: String)
 
 object VatTradingDetails {
   val apiReads: Reads[VatTradingDetails] =
-    (__ \ "trading-name")
-    .read[String]
-    .map[VatTradingDetails](VatTradingDetails(_))
+    (__ \ "trading-name").read[String].map[VatTradingDetails](VatTradingDetails(_))
 
   val apiWrites: Writes[VatTradingDetails] =
-    (__ \ "trading-name")
-    .write[String]
-    .contramap[VatTradingDetails](_.tradingName)
+    (__ \ "trading-name").write[String].contramap[VatTradingDetails](_.tradingName)
 
   implicit val format = Format(apiReads, apiWrites)
 }
