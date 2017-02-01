@@ -37,8 +37,8 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
   }
 
   s"GET ${routes.SummaryController.show()}" should {
-    "return HTML" in {
-      when(mockVatRegistrationService.getRegistrationSummary()(Matchers.any())).thenReturn(Future.successful(Some(validSummaryView)))
+    "return HTML with a valid summary view" in {
+      when(mockVatRegistrationService.getRegistrationSummary()(Matchers.any())).thenReturn(Future.successful(validSummaryView))
 
       callAuthorised(TestSummaryController.show, mockAuthConnector) {
         result =>
@@ -51,8 +51,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
   }
 
   s"GET ${routes.SummaryController.show()}" should {
-    "return internal server error" in {
-      when(mockVatRegistrationService.getRegistrationSummary()(Matchers.any())).thenReturn(Future.successful(None))
+    "return internal server error with an invalid summary view" in {
 
       callAuthorised(TestSummaryController.show, mockAuthConnector) {
         (response: Future[Result]) =>

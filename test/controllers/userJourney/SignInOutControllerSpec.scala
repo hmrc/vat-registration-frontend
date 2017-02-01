@@ -21,7 +21,7 @@ import play.api.test.Helpers._
 
 class SignInOutControllerSpec extends VatRegSpec {
 
-  object TestController extends SignInOutController(ds) {
+  object TestController extends SignInOutController(vatRegistrationService, ds) {
     override val authConnector = mockAuthConnector
   }
 
