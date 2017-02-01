@@ -16,41 +16,52 @@
 
 package fixtures
 
-import models.api.{VatChoice$, VatRegistration}
+import models.api._
 import models.view.{Summary, SummaryRow, SummarySection}
+import org.joda.time.format.DateTimeFormat
 
 trait VatRegistrationFixture {
 
-  val validVatDetailsAPI = VatChoice(
-    taxableTurnover = Some("No"),
-    registerVoluntarily = Some("Yes"),
-    startDate = Some("1 February 2017")
-  )
+  val formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss")
+  val dateTime = formatter.parseDateTime("2017-01-11T15:10:12")
 
-  val validVatRegistrationAPI = VatRegistration(
-    registrationID = "AC123456",
-    formCreationTimestamp = "2017-01-11T15:10:12",
-    vatDetails = validVatDetailsAPI
+  val validVatScheme = VatScheme(
+    "VAT123456",
+    VatTradingDetails("ACME INC"),
+    VatChoice(dateTime, VatChoice.NECESSITY_VOLUNTARY)
   )
 
   lazy val validSummaryView = Summary(
-    Seq(SummarySection(
-      id = "vatDetails",
-      Seq(SummaryRow(
-        id = "vatDetails.taxableTurnover",
-        answer = Right("No"),
-        changeLink = Some(controllers.userJourney.routes.TaxableTurnoverController.show())
+    Seq(
+      getVatDetailsSection,
+      getCompanyDetailsSection
+    )
+  )
+
+  private def getVatDetailsSection: SummarySection = SummarySection(
+    id = "vatDetails",
+    Seq(
+      SummaryRow(
+        id = "vatDetails.registerVoluntarily",
+        answer = Right("Yes"),
+        changeLink = Some(controllers.userJourney.routes.SummaryController.show())
       ),
-        SummaryRow(
-          id = "vatDetails.registerVoluntarily",
-          answer = Right("Yes"),
-          changeLink = Some(controllers.userJourney.routes.SummaryController.show())
-        ),
-        SummaryRow(
-          id = "vatDetails.startDate",
-          answer = Right("1 February 2017"),
-          changeLink = Some(controllers.userJourney.routes.StartDateController.show())
-        ))
-    ))
+      SummaryRow(
+        id = "vatDetails.startDate",
+        answer = Right("1 February 2017"),
+        changeLink = Some(controllers.userJourney.routes.StartDateController.show())
+      )
+    )
+  )
+
+  private def getCompanyDetailsSection: SummarySection = SummarySection(
+    id = "companyDetails",
+    Seq(
+      SummaryRow(
+        "vatDetails.tradingName",
+        Right("ACME INC"),
+        Some(controllers.userJourney.routes.TradingNameController.show())
+      )
+    )
   )
 }

@@ -16,68 +16,44 @@
 
 package services
 
+import connectors.VatRegistrationConnector
+import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api.{VatChoice, VatScheme, VatTradingDetails}
 import models.view.{Summary, SummaryRow, SummarySection}
 import org.joda.time.format.DateTimeFormat
+import org.mockito.Matchers
+import org.mockito.Mockito._
+import play.api.test.FutureAwaits
+import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-class VatRegistrationServiceSpec extends VatRegSpec {
+class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss")
-  val dateTime = formatter.parseDateTime("2017-01-11T15:10:12")
+  implicit val hc = HeaderCarrier()
+//  val mockRegConnector = mock[VatRegistrationConnector]
 
-  val apiRegistration = VatScheme(
-    "VAT123456",
-    VatTradingDetails("ACME INC"),
-    VatChoice(dateTime, VatChoice.NECESSITY_VOLUNTARY)
-  )
+  class Setup {
+//    val service = new VatRegistrationService(mockRegConnector)
+  }
 
-  lazy val summary = Summary(
-    Seq(
-      getVatDetailsSection,
-      getCompanyDetailsSection
-    )
-  )
-
-  private def getVatDetailsSection: SummarySection = SummarySection(
-    id = "vatDetails",
-    Seq(
-      SummaryRow(
-        id = "vatDetails.registerVoluntarily",
-        answer = Right("Yes"),
-        changeLink = Some(controllers.userJourney.routes.SummaryController.show())
-      ),
-      SummaryRow(
-        id = "vatDetails.startDate",
-        answer = Right("1 February 2017"),
-        changeLink = Some(controllers.userJourney.routes.StartDateController.show())
-      )
-    )
-  )
-
-  private def getCompanyDetailsSection: SummarySection = SummarySection(
-    id = "companyDetails",
-    Seq(
-      SummaryRow(
-        "vatDetails.tradingName",
-        Right("ACME INC"),
-        Some(controllers.userJourney.routes.TradingNameController.show())
-      )
-    )
-  )
-
-  "convert a VAT Registration API Model to a summary model with VAT details" should {
+  "Calling registrationToSummary converts a VatScheme API Model to a summary model with a valid details" should {
     "return success" in {
-      vatRegistrationService.registrationToSummary(apiRegistration) mustBe summary
+      vatRegistrationService.registrationToSummary(validVatScheme) mustBe validSummaryView
     }
   }
 
-  "get a registration summary" should {
-    "return success" in {
+  "Calling getRegistrationSummary" should {
+    "return success" in new Setup {
+//      when(mockRegConnector.getRegistration(Matchers.any())(Matchers.any(), Matchers.any()))
+//        .thenReturn(Future.successful(validVatScheme))
+
       vatRegistrationService.getRegistrationSummary()
     }
   }
+
 
 }
