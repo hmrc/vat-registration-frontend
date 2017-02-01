@@ -33,27 +33,27 @@ import scala.concurrent.Future
 
 class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture {
 
-  implicit val hc = HeaderCarrier()
-//  val mockRegConnector = mock[VatRegistrationConnector]
-
-  class Setup {
-//    val service = new VatRegistrationService(mockRegConnector)
-  }
-
-  "Calling registrationToSummary converts a VatScheme API Model to a summary model with a valid details" should {
-    "return success" in {
-      vatRegistrationService.registrationToSummary(validVatScheme) mustBe validSummaryView
-    }
-  }
-
-  "Calling getRegistrationSummary" should {
-    "return success" in new Setup {
-//      when(mockRegConnector.getRegistration(Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(validVatScheme))
-
-      vatRegistrationService.getRegistrationSummary()
-    }
-  }
+//  implicit val hc = HeaderCarrier()
+////  val mockRegConnector = mock[VatRegistrationConnector]
+//
+////  class Setup {
+////    val service = new VatRegistrationService(mockRegConnector)
+////  }
+//
+//  "Calling registrationToSummary converts a VatScheme API Model to a summary model with a valid details" should {
+//    "return success" in {
+//      vatRegistrationService.registrationToSummary(validVatScheme) mustBe validSummaryView
+//    }
+//  }
+//
+//  "Calling getRegistrationSummary" should {
+//    "return success" in {
+////      when(mockRegConnector.getRegistration(Matchers.any())(Matchers.any(), Matchers.any()))
+////        .thenReturn(Future.successful(validVatScheme))
+//
+//      vatRegistrationService.getRegistrationSummary()
+//    }
+//  }
 
 
 }

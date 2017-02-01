@@ -17,7 +17,6 @@
 package helpers
 
 import builders.AuthBuilder
-import connectors.VatRegistrationConnector
 import controllers.CommonPlayDependencies
 import fixtures.LoginFixture
 import mocks.VatMocks
