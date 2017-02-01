@@ -16,12 +16,16 @@
 
 package controllers.userJourney
 
+import connectors.VatRegistrationConnector
 import helpers.VatRegSpec
 import play.api.test.Helpers._
+import services.VatRegistrationService
 
 class SignInOutControllerSpec extends VatRegSpec {
 
-  object TestController extends SignInOutController(vatRegistrationService, ds) {
+  val mockVatRegistrationService = mock[VatRegistrationService]
+
+  object TestController extends SignInOutController(mockVatRegistrationService, ds) {
     override val authConnector = mockAuthConnector
   }
 
