@@ -26,19 +26,11 @@ case class VatChoice(
                     )
 
 object VatChoice {
+
   val NECESSITY_OBLIGATORY = "obligatory"
   val NECESSITY_VOLUNTARY = "voluntary"
 
-  val r =
-    (__ \ "start-date").read[DateTime] and
-      (__ \ "necessity").read[String]
-
-  val w =
-    (__ \ "start-date").write[DateTime] and
-      (__ \ "necessity").write[String]
-
-  val apiReads: Reads[VatChoice] = r(VatChoice.apply _)
-  val apiWrites: Writes[VatChoice] = w(unlift(VatChoice.unapply))
-
-  implicit val format = Format(apiReads, apiWrites)
+  implicit val format = (
+    (__ \ "start-date").format[DateTime] and
+      (__ \ "necessity").format[String]) (VatChoice.apply, unlift(VatChoice.unapply))
 }

@@ -16,6 +16,7 @@
 
 package controllers.userJourney
 
+import connectors.VatRegistrationConnector
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import org.mockito.Matchers
@@ -30,13 +31,14 @@ import scala.concurrent.Future
 class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val mockVatRegistrationService = mock[VatRegistrationService]
+
   implicit val materializer = app.materializer
 
   object TestSummaryController extends SummaryController(mockVatRegistrationService, ds) {
     override val authConnector = mockAuthConnector
   }
 
-  s"GET ${routes.SummaryController.show()}" should {
+  "Calling summary to show the summary page" should {
     "return HTML with a valid summary view" in {
       when(mockVatRegistrationService.getRegistrationSummary()(Matchers.any())).thenReturn(Future.successful(validSummaryView))
 
@@ -48,10 +50,9 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
           contentAsString(result) must include("Check your answers")
       }
     }
-  }
 
-  s"GET ${routes.SummaryController.show()}" should {
-    "return internal server error with an invalid summary view" in {
+    "return an Internal Server Error response when no valid model is returned from the microservice" in {
+      when(mockVatRegistrationService.getRegistrationSummary()(Matchers.any())).thenReturn(Future.failed(new InternalError()))
 
       callAuthorised(TestSummaryController.show, mockAuthConnector) {
         (response: Future[Result]) =>
@@ -59,5 +60,6 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       }
     }
   }
+
 
 }
