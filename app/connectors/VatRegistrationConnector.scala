@@ -28,18 +28,17 @@ import uk.gov.hmrc.play.http._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class RegistrationConnector extends VatRegistrationConnector with ServicesConfig {
+@ImplementedBy(classOf[VatRegistrationConnector])
+trait RegistrationConnector {
+  val vatRegUrl: String
+  val http: HttpGet with HttpPost with HttpPatch
+}
+
+class VatRegistrationConnector extends RegistrationConnector with ServicesConfig {
   //$COVERAGE-OFF$
   val vatRegUrl = baseUrl("vat-registration")
   val http = WSHttp
   //$COVERAGE-ON$
-}
-
-@ImplementedBy(classOf[RegistrationConnector])
-trait VatRegistrationConnector {
-
-  val vatRegUrl: String
-  val http: HttpGet with HttpPost with HttpPatch
 
   def createNewRegistration()(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[DownstreamOutcome.Value] = {
     http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/new") map {
@@ -86,3 +85,4 @@ trait VatRegistrationConnector {
     e
   }
 }
+

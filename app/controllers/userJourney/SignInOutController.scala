@@ -18,17 +18,15 @@ package controllers.userJourney
 
 import javax.inject.Inject
 
-import config.FrontendAuthConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.DownstreamOutcome
 import play.api.mvc.{Action, AnyContent, Request, Result}
-import services.VatRegistrationService
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import services.RegistrationService
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class SignInOutController @Inject()(vatRegistrationService: VatRegistrationService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class SignInOutController @Inject()(vatRegistrationService: RegistrationService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def postSignIn: Action[AnyContent] = authorised.async {
     implicit user =>

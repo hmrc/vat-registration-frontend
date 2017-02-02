@@ -16,10 +16,14 @@
 
 package controllers.userJourney
 
-import connectors.VatRegistrationConnector
+import enums.DownstreamOutcome
 import helpers.VatRegSpec
+import org.mockito.Matchers
+import org.mockito.Mockito._
 import play.api.test.Helpers._
 import services.VatRegistrationService
+
+import scala.concurrent.Future
 
 class SignInOutControllerSpec extends VatRegSpec {
 
@@ -32,6 +36,9 @@ class SignInOutControllerSpec extends VatRegSpec {
   "Post-sign-in" should {
 
     "redirect to start of the journey when authorized" in {
+      when(mockVatRegistrationService.assertRegistrationFootprint()(Matchers.any()))
+        .thenReturn(Future.successful(DownstreamOutcome.Success))
+
       callAuthorised(TestController.postSignIn, mockAuthConnector) {
         result =>
           status(result) mustBe SEE_OTHER

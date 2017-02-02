@@ -23,7 +23,7 @@ import org.joda.time.format.DateTimeFormat
 trait VatRegistrationFixture {
 
   val formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss")
-  val dateTime = formatter.parseDateTime("2017-01-11T15:10:12")
+  val dateTime = formatter.parseDateTime("01/11/2017 15:10:12")
 
   val validVatScheme = VatScheme(
     "VAT123456",
