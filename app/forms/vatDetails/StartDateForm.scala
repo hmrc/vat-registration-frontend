@@ -19,15 +19,16 @@ package forms.vatDetails
 import models.view.StartDate
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.data.validation.{Constraint, Constraints, Valid, ValidationError}
 
 object StartDateForm {
 
   val form = Form(
     mapping(
-      "startDate" -> nonEmptyText,
-      "startDate.year" -> optional(text),
-      "startDate.month" -> optional(text),
-      "startDate.day" -> optional(text)
+      "startDateRadio" -> nonEmptyText,
+      "year" -> optional(text),
+      "month" -> optional(text),
+      "day" -> optional(text)
     )(StartDate.apply)(StartDate.unapply)
   )
 }
