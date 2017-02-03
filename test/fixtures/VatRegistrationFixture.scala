@@ -24,13 +24,24 @@ trait VatRegistrationFixture {
 
   val IM_A_TEAPOT: Int = 418
 
-  val formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss")
-  val dateTime = formatter.parseDateTime("01/11/2017 15:10:12")
+  val validDateTime = {
+    val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
+    formatter.parseDateTime("17/02/01")
+  }
+
+  val validVatChoice = VatChoice(
+    validDateTime,
+    VatChoice.NECESSITY_VOLUNTARY
+  )
+
+  val validVatTradingDetails = VatTradingDetails(
+    "ACME INC"
+  )
 
   val validVatScheme = VatScheme(
     "VAT123456",
-    VatTradingDetails("ACME INC"),
-    VatChoice(dateTime, VatChoice.NECESSITY_VOLUNTARY)
+    validVatTradingDetails,
+    validVatChoice
   )
 
   lazy val validSummaryView = Summary(

@@ -16,14 +16,22 @@
 
 package models
 
+import fixtures.VatRegistrationFixture
 import models.view.StartDate
 import uk.gov.hmrc.play.test.UnitSpec
 
-class StartDateSpec extends UnitSpec {
+class StartDateSpec extends UnitSpec with VatRegistrationFixture {
 
   "empty" should {
     "create an empty StartDate model" in {
       StartDate.empty shouldBe StartDate("", None, None, None)
+    }
+  }
+
+  "toDate" should {
+    "convert a populated StartDate model to a DateTime" in {
+      val startDate: StartDate = StartDate(StartDate.FUTURE_DATE, Some("01"), Some("02"), Some("17"))
+      startDate.toDate shouldBe validDateTime
     }
   }
 
