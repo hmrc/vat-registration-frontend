@@ -90,7 +90,7 @@ class StartDateControllerSpec extends VatRegSpec {
         .thenReturn(Future.successful(returnCacheMap))
 
       AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "startDate" -> StartDate.WHEN_REGISTERED
+        "startDateRadio" -> StartDate.WHEN_REGISTERED
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
