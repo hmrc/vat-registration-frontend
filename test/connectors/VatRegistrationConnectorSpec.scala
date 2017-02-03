@@ -38,13 +38,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   implicit val hc = HeaderCarrier()
 
-  val badRequest = new BadRequestException(Status.BAD_REQUEST.toString)
-  val forbidden = Upstream4xxResponse(Status.FORBIDDEN.toString, Status.FORBIDDEN, Status.FORBIDDEN)
-  val upstream4xx = Upstream4xxResponse(IM_A_TEAPOT.toString, IM_A_TEAPOT, IM_A_TEAPOT)
-  val upstream5xx = Upstream5xxResponse(Status.INTERNAL_SERVER_ERROR.toString, Status.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR)
-  val notFound = new NotFoundException(Status.NOT_FOUND.toString)
-  val internalServiceException = new InternalServerException(Status.BAD_GATEWAY.toString)
-
   "Calling createNewRegistration" should {
     "return a successful outcome when the microservice successfully creates a new Vat Registration" in new Setup {
       mockHttpPOSTEmpty[HttpResponse]("tst-url", HttpResponse(Status.CREATED))

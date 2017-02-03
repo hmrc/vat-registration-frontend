@@ -19,10 +19,19 @@ package fixtures
 import models.api._
 import models.view.{Summary, SummaryRow, SummarySection}
 import org.joda.time.format.DateTimeFormat
+import play.api.http.Status
+import uk.gov.hmrc.play.http._
 
 trait VatRegistrationFixture {
 
   val IM_A_TEAPOT: Int = 418
+  val badRequest = new BadRequestException(Status.BAD_REQUEST.toString)
+  val forbidden = Upstream4xxResponse(Status.FORBIDDEN.toString, Status.FORBIDDEN, Status.FORBIDDEN)
+  val upstream4xx = Upstream4xxResponse(IM_A_TEAPOT.toString, IM_A_TEAPOT, IM_A_TEAPOT)
+  val upstream5xx = Upstream5xxResponse(Status.INTERNAL_SERVER_ERROR.toString, Status.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR)
+  val notFound = new NotFoundException(Status.NOT_FOUND.toString)
+  val internalServiceException = new InternalServerException(Status.BAD_GATEWAY.toString)
+  val runTimeException = new RuntimeException("tst")
 
   val validDateTime = {
     val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")

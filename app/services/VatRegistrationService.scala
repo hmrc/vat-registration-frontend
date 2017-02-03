@@ -27,6 +27,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Success
 
 @ImplementedBy(classOf[VatRegistrationService])
 trait RegistrationService {
@@ -45,7 +46,10 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
   override val keystoreConnector = KeystoreConnector
 
   def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] = {
-    vatRegConnector.createNewRegistration()
+    vatRegConnector.createNewRegistration().map { vatScheme =>
+      keystoreConnector.cache[String]("RegistrationId", vatScheme.id)
+    }
+    Future.successful(DownstreamOutcome.Success)
   }
 
   def submitVatChoice(startDate: StartDate)(implicit hc: HeaderCarrier): Future[VatChoice] = {

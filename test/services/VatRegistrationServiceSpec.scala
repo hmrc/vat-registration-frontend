@@ -17,6 +17,7 @@
 package services
 
 import connectors.VatRegistrationConnector
+import enums.DownstreamOutcome
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api.{VatChoice, VatScheme, VatTradingDetails}
@@ -33,27 +34,20 @@ import scala.concurrent.Future
 
 class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture {
 
-//  implicit val hc = HeaderCarrier()
-////  val mockRegConnector = mock[VatRegistrationConnector]
-//
-////  class Setup {
-////    val service = new VatRegistrationService(mockRegConnector)
-////  }
-//
-//  "Calling registrationToSummary converts a VatScheme API Model to a summary model with a valid details" should {
-//    "return success" in {
-//      vatRegistrationService.registrationToSummary(validVatScheme) mustBe validSummaryView
-//    }
-//  }
-//
-//  "Calling getRegistrationSummary" should {
-//    "return success" in {
-////      when(mockRegConnector.getRegistration(Matchers.any())(Matchers.any(), Matchers.any()))
-////        .thenReturn(Future.successful(validVatScheme))
-//
-//      vatRegistrationService.getRegistrationSummary()
-//    }
-//  }
+    implicit val hc = HeaderCarrier()
+    val mockRegConnector = mock[VatRegistrationConnector]
+
+    class Setup {
+      val service = new VatRegistrationService(mockRegConnector)
+    }
+
+  "Calling createNewRegistration" should {
+    "return a success response when the Registration is successfully created" in new Setup {
+      when(mockRegConnector.createNewRegistration()(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(validVatScheme))
+      service.assertRegistrationFootprint().map(_ mustBe DownstreamOutcome.Success)
+    }
+  }
 
 
 }
