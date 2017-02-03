@@ -17,7 +17,7 @@
 package fixtures
 
 import models.api._
-import models.view.{Summary, SummaryRow, SummarySection}
+import models.view._
 import org.joda.time.format.DateTimeFormat
 import play.api.http.Status
 import uk.gov.hmrc.play.http._
@@ -35,11 +35,15 @@ trait VatRegistrationFixture {
 
   val validDateTime = {
     val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
-    formatter.parseDateTime("17/02/01")
+    formatter.parseDateTime("01/02/17")
   }
 
+  val validStartDate = StartDate(StartDate.FUTURE_DATE, Some("01"), Some("02"), Some("17"))
+  val validTradingName = TradingName(TradingName.TRADING_NAME_YES, Some("ACME INC"))
+  val validRegId = "VAT123456"
+
   val validVatChoice = VatChoice(
-    validDateTime,
+    validStartDate.toDate,
     VatChoice.NECESSITY_VOLUNTARY
   )
 
@@ -48,7 +52,7 @@ trait VatRegistrationFixture {
   )
 
   val validVatScheme = VatScheme(
-    "VAT123456",
+    validRegId,
     validVatTradingDetails,
     validVatChoice
   )
@@ -70,7 +74,7 @@ trait VatRegistrationFixture {
       ),
       SummaryRow(
         id = "vatDetails.startDate",
-        answer = Right("1 February 2017"),
+        answer = Right("1 February 17"),
         changeLink = Some(controllers.userJourney.routes.StartDateController.show())
       )
     )
@@ -80,7 +84,7 @@ trait VatRegistrationFixture {
     id = "companyDetails",
     Seq(
       SummaryRow(
-        "vatDetails.tradingName",
+        "companyDetails.tradingName",
         Right("ACME INC"),
         Some(controllers.userJourney.routes.TradingNameController.show())
       )

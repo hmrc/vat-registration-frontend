@@ -30,8 +30,7 @@ class StartDateSpec extends UnitSpec with VatRegistrationFixture {
 
   "toDate" should {
     "convert a populated StartDate model to a DateTime" in {
-      val startDate: StartDate = StartDate(StartDate.FUTURE_DATE, Some("01"), Some("02"), Some("17"))
-      startDate.toDate shouldBe validDateTime
+      validStartDate.toDate shouldBe validDateTime
     }
   }
 

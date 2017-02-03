@@ -29,7 +29,7 @@ case class StartDate(dateType: String,
     val d = day.getOrElse("")
     val m = month.getOrElse("")
     val y = year.getOrElse("")
-    s"$d/$m/$y"
+    s"$y/$m/$d"
   }
 
   def toDate: DateTime = {
