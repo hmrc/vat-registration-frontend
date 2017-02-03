@@ -22,6 +22,8 @@ import org.joda.time.format.DateTimeFormat
 
 trait VatRegistrationFixture {
 
+  val IM_A_TEAPOT: Int = 418
+
   val formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss")
   val dateTime = formatter.parseDateTime("01/11/2017 15:10:12")
 
