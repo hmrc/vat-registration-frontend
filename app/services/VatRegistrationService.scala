@@ -108,7 +108,7 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
 
     def getStartDate: SummaryRow = {
       SummaryRow("vatDetails.startDate",
-        Right(vatChoice.startDate.toString("d M y")),
+        Right(vatChoice.startDate.toString("d MMMM y")),
         Some(controllers.userJourney.routes.StartDateController.show())
       )
     }
