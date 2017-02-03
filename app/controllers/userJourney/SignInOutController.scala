@@ -36,10 +36,9 @@ class SignInOutController @Inject()(vatRegistrationService: RegistrationService,
         }
   }
 
-  private def assertVatRegistrationFootprint(f: => Result)(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[Result] = {
+  def assertVatRegistrationFootprint(f: => Result)(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[Result] = {
     vatRegistrationService.assertRegistrationFootprint() map {
       case DownstreamOutcome.Success => f
-      case DownstreamOutcome.Failure => InternalServerError(views.html.pages.error.restart())
     }
   }
 

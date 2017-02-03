@@ -16,6 +16,8 @@
 
 package connectors
 
+import javax.inject.Singleton
+
 import com.google.inject.ImplementedBy
 import config.WSHttp
 import enums.DownstreamOutcome
@@ -24,26 +26,33 @@ import play.api.Logger
 import play.api.http.Status
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.play.http.ws.WSHttp
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@ImplementedBy(classOf[VatRegistrationConnector])
-trait RegistrationConnector {
-  val vatRegUrl: String
-  val http: HttpGet with HttpPost with HttpPatch
-}
-
+@Singleton
 class VatRegistrationConnector extends RegistrationConnector with ServicesConfig {
   //$COVERAGE-OFF$
   val vatRegUrl = baseUrl("vat-registration")
-  val http = WSHttp
+  val http: WSHttp = WSHttp
   //$COVERAGE-ON$
+}
+
+@ImplementedBy(classOf[VatRegistrationConnector])
+trait RegistrationConnector {
+  val vatRegUrl: String
+  val http: WSHttp
 
   def createNewRegistration()(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[DownstreamOutcome.Value] = {
     http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/new") map {
-      response => response.status match {
-        case Status.CREATED => DownstreamOutcome.Success
+      response =>
+        response.status match {
+        case Status.CREATED =>
+          DownstreamOutcome.Success
+        case _ =>
+            val test = "test"
+          DownstreamOutcome.Failure
       }
     } recover {
       case e: Exception => logResponse(e, "createNewRegistration", "creating new registration")
@@ -85,4 +94,5 @@ class VatRegistrationConnector extends RegistrationConnector with ServicesConfig
     e
   }
 }
+
 

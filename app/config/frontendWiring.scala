@@ -28,9 +28,13 @@ object FrontendAuditConnector extends Auditing with AppName with RunMode {
   override lazy val auditingConfig = LoadAuditingConfig(s"$env.auditing")
 }
 
-object WSHttp extends WSGet with WSPut with WSPost with WSDelete with WSPatch with AppName with RunMode {
+object WSHttp extends WSHttp with AppName with RunMode {
   override val hooks = NoneRequired
 }
+
+//object WSHttp extends WSHttp { // with AppName with RunMode {
+//  override val hooks = NoneRequired
+//}
 
 object FrontendAuthConnector extends AuthConnector with ServicesConfig {
   val serviceUrl = baseUrl("auth")
