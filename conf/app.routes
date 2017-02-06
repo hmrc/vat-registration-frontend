@@ -11,11 +11,12 @@ GET         /start-date             controllers.userJourney.StartDateController.
 POST        /start-date             controllers.userJourney.StartDateController.submit
 
 ## TRADING NAME PAGE
-GET         /trading-name             controllers.userJourney.TradingNameController.show
-POST        /trading-name             controllers.userJourney.TradingNameController.submit
+GET         /trading-name           controllers.userJourney.TradingNameController.show
+POST        /trading-name           controllers.userJourney.TradingNameController.submit
 
 ## TAXABLE TURNOVER PAGE
 GET         /taxable-turnover       controllers.userJourney.TaxableTurnoverController.show
+POST        /taxable-turnover       controllers.userJourney.TaxableTurnoverController.submit
 
 ## FEEDBACK
 GET         /feedback               controllers.feedback.FeedbackController.show

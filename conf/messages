@@ -60,8 +60,17 @@ pages.tradingName.validation.invalid.tradingName    = Please enter a valid tradi
 pages.tradingName.validation.empty.tradingName      = Please enter a trading name
 
 ## Taxable Turnover Page
-pages.taxable.turnover.title    = Before you register for VAT
-pages.taxable.turnover.heading  = Do you expect the company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered with Companies House?
+pages.taxable.turnover.title                            = Before you register for VAT
+pages.taxable.turnover.heading                          = Do you want to register voluntarily for VAT?
+pages.taxable.turnover.para1                            = You can register for VAT if your taxable turnover is less than £83,000, unless everything you sell is <a href="https://www.gov.uk/vat-businesses/when-not-to-charge-vat">exempt from VAT</a>.
+pages.taxable.turnover.vatVoluntarily.title             = Find out more about voluntary VAT registration
+pages.taxable.turnover.vatVoluntarily.para1             = If you''re registered for VAT you:
+pages.taxable.turnover.vatVoluntarily.bullet.charge     = can <a href="https://www.gov.uk/vat-businesses/how-vat-works">charge VAT</a> on the goods or services you sell
+pages.taxable.turnover.vatVoluntarily.bullet.reclaim    = can <a href="https://www.gov.uk/reclaim-vat">reclaim VAT</a> on your business-related purchases
+pages.taxable.turnover.vatVoluntarily.para2             = VAT-registered companies can appear larger and more established to customers. However, if your customers aren''t VAT registered (and they can''t reclaim VAT) your increased prices may appear too high.
+pages.taxable.turnover.vatVoluntarily.para3             = You can cancel your VAT registration at any time if it turns out to be the wrong decision.
+
+
 
 ## Summary Page
 pages.summary.title                                     = Summary
