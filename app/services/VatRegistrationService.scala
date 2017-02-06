@@ -16,61 +16,110 @@
 
 package services
 
+import javax.inject.Inject
 import com.google.inject.ImplementedBy
-import models.api.{VatDetails, VatRegistration => VatRegistrationAPI}
-import models.view.{Summary, SummaryRow, SummarySection}
-
-import scala.concurrent.{ExecutionContext, Future}
+import connectors.{KeystoreConnector, VatRegistrationConnector}
+import enums.DownstreamOutcome
+import models.api.{VatChoice, VatScheme, VatTradingDetails}
+import models.view._
+import uk.gov.hmrc.play.http.HeaderCarrier
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @ImplementedBy(classOf[VatRegistrationService])
 trait RegistrationService {
 
-  def getRegistrationSummary()(implicit executionContext: ExecutionContext): Future[Option[Summary]]
+  def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value]
+  def submitVatChoice(startDate: StartDate)(implicit hc: HeaderCarrier): Future[VatChoice]
+  def submitTradingDetails(tradingName: TradingName)(implicit hc: HeaderCarrier): Future[VatTradingDetails]
+  def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary]
 
 }
 
-class VatRegistrationService extends RegistrationService {
+class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector)
+  extends RegistrationService
+  with CommonService {
 
-  override def getRegistrationSummary()(implicit ec: ExecutionContext): Future[Option[Summary]] = {
-    Future.successful(
-      Option(
-        registrationToSummary(
-          new VatRegistrationAPI("VAT123456", "2017-01-11T15:10:12",
-            new VatDetails(Option("No"), Option("Yes"), Option("1 February 2017")))
-        )
+  override val keystoreConnector: KeystoreConnector = KeystoreConnector
+
+  def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] = {
+    for {
+      vatScheme <- vatRegConnector.createNewRegistration()
+      cache <- keystoreConnector.cache[String]("RegistrationId", vatScheme.id)
+    } yield DownstreamOutcome.Success
+  }
+
+  def submitVatChoice(startDate: StartDate)(implicit hc: HeaderCarrier): Future[VatChoice] = {
+    for {
+      regId <- fetchRegistrationId
+      response <- vatRegConnector.upsertVatChoice(regId, viewModelToVatChoice(startDate))
+    } yield response
+  }
+
+  def submitTradingDetails(tradingName: TradingName)(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
+    for {
+      regId <- fetchRegistrationId
+      response <- vatRegConnector.upsertVatTradingDetails(regId, viewModelToTradingDetails(tradingName))
+    } yield response
+  }
+
+  private[services] def viewModelToVatChoice(startDate: StartDate): VatChoice = VatChoice(
+      startDate = startDate.toDate,
+      necessity = VatChoice.NECESSITY_VOLUNTARY // Until we play the 83k threshold story
+    )
+
+  private[services] def viewModelToTradingDetails(tradingName: TradingName): VatTradingDetails =
+    VatTradingDetails(tradingName.toString)
+
+  def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
+    for {
+      regId <- fetchRegistrationId
+      response <- vatRegConnector.getRegistration(regId)
+    } yield registrationToSummary(response)
+
+  def registrationToSummary(vatScheme: VatScheme): Summary = Summary(
+      Seq(
+        getVatDetailsSection(vatScheme.vatChoice),
+        getCompanyDetailsSection(vatScheme.tradingDetails)
+      )
+    )
+
+  private def getVatDetailsSection(vatChoice: VatChoice) = {
+
+    def getRegisterVoluntarily: SummaryRow = SummaryRow(
+        "vatDetails.registerVoluntarily",
+        vatChoice.necessity match {
+          case VatChoice.NECESSITY_VOLUNTARY => Right("Yes")
+          case _ => Left("No")
+        },
+        Some(controllers.userJourney.routes.SummaryController.show())
+      )
+
+    def getStartDate: SummaryRow = SummaryRow(
+        "vatDetails.startDate",
+        Right(vatChoice.startDate.toString("d MMMM y")),
+        Some(controllers.userJourney.routes.StartDateController.show())
+      )
+
+    SummarySection(
+      id = "vatDetails",
+      Seq(
+        getRegisterVoluntarily,
+        getStartDate
       )
     )
   }
 
-  def registrationToSummary(apiModel: VatRegistrationAPI): Summary = {
-    Summary(
-      Seq(SummarySection(
-        id = "vatDetails",
-        Seq(SummaryRow(
-          id = "vatDetails.taxableTurnover",
-          answer = apiModel.vatDetails.taxableTurnover match {
-            case Some(name) => Right(name)
-          },
-          changeLink = Some(controllers.userJourney.routes.TaxableTurnoverController.show())
-        ),
-          SummaryRow(
-            id = "vatDetails.registerVoluntarily",
-            answer = apiModel.vatDetails.registerVoluntarily match {
-              case Some(name) => Right(name)
-            },
-            changeLink = Some(controllers.userJourney.routes.SummaryController.show())
-          ),
-          SummaryRow(
-            id = "vatDetails.startDate",
-            answer = apiModel.vatDetails.startDate match {
-              case Some(name) => Right(name)
-            },
-            changeLink = Some(controllers.userJourney.routes.StartDateController.show())
-          )
-        )
-      ))
+  private def getCompanyDetailsSection(vatTradingDetails: VatTradingDetails) = SummarySection(
+    id = "companyDetails",
+    Seq(
+      SummaryRow(
+        "companyDetails.tradingName",
+        Right(vatTradingDetails.tradingName),
+        Some(controllers.userJourney.routes.TradingNameController.show())
+      )
     )
-  }
+  )
 }
 
 

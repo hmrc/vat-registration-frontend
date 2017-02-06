@@ -16,8 +16,14 @@
 
 package controllers.userJourney
 
+import enums.DownstreamOutcome
 import helpers.VatRegSpec
+import org.mockito.Matchers
+import org.mockito.Mockito._
 import play.api.test.Helpers._
+import services.VatRegistrationService
+
+import scala.concurrent.Future
 
 class SignInOutControllerSpec extends VatRegSpec {
 

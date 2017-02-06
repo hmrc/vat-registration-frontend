@@ -18,17 +18,19 @@ package controllers.userJourney
 
 import javax.inject.Inject
 
-import config.FrontendAuthConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import enums.DownstreamOutcome
+import play.api.mvc.{Action, AnyContent, Request, Result}
+import services.RegistrationService
+import uk.gov.hmrc.play.http.HeaderCarrier
+
+import scala.concurrent.Future
 
 class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def postSignIn: Action[AnyContent] = authorised {
     implicit user =>
       implicit request =>
-        Redirect(controllers.userJourney.routes.WelcomeController.start())
+          Redirect(controllers.userJourney.routes.WelcomeController.start())
   }
-
 }

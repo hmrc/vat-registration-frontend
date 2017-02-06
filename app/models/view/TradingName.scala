@@ -20,6 +20,8 @@ import play.api.libs.json.Json
 
 case class TradingName(yesNo: String,
                        tradingName: Option[String]) {
+
+  override def toString: String = tradingName.getOrElse("")
 }
 
 object TradingName {

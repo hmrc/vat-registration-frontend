@@ -18,7 +18,6 @@ package services
 
 import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, S4LConnector}
-import controllers.userJourney.StartDateController
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
@@ -33,14 +32,14 @@ trait S4LService extends CommonService {
 
   def saveForm[T](formId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
     for {
-      regId    <- fetchRegistrationID
+      regId    <- fetchRegistrationId
       cacheMap <- s4LConnector.saveForm[T](regId, formId, data)
     } yield cacheMap
   }
 
   def fetchAndGet[T](formId: String)(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] = {
     for {
-      regId <- fetchRegistrationID
+      regId <- fetchRegistrationId
       data  <- s4LConnector.fetchAndGet[T](regId, formId)
     } yield data
   }
@@ -48,14 +47,14 @@ trait S4LService extends CommonService {
 
   def clear()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     for {
-      regId <- fetchRegistrationID
+      regId <- fetchRegistrationId
       resp <- s4LConnector.clear(regId)
     } yield resp
   }
 
   def fetchAll()(implicit hc: HeaderCarrier): Future[Option[CacheMap]] = {
     for {
-      regId <- fetchRegistrationID
+      regId <- fetchRegistrationId
       cacheMap <- s4LConnector.fetchAll(regId)
     } yield cacheMap
   }
