@@ -33,14 +33,14 @@ import scala.concurrent.Future
 
 class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture {
 
-    implicit val hc = HeaderCarrier()
-    val mockRegConnector = mock[VatRegistrationConnector]
+  implicit val hc = HeaderCarrier()
+  val mockRegConnector = mock[VatRegistrationConnector]
 
-    class Setup {
-      val service = new VatRegistrationService(mockRegConnector) {
-        override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-      }
+  class Setup {
+    val service = new VatRegistrationService(mockRegConnector) {
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
+  }
 
   "Calling createNewRegistration" should {
     "return a success response when the Registration is successfully created" in new Setup {

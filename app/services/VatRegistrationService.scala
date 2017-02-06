@@ -17,17 +17,14 @@
 package services
 
 import javax.inject.Inject
-
 import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.DownstreamOutcome
 import models.api.{VatChoice, VatScheme, VatTradingDetails}
 import models.view._
 import uk.gov.hmrc.play.http.HeaderCarrier
-
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.Success
+import scala.concurrent.Future
 
 @ImplementedBy(classOf[VatRegistrationService])
 trait RegistrationService {
