@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package common.exceptions
+package enums
 
-object DownstreamExceptions extends DownstreamExceptions
+object DownstreamOutcome extends Enumeration {
 
-trait DownstreamExceptions {
+  val Success = Value
+  val Failure  = Value
 
-  class RegistrationIdNotFoundException extends Exception
 }

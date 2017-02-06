@@ -16,14 +16,17 @@
 
 package models.api
 
-import play.api.libs.json.Json
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-case class VatRegistration(
-                            registrationID: String,
-                            formCreationTimestamp: String,
-                            vatDetails: VatDetails
-                          )
+case class VatTradingDetails(tradingName: String)
 
-object VatRegistration {
-  implicit val format = Json.format[VatRegistration]
+object VatTradingDetails {
+  val apiReads: Reads[VatTradingDetails] =
+    (__ \ "trading-name").read[String].map(VatTradingDetails(_))
+
+  val apiWrites: Writes[VatTradingDetails] =
+    (__ \ "trading-name").write[String].contramap(_.tradingName)
+
+  implicit val format = Format(apiReads, apiWrites)
 }

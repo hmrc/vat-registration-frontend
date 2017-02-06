@@ -17,7 +17,7 @@
 package services
 
 import fixtures.{S4LFixture, VatRegistrationFixture}
-import models.view.{StartDate => StartDateView}
+import models.view.StartDate
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -33,26 +33,30 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
 
   implicit val hc = new HeaderCarrier()
 
-  val tstStartDateModel = StartDateView("", None, None, None)
+  val tstStartDateModel = StartDate("", None, None, None)
 
   "S4L Service" should {
 
     "save a form with the correct key" in new Setup {
-      mockS4LSaveForm[StartDateView]("startDate", CacheMap("s-date", Map.empty))
-      await(service.saveForm[StartDateView]("startDate", tstStartDateModel)).id shouldBe "s-date"
+      mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
+      mockS4LSaveForm[StartDate]("startDate", CacheMap("s-date", Map.empty))
+      await(service.saveForm[StartDate]("startDate", tstStartDateModel)).id shouldBe "s-date"
     }
 
     "fetch a form with the correct key" in new Setup {
-      mockS4LFetchAndGet[StartDateView]("startDate2", Some(tstStartDateModel))
-      await(service.fetchAndGet[StartDateView]("startDate2")) shouldBe Some(tstStartDateModel)
+      mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
+      mockS4LFetchAndGet[StartDate]("startDate2", Some(tstStartDateModel))
+      await(service.fetchAndGet[StartDate]("startDate2")) shouldBe Some(tstStartDateModel)
     }
 
     "clear down S4L data" in new Setup {
+      mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
       mockS4LClear()
       await(service.clear()).status shouldBe 200
     }
 
     "fetch all data" in new Setup {
+      mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
       mockS4LFetchAll(Some(CacheMap("allData", Map.empty)))
       await(service.fetchAll()) shouldBe Some(CacheMap("allData", Map.empty))
     }

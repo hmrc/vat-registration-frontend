@@ -16,54 +16,73 @@
 
 package services
 
+import connectors.{KeystoreConnector, VatRegistrationConnector}
+import enums.DownstreamOutcome
+import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{VatDetails, VatRegistration => VatRegistrationAPI}
-import models.view.{Summary, SummaryRow, SummarySection}
+import models.api.{VatChoice, VatTradingDetails}
+import org.mockito.Matchers
+import org.mockito.Mockito._
+import org.scalatest.concurrent.ScalaFutures
+import play.api.libs.json.Format
+import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-class VatRegistrationServiceSpec extends VatRegSpec {
+class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val apiRegistration = VatRegistrationAPI(
-    registrationID = "VAT123456",
-    formCreationTimestamp = "2017-01-11T15:10:12",
-    vatDetails = VatDetails(
-      taxableTurnover = Some("No"),
-      registerVoluntarily = Some("Yes"),
-      startDate = Some("1 February 2017")
-    )
-  )
+  implicit val hc = HeaderCarrier()
+  val mockRegConnector = mock[VatRegistrationConnector]
 
-  lazy val summary = Summary(
-    Seq(SummarySection(
-      id = "vatDetails",
-      Seq(SummaryRow(
-        id = "vatDetails.taxableTurnover",
-        answer = Right("No"),
-        changeLink = Some(controllers.userJourney.routes.TaxableTurnoverController.show())
-      ),
-        SummaryRow(
-          id = "vatDetails.registerVoluntarily",
-          answer = Right("Yes"),
-          changeLink = Some(controllers.userJourney.routes.SummaryController.show())
-        ),
-        SummaryRow(
-          id = "vatDetails.startDate",
-          answer = Right("1 February 2017"),
-          changeLink = Some(controllers.userJourney.routes.StartDateController.show())
-        ))
-    ))
-  )
-
-  "convert a VAT Registration API Model to a summary model with VAT details" should {
-    "return success" in {
-      vatRegistrationService.registrationToSummary(apiRegistration) mustBe summary
+  class Setup {
+    val service = new VatRegistrationService(mockRegConnector) {
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
 
-  "get a registration summary" should {
-    "return success" in {
-      vatRegistrationService.getRegistrationSummary()
+  "Calling createNewRegistration" should {
+    "return a success response when the Registration is successfully created" in new Setup {
+      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+      when(mockRegConnector.createNewRegistration()(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(validVatScheme))
+
+      ScalaFutures.whenReady(service.assertRegistrationFootprint())(_ mustBe DownstreamOutcome.Success)
+    }
+  }
+
+  "Calling submitVatChoice" should {
+    "return a success response when a VatChoice is submitted" in new Setup {
+      mockFetchRegId(validRegId)
+      when(mockRegConnector.upsertVatChoice(Matchers.any(), Matchers.any())
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatChoice))
+
+      ScalaFutures.whenReady(service.submitVatChoice(validStartDate))(_ mustBe validVatChoice)
+    }
+  }
+
+  "Calling submitTradingDetails" should {
+    "return a success response when VatTradingDetails is submitted" in new Setup {
+      mockFetchRegId(validRegId)
+      when(mockRegConnector.upsertVatTradingDetails(Matchers.any(), Matchers.any())
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatTradingDetails))
+      ScalaFutures.whenReady(service.submitTradingDetails(validTradingName))(_ mustBe validVatTradingDetails)
+    }
+  }
+
+  "Calling registrationToSummary" should {
+    "convert a VAT Registration API Model to a summary model" in new Setup {
+      service.registrationToSummary(validVatScheme) mustBe validSummaryView
+    }
+  }
+
+  "Calling getRegistrationSummary" should {
+    "return a defined Summary when the connector returns a valid VAT Registration response" in new Setup {
+      mockFetchRegId(validRegId)
+      when(mockRegConnector.getRegistration(Matchers.contains(validRegId))
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatScheme))
+      ScalaFutures.whenReady(service.getRegistrationSummary())(_ mustBe validSummaryView)
     }
   }
 

@@ -18,11 +18,7 @@ package models.view
 
 import play.api.mvc.Call
 
-case class Summary(
-                    sections: Seq[SummarySection]
-                  ) {
-
-}
+case class Summary(sections: Seq[SummarySection])
 
 case class SummarySection(
                            id: String,
