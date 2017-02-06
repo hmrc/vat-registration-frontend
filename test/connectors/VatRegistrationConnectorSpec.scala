@@ -40,39 +40,35 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   "Calling createNewRegistration" should {
     "return a successful outcome when the microservice successfully creates a new Vat Registration" in new Setup {
-      mockHttpPOSTEmpty[HttpResponse]("tst-url", HttpResponse(Status.CREATED))
-      connector.createNewRegistration().map(_ mustBe DownstreamOutcome.Success)
-    }
-    "return a failed outcome when the microservice returns a 2xx response other than CREATED" in new Setup {
-      mockHttpPOSTEmpty[HttpResponse]("tst-url", HttpResponse(Status.ACCEPTED))
-      connector.createNewRegistration().map(_ mustBe DownstreamOutcome.Failure)
+      mockHttpPOSTEmpty[VatScheme]("tst-url", validNewVatScheme)
+      ScalaFutures.whenReady(connector.createNewRegistration())(_ mustBe validNewVatScheme)
     }
     "return a Bad Request response" in new Setup {
       mockHttpFailedPOSTEmpty[HttpResponse]("tst-url", badRequest)
-      connector.createNewRegistration().map(_ mustBe DownstreamOutcome.Failure)
+      ScalaFutures.whenReady(connector.createNewRegistration().failed)(_ mustBe badRequest)
     }
     "return a Forbidden response" in new Setup {
       mockHttpFailedPOSTEmpty[HttpResponse]("tst-url", forbidden)
-      connector.createNewRegistration().map(_ mustBe DownstreamOutcome.Failure)
+      ScalaFutures.whenReady(connector.createNewRegistration().failed)(_ mustBe forbidden)
     }
     "return an Upstream4xxResponse" in new Setup {
       mockHttpFailedPOSTEmpty[HttpResponse]("tst-url", upstream4xx)
-      connector.createNewRegistration().map(_ mustBe DownstreamOutcome.Failure)
+      ScalaFutures.whenReady(connector.createNewRegistration().failed)(_ mustBe upstream4xx)
     }
     "return Upstream5xxResponse" in new Setup {
       mockHttpFailedPOSTEmpty[HttpResponse]("tst-url", upstream5xx)
-      connector.createNewRegistration().map(_ mustBe DownstreamOutcome.Failure)
+      ScalaFutures.whenReady(connector.createNewRegistration().failed)(_ mustBe upstream5xx)
     }
     "return a Internal Server Error" in new Setup {
       mockHttpFailedPOSTEmpty[HttpResponse]("tst-url", internalServiceException)
-      connector.createNewRegistration().map(_ mustBe DownstreamOutcome.Failure)
+      ScalaFutures.whenReady(connector.createNewRegistration().failed)(_ mustBe internalServiceException)
     }
   }
 
   "Calling getRegistration" should {
     "return the correct VatResponse when the microservice returns a Vat Registration model" in new Setup {
       mockHttpGET[VatScheme]("tst-url", validVatScheme)
-      connector.getRegistration("tstID").map(_ mustBe validVatScheme)
+      ScalaFutures.whenReady(connector.getRegistration("tstID"))(_ mustBe validVatScheme)
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
       mockHttpFailedGET[VatScheme]("tst-url", forbidden)
@@ -91,7 +87,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   "Calling upsertVatChoice" should {
     "return the correct VatResponse when the microservice completes and returns a VatChoice model" in new Setup {
       mockHttpPATCH[VatChoice, VatChoice]("tst-url", validVatChoice)
-      connector.upsertVatChoice("tstID", validVatChoice).map(_ mustBe validVatChoice)
+      ScalaFutures.whenReady(connector.upsertVatChoice("tstID", validVatChoice))(_ mustBe validVatChoice)
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH[VatChoice, VatChoice]("tst-url", forbidden)
@@ -110,7 +106,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   "Calling upsertVatTradingDetails" should {
     "return the correct VatResponse when the microservice completes and returns a VatTradingDetails model" in new Setup {
       mockHttpPATCH[VatTradingDetails, VatTradingDetails]("tst-url", validVatTradingDetails)
-      connector.upsertVatTradingDetails("tstID", validVatTradingDetails).map(_ mustBe validVatTradingDetails)
+      ScalaFutures.whenReady(connector.upsertVatTradingDetails("tstID", validVatTradingDetails))(_ mustBe validVatTradingDetails)
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH[VatTradingDetails, VatTradingDetails]("tst-url", forbidden)

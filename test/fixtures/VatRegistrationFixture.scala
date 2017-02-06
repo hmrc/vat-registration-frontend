@@ -51,6 +51,8 @@ trait VatRegistrationFixture {
     "ACME INC"
   )
 
+  val validNewVatScheme = VatScheme.blank(validRegId)
+
   val validVatScheme = VatScheme(
     validRegId,
     validVatTradingDetails,

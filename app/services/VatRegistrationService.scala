@@ -66,37 +66,30 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
     } yield response
   }
 
-  private[services] def viewModelToVatChoice(startDate: StartDate): VatChoice = {
-    VatChoice(
+  private[services] def viewModelToVatChoice(startDate: StartDate): VatChoice = VatChoice(
       startDate = startDate.toDate,
       necessity = VatChoice.NECESSITY_VOLUNTARY // Until we play the 83k threshold story
     )
-  }
 
-  private[services] def viewModelToTradingDetails(tradingName: TradingName): VatTradingDetails = {
+  private[services] def viewModelToTradingDetails(tradingName: TradingName): VatTradingDetails =
     VatTradingDetails(tradingName.toString)
-  }
 
-  def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] = {
+  def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
     for {
       regId <- fetchRegistrationId
       response <- vatRegConnector.getRegistration(regId)
     } yield registrationToSummary(response)
-  }
 
-  def registrationToSummary(vatScheme: VatScheme): Summary = {
-    Summary(
+  def registrationToSummary(vatScheme: VatScheme): Summary = Summary(
       Seq(
         getVatDetailsSection(vatScheme.vatChoice),
         getCompanyDetailsSection(vatScheme.tradingDetails)
       )
     )
-  }
 
   private def getVatDetailsSection(vatChoice: VatChoice) = {
 
-    def getRegisterVoluntarily: SummaryRow = {
-      SummaryRow(
+    def getRegisterVoluntarily: SummaryRow = SummaryRow(
         "vatDetails.registerVoluntarily",
         vatChoice.necessity match {
           case VatChoice.NECESSITY_VOLUNTARY => Right("Yes")
@@ -104,14 +97,12 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
         },
         Some(controllers.userJourney.routes.SummaryController.show())
       )
-    }
 
-    def getStartDate: SummaryRow = {
-      SummaryRow("vatDetails.startDate",
+    def getStartDate: SummaryRow = SummaryRow(
+        "vatDetails.startDate",
         Right(vatChoice.startDate.toString("d MMMM y")),
         Some(controllers.userJourney.routes.StartDateController.show())
       )
-    }
 
     SummarySection(
       id = "vatDetails",
