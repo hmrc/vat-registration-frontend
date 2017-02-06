@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.VatRegistrationConnector
+import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.DownstreamOutcome
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
@@ -24,6 +24,8 @@ import models.api.{VatChoice, VatTradingDetails}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
+import play.api.libs.json.Format
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,27 +37,34 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     val mockRegConnector = mock[VatRegistrationConnector]
 
     class Setup {
-      val service = new VatRegistrationService(mockRegConnector)
+      val service = new VatRegistrationService(mockRegConnector) {
+        override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      }
     }
 
   "Calling createNewRegistration" should {
     "return a success response when the Registration is successfully created" in new Setup {
+      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
       when(mockRegConnector.createNewRegistration()(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
+
       ScalaFutures.whenReady(service.assertRegistrationFootprint())(_ mustBe DownstreamOutcome.Success)
     }
   }
 
   "Calling submitVatChoice" should {
     "return a success response when a VatChoice is submitted" in new Setup {
+      mockFetchRegId(validRegId)
       when(mockRegConnector.upsertVatChoice(Matchers.any(), Matchers.any())
       (Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatChoice))
+
       ScalaFutures.whenReady(service.submitVatChoice(validStartDate))(_ mustBe validVatChoice)
     }
   }
 
   "Calling submitTradingDetails" should {
     "return a success response when VatTradingDetails is submitted" in new Setup {
+      mockFetchRegId(validRegId)
       when(mockRegConnector.upsertVatTradingDetails(Matchers.any(), Matchers.any())
       (Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatTradingDetails))
       ScalaFutures.whenReady(service.submitTradingDetails(validTradingName))(_ mustBe validVatTradingDetails)
@@ -70,7 +79,8 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
   "Calling getRegistrationSummary" should {
     "return a defined Summary when the connector returns a valid VAT Registration response" in new Setup {
-      when(mockRegConnector.getRegistration(Matchers.any())
+      mockFetchRegId(validRegId)
+      when(mockRegConnector.getRegistration(Matchers.contains(validRegId))
       (Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatScheme))
       ScalaFutures.whenReady(service.getRegistrationSummary())(_ mustBe validSummaryView)
     }

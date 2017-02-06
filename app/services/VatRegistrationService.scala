@@ -43,13 +43,13 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
   extends RegistrationService
   with CommonService {
 
-  override val keystoreConnector = KeystoreConnector
+  override val keystoreConnector: KeystoreConnector = KeystoreConnector
 
   def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] = {
-    vatRegConnector.createNewRegistration().map { vatScheme =>
-      keystoreConnector.cache[String]("RegistrationId", vatScheme.id)
-    }
-    Future.successful(DownstreamOutcome.Success)
+    for {
+      vatScheme <- vatRegConnector.createNewRegistration()
+      cache <- keystoreConnector.cache[String]("RegistrationId", vatScheme.id)
+    } yield DownstreamOutcome.Success
   }
 
   def submitVatChoice(startDate: StartDate)(implicit hc: HeaderCarrier): Future[VatChoice] = {

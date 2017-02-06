@@ -26,20 +26,11 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class SignInOutController @Inject()(vatRegistrationService: RegistrationService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
-  def postSignIn: Action[AnyContent] = authorised.async {
+  def postSignIn: Action[AnyContent] = authorised {
     implicit user =>
       implicit request =>
-        assertVatRegistrationFootprint {
           Redirect(controllers.userJourney.routes.WelcomeController.start())
-        }
   }
-
-  def assertVatRegistrationFootprint(f: => Result)(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[Result] = {
-    vatRegistrationService.assertRegistrationFootprint() map {
-      case DownstreamOutcome.Success => f
-    }
-  }
-
 }
