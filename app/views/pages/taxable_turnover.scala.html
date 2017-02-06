@@ -1,44 +1,56 @@
-@()(implicit request: Request[_], messages: Messages)
+@import models.view.TaxableTurnover
+@(taxableTurnoverForm:  Form[TaxableTurnover])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 
 @main_template(title = messages("pages.taxable.turnover.title")) {
 
-  <div class="grid-row">
-    <div class="column-two-thirds">
+  <div class="column-one-third">
 
       <h1 class="form-title heading-large" id="pageHeading">@messages("pages.taxable.turnover.heading")</h1>
+      <p>@Html(Messages("pages.taxable.turnover.para1"))</p>
 
-      <div class="form-group">
-        <fieldset class="inline">
-
-          <legend class="visuallyhidden">Do you expect your company's taxable turnover to be more than £83,000 in the 30 days after it's registered?</legend>
-
-          <label class="block-label" data-target="example-ni-no" for="radio-indent-1">
-            <input id="radio-indent-1" type="radio" name="q1" value="Yes" aria-controls="example-ni-no">Yes
-          </label>
-
-          <label class="block-label" data-target="example-ni-yes" for="radio-indent-2">
-            <input id="radio-indent-2" type="radio" name="q1" value="No" aria-controls="example-ni-yes">No
-          </label>
-        </fieldset>
-      </div>
 
       <div class="form-group">
         <details role="group">
-          <summary role="button" aria-controls="details-content-0" aria-expanded="false">
-            <span class="summary">What is 'VAT taxable turnover'?</span>
-          </summary>
-          <div class="panel panel-border-narrow" id="details-content-0" aria-hidden="true">
+          <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
+            @messages("pages.taxable.turnover.vatVoluntarily.title")
+          </span></summary>
+            <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
+            <p> @messages("pages.taxable.turnover.vatVoluntarily.para1")</p>
 
-            <p>VAT taxable turnover is the total value of everything you sell that isn't <a href="https://www.gov.uk/vat-businesses/when-not-to-charge-vatexempt from VAT">exempt from VAT</a>.</p>
+            <ul class="list list-bullet">
+              <li>@Html(Messages("pages.taxable.turnover.vatVoluntarily.bullet.charge"))</li>
+              <li>@Html(Messages("pages.taxable.turnover.vatVoluntarily.bullet.reclaim"))</li>
+            </ul>
+
+            <p>@messages("pages.taxable.turnover.vatVoluntarily.para2")</p>
+            <p>@messages("pages.taxable.turnover.vatVoluntarily.para3")</p>
           </div>
         </details>
+      </div>
+
+      @govHelpers.form(action = controllers.userJourney.routes.TaxableTurnoverController.submit()) {
+      <div class="form-group">
+        <fieldset class="inline">
+
+          @govHelpers.inputRadioGroup(
+            field = taxableTurnoverForm("turnoverRadio"),
+            Seq(
+              TaxableTurnover.TURNOVER_YES -> Messages("app.common.yes"),
+              TaxableTurnover.TURNOVER_NO -> Messages("app.common.no")
+            ),
+            '_labelAfter -> true,
+            '_labelClass -> "block-label"
+          )
+        </fieldset>
       </div>
 
       <div class="form-group">
         <button class="button-save-and-continue" role="button" id="continue">@messages("app.common.saveAndContinue")</button>
       </div>
 
+      }
+
     </div>
-  </div>
 
 }

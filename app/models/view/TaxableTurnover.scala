@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-package enums
+package models.view
 
-object CacheKeys extends Enumeration {
-  val StartDate = Value
-  val TradingName = Value
-  val TaxableTurnover = Value
+import play.api.libs.json.Json
 
+case class TaxableTurnover(yesNo: String) {
+}
+
+object TaxableTurnover {
+  val TURNOVER_YES = "TURNOVER_YES"
+  val TURNOVER_NO = "TURNOVER_NO"
+
+  implicit val format = Json.format[TaxableTurnover]
+
+  def empty: TaxableTurnover = TaxableTurnover("")
 }

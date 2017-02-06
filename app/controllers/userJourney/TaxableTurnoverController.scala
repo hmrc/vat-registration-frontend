@@ -19,10 +19,39 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
+import enums.CacheKeys
+import forms.vatDetails.{StartDateForm, TaxableTurnoverForm}
+import models.view.{StartDate, TaxableTurnover}
 import play.api.mvc._
+import services.S4LService
 
-class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+import scala.concurrent.Future
 
-  def show: Action[AnyContent] = authorised(implicit user => implicit request => Ok(views.html.pages.taxable_turnover()))
+  class TaxableTurnoverController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    s4LService.fetchAndGet[TaxableTurnover](CacheKeys.TaxableTurnover.toString) map { date =>
+      val form = TaxableTurnoverForm.form.fill(date.getOrElse(TaxableTurnover.empty))
+      Ok(views.html.pages.taxable_turnover(form))
+    }
+  })
+
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    TaxableTurnoverForm.form.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(views.html.pages.taxable_turnover(formWithErrors)))
+      }, {
+
+        data: TaxableTurnover => {
+          s4LService.saveForm[TaxableTurnover](CacheKeys.TaxableTurnover.toString, data) map { _ =>
+              if (TaxableTurnover.TURNOVER_YES == data.yesNo) {
+                Redirect(controllers.userJourney.routes.StartDateController.show())
+              } else {
+                Redirect(controllers.userJourney.routes.StartDateController.show())
+              }
+          }
+        }
+      })
+  })
 
 }
