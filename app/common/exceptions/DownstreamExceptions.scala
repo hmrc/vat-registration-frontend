@@ -20,5 +20,5 @@ object DownstreamExceptions extends DownstreamExceptions
 
 trait DownstreamExceptions {
 
-  class VatMicroserviceException(msg:String) extends Exception (msg)
+  class RegistrationIdNotFoundException extends Exception
 }

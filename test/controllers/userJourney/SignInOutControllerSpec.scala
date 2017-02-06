@@ -27,18 +27,13 @@ import scala.concurrent.Future
 
 class SignInOutControllerSpec extends VatRegSpec {
 
-  val mockVatRegistrationService = mock[VatRegistrationService]
-
-  object TestController extends SignInOutController(mockVatRegistrationService, ds) {
+  object TestController extends SignInOutController(ds) {
     override val authConnector = mockAuthConnector
   }
 
   "Post-sign-in" should {
 
     "redirect to start of the journey when authorized" in {
-      when(mockVatRegistrationService.assertRegistrationFootprint()(Matchers.any()))
-        .thenReturn(Future.successful(DownstreamOutcome.Success))
-
       callAuthorised(TestController.postSignIn, mockAuthConnector) {
         result =>
           status(result) mustBe SEE_OTHER
