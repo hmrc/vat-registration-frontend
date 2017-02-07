@@ -1,27 +1,28 @@
 # microservice specific routes
 
-GET         /assets/*file           controllers.Assets.at(path="/public", file)
+GET         /assets/*file                   controllers.Assets.at(path="/public", file)
 
 ## WELCOME PAGE
-GET         /                       controllers.userJourney.WelcomeController.show
-GET         /start                  controllers.userJourney.WelcomeController.start
+GET         /                               controllers.userJourney.WelcomeController.show
+GET         /start                          controllers.userJourney.WelcomeController.start
 
 ## START DATE PAGE
-GET         /start-date             controllers.userJourney.StartDateController.show
-POST        /start-date             controllers.userJourney.StartDateController.submit
+GET         /start-date                     controllers.userJourney.StartDateController.show
+POST        /start-date                     controllers.userJourney.StartDateController.submit
 
 ## TRADING NAME PAGE
-GET         /trading-name             controllers.userJourney.TradingNameController.show
-POST        /trading-name             controllers.userJourney.TradingNameController.submit
+GET         /trading-name                   controllers.userJourney.TradingNameController.show
+POST        /trading-name                   controllers.userJourney.TradingNameController.submit
 
-## TAXABLE TURNOVER PAGE
-GET         /taxable-turnover       controllers.userJourney.TaxableTurnoverController.show
+## VOLUNTARY REGISTRATION
+GET         /voluntary-registration         controllers.userJourney.VoluntaryRegistrationController.show
+POST        /voluntary-registration         controllers.userJourney.VoluntaryRegistrationController.submit
 
 ## FEEDBACK
-GET         /feedback               controllers.feedback.FeedbackController.show
+GET         /feedback                       controllers.feedback.FeedbackController.show
 
 ## SUMMARY
-GET         /summary                controllers.userJourney.SummaryController.show
+GET         /summary                        controllers.userJourney.SummaryController.show
 
 ## POST SIGN IN
-GET         /post-sign-in           controllers.userJourney.SignInOutController.postSignIn
+GET         /post-sign-in                   controllers.userJourney.SignInOutController.postSignIn
