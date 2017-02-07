@@ -20,31 +20,35 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.StartDateForm
-import models.view.StartDate
+import forms.vatDetails.VoluntaryRegistrationForm
+import models.view.VoluntaryRegistration
 import play.api.mvc._
 import services.S4LService
 
 import scala.concurrent.Future
 
-class StartDateController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+  class VoluntaryRegistrationController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    s4LService.fetchAndGet[StartDate](CacheKeys.StartDate.toString) map { date =>
-      val form = StartDateForm.form.fill(date.getOrElse(StartDate.empty))
-      Ok(views.html.pages.start_date(form))
+    s4LService.fetchAndGet[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString) map { date =>
+      val form = VoluntaryRegistrationForm.form.fill(date.getOrElse(VoluntaryRegistration.empty))
+      Ok(views.html.pages.voluntary_registration(form))
     }
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    StartDateForm.form.bindFromRequest().fold(
+    VoluntaryRegistrationForm.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.start_date(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.voluntary_registration(formWithErrors)))
       }, {
-        data: StartDate => {
-          // Save to S4L
-          s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, data) map { _ =>
-            Redirect(controllers.userJourney.routes.VoluntaryRegistrationController.show())
+
+        data: VoluntaryRegistration => {
+          s4LService.saveForm[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString, data) map { _ =>
+              if (VoluntaryRegistration.REGISTER_YES == data.yesNo) {
+                Redirect(controllers.userJourney.routes.StartDateController.show())
+              } else {
+                Redirect(controllers.userJourney.routes.StartDateController.show())
+              }
           }
         }
       })

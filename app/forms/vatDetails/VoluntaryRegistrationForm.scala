@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package enums
+package forms.vatDetails
 
-object CacheKeys extends Enumeration {
-  val StartDate = Value
-  val TradingName = Value
-  val VoluntaryRegistration = Value
-  val TaxableTurnover = Value
+import models.view.VoluntaryRegistration
+import play.api.data.Form
+import play.api.data.Forms._
+
+object VoluntaryRegistrationForm {
+  val RADIO_YES_NO: String = "voluntaryRegistrationRadio"
+
+  val form = Form(
+    mapping(
+      RADIO_YES_NO -> nonEmptyText
+    )(VoluntaryRegistration.apply)(VoluntaryRegistration.unapply)
+  )
 
 }

@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package controllers.userJourney
+package models.view
 
-import javax.inject.Inject
+import play.api.libs.json.Json
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc._
+case class VoluntaryRegistration(yesNo: String) {
+}
 
-class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+object VoluntaryRegistration {
+  val REGISTER_YES = "REGISTER_YES"
+  val REGISTER_NO = "REGISTER_NO"
 
-  def show: Action[AnyContent] = authorised(implicit user => implicit request => Ok(views.html.pages.taxable_turnover()))
+  implicit val format = Json.format[VoluntaryRegistration]
 
+  def empty: VoluntaryRegistration = VoluntaryRegistration("")
 }
