@@ -52,4 +52,9 @@ trait KeystoreMock {
       .thenReturn(Future.successful(HttpResponse(200)))
   }
 
+  def mockFetchRegId(regID: String = "12345"): OngoingStubbing[Future[Option[String]]] = {
+    when(mockKeystoreConnector.fetchAndGet[String](Matchers.any())(Matchers.any[HeaderCarrier](), Matchers.any[Format[String]]()))
+      .thenReturn(Future.successful(Some(regID)))
+  }
+
 }

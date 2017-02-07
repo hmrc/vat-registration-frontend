@@ -82,13 +82,43 @@ pages.voluntary.registration.panels.no.bullet2                = you expect the v
 ## Summary Page
 pages.summary.title                                     = Summary
 pages.summary.heading                                   = Check your answers
+
+## Summary Page VAT details
 pages.summary.vatDetails.sectionHeading                 = VAT details
-pages.summary.vatDetails.taxableTurnover.question       = Will earn more than £83,000 in the next 30 days
-pages.summary.vatDetails.registerVoluntarily.question   = Register voluntarily
-pages.summary.vatDetails.startDate.question             = VAT start date
+pages.summary.vatDetails.taxableTurnover                = Will earn more than £83,000 in the next 30 days
+pages.summary.vatDetails.registerVoluntarily            = Register voluntarily
+pages.summary.vatDetails.startDate                      = VAT start date
+
+## Summary Page Director contact details
+pages.summary.directorContactDetails.sectionHeading    = Director contact details
+pages.summary.directorContactDetails.emailAddress      = Director email address
+pages.summary.directorContactDetails.daytimePhone      = Day time phone number
+pages.summary.directorContactDetails.mobilePhone       = Mobile number
+
+## Summary Page Director's details
+pages.summary.directorDetails.sectionHeading           = Director''s details
+pages.summary.directorDetails.whoIsRegistering         = Who is registering the company for VAT
+pages.summary.directorDetails.homeAddress              = Home address
+pages.summary.directorDetails.moreThanThreeYears       = Lived at current address for more than 3 years
+pages.summary.directorDetails.previousAddress          = Previous address
+pages.summary.directorDetails.dateOfBirth              = Date of birth
+pages.summary.directorDetails.nino                     = National Insurance number
+
+## Summary Page Company details
+pages.summary.companyDetails.sectionHeading            = Company details
+pages.summary.companyDetails.tradingName               = Other Trading Name
+pages.summary.companyDetails.businessDescription       = Business description
+pages.summary.companyDetails.mainActivity              = Main activity
+pages.summary.companyDetails.estimatedSalesValue       = Estimated sales value
+pages.summary.companyDetails.zeroRatedSales            = Zero rated sales
+pages.summary.companyDetails.zeroRatedSalesValue       = Estimated value of zero rated sales
+pages.summary.companyDetails.reclaimMoreVat            = Reclaim more VAT than you charge
+pages.summary.companyDetails.accountingPeriod          = Accounting period
+pages.summary.companyDetails.eori                      = Economic Operator Registration and Identification number
+pages.summary.companyDetails.flatRateScheme            = Flat rate scheme
 
 ## Error Pages
 errorPages.title                        = Something went wrong
 errorPages.restart.heading              = Sorry, we''re having technical issues.
-errorPages.restart.p1                   = You can try again by <a href="{0}" >restarting</a> your PAYE registration.
+errorPages.restart.p1                   = You can try again by <a href="{0}" >restarting</a> your VAT registration.
 
