@@ -6,9 +6,14 @@ GET         /assets/*file                   controllers.Assets.at(path="/public"
 GET         /                               controllers.userJourney.WelcomeController.show
 GET         /start                          controllers.userJourney.WelcomeController.start
 
-## START DATE PAGE
+## VOLUNTARY START DATE PAGE
 GET         /start-date                     controllers.userJourney.StartDateController.show
 POST        /start-date                     controllers.userJourney.StartDateController.submit
+
+## MANDATORY START DATE PAGE
+GET         /start-date-confirmation        controllers.userJourney.StartDateController.showMandatoryStartDateConfirmation
+POST        /start-date-confirmation        controllers.userJourney.StartDateController.submitMandatoryStartDateConfirmation
+
 
 ## TRADING NAME PAGE
 GET         /trading-name                   controllers.userJourney.TradingNameController.show
