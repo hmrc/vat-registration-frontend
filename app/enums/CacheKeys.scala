@@ -19,6 +19,7 @@ package enums
 object CacheKeys extends Enumeration {
   val StartDate = Value
   val TradingName = Value
+  val VoluntaryRegistration = Value
   val TaxableTurnover = Value
 
 }

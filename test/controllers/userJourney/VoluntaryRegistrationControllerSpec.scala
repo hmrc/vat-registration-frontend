@@ -35,7 +35,7 @@ package controllers.userJourney
 import builders.AuthBuilder
 import enums.CacheKeys
 import helpers.VatRegSpec
-import models.view.TaxableTurnover
+import models.view.VoluntaryRegistration
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -46,24 +46,24 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
-class TaxableTurnoverControllerSpec extends VatRegSpec {
+class VoluntaryRegistrationControllerSpec extends VatRegSpec {
 
-  object TestTaxableTurnoverController extends TaxableTurnoverController(mockS4LService, ds) {
+  object TestVoluntaryRegistrationController extends VoluntaryRegistrationController(mockS4LService, ds) {
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.TaxableTurnoverController.show())
+  val fakeRequest = FakeRequest(routes.VoluntaryRegistrationController.show())
 
-  s"GET ${routes.TaxableTurnoverController.show()}" should {
+  s"GET ${routes.VoluntaryRegistrationController.show()}" should {
 
     "return HTML blank page with no Selection" in {
-      val taxableTurnover = TaxableTurnover("")
+      val voluntaryRegistration = VoluntaryRegistration("")
 
-      when(mockS4LService.fetchAndGet[TaxableTurnover](Matchers.eq(CacheKeys.TaxableTurnover.toString))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(taxableTurnover)))
+      when(mockS4LService.fetchAndGet[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(voluntaryRegistration)))
 
-      AuthBuilder.submitWithAuthorisedUser(TestTaxableTurnoverController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "turnoverRadio" -> ""
+      AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        "voluntaryRegistrationRadio" -> ""
       )){
 
         result =>
@@ -76,10 +76,10 @@ class TaxableTurnoverControllerSpec extends VatRegSpec {
   }
 
 
-  s"POST ${routes.TaxableTurnoverController.submit()} with Empty data" should {
+  s"POST ${routes.VoluntaryRegistrationController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestTaxableTurnoverController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe  Status.BAD_REQUEST
@@ -88,16 +88,16 @@ class TaxableTurnoverControllerSpec extends VatRegSpec {
     }
   }
 
-  s"POST ${routes.TaxableTurnoverController.submit()} with Taxable Turnover selected Yes" should {
+  s"POST ${routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected Yes" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TaxableTurnover.empty)))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration.empty)))
 
-      when(mockS4LService.saveForm[TaxableTurnover](Matchers.eq(CacheKeys.TaxableTurnover.toString), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      AuthBuilder.submitWithAuthorisedUser(TestTaxableTurnoverController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "turnoverRadio" -> TaxableTurnover.TURNOVER_YES
+      AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        "voluntaryRegistrationRadio" -> VoluntaryRegistration.REGISTER_YES
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
@@ -107,16 +107,16 @@ class TaxableTurnoverControllerSpec extends VatRegSpec {
     }
   }
 
-  s"POST ${routes.TaxableTurnoverController.submit()} with Taxable Turnover selected No" should {
+  s"POST ${routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected No" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TaxableTurnover.empty)))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration.empty)))
 
-      when(mockS4LService.saveForm[TaxableTurnover](Matchers.eq(CacheKeys.TaxableTurnover.toString), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      AuthBuilder.submitWithAuthorisedUser(TestTaxableTurnoverController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "turnoverRadio" -> TaxableTurnover.TURNOVER_NO
+      AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        "voluntaryRegistrationRadio" -> VoluntaryRegistration.REGISTER_NO
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
