@@ -16,17 +16,17 @@
 
 package forms.vatDetails
 
-import models.view.TaxableTurnover
+import models.view.VoluntaryRegistration
 import play.api.data.Form
 import play.api.data.Forms._
 
-object TaxableTurnoverForm {
-  val RADIO_YES_NO: String = "turnoverRadio"
+object VoluntaryRegistrationForm {
+  val RADIO_YES_NO: String = "voluntaryRegistrationRadio"
 
   val form = Form(
     mapping(
       RADIO_YES_NO -> nonEmptyText
-    )(TaxableTurnover.apply)(TaxableTurnover.unapply)
+    )(VoluntaryRegistration.apply)(VoluntaryRegistration.unapply)
   )
 
 }

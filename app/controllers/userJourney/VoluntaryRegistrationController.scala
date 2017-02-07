@@ -20,31 +20,31 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.TaxableTurnoverForm
-import models.view.TaxableTurnover
+import forms.vatDetails.VoluntaryRegistrationForm
+import models.view.VoluntaryRegistration
 import play.api.mvc._
 import services.S4LService
 
 import scala.concurrent.Future
 
-  class TaxableTurnoverController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+  class VoluntaryRegistrationController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    s4LService.fetchAndGet[TaxableTurnover](CacheKeys.TaxableTurnover.toString) map { date =>
-      val form = TaxableTurnoverForm.form.fill(date.getOrElse(TaxableTurnover.empty))
-      Ok(views.html.pages.taxable_turnover(form))
+    s4LService.fetchAndGet[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString) map { date =>
+      val form = VoluntaryRegistrationForm.form.fill(date.getOrElse(VoluntaryRegistration.empty))
+      Ok(views.html.pages.voluntary_registration(form))
     }
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    TaxableTurnoverForm.form.bindFromRequest().fold(
+    VoluntaryRegistrationForm.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.taxable_turnover(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.voluntary_registration(formWithErrors)))
       }, {
 
-        data: TaxableTurnover => {
-          s4LService.saveForm[TaxableTurnover](CacheKeys.TaxableTurnover.toString, data) map { _ =>
-              if (TaxableTurnover.TURNOVER_YES == data.yesNo) {
+        data: VoluntaryRegistration => {
+          s4LService.saveForm[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString, data) map { _ =>
+              if (VoluntaryRegistration.REGISTER_YES == data.yesNo) {
                 Redirect(controllers.userJourney.routes.StartDateController.show())
               } else {
                 Redirect(controllers.userJourney.routes.StartDateController.show())

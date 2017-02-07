@@ -51,7 +51,7 @@ class VatRegistrationService extends RegistrationService {
           answer = apiModel.vatDetails.taxableTurnover match {
             case Some(name) => Right(name)
           },
-          changeLink = Some(controllers.userJourney.routes.TaxableTurnoverController.show())
+          changeLink = Some(controllers.userJourney.routes.VoluntaryRegistrationController.show())
         ),
           SummaryRow(
             id = "vatDetails.registerVoluntarily",

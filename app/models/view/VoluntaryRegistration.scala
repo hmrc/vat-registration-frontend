@@ -18,14 +18,14 @@ package models.view
 
 import play.api.libs.json.Json
 
-case class TaxableTurnover(yesNo: String) {
+case class VoluntaryRegistration(yesNo: String) {
 }
 
-object TaxableTurnover {
-  val TURNOVER_YES = "TURNOVER_YES"
-  val TURNOVER_NO = "TURNOVER_NO"
+object VoluntaryRegistration {
+  val REGISTER_YES = "REGISTER_YES"
+  val REGISTER_NO = "REGISTER_NO"
 
-  implicit val format = Json.format[TaxableTurnover]
+  implicit val format = Json.format[VoluntaryRegistration]
 
-  def empty: TaxableTurnover = TaxableTurnover("")
+  def empty: VoluntaryRegistration = VoluntaryRegistration("")
 }
