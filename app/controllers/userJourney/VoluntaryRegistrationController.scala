@@ -47,7 +47,8 @@ import scala.concurrent.Future
               if (VoluntaryRegistration.REGISTER_YES == data.yesNo) {
                 Redirect(controllers.userJourney.routes.StartDateController.show())
               } else {
-                Redirect(controllers.userJourney.routes.StartDateController.show())
+                s4LService.clear()
+                Redirect(controllers.userJourney.routes.WelcomeController.show())
               }
           }
         }

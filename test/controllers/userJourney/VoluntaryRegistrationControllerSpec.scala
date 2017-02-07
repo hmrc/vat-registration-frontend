@@ -109,7 +109,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec {
 
   s"POST ${routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected No" should {
 
-    "return 303" in {
+    "redirect to the welcome page" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration.empty)))
 
       when(mockS4LService.saveForm[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString), Matchers.any())(Matchers.any(), Matchers.any()))
@@ -120,7 +120,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec {
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/start-date"
+          redirectLocation(response).getOrElse("") mustBe  "/vat-registration"
       }
 
     }
