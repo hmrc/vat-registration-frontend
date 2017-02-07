@@ -35,7 +35,7 @@ package controllers.userJourney
 import builders.AuthBuilder
 import enums.CacheKeys
 import helpers.VatRegSpec
-import models.view.{StartDate, TaxableTurnover}
+import models.view.{TaxableTurnover}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -43,12 +43,11 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 
 class TaxableTurnoverControllerSpec extends VatRegSpec {
-
-  //implicit val materializer = fakeApplication.materializer
 
   object TestTaxableTurnoverController extends TaxableTurnoverController(mockS4LService, ds) {
     override val authConnector = mockAuthConnector
@@ -101,9 +100,28 @@ class TaxableTurnoverControllerSpec extends VatRegSpec {
       AuthBuilder.submitWithAuthorisedUser(TestTaxableTurnoverController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "turnoverRadio" -> TaxableTurnover.TURNOVER_YES
       )) {
-        result =>
-          status(result) mustBe Status.SEE_OTHER
-         val text = contentAsString(result)
+        response =>
+          status(response) mustBe Status.SEE_OTHER
+          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/start-date"
+     }
+
+    }
+  }
+
+  s"POST ${routes.TaxableTurnoverController.submit()} with Taxable Turnover selected No" should {
+
+    "return 303" in {
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TaxableTurnover.empty)))
+
+      when(mockS4LService.saveForm[TaxableTurnover](Matchers.eq(CacheKeys.TaxableTurnover.toString), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(returnCacheMap))
+
+      AuthBuilder.submitWithAuthorisedUser(TestTaxableTurnoverController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        "turnoverRadio" -> TaxableTurnover.TURNOVER_NO
+      )) {
+        response =>
+          status(response) mustBe Status.SEE_OTHER
+          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/start-date"
       }
 
     }

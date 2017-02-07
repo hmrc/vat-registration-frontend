@@ -16,17 +16,10 @@
 
 package testHelpers
 
-import controllers.CommonPlayDependencies
 import mocks.VatMocks
 import org.scalatest.mockito.MockitoSugar
-import services.VatRegistrationService
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 trait VatRegSpec extends UnitSpec with WithFakeApplication with MockitoSugar with VatMocks {
 
-  // Placeholder for custom configuration
-  // Use this if you want to configure the app
-  // implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
-  var ds: CommonPlayDependencies = fakeApplication.injector.instanceOf[CommonPlayDependencies]
-  var vatRegistrationService = fakeApplication.injector.instanceOf[VatRegistrationService]
 }
