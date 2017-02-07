@@ -17,7 +17,9 @@
 package services
 
 import connectors.KeystoreConnector
+import common.exceptions.DownstreamExceptions._
 import uk.gov.hmrc.play.http.HeaderCarrier
+import play.api.Logger
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -26,9 +28,13 @@ trait CommonService {
 
   val keystoreConnector: KeystoreConnector
 
-  def fetchRegistrationID(implicit hc: HeaderCarrier): Future[String] = {
-    // Should return a registration id
-    Future("registration-id-1234")
+  def fetchRegistrationId(implicit hc: HeaderCarrier): Future[String] = {
+    keystoreConnector.fetchAndGet[String]("RegistrationId").map {
+      case Some(regId) => regId
+      case None =>
+        Logger.error("Could not find a registration ID in keystore")
+        throw new RegistrationIdNotFoundException
+    }
   }
 
 }

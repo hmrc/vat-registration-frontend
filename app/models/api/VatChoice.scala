@@ -16,14 +16,21 @@
 
 package models.api
 
-import play.api.libs.json.Json
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import org.joda.time.DateTime
 
-case class VatDetails(
-                       taxableTurnover: Option[String],
-                       registerVoluntarily: Option[String],
-                       startDate: Option[String]
-                     )
+case class VatChoice(
+                      startDate: DateTime,
+                      necessity: String // "obligatory" or "voluntary"
+                    )
 
-object VatDetails {
-  implicit val format = Json.format[VatDetails]
+object VatChoice {
+
+  val NECESSITY_OBLIGATORY = "obligatory"
+  val NECESSITY_VOLUNTARY = "voluntary"
+
+  implicit val format = (
+    (__ \ "start-date").format[DateTime] and
+      (__ \ "necessity").format[String]) (VatChoice.apply, unlift(VatChoice.unapply))
 }

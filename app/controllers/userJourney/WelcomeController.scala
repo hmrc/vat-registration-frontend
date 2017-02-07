@@ -19,13 +19,27 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
+import enums.DownstreamOutcome
 import play.api.mvc._
+import services.RegistrationService
+import uk.gov.hmrc.play.http.HeaderCarrier
 
-class WelcomeController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+import scala.concurrent.Future
+
+class WelcomeController @Inject()(vatRegistrationService: RegistrationService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   //access to root of application should by default direct the user to the proper URL for start of VAT registration
   def show: Action[AnyContent] = Action(implicit request => Redirect(routes.WelcomeController.start()))
 
-  def start: Action[AnyContent] = authorised(implicit user => implicit request => Ok(views.html.pages.welcome()))
+  def start: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    assertVatRegistrationFootprint {
+      Ok(views.html.pages.welcome())
+    }
+  })
 
+  def assertVatRegistrationFootprint(f: => Result)(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[Result] = {
+    vatRegistrationService.assertRegistrationFootprint() map {
+      case DownstreamOutcome.Success => f
+    }
+  }
 }
