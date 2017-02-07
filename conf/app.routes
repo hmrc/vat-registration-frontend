@@ -18,6 +18,10 @@ POST        /trading-name                   controllers.userJourney.TradingNameC
 GET         /voluntary-registration         controllers.userJourney.VoluntaryRegistrationController.show
 POST        /voluntary-registration         controllers.userJourney.VoluntaryRegistrationController.submit
 
+## TAXABLE TURNOVER PAGE
+GET         /taxable-turnover               controllers.userJourney.TaxableTurnoverController.show
+POST        /taxable-turnover               controllers.userJourney.TaxableTurnoverController.submit
+
 ## FEEDBACK
 GET         /feedback                       controllers.feedback.FeedbackController.show
 
