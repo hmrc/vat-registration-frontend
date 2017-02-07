@@ -56,7 +56,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec {
 
   s"GET ${routes.VoluntaryRegistrationController.show()}" should {
 
-    "return HTML blank page with no Selection" in {
+    "return HTML Voluntary Registration  page with no Selection" in {
       val voluntaryRegistration = VoluntaryRegistration("")
 
       when(mockS4LService.fetchAndGet[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString))(Matchers.any(), Matchers.any()))
