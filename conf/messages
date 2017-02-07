@@ -60,13 +60,11 @@ pages.tradingName.validation.invalid.tradingName    = Please enter a valid tradi
 pages.tradingName.validation.empty.tradingName      = Please enter a trading name
 
 ## Voluntary Registration Page
-pages.voluntary.registration.title                            = Before you register for VAT
+pages.voluntary.registration.title                            = Voluntary Registration
 pages.voluntary.registration.heading                          = Do you want to register voluntarily for VAT?
 pages.voluntary.registration.para1                            = You can register for VAT if the company''s taxable turnover will be less than £83,000 within the next 30 days.
 pages.voluntary.registration.vatVoluntarily.title             = Find out more about voluntary VAT registration
 pages.voluntary.registration.vatVoluntarily.para1             = If you''re registered for VAT you:
-
-
 pages.voluntary.registration.vatVoluntarily.bullet.charge     = must <a href="https://www.gov.uk/vat-businesses/how-vat-works">charge VAT</a> on the goods or services you sell
 pages.voluntary.registration.vatVoluntarily.bullet.reclaim    = can <a href="https://www.gov.uk/reclaim-vat">reclaim VAT</a> on your business-related purchases
 pages.voluntary.registration.vatVoluntarily.para2             = VAT-registered companies can appear larger and more established to customers. However, if your customers aren''t VAT registered (and can''t reclaim VAT) may be put off by the company''s increased prices.
@@ -74,6 +72,13 @@ pages.voluntary.registration.vatVoluntarily.para3             = You can cancel y
 pages.voluntary.registration.panels.no.para1                  = You must register for VAT if:
 pages.voluntary.registration.panels.no.bullet1                = at the end of any month, the value of the company''s taxable sales in the previous 12 months or less is over the £83,000 registration threshold
 pages.voluntary.registration.panels.no.bullet2                = you expect the value of the company''s taxable sales in the next 30-day period alone to go over the £83,000 registration threshold
+
+
+## Taxable Turnover
+pages.taxable.turnover.title                            = Taxable Turnover
+pages.taxable.turnover.heading                          = Do you expect the company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered with Companies House?
+pages.taxable.turnover.what.is.turnover.title           = What is ''VAT taxable turnover''?
+pages.taxable.turnover.what.is.turnover.para1           = VAT taxable turnover is the total value of everything you sell that isn''t <a href="https://www.gov.uk/vat-businesses/when-not-to-charge-vatexempt">exempt from VAT</a>.
 
 
 
