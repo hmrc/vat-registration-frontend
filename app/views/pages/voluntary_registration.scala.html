@@ -1,12 +1,19 @@
 @import models.view.VoluntaryRegistration
 @(voluntaryRegistrationForm:  Form[VoluntaryRegistration])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
 
 @main_template(title = messages("pages.voluntary.registration.title")) {
 
   <div class="column-one-third">
 
       <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.voluntary.registration.heading")</h1>
+
+      @errorSummary(
+          Messages("app.common.errorSummaryLabel"),
+          voluntaryRegistrationForm
+      )
+
       <p>@Html(Messages("pages.voluntary.registration.para1"))</p>
 
       @govHelpers.form(action = controllers.userJourney.routes.VoluntaryRegistrationController.submit()) {

@@ -85,7 +85,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec {
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/trading-name"
+          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/start-date-confirmation"
       }
 
     }
