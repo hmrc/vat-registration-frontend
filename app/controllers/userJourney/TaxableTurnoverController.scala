@@ -20,8 +20,8 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.{StartDateForm, TaxableTurnoverForm}
-import models.view.{StartDate, TaxableTurnover}
+import forms.vatDetails.TaxableTurnoverForm
+import models.view.TaxableTurnover
 import play.api.mvc._
 import services.S4LService
 
