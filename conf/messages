@@ -7,7 +7,7 @@ app.common.continue                     = Continue
 app.common.saveAndContinue              = Save and continue
 app.common.errorSummaryLabel            = The following errors were identified on this page.
 app.common.change                       = Change
-app.validation.nonEmpty                 = Field is required
+app.validation.nonEmpty                 = Select an option
 speciallyCraftedMessage                 = Some very special validation message
 
 ## Welcome Page
