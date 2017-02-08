@@ -1,12 +1,18 @@
 @import models.view.TaxableTurnover
 @(taxableTurnoverForm:  Form[TaxableTurnover])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
 
 @main_template(title = messages("pages.taxable.turnover.title")) {
 
   <div class="column-one-third">
 
       <h1 class="form-title heading-large" id="pageHeading">@messages("pages.taxable.turnover.heading")</h1>
+
+      @errorSummary(
+          Messages("app.common.errorSummaryLabel"),
+          taxableTurnoverForm
+      )
 
       @govHelpers.form(action = controllers.userJourney.routes.TaxableTurnoverController.submit()) {
       <div class="form-group">

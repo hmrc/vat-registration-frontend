@@ -24,3 +24,24 @@ label.cascading span {
 	font-weight: bold;
 	padding-right: 0;
 }
+
+.notice {
+	position: relative;
+}
+.notice .icon {
+	position: absolute;
+	left: 0;
+	top: 50%;
+	margin-top: -17px;
+}
+
+.icon-important {
+	width: 35px;
+	height: 35px;
+}
+
+.notice strong {
+	display: block;
+	padding-left: 65px;
+	margin-left: -15px;
+}
