@@ -1,2 +1,3 @@
+GET        /current-profile-setup        controllers.test.CurrentProfileController.currentProfileSetup
 
-GET        /s4l-teardown                     controllers.test.TestCacheController.tearDownS4L
+GET        /s4l-teardown                 controllers.test.TestCacheController.tearDownS4L
