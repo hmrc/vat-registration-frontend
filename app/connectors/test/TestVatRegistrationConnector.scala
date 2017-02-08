@@ -31,12 +31,14 @@ trait TestRegistrationConnector {
 }
 
 class TestVatRegistrationConnector extends TestRegistrationConnector with ServicesConfig {
+
   //$COVERAGE-OFF$
   val vatRegUrl = baseUrl("vat-registration")
   val http = WSHttp
-  //$COVERAGE-ON$
 
   def setupCurrentProfile()(implicit hc: HeaderCarrier): Future[Result] = {
     http.POSTEmpty(s"$vatRegUrl/vatreg/test-only/current-profile-setup").map { _ => Results.Ok }
   }
+  //$COVERAGE-ON$
+
 }
