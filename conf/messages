@@ -8,9 +8,7 @@ app.common.saveAndContinue              = Save and continue
 app.common.errorSummaryLabel            = The following errors were identified on this page.
 app.common.change                       = Change
 app.validation.nonEmpty                 = Field is required
-
-speciallyCraftedMessage = Some very special validation message
-
+speciallyCraftedMessage                 = Some very special validation message
 
 ## Welcome Page
 pages.welcome.title                     = Before you register for VAT
@@ -73,24 +71,19 @@ pages.voluntary.registration.panels.no.para1                  = You must registe
 pages.voluntary.registration.panels.no.bullet1                = at the end of any month, the value of the company''s taxable sales in the previous 12 months or less is over the £83,000 registration threshold
 pages.voluntary.registration.panels.no.bullet2                = you expect the value of the company''s taxable sales in the next 30-day period alone to go over the £83,000 registration threshold
 
-
 ## Taxable Turnover
 pages.taxable.turnover.title                            = Taxable Turnover
 pages.taxable.turnover.heading                          = Do you expect the company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered with Companies House?
 pages.taxable.turnover.what.is.turnover.title           = What is ''VAT taxable turnover''?
 pages.taxable.turnover.what.is.turnover.para1           = VAT taxable turnover is the total value of everything you sell that isn''t <a href="https://www.gov.uk/vat-businesses/when-not-to-charge-vatexempt">exempt from VAT</a>.
 
-
-
-## Vat Start Date Confirmation page
+## Mandatory Start Date Confirmation page
 pages.start.date.confirmation.title                          = Start Date Confirmation page
 pages.start.date.confirmation.heading                        = Your VAT start date
-pages.start.date.confirmation.para1                          = Your VAT start date will be the same as your company registration date. You can’'t be registered for VAT before the company has been set up.
+pages.start.date.confirmation.para1                          = Your VAT start date will be the same as your company registration date. You can''t be registered for VAT before the company has been set up.
 pages.start.date.confirmation.para2                          = You must apply to register if you expect your VAT taxable turnover to go over the £83,000 threshold within the next 30 days.
 pages.start.date.confirmation.para3                          = If you register late, you must pay what you owe from the date you should''ve registered.
 pages.start.date.confirmation.warning                        = You may get a penalty depending on how much you owe and how late your registration is.
-
-
 
 ## Summary Page
 pages.summary.title                                     = Summary

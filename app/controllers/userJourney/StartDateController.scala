@@ -36,15 +36,6 @@ class StartDateController @Inject()(s4LService: S4LService, ds: CommonPlayDepend
     }
   })
 
-  def showMandatoryStartDateConfirmation: Action[AnyContent] = authorised(implicit user => implicit request => {
-      Ok(views.html.pages.mandatory_start_date_confirmation())
-  })
-
-  def submitMandatoryStartDateConfirmation: Action[AnyContent] = authorised(implicit user => implicit request => {
-    Redirect(controllers.userJourney.routes.TradingNameController.show())
-  })
-
-
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     StartDateForm.form.bindFromRequest().fold(
       formWithErrors => {
@@ -58,5 +49,14 @@ class StartDateController @Inject()(s4LService: S4LService, ds: CommonPlayDepend
         }
       })
   })
+
+  def showMandatoryStartDateConfirmation: Action[AnyContent] = authorised(implicit user => implicit request => {
+      Ok(views.html.pages.mandatory_start_date_confirmation())
+  })
+
+  def submitMandatoryStartDateConfirmation: Action[AnyContent] = authorised(implicit user => implicit request => {
+    Redirect(controllers.userJourney.routes.TradingNameController.show())
+  })
+
 
 }
