@@ -99,4 +99,27 @@ class StartDateControllerSpec extends VatRegSpec {
     }
   }
 
+  s"GET ${routes.StartDateController.showMandatoryStartDateConfirmation()}" should {
+
+    "display the mandatory start date confirmation page to the user" in {
+      callAuthorised(TestStartDateController.showMandatoryStartDateConfirmation, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("VAT start date")
+      }
+    }
+  }
+
+  s"POST ${routes.StartDateController.submitMandatoryStartDateConfirmation()}" should {
+
+    "redirect the user to the trading name page after clicking continue on the mandatory start date confirmation page" in {
+      callAuthorised(TestStartDateController.submitMandatoryStartDateConfirmation, mockAuthConnector) {
+        result =>
+          status(result) mustBe SEE_OTHER
+      }
+    }
+  }
+
 }
