@@ -58,5 +58,4 @@ class StartDateController @Inject()(s4LService: S4LService, ds: CommonPlayDepend
     Redirect(controllers.userJourney.routes.TradingNameController.show())
   })
 
-
 }

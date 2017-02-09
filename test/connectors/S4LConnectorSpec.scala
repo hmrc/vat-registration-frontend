@@ -45,7 +45,7 @@ class S4LConnectorSpec  extends UnitSpec with MockitoSugar with WithFakeApplicat
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val sDateModel = StartDateView(StartDateView.WHEN_REGISTERED, None, None, None)
+  val sDateModel = StartDateView(StartDateView.COMPANY_REGISTRATION_DATE, None, None, None)
   val cacheMap = CacheMap("", Map("" -> Json.toJson(sDateModel)))
 
   "Fetching from save4later" should {

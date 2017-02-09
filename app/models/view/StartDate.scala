@@ -16,6 +16,7 @@
 
 package models.view
 
+import models.api.{VatChoice, VatScheme}
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.Json
@@ -23,7 +24,7 @@ import play.api.libs.json.Json
 case class StartDate(dateType: String,
                      year: Option[String],
                      month: Option[String],
-                     day: Option[String]) {
+                     day: Option[String]) extends ViewModelTransformer {
 
   override def toString: String = {
     val d = day.getOrElse("")
@@ -37,14 +38,23 @@ case class StartDate(dateType: String,
     formatter.parseDateTime(toString)
   }
 
+  def toApi[VatChoice](vatChoice: VatChoice): VatChoice = {
+    vatChoice
+  }
+
 }
 
-object StartDate {
-  val WHEN_REGISTERED = "WHEN_REGISTERED"
-  val WHEN_TRADING = "WHEN_TRADING"
-  val FUTURE_DATE = "FUTURE_DATE"
+object StartDate extends ApiModelTransformer {
+
+  val COMPANY_REGISTRATION_DATE = "COMPANY_REGISTRATION_DATE"
+  val BUSINESS_START_DATE = "BUSINESS_START_DATE"
+  val SPECIFIC_DATE = "SPECIFIC_DATE"
 
   implicit val format = Json.format[StartDate]
 
   def empty: StartDate = StartDate("", None, None, None)
+
+  def fromApi[StartDate](vatScheme: VatScheme): StartDate = {
+    new StartDate("", None, None, None)
+  }
 }

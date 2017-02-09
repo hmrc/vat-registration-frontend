@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-//$COVERAGE-OFF$
 package controllers.test
 
 import javax.inject.Inject
@@ -32,4 +31,3 @@ class TestCacheController @Inject()(s4LService: S4LService, ds: CommonPlayDepend
   })
 
 }
-//$COVERAGE-ON$

@@ -41,7 +41,7 @@ class StartDateControllerSpec extends VatRegSpec {
   s"GET ${routes.StartDateController.show()}" should {
 
     "return HTML when there's a start date in S4L" in {
-      val startDate = StartDate(StartDate.FUTURE_DATE, Some("2017"), Some("01"), Some("30"))
+      val startDate = StartDate(StartDate.SPECIFIC_DATE, Some("2017"), Some("01"), Some("30"))
 
       when(mockS4LService.fetchAndGet[StartDate](Matchers.eq(CacheKeys.StartDate.toString))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(startDate)))
@@ -90,7 +90,7 @@ class StartDateControllerSpec extends VatRegSpec {
         .thenReturn(Future.successful(returnCacheMap))
 
       AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "startDateRadio" -> StartDate.WHEN_REGISTERED
+        "startDateRadio" -> StartDate.COMPANY_REGISTRATION_DATE
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER

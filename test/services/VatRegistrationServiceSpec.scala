@@ -84,6 +84,13 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       (Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatScheme))
       ScalaFutures.whenReady(service.getRegistrationSummary())(_ mustBe validSummaryView)
     }
+
+    "return a defined Summary when the connector returns another valid VAT Registration response" in new Setup {
+      mockFetchRegId(validRegId)
+      when(mockRegConnector.getRegistration(Matchers.contains(validRegId))
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatScheme2))
+      ScalaFutures.whenReady(service.getRegistrationSummary())(_ mustBe validSummaryView2)
+    }
   }
 
 }
