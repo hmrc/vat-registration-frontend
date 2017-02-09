@@ -90,7 +90,7 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
         "vatDetails.registerVoluntarily",
         vatChoice.necessity match {
           case VatChoice.NECESSITY_VOLUNTARY => Right("Yes")
-          case _ => Left("No")
+          case _ => Right("No")
         },
         Some(controllers.userJourney.routes.SummaryController.show())
       )
