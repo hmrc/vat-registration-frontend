@@ -18,8 +18,8 @@
                     @govHelpers.inputRadioGroup(
                         field = startDateForm("startDateRadio"),
                         Seq(
-                            StartDate.WHEN_REGISTERED -> Messages("pages.startDate.radio.whenRegistered"),
-                            StartDate.FUTURE_DATE -> Messages("pages.startDate.radio.futureDate")
+                            StartDate.COMPANY_REGISTRATION_DATE -> Messages("pages.startDate.radio.whenRegistered"),
+                            StartDate.SPECIFIC_DATE -> Messages("pages.startDate.radio.futureDate")
                         ),
                         '_labelAfter -> true,
                         '_labelClass -> "block-label"

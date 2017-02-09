@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package fixtures
+package models.view
 
-import models.view.StartDate
+import models.api.VatScheme
 
-trait S4LFixture {
+trait ViewModelTransformer {
 
-  lazy val validFutureDate = StartDate("SPECIFIC_DATE", Some("2017"), Some("03"), Some("10"))
+  def toApi[L](logicalGroup: L): L
+}
 
+trait ApiModelTransformer {
+
+  def fromApi[V](vatScheme: VatScheme): V
 }
