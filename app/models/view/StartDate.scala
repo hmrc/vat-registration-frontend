@@ -16,7 +16,7 @@
 
 package models.view
 
-import models.api.{VatChoice, VatScheme}
+import models.api.VatScheme
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.Json
@@ -54,7 +54,12 @@ object StartDate extends ApiModelTransformer {
 
   def empty: StartDate = StartDate("", None, None, None)
 
-  def fromApi[StartDate](vatScheme: VatScheme): StartDate = {
-    new StartDate("", None, None, None)
+  def fromDate(d: DateTime): StartDate = {
+    StartDate(SPECIFIC_DATE, Some(d.year.get().toString), Some(d.monthOfYear().get.toString), Some(d.dayOfMonth().get.toString))
   }
+
+  def fromApi[V:StartDate](vatScheme: VatScheme): StartDate = {
+    fromDate(vatScheme.vatChoice.startDate)
+  }
+
 }
