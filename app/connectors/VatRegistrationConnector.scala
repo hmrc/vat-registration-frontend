@@ -51,7 +51,7 @@ trait RegistrationConnector {
   }
 
   def getRegistration(regId: String)(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[VatScheme] = {
-    http.GET[VatScheme](s"$vatRegUrl/vatreg/$regId") recover {
+    http.GET[VatScheme](s"$vatRegUrl/vatreg/$regId/get-scheme") recover {
       case e: Exception => throw logResponse(e, "getRegistration", "getting registration")
     }
   }
