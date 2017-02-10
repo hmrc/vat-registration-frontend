@@ -17,12 +17,15 @@
 package services
 
 import javax.inject.Inject
+
 import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.DownstreamOutcome
 import models.api.{VatChoice, VatScheme, VatTradingDetails}
 import models.view._
+import play.api.i18n.MessagesApi
 import uk.gov.hmrc.play.http.HeaderCarrier
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -36,7 +39,7 @@ trait RegistrationService {
 
 }
 
-class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector)
+class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector, messagesApi: MessagesApi)
   extends RegistrationService
   with CommonService {
 
@@ -86,25 +89,41 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
 
   private def getVatDetailsSection(vatChoice: VatChoice) = {
 
-    def getRegisterVoluntarily: SummaryRow = SummaryRow(
-        "vatDetails.registerVoluntarily",
+    def getTaxableTurnover: SummaryRow = SummaryRow(
+      "vatDetails.taxableTurnover",
+      vatChoice.necessity match {
+        case VatChoice.NECESSITY_VOLUNTARY => Right("No")
+        case _ => Right("Yes")
+      },
+      Some(controllers.userJourney.routes.TaxableTurnoverController.show())
+    )
+
+    def getNecessity: SummaryRow = SummaryRow(
+        "vatDetails.necessity",
         vatChoice.necessity match {
           case VatChoice.NECESSITY_VOLUNTARY => Right("Yes")
           case _ => Right("No")
         },
-        Some(controllers.userJourney.routes.SummaryController.show())
+        Some(controllers.userJourney.routes.VoluntaryRegistrationController.show())
       )
 
     def getStartDate: SummaryRow = SummaryRow(
         "vatDetails.startDate",
-        Right(vatChoice.startDate.toString("d MMMM y")),
-        Some(controllers.userJourney.routes.StartDateController.show())
+        vatChoice.necessity match {
+          case VatChoice.NECESSITY_VOLUNTARY => Right(vatChoice.startDate.toString("d MMMM y"))
+          case _ => Right(messagesApi("pages.summary.vatDetails.mandatoryStartDate"))
+        },
+        vatChoice.necessity match {
+          case VatChoice.NECESSITY_VOLUNTARY => Some(controllers.userJourney.routes.StartDateController.show())
+          case _ => None
+        }
       )
 
     SummarySection(
       id = "vatDetails",
       Seq(
-        getRegisterVoluntarily,
+        getTaxableTurnover,
+        getNecessity,
         getStartDate
       )
     )

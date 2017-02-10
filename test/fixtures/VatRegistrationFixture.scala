@@ -70,9 +70,14 @@ trait VatRegistrationFixture {
     id = "vatDetails",
     Seq(
       SummaryRow(
-        id = "vatDetails.registerVoluntarily",
+        id = "vatDetails.taxableTurnover",
+        answer = Right("No"),
+        changeLink = Some(controllers.userJourney.routes.TaxableTurnoverController.show())
+      ),
+      SummaryRow(
+        id = "vatDetails.necessity",
         answer = Right("Yes"),
-        changeLink = Some(controllers.userJourney.routes.SummaryController.show())
+        changeLink = Some(controllers.userJourney.routes.VoluntaryRegistrationController.show())
       ),
       SummaryRow(
         id = "vatDetails.startDate",
