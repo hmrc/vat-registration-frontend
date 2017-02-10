@@ -16,10 +16,11 @@
 
 package models
 
+import fixtures.VatRegistrationFixture
 import models.view.TradingName
 import uk.gov.hmrc.play.test.UnitSpec
 
-class TradingNameSpec extends UnitSpec {
+class TradingNameSpec extends UnitSpec with VatRegistrationFixture {
 
   "empty" should {
     "create an empty TradingName model" in {
@@ -27,4 +28,15 @@ class TradingNameSpec extends UnitSpec {
     }
   }
 
+  "toApi" should {
+    "upserts (merge) a current VatTradingDetails API model with the details of an instance of TradingName view model" in {
+      differentTradingName.toApi(validVatTradingDetails) shouldBe differentVatTradingDetails
+    }
+  }
+
+  "apply" should {
+    "convert a populated VatScheme's VatTradingDetails API model to an instance of TradingName view model" in {
+      TradingName.apply(validVatScheme) shouldBe validTradingName
+    }
+  }
 }

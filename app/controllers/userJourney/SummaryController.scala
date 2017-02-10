@@ -19,6 +19,7 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
+import models.view.Summary
 import play.api.mvc._
 import services.VatRegistrationService
 
@@ -28,8 +29,10 @@ class SummaryController @Inject()(vatRegistrationService: VatRegistrationService
 
   def show: Action[AnyContent] = authorised.async {
     implicit user => implicit request =>
+      // call vatRegistrationService.persistVatScheme here
+
       vatRegistrationService.getRegistrationSummary map {
-        model => Ok(views.html.pages.summary(model))
+        model: Summary => Ok(views.html.pages.summary(model))
       }
   }
 }

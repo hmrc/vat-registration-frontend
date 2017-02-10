@@ -20,10 +20,12 @@ import models.api.VatScheme
 
 trait ViewModelTransformer[L] {
 
+  // Upserts (selectively converts) a View model object to its API model counterpart
   def toApi(logicalGroup: L): L
 }
 
 trait ApiModelTransformer[V] {
 
+  // Returns a view model for a specific part of a given VatScheme API model
   def apply(vatScheme: VatScheme): V
 }

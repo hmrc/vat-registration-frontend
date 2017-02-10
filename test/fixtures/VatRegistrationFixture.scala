@@ -39,7 +39,9 @@ trait VatRegistrationFixture {
   }
 
   val validStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(1), Some(2), Some(2017))
+  val differentStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(30), Some(12), Some(2001))
   val validTradingName = TradingName(TradingName.TRADING_NAME_YES, Some("ACME INC"))
+  val differentTradingName = TradingName(TradingName.TRADING_NAME_YES, Some("HOLIDAY INC"))
   val validRegId = "VAT123456"
 
   val validVatChoice = VatChoice(
@@ -47,8 +49,17 @@ trait VatRegistrationFixture {
     VatChoice.NECESSITY_VOLUNTARY
   )
 
+  val differentVatChoice = VatChoice(
+    differentStartDate.toDateTime,
+    VatChoice.NECESSITY_VOLUNTARY
+  )
+
   val validVatTradingDetails = VatTradingDetails(
     "ACME INC"
+  )
+
+  val differentVatTradingDetails = VatTradingDetails(
+    "HOLIDAY INC"
   )
 
   val validNewVatScheme = VatScheme.blank(validRegId)

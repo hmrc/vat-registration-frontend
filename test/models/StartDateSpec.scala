@@ -34,6 +34,18 @@ class StartDateSpec extends UnitSpec with VatRegistrationFixture {
     }
   }
 
+  "toApi" should {
+    "upserts (merge) a current VatChoice API model with the details of an instance of StartDate view model" in {
+      validStartDate.toApi(differentVatChoice) shouldBe validVatChoice
+    }
+  }
+
+  "apply" should {
+    "convert a populated VatScheme's VatChoice API model to an instance of StartDate view model" in {
+      StartDate.apply(validVatScheme) shouldBe validStartDate
+    }
+  }
+
   "fromDateTime" should {
     "convert a DateTime object to a StartDate model" in {
       val startDate = StartDate.fromDateTime(validDateTime)
