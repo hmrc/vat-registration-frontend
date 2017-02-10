@@ -67,7 +67,7 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
   }
 
   private[services] def viewModelToVatChoice(startDate: StartDate): VatChoice = VatChoice(
-      startDate = startDate.toDate,
+      startDate = startDate.toDateTime,
       necessity = VatChoice.NECESSITY_VOLUNTARY // Until we play the 83k threshold story
     )
 

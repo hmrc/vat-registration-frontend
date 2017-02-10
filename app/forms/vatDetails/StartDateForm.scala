@@ -26,9 +26,9 @@ object StartDateForm {
   val form = Form(
     mapping(
       "startDateRadio" -> nonEmptyText,
-      "year" -> optional(text),
-      "month" -> optional(text),
-      "day" -> optional(text)
+      "day" -> optional(number),
+      "month" -> optional(number),
+      "year" -> optional(number)
     )(StartDate.apply)(StartDate.unapply)
   )
 }
