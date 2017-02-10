@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package models.view
+package models
 
 import models.api.VatScheme
 
-trait ViewModelTransformer {
+trait ViewModelTransformer[L] {
 
-  def toApi[L](logicalGroup: L): L
+  def toApi(logicalGroup: L): L
 }
 
-trait ApiModelTransformer {
+trait ApiModelTransformer[V] {
 
-  def fromApi[V](vatScheme: VatScheme): V
+  def fromApi(vatScheme: VatScheme): V
 }
