@@ -91,8 +91,9 @@ pages.summary.heading                                   = Check your answers
 ## Summary Page VAT details
 pages.summary.vatDetails.sectionHeading                 = VAT details
 pages.summary.vatDetails.taxableTurnover                = Will earn more than £83,000 in the next 30 days
-pages.summary.vatDetails.registerVoluntarily            = Register voluntarily
+pages.summary.vatDetails.necessity                      = Register voluntarily
 pages.summary.vatDetails.startDate                      = VAT start date
+pages.summary.vatDetails.mandatoryStartDate             = The date the company is registered with Companies House
 
 ## Summary Page Director contact details
 pages.summary.directorContactDetails.sectionHeading    = Director contact details

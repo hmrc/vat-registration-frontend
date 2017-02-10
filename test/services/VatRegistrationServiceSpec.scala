@@ -20,24 +20,23 @@ import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.DownstreamOutcome
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{VatChoice, VatTradingDetails}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
-import play.api.libs.json.Format
+import play.api.i18n.MessagesApi
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture {
 
   implicit val hc = HeaderCarrier()
   val mockRegConnector = mock[VatRegistrationConnector]
+  val messagesApi = mock[MessagesApi]
 
   class Setup {
-    val service = new VatRegistrationService(mockRegConnector) {
+    val service = new VatRegistrationService(mockRegConnector, messagesApi) {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
