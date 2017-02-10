@@ -16,19 +16,34 @@
 
 package models.view
 
+import models.{ApiModelTransformer, ViewModelTransformer}
+import models.api.{VatScheme, VatTradingDetails}
 import play.api.libs.json.Json
 
 case class TradingName(yesNo: String,
-                       tradingName: Option[String]) {
+                       tradingName: Option[String])
+  extends ViewModelTransformer[VatTradingDetails] {
 
   override def toString: String = tradingName.getOrElse("")
+
+  override def toApi(vatTradingDetails: VatTradingDetails): VatTradingDetails =
+    vatTradingDetails.copy(tradingName = tradingName.getOrElse(""))
 }
 
-object TradingName {
+object TradingName extends ApiModelTransformer[TradingName] {
   val TRADING_NAME_YES = "TRADING_NAME_YES"
   val TRADING_NAME_NO = "TRADING_NAME_NO"
 
   implicit val format = Json.format[TradingName]
 
   def empty: TradingName = TradingName("", None)
+
+  override def apply(vatScheme: VatScheme): TradingName = {
+    val tradingName = vatScheme.tradingDetails.tradingName
+    if (tradingName.isEmpty) {
+      TradingName(yesNo = TRADING_NAME_NO, tradingName = None)
+    } else {
+      TradingName(yesNo = TRADING_NAME_YES, tradingName = Some(tradingName))
+    }
+  }
 }

@@ -35,11 +35,11 @@ case class StartDate(dateType: String,
     s"$d/$m/$y"
   }
 
-  def toDateTime: DateTime =
-      DateTimeFormat.forPattern("dd/MM/yyyy").parseDateTime(toString)
-
   override def toApi(vatChoice: VatChoice): VatChoice =
     vatChoice.copy(startDate = toDateTime)
+
+  def toDateTime: DateTime =
+    DateTimeFormat.forPattern("dd/MM/yyyy").parseDateTime(toString)
 }
 
 object StartDate extends ApiModelTransformer[StartDate] {
@@ -50,9 +50,7 @@ object StartDate extends ApiModelTransformer[StartDate] {
 
   implicit val format = Json.format[StartDate]
 
-  def empty: StartDate = StartDate("", None, None, None)
-
-  def apply(vatScheme: VatScheme): StartDate =
+  override def apply(vatScheme: VatScheme): StartDate =
     fromDateTime(vatScheme.vatChoice.startDate)
 
   def fromDateTime(d: DateTime): StartDate =
@@ -62,4 +60,5 @@ object StartDate extends ApiModelTransformer[StartDate] {
       Some(d.year().get)
     )
 
+  def empty: StartDate = StartDate("", None, None, None)
 }
