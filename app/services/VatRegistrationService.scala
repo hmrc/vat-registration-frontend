@@ -33,8 +33,8 @@ import scala.concurrent.Future
 trait RegistrationService {
 
   def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value]
-  def submitVatChoice(startDate: StartDate)(implicit hc: HeaderCarrier): Future[VatChoice]
-  def submitTradingDetails(tradingName: TradingName)(implicit hc: HeaderCarrier): Future[VatTradingDetails]
+  def submitVatChoice(startDate: StartDate, vatChoice: VatChoice)(implicit hc: HeaderCarrier): Future[VatChoice]
+  def submitTradingDetails(tradingName: TradingName, tradingDetails: VatTradingDetails)(implicit hc: HeaderCarrier): Future[VatTradingDetails]
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary]
 
 }
@@ -52,27 +52,27 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
     } yield DownstreamOutcome.Success
   }
 
-  def submitVatChoice(startDate: StartDate)(implicit hc: HeaderCarrier): Future[VatChoice] = {
+  def submitVatChoice(startDate: StartDate, vatChoice: VatChoice)(implicit hc: HeaderCarrier): Future[VatChoice] = {
     for {
       regId <- fetchRegistrationId
-      response <- vatRegConnector.upsertVatChoice(regId, viewModelToVatChoice(startDate))
+      response <- vatRegConnector.upsertVatChoice(regId, startDate.toApi(vatChoice))
     } yield response
   }
 
-  def submitTradingDetails(tradingName: TradingName)(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
+  def submitTradingDetails(tradingName: TradingName, tradingDetails: VatTradingDetails)(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
     for {
       regId <- fetchRegistrationId
-      response <- vatRegConnector.upsertVatTradingDetails(regId, viewModelToTradingDetails(tradingName))
+      response <- vatRegConnector.upsertVatTradingDetails(regId, tradingName.toApi(tradingDetails))
     } yield response
   }
 
-  private[services] def viewModelToVatChoice(startDate: StartDate): VatChoice = VatChoice(
-      startDate = startDate.toDateTime,
-      necessity = VatChoice.NECESSITY_VOLUNTARY // Until we play the 83k threshold story
-    )
-
-  private[services] def viewModelToTradingDetails(tradingName: TradingName): VatTradingDetails =
-    VatTradingDetails(tradingName.toString)
+//  private[services] def viewModelToVatChoice(startDate: StartDate): VatChoice = VatChoice(
+//      startDate = startDate.toDateTime,
+//      necessity = VatChoice.NECESSITY_VOLUNTARY // Until we play the 83k threshold story
+//    )
+//
+//  private[services] def viewModelToTradingDetails(tradingName: TradingName): VatTradingDetails =
+//    VatTradingDetails(tradingName.toString)
 
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
     for {
