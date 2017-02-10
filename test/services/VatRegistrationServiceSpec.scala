@@ -57,7 +57,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.upsertVatChoice(Matchers.any(), Matchers.any())
       (Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatChoice))
 
-      ScalaFutures.whenReady(service.submitVatChoice(validStartDate))(_ mustBe validVatChoice)
+      ScalaFutures.whenReady(service.submitVatChoice(validStartDate, differentVatChoice))(_ mustBe validVatChoice)
     }
   }
 
@@ -66,7 +66,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       mockFetchRegId(validRegId)
       when(mockRegConnector.upsertVatTradingDetails(Matchers.any(), Matchers.any())
       (Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatTradingDetails))
-      ScalaFutures.whenReady(service.submitTradingDetails(validTradingName))(_ mustBe validVatTradingDetails)
+      ScalaFutures.whenReady(service.submitTradingDetails(validTradingName, differentVatTradingDetails))(_ mustBe validVatTradingDetails)
     }
   }
 
