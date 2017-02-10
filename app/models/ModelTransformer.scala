@@ -25,5 +25,5 @@ trait ViewModelTransformer[L] {
 
 trait ApiModelTransformer[V] {
 
-  def fromApi(vatScheme: VatScheme): V
+  def apply(vatScheme: VatScheme): V
 }

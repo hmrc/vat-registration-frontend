@@ -20,6 +20,6 @@ import models.view.StartDate
 
 trait S4LFixture {
 
-  lazy val validFutureDate = StartDate("SPECIFIC_DATE", Some("2017"), Some("03"), Some("10"))
+  lazy val validFutureDate = StartDate("SPECIFIC_DATE", Some(10), Some(3), Some(2017))
 
 }

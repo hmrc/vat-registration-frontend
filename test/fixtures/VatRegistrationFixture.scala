@@ -35,21 +35,16 @@ trait VatRegistrationFixture {
 
   val validDateTime = {
     val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
-    formatter.parseDateTime("01/02/17")
+    formatter.parseDateTime("01/02/2017")
   }
 
-  val validStartDate = StartDate(StartDate.SPECIFIC_DATE, Some("01"), Some("02"), Some("17"))
+  val validStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(1), Some(2), Some(2017))
   val validTradingName = TradingName(TradingName.TRADING_NAME_YES, Some("ACME INC"))
   val validRegId = "VAT123456"
 
   val validVatChoice = VatChoice(
-    validStartDate.toDate,
+    validStartDate.toDateTime,
     VatChoice.NECESSITY_VOLUNTARY
-  )
-
-  val validVatChoice2 = VatChoice(
-    validStartDate.toDate,
-    VatChoice.NECESSITY_OBLIGATORY
   )
 
   val validVatTradingDetails = VatTradingDetails(
@@ -64,22 +59,9 @@ trait VatRegistrationFixture {
     validVatChoice
   )
 
-  val validVatScheme2 = VatScheme(
-    validRegId,
-    validVatTradingDetails,
-    validVatChoice2
-  )
-
   lazy val validSummaryView = Summary(
     Seq(
       getVatDetailsSection,
-      getCompanyDetailsSection
-    )
-  )
-
-  lazy val validSummaryView2 = Summary(
-    Seq(
-      getVatDetailsSection2,
       getCompanyDetailsSection
     )
   )
@@ -99,23 +81,7 @@ trait VatRegistrationFixture {
       ),
       SummaryRow(
         id = "vatDetails.startDate",
-        answer = Right("1 February 17"),
-        changeLink = Some(controllers.userJourney.routes.StartDateController.show())
-      )
-    )
-  )
-
-  private def getVatDetailsSection2: SummarySection = SummarySection(
-    id = "vatDetails",
-    Seq(
-      SummaryRow(
-        id = "vatDetails.registerVoluntarily",
-        answer = Left("No"),
-        changeLink = Some(controllers.userJourney.routes.SummaryController.show())
-      ),
-      SummaryRow(
-        id = "vatDetails.startDate",
-        answer = Right("1 February 17"),
+        answer = Right("1 February 2017"),
         changeLink = Some(controllers.userJourney.routes.StartDateController.show())
       )
     )

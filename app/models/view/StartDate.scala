@@ -23,27 +23,23 @@ import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.Json
 
 case class StartDate(dateType: String,
-                     year: Option[String],
-                     month: Option[String],
-                     day: Option[String])
+                     day: Option[Int],
+                     month: Option[Int],
+                     year: Option[Int])
   extends ViewModelTransformer[VatChoice] {
 
   override def toString: String = {
     val d = day.getOrElse("")
     val m = month.getOrElse("")
     val y = year.getOrElse("")
-    s"$y/$m/$d"
+    s"$d/$m/$y"
   }
 
-  def toDate: DateTime = {
-    val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
-    formatter.parseDateTime(toString)
-  }
+  def toDateTime: DateTime =
+      DateTimeFormat.forPattern("dd/MM/yyyy").parseDateTime(toString)
 
-  override def toApi(vatChoice: VatChoice): VatChoice = {
-    vatChoice
-  }
-
+  override def toApi(vatChoice: VatChoice): VatChoice =
+    vatChoice.copy(startDate = toDateTime)
 }
 
 object StartDate extends ApiModelTransformer[StartDate] {
@@ -56,15 +52,14 @@ object StartDate extends ApiModelTransformer[StartDate] {
 
   def empty: StartDate = StartDate("", None, None, None)
 
-  def fromApi(vatScheme: VatScheme): StartDate = {
-    fromDate(vatScheme.vatChoice.startDate)
-  }
+  def apply(vatScheme: VatScheme): StartDate =
+    fromDateTime(vatScheme.vatChoice.startDate)
 
-  def fromDate(d: DateTime): StartDate =
+  def fromDateTime(d: DateTime): StartDate =
     StartDate(StartDate.SPECIFIC_DATE,
-      Some(d.year.get().toString),
-      Some(d.monthOfYear().get.toString),
-      Some(d.dayOfMonth().get.toString)
+      Some(d.dayOfMonth.get()),
+      Some(d.monthOfYear().get),
+      Some(d.year().get)
     )
 
 }
