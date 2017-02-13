@@ -23,20 +23,38 @@ import enums.CacheKeys
 import forms.vatDetails.TaxableTurnoverForm
 import models.view.TaxableTurnover
 import play.api.mvc.{Action, AnyContent}
-import services.S4LService
+import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
 
 
-class TaxableTurnoverController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class TaxableTurnoverController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
+                                          ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    s4LService.fetchAndGet[TaxableTurnover](CacheKeys.TaxableTurnover.toString) map { date =>
-      val form = TaxableTurnoverForm.form.fill(date.getOrElse(TaxableTurnover.empty))
-      Ok(views.html.pages.taxable_turnover(form))
-    }
-  })
+
+//    s4LService.fetchAndGet[TaxableTurnover](CacheKeys.TaxableTurnover.toString) map {
+//
+//      case Some(taxableTurnover) => {
+//        val form = TaxableTurnoverForm.form.fill(taxableTurnover)
+//        Ok(views.html.pages.taxable_turnover(form))
+//      }
+//
+//      case None => {
+//        val taxableTurnover = vatRegistrationService.getVatScheme() map {
+//          x => {
+//            TaxableTurnover
+//          }
+//
+//        }
+//        val form = TaxableTurnoverForm.form.fill(taxableTurnover)
+//        Ok(views.html.pages.taxable_turnover(form))
+//      }
+//    }
+
+      Future.successful(Ok)
+    })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     TaxableTurnoverForm.form.bindFromRequest().fold(
