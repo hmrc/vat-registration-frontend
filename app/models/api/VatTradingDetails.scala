@@ -29,4 +29,6 @@ object VatTradingDetails {
     (__ \ "trading-name").write[String].contramap(_.tradingName)
 
   implicit val format = Format(apiReads, apiWrites)
+
+  def empty: VatTradingDetails = VatTradingDetails("")
 }

@@ -47,7 +47,7 @@ class TaxableTurnoverController @Inject()(s4LService: S4LService, ds: CommonPlay
         data: TaxableTurnover => {
           s4LService.saveForm[TaxableTurnover](CacheKeys.TaxableTurnover.toString, data) map { _ =>
             if (TaxableTurnover.TAXABLE_YES == data.yesNo) {
-              Redirect(controllers.userJourney.routes.StartDateController.showMandatoryStartDateConfirmation())
+              Redirect(controllers.userJourney.routes.MandatoryStartDateController.show())
             } else {
               Redirect(controllers.userJourney.routes.VoluntaryRegistrationController.show())
             }

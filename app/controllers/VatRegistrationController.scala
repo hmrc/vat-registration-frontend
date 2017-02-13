@@ -20,10 +20,8 @@ import javax.inject.{Inject, Singleton}
 
 import auth.VatTaxRegime
 import config.FrontendAuthConnector
-import connectors.{KeystoreConnector, S4LConnector}
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, MessagesApi}
-import services.S4LService
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController

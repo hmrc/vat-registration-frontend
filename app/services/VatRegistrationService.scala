@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, VatRegistrationConnector}
-import enums.DownstreamOutcome
+import enums.{CacheKeys, DownstreamOutcome}
 import models.api.{VatChoice, VatScheme, VatTradingDetails}
 import models.view._
 import play.api.i18n.MessagesApi
@@ -33,13 +33,13 @@ import scala.concurrent.Future
 trait RegistrationService {
 
   def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value]
-  def submitVatChoice(startDate: StartDate, vatChoice: VatChoice)(implicit hc: HeaderCarrier): Future[VatChoice]
-  def submitTradingDetails(tradingName: TradingName, tradingDetails: VatTradingDetails)(implicit hc: HeaderCarrier): Future[VatTradingDetails]
+  def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value]
+  def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails]
+  def submitVatChoice()(implicit hc: HeaderCarrier): Future[VatChoice]
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary]
-
 }
 
-class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector, messagesApi: MessagesApi)
+class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector: VatRegistrationConnector, messagesApi: MessagesApi)
   extends RegistrationService
   with CommonService {
 
@@ -52,27 +52,33 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
     } yield DownstreamOutcome.Success
   }
 
-  def submitVatChoice(startDate: StartDate, vatChoice: VatChoice)(implicit hc: HeaderCarrier): Future[VatChoice] = {
+  def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] =
+    for {
+      _ <- submitTradingDetails()
+      _ <- submitVatChoice()
+    } yield DownstreamOutcome.Success
+
+  def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
     for {
       regId <- fetchRegistrationId
-      response <- vatRegConnector.upsertVatChoice(regId, startDate.toApi(vatChoice))
+      vatTradingDetails = VatTradingDetails.empty
+      tradingName <- s4LService.fetchAndGet[TradingName](CacheKeys.TradingName.toString)
+      tradingDetails = tradingName.getOrElse(TradingName.empty).toApi(vatTradingDetails)
+      response <- vatRegConnector.upsertVatTradingDetails(regId, tradingDetails)
     } yield response
   }
 
-  def submitTradingDetails(tradingName: TradingName, tradingDetails: VatTradingDetails)(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
+  def submitVatChoice()(implicit hc: HeaderCarrier): Future[VatChoice] = {
     for {
       regId <- fetchRegistrationId
-      response <- vatRegConnector.upsertVatTradingDetails(regId, tradingName.toApi(tradingDetails))
+      vatChoice = VatChoice.empty
+      startDate <- s4LService.fetchAndGet[StartDate](CacheKeys.StartDate.toString)
+      voluntaryRegistration <- s4LService.fetchAndGet[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString)
+      sdVatChoice = startDate.getOrElse(StartDate.empty).toApi(vatChoice)
+      vrVatChoice = voluntaryRegistration.getOrElse(VoluntaryRegistration.empty).toApi(sdVatChoice)
+      response <- vatRegConnector.upsertVatChoice(regId, vrVatChoice)
     } yield response
   }
-
-//  private[services] def viewModelToVatChoice(startDate: StartDate): VatChoice = VatChoice(
-//      startDate = startDate.toDateTime,
-//      necessity = VatChoice.NECESSITY_VOLUNTARY // Until we play the 83k threshold story
-//    )
-//
-//  private[services] def viewModelToTradingDetails(tradingName: TradingName): VatTradingDetails =
-//    VatTradingDetails(tradingName.toString)
 
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
     for {
@@ -81,11 +87,11 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
     } yield registrationToSummary(response)
 
   def registrationToSummary(vatScheme: VatScheme): Summary = Summary(
-      Seq(
-        getVatDetailsSection(vatScheme.vatChoice),
-        getCompanyDetailsSection(vatScheme.tradingDetails)
-      )
+    Seq(
+      getVatDetailsSection(vatScheme.vatChoice),
+      getCompanyDetailsSection(vatScheme.tradingDetails)
     )
+  )
 
   private def getVatDetailsSection(vatChoice: VatChoice) = {
 
@@ -99,25 +105,25 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
     )
 
     def getNecessity: SummaryRow = SummaryRow(
-        "vatDetails.necessity",
-        vatChoice.necessity match {
-          case VatChoice.NECESSITY_VOLUNTARY => Right("Yes")
-          case _ => Right("No")
-        },
-        Some(controllers.userJourney.routes.VoluntaryRegistrationController.show())
-      )
+      "vatDetails.necessity",
+      vatChoice.necessity match {
+        case VatChoice.NECESSITY_VOLUNTARY => Right("Yes")
+        case _ => Right("No")
+      },
+      Some(controllers.userJourney.routes.VoluntaryRegistrationController.show())
+    )
 
     def getStartDate: SummaryRow = SummaryRow(
-        "vatDetails.startDate",
-        vatChoice.necessity match {
-          case VatChoice.NECESSITY_VOLUNTARY => Right(vatChoice.startDate.toString("d MMMM y"))
-          case _ => Right(messagesApi("pages.summary.vatDetails.mandatoryStartDate"))
-        },
-        vatChoice.necessity match {
-          case VatChoice.NECESSITY_VOLUNTARY => Some(controllers.userJourney.routes.StartDateController.show())
-          case _ => None
-        }
-      )
+      "vatDetails.startDate",
+      vatChoice.necessity match {
+        case VatChoice.NECESSITY_VOLUNTARY => Right(vatChoice.startDate.toString("d MMMM y"))
+        case _ => Right(messagesApi("pages.summary.vatDetails.mandatoryStartDate"))
+      },
+      vatChoice.necessity match {
+        case VatChoice.NECESSITY_VOLUNTARY => Some(controllers.userJourney.routes.StartDateController.show())
+        case _ => None
+      }
+    )
 
     SummarySection(
       id = "vatDetails",
@@ -140,5 +146,4 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
     )
   )
 }
-
 

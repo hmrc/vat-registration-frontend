@@ -11,8 +11,8 @@ GET         /start-date                     controllers.userJourney.StartDateCon
 POST        /start-date                     controllers.userJourney.StartDateController.submit
 
 ## MANDATORY START DATE PAGE
-GET         /start-date-confirmation        controllers.userJourney.StartDateController.showMandatoryStartDateConfirmation
-POST        /start-date-confirmation        controllers.userJourney.StartDateController.submitMandatoryStartDateConfirmation
+GET         /start-date-confirmation        controllers.userJourney.MandatoryStartDateController.show
+POST        /start-date-confirmation        controllers.userJourney.MandatoryStartDateController.submit
 
 
 ## TRADING NAME PAGE

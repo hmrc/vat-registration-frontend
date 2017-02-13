@@ -33,4 +33,6 @@ object VatChoice {
   implicit val format = (
     (__ \ "start-date").format[DateTime] and
       (__ \ "necessity").format[String]) (VatChoice.apply, unlift(VatChoice.unapply))
+
+  def empty: VatChoice = VatChoice(DateTime.now, "")
 }
