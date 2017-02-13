@@ -37,6 +37,7 @@ trait RegistrationService {
   def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails]
   def submitVatChoice()(implicit hc: HeaderCarrier): Future[VatChoice]
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary]
+  def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme]
 }
 
 class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector: VatRegistrationConnector, messagesApi: MessagesApi)
@@ -81,10 +82,13 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
   }
 
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
+    getVatScheme().map(registrationToSummary(_))
+
+  def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
     for {
       regId <- fetchRegistrationId
-      response <- vatRegConnector.getRegistration(regId)
-    } yield registrationToSummary(response)
+      vatScheme <- vatRegConnector.getRegistration(regId)
+    } yield vatScheme
 
   def registrationToSummary(vatScheme: VatScheme): Summary = Summary(
     Seq(

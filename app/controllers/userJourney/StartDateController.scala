@@ -30,8 +30,8 @@ import scala.concurrent.Future
 class StartDateController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    s4LService.fetchAndGet[StartDate](CacheKeys.StartDate.toString) map { date =>
-      val form = StartDateForm.form.fill(date.getOrElse(StartDate.empty))
+    s4LService.fetchAndGet[StartDate](CacheKeys.StartDate.toString) map { startDate =>
+      val form = StartDateForm.form.fill(startDate.getOrElse(StartDate.empty))
       Ok(views.html.pages.start_date(form))
     }
   })
