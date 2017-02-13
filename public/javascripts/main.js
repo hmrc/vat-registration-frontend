@@ -34,7 +34,7 @@ $(document).ready($(function () {
 (function (StartDatePage, $, undefined) {
     StartDatePage.init = function() {
         UI.hideShowOnRadioButton("startDateRadio",
-            { "#startDateRadio-future_date": "#future_date_panel" });
+            { "#startDateRadio-specific_date": "#specific_date_panel" });
     }
 }(window.StartDatePage = window.StartDatePage || {}, jQuery));
 
@@ -60,6 +60,6 @@ $(document).ready($(function () {
 /*
  example of multiple hide/show areas
  UI.hideShowOnRadioButton("startDate",
- {   "#startDate-future_date": "#future_date_panel",
+ {   "#startDate-specific_date": "#specific_date_panel",
      "#startDate-when_registered": "#other_panel"   });
  */

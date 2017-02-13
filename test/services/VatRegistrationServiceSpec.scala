@@ -17,13 +17,15 @@
 package services
 
 import connectors.{KeystoreConnector, VatRegistrationConnector}
-import enums.DownstreamOutcome
+import enums.{CacheKeys, DownstreamOutcome}
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.view.{StartDate, TradingName, VoluntaryRegistration}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
 import play.api.i18n.MessagesApi
+import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -36,7 +38,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   val messagesApi = mock[MessagesApi]
 
   class Setup {
-    val service = new VatRegistrationService(mockRegConnector, messagesApi) {
+    val service = new VatRegistrationService(mockS4LService, mockRegConnector, messagesApi) {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -54,19 +56,34 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   "Calling submitVatChoice" should {
     "return a success response when a VatChoice is submitted" in new Setup {
       mockFetchRegId(validRegId)
+
+      when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.StartDate.toString))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
+          .thenReturn(Future.successful(Some(validStartDate)))
+
+      when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.VoluntaryRegistration.toString))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[VoluntaryRegistration]]()))
+          .thenReturn(Future.successful(Some(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES))))
+
       when(mockRegConnector.upsertVatChoice(Matchers.any(), Matchers.any())
       (Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatChoice))
 
-      ScalaFutures.whenReady(service.submitVatChoice(validStartDate, differentVatChoice))(_ mustBe validVatChoice)
+      ScalaFutures.whenReady(service.submitVatChoice())(_ mustBe validVatChoice)
     }
   }
 
   "Calling submitTradingDetails" should {
     "return a success response when VatTradingDetails is submitted" in new Setup {
       mockFetchRegId(validRegId)
+
+      when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.TradingName.toString))
+      (Matchers.any[HeaderCarrier](), Matchers.any[Format[TradingName]]()))
+        .thenReturn(Future.successful(Some(validTradingName)))
+
       when(mockRegConnector.upsertVatTradingDetails(Matchers.any(), Matchers.any())
       (Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatTradingDetails))
-      ScalaFutures.whenReady(service.submitTradingDetails(validTradingName, differentVatTradingDetails))(_ mustBe validVatTradingDetails)
+
+      ScalaFutures.whenReady(service.submitTradingDetails())(_ mustBe validVatTradingDetails)
     }
   }
 

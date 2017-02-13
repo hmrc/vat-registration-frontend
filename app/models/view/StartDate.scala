@@ -29,12 +29,13 @@ case class StartDate(dateType: String,
   extends ViewModelTransformer[VatChoice] {
 
   override def toString: String = {
-    val d = day.getOrElse("")
-    val m = month.getOrElse("")
-    val y = year.getOrElse("")
+    val d = day.getOrElse(1)
+    val m = month.getOrElse(1)
+    val y = year.getOrElse(1970)
     s"$d/$m/$y"
   }
 
+  // Upserts (selectively converts) a View model object to its API model counterpart
   override def toApi(vatChoice: VatChoice): VatChoice =
     vatChoice.copy(startDate = toDateTime)
 
@@ -50,6 +51,7 @@ object StartDate extends ApiModelTransformer[StartDate] {
 
   implicit val format = Json.format[StartDate]
 
+  // Returns a view model for a specific part of a given VatScheme API model
   override def apply(vatScheme: VatScheme): StartDate =
     fromDateTime(vatScheme.vatChoice.startDate)
 

@@ -16,7 +16,7 @@
 
 package controllers.userJourney
 
-import connectors.VatRegistrationConnector
+import enums.DownstreamOutcome
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import org.mockito.Matchers
@@ -25,6 +25,7 @@ import play.api.http.Status
 import play.api.mvc.Result
 import services.VatRegistrationService
 import play.api.test.Helpers._
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -34,13 +35,15 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   implicit val materializer = app.materializer
 
-  object TestSummaryController extends SummaryController(mockVatRegistrationService, ds) {
+  object TestSummaryController extends SummaryController(mockS4LService, mockVatRegistrationService, ds) {
     override val authConnector = mockAuthConnector
   }
 
   "Calling summary to show the summary page" should {
     "return HTML with a valid summary view" in {
-      when(mockVatRegistrationService.getRegistrationSummary()(Matchers.any())).thenReturn(Future.successful(validSummaryView))
+      when(mockVatRegistrationService.submitVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(DownstreamOutcome.Success))
+      when(mockVatRegistrationService.getRegistrationSummary()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validSummaryView))
+      when(mockS4LService.clear()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validHttpResponse))
 
       callAuthorised(TestSummaryController.show, mockAuthConnector) {
         result =>
@@ -53,7 +56,9 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
     // TODO: Need to resolve why raising a new InternalError gives a Boxed Error exception yet this works for PAYE
     "return an Internal Server Error response when no valid model is returned from the microservice" ignore {
-      when(mockVatRegistrationService.getRegistrationSummary()(Matchers.any())).thenReturn(Future.failed(new InternalError()))
+      when(mockVatRegistrationService.submitVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(DownstreamOutcome.Success))
+      when(mockVatRegistrationService.getRegistrationSummary()(Matchers.any[HeaderCarrier]())).thenReturn(Future.failed(new InternalError()))
+      when(mockS4LService.clear()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validHttpResponse))
 
       callAuthorised(TestSummaryController.show, mockAuthConnector) {
         (response: Future[Result]) =>

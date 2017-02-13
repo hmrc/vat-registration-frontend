@@ -19,20 +19,20 @@
                         field = startDateForm("startDateRadio"),
                         Seq(
                             StartDate.COMPANY_REGISTRATION_DATE -> Messages("pages.startDate.radio.whenRegistered"),
-                            StartDate.SPECIFIC_DATE -> Messages("pages.startDate.radio.futureDate")
+                            StartDate.SPECIFIC_DATE -> Messages("pages.startDate.radio.specificDate")
                         ),
                         '_labelAfter -> true,
                         '_labelClass -> "block-label"
                     )
 
-                    <div class="panel panel-indent hidden" id="future_date_panel">
-                        <p>@messages("pages.startDate.panels.futureDate.para1")</p>
+                    <div class="panel panel-indent hidden" id="specific_date_panel">
+                        <p>@messages("pages.startDate.panels.specificDate.para1")</p>
                         <ul class="list list-bullet">
-                            <li>@messages("pages.startDate.panels.futureDate.bullet.2days")</li>
-                            <li>@messages("pages.startDate.panels.futureDate.bullet.3months")</li>
+                            <li>@messages("pages.startDate.panels.specificDate.bullet.2days")</li>
+                            <li>@messages("pages.startDate.panels.specificDate.bullet.3months")</li>
                         </ul>
 
-                        <span class="form-hint">@messages("pages.startDate.panels.futureDate.hint")</span>
+                        <span class="form-hint">@messages("pages.startDate.panels.specificDate.hint")</span>
 
 
                         <div class="form-date">
@@ -40,7 +40,7 @@
                                     startDateForm("day"),
                                     '_divClass -> "form-group",
                                     '_inputClass -> "form-control",
-                                    '_label -> Messages("pages.startDate.panels.futureDate.inputField.day"),
+                                    '_label -> Messages("pages.startDate.panels.specificDate.inputField.day"),
                                     '_labelClass -> "form-label"
                                 )
 
@@ -48,7 +48,7 @@
                                     startDateForm("month"),
                                     '_divClass -> "form-group",
                                     '_inputClass -> "form-control",
-                                    '_label -> Messages("pages.startDate.panels.futureDate.inputField.month"),
+                                    '_label -> Messages("pages.startDate.panels.specificDate.inputField.month"),
                                     '_labelClass -> "form-label"
                                 )
 
@@ -56,7 +56,7 @@
                                     startDateForm("year"),
                                     '_divClass -> "form-group form-group-year",
                                     '_inputClass -> "form-control",
-                                    '_label -> Messages("pages.startDate.panels.futureDate.inputField.year"),
+                                    '_label -> Messages("pages.startDate.panels.specificDate.inputField.year"),
                                     '_labelClass -> "form-label"
                                 )
                         </div>

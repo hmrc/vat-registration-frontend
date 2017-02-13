@@ -33,6 +33,8 @@ trait VatRegistrationFixture {
   val internalServiceException = new InternalServerException(Status.BAD_GATEWAY.toString)
   val runTimeException = new RuntimeException("tst")
 
+  val validHttpResponse = HttpResponse(200)
+
   val validDateTime = {
     val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
     formatter.parseDateTime("01/02/2017")

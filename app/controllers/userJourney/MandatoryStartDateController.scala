@@ -19,18 +19,21 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
+import enums.CacheKeys
+import forms.vatDetails.StartDateForm
+import models.view.StartDate
 import play.api.mvc._
-import services.{S4LService, VatRegistrationService}
+import services.S4LService
 
-class SummaryController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService, ds: CommonPlayDependencies)
-  extends VatRegistrationController(ds) {
+import scala.concurrent.Future
 
-  def show: Action[AnyContent] = authorised.async {
-    implicit user => implicit request =>
-      for {
-        _ <- vatRegistrationService.submitVatScheme()
-        summary <- vatRegistrationService.getRegistrationSummary()
-        _ <- s4LService.clear()
-      } yield Ok(views.html.pages.summary(summary))
-  }
+class MandatoryStartDateController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+
+  def show: Action[AnyContent] = authorised(implicit user => implicit request => {
+      Ok(views.html.pages.mandatory_start_date_confirmation())
+  })
+
+  def submit: Action[AnyContent] = authorised(implicit user => implicit request => {
+    Redirect(controllers.userJourney.routes.TradingNameController.show())
+  })
 }

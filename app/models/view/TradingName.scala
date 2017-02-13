@@ -26,6 +26,7 @@ case class TradingName(yesNo: String,
 
   override def toString: String = tradingName.getOrElse("")
 
+  // Upserts (selectively converts) a View model object to its API model counterpart
   override def toApi(vatTradingDetails: VatTradingDetails): VatTradingDetails =
     vatTradingDetails.copy(tradingName = tradingName.getOrElse(""))
 }
@@ -38,6 +39,7 @@ object TradingName extends ApiModelTransformer[TradingName] {
 
   def empty: TradingName = TradingName("", None)
 
+  // Returns a view model for a specific part of a given VatScheme API model
   override def apply(vatScheme: VatScheme): TradingName = {
     val tradingName = vatScheme.tradingDetails.tradingName
     if (tradingName.isEmpty) {
