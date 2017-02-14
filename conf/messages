@@ -88,6 +88,23 @@ pages.start.date.confirmation.warning                        = You may get a pen
 pages.summary.title                                     = Summary
 pages.summary.heading                                   = Check your answers
 
+## Application submission confirmation page
+pages.application.submission.confirmation.title                     = Application Submitted
+pages.application.submission.confirmation.heading                   = Application submitted
+pages.application.submission.confirmation.reference.number          = Your reference number is
+pages.application.submission.confirmation.whatNext.sub.heading      = What happens next?
+pages.application.submission.confirmation.whatNext.para1            = HMRC will send you an email to let you know the outcome of your application. This will usually take up to 7 days.
+pages.application.submission.confirmation.whatNext.para2            = You''ll get a secure message with your VAT number sent to your business tax account once you''re registered for VAT.
+pages.application.submission.confirmation.whatNext.para3            = Once you''ve got your VAT number you can send VAT invoices to your VAT-registered customers which show the VAT amount separately.
+
+
+pages.application.submission.confirmation.whileWait.sub.heading     = While you wait
+pages.application.submission.confirmation.whileWait.para1           = You can''t charge VAT until you get your VAT number, but you''ll still have to pay the VAT to HMRC for this period.
+pages.application.submission.confirmation.whileWait.para2           = You should increase your prices to allow for this and tell your customers why.
+pages.application.submission.confirmation.whileWait.example         = Example
+pages.application.submission.confirmation.whileWait.example.para1   = If you would''ve charged £100 for something that''s subject to the standard <a href="https://www.gov.uk/vat-rates">rate of VAT</a> (20%), increase the price by the 20% and charge £120.
+pages.application.submission.confirmation.whileWait.para3           = Once you''ve got your VAT number you can then reissue invoices showing the VAT.
+pages.application.submission.confirmation.button                    = Your business registration overview
 ## Summary Page VAT details
 pages.summary.vatDetails.sectionHeading                 = VAT details
 pages.summary.vatDetails.taxableTurnover                = Will earn more than £83,000 in the next 30 days
