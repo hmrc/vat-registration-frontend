@@ -63,4 +63,6 @@ object StartDate extends ApiModelTransformer[StartDate] {
     )
 
   def empty: StartDate = StartDate("", None, None, None)
+
+  def empty(dateType: String): StartDate = StartDate(dateType, None, None, None)
 }
