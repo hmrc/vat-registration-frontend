@@ -35,3 +35,6 @@ GET         /summary                        controllers.userJourney.SummaryContr
 
 ## POST SIGN IN
 GET         /post-sign-in                   controllers.userJourney.SignInOutController.postSignIn
+
+## APPLICATION SUBMISSION CONFIRMATION
+GET         /submission-confirmation        controllers.userJourney.ApplicationSubmissionController.show

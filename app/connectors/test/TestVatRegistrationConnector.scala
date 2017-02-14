@@ -28,6 +28,7 @@ import scala.concurrent.Future
 @ImplementedBy(classOf[TestVatRegistrationConnector])
 trait TestRegistrationConnector {
   def setupCurrentProfile()(implicit hc: HeaderCarrier): Future[Result]
+  def dropCollection()(implicit hc: HeaderCarrier): Future[Result]
 }
 
 class TestVatRegistrationConnector extends TestRegistrationConnector with ServicesConfig {
@@ -39,6 +40,11 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
   def setupCurrentProfile()(implicit hc: HeaderCarrier): Future[Result] = {
     http.POSTEmpty(s"$vatRegUrl/vatreg/test-only/current-profile-setup").map { _ => Results.Ok }
   }
+
+  def dropCollection()(implicit hc: HeaderCarrier): Future[Result] = {
+    http.GET(s"$vatRegUrl/vatreg/test-only/clear").map { _ => Results.Ok }
+  }
+
   //$COVERAGE-ON$
 
 }

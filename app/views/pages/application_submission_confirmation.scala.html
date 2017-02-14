@@ -1,0 +1,47 @@
+@()(implicit request: Request[_], messages: Messages)
+
+@import uk.gov.hmrc.play.views.html.helpers.form
+
+@main_template(title = messages("pages.application.submission.confirmation.title")) {
+
+
+    <div class="grid-row">
+        <div class="column-one-third">
+
+            <div class="transaction-banner--complete">
+                <h1 class="form-title heading-large">@messages("pages.application.submission.confirmation.heading")</h1>
+                <p>@messages("pages.application.submission.confirmation.reference.number")</p>
+                <p><strong class="heading-medium">000-032597</strong></p>
+            </div>
+
+
+            <div class="form-group">
+                <h2 class="heading-medium">@messages("pages.application.submission.confirmation.whatNext.sub.heading")</h2>
+                <p>@messages("pages.application.submission.confirmation.whatNext.para1")</p>
+                <p>@messages("pages.application.submission.confirmation.whatNext.para2")</p>
+                <p>@messages("pages.application.submission.confirmation.whatNext.para3")</p>
+
+                <h2 class="heading-medium">@messages("pages.application.submission.confirmation.whileWait.sub.heading")</h2>
+                <p>@messages("pages.application.submission.confirmation.whileWait.para1")</p>
+                <p>@messages("pages.application.submission.confirmation.whileWait.para2")</p>
+                <div class="panel panel-indent" id="details-content-2" aria-hidden="false">
+                    <h3 class="heading-small">@messages("pages.application.submission.confirmation.whileWait.example")</h3>
+                    <p>@Html(messages("pages.application.submission.confirmation.whileWait.example.para1"))</p>
+                </div>
+                <p>@messages("pages.application.submission.confirmation.whileWait.para3")</p>
+
+            </div>
+
+            <p>@messages("pages.welcome.note.registrationTime")</p>
+
+            @form(action = controllers.userJourney.routes.WelcomeController.show()) {
+                <div class="form-group">
+                    <button class="button-get-started" role="button" id="save-and-continue">@messages("pages.application.submission.confirmation.button")</button>
+                </div>
+            }
+
+
+        </div>
+
+    </div>
+}

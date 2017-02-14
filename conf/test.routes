@@ -1,3 +1,5 @@
 GET        /current-profile-setup        controllers.test.CurrentProfileController.currentProfileSetup
 
 GET        /s4l-teardown                 controllers.test.TestCacheController.tearDownS4L
+
+GET        /db-teardown                 controllers.test.TestVatRegistrationAdminController.dropCollection()
