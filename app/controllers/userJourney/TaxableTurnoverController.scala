@@ -38,16 +38,15 @@ class TaxableTurnoverController @Inject()(s4LService: S4LService, vatRegistratio
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
     s4LService.fetchAndGet[TaxableTurnover](CacheKeys.TaxableTurnover.toString) flatMap {
-      case Some(taxableTurnover) => Future.successful(taxableTurnover)
+      case Some(viewModel) => Future.successful(viewModel)
       case None => for {
         vatScheme <- vatRegistrationService.getVatScheme()
-        taxableTurnover = TaxableTurnover(vatScheme)
-      } yield taxableTurnover
-    } map { taxableTurnover =>
-      val form = TaxableTurnoverForm.form.fill(taxableTurnover)
+        viewModel = TaxableTurnover(vatScheme)
+      } yield viewModel
+    } map { viewModel =>
+      val form = TaxableTurnoverForm.form.fill(viewModel)
       Ok(views.html.pages.taxable_turnover(form))
     }
-
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {

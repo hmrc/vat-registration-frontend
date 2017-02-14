@@ -25,26 +25,29 @@ import models.view.StartDate
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 class StartDateController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
                                     ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    for {
-      startDate <- s4LService.fetchAndGet[StartDate](CacheKeys.StartDate.toString)
-    } yield {
-      if(startDate.getOrElse(StartDate.empty) != StartDate.empty) {
-        val form = StartDateForm.form.fill(startDate.getOrElse(StartDate.empty))
-        Ok(views.html.pages.start_date(form))
-      } else {
-        val form = vatRegistrationService.getVatScheme() map {
-          x => StartDateForm.form.fill(StartDate.apply(x))
-        }
-        Ok(views.html.pages.start_date(Await.result(form, Duration.Inf)))
-      }
+
+    s4LService.fetchAndGet[StartDate](CacheKeys.StartDate.toString) flatMap {
+      case Some(viewModel) => Future.successful(viewModel)
+      case None => for {
+        vatScheme <- vatRegistrationService.getVatScheme()
+        viewModel = StartDate(vatScheme)
+      } yield viewModel
+    } map { viewModel =>
+      val form = StartDateForm.form.fill(viewModel)
+      Ok(views.html.pages.start_date(form))
     }
+
+//    vatRegistrationService.retrieveViewModel[StartDate](StartDate, CacheKeys.StartDate.toString).map {
+//      viewModel: StartDate =>
+//        val form = StartDateForm.form.fill(viewModel)
+//        Ok(views.html.pages.start_date(form))
+//    }
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {

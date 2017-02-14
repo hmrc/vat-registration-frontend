@@ -20,6 +20,7 @@ import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.{CacheKeys, DownstreamOutcome}
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.api.{VatChoice, VatScheme}
 import models.view.{StartDate, TradingName, VoluntaryRegistration}
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -27,7 +28,7 @@ import org.scalatest.concurrent.ScalaFutures
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpReads}
 
 import scala.concurrent.Future
 
@@ -63,10 +64,15 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.VoluntaryRegistration.toString))
         (Matchers.any[HeaderCarrier](), Matchers.any[Format[VoluntaryRegistration]]()))
-          .thenReturn(Future.successful(Some(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES))))
+        .thenReturn(Future.successful(Some(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES))))
+
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
+      (Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatScheme]]()))
+        .thenReturn(Future.successful(validVatScheme))
 
       when(mockRegConnector.upsertVatChoice(Matchers.any(), Matchers.any())
-      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatChoice))
+        (Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatChoice]]()))
+        .thenReturn(Future.successful(validVatChoice))
 
       ScalaFutures.whenReady(service.submitVatChoice())(_ mustBe validVatChoice)
     }
@@ -77,11 +83,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       mockFetchRegId(validRegId)
 
       when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.TradingName.toString))
-      (Matchers.any[HeaderCarrier](), Matchers.any[Format[TradingName]]()))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[TradingName]]()))
         .thenReturn(Future.successful(Some(validTradingName)))
 
       when(mockRegConnector.upsertVatTradingDetails(Matchers.any(), Matchers.any())
-      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatTradingDetails))
+        (Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(validVatTradingDetails))
 
       ScalaFutures.whenReady(service.submitTradingDetails())(_ mustBe validVatTradingDetails)
     }

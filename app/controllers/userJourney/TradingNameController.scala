@@ -32,18 +32,16 @@ class TradingNameController @Inject()(s4LService: S4LService, vatRegistrationSer
                                       ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    for {
-      tradingName <- s4LService.fetchAndGet[TradingName](CacheKeys.TradingName.toString)
-    } yield {
-      if(tradingName.getOrElse(TradingName.empty) != TradingName.empty) {
-        val form = TradingNameForm.form.fill(tradingName.getOrElse(TradingName.empty))
-        Ok(views.html.pages.trading_name(form))
-      } else {
-        val form = vatRegistrationService.getVatScheme() map {
-          x => TradingNameForm.form.fill(TradingName.apply(x))
-        }
-        Ok(views.html.pages.trading_name(Await.result(form, Duration.Inf)))
-      }
+
+    s4LService.fetchAndGet[TradingName](CacheKeys.TradingName.toString) flatMap {
+      case Some(viewModel) => Future.successful(viewModel)
+      case None => for {
+        vatScheme <- vatRegistrationService.getVatScheme()
+        viewModel = TradingName(vatScheme)
+      } yield viewModel
+    } map { viewModel =>
+      val form = TradingNameForm.form.fill(viewModel)
+      Ok(views.html.pages.trading_name(form))
     }
   })
 
