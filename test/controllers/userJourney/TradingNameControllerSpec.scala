@@ -18,20 +18,22 @@ package controllers.userJourney
 
 import builders.AuthBuilder
 import enums.CacheKeys
+import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.view.TradingName
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class TradingNameControllerSpec extends VatRegSpec {
+class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
@@ -46,8 +48,12 @@ class TradingNameControllerSpec extends VatRegSpec {
     "return HTML when there's a trading name in S4L" in {
       val tradingName = TradingName(TradingName.TRADING_NAME_YES, Some("Test Trading Name"))
 
-      when(mockS4LService.fetchAndGet[TradingName](Matchers.eq(CacheKeys.TradingName.toString))(Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[TradingName](Matchers.eq(CacheKeys.TradingName.toString))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[TradingName]]()))
         .thenReturn(Future.successful(Some(tradingName)))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestTradingNameController.show, mockAuthConnector) {
         result =>
@@ -59,7 +65,8 @@ class TradingNameControllerSpec extends VatRegSpec {
     }
 
     "return HTML when there's nothing in S4L" in {
-      when(mockS4LService.fetchAndGet[TradingName](Matchers.eq(CacheKeys.TradingName.toString))(Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[TradingName](Matchers.eq(CacheKeys.TradingName.toString))
+        (Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       callAuthorised(TestTradingNameController.show, mockAuthConnector) {

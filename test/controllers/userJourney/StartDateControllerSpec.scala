@@ -18,20 +18,22 @@ package controllers.userJourney
 
 import builders.AuthBuilder
 import enums.CacheKeys
+import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.view.StartDate
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class StartDateControllerSpec extends VatRegSpec {
+class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
@@ -46,8 +48,12 @@ class StartDateControllerSpec extends VatRegSpec {
     "return HTML when there's a start date in S4L" in {
       val startDate = StartDate(StartDate.SPECIFIC_DATE, Some(30), Some(1), Some(2017))
 
-      when(mockS4LService.fetchAndGet[StartDate](Matchers.eq(CacheKeys.StartDate.toString))(Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[StartDate](Matchers.eq(CacheKeys.StartDate.toString))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
         .thenReturn(Future.successful(Some(startDate)))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestStartDateController.show, mockAuthConnector) {
         result =>

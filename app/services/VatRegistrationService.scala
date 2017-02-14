@@ -21,10 +21,12 @@ import javax.inject.Inject
 import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.{CacheKeys, DownstreamOutcome}
+import models.{ApiModelTransformer, ViewModelTransformer}
 import models.api.{VatChoice, VatScheme, VatTradingDetails}
 import models.view._
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.play.http.HeaderCarrier
+import play.api.data.Form
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -91,6 +93,16 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
       regId <- fetchRegistrationId
       vatScheme <- vatRegConnector.getRegistration(regId)
     } yield vatScheme
+
+//  def retrieveViewModel[V](v: ApiModelTransformer[V], key: String)(implicit hc: HeaderCarrier): Future[V] = {
+//    s4LService.fetchAndGet[V](key) flatMap {
+//      case Some(viewModel) => Future.successful(viewModel)
+//      case None => for {
+//        vatScheme <- getVatScheme()
+//        viewModel = v.apply(vatScheme)
+//      } yield viewModel
+//    }
+//  }
 
   def registrationToSummary(vatScheme: VatScheme): Summary = Summary(
     Seq(

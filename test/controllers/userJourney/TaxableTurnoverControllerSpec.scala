@@ -19,15 +19,17 @@ package controllers.userJourney
 import builders.AuthBuilder
 import enums.CacheKeys
 import helpers.VatRegSpec
-import models.view.TaxableTurnover
+import models.view.{StartDate, TaxableTurnover, VoluntaryRegistration}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.api.libs.json.Format
 import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -78,10 +80,24 @@ class TaxableTurnoverControllerSpec extends VatRegSpec {
   s"POST ${routes.TaxableTurnoverController.submit()} with Taxable Turnover selected Yes" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TaxableTurnover.empty)))
+      val returnCacheMapTaxableTurnover = CacheMap("", Map("" -> Json.toJson(TaxableTurnover.empty)))
+      val returnCacheMapVoluntaryRegistration = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration.empty)))
+      val returnCacheMapStartDate = CacheMap("", Map("" -> Json.toJson(StartDate.empty)))
 
-      when(mockS4LService.saveForm[TaxableTurnover](Matchers.eq(CacheKeys.TaxableTurnover.toString), Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMap))
+      when(mockS4LService.saveForm[TaxableTurnover]
+        (Matchers.eq(CacheKeys.TaxableTurnover.toString), Matchers.any())
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[TaxableTurnover]]()))
+        .thenReturn(Future.successful(returnCacheMapTaxableTurnover))
+
+      when(mockS4LService.saveForm[VoluntaryRegistration]
+        (Matchers.eq(CacheKeys.VoluntaryRegistration.toString), Matchers.any())
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[VoluntaryRegistration]]()))
+        .thenReturn(Future.successful(returnCacheMapVoluntaryRegistration))
+
+      when(mockS4LService.saveForm[StartDate]
+        (Matchers.eq(CacheKeys.StartDate.toString), Matchers.any())
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
+        .thenReturn(Future.successful(returnCacheMapStartDate))
 
       AuthBuilder.submitWithAuthorisedUser(TestTaxableTurnoverController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "taxableTurnoverRadio" -> TaxableTurnover.TAXABLE_YES

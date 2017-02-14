@@ -32,18 +32,16 @@ import scala.concurrent.{Await, Future}
                                                   ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    for {
-      voluntaryRegistration <- s4LService.fetchAndGet[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString)
-    } yield {
-      if(voluntaryRegistration.getOrElse(VoluntaryRegistration.empty) != VoluntaryRegistration.empty) {
-        val form = VoluntaryRegistrationForm.form.fill(voluntaryRegistration.getOrElse(VoluntaryRegistration.empty))
-        Ok(views.html.pages.voluntary_registration(form))
-      } else {
-        val form = vatRegistrationService.getVatScheme() map {
-          x => VoluntaryRegistrationForm.form.fill(VoluntaryRegistration.apply(x))
-        }
-        Ok(views.html.pages.voluntary_registration(Await.result(form, Duration.Inf)))
-      }
+
+    s4LService.fetchAndGet[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString) flatMap {
+      case Some(viewModel) => Future.successful(viewModel)
+      case None => for {
+        vatScheme <- vatRegistrationService.getVatScheme()
+        viewModel = VoluntaryRegistration(vatScheme)
+      } yield viewModel
+    } map { viewModel =>
+      val form = VoluntaryRegistrationForm.form.fill(viewModel)
+      Ok(views.html.pages.voluntary_registration(form))
     }
   })
 
