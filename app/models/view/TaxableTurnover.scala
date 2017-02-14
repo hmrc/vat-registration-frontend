@@ -16,16 +16,27 @@
 
 package models.view
 
+import models.ApiModelTransformer
+import models.api.VatChoice.{NECESSITY_VOLUNTARY, NECESSITY_OBLIGATORY}
+import models.api.VatScheme
 import play.api.libs.json.Json
 
 case class TaxableTurnover(yesNo: String) {
 }
 
-object TaxableTurnover {
+object TaxableTurnover extends ApiModelTransformer[TaxableTurnover] {
   val TAXABLE_YES = "TAXABLE_YES"
   val TAXABLE_NO = "TAXABLE_NO"
 
   implicit val format = Json.format[TaxableTurnover]
+
+  // Returns a view model for a specific part of a given VatScheme API model
+  override def apply(vatScheme: VatScheme): TaxableTurnover =
+    vatScheme.vatChoice.necessity match {
+      case NECESSITY_VOLUNTARY => TaxableTurnover(TAXABLE_NO)
+      case NECESSITY_OBLIGATORY => TaxableTurnover(TAXABLE_YES)
+      case _ => TaxableTurnover.empty
+    }
 
   def empty: TaxableTurnover = TaxableTurnover("")
 }

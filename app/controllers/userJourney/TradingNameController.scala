@@ -21,18 +21,29 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
 import forms.vatDetails.TradingNameForm
-import models.view.TradingName
+import models.view.{TradingName, VoluntaryRegistration}
 import play.api.mvc._
-import services.S4LService
+import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
-class TradingNameController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class TradingNameController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
+                                      ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    s4LService.fetchAndGet[TradingName](CacheKeys.TradingName.toString) map { tradingName =>
-      val form = TradingNameForm.form.fill(tradingName.getOrElse(TradingName.empty))
-      Ok(views.html.pages.trading_name(form))
+    for {
+      tradingName <- s4LService.fetchAndGet[TradingName](CacheKeys.TradingName.toString)
+    } yield {
+      if(tradingName.getOrElse(TradingName.empty) != TradingName.empty) {
+        val form = TradingNameForm.form.fill(tradingName.getOrElse(TradingName.empty))
+        Ok(views.html.pages.trading_name(form))
+      } else {
+        val form = vatRegistrationService.getVatScheme() map {
+          x => TradingNameForm.form.fill(TradingName.apply(x))
+        }
+        Ok(views.html.pages.trading_name(Await.result(form, Duration.Inf)))
+      }
     }
   })
 
@@ -44,7 +55,12 @@ class TradingNameController @Inject()(s4LService: S4LService, ds: CommonPlayDepe
         data: TradingName => {
           // Save to S4L
           s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, data) map { _ =>
-            Redirect(controllers.userJourney.routes.SummaryController.show())
+            if (TradingName.TRADING_NAME_YES == data.yesNo) {
+              Redirect(controllers.userJourney.routes.SummaryController.show())
+            } else {
+              s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, TradingName.empty)
+              Redirect(controllers.userJourney.routes.SummaryController.show())
+            }
           }
         }
       })

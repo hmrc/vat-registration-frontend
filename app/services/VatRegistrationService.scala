@@ -114,7 +114,10 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
         case VatChoice.NECESSITY_VOLUNTARY => Right("Yes")
         case _ => Right("No")
       },
-      Some(controllers.userJourney.routes.VoluntaryRegistrationController.show())
+      vatChoice.necessity match {
+        case VatChoice.NECESSITY_VOLUNTARY => Some(controllers.userJourney.routes.VoluntaryRegistrationController.show())
+        case _ => None
+      }
     )
 
     def getStartDate: SummaryRow = SummaryRow(
@@ -129,14 +132,25 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
       }
     )
 
-    SummarySection(
-      id = "vatDetails",
-      Seq(
-        getTaxableTurnover,
-        getNecessity,
-        getStartDate
+    if(vatChoice.necessity == VatChoice.NECESSITY_VOLUNTARY) {
+      SummarySection(
+        id = "vatDetails",
+        Seq(
+          getTaxableTurnover,
+          getNecessity,
+          getStartDate
+        )
       )
-    )
+    } else {
+      SummarySection(
+        id = "vatDetails",
+        Seq(
+          getTaxableTurnover,
+          getStartDate
+        )
+      )
+    }
+
   }
 
   private def getCompanyDetailsSection(vatTradingDetails: VatTradingDetails) = SummarySection(
@@ -144,7 +158,10 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
     Seq(
       SummaryRow(
         "companyDetails.tradingName",
-        Right(vatTradingDetails.tradingName),
+        vatTradingDetails.tradingName match {
+          case "" => Right("No")
+          case _ => Right(vatTradingDetails.tradingName)
+        },
         Some(controllers.userJourney.routes.TradingNameController.show())
       )
     )
