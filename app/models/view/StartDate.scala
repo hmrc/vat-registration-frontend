@@ -56,11 +56,15 @@ object StartDate extends ApiModelTransformer[StartDate] {
     fromDateTime(vatScheme.vatChoice.startDate)
 
   def fromDateTime(d: DateTime): StartDate =
-    StartDate(StartDate.SPECIFIC_DATE,
-      Some(d.dayOfMonth.get()),
-      Some(d.monthOfYear().get),
-      Some(d.year().get)
-    )
+    if (d.toString("dd/MM/yyyy") == "01/01/1970") {
+      StartDate.empty(COMPANY_REGISTRATION_DATE)
+    } else {
+      StartDate(StartDate.SPECIFIC_DATE,
+        Some(d.dayOfMonth.get()),
+        Some(d.monthOfYear().get),
+        Some(d.year().get)
+      )
+    }
 
   def empty: StartDate = StartDate("", None, None, None)
 
