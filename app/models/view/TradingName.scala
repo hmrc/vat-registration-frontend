@@ -44,6 +44,8 @@ object TradingName extends ApiModelTransformer[TradingName] {
     val tradingName = vatScheme.tradingDetails.tradingName
     if (tradingName.isEmpty) {
       TradingName(yesNo = TRADING_NAME_NO, tradingName = None)
+    } else if(tradingName == "#") {
+      TradingName.empty
     } else {
       TradingName(yesNo = TRADING_NAME_YES, tradingName = Some(tradingName))
     }

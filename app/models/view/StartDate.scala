@@ -57,7 +57,7 @@ object StartDate extends ApiModelTransformer[StartDate] {
 
   def fromDateTime(d: DateTime): StartDate =
     if (d.toString("dd/MM/yyyy") == "01/01/1970") {
-      StartDate.empty(COMPANY_REGISTRATION_DATE)
+      StartDate.empty
     } else {
       StartDate(StartDate.SPECIFIC_DATE,
         Some(d.dayOfMonth.get()),
