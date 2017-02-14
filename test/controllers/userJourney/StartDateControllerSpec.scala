@@ -26,13 +26,16 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
 class StartDateControllerSpec extends VatRegSpec {
 
-  object TestStartDateController extends StartDateController(mockS4LService, ds) {
+  val mockVatRegistrationService = mock[VatRegistrationService]
+
+  object TestStartDateController extends StartDateController(mockS4LService, mockVatRegistrationService, ds) {
     override val authConnector = mockAuthConnector
   }
 

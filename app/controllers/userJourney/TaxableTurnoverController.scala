@@ -21,7 +21,9 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
 import forms.vatDetails.TaxableTurnoverForm
-import models.view.TaxableTurnover
+import models.view.{StartDate, TaxableTurnover, VoluntaryRegistration}
+import models.view.StartDate.COMPANY_REGISTRATION_DATE
+import models.view.VoluntaryRegistration.REGISTER_NO
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -35,39 +37,18 @@ class TaxableTurnoverController @Inject()(s4LService: S4LService, vatRegistratio
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    for {
-      taxableTurnover <- s4LService.fetchAndGet[TaxableTurnover](CacheKeys.TaxableTurnover.toString)
-    } yield {
-      if(taxableTurnover.getOrElse(TaxableTurnover.empty) != TaxableTurnover.empty) {
-        val form = TaxableTurnoverForm.form.fill(taxableTurnover.getOrElse(TaxableTurnover.empty))
-        Ok(views.html.pages.taxable_turnover(form))
-      } else {
-        val form = vatRegistrationService.getVatScheme() map {
-          x => TaxableTurnoverForm.form.fill(TaxableTurnover.apply(x))
-        }
-        Ok(views.html.pages.taxable_turnover(Await.result(form, Duration.Inf)))
-      }
+    s4LService.fetchAndGet[TaxableTurnover](CacheKeys.TaxableTurnover.toString) flatMap {
+      case Some(taxableTurnover) => Future.successful(taxableTurnover)
+      case None => for {
+        vatScheme <- vatRegistrationService.getVatScheme()
+        taxableTurnover = TaxableTurnover(vatScheme)
+      } yield taxableTurnover
+    } map { taxableTurnover =>
+      val form = TaxableTurnoverForm.form.fill(taxableTurnover)
+      Ok(views.html.pages.taxable_turnover(form))
     }
 
-//    s4LService.fetchAndGet[TaxableTurnover](CacheKeys.TaxableTurnover.toString) map {
-//
-//      case Some(taxableTurnover) => {
-//        val form = TaxableTurnoverForm.form.fill(taxableTurnover)
-//        Ok(views.html.pages.taxable_turnover(form))
-//      }
-//
-//      case None => {
-//
-//        for {
-//          vatScheme <- vatRegistrationService.getVatScheme()
-//          form <- TaxableTurnoverForm.form.fill(TaxableTurnover.apply(vatScheme))
-//        } yield form
-//
-//        Ok(views.html.pages.taxable_turnover(form))
-//      }
-//    }
-
-    })
+  })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     TaxableTurnoverForm.form.bindFromRequest().fold(
@@ -76,11 +57,14 @@ class TaxableTurnoverController @Inject()(s4LService: S4LService, vatRegistratio
       }, {
 
         data: TaxableTurnover => {
-          s4LService.saveForm[TaxableTurnover](CacheKeys.TaxableTurnover.toString, data) map { _ =>
+          s4LService.saveForm[TaxableTurnover](CacheKeys.TaxableTurnover.toString, data) flatMap { _ =>
             if (TaxableTurnover.TAXABLE_YES == data.yesNo) {
-              Redirect(controllers.userJourney.routes.MandatoryStartDateController.show())
+              for {
+                _ <- s4LService.saveForm[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString, VoluntaryRegistration(REGISTER_NO))
+                _ <- s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, StartDate.empty(COMPANY_REGISTRATION_DATE))
+              } yield Redirect(controllers.userJourney.routes.MandatoryStartDateController.show())
             } else {
-              Redirect(controllers.userJourney.routes.VoluntaryRegistrationController.show())
+              Future.successful(Redirect(controllers.userJourney.routes.VoluntaryRegistrationController.show()))
             }
           }
         }
