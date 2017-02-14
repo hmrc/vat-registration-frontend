@@ -25,7 +25,8 @@ import models.view.TaxableTurnover
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
 
 
@@ -33,6 +34,20 @@ class TaxableTurnoverController @Inject()(s4LService: S4LService, vatRegistratio
                                           ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+
+    for {
+      taxableTurnover <- s4LService.fetchAndGet[TaxableTurnover](CacheKeys.TaxableTurnover.toString)
+    } yield {
+      if(taxableTurnover.getOrElse(TaxableTurnover.empty) != TaxableTurnover.empty) {
+        val form = TaxableTurnoverForm.form.fill(taxableTurnover.getOrElse(TaxableTurnover.empty))
+        Ok(views.html.pages.taxable_turnover(form))
+      } else {
+        val form = vatRegistrationService.getVatScheme() map {
+          x => TaxableTurnoverForm.form.fill(TaxableTurnover.apply(x))
+        }
+        Ok(views.html.pages.taxable_turnover(Await.result(form, Duration.Inf)))
+      }
+    }
 
 //    s4LService.fetchAndGet[TaxableTurnover](CacheKeys.TaxableTurnover.toString) map {
 //
@@ -42,18 +57,16 @@ class TaxableTurnoverController @Inject()(s4LService: S4LService, vatRegistratio
 //      }
 //
 //      case None => {
-//        val taxableTurnover = vatRegistrationService.getVatScheme() map {
-//          x => {
-//            TaxableTurnover
-//          }
 //
-//        }
-//        val form = TaxableTurnoverForm.form.fill(taxableTurnover)
+//        for {
+//          vatScheme <- vatRegistrationService.getVatScheme()
+//          form <- TaxableTurnoverForm.form.fill(TaxableTurnover.apply(vatScheme))
+//        } yield form
+//
 //        Ok(views.html.pages.taxable_turnover(form))
 //      }
 //    }
 
-      Future.successful(Ok)
     })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {

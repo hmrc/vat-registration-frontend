@@ -23,16 +23,27 @@ import enums.CacheKeys
 import forms.vatDetails.StartDateForm
 import models.view.StartDate
 import play.api.mvc._
-import services.S4LService
+import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
-class StartDateController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class StartDateController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
+                                    ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    s4LService.fetchAndGet[StartDate](CacheKeys.StartDate.toString) map { startDate =>
-      val form = StartDateForm.form.fill(startDate.getOrElse(StartDate.empty))
-      Ok(views.html.pages.start_date(form))
+    for {
+      startDate <- s4LService.fetchAndGet[StartDate](CacheKeys.StartDate.toString)
+    } yield {
+      if(startDate.getOrElse(StartDate.empty) != StartDate.empty) {
+        val form = StartDateForm.form.fill(startDate.getOrElse(StartDate.empty))
+        Ok(views.html.pages.start_date(form))
+      } else {
+        val form = vatRegistrationService.getVatScheme() map {
+          x => StartDateForm.form.fill(StartDate.apply(x))
+        }
+        Ok(views.html.pages.start_date(Await.result(form, Duration.Inf)))
+      }
     }
   })
 
@@ -42,9 +53,13 @@ class StartDateController @Inject()(s4LService: S4LService, ds: CommonPlayDepend
         Future.successful(BadRequest(views.html.pages.start_date(formWithErrors)))
       }, {
         data: StartDate => {
-          // Save to S4L
           s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, data) map { _ =>
+          if (StartDate.SPECIFIC_DATE == data.dateType) {
             Redirect(controllers.userJourney.routes.TradingNameController.show())
+          } else {
+            s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, StartDate.empty)
+            Redirect(controllers.userJourney.routes.TradingNameController.show())
+          }
           }
         }
       })
