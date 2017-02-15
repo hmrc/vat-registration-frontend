@@ -45,3 +45,12 @@ label.cascading span {
 	padding-left: 65px;
 	margin-left: -15px;
 }
+
+.white--color {
+	color: #fff
+}
+
+td {
+	width: 50%;
+	vertical-align: top
+}
