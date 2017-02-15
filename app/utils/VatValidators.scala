@@ -16,8 +16,8 @@
 
 package utils
 
-import forms.vatDetails.TradingNameForm
-import models.view.TradingName
+import forms.vatDetails.{EstimateVatTurnoverForm, TradingNameForm}
+import models.view.{EstimateVatTurnover, TradingName}
 import play.api.data.validation.{ValidationError, _}
 
 object VatValidators {
@@ -38,5 +38,20 @@ object VatValidators {
       }
       if (errors.isEmpty) Valid else Invalid(errors)
   })
+
+  def turnoverEstimateValidation : Constraint[EstimateVatTurnover] = Constraint("constraint.turnoverEstimate")({
+    text =>
+      val errors = text match {
+        case _ if text.vatTurnoverEstimate.getOrElse(EstimateVatTurnover.empty) == 0
+        => Seq(ValidationError("pages.estimate.vat.turnover.validation.low", EstimateVatTurnoverForm.INPUT_ESTIMATE))
+        case _ if text.vatTurnoverEstimate.getOrElse(EstimateVatTurnover.empty) == EstimateVatTurnover.empty
+        => Seq(ValidationError("pages.estimate.vat.turnover.validation.empty", EstimateVatTurnoverForm.INPUT_ESTIMATE))
+        case _ if text.vatTurnoverEstimate.getOrElse(EstimateVatTurnover.empty) == 1000000
+        => Seq(ValidationError(IN_VALID_TRADING_NAME_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
+        case _ => Nil
+      }
+      if (errors.isEmpty) Valid else Invalid(errors)
+  })
+
 
 }
