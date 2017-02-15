@@ -9,7 +9,7 @@
         <div class="column-one-third">
 
             <div class="transaction-banner--complete">
-                <h1 class="form-title heading-large">@messages("pages.application.submission.confirmation.heading")</h1>
+                <h1 id="heading-application-submitted" class="transaction-banner__heading">@messages("pages.application.submission.confirmation.heading")</h1>
                 <p>@messages("pages.application.submission.confirmation.reference.number")</p>
                 <p><strong class="heading-medium">000-032597</strong></p>
             </div>
@@ -31,8 +31,6 @@
                 <p>@messages("pages.application.submission.confirmation.whileWait.para3")</p>
 
             </div>
-
-            <p>@messages("pages.welcome.note.registrationTime")</p>
 
             @form(action = controllers.userJourney.routes.WelcomeController.show()) {
                 <div class="form-group">
