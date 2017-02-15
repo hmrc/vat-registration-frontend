@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-package enums
+package models.view
 
-object CacheKeys extends Enumeration {
-  val StartDate = Value
-  val TradingName = Value
-  val VoluntaryRegistration = Value
-  val TaxableTurnover = Value
-  val VatTurnoverEstimate = Value
+import models.ApiModelTransformer
+import models.api.VatScheme
+import play.api.libs.json.Json
 
+case class EstimateVatTurnover(vatTurnoverEstimate: Option[Int]) {
+}
+
+object EstimateVatTurnover extends ApiModelTransformer[EstimateVatTurnover] {
+
+  implicit val format = Json.format[EstimateVatTurnover]
+
+  // Returns a view model for a specific part of a given VatScheme API model
+  override def apply(vatScheme: VatScheme): EstimateVatTurnover =
+    empty
+
+  def empty: EstimateVatTurnover = EstimateVatTurnover(None)
 }

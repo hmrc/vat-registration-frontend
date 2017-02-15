@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-package enums
+package forms.vatDetails
 
-object CacheKeys extends Enumeration {
-  val StartDate = Value
-  val TradingName = Value
-  val VoluntaryRegistration = Value
-  val TaxableTurnover = Value
-  val VatTurnoverEstimate = Value
+import models.view.EstimateVatTurnover
+import play.api.data.Form
+import play.api.data.Forms._
+import utils.VatValidators.turnoverEstimateValidation
+
+object EstimateVatTurnoverForm {
+
+  val INPUT_ESTIMATE: String = "turnoverEstimate"
+
+  val form = Form(
+    mapping(
+      INPUT_ESTIMATE -> optional(number(min=0, max=1000000))
+    )(EstimateVatTurnover.apply)(EstimateVatTurnover.unapply).verifying(turnoverEstimateValidation)
+  )
 
 }
