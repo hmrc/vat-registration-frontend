@@ -33,7 +33,7 @@ class EstimateVatTurnoverController @Inject()(s4LService: S4LService, vatRegistr
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    s4LService.fetchAndGet[EstimateVatTurnover](CacheKeys.VatTurnoverEstimate.toString) flatMap {
+    s4LService.fetchAndGet[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString) flatMap {
       case Some(viewModel) => Future.successful(viewModel)
       case None => for {
         vatScheme <- vatRegistrationService.getVatScheme()
@@ -51,7 +51,7 @@ class EstimateVatTurnoverController @Inject()(s4LService: S4LService, vatRegistr
         Future.successful(BadRequest(views.html.pages.estimate_vat_turnover(formWithErrors)))
       }, {
         data: EstimateVatTurnover => {
-          s4LService.saveForm[EstimateVatTurnover](CacheKeys.VatTurnoverEstimate.toString, data) map { _ =>
+          s4LService.saveForm[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString, data) map { _ =>
             Redirect(controllers.userJourney.routes.StartDateController.show())
           }
         }

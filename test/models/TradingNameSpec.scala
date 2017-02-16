@@ -58,7 +58,8 @@ class TradingNameSpec extends UnitSpec with VatRegistrationFixture {
       val vatSchemeEmptyTradingName = VatScheme(
         validRegId,
         VatTradingDetails(""),
-        validVatChoice
+        validVatChoice,
+        validVatFinancials
       )
       TradingName.apply(vatSchemeEmptyTradingName) shouldBe TradingName(yesNo = TRADING_NAME_NO, tradingName = None)
     }
@@ -67,7 +68,8 @@ class TradingNameSpec extends UnitSpec with VatRegistrationFixture {
       val vatSchemeHashInTradingName = VatScheme(
         validRegId,
         VatTradingDetails("#"),
-        validVatChoice
+        validVatChoice,
+        validVatFinancials
       )
 
       TradingName.apply(vatSchemeHashInTradingName) shouldBe TradingName.empty
