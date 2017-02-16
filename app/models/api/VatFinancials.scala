@@ -18,20 +18,19 @@ package models.api
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import org.joda.time.DateTime
 
 case class VatFinancials(
-                      turnoverEstimate: Int
+                      turnoverEstimate: Long
                     )
 
 object VatFinancials {
   val apiReads: Reads[VatFinancials] =
-    (__ \ "turnover-estimate").read[Int].map(VatFinancials(_))
+    (__ \ "turnover-estimate").read[Long].map(VatFinancials(_))
 
   val apiWrites: Writes[VatFinancials] =
-    (__ \ "turnover-estimate").write[Int].contramap(_.turnoverEstimate)
+    (__ \ "turnover-estimate").write[Long].contramap(_.turnoverEstimate)
 
   implicit val format = Format(apiReads, apiWrites)
 
-  def empty: VatFinancials = VatFinancials(0)
+  def empty: VatFinancials = VatFinancials(0L)
 }

@@ -20,7 +20,7 @@ import models.ApiModelTransformer
 import models.api.VatScheme
 import play.api.libs.json.Json
 
-case class EstimateVatTurnover(vatTurnoverEstimate: Option[Int]) {
+case class EstimateVatTurnover(vatTurnoverEstimate: Option[Long]) {
 }
 
 object EstimateVatTurnover extends ApiModelTransformer[EstimateVatTurnover] {
