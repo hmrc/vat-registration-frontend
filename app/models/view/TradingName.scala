@@ -41,13 +41,17 @@ object TradingName extends ApiModelTransformer[TradingName] {
 
   // Returns a view model for a specific part of a given VatScheme API model
   override def apply(vatScheme: VatScheme): TradingName = {
-    val tradingName = vatScheme.tradingDetails.tradingName
-    if (tradingName.isEmpty) {
-      TradingName(yesNo = TRADING_NAME_NO, tradingName = None)
-    } else if(tradingName == "#") {
-      TradingName.empty
-    } else {
-      TradingName(yesNo = TRADING_NAME_YES, tradingName = Some(tradingName))
+
+    vatScheme.tradingDetails match {
+      case Some(tradingDetails) => {
+        if (tradingDetails.tradingName.isEmpty) {
+          TradingName(yesNo = TRADING_NAME_NO, tradingName = None)
+        } else {
+          TradingName(yesNo = TRADING_NAME_YES, tradingName = Some(tradingDetails.tradingName))
+        }
+      }
+
+      case None => TradingName.empty
     }
   }
 }

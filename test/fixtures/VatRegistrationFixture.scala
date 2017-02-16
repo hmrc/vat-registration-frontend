@@ -58,8 +58,8 @@ trait VatRegistrationFixture {
 
   val validVatScheme = VatScheme(
     validRegId,
-    validVatTradingDetails,
-    validVatChoice
+    Some(validVatTradingDetails),
+    Some(validVatChoice)
   )
 
   lazy val validSummaryView = Summary(
