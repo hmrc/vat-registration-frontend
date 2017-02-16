@@ -65,7 +65,8 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "return HTML when there's nothing in S4L" in {
-      when(mockS4LService.fetchAndGet[StartDate](Matchers.eq(CacheKeys.StartDate.toString))(Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[StartDate](Matchers.eq(CacheKeys.StartDate.toString))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
         .thenReturn(Future.successful(None))
 
       callAuthorised(TestStartDateController.show, mockAuthConnector) {
@@ -95,11 +96,31 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDate.empty)))
 
-      when(mockS4LService.saveForm[StartDate](Matchers.eq(CacheKeys.StartDate.toString), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[StartDate](Matchers.eq(CacheKeys.StartDate.toString), Matchers.any())
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
         .thenReturn(Future.successful(returnCacheMap))
 
       AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDate.COMPANY_REGISTRATION_DATE
+      )) {
+        result =>
+          status(result) mustBe Status.SEE_OTHER
+      }
+
+    }
+  }
+
+  s"POST ${routes.StartDateController.submit()} with StartDate having a specific date" should {
+
+    "return 303" in {
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDate.empty)))
+
+      when(mockS4LService.saveForm[StartDate](Matchers.eq(CacheKeys.StartDate.toString), Matchers.any())
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
+        .thenReturn(Future.successful(returnCacheMap))
+
+      AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        "startDateRadio" -> StartDate.SPECIFIC_DATE
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER

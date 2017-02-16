@@ -53,12 +53,10 @@ class TradingNameController @Inject()(s4LService: S4LService, vatRegistrationSer
         data: TradingName => {
           // Save to S4L
           s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, data) map { _ =>
-            if (TradingName.TRADING_NAME_YES == data.yesNo) {
-              Redirect(controllers.userJourney.routes.SummaryController.show())
-            } else {
+            if (TradingName.TRADING_NAME_NO == data.yesNo) {
               s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, TradingName.empty)
-              Redirect(controllers.userJourney.routes.SummaryController.show())
             }
+            Redirect(controllers.userJourney.routes.SummaryController.show())
           }
         }
       })
