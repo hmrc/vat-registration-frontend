@@ -17,7 +17,9 @@
 package models
 
 import fixtures.VatRegistrationFixture
+import models.api.{VatScheme, VatTradingDetails}
 import models.view.TradingName
+import models.view.TradingName._
 import uk.gov.hmrc.play.test.UnitSpec
 
 class TradingNameSpec extends UnitSpec with VatRegistrationFixture {
@@ -28,15 +30,47 @@ class TradingNameSpec extends UnitSpec with VatRegistrationFixture {
     }
   }
 
+  "toString" should {
+    "TradingName with a trading name returns it when toString is called" in {
+      TradingName("", Some("Test Ltd")).toString shouldBe "Test Ltd"
+    }
+
+    "TradingName with an empty trading name returns empty string" in {
+      TradingName("", None).toString shouldBe ""
+    }
+  }
+
   "toApi" should {
     "upserts (merge) a current VatTradingDetails API model with the details of an instance of TradingName view model" in {
-      differentTradingName.toApi(validVatTradingDetails) shouldBe differentVatTradingDetails
+      val tradingName = TradingName(TradingName.TRADING_NAME_YES, Some("HOLIDAY INC"))
+      tradingName.toApi(validVatTradingDetails) shouldBe VatTradingDetails(
+        "HOLIDAY INC"
+      )
     }
   }
 
   "apply" should {
     "convert a populated VatScheme's VatTradingDetails API model to an instance of TradingName view model" in {
       TradingName.apply(validVatScheme) shouldBe validTradingName
+    }
+
+    "convert a populated VatScheme's VatTradingDetails API model that has an empty trading name to an instance of TradingName view model" in {
+      val vatSchemeEmptyTradingName = VatScheme(
+        validRegId,
+        VatTradingDetails(""),
+        validVatChoice
+      )
+      TradingName.apply(vatSchemeEmptyTradingName) shouldBe TradingName(yesNo = TRADING_NAME_NO, tradingName = None)
+    }
+
+    "convert a populated VatScheme's VatTradingDetails API model that has a hash as a trading name to an instance of TradingName view model" in {
+      val vatSchemeHashInTradingName = VatScheme(
+        validRegId,
+        VatTradingDetails("#"),
+        validVatChoice
+      )
+
+      TradingName.apply(vatSchemeHashInTradingName) shouldBe TradingName.empty
     }
   }
 }

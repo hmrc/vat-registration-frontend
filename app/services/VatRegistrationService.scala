@@ -21,12 +21,10 @@ import javax.inject.Inject
 import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.{CacheKeys, DownstreamOutcome}
-import models.{ApiModelTransformer, ViewModelTransformer}
 import models.api.{VatChoice, VatScheme, VatTradingDetails}
 import models.view._
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.play.http.HeaderCarrier
-import play.api.data.Form
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -51,15 +49,19 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
   def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] = {
     for {
       vatScheme <- vatRegConnector.createNewRegistration()
-      cache <- keystoreConnector.cache[String]("RegistrationId", vatScheme.id)
+      _ <- keystoreConnector.cache[String]("RegistrationId", vatScheme.id)
     } yield DownstreamOutcome.Success
   }
 
-  def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] =
+  def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] = {
+    val tradingDetailsSubmission = submitTradingDetails()
+    val vatChoiceSubmission = submitVatChoice()
+
     for {
-      _ <- submitTradingDetails()
-      _ <- submitVatChoice()
+      _ <- tradingDetailsSubmission
+      _ <- vatChoiceSubmission
     } yield DownstreamOutcome.Success
+  }
 
   def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
     for {

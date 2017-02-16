@@ -43,11 +43,6 @@ class StartDateController @Inject()(s4LService: S4LService, vatRegistrationServi
       Ok(views.html.pages.start_date(form))
     }
 
-//    vatRegistrationService.retrieveViewModel[StartDate](StartDate, CacheKeys.StartDate.toString).map {
-//      viewModel: StartDate =>
-//        val form = StartDateForm.form.fill(viewModel)
-//        Ok(views.html.pages.start_date(form))
-//    }
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
