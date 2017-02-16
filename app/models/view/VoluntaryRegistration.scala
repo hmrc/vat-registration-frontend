@@ -40,8 +40,14 @@ object VoluntaryRegistration extends ApiModelTransformer[VoluntaryRegistration] 
 
   // Returns a view model for a specific part of a given VatScheme API model
   override def apply(vatScheme: VatScheme): VoluntaryRegistration =
-    vatScheme.vatChoice.necessity match {
-      case NECESSITY_VOLUNTARY => VoluntaryRegistration(REGISTER_YES)
-      case _ => VoluntaryRegistration.empty
+
+    vatScheme.vatChoice match {
+
+      case Some(vatChoice) => vatChoice.necessity match {
+        case NECESSITY_VOLUNTARY => VoluntaryRegistration(REGISTER_YES)
+        case _ => VoluntaryRegistration.empty
+      }
+
+      case None => VoluntaryRegistration.empty
     }
 }

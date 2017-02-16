@@ -32,10 +32,16 @@ object TaxableTurnover extends ApiModelTransformer[TaxableTurnover] {
 
   // Returns a view model for a specific part of a given VatScheme API model
   override def apply(vatScheme: VatScheme): TaxableTurnover =
-    vatScheme.vatChoice.necessity match {
-      case NECESSITY_VOLUNTARY => TaxableTurnover(TAXABLE_NO)
-      case NECESSITY_OBLIGATORY => TaxableTurnover(TAXABLE_YES)
-      case _ => TaxableTurnover.empty
+
+    vatScheme.vatChoice match {
+
+      case Some(vatChoice) => vatChoice.necessity match {
+        case NECESSITY_VOLUNTARY => TaxableTurnover(TAXABLE_NO)
+        case NECESSITY_OBLIGATORY => TaxableTurnover(TAXABLE_YES)
+        case _ => TaxableTurnover.empty
+      }
+
+      case None => TaxableTurnover.empty
     }
 
   def empty: TaxableTurnover = TaxableTurnover("")
