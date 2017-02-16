@@ -17,7 +17,7 @@
 package models
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatChoice, VatScheme}
+import models.api.{VatChoice, VatFinancials, VatScheme}
 import models.view.TaxableTurnover
 import models.view.TaxableTurnover._
 import org.joda.time.DateTime

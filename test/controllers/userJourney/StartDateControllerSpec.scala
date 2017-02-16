@@ -52,9 +52,6 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
         (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
         .thenReturn(Future.successful(Some(startDate)))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-        .thenReturn(Future.successful(validVatScheme))
-
       callAuthorised(TestStartDateController.show, mockAuthConnector) {
         result =>
           status(result) mustBe OK
@@ -68,6 +65,9 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockS4LService.fetchAndGet[StartDate](Matchers.eq(CacheKeys.StartDate.toString))
         (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
         .thenReturn(Future.successful(None))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestStartDateController.show, mockAuthConnector) {
         result =>

@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package enums
+package models.api
 
-object CacheKeys extends Enumeration {
-  val StartDate = Value
-  val TradingName = Value
-  val VoluntaryRegistration = Value
-  val TaxableTurnover = Value
-  val EstimateVatTurnover = Value
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
+case class VatFinancials(
+                      turnoverEstimate: Long
+                    )
+
+object VatFinancials {
+  val apiReads: Reads[VatFinancials] =
+    (__ \ "turnover-estimate").read[Long].map(VatFinancials(_))
+
+  val apiWrites: Writes[VatFinancials] =
+    (__ \ "turnover-estimate").write[Long].contramap(_.turnoverEstimate)
+
+  implicit val format = Format(apiReads, apiWrites)
+
+  def empty: VatFinancials = VatFinancials(0L)
 }

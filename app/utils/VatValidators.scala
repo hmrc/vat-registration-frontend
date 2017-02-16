@@ -16,27 +16,48 @@
 
 package utils
 
-import forms.vatDetails.TradingNameForm
-import models.view.TradingName
+import forms.vatDetails.{EstimateVatTurnoverForm, TradingNameForm}
+import models.view.{EstimateVatTurnover, TradingName}
 import play.api.data.validation.{ValidationError, _}
 
 object VatValidators {
 
-  private val tradingNameRegex = """^[A-Za-z0-9.,\-()/!"%&*;'<>][A-Za-z0-9 .,\-()/!"%&*;'<>]{0,55}$"""
-  private val nonEmptyRegex = """^(?=\s*\S).*$"""
-  val IN_VALID_TRADING_NAME_MSG_KEY = "pages.tradingName.validation.invalid.tradingName"
+  private val TRADING_NAME_REGEX = """^[A-Za-z0-9.,\-()/!"%&*;'<>][A-Za-z0-9 .,\-()/!"%&*;'<>]{0,55}$"""
+  private val NON_EMPTY_REGEX = """^(?=\s*\S).*$"""
+  private val MAX_TURNOVER_ESTIMATE = 1000000000000000L
+  private val MIN_TURNOVER_ESTIMATE = 0L
+
   val EMPTY_TRADING_NAME_MSG_KEY = "pages.tradingName.validation.empty.tradingName"
+  val IN_VALID_TRADING_NAME_MSG_KEY = "pages.tradingName.validation.invalid.tradingName"
+  val TURNOVER_ESTIMATE_LOW_MSG_KEY = "pages.estimate.vat.turnover.validation.low"
+  val TURNOVER_ESTIMATE_HIGH_MSG_KEY = "pages.estimate.vat.turnover.validation.high"
+  val TURNOVER_ESTIMATE_EMPTY_MSG_KEY = "pages.estimate.vat.turnover.validation.empty"
 
   def tradingNameValidation : Constraint[TradingName] = Constraint("constraint.tradingName")({
     text =>
       val errors = text match {
-        case _ if text.yesNo == TradingName.TRADING_NAME_YES && !text.tradingName.getOrElse("").matches(nonEmptyRegex)
-        => Seq(ValidationError(EMPTY_TRADING_NAME_MSG_KEY, TradingNameForm.INPUT_TRADING_NAME))
-        case _ if text.yesNo == TradingName.TRADING_NAME_YES && !text.tradingName.getOrElse("").matches(tradingNameRegex)
-        => Seq(ValidationError(IN_VALID_TRADING_NAME_MSG_KEY, TradingNameForm.INPUT_TRADING_NAME))
+        case _ if text.yesNo == TradingName.TRADING_NAME_YES && !text.tradingName.getOrElse("").matches(NON_EMPTY_REGEX)
+          => Seq(ValidationError(EMPTY_TRADING_NAME_MSG_KEY, TradingNameForm.INPUT_TRADING_NAME))
+        case _ if text.yesNo == TradingName.TRADING_NAME_YES && !text.tradingName.getOrElse("").matches(TRADING_NAME_REGEX)
+          => Seq(ValidationError(IN_VALID_TRADING_NAME_MSG_KEY, TradingNameForm.INPUT_TRADING_NAME))
         case _ => Nil
       }
       if (errors.isEmpty) Valid else Invalid(errors)
   })
+
+  def turnoverEstimateValidation : Constraint[EstimateVatTurnover] = Constraint("constraint.turnoverEstimate")({
+    text =>
+      val errors = text match {
+        case EstimateVatTurnover(None)
+          => Seq(ValidationError(TURNOVER_ESTIMATE_EMPTY_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
+        case _ if text.vatTurnoverEstimate.get < MIN_TURNOVER_ESTIMATE
+          => Seq(ValidationError(TURNOVER_ESTIMATE_LOW_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
+        case _ if text.vatTurnoverEstimate.get > MAX_TURNOVER_ESTIMATE
+          => Seq(ValidationError(TURNOVER_ESTIMATE_HIGH_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
+        case _ => Nil
+      }
+      if (errors.isEmpty) Valid else Invalid(errors)
+  })
+
 
 }

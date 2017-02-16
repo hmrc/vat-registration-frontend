@@ -19,9 +19,13 @@ POST        /start-date-confirmation        controllers.userJourney.MandatorySta
 GET         /trading-name                   controllers.userJourney.TradingNameController.show
 POST        /trading-name                   controllers.userJourney.TradingNameController.submit
 
-## VOLUNTARY REGISTRATION
+## VOLUNTARY REGISTRATION PAGE
 GET         /voluntary-registration         controllers.userJourney.VoluntaryRegistrationController.show
 POST        /voluntary-registration         controllers.userJourney.VoluntaryRegistrationController.submit
+
+## ESTIMATE VAT TAXABLE TURNOVER PAGE
+GET         /estimate-vat-turnover          controllers.userJourney.EstimateVatTurnoverController.show
+POST        /estimate-vat-turnover          controllers.userJourney.EstimateVatTurnoverController.submit
 
 ## TAXABLE TURNOVER PAGE
 GET         /taxable-turnover               controllers.userJourney.TaxableTurnoverController.show
