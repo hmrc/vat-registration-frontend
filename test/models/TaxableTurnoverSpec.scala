@@ -35,11 +35,11 @@ class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
     "convert a populated VatScheme's VatChoice API model to an instance of TaxableTurnover.view model" in {
       val vatSchemeObligatory = VatScheme(
         validRegId,
-        validVatTradingDetails,
-        VatChoice(
+        Some(validVatTradingDetails),
+        Some(VatChoice(
           DateTime.now,
           VatChoice.NECESSITY_OBLIGATORY
-        )
+        ))
       )
 
       TaxableTurnover.apply(vatSchemeObligatory) shouldBe TaxableTurnover(TAXABLE_YES)
