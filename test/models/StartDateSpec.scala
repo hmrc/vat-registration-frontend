@@ -60,6 +60,12 @@ class StartDateSpec extends UnitSpec with VatRegistrationFixture {
       val startDate = StartDate.fromDateTime(validDateTime)
       startDate shouldBe validStartDate
     }
+
+    // TODO: remove when we play the VatChoice refactoring story
+    "convert a DateTime object to a StartDate model when it's a default value" in {
+      val startDate = StartDate.fromDateTime(validDefaultDateTime)
+      startDate shouldBe StartDate.empty
+    }
   }
 
 }
