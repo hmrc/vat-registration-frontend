@@ -17,6 +17,7 @@
 package models
 
 import fixtures.VatRegistrationFixture
+import models.api.VatChoice
 import models.view.StartDate
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -36,7 +37,15 @@ class StartDateSpec extends UnitSpec with VatRegistrationFixture {
 
   "toApi" should {
     "upserts (merge) a current VatChoice API model with the details of an instance of StartDate view model" in {
-      validStartDate.toApi(differentVatChoice) shouldBe validVatChoice
+      val vatChoice = VatChoice(
+       StartDate(StartDate.SPECIFIC_DATE, Some(30), Some(12), Some(2001)).toDateTime,
+        VatChoice.NECESSITY_OBLIGATORY
+      )
+
+      validStartDate.toApi(vatChoice) shouldBe VatChoice(
+        validStartDate.toDateTime,
+        VatChoice.NECESSITY_OBLIGATORY
+      )
     }
   }
 
