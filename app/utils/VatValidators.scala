@@ -37,9 +37,9 @@ object VatValidators {
     text =>
       val errors = text match {
         case _ if text.yesNo == TradingName.TRADING_NAME_YES && !text.tradingName.getOrElse("").matches(NON_EMPTY_REGEX)
-        => Seq(ValidationError(EMPTY_TRADING_NAME_MSG_KEY, TradingNameForm.INPUT_TRADING_NAME))
+          => Seq(ValidationError(EMPTY_TRADING_NAME_MSG_KEY, TradingNameForm.INPUT_TRADING_NAME))
         case _ if text.yesNo == TradingName.TRADING_NAME_YES && !text.tradingName.getOrElse("").matches(TRADING_NAME_REGEX)
-        => Seq(ValidationError(IN_VALID_TRADING_NAME_MSG_KEY, TradingNameForm.INPUT_TRADING_NAME))
+          => Seq(ValidationError(IN_VALID_TRADING_NAME_MSG_KEY, TradingNameForm.INPUT_TRADING_NAME))
         case _ => Nil
       }
       if (errors.isEmpty) Valid else Invalid(errors)
@@ -49,11 +49,11 @@ object VatValidators {
     text =>
       val errors = text match {
         case EstimateVatTurnover(None)
-        => Seq(ValidationError(TURNOVER_ESTIMATE_EMPTY_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
-        case _ if text.vatTurnoverEstimate.getOrElse(0L) < MIN_TURNOVER_ESTIMATE
-        => Seq(ValidationError(TURNOVER_ESTIMATE_LOW_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
-        case _ if text.vatTurnoverEstimate.getOrElse(0L) > MAX_TURNOVER_ESTIMATE
-        => Seq(ValidationError(TURNOVER_ESTIMATE_HIGH_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
+          => Seq(ValidationError(TURNOVER_ESTIMATE_EMPTY_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
+        case _ if text.vatTurnoverEstimate.get < MIN_TURNOVER_ESTIMATE
+          => Seq(ValidationError(TURNOVER_ESTIMATE_LOW_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
+        case _ if text.vatTurnoverEstimate.get > MAX_TURNOVER_ESTIMATE
+          => Seq(ValidationError(TURNOVER_ESTIMATE_HIGH_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
         case _ => Nil
       }
       if (errors.isEmpty) Valid else Invalid(errors)

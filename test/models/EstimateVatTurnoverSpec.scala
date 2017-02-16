@@ -22,12 +22,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
 
-  "empty" should {
-    "create an empty EstimateVatTurnover model" in {
-      EstimateVatTurnover.empty shouldBe EstimateVatTurnover(None)
-    }
-  }
-
   "toApi" should {
     "upserts (merge) a current VatFinancials API model with the details of an instance of EstimateVatTurnover view model" in {
       differentEstimateVatTurnover.toApi(validVatFinancials) shouldBe differentVatFinancials
@@ -36,7 +30,7 @@ class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
     "convert a populated VatScheme's VatFinancials API model to an instance of EstimateVatTurnover view model" in {
-      EstimateVatTurnover.apply(validVatScheme) shouldBe validEstimateVatTurnover
+      EstimateVatTurnover.apply(validVatScheme) shouldBe EstimateVatTurnover(None)
     }
   }
 }
