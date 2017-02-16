@@ -54,6 +54,39 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     }
   }
 
+  "Calling submitVatScheme" should {
+    "return a downstream success when both trading details and vat-choice are upserted" in new Setup {
+      mockFetchRegId(validRegId)
+
+      when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.StartDate.toString))
+      (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
+        .thenReturn(Future.successful(Some(validStartDate)))
+
+      when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.VoluntaryRegistration.toString))
+      (Matchers.any[HeaderCarrier](), Matchers.any[Format[VoluntaryRegistration]]()))
+        .thenReturn(Future.successful(Some(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES))))
+
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
+      (Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatScheme]]()))
+        .thenReturn(Future.successful(validVatScheme))
+
+      when(mockRegConnector.upsertVatChoice(Matchers.any(), Matchers.any())
+      (Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatChoice]]()))
+        .thenReturn(Future.successful(validVatChoice))
+
+
+      when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.TradingName.toString))
+      (Matchers.any[HeaderCarrier](), Matchers.any[Format[TradingName]]()))
+        .thenReturn(Future.successful(Some(validTradingName)))
+
+      when(mockRegConnector.upsertVatTradingDetails(Matchers.any(), Matchers.any())
+      (Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(validVatTradingDetails))
+
+      ScalaFutures.whenReady(service.submitVatScheme())(_ mustBe DownstreamOutcome.Success)
+    }
+  }
+
   "Calling submitVatChoice" should {
     "return a success response when a VatChoice is submitted" in new Setup {
       mockFetchRegId(validRegId)
@@ -85,6 +118,10 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.TradingName.toString))
         (Matchers.any[HeaderCarrier](), Matchers.any[Format[TradingName]]()))
         .thenReturn(Future.successful(Some(validTradingName)))
+
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
+      (Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatScheme]]()))
+        .thenReturn(Future.successful(validVatScheme))
 
       when(mockRegConnector.upsertVatTradingDetails(Matchers.any(), Matchers.any())
         (Matchers.any(), Matchers.any()))
