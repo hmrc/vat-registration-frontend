@@ -17,7 +17,7 @@
 package models
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatChoice, VatScheme}
+import models.api.{VatChoice, VatFinancials, VatScheme}
 import models.view.TaxableTurnover
 import models.view.TaxableTurnover._
 import org.joda.time.DateTime
@@ -39,7 +39,8 @@ class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
         VatChoice(
           DateTime.now,
           VatChoice.NECESSITY_OBLIGATORY
-        )
+        ),
+        validVatFinancials
       )
 
       TaxableTurnover.apply(vatSchemeObligatory) shouldBe TaxableTurnover(TAXABLE_YES)

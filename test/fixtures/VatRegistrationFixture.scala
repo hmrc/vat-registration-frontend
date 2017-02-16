@@ -18,7 +18,6 @@ package fixtures
 
 import models.api._
 import models.view._
-import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.http.Status
 import uk.gov.hmrc.play.http._
