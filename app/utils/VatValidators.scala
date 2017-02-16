@@ -29,6 +29,9 @@ object VatValidators {
 
   val EMPTY_TRADING_NAME_MSG_KEY = "pages.tradingName.validation.empty.tradingName"
   val IN_VALID_TRADING_NAME_MSG_KEY = "pages.tradingName.validation.invalid.tradingName"
+  val TURNOVER_ESTIMATE_LOW_MSG_KEY = "pages.estimate.vat.turnover.validation.low"
+  val TURNOVER_ESTIMATE_HIGH_MSG_KEY = "pages.estimate.vat.turnover.validation.high"
+  val TURNOVER_ESTIMATE_EMPTY_MSG_KEY = "pages.estimate.vat.turnover.validation.empty"
 
   def tradingNameValidation : Constraint[TradingName] = Constraint("constraint.tradingName")({
     text =>
@@ -46,11 +49,11 @@ object VatValidators {
     text =>
       val errors = text match {
         case EstimateVatTurnover(None)
-        => Seq(ValidationError("pages.estimate.vat.turnover.validation.empty", EstimateVatTurnoverForm.INPUT_ESTIMATE))
+        => Seq(ValidationError(TURNOVER_ESTIMATE_EMPTY_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
         case _ if text.vatTurnoverEstimate.getOrElse(0L) < MIN_TURNOVER_ESTIMATE
-        => Seq(ValidationError("pages.estimate.vat.turnover.validation.low", EstimateVatTurnoverForm.INPUT_ESTIMATE))
+        => Seq(ValidationError(TURNOVER_ESTIMATE_LOW_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
         case _ if text.vatTurnoverEstimate.getOrElse(0L) > MAX_TURNOVER_ESTIMATE
-        => Seq(ValidationError("pages.estimate.vat.turnover.validation.high", EstimateVatTurnoverForm.INPUT_ESTIMATE))
+        => Seq(ValidationError(TURNOVER_ESTIMATE_HIGH_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
         case _ => Nil
       }
       if (errors.isEmpty) Valid else Invalid(errors)
