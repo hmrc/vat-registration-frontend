@@ -97,7 +97,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.EstimateVatTurnoverController.submit()} with a valid turnover estimate entered" should {
 
     "return 303" in {
-      val returnCacheMapEstimateVatTurnover = CacheMap("", Map("" -> Json.toJson(EstimateVatTurnover.empty)))
+      val returnCacheMapEstimateVatTurnover = CacheMap("", Map("" -> Json.toJson(validEstimateVatTurnover)))
 
       when(mockS4LService.saveForm[EstimateVatTurnover]
         (Matchers.eq(CacheKeys.EstimateVatTurnover.toString), Matchers.any())

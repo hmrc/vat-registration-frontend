@@ -35,14 +35,17 @@
                       @govHelpers.errorInline("turnoverEstimate", Messages(error.message))
                   }
 
+
                   <label class="form-label">@messages("pages.estimate.vat.turnover.form.label")</label>
                       @govHelpers.input(
                           estimateVatTurnoverForm("turnoverEstimate"),
                           '_divClass -> "form-group",
                           '_inputClass -> "form-control",
                           '_label -> Messages("app.common.gbp.symbol"),
-                          '_labelClass -> "form-label"
+                          '_labelClass -> "form-label",
+                          '_type -> "number"
                       )
+
 
               </fieldset>
 
