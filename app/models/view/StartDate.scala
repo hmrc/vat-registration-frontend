@@ -52,8 +52,14 @@ object StartDate extends ApiModelTransformer[StartDate] {
   implicit val format = Json.format[StartDate]
 
   // Returns a view model for a specific part of a given VatScheme API model
-  override def apply(vatScheme: VatScheme): StartDate =
-    fromDateTime(vatScheme.vatChoice.startDate)
+  override def apply(vatScheme: VatScheme): StartDate = {
+
+    vatScheme.vatChoice match {
+      case Some(vatChoice) => fromDateTime(vatChoice.startDate)
+      case None => StartDate.empty
+    }
+
+  }
 
   def fromDateTime(d: DateTime): StartDate =
     if (d.toString("dd/MM/yyyy") == "01/01/1970") {

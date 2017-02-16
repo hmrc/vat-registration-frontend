@@ -57,20 +57,11 @@ class TradingNameSpec extends UnitSpec with VatRegistrationFixture {
     "convert a populated VatScheme's VatTradingDetails API model that has an empty trading name to an instance of TradingName view model" in {
       val vatSchemeEmptyTradingName = VatScheme(
         validRegId,
-        VatTradingDetails(""),
-        validVatChoice
+        Some(VatTradingDetails("")),
+        Some(validVatChoice)
       )
       TradingName.apply(vatSchemeEmptyTradingName) shouldBe TradingName(yesNo = TRADING_NAME_NO, tradingName = None)
     }
 
-    "convert a populated VatScheme's VatTradingDetails API model that has a hash as a trading name to an instance of TradingName view model" in {
-      val vatSchemeHashInTradingName = VatScheme(
-        validRegId,
-        VatTradingDetails("#"),
-        validVatChoice
-      )
-
-      TradingName.apply(vatSchemeHashInTradingName) shouldBe TradingName.empty
-    }
   }
 }
