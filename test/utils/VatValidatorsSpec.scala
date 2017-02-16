@@ -16,15 +16,17 @@
 
 package utils
 
-import forms.vatDetails.TradingNameForm
+import forms.vatDetails.{EstimateVatTurnoverForm, TradingNameForm}
 import helpers.VatRegSpec
 import models.view.TradingName
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 class VatValidatorsSpec extends VatRegSpec {
 
     val testTradingNameForm = TradingNameForm.form
+    val testTurnoverEstimateForm = EstimateVatTurnoverForm.form
 
+
+    //Trading Name Page Form
     "return an error when user enters a empty trading name and selected Yes " in {
       val data : Map[String, String] =
         Map(
@@ -33,7 +35,7 @@ class VatValidatorsSpec extends VatRegSpec {
         )
 
       val boundForm = testTradingNameForm.bind(data)
-      boundForm.errors.map(err => (err.key, err.message)) mustBe  List(("", VatValidators.EMPTY_TRADING_NAME_MSG_KEY))
+      boundForm.errors.map(err => (err.key, err.message)) mustBe List(("", VatValidators.EMPTY_TRADING_NAME_MSG_KEY))
 
     }
 
@@ -58,6 +60,51 @@ class VatValidatorsSpec extends VatRegSpec {
       )
 
     val boundForm = testTradingNameForm.bind(data)
+    boundForm.errors.map(err => (err.key, err.message)) mustBe List()
+
+  }
+
+  //Estimate Vat Turnover Page Form
+  "return an error when user enters a empty turnover estimate" in {
+    val data : Map[String, String] =
+      Map(
+        "turnoverEstimate" -> ""
+      )
+
+    val boundForm = testTurnoverEstimateForm.bind(data)
+    boundForm.errors.map(err => (err.key, err.message)) mustBe List(("", VatValidators.TURNOVER_ESTIMATE_EMPTY_MSG_KEY))
+
+  }
+
+  "return an error when user enters a turnover estimate greater than 1,000,000,000,000,000" in {
+    val data : Map[String, String] =
+      Map(
+        "turnoverEstimate" -> "1000000000000001"
+      )
+
+    val boundForm = testTurnoverEstimateForm.bind(data)
+    boundForm.errors.map(err => (err.key, err.message)) mustBe List(("", VatValidators.TURNOVER_ESTIMATE_HIGH_MSG_KEY))
+
+  }
+
+  "return an error when user enters a turnover estimate less than 0" in {
+    val data : Map[String, String] =
+      Map(
+        "turnoverEstimate" -> "-1"
+      )
+
+    val boundForm = testTurnoverEstimateForm.bind(data)
+    boundForm.errors.map(err => (err.key, err.message)) mustBe List(("", VatValidators.TURNOVER_ESTIMATE_LOW_MSG_KEY))
+
+  }
+
+  "return no errors when user enters a valid turnover estimate" in {
+    val data : Map[String, String] =
+      Map(
+        "turnoverEstimate" -> "50000"
+      )
+
+    val boundForm = testTurnoverEstimateForm.bind(data)
     boundForm.errors.map(err => (err.key, err.message)) mustBe List()
 
   }

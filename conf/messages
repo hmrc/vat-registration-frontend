@@ -7,6 +7,7 @@ app.common.continue                     = Continue
 app.common.saveAndContinue              = Save and continue
 app.common.errorSummaryLabel            = The following errors were identified on this page.
 app.common.change                       = Change
+app.common.gbp.symbol                   = £
 error.required                          = Select an option
 
 ## Welcome Page
@@ -70,7 +71,7 @@ pages.voluntary.registration.panels.no.para1                  = You must registe
 pages.voluntary.registration.panels.no.bullet1                = at the end of any month, the value of the company''s taxable sales in the previous 12 months or less is over the £83,000 registration threshold
 pages.voluntary.registration.panels.no.bullet2                = you expect the value of the company''s taxable sales in the next 30-day period alone to go over the £83,000 registration threshold
 
-## Taxable Turnover
+## Taxable Turnover Page
 pages.taxable.turnover.title                            = Taxable Turnover
 pages.taxable.turnover.heading                          = Do you expect the company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered with Companies House?
 pages.taxable.turnover.what.is.turnover.title           = What is ''VAT taxable turnover''?
@@ -84,11 +85,29 @@ pages.start.date.confirmation.para2                          = You must apply to
 pages.start.date.confirmation.para3                          = If you register late, you must pay what you owe from the date you should''ve registered.
 pages.start.date.confirmation.warning                        = You may get a penalty depending on how much you owe and how late your registration is.
 
+## Estimate Vat Turnover Page
+pages.estimate.vat.turnover.title                           = Estimate value of sales
+pages.estimate.vat.turnover.heading                         = Estimate the company''s VAT taxable turnover 
+pages.estimate.vat.turnover.para1                           = Estimate the total value of the products or services you expect to sell in the next 12 months that are subject to VAT. This is called your <a href="https://www.gov.uk/vat-registration/calculate-turnover">VAT taxable turnover</a>.
+pages.estimate.vat.turnover.info                            = You won''t be penalised if your estimate isn''t exact.
+pages.estimate.vat.turnover.form.label                      = Estimated VAT taxable turnover for the next 12 months
+pages.estimate.vat.turnover.include.title                   = What should I include in my estimate?
+pages.estimate.vat.turnover.include.para1                   = Add together the total value of your UK sales that aren''t <a href="https://www.gov.uk/vat-businesses/when-not-to-charge-vat">exempt from VAT</a>, including:
+pages.estimate.vat.turnover.include.bullet1                 = goods you hired or loaned to customers
+pages.estimate.vat.turnover.include.bullet2                 = business goods used for personal reasons
+pages.estimate.vat.turnover.include.bullet3                 = goods you <a href="https://www.gov.uk/guidance/vat-part-exchanges-barters-and-set-offs">bartered, part-exchanged</a> or gave as gifts
+pages.estimate.vat.turnover.include.bullet4                 = services you received from businesses in other countries that you had to <a href="https://www.gov.uk/government/publications/vat-notice-735-vat-reverse-charge-on-specified-goods-and-services/vat-notice-735-vat-reverse-charge-on-specified-goods-and-services">''reverse charge''</a>
+pages.estimate.vat.turnover.include.bullet5                 = <a href="https://www.gov.uk/government/publications/vat-notice-708-buildings-and-construction">building work over £100,000</a> your business did for itself
+pages.estimate.vat.turnover.include.para2                   = Include any <a href="https://www.gov.uk/vat-businesses/vat-rates">zero-rated items</a> - only exclude VAT-exempt sales, and goods or services you supply outside of the UK.
+pages.estimate.vat.turnover.validation.empty                = Enter an estimate
+pages.estimate.vat.turnover.validation.low                  = Enter a positive estimate
+pages.estimate.vat.turnover.validation.high                 = Enter an estimate which is less than 1,000,000,000,000,000
+
 ## Summary Page
 pages.summary.title                                     = Summary
 pages.summary.heading                                   = Check your answers
 
-## Application submission confirmation page
+## Application Submission Confirmation page
 pages.application.submission.confirmation.title                     = Application Submitted
 pages.application.submission.confirmation.heading                   = Application submitted
 pages.application.submission.confirmation.reference.number          = Your reference number is
@@ -96,8 +115,6 @@ pages.application.submission.confirmation.whatNext.sub.heading      = What happe
 pages.application.submission.confirmation.whatNext.para1            = HMRC will send you an email to let you know the outcome of your application. This will usually take up to 7 days.
 pages.application.submission.confirmation.whatNext.para2            = You''ll get a secure message with your VAT number sent to your business tax account once you''re registered for VAT.
 pages.application.submission.confirmation.whatNext.para3            = Once you''ve got your VAT number you can send VAT invoices to your VAT-registered customers which show the VAT amount separately.
-
-
 pages.application.submission.confirmation.whileWait.sub.heading     = While you wait
 pages.application.submission.confirmation.whileWait.para1           = You can''t charge VAT until you get your VAT number, but you''ll still have to pay the VAT to HMRC for this period.
 pages.application.submission.confirmation.whileWait.para2           = You should increase your prices to allow for this and tell your customers why.
@@ -105,6 +122,7 @@ pages.application.submission.confirmation.whileWait.example         = Example
 pages.application.submission.confirmation.whileWait.example.para1   = If you would''ve charged £100 for something that''s subject to the standard <a href="https://www.gov.uk/vat-rates">rate of VAT</a> (20%), increase the price by the 20% and charge £120.
 pages.application.submission.confirmation.whileWait.para3           = Once you''ve got your VAT number you can then reissue invoices showing the VAT.
 pages.application.submission.confirmation.button                    = Your business registration overview
+
 ## Summary Page VAT details
 pages.summary.vatDetails.sectionHeading                 = VAT details
 pages.summary.vatDetails.taxableTurnover                = Will earn more than £83,000 in the next 30 days

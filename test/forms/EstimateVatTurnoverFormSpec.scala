@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package enums
+package forms
 
-object CacheKeys extends Enumeration {
-  val StartDate = Value
-  val TradingName = Value
-  val VoluntaryRegistration = Value
-  val TaxableTurnover = Value
-  val EstimateVatTurnover = Value
+import forms.vatDetails.EstimateVatTurnoverForm
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
+class EstimateVatTurnoverFormSpec extends UnitSpec with WithFakeApplication {
+
+  val testForm = EstimateVatTurnoverForm.form
+
+  "Creating a form using an empty model" should {
+    "return an empty turnover estimate object" in {
+      testForm.data.isEmpty shouldBe true
+    }
+  }
 }
