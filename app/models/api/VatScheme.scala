@@ -24,15 +24,17 @@ import play.api.libs.json._
 case class VatScheme(
                       id: String,
                       tradingDetails: VatTradingDetails,
-                      vatChoice: VatChoice
+                      vatChoice: VatChoice,
+                      vatFinancials: VatFinancials
                     )
 
 object VatScheme {
 
-  def blank(id: String)(implicit now: Now[DateTime]): VatScheme = VatScheme(id, VatTradingDetails(""), VatChoice(now(), ""))
+  def blank(id: String)(implicit now: Now[DateTime]): VatScheme = VatScheme(id, VatTradingDetails(""), VatChoice(now(), ""), VatFinancials(0L))
 
   implicit val format = (
     (__ \ "ID").format[String] and
       (__ \ "trading-details").format[VatTradingDetails] and
-      (__ \ "vat-choice").format[VatChoice]) (VatScheme.apply, unlift(VatScheme.unapply))
+      (__ \ "vat-choice").format[VatChoice] and
+      (__ \ "vat-financials").format[VatFinancials]) (VatScheme.apply, unlift(VatScheme.unapply))
 }

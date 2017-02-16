@@ -16,11 +16,16 @@
 
 package models.view
 
-import models.ApiModelTransformer
-import models.api.VatScheme
+import models.{ApiModelTransformer, ViewModelTransformer}
+import models.api.{VatFinancials, VatScheme, VatTradingDetails}
 import play.api.libs.json.Json
 
-case class EstimateVatTurnover(vatTurnoverEstimate: Option[Long]) {
+case class EstimateVatTurnover(vatTurnoverEstimate: Option[Long])
+  extends ViewModelTransformer[VatFinancials] {
+
+  // Upserts (selectively converts) a View model object to its API model counterpart
+  override def toApi(vatFinancials: VatFinancials): VatFinancials =
+    vatFinancials.copy(turnoverEstimate = vatTurnoverEstimate.getOrElse(0L))
 }
 
 object EstimateVatTurnover extends ApiModelTransformer[EstimateVatTurnover] {
@@ -28,8 +33,10 @@ object EstimateVatTurnover extends ApiModelTransformer[EstimateVatTurnover] {
   implicit val format = Json.format[EstimateVatTurnover]
 
   // Returns a view model for a specific part of a given VatScheme API model
-  override def apply(vatScheme: VatScheme): EstimateVatTurnover =
-    empty
+  override def apply(vatScheme: VatScheme): EstimateVatTurnover = {
+    val turnoverEstimate = vatScheme.vatFinancials.turnoverEstimate
+    EstimateVatTurnover(Some(turnoverEstimate))
+  }
 
   def empty: EstimateVatTurnover = EstimateVatTurnover(None)
 }
