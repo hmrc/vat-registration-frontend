@@ -34,7 +34,11 @@ object EstimateZeroRatedSales extends ApiModelTransformer[EstimateZeroRatedSales
 
   // Returns a view model for a specific part of a given VatScheme API model
   override def apply(vatScheme: VatScheme): EstimateZeroRatedSales = {
-    EstimateZeroRatedSales(None)
+
+    vatScheme.financials match {
+      case Some(financials) =>  EstimateZeroRatedSales(financials.zeroRatedSalesEstimate)
+      case _ =>  EstimateZeroRatedSales.empty
+    }
   }
 
   def empty: EstimateZeroRatedSales = EstimateZeroRatedSales(None)
