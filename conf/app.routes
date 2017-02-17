@@ -14,7 +14,6 @@ POST        /start-date                     controllers.userJourney.StartDateCon
 GET         /start-date-confirmation        controllers.userJourney.MandatoryStartDateController.show
 POST        /start-date-confirmation        controllers.userJourney.MandatoryStartDateController.submit
 
-
 ## TRADING NAME PAGE
 GET         /trading-name                   controllers.userJourney.TradingNameController.show
 POST        /trading-name                   controllers.userJourney.TradingNameController.submit
@@ -26,6 +25,10 @@ POST        /voluntary-registration         controllers.userJourney.VoluntaryReg
 ## ESTIMATE VAT TAXABLE TURNOVER PAGE
 GET         /estimate-vat-turnover          controllers.userJourney.EstimateVatTurnoverController.show
 POST        /estimate-vat-turnover          controllers.userJourney.EstimateVatTurnoverController.submit
+
+## ESTIMATE ZERO RATED SALES PAGE
+GET         /estimate-zero-rated-sales      controllers.userJourney.EstimateZeroRatedSalesController.show
+POST        /estimate-zero-rated-sales      controllers.userJourney.EstimateZeroRatedSalesController.submit
 
 ## TAXABLE TURNOVER PAGE
 GET         /taxable-turnover               controllers.userJourney.TaxableTurnoverController.show
