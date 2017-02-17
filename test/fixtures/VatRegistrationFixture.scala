@@ -129,6 +129,21 @@ trait VatRegistrationFixture {
         "companyDetails.tradingName",
         Right("ACME INC"),
         Some(controllers.userJourney.routes.TradingNameController.show())
+      ),
+      SummaryRow(
+        "companyDetails.estimatedSalesValue",
+        Right("£10000000000"),
+        Some(controllers.userJourney.routes.EstimateVatTurnoverController.show())
+      ),
+      SummaryRow(
+        "companyDetails.zeroRatedSales",
+        Right("Yes"),
+        Some(controllers.userJourney.routes.ZeroRatedSalesController.show())
+      ),
+      SummaryRow(
+        "companyDetails.zeroRatedSalesValue",
+        Right("£10000000000"),
+        Some(controllers.userJourney.routes.EstimateZeroRatedSalesController.show())
       )
     )
   )

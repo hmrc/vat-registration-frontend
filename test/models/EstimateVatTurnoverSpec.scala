@@ -48,7 +48,7 @@ class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
     "convert a populated VatScheme's VatFinancials API model to an instance of EstimateVatTurnover view model" in {
-      EstimateVatTurnover.apply(validVatScheme) shouldBe EstimateVatTurnover(Some(50L))
+      EstimateVatTurnover.apply(validVatScheme) shouldBe EstimateVatTurnover(Some(10000000000L))
     }
   }
 }

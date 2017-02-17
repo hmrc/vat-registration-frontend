@@ -48,7 +48,7 @@ class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
     "convert a populated VatScheme's VatFinancials API model to an instance of EstimateZeroRatedSales view model" in {
-      EstimateZeroRatedSales.apply(validVatScheme) shouldBe EstimateZeroRatedSales(None)
+      EstimateZeroRatedSales.apply(validVatScheme) shouldBe EstimateZeroRatedSales(Some(10000000000L))
     }
   }
 }
