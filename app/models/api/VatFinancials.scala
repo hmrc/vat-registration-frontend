@@ -19,16 +19,22 @@ package models.api
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatFinancials(
-                          turnoverEstimate: Long,
-                          zeroRatedSalesEstimate: Long
-                    )
+case class VatFinancials( bankAccount: Option[VatBankAccount],
+                          turnoverEstimate : Long,
+                          zeroRatedSalesEstimate : Option[Long],
+                          reclaimVatOnMostReturns: Boolean,
+                          vatAccountingPeriod: VatAccountingPeriod
+                        )
 
 object VatFinancials {
 
   implicit val format = (
-    (__ \ "turnover-estimate").format[Long] and
-      (__ \ "zero-rated-sales-estimate").format[Long]) (VatFinancials.apply, unlift(VatFinancials.unapply))
+    (__ \ "bankAccount").formatNullable[VatBankAccount] and
+      (__ \ "turnoverEstimate").format[Long] and
+      (__ \ "zeroRatedTurnoverEstimate").formatNullable[Long] and
+      (__ \ "reclaimVatOnMostReturns").format[Boolean] and
+      (__ \ "accountingPeriods").format[VatAccountingPeriod]
+    ) (VatFinancials.apply, unlift(VatFinancials.unapply))
 
-  def empty: VatFinancials = VatFinancials(0L, 0L)
+  def empty: VatFinancials = VatFinancials(None, 0L, None, false, VatAccountingPeriod(None, ""))
 }
