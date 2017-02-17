@@ -24,5 +24,6 @@ object CacheKeys extends Enumeration {
   val TaxableTurnover = Value
   val EstimateVatTurnover = Value
   val ZeroRatedSales = Value
+  val EstimateZeroRatedSales = Value
 
 }

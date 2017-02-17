@@ -18,30 +18,31 @@ package models
 
 import fixtures.VatRegistrationFixture
 import models.api.VatFinancials
-import models.view.{EstimateVatTurnover, TradingName}
+import models.view.EstimateZeroRatedSales
 import uk.gov.hmrc.play.test.UnitSpec
 
-class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
-  override val validEstimateVatTurnover = EstimateVatTurnover(Some(50000L))
-  override val differentEstimateVatTurnover = EstimateVatTurnover(Some(10000L))
+class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
+
+  override val validEstimateZeroRatedSales = EstimateZeroRatedSales(Some(60000L))
+  override val differentEstimateZeroRatedSales = EstimateZeroRatedSales(Some(20000L))
 
   val validVatFinancials = VatFinancials(
     turnoverEstimate = 50000L, zeroRatedSalesEstimate = 60000L
   )
 
   val differentVatFinancials = VatFinancials(
-    turnoverEstimate = 10000L, zeroRatedSalesEstimate = 60000L
+    turnoverEstimate = 50000L, zeroRatedSalesEstimate = 20000L
   )
 
   "toApi" should {
-    "upserts (merge) a current VatFinancials API model with the details of an instance of EstimateVatTurnover view model" in {
-      differentEstimateVatTurnover.toApi(validVatFinancials) shouldBe differentVatFinancials
+    "upserts (merge) a current VatFinancials API model with the details of an instance of EstimateZeroRatedSales view model" in {
+      differentEstimateZeroRatedSales.toApi(validVatFinancials) shouldBe differentVatFinancials
     }
   }
 
   "apply" should {
-    "convert a populated VatScheme's VatFinancials API model to an instance of EstimateVatTurnover view model" in {
-      EstimateVatTurnover.apply(validVatScheme) shouldBe EstimateVatTurnover(None)
+    "convert a populated VatScheme's VatFinancials API model to an instance of EstimateZeroRatedSales view model" in {
+      EstimateZeroRatedSales.apply(validVatScheme) shouldBe EstimateZeroRatedSales(None)
     }
   }
 }
