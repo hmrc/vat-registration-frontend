@@ -20,44 +20,38 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.ZeroRatedSalesForm
-import models.view.{TaxableTurnover, ZeroRatedSales}
+import forms.vatDetails.{EstimateVatTurnoverForm, EstimateZeroRatedSalesForm}
+import models.view.{EstimateVatTurnover, EstimateZeroRatedSales}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
-
-class ZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                         ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class EstimateZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
+                                                 ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    s4LService.fetchAndGet[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString) flatMap {
+    s4LService.fetchAndGet[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString) flatMap {
       case Some(viewModel) => Future.successful(viewModel)
       case None => for {
         vatScheme <- vatRegistrationService.getVatScheme()
-        viewModel = ZeroRatedSales(vatScheme)
+        viewModel = EstimateZeroRatedSales(vatScheme)
       } yield viewModel
     } map { viewModel =>
-      val form = ZeroRatedSalesForm.form.fill(viewModel)
-      Ok(views.html.pages.zero_rated_sales(form))
+      val form = EstimateZeroRatedSalesForm.form.fill(viewModel)
+      Ok(views.html.pages.estimate_zero_rated_sales(form))
     }
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    ZeroRatedSalesForm.form.bindFromRequest().fold(
+    EstimateZeroRatedSalesForm.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.zero_rated_sales(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.estimate_zero_rated_sales(formWithErrors)))
       }, {
-
-        data: ZeroRatedSales => {
-          s4LService.saveForm[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString, data) map { _ =>
-            if(ZeroRatedSales.ZERO_RATED_SALES_YES == data.yesNo) {
-              Redirect(controllers.userJourney.routes.EstimateZeroRatedSalesController.show())
-            } else {
-              Redirect(controllers.userJourney.routes.SummaryController.show())
-            }
+        data: EstimateZeroRatedSales => {
+          s4LService.saveForm[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString, data) map { _ =>
+            Redirect(controllers.userJourney.routes.SummaryController.show())
           }
         }
       })
