@@ -54,7 +54,7 @@ class ZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegistration
         data: ZeroRatedSales => {
           s4LService.saveForm[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString, data) map { _ =>
             if(ZeroRatedSales.ZERO_RATED_SALES_YES == data.yesNo) {
-              Redirect(controllers.userJourney.routes.StartDateController.show())
+              Redirect(controllers.userJourney.routes.EstimateZeroRatedSalesController.show())
             } else {
               Redirect(controllers.userJourney.routes.SummaryController.show())
             }
