@@ -20,7 +20,7 @@ import builders.AuthBuilder
 import enums.CacheKeys
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.view.{EstimateVatTurnover, StartDate}
+import models.view.EstimateVatTurnover
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -62,8 +62,8 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
     }
 
     "return HTML when there's nothing in S4L" in {
-      when(mockS4LService.fetchAndGet[StartDate](Matchers.eq(CacheKeys.StartDate.toString))
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
+      when(mockS4LService.fetchAndGet[EstimateVatTurnover](Matchers.eq(CacheKeys.EstimateVatTurnover.toString))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[EstimateVatTurnover]]()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
