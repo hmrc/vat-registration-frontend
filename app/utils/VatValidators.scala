@@ -16,8 +16,8 @@
 
 package utils
 
-import forms.vatDetails.{EstimateVatTurnoverForm, TradingNameForm}
-import models.view.{EstimateVatTurnover, TradingName}
+import forms.vatDetails.{EstimateVatTurnoverForm, EstimateZeroRatedSalesForm, TradingNameForm}
+import models.view.{EstimateVatTurnover, EstimateZeroRatedSales, TradingName}
 import play.api.data.validation.{ValidationError, _}
 
 object VatValidators {
@@ -32,6 +32,10 @@ object VatValidators {
   val TURNOVER_ESTIMATE_LOW_MSG_KEY = "pages.estimate.vat.turnover.validation.low"
   val TURNOVER_ESTIMATE_HIGH_MSG_KEY = "pages.estimate.vat.turnover.validation.high"
   val TURNOVER_ESTIMATE_EMPTY_MSG_KEY = "pages.estimate.vat.turnover.validation.empty"
+
+  val ZERO_RATED_SALES_ESTIMATE_LOW_MSG_KEY = "pages.estimate.zero.rated.sales.validation.low"
+  val ZERO_RATED_SALES_ESTIMATE_HIGH_MSG_KEY = "pages.estimate.zero.rated.sales.validation.high"
+  val ZERO_RATED_SALES_ESTIMATE_EMPTY_MSG_KEY = "pages.estimate.zero.rated.sales.validation.empty"
 
   def tradingNameValidation : Constraint[TradingName] = Constraint("constraint.tradingName")({
     text =>
@@ -59,5 +63,18 @@ object VatValidators {
       if (errors.isEmpty) Valid else Invalid(errors)
   })
 
+  def zeroRatedSalesEstimateValidation : Constraint[EstimateZeroRatedSales] = Constraint("constraint.zeroRatedSalesEstimate")({
+    text =>
+      val errors = text match {
+        case EstimateZeroRatedSales(None)
+        => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_EMPTY_MSG_KEY, EstimateZeroRatedSalesForm.INPUT_ESTIMATE))
+        case _ if text.zeroRatedSalesEstimate.get < MIN_TURNOVER_ESTIMATE
+        => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_LOW_MSG_KEY, EstimateZeroRatedSalesForm.INPUT_ESTIMATE))
+        case _ if text.zeroRatedSalesEstimate.get > MAX_TURNOVER_ESTIMATE
+        => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_HIGH_MSG_KEY, EstimateZeroRatedSalesForm.INPUT_ESTIMATE))
+        case _ => Nil
+      }
+      if (errors.isEmpty) Valid else Invalid(errors)
+  })
 
 }

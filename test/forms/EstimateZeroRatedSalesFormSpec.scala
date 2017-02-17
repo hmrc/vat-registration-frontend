@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package models.api
+package forms
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import forms.vatDetails.EstimateZeroRatedSalesForm
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-case class VatFinancials(
-                          turnoverEstimate: Long,
-                          zeroRatedSalesEstimate: Long
-                    )
+class EstimateZeroRatedSalesFormSpec extends UnitSpec with WithFakeApplication {
 
-object VatFinancials {
+  val testForm = EstimateZeroRatedSalesForm.form
 
-  implicit val format = (
-    (__ \ "turnover-estimate").format[Long] and
-      (__ \ "zero-rated-sales-estimate").format[Long]) (VatFinancials.apply, unlift(VatFinancials.unapply))
-
-  def empty: VatFinancials = VatFinancials(0L, 0L)
+  "Creating a form using an empty model" should {
+    "return an empty zero rated sales estimate object" in {
+      testForm.data.isEmpty shouldBe true
+    }
+  }
 }
