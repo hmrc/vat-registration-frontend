@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package models.api
+package forms.vatDetails
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import models.view.EstimateZeroRatedSales
+import play.api.data.Form
+import play.api.data.Forms.{longNumber, mapping, optional}
+import utils.VatValidators.zeroRatedSalesEstimateValidation
 
-case class VatFinancials(
-                          turnoverEstimate: Long,
-                          zeroRatedSalesEstimate: Long
-                    )
+object EstimateZeroRatedSalesForm {
+  val INPUT_ESTIMATE: String = "zeroRatedSalesEstimate"
 
-object VatFinancials {
-
-  implicit val format = (
-    (__ \ "turnover-estimate").format[Long] and
-      (__ \ "zero-rated-sales-estimate").format[Long]) (VatFinancials.apply, unlift(VatFinancials.unapply))
-
-  def empty: VatFinancials = VatFinancials(0L, 0L)
+  val form = Form(
+    mapping(
+      INPUT_ESTIMATE -> optional(longNumber)
+    )(EstimateZeroRatedSales.apply)(EstimateZeroRatedSales.unapply).verifying(zeroRatedSalesEstimateValidation)
+  )
 }

@@ -103,6 +103,23 @@ pages.estimate.vat.turnover.validation.empty                = Enter an estimate
 pages.estimate.vat.turnover.validation.low                  = Enter a positive estimate
 pages.estimate.vat.turnover.validation.high                 = Enter an estimate which is less than 1,000,000,000,000,000
 
+
+## Estimate Zero-Rated Sales Page
+pages.estimate.zero.rated.sales.title                       = Estimate value of zero-rated sales
+pages.estimate.zero.rated.sales.heading                     = Estimate the value of your sales that are charged at 0% VAT
+pages.estimate.zero.rated.sales.para1                       = Some goods and services are subject to VAT but the <a href="https://www.gov.uk/vat-rates">rate of VAT</a> you charge your customers is 0%. This rate of VAT is called the ''zero rate''.
+pages.estimate.zero.rated.sales.info                        = You won''t be penalised if your estimate isn''t exact.
+pages.estimate.zero.rated.sales.form.label                  = Estimated zero-rated sales for the next 12 months
+pages.estimate.zero.rated.sales.include.title               = Examples of zero-rated goods
+pages.estimate.zero.rated.sales.include.para1               = Zero-rated goods include:
+pages.estimate.zero.rated.sales.include.bullet1             = books and newspapers
+pages.estimate.zero.rated.sales.include.bullet2             = children''s clothes and shoes
+pages.estimate.zero.rated.sales.include.bullet3             = motorcycle helmets
+pages.estimate.zero.rated.sales.include.para2               = Find out about <a href="https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services">VAT rates on different goods and services</a>.
+pages.estimate.zero.rated.sales.validation.empty            = Enter an estimate
+pages.estimate.zero.rated.sales.validation.low              = Enter a positive estimate
+pages.estimate.zero.rated.sales.validation.high             = Enter an estimate which is less than 1,000,000,000,000,000
+
 ## Summary Page
 pages.summary.title                                     = Summary
 pages.summary.heading                                   = Check your answers
