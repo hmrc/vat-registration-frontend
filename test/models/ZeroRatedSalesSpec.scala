@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-package enums
+package models
 
-object CacheKeys extends Enumeration {
+import fixtures.VatRegistrationFixture
+import models.view.ZeroRatedSales
+import uk.gov.hmrc.play.test.UnitSpec
 
-  val StartDate = Value
-  val TradingName = Value
-  val VoluntaryRegistration = Value
-  val TaxableTurnover = Value
-  val EstimateVatTurnover = Value
-  val ZeroRatedSales = Value
+class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
 
+  "empty" should {
+    "create an empty Zero Rated Sales model" in {
+      ZeroRatedSales.empty shouldBe ZeroRatedSales("")
+    }
+  }
+
+  "apply" should {
+    "convert a populated VatScheme's VatFinancials API model to an instance of ZeroRatedSales view model" in {
+      ZeroRatedSales.apply(validVatScheme) shouldBe ZeroRatedSales.empty
+    }
+  }
 }
+

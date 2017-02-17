@@ -34,20 +34,22 @@ package controllers.userJourney
 
 import builders.AuthBuilder
 import enums.CacheKeys
+import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.view.VoluntaryRegistration
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class VoluntaryRegistrationControllerSpec extends VatRegSpec {
+class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
@@ -69,6 +71,23 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec {
         "voluntaryRegistrationRadio" -> ""
       )){
 
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("Do you want to register voluntarily for VAT?")
+      }
+    }
+
+    "return HTML when there's nothing in S4L" in {
+      when(mockS4LService.fetchAndGet[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[VoluntaryRegistration]]()))
+        .thenReturn(Future.successful(None))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(validVatScheme))
+
+      callAuthorised(TestVoluntaryRegistrationController.show, mockAuthConnector) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")

@@ -37,7 +37,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object TestEstimateVatTurnoverControllerSpec extends EstimateVatTurnoverController(mockS4LService, mockVatRegistrationService, ds) {
+  object TestEstimateVatTurnoverController extends EstimateVatTurnoverController(mockS4LService, mockVatRegistrationService, ds) {
     override val authConnector = mockAuthConnector
   }
 
@@ -49,7 +49,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockS4LService.fetchAndGet[EstimateVatTurnover](Matchers.eq(CacheKeys.EstimateVatTurnover.toString))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validEstimateVatTurnover)))
 
-      AuthBuilder.submitWithAuthorisedUser(TestEstimateVatTurnoverControllerSpec.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestEstimateVatTurnoverController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "turnoverEstimate" -> ""
       )){
 
@@ -69,7 +69,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestEstimateVatTurnoverControllerSpec.show, mockAuthConnector) {
+      callAuthorised(TestEstimateVatTurnoverController.show, mockAuthConnector) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -85,7 +85,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.EstimateVatTurnoverController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestEstimateVatTurnoverControllerSpec.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestEstimateVatTurnoverController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe  Status.BAD_REQUEST
@@ -104,12 +104,12 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
         (Matchers.any[HeaderCarrier](), Matchers.any[Format[EstimateVatTurnover]]()))
         .thenReturn(Future.successful(returnCacheMapEstimateVatTurnover))
 
-      AuthBuilder.submitWithAuthorisedUser(TestEstimateVatTurnoverControllerSpec.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestEstimateVatTurnoverController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "turnoverEstimate" -> "50000"
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/start-date"
+          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/zero-rated-sales"
       }
 
     }

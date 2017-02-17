@@ -20,43 +20,44 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.TradingNameForm
-import models.view.{TradingName, VoluntaryRegistration}
-import play.api.mvc._
+import forms.vatDetails.ZeroRatedSalesForm
+import models.view.{TaxableTurnover, ZeroRatedSales}
+import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
-class TradingNameController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                      ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+
+class ZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
+                                         ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    s4LService.fetchAndGet[TradingName](CacheKeys.TradingName.toString) flatMap {
+    s4LService.fetchAndGet[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString) flatMap {
       case Some(viewModel) => Future.successful(viewModel)
       case None => for {
         vatScheme <- vatRegistrationService.getVatScheme()
-        viewModel = TradingName(vatScheme)
+        viewModel = ZeroRatedSales(vatScheme)
       } yield viewModel
     } map { viewModel =>
-      val form = TradingNameForm.form.fill(viewModel)
-      Ok(views.html.pages.trading_name(form))
+      val form = ZeroRatedSalesForm.form.fill(viewModel)
+      Ok(views.html.pages.zero_rated_sales(form))
     }
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    TradingNameForm.form.bindFromRequest().fold(
+    ZeroRatedSalesForm.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.trading_name(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.zero_rated_sales(formWithErrors)))
       }, {
-        data: TradingName => {
-          // Save to S4L
-          s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, data) map { _ =>
-            if (TradingName.TRADING_NAME_NO == data.yesNo) {
-              s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, TradingName.empty)
+
+        data: ZeroRatedSales => {
+          s4LService.saveForm[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString, data) map { _ =>
+            if(ZeroRatedSales.ZERO_RATED_SALES_YES == data.yesNo) {
+              Redirect(controllers.userJourney.routes.StartDateController.show())
+            } else {
+              Redirect(controllers.userJourney.routes.SummaryController.show())
             }
-            Redirect(controllers.userJourney.routes.EstimateVatTurnoverController.show())
           }
         }
       })
