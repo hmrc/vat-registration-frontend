@@ -26,13 +26,13 @@ POST        /voluntary-registration         controllers.userJourney.VoluntaryReg
 GET         /estimate-vat-turnover          controllers.userJourney.EstimateVatTurnoverController.show
 POST        /estimate-vat-turnover          controllers.userJourney.EstimateVatTurnoverController.submit
 
-## ESTIMATE ZERO RATED SALES PAGE
-GET         /estimate-zero-rated-sales      controllers.userJourney.EstimateZeroRatedSalesController.show
-POST        /estimate-zero-rated-sales      controllers.userJourney.EstimateZeroRatedSalesController.submit
-
 ## ZERO RATED SALES PAGE
 GET         /zero-rated-sales               controllers.userJourney.ZeroRatedSalesController.show
 POST        /zero-rated-sales               controllers.userJourney.ZeroRatedSalesController.submit
+
+## ESTIMATE ZERO RATED SALES PAGE
+GET         /estimate-zero-rated-sales      controllers.userJourney.EstimateZeroRatedSalesController.show
+POST        /estimate-zero-rated-sales      controllers.userJourney.EstimateZeroRatedSalesController.submit
 
 ## TAXABLE TURNOVER PAGE
 GET         /taxable-turnover               controllers.userJourney.TaxableTurnoverController.show
