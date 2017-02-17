@@ -56,7 +56,7 @@ class TradingNameController @Inject()(s4LService: S4LService, vatRegistrationSer
             if (TradingName.TRADING_NAME_NO == data.yesNo) {
               s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, TradingName.empty)
             }
-            Redirect(controllers.userJourney.routes.SummaryController.show())
+            Redirect(controllers.userJourney.routes.EstimateVatTurnoverController.show())
           }
         }
       })
