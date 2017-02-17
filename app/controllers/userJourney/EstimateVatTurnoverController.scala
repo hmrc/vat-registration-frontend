@@ -52,7 +52,7 @@ class EstimateVatTurnoverController @Inject()(s4LService: S4LService, vatRegistr
       }, {
         data: EstimateVatTurnover => {
           s4LService.saveForm[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString, data) map { _ =>
-            Redirect(controllers.userJourney.routes.StartDateController.show())
+            Redirect(controllers.userJourney.routes.ZeroRatedSalesController.show())
           }
         }
       })

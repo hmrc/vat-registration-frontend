@@ -103,6 +103,18 @@ pages.estimate.vat.turnover.validation.empty                = Enter an estimate
 pages.estimate.vat.turnover.validation.low                  = Enter a positive estimate
 pages.estimate.vat.turnover.validation.high                 = Enter an estimate which is less than 1,000,000,000,000,000
 
+## Zero Rated Sales Page
+pages.zero.rated.sales.title                                = Zero-Rated sales
+pages.zero.rated.sales.heading                              = Do you expect to make any zero-rated sales?
+pages.zero.rated.sales.para1                                = ''Zero-rated'' goods and services are subject to VAT but the rate you''ll charge your customers will be at 0%.
+pages.zero.rated.sales.examples.title                       = Examples of zero-rated items
+pages.zero.rated.sales.examples.para1                       = Zero-rated items include:
+pages.zero.rated.sales.examples.bullet1                     = most food and drink
+pages.zero.rated.sales.examples.bullet2                     = books and newspapers
+pages.zero.rated.sales.examples.bullet3                     = children''s clothes and shoes
+pages.zero.rated.sales.examples.bullet4                     = motorcycle helmets
+pages.zero.rated.sales.examples.para2                       = Find out about <a href="https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services">VAT rates on different goods and services</a>.
+
 ## Summary Page
 pages.summary.title                                     = Summary
 pages.summary.heading                                   = Check your answers
