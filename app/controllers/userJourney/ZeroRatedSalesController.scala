@@ -21,7 +21,7 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
 import forms.vatDetails.ZeroRatedSalesForm
-import models.view.{TaxableTurnover, ZeroRatedSales}
+import models.view.{EstimateZeroRatedSales, TaxableTurnover, TradingName, ZeroRatedSales}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -56,6 +56,7 @@ class ZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegistration
             if(ZeroRatedSales.ZERO_RATED_SALES_YES == data.yesNo) {
               Redirect(controllers.userJourney.routes.EstimateZeroRatedSalesController.show())
             } else {
+              s4LService.saveForm[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString, EstimateZeroRatedSales.empty)
               Redirect(controllers.userJourney.routes.SummaryController.show())
             }
           }

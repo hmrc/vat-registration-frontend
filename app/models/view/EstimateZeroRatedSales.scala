@@ -25,7 +25,7 @@ case class EstimateZeroRatedSales(zeroRatedSalesEstimate: Option[Long])
 
   // Upserts (selectively converts) a View model object to its API model counterpart
   override def toApi(vatFinancials: VatFinancials): VatFinancials =
-    vatFinancials.copy(zeroRatedSalesEstimate = zeroRatedSalesEstimate.get)
+    vatFinancials.copy(zeroRatedSalesEstimate = zeroRatedSalesEstimate)
 }
 
 object EstimateZeroRatedSales extends ApiModelTransformer[EstimateZeroRatedSales] {
@@ -36,4 +36,7 @@ object EstimateZeroRatedSales extends ApiModelTransformer[EstimateZeroRatedSales
   override def apply(vatScheme: VatScheme): EstimateZeroRatedSales = {
     EstimateZeroRatedSales(None)
   }
+
+  def empty: EstimateZeroRatedSales = EstimateZeroRatedSales(None)
+
 }

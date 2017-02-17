@@ -71,8 +71,10 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
       vatScheme <- vatRegConnector.getRegistration(regId)
       vatFinancials = vatScheme.financials.getOrElse(VatFinancials.empty)
       estimateVatTurnover <- s4LService.fetchAndGet[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString)
-      updatedVatFinancials = estimateVatTurnover.getOrElse(EstimateVatTurnover(vatScheme)).toApi(vatFinancials)
-      response <- vatRegConnector.upsertVatFinancials(regId, updatedVatFinancials)
+      zeroRatedSalesEstimate <- s4LService.fetchAndGet[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString)
+      estimateVatTurnoverVf = estimateVatTurnover.getOrElse(EstimateVatTurnover(vatScheme)).toApi(vatFinancials)
+      zeroRatedSalesEstimateVf = zeroRatedSalesEstimate.getOrElse(EstimateZeroRatedSales(vatScheme)).toApi(estimateVatTurnoverVf)
+      response <- vatRegConnector.upsertVatFinancials(regId, zeroRatedSalesEstimateVf)
     } yield response
   }
 
@@ -201,37 +203,47 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
 
     def getEstimatedSalesValue: SummaryRow = SummaryRow(
       "companyDetails.estimatedSalesValue",
-      Right(vatFinancials.turnoverEstimate.toString),
-      Some(controllers.userJourney.routes.TradingNameController.show())
+      Right(s"£${vatFinancials.turnoverEstimate.toString}"),
+      Some(controllers.userJourney.routes.EstimateVatTurnoverController.show())
     )
 
     def getZeroRatedSales: SummaryRow = SummaryRow(
       "companyDetails.zeroRatedSales",
-      vatFinancials match {
-        case _ => Right("No")
-        case _ => Right(vatTradingDetails.tradingName)
+      vatFinancials.zeroRatedSalesEstimate match {
+        case Some(_) => Right("Yes")
+        case None => Right("No")
       },
-      Some(controllers.userJourney.routes.TradingNameController.show())
+      Some(controllers.userJourney.routes.ZeroRatedSalesController.show())
     )
 
     def getEstimatedZeroRatedSales: SummaryRow = SummaryRow(
       "companyDetails.zeroRatedSalesValue",
-      vatTradingDetails.tradingName match {
-        case "" => Right("No")
-        case _ => Right(vatTradingDetails.tradingName)
-      },
-      Some(controllers.userJourney.routes.TradingNameController.show())
+      Right(s"£${vatFinancials.zeroRatedSalesEstimate.get.toString}"),
+      Some(controllers.userJourney.routes.EstimateZeroRatedSalesController.show())
     )
 
-    SummarySection(
-      id = "companyDetails",
-      Seq(
-        getTradingName,
-        getEstimatedSalesValue,
-        getZeroRatedSales,
-        getEstimatedZeroRatedSales
+
+
+    if(vatFinancials.zeroRatedSalesEstimate.isEmpty) {
+      SummarySection(
+        id = "companyDetails",
+        Seq(
+          getTradingName,
+          getEstimatedSalesValue,
+          getZeroRatedSales
+        )
       )
-    )
+    } else {
+      SummarySection(
+        id = "companyDetails",
+        Seq(
+          getTradingName,
+          getEstimatedSalesValue,
+          getZeroRatedSales,
+          getEstimatedZeroRatedSales
+        )
+      )
+    }
 
   }
 }

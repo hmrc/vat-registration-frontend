@@ -39,7 +39,8 @@ class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
         Some(VatChoice(
           DateTime.now,
           VatChoice.NECESSITY_OBLIGATORY
-        ))
+        )),
+        Some(validVatFinancials)
       )
 
       TaxableTurnover.apply(vatSchemeObligatory) shouldBe TaxableTurnover(TAXABLE_YES)
