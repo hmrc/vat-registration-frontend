@@ -69,6 +69,13 @@ trait RegistrationConnector {
     }
   }
 
+  def upsertVatFinancials(regId: String, vatFinancials: VatFinancials)
+                             (implicit hc: HeaderCarrier, rds: HttpReads[VatFinancials]): Future[VatFinancials] = {
+    http.PATCH[VatFinancials, VatFinancials](s"$vatRegUrl/vatreg/$regId/vat-financials", vatFinancials) recover {
+      case e: Exception => throw logResponse(e, "upsertVatFinancials", "upserting financials details")
+    }
+  }
+
   private[connectors] def logResponse(e: Throwable, f: String, m: String): Throwable = {
     def log(s: String) = Logger.warn(s"[VatRegistrationConnector] [$f] received $s when $m")
     e match {

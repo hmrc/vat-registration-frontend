@@ -34,9 +34,13 @@ object EstimateVatTurnover extends ApiModelTransformer[EstimateVatTurnover] {
 
   // Returns a view model for a specific part of a given VatScheme API model
   override def apply(vatScheme: VatScheme): EstimateVatTurnover = {
-    EstimateVatTurnover(None)
+
+    vatScheme.financials match {
+      case Some(financials) =>  EstimateVatTurnover(Some(financials.turnoverEstimate))
+      case _ =>  EstimateVatTurnover.empty
+    }
   }
 
-
+  def empty: EstimateVatTurnover = EstimateVatTurnover(None)
 
 }
