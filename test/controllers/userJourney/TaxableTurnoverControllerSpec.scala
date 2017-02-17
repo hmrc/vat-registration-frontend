@@ -18,6 +18,7 @@ package controllers.userJourney
 
 import builders.AuthBuilder
 import enums.CacheKeys
+import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.view.{StartDate, TaxableTurnover, VoluntaryRegistration}
 import org.mockito.Matchers
@@ -33,7 +34,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class TaxableTurnoverControllerSpec extends VatRegSpec {
+class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
@@ -45,7 +46,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec {
 
   s"GET ${routes.TaxableTurnoverController.show()}" should {
 
-    "return HTML Taxable Turnover page with no Selection" in {
+    "return HTML when there's a start date in S4Ln" in {
       val taxableTurnover = TaxableTurnover("")
 
       when(mockS4LService.fetchAndGet[TaxableTurnover](Matchers.eq(CacheKeys.TaxableTurnover.toString))(Matchers.any(), Matchers.any()))
@@ -55,6 +56,23 @@ class TaxableTurnoverControllerSpec extends VatRegSpec {
         "taxableTurnoverRadio" -> ""
       )){
 
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("VAT taxable turnover to be more than £83,000")
+      }
+    }
+
+    "return HTML when there's nothing in S4L" in {
+      when(mockS4LService.fetchAndGet[TaxableTurnover](Matchers.eq(CacheKeys.TaxableTurnover.toString))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[TaxableTurnover]]()))
+        .thenReturn(Future.successful(None))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(validVatScheme))
+
+      callAuthorised(TestTaxableTurnoverController.show, mockAuthConnector) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
