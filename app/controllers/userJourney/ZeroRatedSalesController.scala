@@ -20,39 +20,44 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.EstimateVatTurnoverForm
-import models.view.EstimateVatTurnover
+import forms.vatDetails.ZeroRatedSalesForm
+import models.view.{TaxableTurnover, ZeroRatedSales}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
 
-class EstimateVatTurnoverController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                              ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class ZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
+                                         ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    s4LService.fetchAndGet[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString) flatMap {
+    s4LService.fetchAndGet[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString) flatMap {
       case Some(viewModel) => Future.successful(viewModel)
       case None => for {
         vatScheme <- vatRegistrationService.getVatScheme()
-        viewModel = EstimateVatTurnover(vatScheme)
+        viewModel = ZeroRatedSales(vatScheme)
       } yield viewModel
     } map { viewModel =>
-      val form = EstimateVatTurnoverForm.form.fill(viewModel)
-      Ok(views.html.pages.estimate_vat_turnover(form))
+      val form = ZeroRatedSalesForm.form.fill(viewModel)
+      Ok(views.html.pages.zero_rated_sales(form))
     }
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    EstimateVatTurnoverForm.form.bindFromRequest().fold(
+    ZeroRatedSalesForm.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.estimate_vat_turnover(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.zero_rated_sales(formWithErrors)))
       }, {
-        data: EstimateVatTurnover => {
-          s4LService.saveForm[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString, data) map { _ =>
-            Redirect(controllers.userJourney.routes.ZeroRatedSalesController.show())
+
+        data: ZeroRatedSales => {
+          s4LService.saveForm[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString, data) map { _ =>
+            if(ZeroRatedSales.ZERO_RATED_SALES_YES == data.yesNo) {
+              Redirect(controllers.userJourney.routes.StartDateController.show())
+            } else {
+              Redirect(controllers.userJourney.routes.SummaryController.show())
+            }
           }
         }
       })
