@@ -55,6 +55,9 @@ trait VatRegistrationFixture {
   val validEstimateVatTurnover = EstimateVatTurnover(Some(50000L))
   val differentEstimateVatTurnover = EstimateVatTurnover(Some(10000L))
 
+  val validEstimateZeroRatedSales = EstimateZeroRatedSales(Some(60000L))
+  val differentEstimateZeroRatedSales = EstimateZeroRatedSales(Some(20000L))
+
   val validRegId = "VAT123456"
 
   val validVatChoice = VatChoice(
@@ -73,14 +76,6 @@ trait VatRegistrationFixture {
 
   val differentVatTradingDetails = VatTradingDetails(
     "HOLIDAY INC"
-  )
-
-  val validVatFinancials = VatFinancials(
-    50000L
-  )
-
-  val differentVatFinancials = VatFinancials(
-    10000L
   )
 
   val validNewVatScheme = VatScheme.blank(validRegId)
