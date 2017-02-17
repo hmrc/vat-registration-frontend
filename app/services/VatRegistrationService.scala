@@ -21,7 +21,7 @@ import javax.inject.Inject
 import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.{CacheKeys, DownstreamOutcome}
-import models.api.{VatChoice, VatScheme, VatTradingDetails}
+import models.api.{VatChoice, VatFinancials, VatScheme, VatTradingDetails}
 import models.view._
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -56,11 +56,24 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] = {
     val tradingDetailsSubmission = submitTradingDetails()
     val vatChoiceSubmission = submitVatChoice()
+    val financialsSubmission = submitFinancials()
 
     for {
       _ <- tradingDetailsSubmission
       _ <- vatChoiceSubmission
+      _ <- financialsSubmission
     } yield DownstreamOutcome.Success
+  }
+
+  def submitFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
+    for {
+      regId <- fetchRegistrationId
+      vatScheme <- vatRegConnector.getRegistration(regId)
+      vatFinancials = vatScheme.financials.getOrElse(VatFinancials.empty)
+      estimateVatTurnover <- s4LService.fetchAndGet[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString)
+      updatedVatFinancials = estimateVatTurnover.getOrElse(EstimateVatTurnover(vatScheme)).toApi(vatFinancials)
+      response <- vatRegConnector.upsertVatFinancials(regId, updatedVatFinancials)
+    } yield response
   }
 
   def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
@@ -109,7 +122,7 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
   def registrationToSummary(vatScheme: VatScheme): Summary = Summary(
     Seq(
       getVatDetailsSection(vatScheme.vatChoice.getOrElse(VatChoice.empty)),
-      getCompanyDetailsSection(vatScheme.tradingDetails.getOrElse(VatTradingDetails.empty))
+      getCompanyDetailsSection(vatScheme.tradingDetails.getOrElse(VatTradingDetails.empty), vatScheme.financials.getOrElse(VatFinancials.empty))
     )
   )
 
@@ -175,18 +188,51 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
 
   }
 
-  private def getCompanyDetailsSection(vatTradingDetails: VatTradingDetails) = SummarySection(
-    id = "companyDetails",
-    Seq(
-      SummaryRow(
-        "companyDetails.tradingName",
-        vatTradingDetails.tradingName match {
-          case "" => Right("No")
-          case _ => Right(vatTradingDetails.tradingName)
-        },
-        Some(controllers.userJourney.routes.TradingNameController.show())
+  private def getCompanyDetailsSection(vatTradingDetails: VatTradingDetails, vatFinancials: VatFinancials) = {
+
+    def getTradingName: SummaryRow = SummaryRow(
+      "companyDetails.tradingName",
+      vatTradingDetails.tradingName match {
+        case "" => Right("No")
+        case _ => Right(vatTradingDetails.tradingName)
+      },
+      Some(controllers.userJourney.routes.TradingNameController.show())
+    )
+
+    def getEstimatedSalesValue: SummaryRow = SummaryRow(
+      "companyDetails.estimatedSalesValue",
+      Right(vatFinancials.turnoverEstimate.toString),
+      Some(controllers.userJourney.routes.TradingNameController.show())
+    )
+
+    def getZeroRatedSales: SummaryRow = SummaryRow(
+      "companyDetails.zeroRatedSales",
+      vatFinancials match {
+        case _ => Right("No")
+        case _ => Right(vatTradingDetails.tradingName)
+      },
+      Some(controllers.userJourney.routes.TradingNameController.show())
+    )
+
+    def getEstimatedZeroRatedSales: SummaryRow = SummaryRow(
+      "companyDetails.zeroRatedSalesValue",
+      vatTradingDetails.tradingName match {
+        case "" => Right("No")
+        case _ => Right(vatTradingDetails.tradingName)
+      },
+      Some(controllers.userJourney.routes.TradingNameController.show())
+    )
+
+    SummarySection(
+      id = "companyDetails",
+      Seq(
+        getTradingName,
+        getEstimatedSalesValue,
+        getZeroRatedSales,
+        getEstimatedZeroRatedSales
       )
     )
-  )
+
+  }
 }
 
