@@ -17,7 +17,6 @@
 package models.view
 
 import models.ApiModelTransformer
-import models.api.VatChoice.{NECESSITY_VOLUNTARY, NECESSITY_OBLIGATORY}
 import models.api.VatScheme
 import play.api.libs.json.Json
 
@@ -31,7 +30,17 @@ object ZeroRatedSales extends ApiModelTransformer[ZeroRatedSales] {
   implicit val format = Json.format[ZeroRatedSales]
 
   // Returns a view model for a specific part of a given VatScheme API model
-  override def apply(vatScheme: VatScheme): ZeroRatedSales = ZeroRatedSales.empty
+  override def apply(vatScheme: VatScheme): ZeroRatedSales =
+
+    vatScheme.financials match {
+
+      case Some(financials) => financials.zeroRatedSalesEstimate match {
+        case Some(_) => ZeroRatedSales(ZERO_RATED_SALES_YES)
+        case None => ZeroRatedSales(ZERO_RATED_SALES_NO)
+      }
+
+      case None => ZeroRatedSales.empty
+    }
 
   def empty: ZeroRatedSales = ZeroRatedSales("")
 }

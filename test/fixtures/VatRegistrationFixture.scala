@@ -65,6 +65,13 @@ trait VatRegistrationFixture {
     VatChoice.NECESSITY_VOLUNTARY
   )
 
+  val validVatFinancials = VatFinancials(Some(VatBankAccount("ACME", "101010","100000000000")),
+    10000000000L,
+    Some(10000000000L),
+    true,
+    VatAccountingPeriod(None, "monthly")
+  )
+
   val differentVatChoice = VatChoice(
     differentStartDate.toDateTime,
     VatChoice.NECESSITY_VOLUNTARY
@@ -83,7 +90,8 @@ trait VatRegistrationFixture {
   val validVatScheme = VatScheme(
     validRegId,
     Some(validVatTradingDetails),
-    Some(validVatChoice)
+    Some(validVatChoice),
+    Some(validVatFinancials)
   )
 
   lazy val validSummaryView = Summary(
@@ -121,6 +129,21 @@ trait VatRegistrationFixture {
         "companyDetails.tradingName",
         Right("ACME INC"),
         Some(controllers.userJourney.routes.TradingNameController.show())
+      ),
+      SummaryRow(
+        "companyDetails.estimatedSalesValue",
+        Right("£10000000000"),
+        Some(controllers.userJourney.routes.EstimateVatTurnoverController.show())
+      ),
+      SummaryRow(
+        "companyDetails.zeroRatedSales",
+        Right("Yes"),
+        Some(controllers.userJourney.routes.ZeroRatedSalesController.show())
+      ),
+      SummaryRow(
+        "companyDetails.zeroRatedSalesValue",
+        Right("£10000000000"),
+        Some(controllers.userJourney.routes.EstimateZeroRatedSalesController.show())
       )
     )
   )

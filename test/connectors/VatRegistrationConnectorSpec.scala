@@ -19,7 +19,7 @@ package connectors
 import enums.DownstreamOutcome
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{VatChoice, VatScheme, VatTradingDetails}
+import models.api.{VatChoice, VatFinancials, VatScheme, VatTradingDetails}
 import org.scalatest.concurrent.ScalaFutures
 import play.api.http.Status
 import uk.gov.hmrc.play.http.ws.WSHttp
@@ -119,6 +119,25 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH[VatTradingDetails, VatTradingDetails]("tst-url", internalServiceException)
       ScalaFutures.whenReady(connector.upsertVatTradingDetails("tstID", validVatTradingDetails).failed)(_ mustBe internalServiceException)
+    }
+  }
+
+  "Calling upsertVatFinancials" should {
+    "return the correct VatResponse when the microservice completes and returns a VatFinancials model" in new Setup {
+      mockHttpPATCH[VatFinancials, VatFinancials]("tst-url", validVatFinancials)
+      ScalaFutures.whenReady(connector.upsertVatFinancials("tstID", validVatFinancials))(_ mustBe validVatFinancials)
+    }
+    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[VatFinancials, VatFinancials]("tst-url", forbidden)
+      ScalaFutures.whenReady(connector.upsertVatFinancials("tstID", validVatFinancials).failed)(_ mustBe forbidden)
+    }
+    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
+      mockHttpFailedPATCH[VatFinancials, VatFinancials]("tst-url", notFound)
+      ScalaFutures.whenReady(connector.upsertVatFinancials("tstID", validVatFinancials).failed)(_ mustBe notFound)
+    }
+    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[VatFinancials, VatFinancials]("tst-url", internalServiceException)
+      ScalaFutures.whenReady(connector.upsertVatFinancials("tstID", validVatFinancials).failed)(_ mustBe internalServiceException)
     }
   }
 }
