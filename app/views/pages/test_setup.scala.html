@@ -1,0 +1,31 @@
+@import models.view.TestSetup
+@(testSetupForm:  Form[TestSetup])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+
+@main_template(title = "Test Setup") {
+    <div class="column-one-third">
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">Test Setup</h1>
+
+        @govHelpers.form(action = controllers.test.routes.TestSetupController.submit()) {
+            <div class="form-group">
+                <fieldset>
+
+                    @govHelpers.input(testSetupForm("startDate"), '_label -> "Start date (DDMMYYYY)*")
+                    @govHelpers.input(testSetupForm("necessity"), '_label -> "Necessity (voluntary or obligatory)*")
+                    @govHelpers.input(testSetupForm("tradingName"), '_label -> "Trading name")
+                    @govHelpers.input(testSetupForm("vatTurnover"), '_label -> "Estimated vat turnover*")
+                    @govHelpers.input(testSetupForm("zeroRatedSalesEstimate"), '_label -> "Estimated zero rated sales")
+
+                </fieldset>
+
+            </div>
+
+            <div class="form-group">
+                <button class="btn button" type="next" id="submit">Submit</button>
+            </div>
+        }
+
+    </div>
+
+}
