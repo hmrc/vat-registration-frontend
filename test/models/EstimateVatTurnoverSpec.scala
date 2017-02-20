@@ -17,8 +17,8 @@
 package models
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatAccountingPeriod, VatBankAccount, VatFinancials}
-import models.view.{EstimateVatTurnover, TradingName}
+import models.api.{VatAccountingPeriod, VatBankAccount, VatFinancials, VatScheme}
+import models.view.{EstimateVatTurnover, TradingName, ZeroRatedSales}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
@@ -32,6 +32,13 @@ class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
     VatAccountingPeriod(None, "monthly")
   )
 
+  override val validVatScheme = VatScheme(
+    validRegId,
+    Some(validVatTradingDetails),
+    Some(validVatChoice),
+    Some(validVatFinancials)
+  )
+
   val differentVatFinancials = VatFinancials(Some(VatBankAccount("ACME", "101010","100000000000")),
     differentEstimateVatTurnover.vatTurnoverEstimate.get,
     Some(10000000000L),
@@ -39,6 +46,11 @@ class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
     VatAccountingPeriod(None, "monthly")
   )
 
+  "empty" should {
+    "create an empty Zero Rated Sales model" in {
+      EstimateVatTurnover.empty shouldBe EstimateVatTurnover(None)
+    }
+  }
 
   "toApi" should {
     "upserts (merge) a current VatFinancials API model with the details of an instance of EstimateVatTurnover view model" in {
@@ -48,7 +60,7 @@ class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
     "convert a populated VatScheme's VatFinancials API model to an instance of EstimateVatTurnover view model" in {
-      EstimateVatTurnover.apply(validVatScheme) shouldBe EstimateVatTurnover(Some(10000000000L))
+      EstimateVatTurnover.apply(validVatScheme) shouldBe validEstimateVatTurnover
     }
   }
 }
