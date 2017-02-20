@@ -17,7 +17,7 @@
 package models
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatAccountingPeriod, VatBankAccount, VatFinancials}
+import models.api.{VatAccountingPeriod, VatBankAccount, VatFinancials, VatScheme}
 import models.view.EstimateZeroRatedSales
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -31,6 +31,13 @@ class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
     validEstimateZeroRatedSales.zeroRatedSalesEstimate,
     true,
     VatAccountingPeriod(None, "monthly")
+  )
+
+  override val validVatScheme = VatScheme(
+    validRegId,
+    Some(validVatTradingDetails),
+    Some(validVatChoice),
+    Some(validVatFinancials)
   )
 
   val differentVatFinancials = VatFinancials(Some(VatBankAccount("ACME", "101010","100000000000")),
@@ -48,7 +55,7 @@ class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
     "convert a populated VatScheme's VatFinancials API model to an instance of EstimateZeroRatedSales view model" in {
-      EstimateZeroRatedSales.apply(validVatScheme) shouldBe EstimateZeroRatedSales(Some(10000000000L))
+      EstimateZeroRatedSales.apply(validVatScheme) shouldBe validEstimateZeroRatedSales
     }
   }
 }
