@@ -155,7 +155,7 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
       "vatDetails.startDate",
       vatChoice.necessity match {
         case VatChoice.NECESSITY_VOLUNTARY => {
-          if (vatChoice.startDate.toString("dd/MM/yyyy") == "01/01/1970") {
+          if (vatChoice.startDate.toString("dd/MM/yyyy") == "31/12/1969") {
             Right(messagesApi("pages.summary.vatDetails.mandatoryStartDate"))
           } else {
             Right(vatChoice.startDate.toString("d MMMM y"))

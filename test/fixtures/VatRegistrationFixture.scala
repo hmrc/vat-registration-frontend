@@ -43,7 +43,7 @@ trait VatRegistrationFixture {
   // TODO: remove when we play the VatChoice refactoring story
   val validDefaultDateTime = {
     val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
-    formatter.parseDateTime("01/01/1970")
+    formatter.parseDateTime("31/12/1969")
   }
 
   val validStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(1), Some(2), Some(2017))

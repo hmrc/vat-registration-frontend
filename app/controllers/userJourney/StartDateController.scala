@@ -51,13 +51,14 @@ class StartDateController @Inject()(s4LService: S4LService, vatRegistrationServi
         Future.successful(BadRequest(views.html.pages.start_date(formWithErrors)))
       }, {
         data: StartDate => {
-          s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, data) map { _ =>
-          if (StartDate.SPECIFIC_DATE == data.dateType) {
-            Redirect(controllers.userJourney.routes.TradingNameController.show())
-          } else {
-            s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, StartDate.empty)
-            Redirect(controllers.userJourney.routes.TradingNameController.show())
-          }
+          s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, data) flatMap { _ =>
+            if (StartDate.SPECIFIC_DATE != data.dateType) {
+              for {
+                _ <- s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, StartDate.empty)
+              } yield Redirect(controllers.userJourney.routes.TradingNameController.show())
+            } else {
+              Future.successful(Redirect(controllers.userJourney.routes.TradingNameController.show()))
+            }
           }
         }
       })
