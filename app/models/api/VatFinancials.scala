@@ -36,5 +36,6 @@ object VatFinancials {
       (__ \ "accountingPeriods").format[VatAccountingPeriod]
     ) (VatFinancials.apply, unlift(VatFinancials.unapply))
 
-  def empty: VatFinancials = VatFinancials(None, 0L, None, false, VatAccountingPeriod(None, ""))
+  // TODO remove use of 'defaults' once Bank Account and Accounting Period stories are in place
+  def empty: VatFinancials = VatFinancials(Some(VatBankAccount.default), 0L, None, false, VatAccountingPeriod.default)
 }
