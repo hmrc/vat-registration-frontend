@@ -16,26 +16,16 @@
 
 package models.api
 
-import common.Now
-import org.joda.time.DateTime
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatScheme(
-                      id: String,
-                      tradingDetails: Option[VatTradingDetails],
-                      vatChoice: Option[VatChoice],
-                      financials: Option[VatFinancials]
-                    )
+case class VatBankAccount(accountName: String, accountSortCode: String, accountNumber: String)
 
-object VatScheme {
-
-  def blank(id: String)(implicit now: Now[DateTime]): VatScheme = VatScheme(id, None, None, None)
+object VatBankAccount {
 
   implicit val format = (
-    (__ \ "ID").format[String] and
-      (__ \ "trading-details").formatNullable[VatTradingDetails] and
-      (__ \ "vat-choice").formatNullable[VatChoice] and
-      (__ \ "financials").formatNullable[VatFinancials]
-    )  (VatScheme.apply, unlift(VatScheme.unapply))
+    (__ \ "accountName").format[String] and
+      (__ \ "accountSortCode").format[String] and
+      (__ \ "accountNumber").format[String]
+    ) (VatBankAccount.apply, unlift(VatBankAccount.unapply))
 }
