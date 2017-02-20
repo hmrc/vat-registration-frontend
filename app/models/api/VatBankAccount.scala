@@ -28,4 +28,9 @@ object VatBankAccount {
       (__ \ "accountSortCode").format[String] and
       (__ \ "accountNumber").format[String]
     ) (VatBankAccount.apply, unlift(VatBankAccount.unapply))
+
+  def empty: VatBankAccount = VatBankAccount("", "", "")
+
+  // TODO remove 'default' once we have Bank Account details story is in place
+  def default: VatBankAccount = VatBankAccount("default", "99-99-99", "12345678")
 }
