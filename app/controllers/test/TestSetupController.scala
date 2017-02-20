@@ -50,7 +50,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
 
             _ <- vatRegistrationConnector.upsertVatChoice(regId,
               VatChoice(StartDate("",Some(data.startDate.substring(0,2).toInt),
-                Some(data.startDate.substring(3,4).toInt),
+                Some(data.startDate.substring(2,4).toInt),
                 Some(data.startDate.substring(4,8).toInt)).toDateTime,
                 data.necessity))
 
