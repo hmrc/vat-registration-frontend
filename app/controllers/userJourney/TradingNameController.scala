@@ -21,12 +21,11 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
 import forms.vatDetails.TradingNameForm
-import models.view.{TradingName, VoluntaryRegistration}
+import models.view.{StartDate, TradingName}
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 class TradingNameController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
                                       ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
@@ -52,11 +51,14 @@ class TradingNameController @Inject()(s4LService: S4LService, vatRegistrationSer
       }, {
         data: TradingName => {
           // Save to S4L
-          s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, data) map { _ =>
+          s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, data) flatMap { _ =>
             if (TradingName.TRADING_NAME_NO == data.yesNo) {
-              s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, TradingName.empty)
+              for {
+                _ <- s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, TradingName.empty)
+              } yield Redirect(controllers.userJourney.routes.EstimateVatTurnoverController.show())
+            } else {
+              Future.successful(Redirect(controllers.userJourney.routes.EstimateVatTurnoverController.show()))
             }
-            Redirect(controllers.userJourney.routes.EstimateVatTurnoverController.show())
           }
         }
       })

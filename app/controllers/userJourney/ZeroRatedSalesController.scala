@@ -21,7 +21,9 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
 import forms.vatDetails.ZeroRatedSalesForm
-import models.view.{EstimateZeroRatedSales, TaxableTurnover, TradingName, ZeroRatedSales}
+import models.view.StartDate.COMPANY_REGISTRATION_DATE
+import models.view.VoluntaryRegistration.REGISTER_NO
+import models.view._
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -50,14 +52,14 @@ class ZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegistration
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.zero_rated_sales(formWithErrors)))
       }, {
-
         data: ZeroRatedSales => {
-          s4LService.saveForm[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString, data) map { _ =>
-            if(ZeroRatedSales.ZERO_RATED_SALES_YES == data.yesNo) {
-              Redirect(controllers.userJourney.routes.EstimateZeroRatedSalesController.show())
+          s4LService.saveForm[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString, data) flatMap { _ =>
+            if (ZeroRatedSales.ZERO_RATED_SALES_NO == data.yesNo) {
+              for {
+                _ <- s4LService.saveForm[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString, EstimateZeroRatedSales.empty)
+              } yield Redirect(controllers.userJourney.routes.SummaryController.show())
             } else {
-              s4LService.saveForm[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString, EstimateZeroRatedSales.empty)
-              Redirect(controllers.userJourney.routes.SummaryController.show())
+              Future.successful(Redirect(controllers.userJourney.routes.EstimateZeroRatedSalesController.show()))
             }
           }
         }
