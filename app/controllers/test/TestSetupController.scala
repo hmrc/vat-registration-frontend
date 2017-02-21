@@ -46,7 +46,9 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       testSetup = TestSetup(if(taxableTurnover.isDefined) taxableTurnover.get.yesNo else "",
         if(voluntaryRegistration.isDefined) voluntaryRegistration.get.yesNo else "",
         if(startDate.isDefined) startDate.get.dateType else "" ,
-        if(startDate.isDefined) s"${startDate.get.day.getOrElse("").toString}${startDate.get.month.getOrElse("").toString}${startDate.get.year.getOrElse("").toString}" else "",
+        if(startDate.isDefined) s"${startDate.get.day.getOrElse("").toString}" else "",
+        if(startDate.isDefined) s"${startDate.get.month.getOrElse("").toString}" else "",
+        if(startDate.isDefined) s"${startDate.get.year.getOrElse("").toString}" else "",
         if(tradingName.isDefined) tradingName.get.yesNo else "",
         if(tradingName.isDefined) tradingName.get.tradingName.getOrElse("") else "",
         if(estimateVatTurnover.isDefined) estimateVatTurnover.get.vatTurnoverEstimate.getOrElse("").toString else "",
@@ -81,9 +83,9 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             match {
               case "" => StartDate.empty
               case _ => StartDate(data.startDateChoice,
-                Some(data.startDate.substring(0,2).toInt),
-                Some(data.startDate.substring(2,4).toInt),
-                Some(data.startDate.substring(4,8).toInt))
+                Some(data.startDateDay.toInt),
+                Some(data.startDateMonth.toInt),
+                Some(data.startDateYear.toInt))
             })
 
             _ <- s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, data.tradingNameChoice
