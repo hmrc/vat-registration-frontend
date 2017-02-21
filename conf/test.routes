@@ -2,4 +2,7 @@ GET        /current-profile-setup        controllers.test.CurrentProfileControll
 
 GET        /s4l-teardown                 controllers.test.TestCacheController.tearDownS4L
 
-GET        /db-teardown                 controllers.test.TestVatRegistrationAdminController.dropCollection()
+GET        /db-teardown                  controllers.test.TestVatRegistrationAdminController.dropCollection()
+
+GET        /test-setup                   controllers.test.TestSetupController.show()
+POST       /test-setup                   controllers.test.TestSetupController.submit()
