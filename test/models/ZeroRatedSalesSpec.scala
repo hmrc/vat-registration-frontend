@@ -17,10 +17,29 @@
 package models
 
 import fixtures.VatRegistrationFixture
+import models.api.{VatAccountingPeriod, VatBankAccount, VatFinancials, VatScheme}
 import models.view.ZeroRatedSales
 import uk.gov.hmrc.play.test.UnitSpec
 
 class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
+
+  val vatFinancialsWithZeroRated = VatFinancials(
+    Some(VatBankAccount("ACME", "101010","100000000000")),
+    100L,
+    Some(200L),
+    true,
+    VatAccountingPeriod(None, "monthly")
+  )
+
+  val vatFinancialsWithoutZeroRated = VatFinancials(
+    Some(VatBankAccount("ACME", "101010","100000000000")),
+    100L,
+    None,
+    true,
+    VatAccountingPeriod(None, "monthly")
+  )
+
+  val vatScheme = validVatScheme.copy(financials = Some(vatFinancialsWithoutZeroRated))
 
   "empty" should {
     "create an empty Zero Rated Sales model" in {
@@ -29,8 +48,16 @@ class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
   }
 
   "apply" should {
-    "convert a populated VatScheme's VatFinancials API model to an instance of ZeroRatedSales view model" in {
-      ZeroRatedSales.apply(validVatScheme) shouldBe ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_YES)
+    "convert a populated VatScheme's VatFinancials API model with ZeroRatedSales to view model" in {
+      val vatScheme = validVatScheme.copy(financials = Some(vatFinancialsWithZeroRated))
+      ZeroRatedSales.apply(vatScheme) shouldBe ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_YES)
+    }
+  }
+
+  "apply" should {
+    "convert a populated VatScheme's VatFinancials API model without ZeroRatedSales to view model" in {
+      val vatScheme = validVatScheme.copy(financials = Some(vatFinancialsWithoutZeroRated))
+      ZeroRatedSales.apply(vatScheme) shouldBe ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_NO)
     }
   }
 }

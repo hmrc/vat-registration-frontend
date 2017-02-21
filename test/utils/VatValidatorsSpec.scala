@@ -16,7 +16,7 @@
 
 package utils
 
-import forms.vatDetails.{EstimateVatTurnoverForm, TradingNameForm}
+import forms.vatDetails.{EstimateVatTurnoverForm, EstimateZeroRatedSalesForm, TradingNameForm}
 import helpers.VatRegSpec
 import models.view.TradingName
 
@@ -24,6 +24,7 @@ class VatValidatorsSpec extends VatRegSpec {
 
     val testTradingNameForm = TradingNameForm.form
     val testTurnoverEstimateForm = EstimateVatTurnoverForm.form
+    val zeroRatedSalesEstimateForm = EstimateZeroRatedSalesForm.form
 
 
     //Trading Name Page Form
@@ -105,6 +106,51 @@ class VatValidatorsSpec extends VatRegSpec {
       )
 
     val boundForm = testTurnoverEstimateForm.bind(data)
+    boundForm.errors.map(err => (err.key, err.message)) mustBe List()
+
+  }
+
+  //Estimate Zero Rated Vat Turnover Page Form
+  "return an error when user enters a empty zero-rated sales estimate" in {
+    val data : Map[String, String] =
+      Map(
+        "zeroRatedSalesEstimate" -> ""
+      )
+
+    val boundForm = zeroRatedSalesEstimateForm.bind(data)
+    boundForm.errors.map(err => (err.key, err.message)) mustBe List(("", VatValidators.ZERO_RATED_SALES_ESTIMATE_EMPTY_MSG_KEY))
+
+  }
+
+  "return an error when user enters a zero rated sales greater than 1,000,000,000,000,000" in {
+    val data : Map[String, String] =
+      Map(
+        "zeroRatedSalesEstimate" -> "1000000000000001"
+      )
+
+    val boundForm = zeroRatedSalesEstimateForm.bind(data)
+    boundForm.errors.map(err => (err.key, err.message)) mustBe List(("", VatValidators.ZERO_RATED_SALES_ESTIMATE_HIGH_MSG_KEY))
+
+  }
+
+  "return an error when user enters a zero rated sales estimate less than 0" in {
+    val data : Map[String, String] =
+      Map(
+        "zeroRatedSalesEstimate" -> "-1"
+      )
+
+    val boundForm = zeroRatedSalesEstimateForm.bind(data)
+    boundForm.errors.map(err => (err.key, err.message)) mustBe List(("", VatValidators.ZERO_RATED_SALES_ESTIMATE_LOW_MSG_KEY))
+
+  }
+
+  "return no errors when user enters a valid zero rated sales estimate" in {
+    val data : Map[String, String] =
+      Map(
+        "zeroRatedSalesEstimate" -> "50000"
+      )
+
+    val boundForm = zeroRatedSalesEstimateForm.bind(data)
     boundForm.errors.map(err => (err.key, err.message)) mustBe List()
 
   }
