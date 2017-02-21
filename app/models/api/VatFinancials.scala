@@ -19,16 +19,16 @@ package models.api
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatFinancials( bankAccount: Option[VatBankAccount],
-                          turnoverEstimate : Long,
-                          zeroRatedSalesEstimate : Option[Long],
-                          reclaimVatOnMostReturns: Boolean,
-                          vatAccountingPeriod: VatAccountingPeriod
+case class VatFinancials(bankAccount: Option[VatBankAccount] = None,
+                         turnoverEstimate: Long,
+                         zeroRatedSalesEstimate: Option[Long] = None,
+                         reclaimVatOnMostReturns: Boolean,
+                         vatAccountingPeriod: VatAccountingPeriod
                         )
 
 object VatFinancials {
 
-  implicit val format = (
+  implicit val format: OFormat[VatFinancials] = (
     (__ \ "bankAccount").formatNullable[VatBankAccount] and
       (__ \ "turnoverEstimate").format[Long] and
       (__ \ "zeroRatedTurnoverEstimate").formatNullable[Long] and
@@ -37,5 +37,9 @@ object VatFinancials {
     ) (VatFinancials.apply, unlift(VatFinancials.unapply))
 
   // TODO remove use of 'defaults' once Bank Account and Accounting Period stories are in place
-  def empty: VatFinancials = VatFinancials(Some(VatBankAccount.default), 0L, None, false, VatAccountingPeriod.default)
+  def empty: VatFinancials = VatFinancials(
+    bankAccount = Some(VatBankAccount.default),
+    turnoverEstimate = 0L,
+    reclaimVatOnMostReturns = false,
+    vatAccountingPeriod = VatAccountingPeriod.default)
 }
