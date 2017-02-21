@@ -131,6 +131,14 @@ pages.estimate.zero.rated.sales.validation.empty            = Enter an estimate
 pages.estimate.zero.rated.sales.validation.low              = Enter a positive estimate
 pages.estimate.zero.rated.sales.validation.high             = Enter an estimate which is less than 1,000,000,000,000,000
 
+## Vat Charge Expectancy Page
+pages.vat.charge.expectancy.title                           = VAT charge expectancy
+pages.vat.charge.expectancy.heading                         = Do you expect to reclaim more VAT than you charge?
+pages.vat.charge.expectancy.para1                           = If the VAT you pay for business-related purchases is more than the VAT you charge your customers, you can reclaim the difference from HMRC.
+pages.vat.charge.expectancy.para2                           = If the VAT you charge is more than the VAT you pay, you have to pay the difference to HMRC.
+pages.vat.charge.expectancy.radio.yes                       = Yes, I expect to reclaim more VAT than I charge
+pages.vat.charge.expectancy.radio.no                       = No, I expect to charge more VAT than I reclaim
+
 ## Summary Page
 pages.summary.title                                         = Summary
 pages.summary.heading                                       = Check your answers
