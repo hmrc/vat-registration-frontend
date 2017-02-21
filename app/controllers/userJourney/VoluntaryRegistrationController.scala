@@ -57,6 +57,7 @@ import scala.concurrent.{Await, Future}
                 Redirect(controllers.userJourney.routes.StartDateController.show())
               } else {
                 s4LService.clear()
+                vatRegistrationService.deleteVatScheme()
                 Redirect(controllers.userJourney.routes.WelcomeController.show())
               }
           }
