@@ -17,7 +17,7 @@
 package models
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatChoice, VatFinancials, VatScheme}
+import models.api.{VatChoice, VatScheme}
 import models.view.TaxableTurnover
 import models.view.TaxableTurnover._
 import org.joda.time.DateTime
@@ -32,64 +32,39 @@ class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
   }
 
   "apply" should {
-    "convert a populated VatScheme's VatChoice (Obligatory) API model to an instance of TaxableTurnover (Yes) model" in {
+    "convert a VatChoice (Obligatory) to view model" in {
       val vatSchemeObligatory = VatScheme(
         validRegId,
-        Some(validVatTradingDetails),
-        Some(VatChoice(
+        vatChoice = Some(VatChoice(
           DateTime.now,
           VatChoice.NECESSITY_OBLIGATORY
-        )),
-        Some(validVatFinancials)
+        ))
       )
-
       TaxableTurnover.apply(vatSchemeObligatory) shouldBe TaxableTurnover(TAXABLE_YES)
     }
-  }
 
-  "apply" should {
-    "convert a populated VatScheme's VatChoice (Voluntary) API model to an instance of TaxableTurnover (No) model" in {
+    "convert a VatChoice (Voluntary) to view model" in {
       val vatSchemeVolunatary = VatScheme(
         validRegId,
-        Some(validVatTradingDetails),
-        Some(VatChoice(
+        vatChoice = Some(VatChoice(
           DateTime.now,
           VatChoice.NECESSITY_VOLUNTARY
-        )),
-        Some(validVatFinancials)
+        ))
       )
-
       TaxableTurnover.apply(vatSchemeVolunatary) shouldBe TaxableTurnover(TAXABLE_NO)
     }
-  }
 
-  "apply" should {
-    "convert a populated VatScheme's VatChoice (invalid) API model to an instance of TaxableTurnover (Empty) model" in {
-      val vatSchemeVolunatary = VatScheme(
-        validRegId,
-        None,
-        Some(VatChoice(
-          DateTime.now,
-          "GARBAGE"
-        )),
-        None
-      )
-
+    "convert an invalid VatChoice to empty view model" in {
+      val vatSchemeVolunatary = VatScheme(validRegId, vatChoice = Some(VatChoice(DateTime.now, "GARBAGE")))
       TaxableTurnover.apply(vatSchemeVolunatary) shouldBe TaxableTurnover.empty
     }
-  }
 
-  "apply" should {
-    "convert a populated VatScheme's VatChoice (None) API model to an instance of TaxableTurnover (Empty) model" in {
-      val vatSchemeVolunatary = VatScheme(
-        validRegId,
-        None,
-        None,
-        None
-      )
-
+    "convert a none VatChoice to empty view model" in {
+      val vatSchemeVolunatary = VatScheme(validRegId)
       TaxableTurnover.apply(vatSchemeVolunatary) shouldBe TaxableTurnover.empty
     }
+
   }
+
 }
 

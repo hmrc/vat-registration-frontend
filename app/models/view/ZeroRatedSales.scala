@@ -17,30 +17,26 @@
 package models.view
 
 import models.ApiModelTransformer
-import models.api.VatScheme
-import play.api.libs.json.Json
+import models.api.{VatFinancials, VatScheme}
+import play.api.libs.json.{Json, OFormat}
 
-case class ZeroRatedSales(yesNo: String) {
-}
+case class ZeroRatedSales(yesNo: String)
 
 object ZeroRatedSales extends ApiModelTransformer[ZeroRatedSales] {
+
   val ZERO_RATED_SALES_YES = "ZERO_RATED_SALES_YES"
   val ZERO_RATED_SALES_NO = "ZERO_RATED_SALES_NO"
 
-  implicit val format = Json.format[ZeroRatedSales]
+  implicit val format: OFormat[ZeroRatedSales] = Json.format[ZeroRatedSales]
 
   // Returns a view model for a specific part of a given VatScheme API model
   override def apply(vatScheme: VatScheme): ZeroRatedSales =
+    vatScheme.financials.map {
+      case VatFinancials(_, _, Some(_), _, _) => ZeroRatedSales(ZERO_RATED_SALES_YES)
+      case VatFinancials(_, _, None, _, _) => ZeroRatedSales(ZERO_RATED_SALES_NO)
+    } getOrElse ZeroRatedSales.empty
 
-    vatScheme.financials match {
-
-      case Some(financials) => financials.zeroRatedSalesEstimate match {
-        case Some(_) => ZeroRatedSales(ZERO_RATED_SALES_YES)
-        case None => ZeroRatedSales(ZERO_RATED_SALES_NO)
-      }
-
-      case None => ZeroRatedSales.empty
-    }
 
   def empty: ZeroRatedSales = ZeroRatedSales("")
+
 }

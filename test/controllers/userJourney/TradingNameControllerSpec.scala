@@ -91,7 +91,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
-  s"POST ${routes.TradingNameController.submit()} with valid data" should {
+  s"POST ${routes.TradingNameController.submit()} with valid data no trading name" should {
 
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingName.empty)))
@@ -101,6 +101,25 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
       AuthBuilder.submitWithAuthorisedUser(TestTradingNameController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "tradingNameRadio" -> TradingName.TRADING_NAME_NO
+      )) {
+        result =>
+          status(result) mustBe Status.SEE_OTHER
+      }
+
+    }
+  }
+
+  s"POST ${routes.TradingNameController.submit()} with valid data with trading name" should {
+
+    "return 303" in {
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingName.empty)))
+
+      when(mockS4LService.saveForm[TradingName](Matchers.eq(CacheKeys.TradingName.toString), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(returnCacheMap))
+
+      AuthBuilder.submitWithAuthorisedUser(TestTradingNameController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        "tradingNameRadio" -> TradingName.TRADING_NAME_YES,
+        "tradingName" -> "some name"
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER

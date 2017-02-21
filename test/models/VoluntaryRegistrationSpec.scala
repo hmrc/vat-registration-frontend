@@ -17,8 +17,8 @@
 package models
 
 import fixtures.VatRegistrationFixture
-import models.api.VatChoice
-import models.view.{StartDate, VoluntaryRegistration}
+import models.api.{VatChoice, VatScheme}
+import models.view.VoluntaryRegistration
 import models.view.VoluntaryRegistration._
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -55,16 +55,35 @@ class VoluntaryRegistrationSpec extends UnitSpec with VatRegistrationFixture {
   }
 
   "apply" should {
-    "convert a populated VatScheme's VatChoice API model to an instance of VoluntaryRegistration view model" in {
-      VoluntaryRegistration.apply(validVatScheme) shouldBe VoluntaryRegistration(REGISTER_YES)
+
+    val vatChoiceVoluntary = VatChoice(
+      validStartDate.toDateTime,
+      VatChoice.NECESSITY_VOLUNTARY
+    )
+
+    val vatChoiceObligatory = VatChoice(
+      validStartDate.toDateTime,
+      VatChoice.NECESSITY_OBLIGATORY
+    )
+
+    val vatScheme = VatScheme(
+      validRegId, None, None, None
+    )
+
+    "convert voluntary vatChoice to view model" in {
+      val vs = vatScheme.copy(vatChoice = Some(vatChoiceVoluntary))
+      VoluntaryRegistration.apply(vs) shouldBe VoluntaryRegistration(REGISTER_YES)
     }
-//
-//    "convert a populated VatScheme's VatChoice API model that has an empty trading name to an instance of VoluntaryRegistration view model" in {
-//      VoluntaryRegistration.apply(validVatSchemeEmptyVoluntaryRegistration) shouldBe VoluntaryRegistration(yesNo = TRADING_NAME_NO, tradingName = None)
-//    }
-//
-//    "convert a populated VatScheme's VatChoice API model that has a hash as a trading name to an instance of VoluntaryRegistration view model" in {
-//      VoluntaryRegistration.apply(validVatSchemeHashInVoluntaryRegistration) shouldBe VoluntaryRegistration.empty
-//    }
+
+    "convert obligatory vatChoice to empty view model" in {
+      val vs = vatScheme.copy(vatChoice = Some(vatChoiceObligatory))
+      VoluntaryRegistration.apply(vs) shouldBe VoluntaryRegistration.empty
+    }
+
+    "convert none vatChoice to view empty model" in {
+      val vs = vatScheme.copy(vatChoice = None)
+      VoluntaryRegistration.apply(vs) shouldBe VoluntaryRegistration.empty
+    }
+
   }
 }
