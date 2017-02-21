@@ -63,14 +63,10 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
   }
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] = {
-    val tradingDetailsSubmission = submitTradingDetails()
-    val vatChoiceSubmission = submitVatChoice()
-    val financialsSubmission = submitFinancials()
-
     for {
-      _ <- tradingDetailsSubmission
-      _ <- vatChoiceSubmission
-      _ <- financialsSubmission
+      _ <- submitTradingDetails()
+      _ <- submitVatChoice()
+      _ <- submitFinancials()
     } yield DownstreamOutcome.Success
   }
 
@@ -164,7 +160,8 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
       "vatDetails.startDate",
       vatChoice.necessity match {
         case VatChoice.NECESSITY_VOLUNTARY => {
-          if (vatChoice.startDate.toString("dd/MM/yyyy") == "31/12/1969") {
+          val startdate = vatChoice.startDate.toString("dd/MM/yyyy")
+          if (startdate == "31/12/1969" || startdate == "01/01/1970") {
             Right(messagesApi("pages.summary.vatDetails.mandatoryStartDate"))
           } else {
             Right(vatChoice.startDate.toString("d MMMM y"))
