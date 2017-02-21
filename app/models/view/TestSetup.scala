@@ -18,10 +18,14 @@ package models.view
 
 import play.api.libs.json.Json
 
-case class TestSetup(startDate: String,
-                     necessity: String,
+case class TestSetup(taxableTurnoverChoice: String,
+                     voluntaryChoice: String,
+                     startDateChoice: String,
+                     startDate: String,
+                     tradingNameChoice: String,
                      tradingName: String,
-                     vatTurnover: String,
+                     estimateVatTurnover: String,
+                     zeroRatedSalesChoice: String,
                      zeroRatedSalesEstimate: String) {
 
 }
