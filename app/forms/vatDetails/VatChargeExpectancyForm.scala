@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package enums
+package forms.vatDetails
 
-object CacheKeys extends Enumeration {
+import models.view.VatChargeExpectancy
+import play.api.data.Form
+import play.api.data.Forms._
 
-  val StartDate = Value
-  val TradingName = Value
-  val VoluntaryRegistration = Value
-  val TaxableTurnover = Value
-  val EstimateVatTurnover = Value
-  val ZeroRatedSales = Value
-  val EstimateZeroRatedSales = Value
-  val VatChargeExpectancy = Value
+object VatChargeExpectancyForm {
+  val RADIO_YES_NO: String = "vatChargeRadio"
+
+  val form = Form(
+    mapping(
+      RADIO_YES_NO -> nonEmptyText
+    )(VatChargeExpectancy.apply)(VatChargeExpectancy.unapply)
+  )
 
 }

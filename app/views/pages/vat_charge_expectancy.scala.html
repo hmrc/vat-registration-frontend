@@ -1,0 +1,45 @@
+@import models.view.VatChargeExpectancy
+@(vatChargeExpectancyForm:  Form[VatChargeExpectancy])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.vat.charge.expectancy.title")) {
+
+  <div class="column-one-third">
+
+      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.vat.charge.expectancy.heading")</h1>
+
+      @errorSummary(
+          Messages("app.common.errorSummaryLabel"),
+          vatChargeExpectancyForm
+      )
+
+      <p>@Html(Messages("pages.vat.charge.expectancy.para1"))</p>
+      <p>@Html(Messages("pages.vat.charge.expectancy.para2"))</p>
+
+      @govHelpers.form(action = controllers.userJourney.routes.VatChargeExpectancyController.submit()) {
+      <div class="form-group">
+        <fieldset class="block">
+
+          @govHelpers.inputRadioGroup(
+            field = vatChargeExpectancyForm("vatChargeRadio"),
+            Seq(
+              VatChargeExpectancy.VAT_CHARGE_YES -> Messages("pages.vat.charge.expectancy.radio.yes"),
+              VatChargeExpectancy.VAT_CHARGE_NO -> Messages("pages.vat.charge.expectancy.radio.no")
+            ),
+            '_labelAfter -> true,
+            '_labelClass -> "block-label"
+          )
+        </fieldset>
+       
+      </div>
+
+      <div class="form-group">
+        <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+      </div>
+
+      }
+
+    </div>
+
+}
