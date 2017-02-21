@@ -50,7 +50,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.Future
 
 class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistrationFixture {
-
+  implicit val hc = HeaderCarrier()
   val mockVatRegistrationService = mock[VatRegistrationService]
 
   object TestVoluntaryRegistrationController extends VoluntaryRegistrationController(mockS4LService, mockVatRegistrationService, ds) {
@@ -136,6 +136,8 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
 
       when(mockS4LService.saveForm[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
+      when(mockVatRegistrationService.deleteVatScheme())
+        .thenReturn(Future.successful(true))
 
       AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationRadio" -> VoluntaryRegistration.REGISTER_NO
