@@ -142,22 +142,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     }
   }
 
-  "Calling registrationToSummary" should {
-    "convert a VAT Registration API Model to a summary model" in new Setup {
-      service.registrationToSummary(validVatScheme) mustBe validSummaryView
-    }
-  }
-
-  "Calling getRegistrationSummary" should {
-    "return a defined Summary when the connector returns a valid VAT Registration response" in new Setup {
-      mockFetchRegId(validRegId)
-      when(mockRegConnector.getRegistration(Matchers.contains(validRegId))
-      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatScheme))
-      ScalaFutures.whenReady(service.getRegistrationSummary())(_ mustBe validSummaryView)
-    }
-
-  }
-
   "Calling deleteVatScheme" should {
     "return a success response when the delete VatScheme is successfully" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))

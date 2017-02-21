@@ -19,6 +19,7 @@ package controllers.userJourney
 import enums.DownstreamOutcome
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.view.Summary
 import org.mockito.Matchers
 import org.mockito.Mockito.when
 import play.api.http.Status
@@ -37,12 +38,12 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   object TestSummaryController extends SummaryController(mockS4LService, mockVatRegistrationService, ds) {
     override val authConnector = mockAuthConnector
+    override def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] = Future.successful(Summary(sections = Seq()))
   }
 
   "Calling summary to show the summary page" should {
     "return HTML with a valid summary view" in {
       when(mockVatRegistrationService.submitVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(DownstreamOutcome.Success))
-      when(mockVatRegistrationService.getRegistrationSummary()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validSummaryView))
       when(mockS4LService.clear()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validHttpResponse))
 
       callAuthorised(TestSummaryController.show, mockAuthConnector) {
@@ -57,7 +58,6 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
     // TODO: Need to resolve why raising a new InternalError gives a Boxed Error exception yet this works for PAYE
     "return an Internal Server Error response when no valid model is returned from the microservice" ignore {
       when(mockVatRegistrationService.submitVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(DownstreamOutcome.Success))
-      when(mockVatRegistrationService.getRegistrationSummary()(Matchers.any[HeaderCarrier]())).thenReturn(Future.failed(new InternalError()))
       when(mockS4LService.clear()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validHttpResponse))
 
       callAuthorised(TestSummaryController.show, mockAuthConnector) {
