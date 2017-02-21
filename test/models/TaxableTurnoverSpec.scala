@@ -32,7 +32,7 @@ class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
   }
 
   "apply" should {
-    "convert a populated VatScheme's VatChoice API model to an instance of TaxableTurnover.view model" in {
+    "convert a populated VatScheme's VatChoice (Obligatory) API model to an instance of TaxableTurnover (Yes) model" in {
       val vatSchemeObligatory = VatScheme(
         validRegId,
         Some(validVatTradingDetails),
@@ -44,7 +44,51 @@ class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
       )
 
       TaxableTurnover.apply(vatSchemeObligatory) shouldBe TaxableTurnover(TAXABLE_YES)
-      TaxableTurnover.apply(validVatScheme) shouldBe TaxableTurnover(TAXABLE_NO)
+    }
+  }
+
+  "apply" should {
+    "convert a populated VatScheme's VatChoice (Voluntary) API model to an instance of TaxableTurnover (No) model" in {
+      val vatSchemeVolunatary = VatScheme(
+        validRegId,
+        Some(validVatTradingDetails),
+        Some(VatChoice(
+          DateTime.now,
+          VatChoice.NECESSITY_VOLUNTARY
+        )),
+        Some(validVatFinancials)
+      )
+
+      TaxableTurnover.apply(vatSchemeVolunatary) shouldBe TaxableTurnover(TAXABLE_NO)
+    }
+  }
+
+  "apply" should {
+    "convert a populated VatScheme's VatChoice (invalid) API model to an instance of TaxableTurnover (Empty) model" in {
+      val vatSchemeVolunatary = VatScheme(
+        validRegId,
+        None,
+        Some(VatChoice(
+          DateTime.now,
+          "GARBAGE"
+        )),
+        None
+      )
+
+      TaxableTurnover.apply(vatSchemeVolunatary) shouldBe TaxableTurnover.empty
+    }
+  }
+
+  "apply" should {
+    "convert a populated VatScheme's VatChoice (None) API model to an instance of TaxableTurnover (Empty) model" in {
+      val vatSchemeVolunatary = VatScheme(
+        validRegId,
+        None,
+        None,
+        None
+      )
+
+      TaxableTurnover.apply(vatSchemeVolunatary) shouldBe TaxableTurnover.empty
     }
   }
 }
