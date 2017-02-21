@@ -22,7 +22,7 @@ import org.joda.time.DateTime
 
 case class VatChoice(
                       startDate: DateTime,
-                      necessity: String // "obligatory" or "voluntary"
+                      necessity: String = "" // "obligatory" or "voluntary"
                     )
 
 object VatChoice {
@@ -30,9 +30,9 @@ object VatChoice {
   val NECESSITY_OBLIGATORY = "obligatory"
   val NECESSITY_VOLUNTARY = "voluntary"
 
-  implicit val format = (
+  implicit val format: OFormat[VatChoice] = (
     (__ \ "start-date").format[DateTime] and
       (__ \ "necessity").format[String]) (VatChoice.apply, unlift(VatChoice.unapply))
 
-  def empty: VatChoice = VatChoice(DateTime.now, "")
+  def empty: VatChoice = VatChoice(DateTime.now)
 }

@@ -17,7 +17,7 @@
 package models
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatChoice, VatFinancials, VatScheme}
+import models.api.{VatChoice, VatScheme}
 import models.view.TaxableTurnover
 import models.view.TaxableTurnover._
 import org.joda.time.DateTime
@@ -32,20 +32,39 @@ class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
   }
 
   "apply" should {
-    "convert a populated VatScheme's VatChoice API model to an instance of TaxableTurnover.view model" in {
+    "convert a VatChoice (Obligatory) to view model" in {
       val vatSchemeObligatory = VatScheme(
         validRegId,
-        Some(validVatTradingDetails),
-        Some(VatChoice(
+        vatChoice = Some(VatChoice(
           DateTime.now,
           VatChoice.NECESSITY_OBLIGATORY
-        )),
-        Some(validVatFinancials)
+        ))
       )
-
       TaxableTurnover.apply(vatSchemeObligatory) shouldBe TaxableTurnover(TAXABLE_YES)
-      TaxableTurnover.apply(validVatScheme) shouldBe TaxableTurnover(TAXABLE_NO)
     }
+
+    "convert a VatChoice (Voluntary) to view model" in {
+      val vatSchemeVolunatary = VatScheme(
+        validRegId,
+        vatChoice = Some(VatChoice(
+          DateTime.now,
+          VatChoice.NECESSITY_VOLUNTARY
+        ))
+      )
+      TaxableTurnover.apply(vatSchemeVolunatary) shouldBe TaxableTurnover(TAXABLE_NO)
+    }
+
+    "convert an invalid VatChoice to empty view model" in {
+      val vatSchemeVolunatary = VatScheme(validRegId, vatChoice = Some(VatChoice(DateTime.now, "GARBAGE")))
+      TaxableTurnover.apply(vatSchemeVolunatary) shouldBe TaxableTurnover.empty
+    }
+
+    "convert a none VatChoice to empty view model" in {
+      val vatSchemeVolunatary = VatScheme(validRegId)
+      TaxableTurnover.apply(vatSchemeVolunatary) shouldBe TaxableTurnover.empty
+    }
+
   }
+
 }
 
