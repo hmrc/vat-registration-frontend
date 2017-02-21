@@ -63,7 +63,7 @@ object StartDate extends ApiModelTransformer[StartDate] {
 
   def fromDateTime(d: DateTime): StartDate =
   // TODO: Remove check when start date becomes optional in next story
-    if (d.toString("dd/MM/yyyy") == "31/12/1969") {
+    if (d.toString("dd/MM/yyyy") == "31/12/1969" || d.toString("dd/MM/yyyy") == "01/01/1970") {
       StartDate.empty
     } else {
       StartDate(StartDate.SPECIFIC_DATE,
