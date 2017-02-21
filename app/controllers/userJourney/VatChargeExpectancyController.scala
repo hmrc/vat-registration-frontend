@@ -20,9 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.ZeroRatedSalesForm
-import models.view.StartDate.COMPANY_REGISTRATION_DATE
-import models.view.VoluntaryRegistration.REGISTER_NO
+import forms.vatDetails.VatChargeExpectancyForm
 import models.view._
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -30,37 +28,31 @@ import services.{S4LService, VatRegistrationService}
 import scala.concurrent.Future
 
 
-class ZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                         ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class VatChargeExpectancyController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
+                                              ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    s4LService.fetchAndGet[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString) flatMap {
+    s4LService.fetchAndGet[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString) flatMap {
       case Some(viewModel) => Future.successful(viewModel)
       case None => for {
         vatScheme <- vatRegistrationService.getVatScheme()
-        viewModel = ZeroRatedSales(vatScheme)
+        viewModel = VatChargeExpectancy(vatScheme)
       } yield viewModel
     } map { viewModel =>
-      val form = ZeroRatedSalesForm.form.fill(viewModel)
-      Ok(views.html.pages.zero_rated_sales(form))
+      val form = VatChargeExpectancyForm.form.fill(viewModel)
+      Ok(views.html.pages.vat_charge_expectancy(form))
     }
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    ZeroRatedSalesForm.form.bindFromRequest().fold(
+    VatChargeExpectancyForm.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.zero_rated_sales(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.vat_charge_expectancy(formWithErrors)))
       }, {
-        data: ZeroRatedSales => {
-          s4LService.saveForm[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString, data) flatMap { _ =>
-            if (ZeroRatedSales.ZERO_RATED_SALES_NO == data.yesNo) {
-              for {
-                _ <- s4LService.saveForm[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString, EstimateZeroRatedSales.empty)
-              } yield Redirect(controllers.userJourney.routes.VatChargeExpectancyController.show())
-            } else {
-              Future.successful(Redirect(controllers.userJourney.routes.EstimateZeroRatedSalesController.show()))
-            }
+        data: VatChargeExpectancy => {
+          s4LService.saveForm[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString, data) flatMap { _ =>
+            Future.successful(Redirect(controllers.userJourney.routes.SummaryController.show()))
           }
         }
       })
