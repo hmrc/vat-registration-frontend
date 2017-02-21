@@ -79,7 +79,7 @@ trait RegistrationConnector {
 
   def deleteVatScheme(regId: String)
                          (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
-    http.GET[Boolean](s"$vatRegUrl/vatreg/$regId/delete-scheme") recover {
+    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-scheme") recover {
       case e: Exception => throw logResponse(e, "deleteVatScheme", "delete VatScheme details")
     }
   }
