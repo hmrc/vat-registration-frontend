@@ -16,10 +16,10 @@
 
 package models.view
 
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import models.api.{VatChoice, VatScheme}
-import models.api.VatChoice.{NECESSITY_VOLUNTARY, NECESSITY_OBLIGATORY}
 import models.view.VoluntaryRegistration.REGISTER_YES
+import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class VoluntaryRegistration(yesNo: String) extends ViewModelTransformer[VatChoice] {
@@ -40,14 +40,7 @@ object VoluntaryRegistration extends ApiModelTransformer[VoluntaryRegistration] 
 
   // Returns a view model for a specific part of a given VatScheme API model
   override def apply(vatScheme: VatScheme): VoluntaryRegistration =
-
-    vatScheme.vatChoice match {
-
-      case Some(vatChoice) => vatChoice.necessity match {
-        case NECESSITY_VOLUNTARY => VoluntaryRegistration(REGISTER_YES)
-        case _ => VoluntaryRegistration.empty
-      }
-
-      case None => VoluntaryRegistration.empty
-    }
+    vatScheme.vatChoice.map(_.necessity).collect {
+      case NECESSITY_VOLUNTARY => VoluntaryRegistration(REGISTER_YES)
+    }.getOrElse(VoluntaryRegistration.empty)
 }

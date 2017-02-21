@@ -23,9 +23,9 @@ import play.api.libs.json._
 
 case class VatScheme(
                       id: String,
-                      tradingDetails: Option[VatTradingDetails],
-                      vatChoice: Option[VatChoice],
-                      financials: Option[VatFinancials]
+                      tradingDetails: Option[VatTradingDetails] = None,
+                      vatChoice: Option[VatChoice] = None,
+                      financials: Option[VatFinancials] = None
                     )
 
 object VatScheme {
