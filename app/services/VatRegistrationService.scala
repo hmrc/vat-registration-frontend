@@ -24,7 +24,7 @@ import enums.{CacheKeys, DownstreamOutcome}
 import models.api.{VatChoice, VatFinancials, VatScheme, VatTradingDetails}
 import models.view._
 import play.api.i18n.MessagesApi
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpReads}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -38,6 +38,7 @@ trait RegistrationService {
   def submitVatChoice()(implicit hc: HeaderCarrier): Future[VatChoice]
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary]
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme]
+  def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Boolean]
 }
 
 class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector: VatRegistrationConnector, messagesApi: MessagesApi)
@@ -45,6 +46,14 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
   with CommonService {
 
   override val keystoreConnector: KeystoreConnector = KeystoreConnector
+
+  override def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Boolean] = {
+    for {
+      regId <- fetchRegistrationId
+      response <- vatRegConnector.deleteVatScheme(regId)
+    } yield response
+  }
+
 
   def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] = {
     for {
@@ -246,5 +255,6 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
     }
 
   }
+
 }
 
