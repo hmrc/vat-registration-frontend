@@ -36,7 +36,6 @@ trait RegistrationService {
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value]
   def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails]
   def submitVatChoice()(implicit hc: HeaderCarrier): Future[VatChoice]
-  def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary]
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme]
   def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Boolean]
 }
@@ -107,8 +106,6 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
     } yield response
   }
 
-  def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
-    getVatScheme().map(registrationToSummary(_))
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
     for {
@@ -116,142 +113,8 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
       vatScheme <- vatRegConnector.getRegistration(regId)
     } yield vatScheme
 
-//  def retrieveViewModel[V](v: ApiModelTransformer[V], key: String)(implicit hc: HeaderCarrier): Future[V] = {
-//    s4LService.fetchAndGet[V](key) flatMap {
-//      case Some(viewModel) => Future.successful(viewModel)
-//      case None => for {
-//        vatScheme <- getVatScheme()
-//        viewModel = v.apply(vatScheme)
-//      } yield viewModel
-//    }
-//  }
-
-  def registrationToSummary(vatScheme: VatScheme): Summary = Summary(
-    Seq(
-      getVatDetailsSection(vatScheme.vatChoice.getOrElse(VatChoice.empty)),
-      getCompanyDetailsSection(vatScheme.tradingDetails.getOrElse(VatTradingDetails.empty), vatScheme.financials.getOrElse(VatFinancials.empty))
-    )
-  )
-
-  private def getVatDetailsSection(vatChoice: VatChoice) = {
-
-    def getTaxableTurnover: SummaryRow = SummaryRow(
-      "vatDetails.taxableTurnover",
-      vatChoice.necessity match {
-        case VatChoice.NECESSITY_VOLUNTARY => Right("No")
-        case _ => Right("Yes")
-      },
-      Some(controllers.userJourney.routes.TaxableTurnoverController.show())
-    )
-
-    def getNecessity: SummaryRow = SummaryRow(
-      "vatDetails.necessity",
-      vatChoice.necessity match {
-        case VatChoice.NECESSITY_VOLUNTARY => Right("Yes")
-        case _ => Right("No")
-      },
-      vatChoice.necessity match {
-        case VatChoice.NECESSITY_VOLUNTARY => Some(controllers.userJourney.routes.VoluntaryRegistrationController.show())
-        case _ => None
-      }
-    )
-
-    def getStartDate: SummaryRow = SummaryRow(
-      "vatDetails.startDate",
-      vatChoice.necessity match {
-        case VatChoice.NECESSITY_VOLUNTARY => {
-          val startdate = vatChoice.startDate.toString("dd/MM/yyyy")
-          if (startdate == "31/12/1969" || startdate == "01/01/1970") {
-            Right(messagesApi("pages.summary.vatDetails.mandatoryStartDate"))
-          } else {
-            Right(vatChoice.startDate.toString("d MMMM y"))
-          }
-        }
-        case _ => Right(messagesApi("pages.summary.vatDetails.mandatoryStartDate"))
-      },
-      vatChoice.necessity match {
-        case VatChoice.NECESSITY_VOLUNTARY => Some(controllers.userJourney.routes.StartDateController.show())
-        case _ => None
-      }
-    )
-
-    if(vatChoice.necessity == VatChoice.NECESSITY_VOLUNTARY) {
-      SummarySection(
-        id = "vatDetails",
-        Seq(
-          getTaxableTurnover,
-          getNecessity,
-          getStartDate
-        )
-      )
-    } else {
-      SummarySection(
-        id = "vatDetails",
-        Seq(
-          getTaxableTurnover,
-          getStartDate
-        )
-      )
-    }
-
-  }
-
-  private def getCompanyDetailsSection(vatTradingDetails: VatTradingDetails, vatFinancials: VatFinancials) = {
-
-    def getTradingName: SummaryRow = SummaryRow(
-      "companyDetails.tradingName",
-      vatTradingDetails.tradingName match {
-        case "" => Right("No")
-        case _ => Right(vatTradingDetails.tradingName)
-      },
-      Some(controllers.userJourney.routes.TradingNameController.show())
-    )
-
-    def getEstimatedSalesValue: SummaryRow = SummaryRow(
-      "companyDetails.estimatedSalesValue",
-      Right(s"£${vatFinancials.turnoverEstimate.toString}"),
-      Some(controllers.userJourney.routes.EstimateVatTurnoverController.show())
-    )
-
-    def getZeroRatedSales: SummaryRow = SummaryRow(
-      "companyDetails.zeroRatedSales",
-      vatFinancials.zeroRatedSalesEstimate match {
-        case Some(_) => Right("Yes")
-        case None => Right("No")
-      },
-      Some(controllers.userJourney.routes.ZeroRatedSalesController.show())
-    )
-
-    def getEstimatedZeroRatedSales: SummaryRow = SummaryRow(
-      "companyDetails.zeroRatedSalesValue",
-      Right(s"£${vatFinancials.zeroRatedSalesEstimate.get.toString}"),
-      Some(controllers.userJourney.routes.EstimateZeroRatedSalesController.show())
-    )
 
 
-
-    if(vatFinancials.zeroRatedSalesEstimate.isEmpty) {
-      SummarySection(
-        id = "companyDetails",
-        Seq(
-          getTradingName,
-          getEstimatedSalesValue,
-          getZeroRatedSales
-        )
-      )
-    } else {
-      SummarySection(
-        id = "companyDetails",
-        Seq(
-          getTradingName,
-          getEstimatedSalesValue,
-          getZeroRatedSales,
-          getEstimatedZeroRatedSales
-        )
-      )
-    }
-
-  }
 
 }
 
