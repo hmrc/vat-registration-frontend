@@ -158,4 +158,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
   }
 
+  "Calling deleteVatScheme" should {
+    "return a success response when the delete VatScheme is successfully" in new Setup {
+      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+      when(mockRegConnector.deleteVatScheme(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(true))
+      ScalaFutures.whenReady(service.deleteVatScheme())(_ mustBe true)
+    }
+  }
 }

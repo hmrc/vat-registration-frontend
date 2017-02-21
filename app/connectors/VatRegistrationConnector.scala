@@ -24,6 +24,7 @@ import enums.DownstreamOutcome
 import models.api._
 import play.api.Logger
 import play.api.http.Status
+import services._
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
@@ -73,6 +74,13 @@ trait RegistrationConnector {
                              (implicit hc: HeaderCarrier, rds: HttpReads[VatFinancials]): Future[VatFinancials] = {
     http.PATCH[VatFinancials, VatFinancials](s"$vatRegUrl/vatreg/$regId/vat-financials", vatFinancials) recover {
       case e: Exception => throw logResponse(e, "upsertVatFinancials", "upserting financials details")
+    }
+  }
+
+  def deleteVatScheme(regId: String)
+                         (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
+    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-scheme") recover {
+      case e: Exception => throw logResponse(e, "deleteVatScheme", "delete VatScheme details")
     }
   }
 
