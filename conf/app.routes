@@ -34,6 +34,10 @@ POST        /zero-rated-sales               controllers.userJourney.ZeroRatedSal
 GET         /estimate-zero-rated-sales      controllers.userJourney.EstimateZeroRatedSalesController.show
 POST        /estimate-zero-rated-sales      controllers.userJourney.EstimateZeroRatedSalesController.submit
 
+## VAT CHARGE EXPECTANCY PAGE
+GET         /vat-charge-expectancy          controllers.userJourney.VatChargeExpectancyController.show
+POST        /vat-charge-expectancy          controllers.userJourney.VatChargeExpectancyController.submit
+
 ## TAXABLE TURNOVER PAGE
 GET         /taxable-turnover               controllers.userJourney.TaxableTurnoverController.show
 POST        /taxable-turnover               controllers.userJourney.TaxableTurnoverController.submit

@@ -51,7 +51,7 @@ class EstimateZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegi
       }, {
         data: EstimateZeroRatedSales => {
           s4LService.saveForm[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString, data) map { _ =>
-            Redirect(controllers.userJourney.routes.SummaryController.show())
+            Redirect(controllers.userJourney.routes.VatChargeExpectancyController.show())
           }
         }
       })
