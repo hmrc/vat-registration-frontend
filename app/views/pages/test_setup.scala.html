@@ -1,0 +1,33 @@
+@import models.view.TestSetup
+@(testSetupForm:  Form[TestSetup])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+
+
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">Test Setup</h1>
+
+        @govHelpers.form(action = controllers.test.routes.TestSetupController.submit()) {
+            <div class="form-group">
+                <fieldset>
+
+                    @govHelpers.input(testSetupForm("taxableTurnoverChoice"), '_label -> "Taxable turnover choice (TAXABLE_YES or TAXABLE_NO)")
+                    <p>@govHelpers.input(testSetupForm("voluntaryChoice"), '_label -> "Voluntary registration choice (REGISTER_YES or REGISTER_NO)")
+                    <p>@govHelpers.input(testSetupForm("startDateChoice"), '_label -> "Start date choice (COMPANY_REGISTRATION_DATE or BUSINESS_START_DATE or SPECIFIC_DATE)")
+                    <p>@govHelpers.input(testSetupForm("startDate"), '_label -> "Start date (DDMMYYYY)")
+                    <p>@govHelpers.input(testSetupForm("tradingNameChoice"), '_label -> "Trading name choice (TRADING_NAME_YES or TRADING_NAME_NO)")
+                    <p>@govHelpers.input(testSetupForm("tradingName"), '_label -> "Trading name")
+                    <p>@govHelpers.input(testSetupForm("estimateVatTurnover"), '_label -> "Estimated vat turnover")
+                    <p>@govHelpers.input(testSetupForm("zeroRatedSalesChoice"), '_label -> "Zero rated sales choice (ZERO_RATED_SALES_YES or ZERO_RATED_SALES_NO)")
+                    <p>@govHelpers.input(testSetupForm("zeroRatedSalesEstimate"), '_label -> "Zero rate sales estimate")
+
+                </fieldset>
+
+            </div>
+
+            <div class="form-group">
+                <button class="btn button" type="next" id="submit">Submit</button>
+            </div>
+        }
+
+
+
