@@ -18,9 +18,9 @@ package models.view
 
 import models.api.{VatFinancials, VatScheme}
 import models.{ApiModelTransformer, ViewModelTransformer}
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
-case class EstimateZeroRatedSales(zeroRatedSalesEstimate: Option[Long])
+case class EstimateZeroRatedSales(zeroRatedSalesEstimate: Option[Long] = None)
   extends ViewModelTransformer[VatFinancials] {
 
   // Upserts (selectively converts) a View model object to its API model counterpart
@@ -30,7 +30,7 @@ case class EstimateZeroRatedSales(zeroRatedSalesEstimate: Option[Long])
 
 object EstimateZeroRatedSales extends ApiModelTransformer[EstimateZeroRatedSales] {
 
-  implicit val format = Json.format[EstimateZeroRatedSales]
+  implicit val format: OFormat[EstimateZeroRatedSales] = Json.format[EstimateZeroRatedSales]
 
   // Returns a view model for a specific part of a given VatScheme API model
   override def apply(vatScheme: VatScheme): EstimateZeroRatedSales = {
@@ -41,6 +41,6 @@ object EstimateZeroRatedSales extends ApiModelTransformer[EstimateZeroRatedSales
     }
   }
 
-  def empty: EstimateZeroRatedSales = EstimateZeroRatedSales(None)
+  def empty: EstimateZeroRatedSales = EstimateZeroRatedSales()
 
 }
