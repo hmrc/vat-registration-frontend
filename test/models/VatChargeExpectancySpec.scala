@@ -23,48 +23,39 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class VatChargeExpectancySpec extends UnitSpec with VatRegistrationFixture {
 
-  val validVatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_NO)
+  val vatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_NO)
+  val turnover = 100L
+  val vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
 
   val vatFinancialsWithReclaimTrue = VatFinancials(
-    turnoverEstimate = 100L,
-    zeroRatedSalesEstimate = Some(200L),
+    turnoverEstimate = turnover,
     reclaimVatOnMostReturns = true,
-    vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
+    vatAccountingPeriod = vatAccountingPeriod
   )
 
   val vatFinancialsWithReclaimFalse = VatFinancials(
-    turnoverEstimate = 100L,
-    zeroRatedSalesEstimate = Some(200L),
+    turnoverEstimate = turnover,
     reclaimVatOnMostReturns = false,
-    vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
+    vatAccountingPeriod = vatAccountingPeriod
   )
 
-  override val validVatFinancials = VatFinancials(Some(VatBankAccount("ACME", "101010","100000000000")),
-    10000000000L,
-    validEstimateZeroRatedSales.zeroRatedSalesEstimate,
-    true,
-    VatAccountingPeriod(None, "monthly")
+  val vatFinancials = VatFinancials(
+    turnoverEstimate = turnover,
+    reclaimVatOnMostReturns = true,
+    vatAccountingPeriod = vatAccountingPeriod
   )
 
-  val differentVatFinancials = VatFinancials(Some(VatBankAccount("ACME", "101010","100000000000")),
-    10000000000L,
-    validEstimateZeroRatedSales.zeroRatedSalesEstimate,
-    false,
-    VatAccountingPeriod(None, "monthly")
-  )
-
-  override val validVatScheme = VatScheme(
-    validRegId,
-    Some(validVatTradingDetails),
-    Some(validVatChoice),
-    Some(validVatFinancials)
+  val differentVatFinancials = VatFinancials(
+    turnoverEstimate = turnover,
+    reclaimVatOnMostReturns = false,
+    vatAccountingPeriod = vatAccountingPeriod
   )
 
   val vatScheme = VatScheme(validRegId)
 
   "toApi" should {
-    "upserts (merge) a current VatFinancials API model with the details of an instance of EstimateZeroRatedSales view model" in {
-      validVatChargeExpectancy.toApi(validVatFinancials) shouldBe differentVatFinancials
+    "update VatFinancials with new VatChargeExpectancy" in {
+      vatChargeExpectancy.toApi(vatFinancials) shouldBe differentVatFinancials
     }
   }
 

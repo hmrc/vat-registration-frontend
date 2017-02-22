@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package enums
+package forms.vatDetails
 
-object CacheKeys extends Enumeration {
+import models.view.AccountingPeriod
+import play.api.data.Form
+import play.api.data.Forms._
 
-  val StartDate = Value
-  val TradingName = Value
-  val VoluntaryRegistration = Value
-  val TaxableTurnover = Value
-  val EstimateVatTurnover = Value
-  val ZeroRatedSales = Value
-  val EstimateZeroRatedSales = Value
-  val VatChargeExpectancy = Value
-  val VatReturnFrequency = Value
-  val AccountingPeriod = Value
+object AccountingPeriodForm {
+  val RADIO_ACCOUNTING_PERIOD: String = "accountingPeriodRadio"
+
+  val form = Form(
+    mapping(
+      RADIO_ACCOUNTING_PERIOD -> nonEmptyText
+    )(AccountingPeriod.apply)(AccountingPeriod.unapply)
+  )
 
 }

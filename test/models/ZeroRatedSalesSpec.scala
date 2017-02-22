@@ -23,21 +23,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
 
-  val vatFinancialsWithZeroRated = VatFinancials(
-    turnoverEstimate = 100L,
-    zeroRatedSalesEstimate = Some(200L),
-    reclaimVatOnMostReturns = true,
-    vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
-  )
-
-  val vatFinancialsWithoutZeroRated = VatFinancials(
-    turnoverEstimate = 100L,
-    reclaimVatOnMostReturns = true,
-    vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
-  )
-
-  val vatScheme = VatScheme(validRegId)
-
   "empty" should {
     "create an empty Zero Rated Sales model" in {
       ZeroRatedSales.empty shouldBe ZeroRatedSales("")
@@ -45,14 +30,28 @@ class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
   }
 
   "apply" should {
+    val vatScheme = VatScheme(validRegId)
 
     "convert VatFinancials with zero rated sales to view model" in {
+      val vatFinancialsWithZeroRated = VatFinancials(
+        turnoverEstimate = 100L,
+        zeroRatedSalesEstimate = Some(200L),
+        reclaimVatOnMostReturns = true,
+        vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
+      )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithZeroRated))
+
       ZeroRatedSales.apply(vs) shouldBe ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_YES)
     }
 
     "convert VatFinancials without zero rated sales to view model" in {
+      val vatFinancialsWithoutZeroRated = VatFinancials(
+        turnoverEstimate = 100L,
+        reclaimVatOnMostReturns = true,
+        vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
+      )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithoutZeroRated))
+
       ZeroRatedSales.apply(vs) shouldBe ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_NO)
     }
 
@@ -60,8 +59,6 @@ class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
       val vs = vatScheme.copy(financials = None)
       ZeroRatedSales.apply(vs) shouldBe ZeroRatedSales.empty
     }
-
   }
-
 }
 
