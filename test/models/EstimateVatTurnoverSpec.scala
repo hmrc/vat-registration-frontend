@@ -22,28 +22,23 @@ import models.view.{EstimateVatTurnover, TradingName, ZeroRatedSales}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
-  override val validEstimateVatTurnover = EstimateVatTurnover(Some(50000L))
-  override val differentEstimateVatTurnover = EstimateVatTurnover(Some(10000L))
+  val turnover = 5000L
+  val turnoverNew = 1000L
+  val estimatedVatTurnover = EstimateVatTurnover(Some(turnover))
+  val newEstimateVatTurnover = EstimateVatTurnover(Some(turnoverNew))
 
-  override val validVatFinancials = VatFinancials(Some(VatBankAccount("ACME", "101010","100000000000")),
-    validEstimateVatTurnover.vatTurnoverEstimate.get,
-    Some(10000000000L),
-    true,
-    VatAccountingPeriod(None, "monthly")
+  val vatFinancials = VatFinancials(
+    turnoverEstimate = estimatedVatTurnover.vatTurnoverEstimate.get,
+    reclaimVatOnMostReturns = true,
+    vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
   )
 
-  override val validVatScheme = VatScheme(
-    validRegId,
-    Some(validVatTradingDetails),
-    Some(validVatChoice),
-    Some(validVatFinancials)
-  )
+  val vatScheme = VatScheme(id = validRegId, financials = Some(vatFinancials))
 
-  val differentVatFinancials = VatFinancials(Some(VatBankAccount("ACME", "101010","100000000000")),
-    differentEstimateVatTurnover.vatTurnoverEstimate.get,
-    Some(10000000000L),
-    true,
-    VatAccountingPeriod(None, "monthly")
+  val differentVatFinancials = VatFinancials(
+    turnoverEstimate = newEstimateVatTurnover.vatTurnoverEstimate.get,
+    reclaimVatOnMostReturns = true,
+    vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
   )
 
   "empty" should {
@@ -53,14 +48,14 @@ class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
   }
 
   "toApi" should {
-    "upserts (merge) a current VatFinancials API model with the details of an instance of EstimateVatTurnover view model" in {
-      differentEstimateVatTurnover.toApi(validVatFinancials) shouldBe differentVatFinancials
+    "update a VatFinancials with new EstimateVatTurnover" in {
+      newEstimateVatTurnover.toApi(vatFinancials) shouldBe differentVatFinancials
     }
   }
 
   "apply" should {
-    "convert a populated VatScheme's VatFinancials API model to an instance of EstimateVatTurnover view model" in {
-      EstimateVatTurnover.apply(validVatScheme) shouldBe validEstimateVatTurnover
+    "Extract a EstimateVatTurnover view model from a VatScheme" in {
+      EstimateVatTurnover.apply(vatScheme) shouldBe estimatedVatTurnover
     }
   }
 }
