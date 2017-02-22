@@ -21,7 +21,7 @@ import enums.CacheKeys
 import fixtures.VatRegistrationFixture
 import forms.vatDetails.VatReturnFrequencyForm
 import helpers.VatRegSpec
-import models.view.VatReturnFrequency
+import models.view.{AccountingPeriod, VatReturnFrequency, VoluntaryRegistration}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -99,18 +99,24 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return 303" in {
       val returnCacheMapVatReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency.empty)))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod.empty)))
 
       when(mockS4LService.saveForm[VatReturnFrequency]
         (Matchers.eq(CacheKeys.VatReturnFrequency.toString), Matchers.any())
         (Matchers.any[HeaderCarrier](), Matchers.any[Format[VatReturnFrequency]]()))
         .thenReturn(Future.successful(returnCacheMapVatReturnFrequency))
 
+      when(mockS4LService.saveForm[AccountingPeriod]
+        (Matchers.eq(CacheKeys.AccountingPeriod.toString), Matchers.any())
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[AccountingPeriod]]()))
+        .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
+
       AuthBuilder.submitWithAuthorisedUser(TestVatReturnFrequencyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/trading-name"
+          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/summary"
       }
 
     }
@@ -120,16 +126,22 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency.empty)))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod.empty)))
 
       when(mockS4LService.saveForm[VatReturnFrequency](Matchers.eq(CacheKeys.VatReturnFrequency.toString), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
+
+      when(mockS4LService.saveForm[AccountingPeriod]
+        (Matchers.eq(CacheKeys.AccountingPeriod.toString), Matchers.any())
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[AccountingPeriod]]()))
+        .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
 
       AuthBuilder.submitWithAuthorisedUser(TestVatReturnFrequencyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.QUARTERLY
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/trading-name"
+          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/accounting-period"
       }
 
     }

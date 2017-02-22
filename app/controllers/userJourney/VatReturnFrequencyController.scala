@@ -21,7 +21,7 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
 import forms.vatDetails.VatReturnFrequencyForm
-import models.view.VatReturnFrequency
+import models.view.{AccountingPeriod, VatChargeExpectancy, VatReturnFrequency}
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
@@ -53,9 +53,11 @@ class VatReturnFrequencyController @Inject()(s4LService: S4LService, vatRegistra
         data: VatReturnFrequency => {
           s4LService.saveForm[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString, data) flatMap { _ =>
             if (VatReturnFrequency.MONTHLY == data.frequencyType) {
-              Future.successful(Redirect(controllers.userJourney.routes.TradingNameController.show()))
+              for {
+                _ <- s4LService.saveForm[AccountingPeriod](CacheKeys.AccountingPeriod.toString, AccountingPeriod.empty)
+              } yield Redirect(controllers.userJourney.routes.SummaryController.show())
             } else {
-              Future.successful(Redirect(controllers.userJourney.routes.TradingNameController.show()))
+              Future.successful(Redirect(controllers.userJourney.routes.AccountingPeriodController.show()))
             }
           }
         }

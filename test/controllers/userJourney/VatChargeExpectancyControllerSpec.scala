@@ -20,7 +20,7 @@ import builders.AuthBuilder
 import enums.CacheKeys
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.view.VatChargeExpectancy
+import models.view.{AccountingPeriod, VatChargeExpectancy, VatReturnFrequency}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -109,7 +109,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/summary"
+          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/vat-return-frequency"
       }
 
     }
@@ -119,16 +119,22 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy.empty)))
+      val returnCacheMapReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency.empty)))
 
       when(mockS4LService.saveForm[VatChargeExpectancy](Matchers.eq(CacheKeys.VatChargeExpectancy.toString), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
+
+      when(mockS4LService.saveForm[VatReturnFrequency]
+        (Matchers.eq(CacheKeys.VatReturnFrequency.toString), Matchers.any())
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[VatReturnFrequency]]()))
+        .thenReturn(Future.successful(returnCacheMapReturnFrequency))
 
       AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_NO
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/summary"
+          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/accounting-period"
       }
 
     }
