@@ -51,8 +51,8 @@ class AccountingPeriodController @Inject()(s4LService: S4LService, vatRegistrati
         Future.successful(BadRequest(views.html.pages.accounting_period(formWithErrors)))
       }, {
         data: AccountingPeriod => {
-          s4LService.saveForm[AccountingPeriod](CacheKeys.AccountingPeriod.toString, data) flatMap { _ =>
-            Future.successful(Redirect(controllers.userJourney.routes.SummaryController.show()))
+          s4LService.saveForm[AccountingPeriod](CacheKeys.AccountingPeriod.toString, data) map { _ =>
+            Redirect(controllers.userJourney.routes.SummaryController.show())
           }
         }
       })
