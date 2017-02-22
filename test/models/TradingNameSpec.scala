@@ -41,16 +41,14 @@ class TradingNameSpec extends UnitSpec with VatRegistrationFixture {
   }
 
   "toApi" should {
-    "upserts (merge) a current VatTradingDetails API model with the details of an instance of TradingName view model" in {
+    "update a VatTradingDetails a new TradingName" in {
       val tradingName = TradingName(TradingName.TRADING_NAME_YES, Some("HOLIDAY INC"))
-      tradingName.toApi(validVatTradingDetails) shouldBe VatTradingDetails(
-        "HOLIDAY INC"
-      )
+      tradingName.toApi(validVatTradingDetails) shouldBe VatTradingDetails("HOLIDAY INC")
     }
   }
 
   "apply" should {
-    "convert a populated VatScheme's VatTradingDetails API model to an instance of TradingName view model" in {
+    "extract a TradingName from a VatScheme" in {
       TradingName.apply(validVatScheme) shouldBe validTradingName
     }
 
