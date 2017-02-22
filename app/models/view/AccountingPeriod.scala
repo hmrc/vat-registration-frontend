@@ -40,9 +40,7 @@ object AccountingPeriod extends ApiModelTransformer[AccountingPeriod] {
   override def apply(vatScheme: VatScheme): AccountingPeriod = {
     vatScheme.financials match {
       case Some(financials) => financials.vatAccountingPeriod.periodStart match {
-        case Some("jan_apr_jul_oct") => AccountingPeriod(JAN_APR_JUL_OCT)
-        case Some("feb_may_aug_nov") => AccountingPeriod(FEB_MAY_AUG_NOV)
-        case Some("mar_jun_sep_dec") => AccountingPeriod(MAR_JUN_SEP_DEC)
+        case Some(period) => AccountingPeriod(period.toUpperCase)
         case _ => AccountingPeriod.empty
       }
       case _ => AccountingPeriod.empty
