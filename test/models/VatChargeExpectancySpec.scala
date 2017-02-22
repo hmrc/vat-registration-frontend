@@ -23,9 +23,10 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class VatChargeExpectancySpec extends UnitSpec with VatRegistrationFixture {
 
-  val vatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_NO)
   val turnover = 100L
   val vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
+  val vatChargeExpectancyNo = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_NO)
+  val vatChargeExpectancyYes = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
 
   val vatFinancialsWithReclaimTrue = VatFinancials(
     turnoverEstimate = turnover,
@@ -39,26 +40,14 @@ class VatChargeExpectancySpec extends UnitSpec with VatRegistrationFixture {
     vatAccountingPeriod = vatAccountingPeriod
   )
 
-  val vatFinancials = VatFinancials(
-    turnoverEstimate = turnover,
-    reclaimVatOnMostReturns = true,
-    vatAccountingPeriod = vatAccountingPeriod
-  )
-
-  val differentVatFinancials = VatFinancials(
-    turnoverEstimate = turnover,
-    reclaimVatOnMostReturns = false,
-    vatAccountingPeriod = vatAccountingPeriod
-  )
-
-  val vatScheme = VatScheme(validRegId)
-
   "toApi" should {
-    "update VatFinancials with new VatChargeExpectancy" in {
-      vatChargeExpectancy.toApi(vatFinancials) shouldBe differentVatFinancials
+    "update VatFinancials with new VatChargeExpectancy with Reclaim false" in {
+      vatChargeExpectancyNo.toApi(vatFinancialsWithReclaimTrue) shouldBe vatFinancialsWithReclaimFalse
+    }
+    "update VatFinancials with new VatChargeExpectancy with Reclaim true" in {
+      vatChargeExpectancyYes.toApi(vatFinancialsWithReclaimFalse) shouldBe vatFinancialsWithReclaimTrue
     }
   }
-
   "empty" should {
     "create an empty Vat Charge Expectancy model" in {
       VatChargeExpectancy.empty shouldBe VatChargeExpectancy("")
@@ -66,23 +55,20 @@ class VatChargeExpectancySpec extends UnitSpec with VatRegistrationFixture {
   }
 
   "apply" should {
+    val vatScheme = VatScheme(validRegId)
 
     "convert VatFinancials with vat charge expectancy yes to view model" in {
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithReclaimTrue))
       VatChargeExpectancy.apply(vs) shouldBe VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
     }
-
     "convert VatFinancials with vat charge expectancy no to view model" in {
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithReclaimFalse))
       VatChargeExpectancy.apply(vs) shouldBe VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_NO)
     }
-
     "convert VatScheme without VatFinancials to empty view model" in {
       val vs = vatScheme.copy(financials = None)
       VatChargeExpectancy.apply(vs) shouldBe VatChargeExpectancy.empty
     }
-
   }
-
 }
 

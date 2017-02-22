@@ -41,6 +41,11 @@ trait WSHTTPMock {
       .thenReturn(thenReturn)
   }
 
+  def mockHttpDELETE[O](url: String, thenReturn: O, mockWSHttp: WSHttp = mockWSHttp): OngoingStubbing[Future[O]] = {
+    when(mockWSHttp.DELETE[O](Matchers.anyString())(Matchers.any[HttpReads[O]](), Matchers.any[HeaderCarrier]()))
+      .thenReturn(Future.successful(thenReturn))
+  }
+
   def mockHttpPOST[I, O](url: String, thenReturn: O, mockWSHttp: WSHttp = mockWSHttp): OngoingStubbing[Future[O]] = {
     when(mockWSHttp.POST[I, O](Matchers.anyString(), Matchers.any[I](), Matchers.any())(Matchers.any[Writes[I]](),
       Matchers.any[HttpReads[O]](), Matchers.any[HeaderCarrier]()))
@@ -86,6 +91,11 @@ trait WSHTTPMock {
   def mockHttpFailedPATCH[I, O](url: String, exception: Exception, mockWSHttp: WSHttp = mockWSHttp): OngoingStubbing[Future[O]] = {
     when(mockWSHttp.PATCH[I, O](Matchers.anyString(), Matchers.any[I]())(Matchers.any[Writes[I]](),
       Matchers.any[HttpReads[O]](), Matchers.any[HeaderCarrier]()))
+      .thenReturn(Future.failed(exception))
+  }
+
+  def mockHttpFailedDELETE[O](url: String, exception: Exception, mockWSHttp: WSHttp = mockWSHttp): OngoingStubbing[Future[O]] = {
+    when(mockWSHttp.DELETE[O](Matchers.anyString())(Matchers.any[HttpReads[O]](), Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.failed(exception))
   }
 }
