@@ -139,6 +139,13 @@ pages.vat.charge.expectancy.para2                           = If the VAT you cha
 pages.vat.charge.expectancy.radio.yes                       = Yes, I expect to reclaim more VAT than I charge
 pages.vat.charge.expectancy.radio.no                       = No, I expect to charge more VAT than I reclaim
 
+## Vat Return Frequency
+pages.vat.return.frequency.title                           = Vat Return Frequency
+pages.vat.return.frequency.heading                         = How often do you want to submit VAT Returns?
+pages.vat.return.frequency.radio.monthly                   = Once a month
+pages.vat.return.frequency.radio.quarterly                 = Every 3 months
+
+
 ## Summary Page
 pages.summary.title                                         = Summary
 pages.summary.heading                                       = Check your answers

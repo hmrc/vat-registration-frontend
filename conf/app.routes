@@ -42,6 +42,12 @@ POST        /vat-charge-expectancy          controllers.userJourney.VatChargeExp
 GET         /taxable-turnover               controllers.userJourney.TaxableTurnoverController.show
 POST        /taxable-turnover               controllers.userJourney.TaxableTurnoverController.submit
 
+
+## VAT RETURN FREQUENCY
+GET         /vat-return-frequency           controllers.userJourney.VatReturnFrequencyController.show
+POST        /vat-return-frequency           controllers.userJourney.VatReturnFrequencyController.submit
+
+
 ## FEEDBACK
 GET         /feedback                       controllers.feedback.FeedbackController.show
 
