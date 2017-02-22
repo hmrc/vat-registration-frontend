@@ -20,48 +20,47 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.VatChargeExpectancyForm
-import models.view._
-import play.api.mvc.{Action, AnyContent}
+import forms.vatDetails.VatReturnFrequencyForm
+import models.view.{AccountingPeriod, VatChargeExpectancy, VatReturnFrequency}
+import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
-
-class VatChargeExpectancyController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                              ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class VatReturnFrequencyController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
+                                             ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    s4LService.fetchAndGet[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString) flatMap {
+    s4LService.fetchAndGet[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString) flatMap {
       case Some(viewModel) => Future.successful(viewModel)
       case None => for {
         vatScheme <- vatRegistrationService.getVatScheme()
-        viewModel = VatChargeExpectancy(vatScheme)
+        viewModel = VatReturnFrequency(vatScheme)
       } yield viewModel
     } map { viewModel =>
-      val form = VatChargeExpectancyForm.form.fill(viewModel)
-      Ok(views.html.pages.vat_charge_expectancy(form))
+      val form = VatReturnFrequencyForm.form.fill(viewModel)
+      Ok(views.html.pages.vat_return_frequency(form))
     }
+
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    VatChargeExpectancyForm.form.bindFromRequest().fold(
+    VatReturnFrequencyForm.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.vat_charge_expectancy(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.vat_return_frequency(formWithErrors)))
       }, {
-        data: VatChargeExpectancy => {
-          s4LService.saveForm[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString, data) flatMap { _ =>
-            if (VatChargeExpectancy.VAT_CHARGE_NO == data.yesNo) {
+        data: VatReturnFrequency => {
+          s4LService.saveForm[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString, data) flatMap { _ =>
+            if (VatReturnFrequency.MONTHLY == data.frequencyType) {
               for {
-                _ <- s4LService.saveForm[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString, VatReturnFrequency.empty)
-              } yield Redirect(controllers.userJourney.routes.AccountingPeriodController.show())
+                _ <- s4LService.saveForm[AccountingPeriod](CacheKeys.AccountingPeriod.toString, AccountingPeriod.empty)
+              } yield Redirect(controllers.userJourney.routes.SummaryController.show())
             } else {
-              Future.successful(Redirect(controllers.userJourney.routes.VatReturnFrequencyController.show()))
+              Future.successful(Redirect(controllers.userJourney.routes.AccountingPeriodController.show()))
             }
           }
         }
       })
   })
-
 }
