@@ -32,14 +32,12 @@ class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
     reclaimVatOnMostReturns = true,
     vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
   )
-
-  val vatScheme = VatScheme(id = validRegId, financials = Some(vatFinancials))
-
   val differentVatFinancials = VatFinancials(
     turnoverEstimate = newEstimateVatTurnover.vatTurnoverEstimate.get,
     reclaimVatOnMostReturns = true,
     vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
   )
+  val vatScheme = VatScheme(id = validRegId, financials = Some(vatFinancials))
 
   "empty" should {
     "create an empty Zero Rated Sales model" in {
@@ -49,6 +47,7 @@ class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
 
   "toApi" should {
     "update a VatFinancials with new EstimateVatTurnover" in {
+
       newEstimateVatTurnover.toApi(vatFinancials) shouldBe differentVatFinancials
     }
   }
@@ -56,6 +55,10 @@ class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
   "apply" should {
     "Extract a EstimateVatTurnover view model from a VatScheme" in {
       EstimateVatTurnover.apply(vatScheme) shouldBe estimatedVatTurnover
+    }
+    "Extract an empty EstimateVatTurnover view model from a VatScheme without financials" in {
+      val vatSchemeWithoutFinancials = VatScheme(id = validRegId, financials = None)
+      EstimateVatTurnover.apply(vatSchemeWithoutFinancials) shouldBe EstimateVatTurnover.empty
     }
   }
 }
