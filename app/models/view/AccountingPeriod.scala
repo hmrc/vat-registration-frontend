@@ -18,27 +18,13 @@ package models.view
 
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
 import models.{ApiModelTransformer, ViewModelTransformer}
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.{Json, OFormat}
 
 case class AccountingPeriod(accountingPeriod: String) extends ViewModelTransformer[VatFinancials] {
 
   // Upserts (selectively converts) a View model object to its API model counterpart
   override def toApi(vatFinancials: VatFinancials): VatFinancials =
-    vatFinancials.copy(vatAccountingPeriod = VatAccountingPeriod(Some(toDateTime), "quarterly"))
-
-  def toDateTime: DateTime = {
-    val periodStart = {
-      accountingPeriod match {
-        case AccountingPeriod.JAN_APR_JUL_OCT => s"01/01/${DateTime.now.getYear}"
-        case AccountingPeriod.MAR_JUN_SEP_DEC => s"01/02/${DateTime.now.getYear}"
-        case AccountingPeriod.FEB_MAY_AUG_NOV => s"01/03/${DateTime.now.getYear}"
-      }
-    }
-
-    DateTimeFormat.forPattern("dd/MM/yyyy").parseDateTime(periodStart)
-  }
+    vatFinancials.copy(vatAccountingPeriod = VatAccountingPeriod(Some(accountingPeriod.toLowerCase), "quarterly"))
 
 }
 
