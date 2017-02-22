@@ -145,7 +145,14 @@ pages.vat.return.frequency.heading                         = How often do you wa
 pages.vat.return.frequency.radio.monthly                   = Once a month
 pages.vat.return.frequency.radio.quarterly                 = Every 3 months
 
-
+## Accounting Period Page
+pages.accounting.period.title                               = Account period
+pages.accounting.period.heading                             = When do you want your VAT Return periods to end?
+pages.accounting.period.para1                               = You usually submit a VAT Return to HMRC every 3 months. This period of time is known as your ''accounting period.''
+pages.accounting.period.radio.january                       = January, April, July and October
+pages.accounting.period.radio.february                      = February, May, August and November
+pages.accounting.period.radio.march                         = March, June, September and December
+#
 ## Summary Page
 pages.summary.title                                         = Summary
 pages.summary.heading                                       = Check your answers

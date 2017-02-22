@@ -17,65 +17,45 @@
 package models
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatAccountingPeriod, VatBankAccount, VatFinancials, VatScheme}
+import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
 import models.view.EstimateZeroRatedSales
 import uk.gov.hmrc.play.test.UnitSpec
 
 class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
 
+  val sales = 60000L
+  val turnover = 100L
+  val estimateZeroRatedSales = EstimateZeroRatedSales(Some(sales))
+
+  val vatFinancials = VatFinancials(
+    turnoverEstimate = turnover,
+    zeroRatedSalesEstimate = estimateZeroRatedSales.zeroRatedSalesEstimate,
+    reclaimVatOnMostReturns = true,
+    vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
+  )
+
   "toApi" should {
     "update VatFinancials with new EstimateZeroRatedSales" in {
-
-      val estimateZeroRatedSales = EstimateZeroRatedSales(Some(60000L))
-
-      val vatFinancials = VatFinancials(
-        turnoverEstimate = 100L,
-        zeroRatedSalesEstimate = None,
-        reclaimVatOnMostReturns = true,
-        vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
-      )
-
       val updatedVatFinancials = VatFinancials(
-        turnoverEstimate = 100L,
+        turnoverEstimate = turnover,
         zeroRatedSalesEstimate = estimateZeroRatedSales.zeroRatedSalesEstimate,
         reclaimVatOnMostReturns = true,
         vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
       )
-
       estimateZeroRatedSales.toApi(vatFinancials) shouldBe updatedVatFinancials
     }
   }
 
   "apply" should {
     "convert a VatFinancials to a view model" in {
-
-      val estimateZeroRatedSales = EstimateZeroRatedSales(Some(60000L))
-
-      val vatFinancials = VatFinancials(
-        turnoverEstimate = 100L,
-        zeroRatedSalesEstimate = estimateZeroRatedSales.zeroRatedSalesEstimate,
-        reclaimVatOnMostReturns = true,
-        vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
-      )
-
-      val vatScheme = VatScheme(
-        id = validRegId,
-        financials = Some(vatFinancials)
-      )
-
+      val vatScheme = VatScheme(id = validRegId, financials = Some(vatFinancials))
       EstimateZeroRatedSales.apply(vatScheme) shouldBe estimateZeroRatedSales
     }
-  }
 
-  "apply" should {
     "convert a VatScheme without a VatFinancials to an empty view model" in {
-
-      val vatScheme = VatScheme(
-        id = validRegId,
-        financials = None
-      )
-
+      val vatScheme = VatScheme(id = validRegId)
       EstimateZeroRatedSales.apply(vatScheme) shouldBe EstimateZeroRatedSales.empty
     }
   }
+
 }
