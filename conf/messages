@@ -137,7 +137,13 @@ pages.vat.charge.expectancy.heading                         = Do you expect to r
 pages.vat.charge.expectancy.para1                           = If the VAT you pay for business-related purchases is more than the VAT you charge your customers, you can reclaim the difference from HMRC.
 pages.vat.charge.expectancy.para2                           = If the VAT you charge is more than the VAT you pay, you have to pay the difference to HMRC.
 pages.vat.charge.expectancy.radio.yes                       = Yes, I expect to reclaim more VAT than I charge
-pages.vat.charge.expectancy.radio.no                        = No, I expect to charge more VAT than I reclaim
+pages.vat.charge.expectancy.radio.no                       = No, I expect to charge more VAT than I reclaim
+
+## Vat Return Frequency
+pages.vat.return.frequency.title                           = Vat Return Frequency
+pages.vat.return.frequency.heading                         = How often do you want to submit VAT Returns?
+pages.vat.return.frequency.radio.monthly                   = Once a month
+pages.vat.return.frequency.radio.quarterly                 = Every 3 months
 
 ## Accounting Period Page
 pages.accounting.period.title                               = Account period
