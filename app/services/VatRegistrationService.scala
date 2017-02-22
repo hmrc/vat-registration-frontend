@@ -23,8 +23,7 @@ import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.{CacheKeys, DownstreamOutcome}
 import models.api.{VatChoice, VatFinancials, VatScheme, VatTradingDetails}
 import models.view._
-import play.api.i18n.MessagesApi
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpReads}
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -33,16 +32,21 @@ import scala.concurrent.Future
 trait RegistrationService {
 
   def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value]
+
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value]
+
   def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails]
+
   def submitVatChoice()(implicit hc: HeaderCarrier): Future[VatChoice]
+
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme]
+
   def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Boolean]
 }
 
-class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector: VatRegistrationConnector, messagesApi: MessagesApi)
+class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: VatRegistrationConnector)
   extends RegistrationService
-  with CommonService {
+    with CommonService {
 
   override val keystoreConnector: KeystoreConnector = KeystoreConnector
 
@@ -53,7 +57,6 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
     } yield response
   }
 
-
   def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] = {
     for {
       vatScheme <- vatRegConnector.createNewRegistration()
@@ -62,10 +65,13 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
   }
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] = {
+    val tradingDetails = submitTradingDetails()
+    val vatChoice = submitVatChoice()
+    val financials = submitFinancials()
     for {
-      _ <- submitTradingDetails()
-      _ <- submitVatChoice()
-      _ <- submitFinancials()
+      _ <- tradingDetails
+      _ <- vatChoice
+      _ <- financials
     } yield DownstreamOutcome.Success
   }
 
@@ -111,5 +117,5 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
       regId <- fetchRegistrationId
       vatScheme <- vatRegConnector.getRegistration(regId)
     } yield vatScheme
-}
 
+}
