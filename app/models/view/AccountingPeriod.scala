@@ -38,7 +38,15 @@ object AccountingPeriod extends ApiModelTransformer[AccountingPeriod] {
 
   // Returns a view model for a specific part of a given VatScheme API model
   override def apply(vatScheme: VatScheme): AccountingPeriod = {
-    empty
+    vatScheme.financials match {
+      case Some(financials) => financials.vatAccountingPeriod.periodStart match {
+        case Some("jan_apr_jul_oct") => AccountingPeriod(JAN_APR_JUL_OCT)
+        case Some("feb_may_aug_nov") => AccountingPeriod(FEB_MAY_AUG_NOV)
+        case Some("mar_jun_sep_dec") => AccountingPeriod(MAR_JUN_SEP_DEC)
+        case _ => AccountingPeriod.empty
+      }
+      case _ => AccountingPeriod.empty
+    }
   }
 
   def empty: AccountingPeriod = AccountingPeriod("")
