@@ -24,7 +24,8 @@ import uk.gov.hmrc.play.http._
 
 trait VatRegistrationFixture {
 
-  val IM_A_TEAPOT: Int = 418
+  val OK = 200
+  val IM_A_TEAPOT = 418
   val badRequest = new BadRequestException(Status.BAD_REQUEST.toString)
   val forbidden = Upstream4xxResponse(Status.FORBIDDEN.toString, Status.FORBIDDEN, Status.FORBIDDEN)
   val upstream4xx = Upstream4xxResponse(IM_A_TEAPOT.toString, IM_A_TEAPOT, IM_A_TEAPOT)
@@ -33,69 +34,45 @@ trait VatRegistrationFixture {
   val internalServiceException = new InternalServerException(Status.BAD_GATEWAY.toString)
   val runTimeException = new RuntimeException("tst")
 
-  val validHttpResponse = HttpResponse(200)
-
-  val validDateTime = {
-    val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
-    formatter.parseDateTime("01/02/2017")
-  }
-
-  // TODO: remove when we play the VatChoice refactoring story
-  val validDefaultDateTime = {
-    val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
-    formatter.parseDateTime("31/12/1969")
-  }
-
-  val validStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(1), Some(2), Some(2017))
-  val differentStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(30), Some(12), Some(2001))
-
-  val validTradingName = TradingName(TradingName.TRADING_NAME_YES, Some("ACME INC"))
-  val differentTradingName = TradingName(TradingName.TRADING_NAME_YES, Some("HOLIDAY INC"))
-
-  val validEstimateVatTurnover = EstimateVatTurnover(Some(50000L))
-  val differentEstimateVatTurnover = EstimateVatTurnover(Some(10000L))
-  val validVatFinancials = VatFinancials(
-    turnoverEstimate = 50000L,
-    reclaimVatOnMostReturns = false,
-    zeroRatedSalesEstimate = Some(60000L),
-    vatAccountingPeriod = VatAccountingPeriod.empty
-  )
-  val validEstimateZeroRatedSales = EstimateZeroRatedSales(Some(60000L))
+  val validHttpResponse = HttpResponse(OK)
 
   val validRegId = "VAT123456"
+
+  val validStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(1), Some(2), Some(2017))
 
   val validVatChoice = VatChoice(
     validStartDate.toDateTime,
     VatChoice.NECESSITY_VOLUNTARY
   )
 
-  val differentVatChoice = VatChoice(
-    differentStartDate.toDateTime,
-    VatChoice.NECESSITY_VOLUNTARY
-  )
+  private val tradingName = "ACME INC"
+  val validVatTradingDetails = VatTradingDetails(tradingName)
+  val validTradingName = TradingName(TradingName.TRADING_NAME_YES, Some(tradingName))
 
-  val validVatTradingDetails = VatTradingDetails(
-    "ACME INC"
-  )
+  private val turnoverEstimate = 50000L
+  private val estimatedSales = 60000L
+  val validEstimateVatTurnover = EstimateVatTurnover(Some(turnoverEstimate))
+  val validEstimateZeroRatedSales = EstimateZeroRatedSales(Some(estimatedSales))
 
-  val differentVatTradingDetails = VatTradingDetails(
-    "HOLIDAY INC"
+
+  private val sortCode = "10-10-10"
+  private val accountNumber = "12345678"
+  private val period = "monthly"
+  val validVatFinancials = VatFinancials(
+    bankAccount = Some(VatBankAccount(tradingName, sortCode, accountNumber)),
+    turnoverEstimate = turnoverEstimate,
+    zeroRatedSalesEstimate = Some(estimatedSales),
+    reclaimVatOnMostReturns = true,
+    vatAccountingPeriod = VatAccountingPeriod(None, period)
   )
 
   val validNewVatScheme = VatScheme.blank(validRegId)
 
-  val aVatFinancials = VatFinancials(Some(VatBankAccount("ACME", "101010","100000000000")),
-    10000000000L,
-    Some(10000000000L),
-    true,
-    VatAccountingPeriod(None, "monthly")
-  )
-
   val validVatScheme = VatScheme(
-    validRegId,
-    Some(validVatTradingDetails),
-    Some(validVatChoice),
-    Some(aVatFinancials)
+    id = validRegId,
+    tradingDetails = Some(validVatTradingDetails),
+    vatChoice = Some(validVatChoice),
+    financials = Some(validVatFinancials)
   )
 
   lazy val validSummaryView = Summary(
@@ -131,7 +108,7 @@ trait VatRegistrationFixture {
     Seq(
       SummaryRow(
         "companyDetails.tradingName",
-        Right("ACME INC"),
+        Right(tradingName),
         Some(controllers.userJourney.routes.TradingNameController.show())
       ),
       SummaryRow(
