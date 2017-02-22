@@ -54,22 +54,19 @@ trait VatRegistrationFixture {
 
   val validEstimateVatTurnover = EstimateVatTurnover(Some(50000L))
   val differentEstimateVatTurnover = EstimateVatTurnover(Some(10000L))
-
+  val validVatFinancials = VatFinancials(
+    turnoverEstimate = 50000L,
+    reclaimVatOnMostReturns = false,
+    zeroRatedSalesEstimate = Some(60000L),
+    vatAccountingPeriod = VatAccountingPeriod.empty
+  )
   val validEstimateZeroRatedSales = EstimateZeroRatedSales(Some(60000L))
-  val differentEstimateZeroRatedSales = EstimateZeroRatedSales(Some(20000L))
 
   val validRegId = "VAT123456"
 
   val validVatChoice = VatChoice(
     validStartDate.toDateTime,
     VatChoice.NECESSITY_VOLUNTARY
-  )
-
-  val validVatFinancials = VatFinancials(Some(VatBankAccount("ACME", "101010","100000000000")),
-    10000000000L,
-    Some(10000000000L),
-    true,
-    VatAccountingPeriod(None, "monthly")
   )
 
   val differentVatChoice = VatChoice(
@@ -87,11 +84,18 @@ trait VatRegistrationFixture {
 
   val validNewVatScheme = VatScheme.blank(validRegId)
 
+  val aVatFinancials = VatFinancials(Some(VatBankAccount("ACME", "101010","100000000000")),
+    10000000000L,
+    Some(10000000000L),
+    true,
+    VatAccountingPeriod(None, "monthly")
+  )
+
   val validVatScheme = VatScheme(
     validRegId,
     Some(validVatTradingDetails),
     Some(validVatChoice),
-    Some(validVatFinancials)
+    Some(aVatFinancials)
   )
 
   lazy val validSummaryView = Summary(
