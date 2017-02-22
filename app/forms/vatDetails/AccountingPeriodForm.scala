@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package models.api
+package forms.vatDetails
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import models.view.AccountingPeriod
+import play.api.data.Form
+import play.api.data.Forms._
 
-case class VatAccountingPeriod(periodStart: Option[String], frequency: String)
+object AccountingPeriodForm {
+  val RADIO_ACCOUNTING_PERIOD: String = "accountingPeriodRadio"
 
+  val form = Form(
+    mapping(
+      RADIO_ACCOUNTING_PERIOD -> nonEmptyText
+    )(AccountingPeriod.apply)(AccountingPeriod.unapply)
+  )
 
-object VatAccountingPeriod {
-
-  implicit val format = (
-    (__ \ "periodStart").formatNullable[String] and
-      (__ \ "frequency").format[String]) (VatAccountingPeriod.apply, unlift(VatAccountingPeriod.unapply))
-
-  def empty: VatAccountingPeriod = VatAccountingPeriod(None, "")
-
-  // TODO remove 'default' once we have VatAccountingPeriod story is in place
-  def default: VatAccountingPeriod = VatAccountingPeriod(None, "monthly")
 }
