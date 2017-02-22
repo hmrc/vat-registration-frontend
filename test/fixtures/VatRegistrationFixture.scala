@@ -18,20 +18,18 @@ package fixtures
 
 import models.api._
 import models.view._
-import org.joda.time.format.DateTimeFormat
-import play.api.http.Status
+import play.api.http.Status._
 import uk.gov.hmrc.play.http._
 
 trait VatRegistrationFixture {
 
-  val OK = 200
   val IM_A_TEAPOT = 418
-  val badRequest = new BadRequestException(Status.BAD_REQUEST.toString)
-  val forbidden = Upstream4xxResponse(Status.FORBIDDEN.toString, Status.FORBIDDEN, Status.FORBIDDEN)
+  val badRequest = new BadRequestException(BAD_REQUEST.toString)
+  val forbidden = Upstream4xxResponse(FORBIDDEN.toString, FORBIDDEN, FORBIDDEN)
   val upstream4xx = Upstream4xxResponse(IM_A_TEAPOT.toString, IM_A_TEAPOT, IM_A_TEAPOT)
-  val upstream5xx = Upstream5xxResponse(Status.INTERNAL_SERVER_ERROR.toString, Status.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR)
-  val notFound = new NotFoundException(Status.NOT_FOUND.toString)
-  val internalServiceException = new InternalServerException(Status.BAD_GATEWAY.toString)
+  val upstream5xx = Upstream5xxResponse(INTERNAL_SERVER_ERROR.toString, INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)
+  val notFound = new NotFoundException(NOT_FOUND.toString)
+  val internalServiceException = new InternalServerException(BAD_GATEWAY.toString)
   val runTimeException = new RuntimeException("tst")
 
   val validHttpResponse = HttpResponse(OK)
