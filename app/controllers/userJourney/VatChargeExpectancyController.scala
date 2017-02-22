@@ -52,7 +52,13 @@ class VatChargeExpectancyController @Inject()(s4LService: S4LService, vatRegistr
       }, {
         data: VatChargeExpectancy => {
           s4LService.saveForm[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString, data) flatMap { _ =>
-            Future.successful(Redirect(controllers.userJourney.routes.SummaryController.show()))
+            if (VatChargeExpectancy.VAT_CHARGE_NO == data.yesNo) {
+              for {
+                _ <- s4LService.saveForm[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString, VatReturnFrequency.empty)
+              } yield Redirect(controllers.userJourney.routes.AccountingPeriodController.show())
+            } else {
+              Future.successful(Redirect(controllers.userJourney.routes.VatReturnFrequencyController.show()))
+            }
           }
         }
       })
