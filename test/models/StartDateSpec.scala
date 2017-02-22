@@ -17,11 +17,16 @@
 package models
 
 import fixtures.VatRegistrationFixture
-import models.api.VatChoice
+import models.api.{VatChoice, VatScheme}
 import models.view.StartDate
+import org.joda.time.format.DateTimeFormat
 import uk.gov.hmrc.play.test.UnitSpec
 
 class StartDateSpec extends UnitSpec with VatRegistrationFixture {
+
+  val startDateTime = DateTimeFormat.forPattern("dd/MM/yyyy").parseDateTime("01/02/2017")
+  val startDate = StartDate(StartDate.SPECIFIC_DATE, Some(1), Some(2), Some(2017))
+  val newStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(30), Some(12), Some(2001))
 
   "empty" should {
     "create an empty StartDate model" in {
@@ -31,39 +36,35 @@ class StartDateSpec extends UnitSpec with VatRegistrationFixture {
 
   "toDateTime" should {
     "convert a populated StartDate model to a DateTime" in {
-      validStartDate.toDateTime shouldBe validDateTime
+      startDate.toDateTime shouldBe startDateTime
     }
   }
 
   "toApi" should {
-    "upserts (merge) a current VatChoice API model with the details of an instance of StartDate view model" in {
-      val vatChoice = VatChoice(
-       StartDate(StartDate.SPECIFIC_DATE, Some(30), Some(12), Some(2001)).toDateTime,
-        VatChoice.NECESSITY_OBLIGATORY
-      )
-
-      validStartDate.toApi(vatChoice) shouldBe VatChoice(
-        validStartDate.toDateTime,
-        VatChoice.NECESSITY_OBLIGATORY
-      )
+    "update a VatChoice a new StartDate" in {
+      val vatChoice = VatChoice(newStartDate.toDateTime, VatChoice.NECESSITY_OBLIGATORY)
+      startDate.toApi(vatChoice) shouldBe VatChoice(startDate.toDateTime, VatChoice.NECESSITY_OBLIGATORY)
     }
   }
 
   "apply" should {
-    "convert a populated VatScheme's VatChoice API model to an instance of StartDate view model" in {
-      StartDate.apply(validVatScheme) shouldBe validStartDate
+    "extract a StartDate from a VatScheme" in {
+      val vatChoice = VatChoice(startDate.toDateTime, VatChoice.NECESSITY_VOLUNTARY)
+      val vatScheme = VatScheme(id = validRegId, vatChoice = Some(vatChoice))
+      StartDate.apply(vatScheme) shouldBe startDate
     }
   }
 
   "fromDateTime" should {
     "convert a DateTime object to a StartDate model" in {
-      val startDate = StartDate.fromDateTime(validDateTime)
-      startDate shouldBe validStartDate
+      val startDate = StartDate.fromDateTime(startDateTime)
+      startDate shouldBe startDate
     }
 
     // TODO: remove when we play the VatChoice refactoring story
     "convert a DateTime object to a StartDate model when it's a default value" in {
-      val startDate = StartDate.fromDateTime(validDefaultDateTime)
+      val defaultDateTime = DateTimeFormat.forPattern("dd/MM/yyyy").parseDateTime("31/12/1969")
+      val startDate = StartDate.fromDateTime(defaultDateTime)
       startDate shouldBe StartDate.empty
     }
   }
