@@ -23,8 +23,10 @@ import play.api.libs.json.{Json, OFormat}
 case class AccountingPeriod(accountingPeriod: String) extends ViewModelTransformer[VatFinancials] {
 
   // Upserts (selectively converts) a View model object to its API model counterpart
-  override def toApi(vatFinancials: VatFinancials): VatFinancials =
-    vatFinancials.copy(vatAccountingPeriod = VatAccountingPeriod(Some(accountingPeriod.toLowerCase), "quarterly"))
+  override def toApi(vatFinancials: VatFinancials): VatFinancials = {
+    val newAccountingPeriod = vatFinancials.vatAccountingPeriod.copy(periodStart = Some(accountingPeriod.toLowerCase))
+    vatFinancials.copy(vatAccountingPeriod = newAccountingPeriod)
+  }
 
 }
 
