@@ -106,15 +106,10 @@ class VatRegistrationService @Inject() (s4LService: S4LService, vatRegConnector:
     } yield response
   }
 
-
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
     for {
       regId <- fetchRegistrationId
       vatScheme <- vatRegConnector.getRegistration(regId)
     } yield vatScheme
-
-
-
-
 }
 
