@@ -25,7 +25,6 @@ import models.view._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
-import play.api.i18n.MessagesApi
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpReads}
@@ -36,10 +35,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
   implicit val hc = HeaderCarrier()
   val mockRegConnector = mock[VatRegistrationConnector]
-  val messagesApi = mock[MessagesApi]
 
   class Setup {
-    val service = new VatRegistrationService(mockS4LService, mockRegConnector, messagesApi) {
+    val service = new VatRegistrationService(mockS4LService, mockRegConnector) {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
