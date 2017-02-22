@@ -31,44 +31,21 @@ class VoluntaryRegistrationSpec extends UnitSpec with VatRegistrationFixture {
   }
 
   "toApi" should {
-    "upserts (merge) a current VatChoice API model with the details of an instance of VoluntaryRegistration view model" in {
-      val vatChoiceObligatory = VatChoice(
-        validStartDate.toDateTime,
-        VatChoice.NECESSITY_OBLIGATORY
-      )
+    "update a VatChoice with new VoluntaryRegistration (YES)" in {
+      val vatChoiceObligatory = VatChoice(validStartDate.toDateTime, VatChoice.NECESSITY_OBLIGATORY)
+      VoluntaryRegistration(REGISTER_YES).toApi(vatChoiceObligatory) shouldBe VatChoice(validStartDate.toDateTime, VatChoice.NECESSITY_VOLUNTARY)
+    }
 
-      VoluntaryRegistration(REGISTER_YES).toApi(vatChoiceObligatory) shouldBe VatChoice(
-        validStartDate.toDateTime,
-        VatChoice.NECESSITY_VOLUNTARY
-      )
-
-      val vatChoiceVoluntary = VatChoice(
-        validStartDate.toDateTime,
-        VatChoice.NECESSITY_VOLUNTARY
-      )
-
-      VoluntaryRegistration(REGISTER_NO).toApi(vatChoiceVoluntary) shouldBe VatChoice(
-        validStartDate.toDateTime,
-        VatChoice.NECESSITY_OBLIGATORY
-      )
+    "update a VatChoice with new VoluntaryRegistration (NO)" in {
+      val vatChoiceVoluntary = VatChoice(validStartDate.toDateTime, VatChoice.NECESSITY_VOLUNTARY)
+      VoluntaryRegistration(REGISTER_NO).toApi(vatChoiceVoluntary) shouldBe VatChoice(validStartDate.toDateTime, VatChoice.NECESSITY_OBLIGATORY)
     }
   }
 
   "apply" should {
-
-    val vatChoiceVoluntary = VatChoice(
-      validStartDate.toDateTime,
-      VatChoice.NECESSITY_VOLUNTARY
-    )
-
-    val vatChoiceObligatory = VatChoice(
-      validStartDate.toDateTime,
-      VatChoice.NECESSITY_OBLIGATORY
-    )
-
-    val vatScheme = VatScheme(
-      validRegId, None, None, None
-    )
+    val vatChoiceVoluntary = VatChoice(validStartDate.toDateTime, VatChoice.NECESSITY_VOLUNTARY)
+    val vatChoiceObligatory = VatChoice(validStartDate.toDateTime, VatChoice.NECESSITY_OBLIGATORY)
+    val vatScheme = VatScheme(validRegId)
 
     "convert voluntary vatChoice to view model" in {
       val vs = vatScheme.copy(vatChoice = Some(vatChoiceVoluntary))
