@@ -16,19 +16,17 @@
 
 package models.api
 
-import org.joda.time.DateTime
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatAccountingPeriod(periodStart: Option[DateTime], frequency: String)
+case class VatAccountingPeriod(periodStart: Option[String], frequency: String)
 
 
 object VatAccountingPeriod {
 
   implicit val format = (
-    (__ \ "periodStart").formatNullable[DateTime] and
+    (__ \ "periodStart").formatNullable[String] and
       (__ \ "frequency").format[String]) (VatAccountingPeriod.apply, unlift(VatAccountingPeriod.unapply))
-
 
   def empty: VatAccountingPeriod = VatAccountingPeriod(None, "")
 
