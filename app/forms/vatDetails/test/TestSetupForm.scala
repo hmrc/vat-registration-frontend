@@ -34,7 +34,10 @@ object TestSetupForm {
       "tradingName" -> text,
       "estimateVatTurnover" -> text,
       "zeroRatedSalesChoice" -> text,
-      "zeroRatedSalesEstimate" -> text
+      "zeroRatedSalesEstimate" -> text,
+      "vatChargeExpectancyChoice" -> text,
+      "vatReturnFrequency" -> text,
+      "accountingPeriod" -> text
     )(TestSetup.apply)(TestSetup.unapply)
   )
 
