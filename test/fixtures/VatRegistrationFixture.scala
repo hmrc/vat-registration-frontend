@@ -51,6 +51,9 @@ trait VatRegistrationFixture {
   private val estimatedSales = 60000L
   val validEstimateVatTurnover = EstimateVatTurnover(Some(turnoverEstimate))
   val validEstimateZeroRatedSales = EstimateZeroRatedSales(Some(estimatedSales))
+  val validVatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
+  val validVatReturnFrequency = VatReturnFrequency(VatReturnFrequency.QUARTERLY)
+  val validAccountingPeriod = AccountingPeriod(Some(AccountingPeriod.MAR_JUN_SEP_DEC))
 
 
   private val sortCode = "10-10-10"

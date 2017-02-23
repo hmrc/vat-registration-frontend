@@ -20,11 +20,15 @@ import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
-case class AccountingPeriod(accountingPeriod: String) extends ViewModelTransformer[VatFinancials] {
+case class AccountingPeriod(accountingPeriod: Option[String]) extends ViewModelTransformer[VatFinancials] {
 
   // Upserts (selectively converts) a View model object to its API model counterpart
   override def toApi(vatFinancials: VatFinancials): VatFinancials = {
-    val newAccountingPeriod = vatFinancials.vatAccountingPeriod.copy(periodStart = Some(accountingPeriod.toLowerCase))
+    val newAccountingPeriod = vatFinancials.vatAccountingPeriod.copy(periodStart = accountingPeriod match {
+      case Some(x) => Some(x.toLowerCase())
+      case _ => None
+    })
+
     vatFinancials.copy(vatAccountingPeriod = newAccountingPeriod)
   }
 
@@ -42,13 +46,13 @@ object AccountingPeriod extends ApiModelTransformer[AccountingPeriod] {
   override def apply(vatScheme: VatScheme): AccountingPeriod = {
     vatScheme.financials match {
       case Some(financials) => financials.vatAccountingPeriod.periodStart match {
-        case Some(period) => AccountingPeriod(period.toUpperCase)
+        case Some(period) => AccountingPeriod(Some(period.toUpperCase))
         case _ => AccountingPeriod.empty
       }
       case _ => AccountingPeriod.empty
     }
   }
 
-  def empty: AccountingPeriod = AccountingPeriod("")
+  def empty: AccountingPeriod = AccountingPeriod(None)
 
 }

@@ -80,11 +80,20 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
       regId <- fetchRegistrationId
       vatScheme <- vatRegConnector.getRegistration(regId)
       vatFinancials = vatScheme.financials.getOrElse(VatFinancials.empty)
+
       estimateVatTurnover <- s4LService.fetchAndGet[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString)
       zeroRatedSalesEstimate <- s4LService.fetchAndGet[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString)
+      vatChargeExpectancy <- s4LService.fetchAndGet[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString)
+      vatReturnFrequency <- s4LService.fetchAndGet[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString)
+      accountingPeriod <- s4LService.fetchAndGet[AccountingPeriod](CacheKeys.AccountingPeriod.toString)
+
       estimateVatTurnoverVf = estimateVatTurnover.getOrElse(EstimateVatTurnover(vatScheme)).toApi(vatFinancials)
       zeroRatedSalesEstimateVf = zeroRatedSalesEstimate.getOrElse(EstimateZeroRatedSales(vatScheme)).toApi(estimateVatTurnoverVf)
-      response <- vatRegConnector.upsertVatFinancials(regId, zeroRatedSalesEstimateVf)
+      vatChargeExpectancyVf = vatChargeExpectancy.getOrElse(VatChargeExpectancy(vatScheme)).toApi(zeroRatedSalesEstimateVf)
+      vatReturnFrequencyVf = vatReturnFrequency.getOrElse(VatReturnFrequency(vatScheme)).toApi(vatChargeExpectancyVf)
+      accountingPeriodVf = accountingPeriod.getOrElse(AccountingPeriod(vatScheme)).toApi(vatReturnFrequencyVf)
+
+      response <- vatRegConnector.upsertVatFinancials(regId, accountingPeriodVf)
     } yield response
   }
 
