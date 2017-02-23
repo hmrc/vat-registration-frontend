@@ -59,7 +59,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
         if(estimateZeroRatedSales.isDefined) estimateZeroRatedSales.get.zeroRatedSalesEstimate.getOrElse("").toString else "",
         if(vatChargeExpectancy.isDefined) vatChargeExpectancy.get.yesNo else "",
         if(vatReturnFrequency.isDefined) vatReturnFrequency.get.frequencyType else "",
-        if(accountingPeriod.isDefined)  accountingPeriod.get.accountingPeriod else ""
+        if(accountingPeriod.isDefined)  accountingPeriod.get.accountingPeriod.getOrElse("") else ""
     )
       form = TestSetupForm.form.fill(testSetup)
     } yield Ok(views.html.pages.test_setup(form))
@@ -133,7 +133,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- s4LService.saveForm[AccountingPeriod](CacheKeys.AccountingPeriod.toString, data.accountingPeriod
             match {
               case "" => AccountingPeriod.empty
-              case _ => AccountingPeriod(data.accountingPeriod)
+              case _ => AccountingPeriod(Some(data.accountingPeriod))
             })
 
           } yield Ok("Test setup complete")
