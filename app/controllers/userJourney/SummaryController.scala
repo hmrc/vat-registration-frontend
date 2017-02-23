@@ -43,7 +43,7 @@ class SummaryController @Inject()(s4LService: S4LService, vatRegistrationService
 
   // Summary page methods
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
-    vatRegistrationService.getVatScheme().map(registrationToSummary(_))
+    vatRegistrationService.getVatScheme().map(registrationToSummary)
 
   def registrationToSummary(vatScheme: VatScheme): Summary = Summary(
     Seq(
