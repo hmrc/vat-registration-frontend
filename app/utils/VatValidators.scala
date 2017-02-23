@@ -16,8 +16,8 @@
 
 package utils
 
-import forms.vatDetails.{EstimateVatTurnoverForm, EstimateZeroRatedSalesForm, TradingNameForm}
-import models.view.{EstimateVatTurnover, EstimateZeroRatedSales, TradingName}
+import forms.vatDetails.{AccountingPeriodForm, EstimateVatTurnoverForm, EstimateZeroRatedSalesForm, TradingNameForm}
+import models.view.{AccountingPeriod, EstimateVatTurnover, EstimateZeroRatedSales, TradingName}
 import play.api.data.validation.{ValidationError, _}
 
 object VatValidators {
@@ -32,6 +32,7 @@ object VatValidators {
   val TURNOVER_ESTIMATE_LOW_MSG_KEY = "pages.estimate.vat.turnover.validation.low"
   val TURNOVER_ESTIMATE_HIGH_MSG_KEY = "pages.estimate.vat.turnover.validation.high"
   val TURNOVER_ESTIMATE_EMPTY_MSG_KEY = "pages.estimate.vat.turnover.validation.empty"
+  val EMPTY_ACCOUNTING_PERIOD_MSG_KEY = "error.required"
 
   val ZERO_RATED_SALES_ESTIMATE_LOW_MSG_KEY = "pages.estimate.zero.rated.sales.validation.low"
   val ZERO_RATED_SALES_ESTIMATE_HIGH_MSG_KEY = "pages.estimate.zero.rated.sales.validation.high"
@@ -72,6 +73,16 @@ object VatValidators {
         => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_LOW_MSG_KEY, EstimateZeroRatedSalesForm.INPUT_ESTIMATE))
         case _ if text.zeroRatedSalesEstimate.get > MAX_TURNOVER_ESTIMATE
         => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_HIGH_MSG_KEY, EstimateZeroRatedSalesForm.INPUT_ESTIMATE))
+        case _ => Nil
+      }
+      if (errors.isEmpty) Valid else Invalid(errors)
+  })
+
+  def accountingPeriodValidation : Constraint[AccountingPeriod] = Constraint("constraint.accountingPeriod")({
+    text =>
+      val errors = text match {
+        case _ if !text.accountingPeriod.getOrElse("").matches(NON_EMPTY_REGEX)
+        => Seq(ValidationError(EMPTY_ACCOUNTING_PERIOD_MSG_KEY, AccountingPeriodForm.RADIO_ACCOUNTING_PERIOD))
         case _ => Nil
       }
       if (errors.isEmpty) Valid else Invalid(errors)

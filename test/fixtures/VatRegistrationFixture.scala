@@ -51,6 +51,9 @@ trait VatRegistrationFixture {
   private val estimatedSales = 60000L
   val validEstimateVatTurnover = EstimateVatTurnover(Some(turnoverEstimate))
   val validEstimateZeroRatedSales = EstimateZeroRatedSales(Some(estimatedSales))
+  val validVatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
+  val validVatReturnFrequency = VatReturnFrequency(VatReturnFrequency.QUARTERLY)
+  val validAccountingPeriod = AccountingPeriod(Some(AccountingPeriod.MAR_JUN_SEP_DEC))
 
 
   private val sortCode = "10-10-10"
@@ -83,47 +86,47 @@ trait VatRegistrationFixture {
   private def getVatDetailsSection: SummarySection = SummarySection(
     id = "vatDetails",
     Seq(
-      SummaryRow(
+      (SummaryRow(
         id = "vatDetails.taxableTurnover",
         answer = Right("No"),
         changeLink = Some(controllers.userJourney.routes.TaxableTurnoverController.show())
-      ),
-      SummaryRow(
+      ), true),
+      (SummaryRow(
         id = "vatDetails.necessity",
         answer = Right("Yes"),
         changeLink = Some(controllers.userJourney.routes.VoluntaryRegistrationController.show())
-      ),
-      SummaryRow(
+      ), true),
+      (SummaryRow(
         id = "vatDetails.startDate",
         answer = Right("1 February 2017"),
         changeLink = Some(controllers.userJourney.routes.StartDateController.show())
-      )
+      ), true)
     )
   )
 
   private def getCompanyDetailsSection: SummarySection = SummarySection(
     id = "companyDetails",
     Seq(
-      SummaryRow(
+      (SummaryRow(
         "companyDetails.tradingName",
         Right(tradingName),
         Some(controllers.userJourney.routes.TradingNameController.show())
-      ),
-      SummaryRow(
+      ), true),
+      (SummaryRow(
         "companyDetails.estimatedSalesValue",
         Right("£10000000000"),
         Some(controllers.userJourney.routes.EstimateVatTurnoverController.show())
-      ),
-      SummaryRow(
+      ), true),
+      (SummaryRow(
         "companyDetails.zeroRatedSales",
         Right("Yes"),
         Some(controllers.userJourney.routes.ZeroRatedSalesController.show())
-      ),
-      SummaryRow(
+      ), true),
+      (SummaryRow(
         "companyDetails.zeroRatedSalesValue",
         Right("£10000000000"),
         Some(controllers.userJourney.routes.EstimateZeroRatedSalesController.show())
-      )
+      ), true)
     )
   )
 }
