@@ -67,7 +67,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] = {
     val tradingDetails = submitTradingDetails()
     val vatChoice = submitVatChoice()
-    val financials = submitFinancials()
+    val financials = submitVatFinancials()
     for {
       _ <- tradingDetails
       _ <- vatChoice
@@ -75,7 +75,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
     } yield DownstreamOutcome.Success
   }
 
-  def submitFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
+  def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
     for {
       regId <- fetchRegistrationId
       vatScheme <- vatRegConnector.getRegistration(regId)
