@@ -152,7 +152,7 @@ pages.accounting.period.para1                               = You usually submit
 pages.accounting.period.radio.january                       = January, April, July and October
 pages.accounting.period.radio.february                      = February, May, August and November
 pages.accounting.period.radio.march                         = March, June, September and December
-#
+
 ## Summary Page
 pages.summary.title                                         = Summary
 pages.summary.heading                                       = Check your answers
@@ -196,17 +196,23 @@ pages.summary.directorDetails.dateOfBirth              = Date of birth
 pages.summary.directorDetails.nino                     = National Insurance number
 
 ## Summary Page Company details
-pages.summary.companyDetails.sectionHeading            = Company details
-pages.summary.companyDetails.tradingName               = Other Trading Name
-pages.summary.companyDetails.businessDescription       = Business description
-pages.summary.companyDetails.mainActivity              = Main activity
-pages.summary.companyDetails.estimatedSalesValue       = Estimated sales value
-pages.summary.companyDetails.zeroRatedSales            = Zero rated sales
-pages.summary.companyDetails.zeroRatedSalesValue       = Estimated value of zero rated sales
-pages.summary.companyDetails.reclaimMoreVat            = Reclaim more VAT than you charge
-pages.summary.companyDetails.accountingPeriod          = Accounting period
-pages.summary.companyDetails.eori                      = Economic Operator Registration and Identification number
-pages.summary.companyDetails.flatRateScheme            = Flat rate scheme
+pages.summary.companyDetails.sectionHeading                     = Company details
+pages.summary.companyDetails.tradingName                        = Other Trading Name
+pages.summary.companyDetails.businessDescription                = Business description
+pages.summary.companyDetails.mainActivity                       = Main activity
+pages.summary.companyDetails.estimatedSalesValue                = Estimated sales value
+pages.summary.companyDetails.zeroRatedSales                     = Zero rated sales
+pages.summary.companyDetails.zeroRatedSalesValue                = Estimated value of zero rated sales
+pages.summary.companyDetails.reclaimMoreVat                     = Reclaim more VAT than you charge
+pages.summary.companyDetails.reclaimMoreVat.yes                 = Yes, I expect to reclaim more VAT than I charge
+pages.summary.companyDetails.reclaimMoreVat.no                  = No, I expect to charge more VAT than I reclaim
+pages.summary.companyDetails.accountingPeriod                   = Accounting period
+pages.summary.companyDetails.accountingPeriod.monthly           = Once a month
+pages.summary.companyDetails.accountingPeriod.jan               = January, April, July and October
+pages.summary.companyDetails.accountingPeriod.feb               = February, May, August and November
+pages.summary.companyDetails.accountingPeriod.mar               = March, June, September and December
+pages.summary.companyDetails.eori                               = Economic Operator Registration and Identification number
+pages.summary.companyDetails.flatRateScheme                     = Flat rate scheme
 
 ## Error Pages
 errorPages.title                        = Something went wrong

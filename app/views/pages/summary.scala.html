@@ -12,8 +12,10 @@
         <section>
             <h2 class="heading-medium">@Messages(s"pages.summary.${section.id}.sectionHeading")</h2>
             <table class="check-your-answers form-group">
-            @for(row <- section.rows) {
-                @summaryRow(row)
+            @for((row, pred) <- section.rows) {
+                @if(pred) {
+                    @summaryRow(row)
+                }
             }
             </table>
         </section>

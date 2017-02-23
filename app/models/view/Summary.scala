@@ -22,7 +22,7 @@ case class Summary(sections: Seq[SummarySection])
 
 case class SummarySection(
                            id: String,
-                           rows: Seq[SummaryRow]
+                           rows: Seq[Tuple2[SummaryRow, Boolean]]
                          )
 
 case class SummaryRow(

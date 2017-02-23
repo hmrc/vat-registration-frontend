@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import models.api.{VatChoice, VatFinancials, VatScheme, VatTradingDetails}
-import models.view.{Summary, SummaryRow, SummarySection}
+import models.view._
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -43,7 +43,7 @@ class SummaryController @Inject()(s4LService: S4LService, vatRegistrationService
 
   // Summary page methods
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
-    vatRegistrationService.getVatScheme().map(registrationToSummary(_))
+    vatRegistrationService.getVatScheme().map(registrationToSummary)
 
   def registrationToSummary(vatScheme: VatScheme): Summary = Summary(
     Seq(
@@ -94,24 +94,14 @@ class SummaryController @Inject()(s4LService: S4LService, vatRegistrationService
       }
     )
 
-    if(vatChoice.necessity == VatChoice.NECESSITY_VOLUNTARY) {
-      SummarySection(
-        id = "vatDetails",
-        Seq(
-          getTaxableTurnover,
-          getNecessity,
-          getStartDate
-        )
+    SummarySection(
+      id = "vatDetails",
+      Seq(
+        (getTaxableTurnover, true),
+        (getNecessity, (vatChoice.necessity == VatChoice.NECESSITY_VOLUNTARY)),
+        (getStartDate, true)
       )
-    } else {
-      SummarySection(
-        id = "vatDetails",
-        Seq(
-          getTaxableTurnover,
-          getStartDate
-        )
-      )
-    }
+    )
 
   }
 
@@ -143,32 +133,41 @@ class SummaryController @Inject()(s4LService: S4LService, vatRegistrationService
 
     def getEstimatedZeroRatedSales: SummaryRow = SummaryRow(
       "companyDetails.zeroRatedSalesValue",
-      Right(s"£${vatFinancials.zeroRatedSalesEstimate.get.toString}"),
+      Right(s"£${vatFinancials.zeroRatedSalesEstimate.getOrElse("").toString}"),
       Some(controllers.userJourney.routes.EstimateZeroRatedSalesController.show())
     )
 
+    def getVatChargeExpectancy: SummaryRow = SummaryRow(
+      "companyDetails.reclaimMoreVat",
+      vatFinancials.reclaimVatOnMostReturns match {
+        case true => Right(messagesApi("pages.summary.companyDetails.reclaimMoreVat.yes"))
+        case false => Right(messagesApi("pages.summary.companyDetails.reclaimMoreVat.no"))
+      },
+      Some(controllers.userJourney.routes.VatChargeExpectancyController.show())
+    )
 
+    def getAccountingPeriod: SummaryRow = SummaryRow(
+      "companyDetails.accountingPeriod",
+      vatFinancials.vatAccountingPeriod.frequency match {
+        case VatReturnFrequency.MONTHLY => Right(messagesApi("pages.summary.companyDetails.accountingPeriod.monthly"))
+        case VatReturnFrequency.QUARTERLY => vatFinancials.vatAccountingPeriod.periodStart match {
+          case Some(period) => Right(messagesApi(s"pages.summary.companyDetails.accountingPeriod.${period.substring(0, 3)}"))
+        }
+      },
+      Some(controllers.userJourney.routes.AccountingPeriodController.show())
+    )
 
-    if(vatFinancials.zeroRatedSalesEstimate.isEmpty) {
-      SummarySection(
-        id = "companyDetails",
-        Seq(
-          getTradingName,
-          getEstimatedSalesValue,
-          getZeroRatedSales
-        )
+    SummarySection(
+      id = "companyDetails",
+      Seq(
+        (getTradingName, true),
+        (getEstimatedSalesValue, true),
+        (getZeroRatedSales, true),
+        (getEstimatedZeroRatedSales, vatFinancials.zeroRatedSalesEstimate.isDefined),
+        (getVatChargeExpectancy, true),
+        (getAccountingPeriod, true)
       )
-    } else {
-      SummarySection(
-        id = "companyDetails",
-        Seq(
-          getTradingName,
-          getEstimatedSalesValue,
-          getZeroRatedSales,
-          getEstimatedZeroRatedSales
-        )
-      )
-    }
+    )
 
   }
 
