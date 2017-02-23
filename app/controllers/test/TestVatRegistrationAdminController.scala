@@ -15,13 +15,15 @@
  */
 
 package controllers.test
+
 import javax.inject.Inject
 
 import connectors.test.TestRegistrationConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
 
-class TestVatRegistrationAdminController @Inject()(vatRegConnector: TestRegistrationConnector, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class TestVatRegistrationAdminController @Inject()(vatRegConnector: TestRegistrationConnector, ds: CommonPlayDependencies)
+  extends VatRegistrationController(ds) {
 
   def dropCollection(): Action[AnyContent] =
     authorised.async { implicit user => implicit request => vatRegConnector.dropCollection() }
