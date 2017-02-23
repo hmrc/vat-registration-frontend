@@ -42,7 +42,7 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
   }
 
   def dropCollection()(implicit hc: HeaderCarrier): Future[Result] = {
-    http.GET(s"$vatRegUrl/vatreg/test-only/clear").map { _ => Results.Ok }
+    http.POSTEmpty(s"$vatRegUrl/vatreg/test-only/clear").map { _ => Results.Ok }
   }
 
   //$COVERAGE-ON$
