@@ -134,9 +134,11 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     "redirect to the welcome page" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration.empty)))
 
-      when(mockS4LService.saveForm[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4LService.clear()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validHttpResponse))
+      when(mockS4LService.saveForm[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString),
+        Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
-      when(mockVatRegistrationService.deleteVatScheme())
+      when(mockVatRegistrationService.deleteVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(true))
 
       AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
