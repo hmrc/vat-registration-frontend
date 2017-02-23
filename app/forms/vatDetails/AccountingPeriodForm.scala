@@ -19,14 +19,15 @@ package forms.vatDetails
 import models.view.AccountingPeriod
 import play.api.data.Form
 import play.api.data.Forms._
+import utils.VatValidators._
 
 object AccountingPeriodForm {
   val RADIO_ACCOUNTING_PERIOD: String = "accountingPeriodRadio"
 
   val form = Form(
     mapping(
-      RADIO_ACCOUNTING_PERIOD -> nonEmptyText
-    )(AccountingPeriod.apply)(AccountingPeriod.unapply)
+      RADIO_ACCOUNTING_PERIOD -> optional(text)
+    )(AccountingPeriod.apply)(AccountingPeriod.unapply).verifying(accountingPeriodValidation)
   )
 
 }

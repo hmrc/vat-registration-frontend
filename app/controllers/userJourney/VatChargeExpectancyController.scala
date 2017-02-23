@@ -54,7 +54,7 @@ class VatChargeExpectancyController @Inject()(s4LService: S4LService, vatRegistr
           s4LService.saveForm[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString, data) flatMap { _ =>
             if (VatChargeExpectancy.VAT_CHARGE_NO == data.yesNo) {
               for {
-                _ <- s4LService.saveForm[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString, VatReturnFrequency.empty)
+                _ <- s4LService.saveForm[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString, VatReturnFrequency(VatReturnFrequency.QUARTERLY))
               } yield Redirect(controllers.userJourney.routes.AccountingPeriodController.show())
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.VatReturnFrequencyController.show()))

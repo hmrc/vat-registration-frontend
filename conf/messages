@@ -152,7 +152,7 @@ pages.accounting.period.para1                               = You usually submit
 pages.accounting.period.radio.january                       = January, April, July and October
 pages.accounting.period.radio.february                      = February, May, August and November
 pages.accounting.period.radio.march                         = March, June, September and December
-#
+
 ## Summary Page
 pages.summary.title                                         = Summary
 pages.summary.heading                                       = Check your answers

@@ -49,7 +49,7 @@ class AccountingPeriodSpec extends UnitSpec with VatRegistrationFixture {
   val vatScheme = VatScheme(validRegId)
 
   "toApi" should {
-    val accountingPeriod = AccountingPeriod(AccountingPeriod.JAN_APR_JUL_OCT)
+    val accountingPeriod = AccountingPeriod(Some(AccountingPeriod.JAN_APR_JUL_OCT))
 
     val vatFinancials = VatFinancials(
       turnoverEstimate = turnover,
@@ -70,7 +70,7 @@ class AccountingPeriodSpec extends UnitSpec with VatRegistrationFixture {
 
   "empty" should {
     "create an empty AccountingPeriod model" in {
-      AccountingPeriod.empty shouldBe AccountingPeriod("")
+      AccountingPeriod.empty shouldBe AccountingPeriod(None)
     }
   }
 
@@ -78,17 +78,17 @@ class AccountingPeriodSpec extends UnitSpec with VatRegistrationFixture {
 
     "convert VatFinancials with accounting period jan_apr_jul_oct to view model" in {
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithAccountingPeriod1))
-      AccountingPeriod.apply(vs) shouldBe AccountingPeriod(AccountingPeriod.JAN_APR_JUL_OCT)
+      AccountingPeriod.apply(vs) shouldBe AccountingPeriod(Some(AccountingPeriod.JAN_APR_JUL_OCT))
     }
 
     "convert VatFinancials with accounting period feb_may_aug_nov to view model" in {
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithAccountingPeriod2))
-      AccountingPeriod.apply(vs) shouldBe AccountingPeriod(AccountingPeriod.FEB_MAY_AUG_NOV)
+      AccountingPeriod.apply(vs) shouldBe AccountingPeriod(Some(AccountingPeriod.FEB_MAY_AUG_NOV))
     }
 
     "convert VatFinancials with accounting period mar_jun_sep_dec to view model" in {
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithAccountingPeriod3))
-      AccountingPeriod.apply(vs) shouldBe AccountingPeriod(AccountingPeriod.MAR_JUN_SEP_DEC)
+      AccountingPeriod.apply(vs) shouldBe AccountingPeriod(Some(AccountingPeriod.MAR_JUN_SEP_DEC))
     }
 
     "convert VatScheme without VatFinancials to empty view model" in {
