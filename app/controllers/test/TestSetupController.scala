@@ -42,6 +42,9 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       estimateVatTurnover <- s4LService.fetchAndGet[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString)
       zeroRatedSales <- s4LService.fetchAndGet[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString)
       estimateZeroRatedSales <- s4LService.fetchAndGet[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString)
+      vatChargeExpectancy <- s4LService.fetchAndGet[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString)
+      vatReturnFrequency <- s4LService.fetchAndGet[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString)
+      accountingPeriod <- s4LService.fetchAndGet[AccountingPeriod](CacheKeys.AccountingPeriod.toString)
 
       testSetup = TestSetup(if(taxableTurnover.isDefined) taxableTurnover.get.yesNo else "",
         if(voluntaryRegistration.isDefined) voluntaryRegistration.get.yesNo else "",
@@ -53,8 +56,11 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
         if(tradingName.isDefined) tradingName.get.tradingName.getOrElse("") else "",
         if(estimateVatTurnover.isDefined) estimateVatTurnover.get.vatTurnoverEstimate.getOrElse("").toString else "",
         if(zeroRatedSales.isDefined) zeroRatedSales.get.yesNo else "",
-        if(estimateZeroRatedSales.isDefined) estimateZeroRatedSales.get.zeroRatedSalesEstimate.getOrElse("").toString else "")
-
+        if(estimateZeroRatedSales.isDefined) estimateZeroRatedSales.get.zeroRatedSalesEstimate.getOrElse("").toString else "",
+        if(vatChargeExpectancy.isDefined) vatChargeExpectancy.get.yesNo else "",
+        if(vatReturnFrequency.isDefined) vatReturnFrequency.get.frequencyType else "",
+        if(accountingPeriod.isDefined)  accountingPeriod.get.accountingPeriod else ""
+    )
       form = TestSetupForm.form.fill(testSetup)
     } yield Ok(views.html.pages.test_setup(form))
   })
@@ -111,6 +117,25 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
               case "" => EstimateZeroRatedSales.empty
               case _ => EstimateZeroRatedSales(Some(data.zeroRatedSalesEstimate.toLong))
             })
+
+            _ <- s4LService.saveForm[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString, data.vatChargeExpectancyChoice
+            match {
+              case "" => VatChargeExpectancy.empty
+              case _ => VatChargeExpectancy(data.vatChargeExpectancyChoice)
+            })
+
+            _ <- s4LService.saveForm[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString, data.vatReturnFrequency
+            match {
+              case "" => VatReturnFrequency.empty
+              case _ => VatReturnFrequency(data.vatReturnFrequency)
+            })
+
+            _ <- s4LService.saveForm[AccountingPeriod](CacheKeys.AccountingPeriod.toString, data.accountingPeriod
+            match {
+              case "" => AccountingPeriod.empty
+              case _ => AccountingPeriod(data.accountingPeriod)
+            })
+
           } yield Ok("Test setup complete")
         }
       })
