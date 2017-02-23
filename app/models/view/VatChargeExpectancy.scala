@@ -24,10 +24,14 @@ case class VatChargeExpectancy(yesNo: String) extends ViewModelTransformer[VatFi
 
   // Upserts (selectively converts) a View model object to its API model counterpart
   override def toApi(vatFinancials: VatFinancials): VatFinancials =
-    vatFinancials.copy(reclaimVatOnMostReturns = yesNo match {
+    vatFinancials.copy(reclaimVatOnMostReturns = toBoolean)
+
+  def toBoolean: Boolean = {
+    yesNo match {
       case VatChargeExpectancy.VAT_CHARGE_YES => true
       case VatChargeExpectancy.VAT_CHARGE_NO => false
-    })
+    }
+  }
 
 }
 

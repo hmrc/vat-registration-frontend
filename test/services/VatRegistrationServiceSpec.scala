@@ -84,6 +84,18 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       (Matchers.any[HeaderCarrier](), Matchers.any[Format[EstimateZeroRatedSales]]()))
         .thenReturn(Future.successful(Some(validEstimateZeroRatedSales)))
 
+      when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.VatChargeExpectancy.toString))
+      (Matchers.any[HeaderCarrier](), Matchers.any[Format[VatChargeExpectancy]]()))
+        .thenReturn(Future.successful(Some(validVatChargeExpectancy)))
+
+      when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.VatReturnFrequency.toString))
+      (Matchers.any[HeaderCarrier](), Matchers.any[Format[VatReturnFrequency]]()))
+        .thenReturn(Future.successful(Some(validVatReturnFrequency)))
+
+      when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.AccountingPeriod.toString))
+      (Matchers.any[HeaderCarrier](), Matchers.any[Format[AccountingPeriod]]()))
+        .thenReturn(Future.successful(Some(validAccountingPeriod)))
+
       when(mockRegConnector.upsertVatFinancials(Matchers.any(), Matchers.any())
       (Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(validVatFinancials))
