@@ -52,13 +52,14 @@ import scala.concurrent.{Await, Future}
       }, {
 
         data: VoluntaryRegistration => {
-          s4LService.saveForm[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString, data) map { _ =>
+          s4LService.saveForm[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString, data) flatMap { _ =>
               if (VoluntaryRegistration.REGISTER_YES == data.yesNo) {
-                Redirect(controllers.userJourney.routes.StartDateController.show())
+                Future.successful(Redirect(controllers.userJourney.routes.StartDateController.show()))
               } else {
-                s4LService.clear()
-                vatRegistrationService.deleteVatScheme()
-                Redirect(controllers.userJourney.routes.WelcomeController.show())
+                for {
+                  _ <- s4LService.clear()
+                  _ <- vatRegistrationService.deleteVatScheme()
+                } yield Redirect (controllers.userJourney.routes.WelcomeController.show())
               }
           }
         }
