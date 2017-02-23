@@ -50,12 +50,11 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
 
   override val keystoreConnector: KeystoreConnector = KeystoreConnector
 
-  override def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Boolean] = {
-    for {
-      regId <- fetchRegistrationId
-      response <- vatRegConnector.deleteVatScheme(regId)
-    } yield response
-  }
+  def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
+    fetchRegistrationId.flatMap(vatRegConnector.getRegistration)
+
+  def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Boolean] =
+    fetchRegistrationId.flatMap(vatRegConnector.deleteVatScheme)
 
   def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] = {
     for {
@@ -77,8 +76,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
     for {
-      regId <- fetchRegistrationId
-      vatScheme <- vatRegConnector.getRegistration(regId)
+      vatScheme <- getVatScheme()
       vatFinancials = vatScheme.financials.getOrElse(VatFinancials.empty)
 
       estimateVatTurnover <- s4LService.fetchAndGet[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString)
@@ -92,39 +90,30 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
       vatChargeExpectancyVf = vatChargeExpectancy.getOrElse(VatChargeExpectancy(vatScheme)).toApi(zeroRatedSalesEstimateVf)
       vatReturnFrequencyVf = vatReturnFrequency.getOrElse(VatReturnFrequency(vatScheme)).toApi(vatChargeExpectancyVf)
       accountingPeriodVf = accountingPeriod.getOrElse(AccountingPeriod(vatScheme)).toApi(vatReturnFrequencyVf)
-
-      response <- vatRegConnector.upsertVatFinancials(regId, accountingPeriodVf)
+      response <- vatRegConnector.upsertVatFinancials(vatScheme.id, zeroRatedSalesEstimateVf)
     } yield response
   }
 
   def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
     for {
-      regId <- fetchRegistrationId
-      vatScheme <- vatRegConnector.getRegistration(regId)
+      vatScheme <- getVatScheme()
       vatTradingDetails = vatScheme.tradingDetails.getOrElse(VatTradingDetails.empty)
       tradingName <- s4LService.fetchAndGet[TradingName](CacheKeys.TradingName.toString)
       tradingDetails = tradingName.getOrElse(TradingName(vatScheme)).toApi(vatTradingDetails)
-      response <- vatRegConnector.upsertVatTradingDetails(regId, tradingDetails)
+      response <- vatRegConnector.upsertVatTradingDetails(vatScheme.id, tradingDetails)
     } yield response
   }
 
   def submitVatChoice()(implicit hc: HeaderCarrier): Future[VatChoice] = {
     for {
-      regId <- fetchRegistrationId
-      vatScheme <- vatRegConnector.getRegistration(regId)
+      vatScheme <- getVatScheme()
       vatChoice = vatScheme.vatChoice.getOrElse(VatChoice.empty)
       startDate <- s4LService.fetchAndGet[StartDate](CacheKeys.StartDate.toString)
       voluntaryRegistration <- s4LService.fetchAndGet[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString)
       sdVatChoice = startDate.getOrElse(StartDate(vatScheme)).toApi(vatChoice)
       vrVatChoice = voluntaryRegistration.getOrElse(VoluntaryRegistration(vatScheme)).toApi(sdVatChoice)
-      response <- vatRegConnector.upsertVatChoice(regId, vrVatChoice)
+      response <- vatRegConnector.upsertVatChoice(vatScheme.id, vrVatChoice)
     } yield response
   }
-
-  def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
-    for {
-      regId <- fetchRegistrationId
-      vatScheme <- vatRegConnector.getRegistration(regId)
-    } yield vatScheme
 
 }
