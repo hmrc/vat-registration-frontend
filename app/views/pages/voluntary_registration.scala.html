@@ -15,6 +15,12 @@
       )
 
       <p>@Html(Messages("pages.voluntary.registration.para1"))</p>
+      <p>@Html(Messages("pages.voluntary.registration.para2"))</p>
+
+      <ul class="list list-bullet">
+          <li>@messages("pages.voluntary.registration.bullet1")</li>
+          <li>@messages("pages.voluntary.registration.bullet2")</li>
+      </ul>
 
       @govHelpers.form(action = controllers.userJourney.routes.VoluntaryRegistrationController.submit()) {
       <div class="form-group">
