@@ -48,6 +48,11 @@ class StartDateSpec extends UnitSpec with VatRegistrationFixture {
       val vatScheme = VatScheme(id = validRegId, vatChoice = Some(vatChoice))
       ApiModelTransformer[StartDate].toViewModel(vatScheme) shouldBe startDate
     }
+
+    "extract a default StartDate from a VatScheme that has no VatChoice " in {
+      val vatScheme = VatScheme(id = validRegId, vatChoice = None)
+      ApiModelTransformer[StartDate].toViewModel(vatScheme) shouldBe StartDate()
+    }
   }
 
   "fromDateTime" should {
