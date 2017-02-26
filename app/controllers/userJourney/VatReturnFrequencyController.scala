@@ -21,7 +21,8 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
 import forms.vatDetails.VatReturnFrequencyForm
-import models.view.{AccountingPeriod, VatChargeExpectancy, VatReturnFrequency}
+import models.ApiModelTransformer
+import models.view.{AccountingPeriod, VatReturnFrequency}
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
@@ -34,10 +35,7 @@ class VatReturnFrequencyController @Inject()(s4LService: S4LService, vatRegistra
 
     s4LService.fetchAndGet[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString) flatMap {
       case Some(viewModel) => Future.successful(viewModel)
-      case None => for {
-        vatScheme <- vatRegistrationService.getVatScheme()
-        viewModel = VatReturnFrequency(vatScheme)
-      } yield viewModel
+      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[VatReturnFrequency].toViewModel
     } map { viewModel =>
       val form = VatReturnFrequencyForm.form.fill(viewModel)
       Ok(views.html.pages.vat_return_frequency(form))
@@ -53,9 +51,8 @@ class VatReturnFrequencyController @Inject()(s4LService: S4LService, vatRegistra
         data: VatReturnFrequency => {
           s4LService.saveForm[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString, data) flatMap { _ =>
             if (VatReturnFrequency.MONTHLY == data.frequencyType) {
-              for {
-                _ <- s4LService.saveForm[AccountingPeriod](CacheKeys.AccountingPeriod.toString, AccountingPeriod.empty)
-              } yield Redirect(controllers.userJourney.routes.SummaryController.show())
+              s4LService.saveForm[AccountingPeriod](CacheKeys.AccountingPeriod.toString, AccountingPeriod())
+                .map { _ => Redirect(controllers.userJourney.routes.SummaryController.show()) }
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.AccountingPeriodController.show()))
             }

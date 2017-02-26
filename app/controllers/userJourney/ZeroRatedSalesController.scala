@@ -21,8 +21,7 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
 import forms.vatDetails.ZeroRatedSalesForm
-import models.view.StartDate.COMPANY_REGISTRATION_DATE
-import models.view.VoluntaryRegistration.REGISTER_NO
+import models.ApiModelTransformer
 import models.view._
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -37,10 +36,7 @@ class ZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegistration
 
     s4LService.fetchAndGet[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString) flatMap {
       case Some(viewModel) => Future.successful(viewModel)
-      case None => for {
-        vatScheme <- vatRegistrationService.getVatScheme()
-        viewModel = ZeroRatedSales(vatScheme)
-      } yield viewModel
+      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[ZeroRatedSales].toViewModel
     } map { viewModel =>
       val form = ZeroRatedSalesForm.form.fill(viewModel)
       Ok(views.html.pages.zero_rated_sales(form))
@@ -55,9 +51,8 @@ class ZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegistration
         data: ZeroRatedSales => {
           s4LService.saveForm[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString, data) flatMap { _ =>
             if (ZeroRatedSales.ZERO_RATED_SALES_NO == data.yesNo) {
-              for {
-                _ <- s4LService.saveForm[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString, EstimateZeroRatedSales.empty)
-              } yield Redirect(controllers.userJourney.routes.VatChargeExpectancyController.show())
+              s4LService.saveForm[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString, EstimateZeroRatedSales())
+                .map { _ => Redirect(controllers.userJourney.routes.VatChargeExpectancyController.show()) }
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.EstimateZeroRatedSalesController.show()))
             }

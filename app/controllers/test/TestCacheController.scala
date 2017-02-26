@@ -17,6 +17,7 @@
 package controllers.test
 
 import javax.inject.Inject
+
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
 import services.S4LService

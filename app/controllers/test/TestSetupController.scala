@@ -46,21 +46,21 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       vatReturnFrequency <- s4LService.fetchAndGet[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString)
       accountingPeriod <- s4LService.fetchAndGet[AccountingPeriod](CacheKeys.AccountingPeriod.toString)
 
-      testSetup = TestSetup(if(taxableTurnover.isDefined) taxableTurnover.get.yesNo else "",
-        if(voluntaryRegistration.isDefined) voluntaryRegistration.get.yesNo else "",
-        if(startDate.isDefined) startDate.get.dateType else "" ,
-        if(startDate.isDefined) s"${startDate.get.day.getOrElse("").toString}" else "",
-        if(startDate.isDefined) s"${startDate.get.month.getOrElse("").toString}" else "",
-        if(startDate.isDefined) s"${startDate.get.year.getOrElse("").toString}" else "",
-        if(tradingName.isDefined) tradingName.get.yesNo else "",
-        if(tradingName.isDefined) tradingName.get.tradingName.getOrElse("") else "",
-        if(estimateVatTurnover.isDefined) estimateVatTurnover.get.vatTurnoverEstimate.getOrElse("").toString else "",
-        if(zeroRatedSales.isDefined) zeroRatedSales.get.yesNo else "",
-        if(estimateZeroRatedSales.isDefined) estimateZeroRatedSales.get.zeroRatedSalesEstimate.getOrElse("").toString else "",
-        if(vatChargeExpectancy.isDefined) vatChargeExpectancy.get.yesNo else "",
-        if(vatReturnFrequency.isDefined) vatReturnFrequency.get.frequencyType else "",
-        if(accountingPeriod.isDefined)  accountingPeriod.get.accountingPeriod.getOrElse("") else ""
-    )
+      testSetup = TestSetup(if (taxableTurnover.isDefined) taxableTurnover.get.yesNo else "",
+        if (voluntaryRegistration.isDefined) voluntaryRegistration.get.yesNo else "",
+        if (startDate.isDefined) startDate.get.dateType else "",
+        if (startDate.isDefined) s"${startDate.get.day.getOrElse("").toString}" else "",
+        if (startDate.isDefined) s"${startDate.get.month.getOrElse("").toString}" else "",
+        if (startDate.isDefined) s"${startDate.get.year.getOrElse("").toString}" else "",
+        if (tradingName.isDefined) tradingName.get.yesNo else "",
+        if (tradingName.isDefined) tradingName.get.tradingName.getOrElse("") else "",
+        if (estimateVatTurnover.isDefined) estimateVatTurnover.get.vatTurnoverEstimate.getOrElse("").toString else "",
+        if (zeroRatedSales.isDefined) zeroRatedSales.get.yesNo else "",
+        if (estimateZeroRatedSales.isDefined) estimateZeroRatedSales.get.zeroRatedSalesEstimate.getOrElse("").toString else "",
+        if (vatChargeExpectancy.isDefined) vatChargeExpectancy.get.yesNo else "",
+        if (vatReturnFrequency.isDefined) vatReturnFrequency.get.frequencyType else "",
+        if (accountingPeriod.isDefined) accountingPeriod.get.accountingPeriod.getOrElse("") else ""
+      )
       form = TestSetupForm.form.fill(testSetup)
     } yield Ok(views.html.pages.test_setup(form))
   })
@@ -75,19 +75,19 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             regId <- fetchRegistrationId
             _ <- s4LService.saveForm[TaxableTurnover](CacheKeys.TaxableTurnover.toString, data.taxableTurnoverChoice
             match {
-              case "" => TaxableTurnover.empty
+              case "" => TaxableTurnover()
               case _ => TaxableTurnover(data.taxableTurnoverChoice)
             })
 
             _ <- s4LService.saveForm[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString, data.voluntaryChoice
             match {
-              case "" => VoluntaryRegistration.empty
+              case "" => VoluntaryRegistration()
               case _ => VoluntaryRegistration(data.voluntaryChoice)
             })
 
             _ <- s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, data.startDateChoice
             match {
-              case "" => StartDate.empty
+              case "" => StartDate()
               case _ => StartDate(data.startDateChoice,
                 Some(data.startDateDay.toInt),
                 Some(data.startDateMonth.toInt),
@@ -96,43 +96,43 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
 
             _ <- s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, data.tradingNameChoice
             match {
-              case "" => TradingName.empty
+              case "" => TradingName()
               case _ => TradingName(data.tradingNameChoice, Some(data.tradingName))
             })
 
             _ <- s4LService.saveForm[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString, data.estimateVatTurnover
             match {
-              case "" => EstimateVatTurnover.empty
+              case "" => EstimateVatTurnover()
               case _ => EstimateVatTurnover(Some(data.estimateVatTurnover.toLong))
             })
 
             _ <- s4LService.saveForm[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString, data.zeroRatedSalesChoice
             match {
-              case "" => ZeroRatedSales.empty
+              case "" => ZeroRatedSales()
               case _ => ZeroRatedSales(data.zeroRatedSalesChoice)
             })
 
             _ <- s4LService.saveForm[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString, data.zeroRatedSalesEstimate
             match {
-              case "" => EstimateZeroRatedSales.empty
+              case "" => EstimateZeroRatedSales()
               case _ => EstimateZeroRatedSales(Some(data.zeroRatedSalesEstimate.toLong))
             })
 
             _ <- s4LService.saveForm[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString, data.vatChargeExpectancyChoice
             match {
-              case "" => VatChargeExpectancy.empty
+              case "" => VatChargeExpectancy()
               case _ => VatChargeExpectancy(data.vatChargeExpectancyChoice)
             })
 
             _ <- s4LService.saveForm[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString, data.vatReturnFrequency
             match {
-              case "" => VatReturnFrequency.empty
+              case "" => VatReturnFrequency()
               case _ => VatReturnFrequency(data.vatReturnFrequency)
             })
 
             _ <- s4LService.saveForm[AccountingPeriod](CacheKeys.AccountingPeriod.toString, data.accountingPeriod
             match {
-              case "" => AccountingPeriod.empty
+              case "" => AccountingPeriod()
               case _ => AccountingPeriod(Some(data.accountingPeriod))
             })
 

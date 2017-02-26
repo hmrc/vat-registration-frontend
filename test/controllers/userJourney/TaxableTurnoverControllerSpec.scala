@@ -24,10 +24,9 @@ import models.view.{StartDate, TaxableTurnover, VoluntaryRegistration}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.libs.json.Format
 import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -98,9 +97,9 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
   s"POST ${routes.TaxableTurnoverController.submit()} with Taxable Turnover selected Yes" should {
 
     "return 303" in {
-      val returnCacheMapTaxableTurnover = CacheMap("", Map("" -> Json.toJson(TaxableTurnover.empty)))
-      val returnCacheMapVoluntaryRegistration = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration.empty)))
-      val returnCacheMapStartDate = CacheMap("", Map("" -> Json.toJson(StartDate.empty)))
+      val returnCacheMapTaxableTurnover = CacheMap("", Map("" -> Json.toJson(TaxableTurnover())))
+      val returnCacheMapVoluntaryRegistration = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration())))
+      val returnCacheMapStartDate = CacheMap("", Map("" -> Json.toJson(StartDate())))
 
       when(mockS4LService.saveForm[TaxableTurnover]
         (Matchers.eq(CacheKeys.TaxableTurnover.toString), Matchers.any())
@@ -131,7 +130,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
   s"POST ${routes.TaxableTurnoverController.submit()} with Taxable Turnover selected No" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TaxableTurnover.empty)))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TaxableTurnover())))
 
       when(mockS4LService.saveForm[TaxableTurnover](Matchers.eq(CacheKeys.TaxableTurnover.toString), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))

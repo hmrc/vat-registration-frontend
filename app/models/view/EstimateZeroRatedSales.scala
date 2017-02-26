@@ -21,26 +21,21 @@ import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
 case class EstimateZeroRatedSales(zeroRatedSalesEstimate: Option[Long] = None)
-  extends ViewModelTransformer[VatFinancials] {
 
-  // Upserts (selectively converts) a View model object to its API model counterpart
-  override def toApi(vatFinancials: VatFinancials): VatFinancials =
-    vatFinancials.copy(zeroRatedSalesEstimate = zeroRatedSalesEstimate)
-}
-
-object EstimateZeroRatedSales extends ApiModelTransformer[EstimateZeroRatedSales] {
+object EstimateZeroRatedSales {
 
   implicit val format: OFormat[EstimateZeroRatedSales] = Json.format[EstimateZeroRatedSales]
 
   // Returns a view model for a specific part of a given VatScheme API model
-  override def apply(vatScheme: VatScheme): EstimateZeroRatedSales = {
-
-    vatScheme.financials match {
-      case Some(financials) =>  EstimateZeroRatedSales(financials.zeroRatedSalesEstimate)
-      case _ =>  EstimateZeroRatedSales.empty
+  implicit val modelTransformer = ApiModelTransformer[EstimateZeroRatedSales] { (vs: VatScheme) =>
+    vs.financials match {
+      case Some(financials) => EstimateZeroRatedSales(financials.zeroRatedSalesEstimate)
+      case _ => EstimateZeroRatedSales()
     }
   }
 
-  def empty: EstimateZeroRatedSales = EstimateZeroRatedSales()
+  implicit val viewModelTransformer = ViewModelTransformer { (c: EstimateZeroRatedSales, g: VatFinancials) =>
+    g.copy(zeroRatedSalesEstimate = c.zeroRatedSalesEstimate)
+  }
 
 }

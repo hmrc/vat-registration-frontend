@@ -25,12 +25,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
 
-  "empty" should {
-    "create an empty TaxableTurnover.model" in {
-      TaxableTurnover.empty shouldBe TaxableTurnover("")
-    }
-  }
-
   "apply" should {
     "convert a VatChoice (Obligatory) to view model" in {
       val vatSchemeObligatory = VatScheme(
@@ -40,28 +34,28 @@ class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
           VatChoice.NECESSITY_OBLIGATORY
         ))
       )
-      TaxableTurnover.apply(vatSchemeObligatory) shouldBe TaxableTurnover(TAXABLE_YES)
+      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeObligatory) shouldBe TaxableTurnover(TAXABLE_YES)
     }
 
     "convert a VatChoice (Voluntary) to view model" in {
-      val vatSchemeVolunatary = VatScheme(
+      val vatSchemeVoluntary = VatScheme(
         validRegId,
         vatChoice = Some(VatChoice(
           DateTime.now,
           VatChoice.NECESSITY_VOLUNTARY
         ))
       )
-      TaxableTurnover.apply(vatSchemeVolunatary) shouldBe TaxableTurnover(TAXABLE_NO)
+      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe TaxableTurnover(TAXABLE_NO)
     }
 
     "convert an invalid VatChoice to empty view model" in {
-      val vatSchemeVolunatary = VatScheme(validRegId, vatChoice = Some(VatChoice(DateTime.now, "GARBAGE")))
-      TaxableTurnover.apply(vatSchemeVolunatary) shouldBe TaxableTurnover.empty
+      val vatSchemeVoluntary = VatScheme(validRegId, vatChoice = Some(VatChoice(DateTime.now, "GARBAGE")))
+      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe TaxableTurnover()
     }
 
     "convert a none VatChoice to empty view model" in {
-      val vatSchemeVolunatary = VatScheme(validRegId)
-      TaxableTurnover.apply(vatSchemeVolunatary) shouldBe TaxableTurnover.empty
+      val vatSchemeVoluntary = VatScheme(validRegId)
+      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe TaxableTurnover()
     }
 
   }

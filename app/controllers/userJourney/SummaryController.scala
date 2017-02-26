@@ -47,8 +47,8 @@ class SummaryController @Inject()(s4LService: S4LService, vatRegistrationService
 
   def registrationToSummary(vatScheme: VatScheme): Summary = Summary(
     Seq(
-      getVatDetailsSection(vatScheme.vatChoice.getOrElse(VatChoice.empty)),
-      getCompanyDetailsSection(vatScheme.tradingDetails.getOrElse(VatTradingDetails.empty), vatScheme.financials.getOrElse(VatFinancials.empty))
+      getVatDetailsSection(vatScheme.vatChoice.getOrElse(VatChoice())),
+      getCompanyDetailsSection(vatScheme.tradingDetails.getOrElse(VatTradingDetails()), vatScheme.financials.getOrElse(VatFinancials.empty))
     )
   )
 
@@ -78,14 +78,13 @@ class SummaryController @Inject()(s4LService: S4LService, vatRegistrationService
     def getStartDate: SummaryRow = SummaryRow(
       "vatDetails.startDate",
       vatChoice.necessity match {
-        case VatChoice.NECESSITY_VOLUNTARY => {
+        case VatChoice.NECESSITY_VOLUNTARY =>
           val startdate = vatChoice.startDate.toString("dd/MM/yyyy")
           if (startdate == "31/12/1969" || startdate == "01/01/1970") {
             Right(messagesApi("pages.summary.vatDetails.mandatoryStartDate"))
           } else {
             Right(vatChoice.startDate.toString("d MMMM y"))
           }
-        }
         case _ => Right(messagesApi("pages.summary.vatDetails.mandatoryStartDate"))
       },
       vatChoice.necessity match {

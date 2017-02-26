@@ -21,7 +21,7 @@ import enums.CacheKeys
 import fixtures.VatRegistrationFixture
 import forms.vatDetails.VatReturnFrequencyForm
 import helpers.VatRegSpec
-import models.view.{AccountingPeriod, VatReturnFrequency, VoluntaryRegistration}
+import models.view.{AccountingPeriod, VatReturnFrequency}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -98,8 +98,8 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Monthly" should {
 
     "return 303" in {
-      val returnCacheMapVatReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency.empty)))
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod.empty)))
+      val returnCacheMapVatReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency())))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod())))
 
       when(mockS4LService.saveForm[VatReturnFrequency]
         (Matchers.eq(CacheKeys.VatReturnFrequency.toString), Matchers.any())
@@ -125,8 +125,8 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Quarterly" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency.empty)))
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod.empty)))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency())))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod())))
 
       when(mockS4LService.saveForm[VatReturnFrequency](Matchers.eq(CacheKeys.VatReturnFrequency.toString), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))

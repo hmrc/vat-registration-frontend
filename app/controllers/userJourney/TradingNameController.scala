@@ -21,7 +21,8 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
 import forms.vatDetails.TradingNameForm
-import models.view.{StartDate, TradingName}
+import models.ApiModelTransformer
+import models.view.TradingName
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
@@ -34,10 +35,7 @@ class TradingNameController @Inject()(s4LService: S4LService, vatRegistrationSer
 
     s4LService.fetchAndGet[TradingName](CacheKeys.TradingName.toString) flatMap {
       case Some(viewModel) => Future.successful(viewModel)
-      case None => for {
-        vatScheme <- vatRegistrationService.getVatScheme()
-        viewModel = TradingName(vatScheme)
-      } yield viewModel
+      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[TradingName].toViewModel
     } map { viewModel =>
       val form = TradingNameForm.form.fill(viewModel)
       Ok(views.html.pages.trading_name(form))
@@ -54,7 +52,7 @@ class TradingNameController @Inject()(s4LService: S4LService, vatRegistrationSer
           s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, data) flatMap { _ =>
             if (TradingName.TRADING_NAME_NO == data.yesNo) {
               for {
-                _ <- s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, TradingName.empty)
+                _ <- s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, TradingName())
               } yield Redirect(controllers.userJourney.routes.EstimateVatTurnoverController.show())
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.EstimateVatTurnoverController.show()))

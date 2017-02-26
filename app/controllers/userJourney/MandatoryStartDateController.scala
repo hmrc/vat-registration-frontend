@@ -19,13 +19,8 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
-import forms.vatDetails.StartDateForm
-import models.view.StartDate
 import play.api.mvc._
 import services.S4LService
-
-import scala.concurrent.Future
 
 class MandatoryStartDateController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 

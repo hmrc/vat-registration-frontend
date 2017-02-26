@@ -16,19 +16,9 @@
 
 package controllers.userJourney
 
-import builders.AuthBuilder
-import enums.CacheKeys
 import helpers.VatRegSpec
-import models.view.StartDate
-import org.mockito.Matchers
-import org.mockito.Mockito._
-import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-
-import scala.concurrent.Future
 
 class MandatoryStartDateControllerSpec extends VatRegSpec {
 

@@ -21,6 +21,7 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
 import forms.vatDetails.EstimateVatTurnoverForm
+import models.ApiModelTransformer
 import models.view.EstimateVatTurnover
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -35,10 +36,7 @@ class EstimateVatTurnoverController @Inject()(s4LService: S4LService, vatRegistr
 
     s4LService.fetchAndGet[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString) flatMap {
       case Some(viewModel) => Future.successful(viewModel)
-      case None => for {
-        vatScheme <- vatRegistrationService.getVatScheme()
-        viewModel = EstimateVatTurnover(vatScheme)
-      } yield viewModel
+      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[EstimateVatTurnover].toViewModel
     } map { viewModel =>
       val form = EstimateVatTurnoverForm.form.fill(viewModel)
       Ok(views.html.pages.estimate_vat_turnover(form))
