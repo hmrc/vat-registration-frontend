@@ -16,10 +16,9 @@
 
 package forms.vatDetails
 
-import models.view.{StartDate, VatReturnFrequency, ZeroRatedSales}
+import models.view.VatReturnFrequency
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.data.validation.{Constraint, Constraints, Valid, ValidationError}
 
 object VatReturnFrequencyForm {
 

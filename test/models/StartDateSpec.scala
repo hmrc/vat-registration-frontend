@@ -28,12 +28,6 @@ class StartDateSpec extends UnitSpec with VatRegistrationFixture {
   val startDate = StartDate(StartDate.SPECIFIC_DATE, Some(1), Some(2), Some(2017))
   val newStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(30), Some(12), Some(2001))
 
-  "empty" should {
-    "create an empty StartDate model" in {
-      StartDate.empty shouldBe StartDate("", None, None, None)
-    }
-  }
-
   "toDateTime" should {
     "convert a populated StartDate model to a DateTime" in {
       startDate.toDateTime shouldBe startDateTime
@@ -43,7 +37,8 @@ class StartDateSpec extends UnitSpec with VatRegistrationFixture {
   "toApi" should {
     "update a VatChoice a new StartDate" in {
       val vatChoice = VatChoice(newStartDate.toDateTime, VatChoice.NECESSITY_OBLIGATORY)
-      startDate.toApi(vatChoice) shouldBe VatChoice(startDate.toDateTime, VatChoice.NECESSITY_OBLIGATORY)
+      ViewModelTransformer[StartDate, VatChoice]
+        .toApi(startDate, vatChoice) shouldBe VatChoice(startDate.toDateTime, VatChoice.NECESSITY_OBLIGATORY)
     }
   }
 
@@ -51,7 +46,7 @@ class StartDateSpec extends UnitSpec with VatRegistrationFixture {
     "extract a StartDate from a VatScheme" in {
       val vatChoice = VatChoice(startDate.toDateTime, VatChoice.NECESSITY_VOLUNTARY)
       val vatScheme = VatScheme(id = validRegId, vatChoice = Some(vatChoice))
-      StartDate.apply(vatScheme) shouldBe startDate
+      ApiModelTransformer[StartDate].toViewModel(vatScheme) shouldBe startDate
     }
   }
 
@@ -65,7 +60,7 @@ class StartDateSpec extends UnitSpec with VatRegistrationFixture {
     "convert a DateTime object to a StartDate model when it's a default value" in {
       val defaultDateTime = DateTimeFormat.forPattern("dd/MM/yyyy").parseDateTime("31/12/1969")
       val startDate = StartDate.fromDateTime(defaultDateTime)
-      startDate shouldBe StartDate.empty
+      startDate shouldBe StartDate()
     }
   }
 

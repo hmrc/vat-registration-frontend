@@ -23,12 +23,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
 
-  "empty" should {
-    "create an empty Zero Rated Sales model" in {
-      ZeroRatedSales.empty shouldBe ZeroRatedSales("")
-    }
-  }
-
   "apply" should {
     val vatScheme = VatScheme(validRegId)
 
@@ -40,8 +34,7 @@ class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
         vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
       )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithZeroRated))
-
-      ZeroRatedSales.apply(vs) shouldBe ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_YES)
+      ApiModelTransformer[ZeroRatedSales].toViewModel(vs) shouldBe ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_YES)
     }
 
     "convert VatFinancials without zero rated sales to view model" in {
@@ -52,12 +45,12 @@ class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
       )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithoutZeroRated))
 
-      ZeroRatedSales.apply(vs) shouldBe ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_NO)
+      ApiModelTransformer[ZeroRatedSales].toViewModel(vs) shouldBe ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_NO)
     }
 
     "convert VatScheme without VatFinancials to empty view model" in {
       val vs = vatScheme.copy(financials = None)
-      ZeroRatedSales.apply(vs) shouldBe ZeroRatedSales.empty
+      ApiModelTransformer[ZeroRatedSales].toViewModel(vs) shouldBe ZeroRatedSales()
     }
   }
 }

@@ -97,7 +97,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
   s"POST ${routes.ZeroRatedSalesController.submit()} with Zero Rated Sales selected Yes" should {
 
     "return 303" in {
-      val returnCacheMapZeroRatedSales = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales.empty)))
+      val returnCacheMapZeroRatedSales = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales())))
 
       when(mockS4LService.saveForm[ZeroRatedSales]
         (Matchers.eq(CacheKeys.ZeroRatedSales.toString), Matchers.any())
@@ -118,8 +118,8 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
   s"POST ${routes.ZeroRatedSalesController.submit()} with Zero Rated Sales selected No" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales.empty)))
-      val returnCacheMapEstimateZeroRatedSales = CacheMap("", Map("" -> Json.toJson(EstimateZeroRatedSales.empty)))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales())))
+      val returnCacheMapEstimateZeroRatedSales = CacheMap("", Map("" -> Json.toJson(EstimateZeroRatedSales())))
 
       when(mockS4LService.saveForm[ZeroRatedSales](Matchers.eq(CacheKeys.ZeroRatedSales.toString), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))

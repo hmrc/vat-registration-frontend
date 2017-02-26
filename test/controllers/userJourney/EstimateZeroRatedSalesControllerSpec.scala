@@ -47,7 +47,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
 
     "return HTML Estimate Zero Rated Sales page with no data in the form" in {
       when(mockS4LService.fetchAndGet[EstimateZeroRatedSales](Matchers.eq(CacheKeys.EstimateZeroRatedSales.toString))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(EstimateZeroRatedSales.empty)))
+        .thenReturn(Future.successful(Some(EstimateZeroRatedSales())))
 
       AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "zeroRatedSalesEstimate" -> ""
@@ -96,7 +96,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
   s"POST ${routes.EstimateZeroRatedSalesController.submit()} with a valid turnover estimate entered" should {
 
     "return 303" in {
-      val returnCacheMapEstimateZeroRatedSales = CacheMap("", Map("" -> Json.toJson(EstimateZeroRatedSales.empty)))
+      val returnCacheMapEstimateZeroRatedSales = CacheMap("", Map("" -> Json.toJson(EstimateZeroRatedSales())))
 
       when(mockS4LService.saveForm[EstimateZeroRatedSales]
         (Matchers.eq(CacheKeys.EstimateZeroRatedSales.toString), Matchers.any())

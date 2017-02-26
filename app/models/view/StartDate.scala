@@ -16,17 +16,16 @@
 
 package models.view
 
-import models.{ApiModelTransformer, ViewModelTransformer}
 import models.api.{VatChoice, VatScheme}
+import models.{ApiModelTransformer, ViewModelTransformer}
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.Json
 
-case class StartDate(dateType: String,
-                     day: Option[Int],
-                     month: Option[Int],
-                     year: Option[Int])
-  extends ViewModelTransformer[VatChoice] {
+case class StartDate(dateType: String = "",
+                     day: Option[Int] = None,
+                     month: Option[Int] = None,
+                     year: Option[Int] = None) {
 
   override def toString: String = {
     val d = day.getOrElse(1)
@@ -35,15 +34,13 @@ case class StartDate(dateType: String,
     s"$d/$m/$y"
   }
 
-  // Upserts (selectively converts) a View model object to its API model counterpart
-  override def toApi(vatChoice: VatChoice): VatChoice =
-    vatChoice.copy(startDate = toDateTime)
+  def toDateTime: DateTime = StartDate.pattern.parseDateTime(toString)
 
-  def toDateTime: DateTime =
-    DateTimeFormat.forPattern("dd/MM/yyyy").parseDateTime(toString)
 }
 
-object StartDate extends ApiModelTransformer[StartDate] {
+object StartDate {
+
+  val pattern = DateTimeFormat.forPattern("dd/MM/yyyy")
 
   val COMPANY_REGISTRATION_DATE = "COMPANY_REGISTRATION_DATE"
   val BUSINESS_START_DATE = "BUSINESS_START_DATE"
@@ -52,19 +49,22 @@ object StartDate extends ApiModelTransformer[StartDate] {
   implicit val format = Json.format[StartDate]
 
   // Returns a view model for a specific part of a given VatScheme API model
-  override def apply(vatScheme: VatScheme): StartDate = {
-
-    vatScheme.vatChoice match {
+  implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
+    vs.vatChoice match {
       case Some(vatChoice) => fromDateTime(vatChoice.startDate)
-      case None => StartDate.empty
+      case None => StartDate()
     }
-
   }
+
+  implicit val viewModelTransformer = ViewModelTransformer { (c: StartDate, g: VatChoice) =>
+    g.copy(startDate = c.toDateTime)
+  }
+
 
   def fromDateTime(d: DateTime): StartDate =
   // TODO: Remove check when start date becomes optional in next story
     if (d.toString("dd/MM/yyyy") == "31/12/1969" || d.toString("dd/MM/yyyy") == "01/01/1970") {
-      StartDate.empty
+      StartDate()
     } else {
       StartDate(StartDate.SPECIFIC_DATE,
         Some(d.dayOfMonth.get()),
@@ -73,7 +73,4 @@ object StartDate extends ApiModelTransformer[StartDate] {
       )
     }
 
-  def empty: StartDate = StartDate("", None, None, None)
-
-  def empty(dateType: String): StartDate = StartDate(dateType, None, None, None)
 }

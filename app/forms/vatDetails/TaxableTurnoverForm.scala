@@ -16,7 +16,7 @@
 
 package forms.vatDetails
 
-import models.view.{TaxableTurnover, VoluntaryRegistration}
+import models.view.TaxableTurnover
 import play.api.data.Form
 import play.api.data.Forms._
 

@@ -16,13 +16,13 @@
 
 package services
 
-import connectors.KeystoreConnector
 import common.exceptions.DownstreamExceptions._
-import uk.gov.hmrc.play.http.HeaderCarrier
+import connectors.KeystoreConnector
 import play.api.Logger
+import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait CommonService {
 

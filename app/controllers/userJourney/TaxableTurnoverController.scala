@@ -21,28 +21,23 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
 import forms.vatDetails.TaxableTurnoverForm
-import models.view.{StartDate, TaxableTurnover, VoluntaryRegistration}
+import models.ApiModelTransformer
 import models.view.StartDate.COMPANY_REGISTRATION_DATE
 import models.view.VoluntaryRegistration.REGISTER_NO
+import models.view.{StartDate, TaxableTurnover, VoluntaryRegistration}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
-
+import scala.concurrent.Future
 
 
 class TaxableTurnoverController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
                                           ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
     s4LService.fetchAndGet[TaxableTurnover](CacheKeys.TaxableTurnover.toString) flatMap {
       case Some(viewModel) => Future.successful(viewModel)
-      case None => for {
-        vatScheme <- vatRegistrationService.getVatScheme()
-        viewModel = TaxableTurnover(vatScheme)
-      } yield viewModel
+      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[TaxableTurnover].toViewModel
     } map { viewModel =>
       val form = TaxableTurnoverForm.form.fill(viewModel)
       Ok(views.html.pages.taxable_turnover(form))
@@ -54,13 +49,12 @@ class TaxableTurnoverController @Inject()(s4LService: S4LService, vatRegistratio
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.taxable_turnover(formWithErrors)))
       }, {
-
         data: TaxableTurnover => {
           s4LService.saveForm[TaxableTurnover](CacheKeys.TaxableTurnover.toString, data) flatMap { _ =>
             if (TaxableTurnover.TAXABLE_YES == data.yesNo) {
               for {
                 _ <- s4LService.saveForm[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString, VoluntaryRegistration(REGISTER_NO))
-                _ <- s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, StartDate.empty(COMPANY_REGISTRATION_DATE))
+                _ <- s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, StartDate(COMPANY_REGISTRATION_DATE))
               } yield Redirect(controllers.userJourney.routes.MandatoryStartDateController.show())
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.VoluntaryRegistrationController.show()))

@@ -20,7 +20,7 @@ import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.{CacheKeys, DownstreamOutcome}
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{VatChoice, VatFinancials, VatScheme}
+import models.api.{VatChoice, VatScheme}
 import models.view._
 import org.mockito.Matchers
 import org.mockito.Mockito._

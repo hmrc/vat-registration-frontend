@@ -21,6 +21,7 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
 import forms.vatDetails.StartDateForm
+import models.ApiModelTransformer
 import models.view.StartDate
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
@@ -34,10 +35,7 @@ class StartDateController @Inject()(s4LService: S4LService, vatRegistrationServi
 
     s4LService.fetchAndGet[StartDate](CacheKeys.StartDate.toString) flatMap {
       case Some(viewModel) => Future.successful(viewModel)
-      case None => for {
-        vatScheme <- vatRegistrationService.getVatScheme()
-        viewModel = StartDate(vatScheme)
-      } yield viewModel
+      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[StartDate].toViewModel
     } map { viewModel =>
       val form = StartDateForm.form.fill(viewModel)
       Ok(views.html.pages.start_date(form))
@@ -53,9 +51,8 @@ class StartDateController @Inject()(s4LService: S4LService, vatRegistrationServi
         data: StartDate => {
           s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, data) flatMap { _ =>
             if (StartDate.SPECIFIC_DATE != data.dateType) {
-              for {
-                _ <- s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, StartDate.empty)
-              } yield Redirect(controllers.userJourney.routes.TradingNameController.show())
+              s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, StartDate())
+                .map { _ => Redirect(controllers.userJourney.routes.TradingNameController.show()) }
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.TradingNameController.show()))
             }
