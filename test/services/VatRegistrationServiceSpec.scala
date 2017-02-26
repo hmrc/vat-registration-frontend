@@ -113,11 +113,11 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       mockFetchRegId(validRegId)
 
       when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.StartDate.toString))
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
-          .thenReturn(Future.successful(Some(validStartDate)))
+      (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
+        .thenReturn(Future.successful(Some(validStartDate)))
 
       when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.VoluntaryRegistration.toString))
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[VoluntaryRegistration]]()))
+      (Matchers.any[HeaderCarrier](), Matchers.any[Format[VoluntaryRegistration]]()))
         .thenReturn(Future.successful(Some(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES))))
 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
@@ -125,7 +125,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(validVatScheme))
 
       when(mockRegConnector.upsertVatChoice(Matchers.any(), Matchers.any())
-        (Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatChoice]]()))
+      (Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatChoice]]()))
         .thenReturn(Future.successful(validVatChoice))
 
       ScalaFutures.whenReady(service.submitVatChoice())(_ mustBe validVatChoice)
@@ -137,7 +137,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       mockFetchRegId(validRegId)
 
       when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.TradingName.toString))
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[TradingName]]()))
+      (Matchers.any[HeaderCarrier](), Matchers.any[Format[TradingName]]()))
         .thenReturn(Future.successful(Some(validTradingName)))
 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
@@ -145,7 +145,25 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(validVatScheme))
 
       when(mockRegConnector.upsertVatTradingDetails(Matchers.any(), Matchers.any())
-        (Matchers.any(), Matchers.any()))
+      (Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(validVatTradingDetails))
+
+      ScalaFutures.whenReady(service.submitTradingDetails())(_ mustBe validVatTradingDetails)
+    }
+
+    "return a success response when VatTradingDetails is submitted and no Trading Name is found in S4L" in new Setup {
+      mockFetchRegId(validRegId)
+
+      when(mockS4LService.fetchAndGet(Matchers.eq(CacheKeys.TradingName.toString))
+      (Matchers.any[HeaderCarrier](), Matchers.any[Format[TradingName]]()))
+        .thenReturn(Future.successful(None))
+
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
+      (Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatScheme]]()))
+        .thenReturn(Future.successful(validVatScheme))
+
+      when(mockRegConnector.upsertVatTradingDetails(regId = Matchers.any(), vatTradingDetails = Matchers.any())
+      (hc = Matchers.any(), rds = Matchers.any()))
         .thenReturn(Future.successful(validVatTradingDetails))
 
       ScalaFutures.whenReady(service.submitTradingDetails())(_ mustBe validVatTradingDetails)
