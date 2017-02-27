@@ -18,7 +18,7 @@ package models
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
-import models.view.{EstimateZeroRatedSales, VatReturnFrequency}
+import models.view.VatReturnFrequency
 import uk.gov.hmrc.play.test.UnitSpec
 
 class VatReturnFrequencySpec extends UnitSpec with VatRegistrationFixture {
@@ -57,14 +57,8 @@ class VatReturnFrequencySpec extends UnitSpec with VatRegistrationFixture {
         reclaimVatOnMostReturns = true,
         vatAccountingPeriod = VatAccountingPeriod(None, VatReturnFrequency.MONTHLY)
       )
-
-      vatReturnFrequency.toApi(vatFinancials) shouldBe updatedVatFinancials
-    }
-  }
-
-  "empty" should {
-    "create an empty Vat Return Frequency model" in {
-      VatReturnFrequency.empty shouldBe VatReturnFrequency("")
+      ViewModelTransformer[VatReturnFrequency, VatFinancials]
+        .toApi(vatReturnFrequency, vatFinancials) shouldBe updatedVatFinancials
     }
   }
 
@@ -72,17 +66,17 @@ class VatReturnFrequencySpec extends UnitSpec with VatRegistrationFixture {
 
     "convert VatFinancials with MONTHLY vat return frequency to view model" in {
       val vs = vatScheme.copy(financials = Some(VatReturnFrequencyWithMonthly))
-      VatReturnFrequency.apply(vs) shouldBe VatReturnFrequency(VatReturnFrequency.MONTHLY)
+      ApiModelTransformer[VatReturnFrequency].toViewModel(vs) shouldBe VatReturnFrequency(VatReturnFrequency.MONTHLY)
     }
 
     "convert VatFinancials with QUARTERLY vat return frequency to view model" in {
       val vs = vatScheme.copy(financials = Some(VatReturnFrequencyWithQuarterly))
-      VatReturnFrequency.apply(vs) shouldBe VatReturnFrequency(VatReturnFrequency.QUARTERLY)
+      ApiModelTransformer[VatReturnFrequency].toViewModel(vs) shouldBe VatReturnFrequency(VatReturnFrequency.QUARTERLY)
     }
 
     "convert VatScheme without VatFinancials to empty view model" in {
       val vs = vatScheme.copy(financials = None)
-      VatReturnFrequency.apply(vs) shouldBe VatReturnFrequency.empty
+      ApiModelTransformer[VatReturnFrequency].toViewModel(vs) shouldBe VatReturnFrequency()
     }
 
   }

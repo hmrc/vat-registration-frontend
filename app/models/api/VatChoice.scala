@@ -16,12 +16,12 @@
 
 package models.api
 
+import org.joda.time.DateTime
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import org.joda.time.DateTime
 
 case class VatChoice(
-                      startDate: DateTime,
+                      startDate: DateTime = DateTime.now(),
                       necessity: String = "" // "obligatory" or "voluntary"
                     )
 
@@ -34,5 +34,4 @@ object VatChoice {
     (__ \ "start-date").format[DateTime] and
       (__ \ "necessity").format[String]) (VatChoice.apply, unlift(VatChoice.unapply))
 
-  def empty: VatChoice = VatChoice(DateTime.now)
 }

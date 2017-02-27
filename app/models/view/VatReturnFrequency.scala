@@ -20,33 +20,22 @@ import models.api.{VatFinancials, VatScheme}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class VatReturnFrequency(frequencyType: String)
-  extends ViewModelTransformer[VatFinancials] {
+case class VatReturnFrequency(frequencyType: String = "")
 
-  // Upserts (selectively converts) a View model object to its API model counterpart
-  override def toApi(vatFinancials: VatFinancials): VatFinancials = {
-    val newVatAccountingPeriod = vatFinancials.vatAccountingPeriod.copy(frequency = frequencyType)
-    vatFinancials.copy(vatAccountingPeriod = newVatAccountingPeriod)
-  }
-}
-
-object VatReturnFrequency extends ApiModelTransformer[VatReturnFrequency] {
+object VatReturnFrequency {
 
   val MONTHLY = "monthly"
   val QUARTERLY = "quarterly"
 
   implicit val format = Json.format[VatReturnFrequency]
 
-
   // Returns a view model for a specific part of a given VatScheme API model
-  override def apply(vatScheme: VatScheme): VatReturnFrequency = {
-    vatScheme.financials match {
-      case Some(vatFinancials) => VatReturnFrequency(vatFinancials.vatAccountingPeriod.frequency)
-      case None => VatReturnFrequency.empty
-    }
+  implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
+    vs.financials map (vf => VatReturnFrequency(vf.vatAccountingPeriod.frequency)) getOrElse VatReturnFrequency()
   }
 
-  def empty: VatReturnFrequency = VatReturnFrequency("")
+  implicit val viewModelTransformer = ViewModelTransformer { (c: VatReturnFrequency, g: VatFinancials) =>
+    g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(frequency = c.frequencyType))
+  }
 
-  def empty(frequencyType: String): VatReturnFrequency = VatReturnFrequency(frequencyType)
 }

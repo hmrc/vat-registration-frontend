@@ -16,16 +16,12 @@
 
 package connectors
 
-import enums.DownstreamOutcome
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api.{VatChoice, VatFinancials, VatScheme, VatTradingDetails}
 import org.scalatest.concurrent.ScalaFutures
-import play.api.http.Status
+import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
-import uk.gov.hmrc.play.http.{InternalServerException, NotFoundException, Upstream4xxResponse, Upstream5xxResponse, _}
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 

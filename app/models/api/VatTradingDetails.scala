@@ -19,16 +19,15 @@ package models.api
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatTradingDetails(tradingName: String)
+case class VatTradingDetails(tradingName: String = "")
 
 object VatTradingDetails {
   val apiReads: Reads[VatTradingDetails] =
-    (__ \ "trading-name").read[String].map(VatTradingDetails(_))
+    (__ \ "trading-name").read[String].map(VatTradingDetails.apply)
 
   val apiWrites: Writes[VatTradingDetails] =
     (__ \ "trading-name").write[String].contramap(_.tradingName)
 
   implicit val format = Format(apiReads, apiWrites)
 
-  def empty: VatTradingDetails = VatTradingDetails("")
 }

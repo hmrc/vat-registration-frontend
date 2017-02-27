@@ -18,7 +18,7 @@ package connectors
 
 import config.VatSessionCache
 import play.api.libs.json.Format
-import uk.gov.hmrc.http.cache.client.{SessionCache, CacheMap}
+import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future

@@ -16,25 +16,13 @@
 
 package models.view
 
-import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
+import models.api.{VatFinancials, VatScheme}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
-case class AccountingPeriod(accountingPeriod: Option[String]) extends ViewModelTransformer[VatFinancials] {
+case class AccountingPeriod(accountingPeriod: Option[String] = None)
 
-  // Upserts (selectively converts) a View model object to its API model counterpart
-  override def toApi(vatFinancials: VatFinancials): VatFinancials = {
-    val newAccountingPeriod = vatFinancials.vatAccountingPeriod.copy(periodStart = accountingPeriod match {
-      case Some(x) => Some(x.toLowerCase())
-      case _ => None
-    })
-
-    vatFinancials.copy(vatAccountingPeriod = newAccountingPeriod)
-  }
-
-}
-
-object AccountingPeriod extends ApiModelTransformer[AccountingPeriod] {
+object AccountingPeriod {
 
   val JAN_APR_JUL_OCT = "JAN_APR_JUL_OCT"
   val FEB_MAY_AUG_NOV = "FEB_MAY_AUG_NOV"
@@ -43,16 +31,16 @@ object AccountingPeriod extends ApiModelTransformer[AccountingPeriod] {
   implicit val format: OFormat[AccountingPeriod] = Json.format[AccountingPeriod]
 
   // Returns a view model for a specific part of a given VatScheme API model
-  override def apply(vatScheme: VatScheme): AccountingPeriod = {
-    vatScheme.financials match {
-      case Some(financials) => financials.vatAccountingPeriod.periodStart match {
-        case Some(period) => AccountingPeriod(Some(period.toUpperCase))
-        case _ => AccountingPeriod.empty
-      }
-      case _ => AccountingPeriod.empty
-    }
+  implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
+    val res = for {
+      f <- vs.financials
+      ps <- f.vatAccountingPeriod.periodStart
+    } yield AccountingPeriod(Some(ps.toUpperCase()))
+    res.getOrElse(AccountingPeriod())
   }
 
-  def empty: AccountingPeriod = AccountingPeriod(None)
+  implicit val viewModelTransformer = ViewModelTransformer { (c: AccountingPeriod, g: VatFinancials) =>
+    g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(periodStart = c.accountingPeriod.map(_.toLowerCase)))
+  }
 
 }

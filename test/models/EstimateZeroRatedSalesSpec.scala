@@ -42,19 +42,20 @@ class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
         reclaimVatOnMostReturns = true,
         vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
       )
-      estimateZeroRatedSales.toApi(vatFinancials) shouldBe updatedVatFinancials
+      ViewModelTransformer[EstimateZeroRatedSales, VatFinancials]
+        .toApi(estimateZeroRatedSales, vatFinancials) shouldBe updatedVatFinancials
     }
   }
 
   "apply" should {
     "convert a VatFinancials to a view model" in {
       val vatScheme = VatScheme(id = validRegId, financials = Some(vatFinancials))
-      EstimateZeroRatedSales.apply(vatScheme) shouldBe estimateZeroRatedSales
+      ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vatScheme) shouldBe estimateZeroRatedSales
     }
 
     "convert a VatScheme without a VatFinancials to an empty view model" in {
       val vatScheme = VatScheme(id = validRegId)
-      EstimateZeroRatedSales.apply(vatScheme) shouldBe EstimateZeroRatedSales.empty
+      ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vatScheme) shouldBe EstimateZeroRatedSales()
     }
   }
 

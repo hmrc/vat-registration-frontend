@@ -24,21 +24,17 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class VoluntaryRegistrationSpec extends UnitSpec with VatRegistrationFixture {
 
-  "empty" should {
-    "create an empty VoluntaryRegistration model" in {
-      VoluntaryRegistration.empty shouldBe VoluntaryRegistration("")
-    }
-  }
-
   "toApi" should {
     "update a VatChoice with new VoluntaryRegistration (YES)" in {
       val vatChoiceObligatory = VatChoice(validStartDate.toDateTime, VatChoice.NECESSITY_OBLIGATORY)
-      VoluntaryRegistration(REGISTER_YES).toApi(vatChoiceObligatory) shouldBe VatChoice(validStartDate.toDateTime, VatChoice.NECESSITY_VOLUNTARY)
+      ViewModelTransformer[VoluntaryRegistration, VatChoice]
+        .toApi(VoluntaryRegistration(REGISTER_YES), vatChoiceObligatory) shouldBe VatChoice(validStartDate.toDateTime, VatChoice.NECESSITY_VOLUNTARY)
     }
 
     "update a VatChoice with new VoluntaryRegistration (NO)" in {
       val vatChoiceVoluntary = VatChoice(validStartDate.toDateTime, VatChoice.NECESSITY_VOLUNTARY)
-      VoluntaryRegistration(REGISTER_NO).toApi(vatChoiceVoluntary) shouldBe VatChoice(validStartDate.toDateTime, VatChoice.NECESSITY_OBLIGATORY)
+      ViewModelTransformer[VoluntaryRegistration, VatChoice]
+        .toApi(VoluntaryRegistration(REGISTER_NO), vatChoiceVoluntary) shouldBe VatChoice(validStartDate.toDateTime, VatChoice.NECESSITY_OBLIGATORY)
     }
   }
 
@@ -49,17 +45,17 @@ class VoluntaryRegistrationSpec extends UnitSpec with VatRegistrationFixture {
 
     "convert voluntary vatChoice to view model" in {
       val vs = vatScheme.copy(vatChoice = Some(vatChoiceVoluntary))
-      VoluntaryRegistration.apply(vs) shouldBe VoluntaryRegistration(REGISTER_YES)
+      ApiModelTransformer[VoluntaryRegistration].toViewModel(vs) shouldBe VoluntaryRegistration(REGISTER_YES)
     }
 
     "convert obligatory vatChoice to empty view model" in {
       val vs = vatScheme.copy(vatChoice = Some(vatChoiceObligatory))
-      VoluntaryRegistration.apply(vs) shouldBe VoluntaryRegistration.empty
+      ApiModelTransformer[VoluntaryRegistration].toViewModel(vs) shouldBe VoluntaryRegistration()
     }
 
     "convert none vatChoice to view empty model" in {
       val vs = vatScheme.copy(vatChoice = None)
-      VoluntaryRegistration.apply(vs) shouldBe VoluntaryRegistration.empty
+      ApiModelTransformer[VoluntaryRegistration].toViewModel(vs) shouldBe VoluntaryRegistration()
     }
 
   }

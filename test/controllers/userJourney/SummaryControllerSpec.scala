@@ -24,8 +24,8 @@ import org.mockito.Matchers
 import org.mockito.Mockito.when
 import play.api.http.Status
 import play.api.mvc.Result
-import services.VatRegistrationService
 import play.api.test.Helpers._
+import services.VatRegistrationService
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
