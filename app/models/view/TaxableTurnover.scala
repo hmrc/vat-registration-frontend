@@ -30,14 +30,11 @@ object TaxableTurnover {
 
   implicit val format = Json.format[TaxableTurnover]
 
-  implicit val modelTransformer = new ApiModelTransformer[TaxableTurnover] {
-    // Returns a view model for a specific part of a given VatScheme API model
-    override def toViewModel(vatScheme: VatScheme): TaxableTurnover =
-      vatScheme.vatChoice.map(_.necessity).collect {
-        case NECESSITY_VOLUNTARY => TaxableTurnover(TAXABLE_NO)
-        case NECESSITY_OBLIGATORY => TaxableTurnover(TAXABLE_YES)
-      } getOrElse TaxableTurnover()
-
+  implicit val modelTransformer = ApiModelTransformer[TaxableTurnover] { (vs: VatScheme) =>
+    vs.vatChoice.map(_.necessity).collect {
+      case NECESSITY_VOLUNTARY => TaxableTurnover(TAXABLE_NO)
+      case NECESSITY_OBLIGATORY => TaxableTurnover(TAXABLE_YES)
+    } getOrElse TaxableTurnover()
   }
 
 }
