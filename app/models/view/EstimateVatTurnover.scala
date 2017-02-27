@@ -20,27 +20,20 @@ import models.api.{VatFinancials, VatScheme}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class EstimateVatTurnover(vatTurnoverEstimate: Option[Long])
-  extends ViewModelTransformer[VatFinancials] {
+case class EstimateVatTurnover(vatTurnoverEstimate: Option[Long] = None)
 
-  // Upserts (selectively converts) a View model object to its API model counterpart
-  override def toApi(vatFinancials: VatFinancials): VatFinancials =
-    vatFinancials.copy(turnoverEstimate = vatTurnoverEstimate.get)
-}
-
-object EstimateVatTurnover extends ApiModelTransformer[EstimateVatTurnover] {
+object EstimateVatTurnover {
 
   implicit val format = Json.format[EstimateVatTurnover]
 
-  // Returns a view model for a specific part of a given VatScheme API model
-  override def apply(vatScheme: VatScheme): EstimateVatTurnover = {
-
-    vatScheme.financials match {
-      case Some(financials) =>  EstimateVatTurnover(Some(financials.turnoverEstimate))
-      case _ =>  EstimateVatTurnover.empty
-    }
+  implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
+    vs.financials.map(_.turnoverEstimate).collect {
+      case turnoverEstimate => EstimateVatTurnover(Some(turnoverEstimate))
+    }.getOrElse(EstimateVatTurnover())
   }
 
-  def empty: EstimateVatTurnover = EstimateVatTurnover(None)
+  implicit val viewModelTransformer = ViewModelTransformer { (c: EstimateVatTurnover, g: VatFinancials) =>
+    g.copy(turnoverEstimate = c.vatTurnoverEstimate.getOrElse(0L))
+  }
 
 }

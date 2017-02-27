@@ -17,8 +17,8 @@
 package models
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatAccountingPeriod, VatBankAccount, VatFinancials, VatScheme}
-import models.view.{EstimateVatTurnover, TradingName, ZeroRatedSales}
+import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
+import models.view.EstimateVatTurnover
 import uk.gov.hmrc.play.test.UnitSpec
 
 class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
@@ -39,26 +39,20 @@ class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
   )
   val vatScheme = VatScheme(id = validRegId, financials = Some(vatFinancials))
 
-  "empty" should {
-    "create an empty Zero Rated Sales model" in {
-      EstimateVatTurnover.empty shouldBe EstimateVatTurnover(None)
-    }
-  }
-
   "toApi" should {
     "update a VatFinancials with new EstimateVatTurnover" in {
-
-      newEstimateVatTurnover.toApi(vatFinancials) shouldBe differentVatFinancials
+      ViewModelTransformer[EstimateVatTurnover, VatFinancials]
+        .toApi(newEstimateVatTurnover, vatFinancials) shouldBe differentVatFinancials
     }
   }
 
   "apply" should {
     "Extract a EstimateVatTurnover view model from a VatScheme" in {
-      EstimateVatTurnover.apply(vatScheme) shouldBe estimatedVatTurnover
+      ApiModelTransformer[EstimateVatTurnover].toViewModel(vatScheme) shouldBe estimatedVatTurnover
     }
     "Extract an empty EstimateVatTurnover view model from a VatScheme without financials" in {
       val vatSchemeWithoutFinancials = VatScheme(id = validRegId, financials = None)
-      EstimateVatTurnover.apply(vatSchemeWithoutFinancials) shouldBe EstimateVatTurnover.empty
+      ApiModelTransformer[EstimateVatTurnover].toViewModel(vatSchemeWithoutFinancials) shouldBe EstimateVatTurnover()
     }
   }
 }

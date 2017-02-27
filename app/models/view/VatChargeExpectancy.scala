@@ -16,26 +16,13 @@
 
 package models.view
 
-import models.{ApiModelTransformer, ViewModelTransformer}
 import models.api.{VatFinancials, VatScheme}
+import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
-case class VatChargeExpectancy(yesNo: String) extends ViewModelTransformer[VatFinancials] {
+case class VatChargeExpectancy(yesNo: String = "")
 
-  // Upserts (selectively converts) a View model object to its API model counterpart
-  override def toApi(vatFinancials: VatFinancials): VatFinancials =
-    vatFinancials.copy(reclaimVatOnMostReturns = toBoolean)
-
-  def toBoolean: Boolean = {
-    yesNo match {
-      case VatChargeExpectancy.VAT_CHARGE_YES => true
-      case VatChargeExpectancy.VAT_CHARGE_NO => false
-    }
-  }
-
-}
-
-object VatChargeExpectancy extends ApiModelTransformer[VatChargeExpectancy] {
+object VatChargeExpectancy {
 
   val VAT_CHARGE_YES = "VAT_CHARGE_YES"
   val VAT_CHARGE_NO = "VAT_CHARGE_NO"
@@ -43,16 +30,15 @@ object VatChargeExpectancy extends ApiModelTransformer[VatChargeExpectancy] {
   implicit val format: OFormat[VatChargeExpectancy] = Json.format[VatChargeExpectancy]
 
   // Returns a view model for a specific part of a given VatScheme API model
-  override def apply(vatScheme: VatScheme): VatChargeExpectancy = {
-    vatScheme.financials match {
-      case Some(financials) => financials.reclaimVatOnMostReturns match {
-        case true => VatChargeExpectancy(VAT_CHARGE_YES)
-        case false => VatChargeExpectancy(VAT_CHARGE_NO)
-      }
-      case _ => VatChargeExpectancy.empty
-    }
+  implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
+    vs.financials.map(_.reclaimVatOnMostReturns).collect {
+      case true => VatChargeExpectancy(VAT_CHARGE_YES)
+      case false => VatChargeExpectancy(VAT_CHARGE_NO)
+    } getOrElse VatChargeExpectancy()
   }
 
-  def empty: VatChargeExpectancy = VatChargeExpectancy("")
+  implicit val viewModelTransformer = ViewModelTransformer { (c: VatChargeExpectancy, g: VatFinancials) =>
+    g.copy(reclaimVatOnMostReturns = c.yesNo == VAT_CHARGE_YES)
+  }
 
 }

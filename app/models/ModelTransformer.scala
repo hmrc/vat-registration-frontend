@@ -18,14 +18,28 @@ package models
 
 import models.api.VatScheme
 
-trait ViewModelTransformer[L] {
-
+trait ViewModelTransformer[C, G] {
   // Upserts (selectively converts) a View model object to its API model counterpart
-  def toApi(logicalGroup: L): L
+  def toApi(component: C, group: G): G
 }
 
-trait ApiModelTransformer[V] {
+object ViewModelTransformer {
+  def apply[C, G](implicit vmTransformer: ViewModelTransformer[C, G]): ViewModelTransformer[C, G] = vmTransformer
 
+  def apply[C, G](f: (C, G) => G): ViewModelTransformer[C, G] = new ViewModelTransformer[C, G] {
+    override def toApi(component: C, group: G): G = f(component, group)
+  }
+}
+
+trait ApiModelTransformer[VM] {
   // Returns a view model for a specific part of a given VatScheme API model
-  def apply(vatScheme: VatScheme): V
+  def toViewModel(vatScheme: VatScheme): VM
+}
+
+object ApiModelTransformer {
+  def apply[T: ApiModelTransformer]: ApiModelTransformer[T] = implicitly
+
+  def apply[T](f: VatScheme => T): ApiModelTransformer[T] = new ApiModelTransformer[T] {
+    override def toViewModel(vatScheme: VatScheme): T = f(vatScheme)
+  }
 }

@@ -21,6 +21,7 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import models.api.{VatChoice, VatFinancials, VatScheme, VatTradingDetails}
 import models.view._
+import play.api.UnexpectedException
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -31,12 +32,13 @@ class SummaryController @Inject()(s4LService: S4LService, vatRegistrationService
   extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async {
-    implicit user => implicit request =>
-      for {
-        _ <- vatRegistrationService.submitVatScheme()
-        summary <- getRegistrationSummary()
-        _ <- s4LService.clear()
-      } yield Ok(views.html.pages.summary(summary))
+    implicit user =>
+      implicit request =>
+        for {
+          _ <- vatRegistrationService.submitVatScheme()
+          summary <- getRegistrationSummary()
+          _ <- s4LService.clear()
+        } yield Ok(views.html.pages.summary(summary))
   }
 
   //$COVERAGE-OFF$
@@ -47,8 +49,8 @@ class SummaryController @Inject()(s4LService: S4LService, vatRegistrationService
 
   def registrationToSummary(vatScheme: VatScheme): Summary = Summary(
     Seq(
-      getVatDetailsSection(vatScheme.vatChoice.getOrElse(VatChoice.empty)),
-      getCompanyDetailsSection(vatScheme.tradingDetails.getOrElse(VatTradingDetails.empty), vatScheme.financials.getOrElse(VatFinancials.empty))
+      getVatDetailsSection(vatScheme.vatChoice.getOrElse(VatChoice())),
+      getCompanyDetailsSection(vatScheme.tradingDetails.getOrElse(VatTradingDetails()), vatScheme.financials.getOrElse(VatFinancials.empty))
     )
   )
 
@@ -78,14 +80,13 @@ class SummaryController @Inject()(s4LService: S4LService, vatRegistrationService
     def getStartDate: SummaryRow = SummaryRow(
       "vatDetails.startDate",
       vatChoice.necessity match {
-        case VatChoice.NECESSITY_VOLUNTARY => {
+        case VatChoice.NECESSITY_VOLUNTARY =>
           val startdate = vatChoice.startDate.toString("dd/MM/yyyy")
           if (startdate == "31/12/1969" || startdate == "01/01/1970") {
             Right(messagesApi("pages.summary.vatDetails.mandatoryStartDate"))
           } else {
             Right(vatChoice.startDate.toString("d MMMM y"))
           }
-        }
         case _ => Right(messagesApi("pages.summary.vatDetails.mandatoryStartDate"))
       },
       vatChoice.necessity match {
@@ -98,7 +99,7 @@ class SummaryController @Inject()(s4LService: S4LService, vatRegistrationService
       id = "vatDetails",
       Seq(
         (getTaxableTurnover, true),
-        (getNecessity, (vatChoice.necessity == VatChoice.NECESSITY_VOLUNTARY)),
+        (getNecessity, vatChoice.necessity == VatChoice.NECESSITY_VOLUNTARY),
         (getStartDate, true)
       )
     )
@@ -139,9 +140,10 @@ class SummaryController @Inject()(s4LService: S4LService, vatRegistrationService
 
     def getVatChargeExpectancy: SummaryRow = SummaryRow(
       "companyDetails.reclaimMoreVat",
-      vatFinancials.reclaimVatOnMostReturns match {
-        case true => Right(messagesApi("pages.summary.companyDetails.reclaimMoreVat.yes"))
-        case false => Right(messagesApi("pages.summary.companyDetails.reclaimMoreVat.no"))
+      if (vatFinancials.reclaimVatOnMostReturns) {
+        Right(messagesApi("pages.summary.companyDetails.reclaimMoreVat.yes"))
+      } else {
+        Right(messagesApi("pages.summary.companyDetails.reclaimMoreVat.no"))
       },
       Some(controllers.userJourney.routes.VatChargeExpectancyController.show())
     )
@@ -152,6 +154,7 @@ class SummaryController @Inject()(s4LService: S4LService, vatRegistrationService
         case VatReturnFrequency.MONTHLY => Right(messagesApi("pages.summary.companyDetails.accountingPeriod.monthly"))
         case VatReturnFrequency.QUARTERLY => vatFinancials.vatAccountingPeriod.periodStart match {
           case Some(period) => Right(messagesApi(s"pages.summary.companyDetails.accountingPeriod.${period.substring(0, 3)}"))
+          case None => throw UnexpectedException(Some(s"selected quarterly accounting period, but periodStart was None"))
         }
       },
       Some(controllers.userJourney.routes.AccountingPeriodController.show())

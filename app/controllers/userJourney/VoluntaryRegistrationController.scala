@@ -21,24 +21,21 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
 import forms.vatDetails.VoluntaryRegistrationForm
+import models.ApiModelTransformer
 import models.view.VoluntaryRegistration
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
-  class VoluntaryRegistrationController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                                  ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class VoluntaryRegistrationController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
+                                                ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
     s4LService.fetchAndGet[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString) flatMap {
       case Some(viewModel) => Future.successful(viewModel)
-      case None => for {
-        vatScheme <- vatRegistrationService.getVatScheme()
-        viewModel = VoluntaryRegistration(vatScheme)
-      } yield viewModel
+      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[VoluntaryRegistration].toViewModel
     } map { viewModel =>
       val form = VoluntaryRegistrationForm.form.fill(viewModel)
       Ok(views.html.pages.voluntary_registration(form))
@@ -53,14 +50,14 @@ import scala.concurrent.{Await, Future}
 
         data: VoluntaryRegistration => {
           s4LService.saveForm[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString, data) flatMap { _ =>
-              if (VoluntaryRegistration.REGISTER_YES == data.yesNo) {
-                Future.successful(Redirect(controllers.userJourney.routes.StartDateController.show()))
-              } else {
-                for {
-                  _ <- s4LService.clear()
-                  _ <- vatRegistrationService.deleteVatScheme()
-                } yield Redirect (controllers.userJourney.routes.WelcomeController.show())
-              }
+            if (VoluntaryRegistration.REGISTER_YES == data.yesNo) {
+              Future.successful(Redirect(controllers.userJourney.routes.StartDateController.show()))
+            } else {
+              for {
+                _ <- s4LService.clear()
+                _ <- vatRegistrationService.deleteVatScheme()
+              } yield Redirect(controllers.userJourney.routes.WelcomeController.show())
+            }
           }
         }
       })

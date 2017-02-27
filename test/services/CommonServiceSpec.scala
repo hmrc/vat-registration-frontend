@@ -18,7 +18,7 @@ package services
 
 import common.exceptions.DownstreamExceptions
 import connectors.KeystoreConnector
-import fixtures.{KeystoreFixture, VatRegistrationFixture}
+import fixtures.KeystoreFixture
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.play.http.HeaderCarrier
 

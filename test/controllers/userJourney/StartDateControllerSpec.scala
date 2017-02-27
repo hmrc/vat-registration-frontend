@@ -94,7 +94,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${routes.StartDateController.submit()} with valid data" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDate.empty)))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDate())))
 
       when(mockS4LService.saveForm[StartDate](Matchers.eq(CacheKeys.StartDate.toString), Matchers.any())
         (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
@@ -113,7 +113,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${routes.StartDateController.submit()} with StartDate having a specific date" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDate.empty)))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDate())))
 
       when(mockS4LService.saveForm[StartDate](Matchers.eq(CacheKeys.StartDate.toString), Matchers.any())
         (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))

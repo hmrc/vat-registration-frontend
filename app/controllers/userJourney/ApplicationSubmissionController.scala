@@ -32,6 +32,7 @@
 
 package controllers.userJourney
 import javax.inject.Inject
+
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc._
 import services.S4LService

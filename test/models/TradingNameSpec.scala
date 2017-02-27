@@ -24,12 +24,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class TradingNameSpec extends UnitSpec with VatRegistrationFixture {
 
-  "empty" should {
-    "create an empty TradingName model" in {
-      TradingName.empty shouldBe TradingName("", None)
-    }
-  }
-
   "toString" should {
     "TradingName with a trading name returns it when toString is called" in {
       TradingName("", Some("Test Ltd")).toString shouldBe "Test Ltd"
@@ -43,23 +37,24 @@ class TradingNameSpec extends UnitSpec with VatRegistrationFixture {
   "toApi" should {
     "update a VatTradingDetails a new TradingName" in {
       val tradingName = TradingName(TradingName.TRADING_NAME_YES, Some("HOLIDAY INC"))
-      tradingName.toApi(validVatTradingDetails) shouldBe VatTradingDetails("HOLIDAY INC")
+      ViewModelTransformer[TradingName, VatTradingDetails]
+        .toApi(tradingName, validVatTradingDetails) shouldBe VatTradingDetails("HOLIDAY INC")
     }
   }
 
   "apply" should {
     "extract a TradingName from a VatScheme" in {
-      TradingName.apply(validVatScheme) shouldBe validTradingName
+      ApiModelTransformer[TradingName].toViewModel(validVatScheme) shouldBe validTradingName
     }
 
     "extract a TradingName from VatScheme with no trading name returns empty trading name" in {
-      val vatSchemeEmptyTradingName = VatScheme(id = validRegId, tradingDetails = Some(VatTradingDetails.empty))
-      TradingName.apply(vatSchemeEmptyTradingName) shouldBe TradingName(yesNo = TRADING_NAME_NO, tradingName = None)
+      val vatSchemeEmptyTradingName = VatScheme(id = validRegId, tradingDetails = Some(VatTradingDetails()))
+      ApiModelTransformer[TradingName].toViewModel(vatSchemeEmptyTradingName) shouldBe TradingName(yesNo = TRADING_NAME_NO, tradingName = None)
     }
 
     "extract a TradingName from VatScheme with no VatTradingDetails returns empty trading name" in {
       val vatSchemeEmptyTradingDetails = VatScheme(id = validRegId, tradingDetails = None)
-      TradingName.apply(vatSchemeEmptyTradingDetails) shouldBe TradingName.empty
+      ApiModelTransformer[TradingName].toViewModel(vatSchemeEmptyTradingDetails) shouldBe TradingName()
     }
 
   }

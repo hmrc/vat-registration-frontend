@@ -24,7 +24,6 @@ import org.scalatest.Inside
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.mvc.{Action, AnyContent, Result}
-import services.VatRegistrationService
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future

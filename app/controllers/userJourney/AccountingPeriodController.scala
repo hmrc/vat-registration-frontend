@@ -21,6 +21,7 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
 import forms.vatDetails.AccountingPeriodForm
+import models.ApiModelTransformer
 import models.view._
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -35,10 +36,7 @@ class AccountingPeriodController @Inject()(s4LService: S4LService, vatRegistrati
 
     s4LService.fetchAndGet[AccountingPeriod](CacheKeys.AccountingPeriod.toString) flatMap {
       case Some(viewModel) => Future.successful(viewModel)
-      case None => for {
-        vatScheme <- vatRegistrationService.getVatScheme()
-        viewModel = AccountingPeriod(vatScheme)
-      } yield viewModel
+      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[AccountingPeriod].toViewModel
     } map { viewModel =>
       val form = AccountingPeriodForm.form.fill(viewModel)
       Ok(views.html.pages.accounting_period(form))

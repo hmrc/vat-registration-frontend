@@ -20,11 +20,9 @@ import javax.inject.Singleton
 
 import com.google.inject.ImplementedBy
 import config.WSHttp
-import enums.DownstreamOutcome
 import models.api._
 import play.api.Logger
 import play.api.http.Status
-import services._
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp

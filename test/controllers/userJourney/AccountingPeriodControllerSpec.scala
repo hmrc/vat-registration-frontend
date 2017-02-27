@@ -96,7 +96,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"POST ${routes.AccountingPeriodController.submit()} with accounting period selected is January, April, July and October" should {
 
     "return 303" in {
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod.empty)))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod())))
 
       when(mockS4LService.saveForm[AccountingPeriod]
         (Matchers.eq(CacheKeys.AccountingPeriod.toString), Matchers.any())
@@ -117,7 +117,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"POST ${routes.AccountingPeriodController.submit()} with accounting period selected is February, May, August and November" should {
 
     "return 303" in {
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod.empty)))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod())))
 
       when(mockS4LService.saveForm[AccountingPeriod]
         (Matchers.eq(CacheKeys.AccountingPeriod.toString), Matchers.any())
@@ -138,7 +138,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"POST ${routes.AccountingPeriodController.submit()} with accounting period selected is March, June, September and December" should {
 
     "return 303" in {
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod.empty)))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod())))
 
       when(mockS4LService.saveForm[AccountingPeriod]
         (Matchers.eq(CacheKeys.AccountingPeriod.toString), Matchers.any())

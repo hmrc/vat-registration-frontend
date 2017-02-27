@@ -20,7 +20,7 @@ import builders.AuthBuilder
 import enums.CacheKeys
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.view.{AccountingPeriod, VatChargeExpectancy, VatReturnFrequency}
+import models.view.{VatChargeExpectancy, VatReturnFrequency}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -97,7 +97,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.VatChargeExpectancyController.submit()} with Vat Charge Expectancy selected Yes" should {
 
     "return 303" in {
-      val returnCacheMapVatChargeExpectancy = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy.empty)))
+      val returnCacheMapVatChargeExpectancy = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy())))
 
       when(mockS4LService.saveForm[VatChargeExpectancy]
         (Matchers.eq(CacheKeys.VatChargeExpectancy.toString), Matchers.any())
@@ -118,8 +118,8 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.VatChargeExpectancyController.submit()} with Vat Charge Expectancy selected No" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy.empty)))
-      val returnCacheMapReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency.empty)))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy())))
+      val returnCacheMapReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency())))
 
       when(mockS4LService.saveForm[VatChargeExpectancy](Matchers.eq(CacheKeys.VatChargeExpectancy.toString), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))

@@ -19,12 +19,7 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.DownstreamOutcome
-import play.api.mvc.{Action, AnyContent, Request, Result}
-import services.RegistrationService
-import uk.gov.hmrc.play.http.HeaderCarrier
-
-import scala.concurrent.Future
+import play.api.mvc.{Action, AnyContent}
 
 class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
