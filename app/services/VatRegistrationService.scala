@@ -60,9 +60,9 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   private def s4l[T: Format](cacheKey: CacheKeys.Value)(implicit headerCarrier: HeaderCarrier) =
     s4LService.fetchAndGet[T](cacheKey.toString)
 
-  private def update[C, G](a: Option[C], vatScheme: => VatScheme, group: G)
+  private def update[C, G](vatScheme: => VatScheme, fromS4L: Option[C], logicalGroup: G)
                           (implicit apiTransformer: ApiModelTransformer[C], vmTransformer: ViewModelTransformer[C, G]): G =
-    vmTransformer.toApi(a.getOrElse(apiTransformer.toViewModel(vatScheme)), group)
+    vmTransformer.toApi(fromS4L.getOrElse(apiTransformer.toViewModel(vatScheme)), logicalGroup)
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
     fetchRegistrationId.flatMap(vatRegConnector.getRegistration)
@@ -93,11 +93,11 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
       vs <- getVatScheme()
       vfS4L <- vatFinancialsFromS4L
       vatFinancials = vs.financials.getOrElse(VatFinancials.empty)
-      estimateVatTurnoverVf = update(vfS4L.estimateVatTurnover, vs, vatFinancials)
-      zeroRatedSalesEstimateVf = update(vfS4L.zeroRatedSalesEstimate, vs, estimateVatTurnoverVf)
-      vatChargeExpectancyVf = update(vfS4L.vatChargeExpectancy, vs, zeroRatedSalesEstimateVf)
-      vatReturnFrequencyVf = update(vfS4L.vatReturnFrequency, vs, vatChargeExpectancyVf)
-      accountingPeriodVf = update(vfS4L.accountingPeriod, vs, vatReturnFrequencyVf)
+      estimateVatTurnoverVf = update(vs, vfS4L.estimateVatTurnover, vatFinancials)
+      zeroRatedSalesEstimateVf = update(vs, vfS4L.zeroRatedSalesEstimate, estimateVatTurnoverVf)
+      vatChargeExpectancyVf = update(vs, vfS4L.vatChargeExpectancy, zeroRatedSalesEstimateVf)
+      vatReturnFrequencyVf = update(vs, vfS4L.vatReturnFrequency, vatChargeExpectancyVf)
+      accountingPeriodVf = update(vs, vfS4L.accountingPeriod, vatReturnFrequencyVf)
       response <- vatRegConnector.upsertVatFinancials(vs.id, accountingPeriodVf)
     } yield response
   }
@@ -107,7 +107,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
       vs <- getVatScheme()
       tradingName <- s4l[TradingName](CacheKeys.TradingName)
       vatTradingDetails = vs.tradingDetails.getOrElse(VatTradingDetails())
-      tradingDetails = update(tradingName, vs, vatTradingDetails)
+      tradingDetails = update(vs, tradingName, vatTradingDetails)
       response <- vatRegConnector.upsertVatTradingDetails(vs.id, tradingDetails)
     } yield response
   }
@@ -122,8 +122,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
       vs <- getVatScheme()
       vcS4L <- vatChoiceFromS4L
       vatChoice = vs.vatChoice.getOrElse(VatChoice())
-      sdVatChoice = update(vcS4L.startDate, vs, vatChoice)
-      vrVatChoice = update(vcS4L.voluntaryRegistration, vs, sdVatChoice)
+      sdVatChoice = update(vs, vcS4L.startDate, vatChoice)
+      vrVatChoice = update(vs, vcS4L.voluntaryRegistration, sdVatChoice)
       response <- vatRegConnector.upsertVatChoice(vs.id, vrVatChoice)
     } yield response
   }
