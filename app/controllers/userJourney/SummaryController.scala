@@ -157,7 +157,7 @@ class SummaryController @Inject()(s4LService: S4LService, vatRegistrationService
           case None => throw UnexpectedException(Some(s"selected quarterly accounting period, but periodStart was None"))
         }
       },
-      Some(controllers.userJourney.routes.AccountingPeriodController.show())
+      Some(controllers.userJourney.routes.VatReturnFrequencyController.show())
     )
 
     SummarySection(
