@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package models
+package models.view
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatScheme, VatTradingDetails}
-import models.view.TradingName
 import models.view.TradingName._
+import models.{ApiModelTransformer, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class TradingNameSpec extends UnitSpec with VatRegistrationFixture {
