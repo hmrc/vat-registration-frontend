@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package models
+package models.view
 
 import fixtures.VatRegistrationFixture
+import models.ApiModelTransformer
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
-import models.view.ZeroRatedSales
 import uk.gov.hmrc.play.test.UnitSpec
 
 class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {

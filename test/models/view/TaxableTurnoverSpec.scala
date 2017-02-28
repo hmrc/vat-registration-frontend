@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package models
+package models.view
 
 import fixtures.VatRegistrationFixture
+import models.ApiModelTransformer
 import models.api.{VatChoice, VatScheme}
-import models.view.TaxableTurnover
 import models.view.TaxableTurnover._
 import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.UnitSpec
