@@ -20,42 +20,39 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.TradingNameForm
+import forms.vatDetails.{CompanyBankAccountForm, VoluntaryRegistrationForm}
 import models.ApiModelTransformer
-import models.view.TradingName
+import models.view.{CompanyBankAccount, VoluntaryRegistration}
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
-class TradingNameController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                      ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class CompanyBankAccountController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
+                                             ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
-    s4LService.fetchAndGet[TradingName](CacheKeys.TradingName.toString) flatMap {
+    s4LService.fetchAndGet[CompanyBankAccount](CacheKeys.CompanyBankAccount.toString) flatMap {
       case Some(viewModel) => Future.successful(viewModel)
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[TradingName].toViewModel
+      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[CompanyBankAccount].toViewModel
     } map { viewModel =>
-      val form = TradingNameForm.form.fill(viewModel)
-      Ok(views.html.pages.trading_name(form))
+      val form = CompanyBankAccountForm.form.fill(viewModel)
+      Ok(views.html.pages.company_bank_account(form))
     }
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    TradingNameForm.form.bindFromRequest().fold(
+    CompanyBankAccountForm.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.trading_name(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.company_bank_account(formWithErrors)))
       }, {
-        data: TradingName => {
-          // Save to S4L
-          s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, data) flatMap { _ =>
-            if (TradingName.TRADING_NAME_NO == data.yesNo) {
-              for {
-                _ <- s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, TradingName())
-              } yield Redirect(controllers.userJourney.routes.CompanyBankAccountController.show())
+
+        data: CompanyBankAccount => {
+          s4LService.saveForm[CompanyBankAccount](CacheKeys.CompanyBankAccount.toString, data) flatMap { _ =>
+            if (CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES == data.yesNo) {
+              Future.successful(Redirect(controllers.userJourney.routes.EstimateVatTurnoverController.show()))
             } else {
-              Future.successful(Redirect(controllers.userJourney.routes.CompanyBankAccountController.show()))
+              Future.successful(Redirect(controllers.userJourney.routes.EstimateVatTurnoverController.show()))
             }
           }
         }
