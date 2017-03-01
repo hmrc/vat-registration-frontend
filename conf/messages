@@ -50,6 +50,10 @@ pages.startDate.panels.specificDate.inputField.day    = Day
 pages.startDate.panels.specificDate.inputField.month  = Month
 pages.startDate.panels.specificDate.inputField.year   = Year
 
+## Company Bank Account
+pages.company.bank.account.title                    = Company Bank Account
+pages.company.bank.account.heading                  = Do you have a bank account set up in the name of your company?
+
 ## Trading Name Page
 pages.tradingName.title                             = Trading Name
 pages.tradingName.heading                           = Does the company trade under any other name?

@@ -1,0 +1,41 @@
+@import models.view.CompanyBankAccount
+@(companyBankAccountForm:  Form[CompanyBankAccount])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.company.bank.account.title")) {
+
+  <div class="column-one-third">
+
+      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.company.bank.account.heading")</h1>
+
+      @errorSummary(
+        Messages("app.common.errorSummaryLabel"),
+        companyBankAccountForm
+      )
+
+      @govHelpers.form(action = controllers.userJourney.routes.CompanyBankAccountController.submit()) {
+      <div class="form-group">
+        <fieldset class="inline">
+
+          @govHelpers.inputRadioGroup(
+            field = companyBankAccountForm("companyBankAccountRadio"),
+            Seq(
+              CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES -> Messages("app.common.yes"),
+              CompanyBankAccount.COMPANY_BANK_ACCOUNT_NO -> Messages("app.common.no")
+            ),
+            '_labelAfter -> true,
+            '_labelClass -> "block-label"
+          )
+        </fieldset>
+      </div>
+
+      <div class="form-group">
+        <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+      </div>
+
+      }
+
+    </div>
+
+}
