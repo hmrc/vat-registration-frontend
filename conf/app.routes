@@ -50,6 +50,10 @@ POST        /taxable-turnover               controllers.userJourney.TaxableTurno
 GET         /vat-return-frequency           controllers.userJourney.VatReturnFrequencyController.show
 POST        /vat-return-frequency           controllers.userJourney.VatReturnFrequencyController.submit
 
+## COMPANY BANK ACCOUNT
+GET         /company-bank-account           controllers.userJourney.CompanyBankAccountController.show
+POST        /company-bank-account           controllers.userJourney.CompanyBankAccountController.submit
+
 ## FEEDBACK
 GET         /feedback                       controllers.feedback.FeedbackController.show
 
