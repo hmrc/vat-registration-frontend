@@ -26,12 +26,13 @@ case class TestSetup(taxableTurnoverChoice: String,
                      startDateYear: String,
                      tradingNameChoice: String,
                      tradingName: String,
+                     companyBankAccountChoice: String,
                      estimateVatTurnover: String,
                      zeroRatedSalesChoice: String,
                      zeroRatedSalesEstimate: String,
                      vatChargeExpectancyChoice: String,
                      vatReturnFrequency: String,
-                     accountingPeriod: String) {
+                     accountingPeriod: String ) {
 
 }
 
