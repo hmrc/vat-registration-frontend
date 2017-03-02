@@ -22,9 +22,10 @@ import connectors.test.TestRegistrationConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
 
-class CurrentProfileController @Inject()(vatRegConnector: TestRegistrationConnector, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class CurrentProfileController @Inject()(vatRegConnector: TestRegistrationConnector, ds: CommonPlayDependencies)
+  extends VatRegistrationController(ds) {
 
-  def currentProfileSetup(): Action[AnyContent] =
-    authorised.async { implicit user => implicit request => vatRegConnector.setupCurrentProfile() }
-
+  def currentProfileSetup(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    vatRegConnector.setupCurrentProfile().map(_ => Ok("Current profile setup"))
+  )
 }
