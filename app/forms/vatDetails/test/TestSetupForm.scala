@@ -32,6 +32,7 @@ object TestSetupForm {
       "startDateYear" -> text,
       "tradingNameChoice" -> text,
       "tradingName" -> text,
+      "companyBankAccountChoice" -> text,
       "estimateVatTurnover" -> text,
       "zeroRatedSalesChoice" -> text,
       "zeroRatedSalesEstimate" -> text,
