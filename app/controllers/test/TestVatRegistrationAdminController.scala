@@ -25,7 +25,7 @@ import play.api.mvc.{Action, AnyContent}
 class TestVatRegistrationAdminController @Inject()(vatRegConnector: TestRegistrationConnector, ds: CommonPlayDependencies)
   extends VatRegistrationController(ds) {
 
-  def dropCollection(): Action[AnyContent] =
-    authorised.async { implicit user => implicit request => vatRegConnector.dropCollection() }
-
+  def dropCollection(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    vatRegConnector.dropCollection().map(_ => Ok("DB cleared"))
+  )
 }
