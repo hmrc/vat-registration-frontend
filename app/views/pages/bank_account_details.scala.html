@@ -1,0 +1,92 @@
+@import forms.vatDetails.BankDetailsForm
+@(bankDetailsForm: Form[BankDetailsForm])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+
+@main_template(title = messages("pages.bankDetails.title")) {
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+
+            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.bankDetails.heading")</h1>
+
+            <p>@messages("pages.bankDetails.para1")</p>
+
+            <div class="notice form-group">
+                <i class="icon icon-important">
+                    <span class="visuallyhidden">Warning</span>
+                </i>
+                <strong class="bold-small">@messages("pages.bankDetails.info")</strong>
+            </div>
+
+            @govHelpers.form(action = controllers.userJourney.routes.BankDetailsController.submit()) {
+                <div class="form-group">
+                    <fieldset>
+                        <div class="form-bank-details">
+
+                            <label for="accountName">@Messages("pages.bankDetails.accountName.label")</label>
+                            <span class="form-hint">@messages("pages.bankDetails.accountName.hint")</span>
+                            @govHelpers.input(
+                                bankDetailsForm("accountName"),
+                                '_divClass -> "form-group",
+                                '_inputClass -> "form-control",
+                                '_required -> true
+                            )
+
+                            <label for="accountNumber">@Messages("pages.bankDetails.accountNumber.label")</label>
+                            @govHelpers.input(
+                                bankDetailsForm("accountNumber"),
+                                '_divClass -> "form-group",
+                                '_inputClass -> "form-control",
+                                '_required -> true
+                            )
+
+                            <div class="form-date">
+
+
+                                <fieldset id="sort-code">
+                                    <legend>@messages("pages.bankDetails.sortCode.label")</legend>
+
+                                    @bankDetailsForm("sortCode").errors.map{ error =>
+                                        @govHelpers.errorInline("sort-code", messages(error.message, error.args: _*))
+                                    }
+
+                                    @govHelpers.input(
+                                        bankDetailsForm("sortCode.part1"),
+                                        'type -> "number",
+                                        'min -> "0",
+                                        'max -> "99",
+                                        '_divClass -> "form-group",
+                                        '_inputClass -> "form-control"
+                                    )
+
+                                    @govHelpers.input(
+                                        bankDetailsForm("sortCode.part2"),
+                                        'type -> "number",
+                                        'min -> "0",
+                                        'max -> "99",
+                                        '_divClass -> "form-group",
+                                        '_inputClass -> "form-control"
+                                    )
+
+                                    @govHelpers.input(
+                                        bankDetailsForm("sortCode.part3"),
+                                        'type -> "number",
+                                        'min -> "0",
+                                        'max -> "99",
+                                        '_divClass -> "form-group",
+                                        '_inputClass -> "form-control"
+                                    )
+                                </fieldset>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn button" type="next" id="save-and-continue">Save and continue</button>
+                </div>
+            }
+
+        </div>
+    </div>
+}
