@@ -39,6 +39,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       voluntaryRegistration <- s4LService.fetchAndGet[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString)
       startDate <- s4LService.fetchAndGet[StartDate](CacheKeys.StartDate.toString)
       tradingName <- s4LService.fetchAndGet[TradingName](CacheKeys.TradingName.toString)
+      companyBankAccount <- s4LService.fetchAndGet[CompanyBankAccount](CacheKeys.CompanyBankAccount.toString)
       estimateVatTurnover <- s4LService.fetchAndGet[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString)
       zeroRatedSales <- s4LService.fetchAndGet[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString)
       estimateZeroRatedSales <- s4LService.fetchAndGet[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString)
@@ -54,6 +55,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
         if (startDate.isDefined) s"${startDate.get.year.getOrElse("").toString}" else "",
         if (tradingName.isDefined) tradingName.get.yesNo else "",
         if (tradingName.isDefined) tradingName.get.tradingName.getOrElse("") else "",
+        if (companyBankAccount.isDefined) companyBankAccount.get.yesNo else "",
         if (estimateVatTurnover.isDefined) estimateVatTurnover.get.vatTurnoverEstimate.getOrElse("").toString else "",
         if (zeroRatedSales.isDefined) zeroRatedSales.get.yesNo else "",
         if (estimateZeroRatedSales.isDefined) estimateZeroRatedSales.get.zeroRatedSalesEstimate.getOrElse("").toString else "",
@@ -98,6 +100,12 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             match {
               case "" => TradingName()
               case _ => TradingName(data.tradingNameChoice, Some(data.tradingName))
+            })
+
+            _ <- s4LService.saveForm[CompanyBankAccount](CacheKeys.CompanyBankAccount.toString, data.companyBankAccountChoice
+            match{
+              case "" => CompanyBankAccount()
+              case _ => CompanyBankAccount(data.companyBankAccountChoice)
             })
 
             _ <- s4LService.saveForm[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString, data.estimateVatTurnover
