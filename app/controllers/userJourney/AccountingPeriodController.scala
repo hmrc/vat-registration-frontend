@@ -35,11 +35,14 @@ class AccountingPeriodController @Inject()(s4LService: S4LService, vatRegistrati
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
     s4LService.fetchAndGet[AccountingPeriod](CacheKeys.AccountingPeriod.toString) flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
+      case Some(viewModel) => Future.successful(Some(viewModel))
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[AccountingPeriod].toViewModel
-    } map { viewModel =>
-      val form = AccountingPeriodForm.form.fill(viewModel)
-      Ok(views.html.pages.accounting_period(form))
+    } map {
+      case Some(vm) => {
+        val form = AccountingPeriodForm.form.fill(vm)
+        Ok(views.html.pages.accounting_period(form))
+      }
+      case None => Ok(views.html.pages.accounting_period(AccountingPeriodForm.form))
     }
   })
 

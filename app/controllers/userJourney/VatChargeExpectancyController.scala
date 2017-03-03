@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.VatChargeExpectancyForm
+import forms.vatDetails.{TradingNameForm, VatChargeExpectancyForm}
 import models.ApiModelTransformer
 import models.view._
 import play.api.mvc.{Action, AnyContent}
@@ -35,11 +35,14 @@ class VatChargeExpectancyController @Inject()(s4LService: S4LService, vatRegistr
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
     s4LService.fetchAndGet[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString) flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
+      case Some(viewModel) => Future.successful(Some(viewModel))
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[VatChargeExpectancy].toViewModel
-    } map { viewModel =>
-      val form = VatChargeExpectancyForm.form.fill(viewModel)
-      Ok(views.html.pages.vat_charge_expectancy(form))
+    } map {
+      case Some(vm) => {
+        val form = VatChargeExpectancyForm.form.fill(vm)
+        Ok(views.html.pages.vat_charge_expectancy(form))
+      }
+      case None => Ok(views.html.pages.vat_charge_expectancy(VatChargeExpectancyForm.form))
     }
   })
 

@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.VatReturnFrequencyForm
+import forms.vatDetails.{VatChargeExpectancyForm, VatReturnFrequencyForm}
 import models.ApiModelTransformer
 import models.view.{AccountingPeriod, VatReturnFrequency}
 import play.api.mvc._
@@ -34,13 +34,15 @@ class VatReturnFrequencyController @Inject()(s4LService: S4LService, vatRegistra
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
     s4LService.fetchAndGet[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString) flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
+      case Some(viewModel) => Future.successful(Some(viewModel))
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[VatReturnFrequency].toViewModel
-    } map { viewModel =>
-      val form = VatReturnFrequencyForm.form.fill(viewModel)
-      Ok(views.html.pages.vat_return_frequency(form))
+    } map {
+      case Some(vm) => {
+        val form = VatReturnFrequencyForm.form.fill(vm)
+        Ok(views.html.pages.vat_return_frequency(form))
+      }
+      case None => Ok(views.html.pages.vat_return_frequency(VatReturnFrequencyForm.form))
     }
-
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {

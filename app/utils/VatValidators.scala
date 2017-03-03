@@ -16,19 +16,23 @@
 
 package utils
 
-import forms.vatDetails.{AccountingPeriodForm, EstimateVatTurnoverForm, EstimateZeroRatedSalesForm, TradingNameForm}
-import models.view.{AccountingPeriod, EstimateVatTurnover, EstimateZeroRatedSales, TradingName}
+import forms.vatDetails.AccountingPeriodForm.RADIO_ACCOUNTING_PERIOD
+import forms.vatDetails.EstimateVatTurnoverForm._
+import models.view.{AccountingPeriod, EstimateVatTurnover, EstimateZeroRatedSales}
+import org.apache.commons.lang3.StringUtils
 import play.api.data.validation.{ValidationError, _}
+
+import scala.util.matching.Regex
 
 object VatValidators {
 
-  private val TRADING_NAME_REGEX = """^[A-Za-z0-9.,\-()/!"%&*;'<>][A-Za-z0-9 .,\-()/!"%&*;'<>]{0,55}$"""
-  private val NON_EMPTY_REGEX = """^(?=\s*\S).*$"""
   private val MAX_TURNOVER_ESTIMATE = 1000000000000000L
   private val MIN_TURNOVER_ESTIMATE = 0L
 
-  val EMPTY_TRADING_NAME_MSG_KEY = "pages.tradingName.validation.empty.tradingName"
-  val IN_VALID_TRADING_NAME_MSG_KEY = "pages.tradingName.validation.invalid.tradingName"
+  val MAX_ESTIMATE = 1000000000000000L
+  val MIN_ESTIMATE = 0L
+
+
   val TURNOVER_ESTIMATE_LOW_MSG_KEY = "pages.estimate.vat.turnover.validation.low"
   val TURNOVER_ESTIMATE_HIGH_MSG_KEY = "pages.estimate.vat.turnover.validation.high"
   val TURNOVER_ESTIMATE_EMPTY_MSG_KEY = "pages.estimate.vat.turnover.validation.empty"
@@ -38,27 +42,15 @@ object VatValidators {
   val ZERO_RATED_SALES_ESTIMATE_HIGH_MSG_KEY = "pages.estimate.zero.rated.sales.validation.high"
   val ZERO_RATED_SALES_ESTIMATE_EMPTY_MSG_KEY = "pages.estimate.zero.rated.sales.validation.empty"
 
-  def tradingNameValidation : Constraint[TradingName] = Constraint("constraint.tradingName")({
-    text =>
-      val errors = text match {
-        case _ if text.yesNo == TradingName.TRADING_NAME_YES && !text.tradingName.getOrElse("").matches(NON_EMPTY_REGEX)
-          => Seq(ValidationError(EMPTY_TRADING_NAME_MSG_KEY, TradingNameForm.INPUT_TRADING_NAME))
-        case _ if text.yesNo == TradingName.TRADING_NAME_YES && !text.tradingName.getOrElse("").matches(TRADING_NAME_REGEX)
-          => Seq(ValidationError(IN_VALID_TRADING_NAME_MSG_KEY, TradingNameForm.INPUT_TRADING_NAME))
-        case _ => Nil
-      }
-      if (errors.isEmpty) Valid else Invalid(errors)
-  })
-
   def turnoverEstimateValidation : Constraint[EstimateVatTurnover] = Constraint("constraint.turnoverEstimate")({
     text =>
       val errors = text match {
         case EstimateVatTurnover(None)
-          => Seq(ValidationError(TURNOVER_ESTIMATE_EMPTY_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
-        case _ if text.vatTurnoverEstimate.get < MIN_TURNOVER_ESTIMATE
-          => Seq(ValidationError(TURNOVER_ESTIMATE_LOW_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
-        case _ if text.vatTurnoverEstimate.get > MAX_TURNOVER_ESTIMATE
-          => Seq(ValidationError(TURNOVER_ESTIMATE_HIGH_MSG_KEY, EstimateVatTurnoverForm.INPUT_ESTIMATE))
+          => Seq(ValidationError(TURNOVER_ESTIMATE_EMPTY_MSG_KEY, INPUT_ESTIMATE))
+        case EstimateVatTurnover(Some(estimateVatTurnover)) if estimateVatTurnover < MIN_TURNOVER_ESTIMATE
+          => Seq(ValidationError(TURNOVER_ESTIMATE_LOW_MSG_KEY, INPUT_ESTIMATE))
+        case EstimateVatTurnover(Some(estimateVatTurnover)) if estimateVatTurnover > MAX_TURNOVER_ESTIMATE
+          => Seq(ValidationError(TURNOVER_ESTIMATE_HIGH_MSG_KEY, INPUT_ESTIMATE))
         case _ => Nil
       }
       if (errors.isEmpty) Valid else Invalid(errors)
@@ -68,11 +60,11 @@ object VatValidators {
     text =>
       val errors = text match {
         case EstimateZeroRatedSales(None)
-        => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_EMPTY_MSG_KEY, EstimateZeroRatedSalesForm.INPUT_ESTIMATE))
-        case _ if text.zeroRatedSalesEstimate.get < MIN_TURNOVER_ESTIMATE
-        => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_LOW_MSG_KEY, EstimateZeroRatedSalesForm.INPUT_ESTIMATE))
-        case _ if text.zeroRatedSalesEstimate.get > MAX_TURNOVER_ESTIMATE
-        => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_HIGH_MSG_KEY, EstimateZeroRatedSalesForm.INPUT_ESTIMATE))
+          => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_EMPTY_MSG_KEY, INPUT_ESTIMATE))
+        case EstimateZeroRatedSales(Some(zeroRatedSalesEstimate)) if zeroRatedSalesEstimate < MIN_TURNOVER_ESTIMATE
+          => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_LOW_MSG_KEY, INPUT_ESTIMATE))
+        case EstimateZeroRatedSales(Some(zeroRatedSalesEstimate)) if zeroRatedSalesEstimate > MAX_TURNOVER_ESTIMATE
+          => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_HIGH_MSG_KEY, INPUT_ESTIMATE))
         case _ => Nil
       }
       if (errors.isEmpty) Valid else Invalid(errors)
@@ -81,11 +73,19 @@ object VatValidators {
   def accountingPeriodValidation : Constraint[AccountingPeriod] = Constraint("constraint.accountingPeriod")({
     text =>
       val errors = text match {
-        case _ if !text.accountingPeriod.getOrElse("").matches(NON_EMPTY_REGEX)
-        => Seq(ValidationError(EMPTY_ACCOUNTING_PERIOD_MSG_KEY, AccountingPeriodForm.RADIO_ACCOUNTING_PERIOD))
+        case AccountingPeriod(None) => Seq(ValidationError(EMPTY_ACCOUNTING_PERIOD_MSG_KEY, RADIO_ACCOUNTING_PERIOD))
         case _ => Nil
       }
       if (errors.isEmpty) Valid else Invalid(errors)
   })
+
+  def nonEmptyValidText(field: String, pattern: Regex): Constraint[String] = Constraint[String] {
+    input: String =>
+      input match {
+        case `pattern`(_*) => Valid
+        case s if StringUtils.isNotBlank(s) => Invalid(s"validation.$field.invalid")
+        case _ => Invalid(s"validation.$field.empty")
+      }
+  }
 
 }

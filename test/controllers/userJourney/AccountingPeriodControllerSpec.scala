@@ -46,7 +46,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"GET ${routes.AccountingPeriodController.show()}" should {
 
     "return HTML when there's a Accounting Period model in S4L" in {
-      val accountingPeriod = AccountingPeriod(None)
+      val accountingPeriod = AccountingPeriod()
 
       when(mockS4LService.fetchAndGet[AccountingPeriod](Matchers.eq(CacheKeys.AccountingPeriod.toString))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(accountingPeriod)))
