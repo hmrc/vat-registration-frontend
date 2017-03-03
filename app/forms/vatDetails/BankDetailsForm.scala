@@ -26,6 +26,15 @@ case class SortCode(part1: String, part2: String, part3: String) {
   override def toString: String = Seq(part1, part2, part3).mkString("-")
 }
 
+object SortCode {
+  val SortCodePattern = """^([0-9]{2})-([0-9]{2})-([0-9]{2})$""".r
+
+  def parse(sortCode: String): Option[SortCode] = sortCode match {
+    case SortCodePattern(p1, p2, p3) => Some(SortCode(p1, p2, p3))
+    case _ => None
+  }
+}
+
 object BankDetailsForm {
 
   private val ACCOUNT_TYPE = "business"
