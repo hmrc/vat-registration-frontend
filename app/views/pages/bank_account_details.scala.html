@@ -20,7 +20,6 @@
 
             @govHelpers.form(action = controllers.userJourney.routes.BankDetailsController.submit()) {
                 <div class="form-group">
-                    <fieldset>
                         <div class="form-bank-details">
 
                             <label for="accountName">@Messages("pages.bankDetails.accountName.label")</label>
@@ -28,6 +27,7 @@
                             @govHelpers.input(
                                 bankDetailsForm("accountName"),
                                 '_divClass -> "form-group",
+                                '_maxlength -> 150,
                                 '_inputClass -> "form-control",
                                 '_required -> true
                             )
@@ -36,6 +36,7 @@
                             @govHelpers.input(
                                 bankDetailsForm("accountNumber"),
                                 '_divClass -> "form-group",
+                                '_pattern -> "[0-9]{8}",
                                 '_inputClass -> "form-control",
                                 '_required -> true
                             )
@@ -44,42 +45,49 @@
 
 
                                 <fieldset id="sort-code">
-                                    <legend>@messages("pages.bankDetails.sortCode.label")</legend>
+
+                                    <legend id="sort-code-legend">@messages("pages.bankDetails.sortCode.label")</legend>
 
                                     @bankDetailsForm("sortCode").errors.map{ error =>
-                                        @govHelpers.errorInline("sort-code", messages(error.message, error.args: _*))
+                                       <span class="form-field--error error-notification" role="tooltip"> @messages(error.message, error.args: _*)
                                     }
 
                                     @govHelpers.input(
                                         bankDetailsForm("sortCode.part1"),
-                                        'type -> "number",
-                                        'min -> "0",
-                                        'max -> "99",
+                                        'type -> "text",
+                                        '_pattern -> "[0-9]{2}",
                                         '_divClass -> "form-group",
-                                        '_inputClass -> "form-control"
+                                        '_inputClass -> "form-control",
+                                        '_error_id -> "sort-code-legend",
+                                        '_required -> true
                                     )
 
                                     @govHelpers.input(
                                         bankDetailsForm("sortCode.part2"),
-                                        'type -> "number",
-                                        'min -> "0",
-                                        'max -> "99",
+                                        'type -> "text",
+                                        '_pattern -> "[0-9]{2}",
                                         '_divClass -> "form-group",
-                                        '_inputClass -> "form-control"
+                                        '_inputClass -> "form-control",
+                                        '_error_id -> "sort-code-legend",
+                                        '_required -> true
                                     )
 
                                     @govHelpers.input(
                                         bankDetailsForm("sortCode.part3"),
-                                        'type -> "number",
-                                        'min -> "0",
-                                        'max -> "99",
+                                        'type -> "text",
+                                        '_pattern -> "[0-9]{2}",
                                         '_divClass -> "form-group",
-                                        '_inputClass -> "form-control"
+                                        '_inputClass -> "form-control",
+                                        '_error_id -> "sort-code-legend",
+                                        '_required -> true
                                     )
+
+                                    @bankDetailsForm("sortCode").errors.map { error =>
+                                        </span>
+                                    }
                                 </fieldset>
                             </div>
                         </div>
-                    </fieldset>
                 </div>
 
                 <div class="form-group">

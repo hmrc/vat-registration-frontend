@@ -58,3 +58,12 @@ td {
 	width: 50%;
 	vertical-align: top
 }
+
+#sort-code legend{
+	margin-bottom: 0;
+}
+
+.form-bank-details .form-hint {
+	margin-top: 0;
+	margin-bottom:0;
+}
