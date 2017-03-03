@@ -35,6 +35,7 @@ object FrontendBuild extends Build with MicroService {
     "uk.gov.hmrc" %% "play-health" % "2.0.0",
     "uk.gov.hmrc" %% "play-ui" % "5.3.0",
     "uk.gov.hmrc" %% "http-caching-client" % "6.1.0",
+    "uk.gov.hmrc" %% "play-conditional-form-mapping" % "0.2.0",
     "org.typelevel" %% "cats" % "0.9.0"
   )
 

@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.StartDateForm
+import forms.vatDetails.{EstimateZeroRatedSalesForm, StartDateForm}
 import models.ApiModelTransformer
 import models.view.StartDate
 import play.api.mvc._
@@ -34,13 +34,15 @@ class StartDateController @Inject()(s4LService: S4LService, vatRegistrationServi
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
     s4LService.fetchAndGet[StartDate](CacheKeys.StartDate.toString) flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
+      case Some(viewModel) => Future.successful(Some(viewModel))
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[StartDate].toViewModel
-    } map { viewModel =>
-      val form = StartDateForm.form.fill(viewModel)
-      Ok(views.html.pages.start_date(form))
+    } map {
+      case Some(vm) => {
+        val form = StartDateForm.form.fill(vm)
+        Ok(views.html.pages.start_date(form))
+      }
+      case None => Ok(views.html.pages.start_date(StartDateForm.form))
     }
-
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {

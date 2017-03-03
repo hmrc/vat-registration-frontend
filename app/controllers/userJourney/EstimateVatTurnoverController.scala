@@ -35,11 +35,14 @@ class EstimateVatTurnoverController @Inject()(s4LService: S4LService, vatRegistr
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
     s4LService.fetchAndGet[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString) flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
+      case Some(viewModel) => Future.successful(Some(viewModel))
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[EstimateVatTurnover].toViewModel
-    } map { viewModel =>
-      val form = EstimateVatTurnoverForm.form.fill(viewModel)
-      Ok(views.html.pages.estimate_vat_turnover(form))
+    } map {
+      case Some(vm) => {
+        val form = EstimateVatTurnoverForm.form.fill(vm)
+        Ok(views.html.pages.estimate_vat_turnover(form))
+      }
+      case None => Ok(views.html.pages.estimate_vat_turnover(EstimateVatTurnoverForm.form))
     }
   })
 
