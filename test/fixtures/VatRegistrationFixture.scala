@@ -60,7 +60,7 @@ trait VatRegistrationFixture {
   private val accountNumber = "12345678"
   private val period = "monthly"
   val validVatFinancials = VatFinancials(
-    bankAccount = Some(VatBankAccount(tradingName, sortCode, accountNumber)),
+    bankAccount = Some(VatBankAccount(tradingName, accountNumber, sortCode)),
     turnoverEstimate = turnoverEstimate,
     zeroRatedSalesEstimate = Some(estimatedSales),
     reclaimVatOnMostReturns = true,

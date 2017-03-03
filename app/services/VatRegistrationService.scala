@@ -22,7 +22,7 @@ import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.CacheKeys
 import enums.DownstreamOutcome._
-import models.api.{VatChoice, VatFinancials, VatScheme, VatTradingDetails}
+import models.api._
 import models.s4l.{S4LVatChoice, S4LVatFinancials}
 import models.view._
 import models.{ApiModelTransformer, ViewModelTransformer}
@@ -87,18 +87,20 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
         s4l[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales) |@|
         s4l[VatChargeExpectancy](CacheKeys.VatChargeExpectancy) |@|
         s4l[VatReturnFrequency](CacheKeys.VatReturnFrequency) |@|
-        s4l[AccountingPeriod](CacheKeys.AccountingPeriod) map S4LVatFinancials
+        s4l[AccountingPeriod](CacheKeys.AccountingPeriod) |@|
+        s4l[CompanyBankAccountDetails](CacheKeys.CompanyBankAccountDetails) map S4LVatFinancials
 
     for {
       vs <- getVatScheme()
       vfS4L <- vatFinancialsFromS4L
-      vatFinancials = vs.financials.getOrElse(VatFinancials.empty)
+      vatFinancials = vs.financials.getOrElse(VatFinancials.default)
       estimateVatTurnoverVf = update(vs, vfS4L.estimateVatTurnover, vatFinancials)
       zeroRatedSalesEstimateVf = update(vs, vfS4L.zeroRatedSalesEstimate, estimateVatTurnoverVf)
       vatChargeExpectancyVf = update(vs, vfS4L.vatChargeExpectancy, zeroRatedSalesEstimateVf)
       vatReturnFrequencyVf = update(vs, vfS4L.vatReturnFrequency, vatChargeExpectancyVf)
       accountingPeriodVf = update(vs, vfS4L.accountingPeriod, vatReturnFrequencyVf)
-      response <- vatRegConnector.upsertVatFinancials(vs.id, accountingPeriodVf)
+      bankAccountDetailsVf = update(vs, vfS4L.companyBankAccountDetails, accountingPeriodVf)
+      response <- vatRegConnector.upsertVatFinancials(vs.id, bankAccountDetailsVf)
     } yield response
   }
 

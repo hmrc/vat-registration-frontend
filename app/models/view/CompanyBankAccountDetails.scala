@@ -16,8 +16,8 @@
 
 package models.view
 
-import models.ApiModelTransformer
-import models.api.VatScheme
+import models.api.{VatBankAccount, VatFinancials, VatScheme}
+import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class CompanyBankAccountDetails(accountName: String = "", accountNumber: String = "", sortCode: String = "")
@@ -25,6 +25,12 @@ case class CompanyBankAccountDetails(accountName: String = "", accountNumber: St
 object CompanyBankAccountDetails {
 
   implicit val format = Json.format[CompanyBankAccountDetails]
+
+  implicit val viewModelTransformer = ViewModelTransformer[CompanyBankAccountDetails, VatFinancials] {
+    (c: CompanyBankAccountDetails, g: VatFinancials) =>
+      g.copy(bankAccount = Some(VatBankAccount(c.accountName, c.accountNumber, c.sortCode)))
+  }
+
 
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
     vs.financials.flatMap(_.bankAccount)

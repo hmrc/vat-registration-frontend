@@ -56,7 +56,7 @@ class BankDetailsController @Inject()(s4LService: S4LService, vatRegistrationSer
             accountName = form.accountName,
             accountNumber = form.accountNumber,
             sortCode = form.sortCode.toString
-          )).map(_ => Redirect(controllers.userJourney.routes.SummaryController.show()))
+          )).map(_ => Redirect(controllers.userJourney.routes.EstimateVatTurnoverController.show()))
       })
   })
 
