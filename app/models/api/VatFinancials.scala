@@ -36,10 +36,6 @@ object VatFinancials {
       (__ \ "accountingPeriods").format[VatAccountingPeriod]
     ) (VatFinancials.apply, unlift(VatFinancials.unapply))
 
-  // TODO remove use of 'default' on VatBankAccount once Bank Account story is in place
-  def empty: VatFinancials = VatFinancials(
-    bankAccount = Some(VatBankAccount.default),
-    turnoverEstimate = 0L,
-    reclaimVatOnMostReturns = false,
-    vatAccountingPeriod = VatAccountingPeriod(None, ""))
+  val default = VatFinancials(turnoverEstimate = 0L, vatAccountingPeriod = VatAccountingPeriod.default, reclaimVatOnMostReturns = false)
+
 }

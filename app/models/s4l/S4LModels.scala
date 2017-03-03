@@ -24,7 +24,8 @@ case class S4LVatFinancials(
                              zeroRatedSalesEstimate: Option[EstimateZeroRatedSales],
                              vatChargeExpectancy: Option[VatChargeExpectancy],
                              vatReturnFrequency: Option[VatReturnFrequency],
-                             accountingPeriod: Option[AccountingPeriod]
+                             accountingPeriod: Option[AccountingPeriod],
+                             companyBankAccountDetails: Option[CompanyBankAccountDetails]
                            )
 
 case class S4LVatChoice(
