@@ -19,22 +19,47 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatDetails.BankDetailsForm.form
+import enums.CacheKeys
+import forms.vatDetails.{BankDetailsForm, SortCode}
+import models.ApiModelTransformer
+import models.view.CompanyBankAccountDetails
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
+
+import scala.concurrent.Future
 
 class BankDetailsController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
                                       ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = Action(implicit request => Ok(views.html.pages.bank_account_details(form)))
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    s4LService.fetchAndGet[CompanyBankAccountDetails](CacheKeys.CompanyBankAccountDetails.toString) flatMap {
+      case Some(viewModel) => Future.successful(viewModel)
+      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[CompanyBankAccountDetails].toViewModel
+    } map { viewModel =>
+      val form = BankDetailsForm.form.fill(
+        BankDetailsForm(
+          accountName = viewModel.accountName,
+          accountNumber = viewModel.accountNumber,
+          sortCode = SortCode.parse(viewModel.sortCode).getOrElse(SortCode("", "", ""))))
+      Ok(views.html.pages.bank_account_details(form))
+    }
+  })
 
-  def submit: Action[AnyContent] = Action(implicit request => {
-    form.bindFromRequest().fold(
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    BankDetailsForm.form.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(views.html.pages.bank_account_details(formWithErrors))
-      },
-      _ => Ok("Done")
-    )
+        Future.successful(BadRequest(views.html.pages.bank_account_details(formWithErrors)))
+      }, (form: BankDetailsForm) => {
+        s4LService.saveForm[CompanyBankAccountDetails](
+          CacheKeys.CompanyBankAccountDetails.toString,
+          CompanyBankAccountDetails(
+            accountName = form.accountName,
+            accountNumber = form.accountNumber,
+            sortCode = form.sortCode.toString
+          )).map(_ => Redirect(controllers.userJourney.routes.SummaryController.show()))
+      })
   })
 
 }
+
+
