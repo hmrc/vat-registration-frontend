@@ -16,8 +16,9 @@
 
 package models.view
 
+import enums.CacheKeys
 import models.api.{VatChoice, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.Json
@@ -60,6 +61,7 @@ object StartDate {
     g.copy(startDate = c.toDateTime)
   }
 
+  implicit val cacheKeyProvider = CacheKey[StartDate](CacheKeys.StartDate.toString)
 
   def fromDateTime(d: DateTime): StartDate =
   // TODO: Remove check when start date becomes optional in next story

@@ -54,6 +54,7 @@ trait VatRegistrationFixture {
   val validVatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
   val validVatReturnFrequency = VatReturnFrequency(VatReturnFrequency.QUARTERLY)
   val validAccountingPeriod = AccountingPeriod(Some(AccountingPeriod.MAR_JUN_SEP_DEC))
+  val validBankAccountDetails = CompanyBankAccountDetails(tradingName, accountNumber, sortCode)
 
 
   private val sortCode = "10-10-10"

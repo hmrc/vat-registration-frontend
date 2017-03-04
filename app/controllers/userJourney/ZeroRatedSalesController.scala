@@ -19,7 +19,6 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
 import forms.vatDetails.ZeroRatedSalesForm
 import models.ApiModelTransformer
 import models.view._
@@ -34,7 +33,7 @@ class ZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegistration
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    s4LService.fetchAndGet[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString) flatMap {
+    s4LService.fetchAndGet[ZeroRatedSales]() flatMap {
       case Some(viewModel) => Future.successful(viewModel)
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[ZeroRatedSales].toViewModel
     } map { viewModel =>
@@ -49,9 +48,9 @@ class ZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegistration
         Future.successful(BadRequest(views.html.pages.zero_rated_sales(formWithErrors)))
       }, {
         data: ZeroRatedSales => {
-          s4LService.saveForm[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString, data) flatMap { _ =>
+          s4LService.saveForm[ZeroRatedSales](data) flatMap { _ =>
             if (ZeroRatedSales.ZERO_RATED_SALES_NO == data.yesNo) {
-              s4LService.saveForm[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString, EstimateZeroRatedSales())
+              s4LService.saveForm[EstimateZeroRatedSales](EstimateZeroRatedSales())
                 .map { _ => Redirect(controllers.userJourney.routes.VatChargeExpectancyController.show()) }
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.EstimateZeroRatedSalesController.show()))

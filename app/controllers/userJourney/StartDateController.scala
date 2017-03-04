@@ -19,7 +19,6 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
 import forms.vatDetails.StartDateForm
 import models.ApiModelTransformer
 import models.view.StartDate
@@ -33,7 +32,7 @@ class StartDateController @Inject()(s4LService: S4LService, vatRegistrationServi
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    s4LService.fetchAndGet[StartDate](CacheKeys.StartDate.toString) flatMap {
+    s4LService.fetchAndGet[StartDate]() flatMap {
       case Some(viewModel) => Future.successful(viewModel)
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[StartDate].toViewModel
     } map { viewModel =>
@@ -49,9 +48,9 @@ class StartDateController @Inject()(s4LService: S4LService, vatRegistrationServi
         Future.successful(BadRequest(views.html.pages.start_date(formWithErrors)))
       }, {
         data: StartDate => {
-          s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, data) flatMap { _ =>
+          s4LService.saveForm[StartDate](data) flatMap { _ =>
             if (StartDate.SPECIFIC_DATE != data.dateType) {
-              s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, StartDate())
+              s4LService.saveForm[StartDate](StartDate())
                 .map { _ => Redirect(controllers.userJourney.routes.TradingNameController.show()) }
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.TradingNameController.show()))

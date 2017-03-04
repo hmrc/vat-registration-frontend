@@ -19,7 +19,6 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
 import forms.vatDetails.VatChargeExpectancyForm
 import models.ApiModelTransformer
 import models.view._
@@ -34,7 +33,7 @@ class VatChargeExpectancyController @Inject()(s4LService: S4LService, vatRegistr
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    s4LService.fetchAndGet[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString) flatMap {
+    s4LService.fetchAndGet[VatChargeExpectancy]() flatMap {
       case Some(viewModel) => Future.successful(viewModel)
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[VatChargeExpectancy].toViewModel
     } map { viewModel =>
@@ -49,9 +48,9 @@ class VatChargeExpectancyController @Inject()(s4LService: S4LService, vatRegistr
         Future.successful(BadRequest(views.html.pages.vat_charge_expectancy(formWithErrors)))
       }, {
         data: VatChargeExpectancy => {
-          s4LService.saveForm[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString, data) flatMap { _ =>
+          s4LService.saveForm[VatChargeExpectancy](data) flatMap { _ =>
             if (VatChargeExpectancy.VAT_CHARGE_NO == data.yesNo) {
-              s4LService.saveForm[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString, VatReturnFrequency(VatReturnFrequency.QUARTERLY))
+              s4LService.saveForm[VatReturnFrequency](VatReturnFrequency(VatReturnFrequency.QUARTERLY))
                 .map { _ => Redirect(controllers.userJourney.routes.AccountingPeriodController.show()) }
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.VatReturnFrequencyController.show()))

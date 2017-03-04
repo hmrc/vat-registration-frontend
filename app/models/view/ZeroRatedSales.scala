@@ -16,8 +16,9 @@
 
 package models.view
 
-import models.ApiModelTransformer
+import enums.CacheKeys
 import models.api.{VatFinancials, VatScheme}
+import models.{ApiModelTransformer, CacheKey}
 import play.api.libs.json.{Json, OFormat}
 
 case class ZeroRatedSales(yesNo: String = "")
@@ -37,4 +38,5 @@ object ZeroRatedSales {
     } getOrElse ZeroRatedSales()
   }
 
+  implicit val cacheKeyProvider = CacheKey[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString)
 }

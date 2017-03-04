@@ -16,9 +16,10 @@
 
 package models.view
 
+import enums.CacheKeys
 import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import models.api.{VatChoice, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class VoluntaryRegistration(yesNo: String = "")
@@ -39,5 +40,7 @@ object VoluntaryRegistration {
   implicit val viewModelTransformer = ViewModelTransformer { (c: VoluntaryRegistration, g: VatChoice) =>
     g.copy(necessity = if (REGISTER_YES == c.yesNo) NECESSITY_VOLUNTARY else NECESSITY_OBLIGATORY)
   }
+
+  implicit val cacheKeyProvider = CacheKey[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString)
 
 }

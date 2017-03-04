@@ -19,7 +19,6 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
 import forms.vatDetails.VatReturnFrequencyForm
 import models.ApiModelTransformer
 import models.view.{AccountingPeriod, VatReturnFrequency}
@@ -33,7 +32,7 @@ class VatReturnFrequencyController @Inject()(s4LService: S4LService, vatRegistra
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    s4LService.fetchAndGet[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString) flatMap {
+    s4LService.fetchAndGet[VatReturnFrequency]() flatMap {
       case Some(viewModel) => Future.successful(viewModel)
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[VatReturnFrequency].toViewModel
     } map { viewModel =>
@@ -49,9 +48,9 @@ class VatReturnFrequencyController @Inject()(s4LService: S4LService, vatRegistra
         Future.successful(BadRequest(views.html.pages.vat_return_frequency(formWithErrors)))
       }, {
         data: VatReturnFrequency => {
-          s4LService.saveForm[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString, data) flatMap { _ =>
+          s4LService.saveForm[VatReturnFrequency](data) flatMap { _ =>
             if (VatReturnFrequency.MONTHLY == data.frequencyType) {
-              s4LService.saveForm[AccountingPeriod](CacheKeys.AccountingPeriod.toString, AccountingPeriod())
+              s4LService.saveForm[AccountingPeriod](AccountingPeriod())
                 .map { _ => Redirect(controllers.userJourney.routes.SummaryController.show()) }
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.AccountingPeriodController.show()))

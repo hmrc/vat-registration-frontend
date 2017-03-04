@@ -16,8 +16,9 @@
 
 package models.view
 
+import enums.CacheKeys
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class VatReturnFrequency(frequencyType: String = "")
@@ -37,5 +38,7 @@ object VatReturnFrequency {
   implicit val viewModelTransformer = ViewModelTransformer { (c: VatReturnFrequency, g: VatFinancials) =>
     g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(frequency = c.frequencyType))
   }
+
+  implicit val cacheKeyProvider = CacheKey[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString)
 
 }
