@@ -16,8 +16,9 @@
 
 package models.view
 
+import enums.CacheKeys
 import models.api.{VatBankAccount, VatFinancials, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class CompanyBankAccountDetails(accountName: String = "", accountNumber: String = "", sortCode: String = "")
@@ -38,4 +39,8 @@ object CompanyBankAccountDetails {
       .getOrElse(CompanyBankAccountDetails())
   }
 
+
+  implicit val cacheKeyProvider = CacheKey[CompanyBankAccountDetails] {
+    CacheKeys.CompanyBankAccountDetails.toString
+  }
 }

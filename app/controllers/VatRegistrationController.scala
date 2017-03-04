@@ -20,11 +20,17 @@ import javax.inject.{Inject, Singleton}
 
 import auth.VatTaxRegime
 import config.FrontendAuthConnector
+import models.{ApiModelTransformer, CacheKey}
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.Format
+import services.{S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.play.http.HeaderCarrier
+
+import scala.concurrent.Future
 
 abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController with I18nSupport with Actions {
 
@@ -49,6 +55,14 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
     * @return an AuthenticatedBy action builder that is specific to VatTaxRegime and GGConfidence confidence level
     */
   protected def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
+
+  protected def viewModel[T: ApiModelTransformer : CacheKey : Format]
+  (default: => T)
+  (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService, headerCarrier: HeaderCarrier): Future[T] =
+    s4LService.fetchAndGet[T]() flatMap {
+      case Some(vm) => Future.successful(vm)
+      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[T].toViewModel
+    }
 
 }
 

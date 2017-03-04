@@ -19,28 +19,24 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
 import forms.vatDetails.{BankDetailsForm, SortCode}
-import models.ApiModelTransformer
 import models.view.CompanyBankAccountDetails
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
-class BankDetailsController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                      ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class BankDetailsController @Inject()(ds: CommonPlayDependencies)
+                                     (implicit s4l: S4LService, vatRegistrationService: VatRegistrationService)
+  extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    s4LService.fetchAndGet[CompanyBankAccountDetails](CacheKeys.CompanyBankAccountDetails.toString) flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[CompanyBankAccountDetails].toViewModel
-    } map { viewModel =>
+    viewModel(CompanyBankAccountDetails()).map { vm =>
       val form = BankDetailsForm.form.fill(
         BankDetailsForm(
-          accountName = viewModel.accountName,
-          accountNumber = viewModel.accountNumber,
-          sortCode = SortCode.parse(viewModel.sortCode).getOrElse(SortCode("", "", ""))))
+          accountName = vm.accountName,
+          accountNumber = vm.accountNumber,
+          sortCode = SortCode.parse(vm.sortCode).getOrElse(SortCode("", "", ""))))
       Ok(views.html.pages.bank_account_details(form))
     }
   })
@@ -50,8 +46,7 @@ class BankDetailsController @Inject()(s4LService: S4LService, vatRegistrationSer
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.bank_account_details(formWithErrors)))
       }, (form: BankDetailsForm) => {
-        s4LService.saveForm[CompanyBankAccountDetails](
-          CacheKeys.CompanyBankAccountDetails.toString,
+        s4l.saveForm[CompanyBankAccountDetails](
           CompanyBankAccountDetails(
             accountName = form.accountName,
             accountNumber = form.accountNumber,

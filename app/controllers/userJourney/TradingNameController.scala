@@ -19,7 +19,6 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
 import forms.vatDetails.TradingNameForm
 import models.ApiModelTransformer
 import models.view.TradingName
@@ -33,7 +32,7 @@ class TradingNameController @Inject()(s4LService: S4LService, vatRegistrationSer
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    s4LService.fetchAndGet[TradingName](CacheKeys.TradingName.toString) flatMap {
+    s4LService.fetchAndGet[TradingName]() flatMap {
       case Some(viewModel) => Future.successful(viewModel)
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[TradingName].toViewModel
     } map { viewModel =>
@@ -49,10 +48,10 @@ class TradingNameController @Inject()(s4LService: S4LService, vatRegistrationSer
       }, {
         data: TradingName => {
           // Save to S4L
-          s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, data) flatMap { _ =>
+          s4LService.saveForm[TradingName](data) flatMap { _ =>
             if (TradingName.TRADING_NAME_NO == data.yesNo) {
               for {
-                _ <- s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, TradingName())
+                _ <- s4LService.saveForm[TradingName](TradingName())
               } yield Redirect(controllers.userJourney.routes.CompanyBankAccountController.show())
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.CompanyBankAccountController.show()))

@@ -19,7 +19,6 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
 import forms.vatDetails.VoluntaryRegistrationForm
 import models.ApiModelTransformer
 import models.view.VoluntaryRegistration
@@ -33,7 +32,7 @@ class VoluntaryRegistrationController @Inject()(s4LService: S4LService, vatRegis
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    s4LService.fetchAndGet[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString) flatMap {
+    s4LService.fetchAndGet[VoluntaryRegistration]() flatMap {
       case Some(viewModel) => Future.successful(viewModel)
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[VoluntaryRegistration].toViewModel
     } map { viewModel =>
@@ -49,7 +48,7 @@ class VoluntaryRegistrationController @Inject()(s4LService: S4LService, vatRegis
       }, {
 
         data: VoluntaryRegistration => {
-          s4LService.saveForm[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString, data) flatMap { _ =>
+          s4LService.saveForm[VoluntaryRegistration](data) flatMap { _ =>
             if (VoluntaryRegistration.REGISTER_YES == data.yesNo) {
               Future.successful(Redirect(controllers.userJourney.routes.StartDateController.show()))
             } else {

@@ -19,25 +19,20 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
 import forms.vatDetails.CompanyBankAccountForm
-import models.ApiModelTransformer
 import models.view.CompanyBankAccount
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
-class CompanyBankAccountController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                             ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
+                                            (implicit s4l: S4LService, vatRegService: VatRegistrationService)
+  extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    s4LService.fetchAndGet[CompanyBankAccount](CacheKeys.CompanyBankAccount.toString) flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[CompanyBankAccount].toViewModel
-    } map { viewModel =>
-      val form = CompanyBankAccountForm.form.fill(viewModel)
-      Ok(views.html.pages.company_bank_account(form))
+    viewModel[CompanyBankAccount](CompanyBankAccount()) map { vm =>
+      Ok(views.html.pages.company_bank_account(CompanyBankAccountForm.form.fill(vm)))
     }
   })
 
@@ -47,7 +42,7 @@ class CompanyBankAccountController @Inject()(s4LService: S4LService, vatRegistra
         Future.successful(BadRequest(views.html.pages.company_bank_account(formWithErrors)))
       }, {
         data: CompanyBankAccount => {
-          s4LService.saveForm[CompanyBankAccount](CacheKeys.CompanyBankAccount.toString, data) map { _ =>
+          s4l.saveForm[CompanyBankAccount](data) map { _ =>
             if (CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES == data.yesNo) {
               Redirect(controllers.userJourney.routes.BankDetailsController.show())
             } else {

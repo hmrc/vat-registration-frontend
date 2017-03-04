@@ -20,12 +20,11 @@ import javax.inject.Inject
 
 import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, VatRegistrationConnector}
-import enums.CacheKeys
 import enums.DownstreamOutcome._
 import models.api._
 import models.s4l.{S4LVatChoice, S4LVatFinancials}
 import models.view._
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -57,8 +56,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   import cats.instances.future._
   import cats.syntax.cartesian._
 
-  private def s4l[T: Format](cacheKey: CacheKeys.Value)(implicit headerCarrier: HeaderCarrier) =
-    s4LService.fetchAndGet[T](cacheKey.toString)
+  private def s4l[T: Format : CacheKey]()(implicit headerCarrier: HeaderCarrier) = s4LService.fetchAndGet[T]()
 
   private def update[C, G](vatScheme: => VatScheme, fromS4L: Option[C], logicalGroup: G)
                           (implicit apiTransformer: ApiModelTransformer[C], vmTransformer: ViewModelTransformer[C, G]): G =
@@ -83,12 +81,12 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
 
     def vatFinancialsFromS4L =
-      s4l[EstimateVatTurnover](CacheKeys.EstimateVatTurnover) |@|
-        s4l[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales) |@|
-        s4l[VatChargeExpectancy](CacheKeys.VatChargeExpectancy) |@|
-        s4l[VatReturnFrequency](CacheKeys.VatReturnFrequency) |@|
-        s4l[AccountingPeriod](CacheKeys.AccountingPeriod) |@|
-        s4l[CompanyBankAccountDetails](CacheKeys.CompanyBankAccountDetails) map S4LVatFinancials
+      s4l[EstimateVatTurnover]() |@|
+        s4l[EstimateZeroRatedSales]() |@|
+        s4l[VatChargeExpectancy]() |@|
+        s4l[VatReturnFrequency]() |@|
+        s4l[AccountingPeriod]() |@|
+        s4l[CompanyBankAccountDetails]() map S4LVatFinancials
 
     for {
       vs <- getVatScheme()
@@ -107,7 +105,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
     for {
       vs <- getVatScheme()
-      tradingName <- s4l[TradingName](CacheKeys.TradingName)
+      tradingName <- s4l[TradingName]()
       vatTradingDetails = vs.tradingDetails.getOrElse(VatTradingDetails())
       tradingDetails = update(vs, tradingName, vatTradingDetails)
       response <- vatRegConnector.upsertVatTradingDetails(vs.id, tradingDetails)
@@ -116,9 +114,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
 
   def submitVatChoice()(implicit hc: HeaderCarrier): Future[VatChoice] = {
 
-    def vatChoiceFromS4L =
-      s4l[StartDate](CacheKeys.StartDate) |@|
-        s4l[VoluntaryRegistration](CacheKeys.VoluntaryRegistration) map S4LVatChoice
+    def vatChoiceFromS4L = s4l[StartDate]() |@| s4l[VoluntaryRegistration]() map S4LVatChoice
 
     for {
       vs <- getVatScheme()

@@ -16,8 +16,9 @@
 
 package models.view
 
+import enums.CacheKeys
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
 case class AccountingPeriod(accountingPeriod: Option[String] = None)
@@ -42,5 +43,5 @@ object AccountingPeriod {
   implicit val viewModelTransformer = ViewModelTransformer { (c: AccountingPeriod, g: VatFinancials) =>
     g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(periodStart = c.accountingPeriod.map(_.toLowerCase)))
   }
-
+  implicit val cacheKeyProvider = CacheKey[AccountingPeriod](CacheKeys.AccountingPeriod.toString)
 }

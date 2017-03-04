@@ -19,7 +19,6 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
 import forms.vatDetails.AccountingPeriodForm
 import models.ApiModelTransformer
 import models.view._
@@ -34,7 +33,7 @@ class AccountingPeriodController @Inject()(s4LService: S4LService, vatRegistrati
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    s4LService.fetchAndGet[AccountingPeriod](CacheKeys.AccountingPeriod.toString) flatMap {
+    s4LService.fetchAndGet[AccountingPeriod]() flatMap {
       case Some(viewModel) => Future.successful(viewModel)
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[AccountingPeriod].toViewModel
     } map { viewModel =>
@@ -49,7 +48,7 @@ class AccountingPeriodController @Inject()(s4LService: S4LService, vatRegistrati
         Future.successful(BadRequest(views.html.pages.accounting_period(formWithErrors)))
       }, {
         data: AccountingPeriod => {
-          s4LService.saveForm[AccountingPeriod](CacheKeys.AccountingPeriod.toString, data) map { _ =>
+          s4LService.saveForm(data) map { _ =>
             Redirect(controllers.userJourney.routes.SummaryController.show())
           }
         }

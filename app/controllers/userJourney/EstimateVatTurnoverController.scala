@@ -19,7 +19,6 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
 import forms.vatDetails.EstimateVatTurnoverForm
 import models.ApiModelTransformer
 import models.view.EstimateVatTurnover
@@ -34,7 +33,7 @@ class EstimateVatTurnoverController @Inject()(s4LService: S4LService, vatRegistr
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    s4LService.fetchAndGet[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString) flatMap {
+    s4LService.fetchAndGet[EstimateVatTurnover]() flatMap {
       case Some(viewModel) => Future.successful(viewModel)
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[EstimateVatTurnover].toViewModel
     } map { viewModel =>
@@ -49,7 +48,7 @@ class EstimateVatTurnoverController @Inject()(s4LService: S4LService, vatRegistr
         Future.successful(BadRequest(views.html.pages.estimate_vat_turnover(formWithErrors)))
       }, {
         data: EstimateVatTurnover => {
-          s4LService.saveForm[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString, data) map { _ =>
+          s4LService.saveForm[EstimateVatTurnover](data) map { _ =>
             Redirect(controllers.userJourney.routes.ZeroRatedSalesController.show())
           }
         }
