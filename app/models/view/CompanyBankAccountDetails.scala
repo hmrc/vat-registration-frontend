@@ -40,7 +40,5 @@ object CompanyBankAccountDetails {
   }
 
 
-  implicit val cacheKeyProvider = CacheKey[CompanyBankAccountDetails] {
-    CacheKeys.CompanyBankAccountDetails.toString
-  }
+  implicit val cacheKey = CacheKey[CompanyBankAccountDetails](CacheKeys.CompanyBankAccountDetails)
 }

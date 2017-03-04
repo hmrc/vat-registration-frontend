@@ -38,6 +38,6 @@ object TaxableTurnover {
     } getOrElse TaxableTurnover()
   }
 
-  implicit val cacheKeyProvider = CacheKey[TaxableTurnover](CacheKeys.TaxableTurnover.toString)
+  implicit val cacheKey = CacheKey[TaxableTurnover](CacheKeys.TaxableTurnover)
 
 }

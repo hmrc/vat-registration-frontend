@@ -43,5 +43,7 @@ object AccountingPeriod {
   implicit val viewModelTransformer = ViewModelTransformer { (c: AccountingPeriod, g: VatFinancials) =>
     g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(periodStart = c.accountingPeriod.map(_.toLowerCase)))
   }
-  implicit val cacheKeyProvider = CacheKey[AccountingPeriod](CacheKeys.AccountingPeriod.toString)
+
+  implicit val cacheKey = CacheKey[AccountingPeriod](CacheKeys.AccountingPeriod)
+
 }

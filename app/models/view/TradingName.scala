@@ -47,6 +47,6 @@ object TradingName {
     g.copy(tradingName = c.tradingName.getOrElse(""))
   }
 
-  implicit val cacheKeyProvider = CacheKey[TradingName](CacheKeys.TradingName.toString)
+  implicit val cacheKey = CacheKey[TradingName](CacheKeys.TradingName)
 
 }

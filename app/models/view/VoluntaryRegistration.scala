@@ -41,6 +41,6 @@ object VoluntaryRegistration {
     g.copy(necessity = if (REGISTER_YES == c.yesNo) NECESSITY_VOLUNTARY else NECESSITY_OBLIGATORY)
   }
 
-  implicit val cacheKeyProvider = CacheKey[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString)
+  implicit val cacheKey = CacheKey[VoluntaryRegistration](CacheKeys.VoluntaryRegistration)
 
 }

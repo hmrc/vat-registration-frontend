@@ -16,6 +16,8 @@
 
 package models
 
+import enums.CacheKeys
+
 trait CacheKey[T] {
 
   def cacheKey: String
@@ -26,8 +28,8 @@ object CacheKey {
 
   def apply[T: CacheKey]: CacheKey[T] = implicitly
 
-  def apply[T](key: => String): CacheKey[T] = new CacheKey[T]() {
-    override def cacheKey: String = key
+  def apply[T](key: => CacheKeys.Value): CacheKey[T] = new CacheKey[T]() {
+    override def cacheKey: String = key.toString
   }
 
 }
