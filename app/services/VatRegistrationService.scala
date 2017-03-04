@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, VatRegistrationConnector}
+import enums.DownstreamOutcome
 import enums.DownstreamOutcome._
 import models.api._
 import models.s4l.{S4LVatChoice, S4LVatFinancials}
@@ -34,9 +35,9 @@ import scala.concurrent.Future
 @ImplementedBy(classOf[VatRegistrationService])
 trait RegistrationService {
 
-  def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Value]
+  def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value]
 
-  def submitVatScheme()(implicit hc: HeaderCarrier): Future[Value]
+  def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value]
 
   def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails]
 
@@ -68,14 +69,13 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Boolean] =
     fetchRegistrationId.flatMap(vatRegConnector.deleteVatScheme)
 
-  def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Value] = {
+  def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] =
     for {
       vatScheme <- vatRegConnector.createNewRegistration()
       _ <- keystoreConnector.cache[String]("RegistrationId", vatScheme.id)
     } yield Success
-  }
 
-  def submitVatScheme()(implicit hc: HeaderCarrier): Future[Value] =
+  def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] =
     submitTradingDetails |@| submitVatChoice |@| submitVatFinancials map { case res@_ => Success }
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {

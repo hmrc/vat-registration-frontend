@@ -29,7 +29,7 @@ import scala.concurrent.Future
 @ImplementedBy(classOf[PersistenceService])
 trait S4LService extends CommonService {
 
-  val s4LConnector: S4LConnector
+  private[services] val s4LConnector: S4LConnector
 
   def saveForm[T: CacheKey](data: T)(implicit headerCarrier: HeaderCarrier, format: Format[T]): Future[CacheMap] =
     fetchRegistrationId.flatMap(s4LConnector.saveForm[T](_, CacheKey[T].cacheKey, data))

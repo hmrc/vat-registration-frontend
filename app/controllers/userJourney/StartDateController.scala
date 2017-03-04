@@ -40,16 +40,13 @@ class StartDateController @Inject()(ds: CommonPlayDependencies)
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.start_date(formWithErrors)))
       }, {
-        data: StartDate => {
-          s4LService.saveForm[StartDate](data) flatMap { _ =>
-            if (StartDate.SPECIFIC_DATE != data.dateType) {
-              s4LService.saveForm[StartDate](StartDate())
-                .map { _ => Redirect(controllers.userJourney.routes.TradingNameController.show()) }
-            } else {
-              Future.successful(Redirect(controllers.userJourney.routes.TradingNameController.show()))
-            }
+        data: StartDate =>
+          val d = if (data.dateType == StartDate.COMPANY_REGISTRATION_DATE) StartDate.default else data
+          s4LService.saveForm(d).map { _ =>
+            Redirect(controllers.userJourney.routes.TradingNameController.show())
           }
-        }
       })
   })
 }
+
+//

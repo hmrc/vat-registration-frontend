@@ -31,8 +31,8 @@ object ZeroRatedSales {
   implicit val format: OFormat[ZeroRatedSales] = Json.format[ZeroRatedSales]
 
   // Returns a view model for a specific part of a given VatScheme API model
-  implicit val modelTransformer = new ApiModelTransformer[ZeroRatedSales] {
-    override def toViewModel(vatScheme: VatScheme): ZeroRatedSales = vatScheme.financials.map {
+  implicit val modelTransformer = ApiModelTransformer[ZeroRatedSales] { (vs: VatScheme) =>
+    vs.financials.map {
       case VatFinancials(_, _, Some(_), _, _) => ZeroRatedSales(ZERO_RATED_SALES_YES)
       case VatFinancials(_, _, None, _, _) => ZeroRatedSales(ZERO_RATED_SALES_NO)
     } getOrElse ZeroRatedSales()

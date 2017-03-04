@@ -27,16 +27,14 @@ object CompanyBankAccountDetails {
 
   implicit val format = Json.format[CompanyBankAccountDetails]
 
-  implicit val viewModelTransformer = ViewModelTransformer[CompanyBankAccountDetails, VatFinancials] {
-    (c: CompanyBankAccountDetails, g: VatFinancials) =>
-      g.copy(bankAccount = Some(VatBankAccount(c.accountName, c.accountNumber, c.sortCode)))
-  }
-
-
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
     vs.financials.flatMap(_.bankAccount)
       .map(account => CompanyBankAccountDetails(account.accountName, account.accountNumber, account.accountSortCode))
       .getOrElse(CompanyBankAccountDetails())
+  }
+
+  implicit val viewModelTransformer = ViewModelTransformer { (c: CompanyBankAccountDetails, g: VatFinancials) =>
+    g.copy(bankAccount = Some(VatBankAccount(c.accountName, c.accountNumber, c.sortCode)))
   }
 
 
