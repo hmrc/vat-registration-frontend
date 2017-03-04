@@ -36,7 +36,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object TestStartDateController extends StartDateController(mockS4LService, mockVatRegistrationService, ds) {
+  object TestStartDateController extends StartDateController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 

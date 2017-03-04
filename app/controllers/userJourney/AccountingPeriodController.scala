@@ -20,7 +20,6 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.AccountingPeriodForm
-import models.ApiModelTransformer
 import models.view._
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -28,17 +27,12 @@ import services.{S4LService, VatRegistrationService}
 import scala.concurrent.Future
 
 
-class AccountingPeriodController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                           ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class AccountingPeriodController @Inject()(ds: CommonPlayDependencies)
+                                          (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
-    s4LService.fetchAndGet[AccountingPeriod]() flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[AccountingPeriod].toViewModel
-    } map { viewModel =>
-      val form = AccountingPeriodForm.form.fill(viewModel)
-      Ok(views.html.pages.accounting_period(form))
+    viewModel[AccountingPeriod] map { vm =>
+      Ok(views.html.pages.accounting_period(AccountingPeriodForm.form.fill(vm)))
     }
   })
 

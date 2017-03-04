@@ -19,6 +19,7 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import auth.VatTaxRegime
+import cats.data.OptionT
 import config.FrontendAuthConnector
 import models.{ApiModelTransformer, CacheKey}
 import play.api.Configuration
@@ -56,13 +57,10 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
     */
   protected def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
 
-  protected def viewModel[T: ApiModelTransformer : CacheKey : Format]
-  (default: => T)
+  import cats.instances.future._
+  protected def viewModel[T: ApiModelTransformer : CacheKey : Format]()
   (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService, headerCarrier: HeaderCarrier): Future[T] =
-    s4LService.fetchAndGet[T]() flatMap {
-      case Some(vm) => Future.successful(vm)
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[T].toViewModel
-    }
+    OptionT(s4LService.fetchAndGet[T]()).getOrElseF(vatRegistrationService.getVatScheme() map ApiModelTransformer[T].toViewModel)
 
 }
 

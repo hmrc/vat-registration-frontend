@@ -20,24 +20,19 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.VoluntaryRegistrationForm
-import models.ApiModelTransformer
 import models.view.VoluntaryRegistration
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
-class VoluntaryRegistrationController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                                ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class VoluntaryRegistrationController @Inject()(ds: CommonPlayDependencies)
+                                               (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService)
+  extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
-    s4LService.fetchAndGet[VoluntaryRegistration]() flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[VoluntaryRegistration].toViewModel
-    } map { viewModel =>
-      val form = VoluntaryRegistrationForm.form.fill(viewModel)
-      Ok(views.html.pages.voluntary_registration(form))
+    viewModel[VoluntaryRegistration]() map { vm =>
+      Ok(views.html.pages.voluntary_registration(VoluntaryRegistrationForm.form.fill(vm)))
     }
   })
 

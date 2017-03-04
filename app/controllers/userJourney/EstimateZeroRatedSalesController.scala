@@ -20,24 +20,18 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.EstimateZeroRatedSalesForm
-import models.ApiModelTransformer
 import models.view.EstimateZeroRatedSales
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
-class EstimateZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                                 ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class EstimateZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
+                                                (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
-    s4LService.fetchAndGet[EstimateZeroRatedSales]() flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[EstimateZeroRatedSales].toViewModel
-    } map { viewModel =>
-      val form = EstimateZeroRatedSalesForm.form.fill(viewModel)
-      Ok(views.html.pages.estimate_zero_rated_sales(form))
+    viewModel[EstimateZeroRatedSales]() map { vm =>
+      Ok(views.html.pages.estimate_zero_rated_sales(EstimateZeroRatedSalesForm.form.fill(vm)))
     }
   })
 

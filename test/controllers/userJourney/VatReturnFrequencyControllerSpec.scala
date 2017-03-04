@@ -37,7 +37,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object TestVatReturnFrequencyController extends VatReturnFrequencyController(mockS4LService, mockVatRegistrationService, ds) {
+  object TestVatReturnFrequencyController extends VatReturnFrequencyController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 

@@ -28,17 +28,17 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class SummaryController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService, ds: CommonPlayDependencies)
+class SummaryController @Inject()(ds: CommonPlayDependencies)
+                                 (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = authorised.async {
-    implicit user =>
-      implicit request =>
-        for {
-          _ <- vatRegistrationService.submitVatScheme()
-          summary <- getRegistrationSummary()
-          _ <- s4LService.clear()
-        } yield Ok(views.html.pages.summary(summary))
+  def show: Action[AnyContent] = authorised.async { implicit user =>
+    implicit request =>
+      for {
+        _ <- vatRegistrationService.submitVatScheme()
+        summary <- getRegistrationSummary()
+        _ <- s4LService.clear()
+      } yield Ok(views.html.pages.summary(summary))
   }
 
   //$COVERAGE-OFF$

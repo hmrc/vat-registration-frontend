@@ -36,7 +36,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object TestAccountingPeriodController extends AccountingPeriodController(mockS4LService, mockVatRegistrationService, ds) {
+  object TestAccountingPeriodController extends AccountingPeriodController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 

@@ -20,7 +20,6 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.EstimateVatTurnoverForm
-import models.ApiModelTransformer
 import models.view.EstimateVatTurnover
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -28,17 +27,12 @@ import services.{S4LService, VatRegistrationService}
 import scala.concurrent.Future
 
 
-class EstimateVatTurnoverController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                              ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
+                                             (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
-    s4LService.fetchAndGet[EstimateVatTurnover]() flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[EstimateVatTurnover].toViewModel
-    } map { viewModel =>
-      val form = EstimateVatTurnoverForm.form.fill(viewModel)
-      Ok(views.html.pages.estimate_vat_turnover(form))
+    viewModel[EstimateVatTurnover] map { vm =>
+      Ok(views.html.pages.estimate_vat_turnover(EstimateVatTurnoverForm.form.fill(vm)))
     }
   })
 

@@ -52,7 +52,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
   implicit val hc = HeaderCarrier()
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object TestVoluntaryRegistrationController extends VoluntaryRegistrationController(mockS4LService, mockVatRegistrationService, ds) {
+  object TestVoluntaryRegistrationController extends VoluntaryRegistrationController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
