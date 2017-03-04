@@ -20,24 +20,18 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.TradingNameForm
-import models.ApiModelTransformer
 import models.view.TradingName
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
-class TradingNameController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                      ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class TradingNameController @Inject()(ds: CommonPlayDependencies)
+                                     (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
-    s4LService.fetchAndGet[TradingName]() flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[TradingName].toViewModel
-    } map { viewModel =>
-      val form = TradingNameForm.form.fill(viewModel)
-      Ok(views.html.pages.trading_name(form))
+    viewModel[TradingName]() map { vm =>
+      Ok(views.html.pages.trading_name(TradingNameForm.form.fill(vm)))
     }
   })
 

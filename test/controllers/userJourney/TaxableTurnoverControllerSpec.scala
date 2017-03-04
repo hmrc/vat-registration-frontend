@@ -36,7 +36,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object TestTaxableTurnoverController extends TaxableTurnoverController(mockS4LService, mockVatRegistrationService, ds) {
+  object TestTaxableTurnoverController extends TaxableTurnoverController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 

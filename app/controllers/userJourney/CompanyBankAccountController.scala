@@ -27,11 +27,10 @@ import services.{S4LService, VatRegistrationService}
 import scala.concurrent.Future
 
 class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
-                                            (implicit s4l: S4LService, vatRegService: VatRegistrationService)
-  extends VatRegistrationController(ds) {
+                                            (implicit s4l: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[CompanyBankAccount](CompanyBankAccount()) map { vm =>
+    viewModel[CompanyBankAccount] map { vm =>
       Ok(views.html.pages.company_bank_account(CompanyBankAccountForm.form.fill(vm)))
     }
   })

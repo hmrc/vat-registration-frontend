@@ -20,7 +20,6 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.VatChargeExpectancyForm
-import models.ApiModelTransformer
 import models.view._
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -28,17 +27,12 @@ import services.{S4LService, VatRegistrationService}
 import scala.concurrent.Future
 
 
-class VatChargeExpectancyController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                              ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class VatChargeExpectancyController @Inject()(ds: CommonPlayDependencies)
+                                             (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
-    s4LService.fetchAndGet[VatChargeExpectancy]() flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[VatChargeExpectancy].toViewModel
-    } map { viewModel =>
-      val form = VatChargeExpectancyForm.form.fill(viewModel)
-      Ok(views.html.pages.vat_charge_expectancy(form))
+    viewModel[VatChargeExpectancy]() map { vm =>
+      Ok(views.html.pages.vat_charge_expectancy(VatChargeExpectancyForm.form.fill(vm)))
     }
   })
 

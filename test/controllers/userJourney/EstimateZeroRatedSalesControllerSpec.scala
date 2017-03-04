@@ -36,7 +36,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object TestEstimateZeroRatedSalesController extends EstimateZeroRatedSalesController(mockS4LService, mockVatRegistrationService, ds) {
+  object TestEstimateZeroRatedSalesController extends EstimateZeroRatedSalesController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 

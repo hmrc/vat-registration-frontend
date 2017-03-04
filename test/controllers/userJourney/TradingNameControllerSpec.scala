@@ -36,7 +36,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object TestTradingNameController extends TradingNameController(mockS4LService, mockVatRegistrationService, ds) {
+  object TestTradingNameController extends TradingNameController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 

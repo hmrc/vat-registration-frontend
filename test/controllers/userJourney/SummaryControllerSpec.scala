@@ -36,7 +36,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   implicit val materializer = app.materializer
 
-  object TestSummaryController extends SummaryController(mockS4LService, mockVatRegistrationService, ds) {
+  object TestSummaryController extends SummaryController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
     override def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] = Future.successful(Summary(sections = Seq()))
   }

@@ -31,14 +31,17 @@
  */
 
 package controllers.userJourney
+
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc._
 import services.S4LService
 
-class ApplicationSubmissionController  @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class ApplicationSubmissionController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+
   def show: Action[AnyContent] = authorised(implicit user => implicit request => {
     Ok(views.html.pages.application_submission_confirmation())
   })
+
 }
