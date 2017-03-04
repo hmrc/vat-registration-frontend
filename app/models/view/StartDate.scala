@@ -41,6 +41,8 @@ case class StartDate(dateType: String = "",
 
 object StartDate {
 
+  def default = StartDate(COMPANY_REGISTRATION_DATE)
+
   val pattern = DateTimeFormat.forPattern("dd/MM/yyyy")
 
   val COMPANY_REGISTRATION_DATE = "COMPANY_REGISTRATION_DATE"
@@ -66,7 +68,7 @@ object StartDate {
   def fromDateTime(d: DateTime): StartDate =
   // TODO: Remove check when start date becomes optional in next story
     if (d.toString("dd/MM/yyyy") == "31/12/1969" || d.toString("dd/MM/yyyy") == "01/01/1970") {
-      StartDate()
+      StartDate.default
     } else {
       StartDate(StartDate.SPECIFIC_DATE,
         Some(d.dayOfMonth.get()),

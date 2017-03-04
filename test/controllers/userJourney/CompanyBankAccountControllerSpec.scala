@@ -19,7 +19,8 @@ package controllers.userJourney
 import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.view.{CompanyBankAccount, ZeroRatedSales}
+import models.CacheKey
+import models.view.CompanyBankAccount
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -28,7 +29,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -63,10 +63,11 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return HTML when there's nothing in S4L" in {
-      when(mockS4LService.fetchAndGet[ZeroRatedSales]()(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[CompanyBankAccount]()
+        (Matchers.eq(CacheKey[CompanyBankAccount]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(CompanyBankAccountController.show, mockAuthConnector) {

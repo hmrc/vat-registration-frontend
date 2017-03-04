@@ -27,7 +27,6 @@ object EstimateZeroRatedSales {
 
   implicit val format: OFormat[EstimateZeroRatedSales] = Json.format[EstimateZeroRatedSales]
 
-  // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[EstimateZeroRatedSales] { (vs: VatScheme) =>
     vs.financials match {
       case Some(financials) => EstimateZeroRatedSales(financials.zeroRatedSalesEstimate)
