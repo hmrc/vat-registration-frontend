@@ -18,13 +18,13 @@ package models.view
 
 import models.api.{VatFinancials, VatScheme}
 import models.{ApiModelTransformer, ViewModelTransformer}
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
-case class EstimateVatTurnover(vatTurnoverEstimate: Option[Long])
+case class EstimateVatTurnover(vatTurnoverEstimate: Option[Long] = None)
 
 object EstimateVatTurnover {
 
-  implicit val format = Json.format[EstimateVatTurnover]
+  implicit val format: OFormat[EstimateVatTurnover] = Json.format[EstimateVatTurnover]
 
   implicit val modelTransformer = ApiModelTransformer[EstimateVatTurnover] { (vs: VatScheme) =>
     vs.financials.map(_.turnoverEstimate).collect {

@@ -62,7 +62,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
 
   private def update[C, G](vatScheme: => VatScheme, fromS4L: Option[C], logicalGroup: G)
                           (implicit apiTransformer: ApiModelTransformer[C], vmTransformer: ViewModelTransformer[C, G]): G = {
-    // vmTransformer.toApi (fromS4L.getOrElse (apiTransformer.toViewModel (vatScheme) ), logicalGroup)
     fromS4L match {
       case Some(s4l) => vmTransformer.toApi((s4l), logicalGroup)
       case None => logicalGroup

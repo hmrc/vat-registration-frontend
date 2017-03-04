@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.{EstimateZeroRatedSalesForm, StartDateForm}
+import forms.vatDetails.StartDateForm
 import models.ApiModelTransformer
 import models.view.StartDate
 import play.api.mvc._

@@ -64,13 +64,30 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       }
     }
 
-    "return HTML when there's nothing in S4L" in {
+    "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[VatReturnFrequency](Matchers.eq(CacheKeys.VatReturnFrequency.toString))
         (Matchers.any[HeaderCarrier](), Matchers.any[Format[VatReturnFrequency]]()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
+
+      callAuthorised(TestVatReturnFrequencyController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("How often do you want to submit VAT Returns?")
+      }
+    }
+
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      when(mockS4LService.fetchAndGet[VatReturnFrequency](Matchers.eq(CacheKeys.VatReturnFrequency.toString))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[VatReturnFrequency]]()))
+        .thenReturn(Future.successful(None))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestVatReturnFrequencyController.show, mockAuthConnector) {
         result =>

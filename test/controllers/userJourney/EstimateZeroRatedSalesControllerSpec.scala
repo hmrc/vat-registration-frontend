@@ -61,7 +61,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
       }
     }
 
-    "return HTML when there's nothing in S4L" in {
+    "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[EstimateZeroRatedSales](Matchers.eq(CacheKeys.EstimateZeroRatedSales.toString))
         (Matchers.any[HeaderCarrier](), Matchers.any[Format[EstimateZeroRatedSales]]()))
         .thenReturn(Future.successful(None))
@@ -78,6 +78,22 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
       }
     }
 
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      when(mockS4LService.fetchAndGet[EstimateZeroRatedSales](Matchers.eq(CacheKeys.EstimateZeroRatedSales.toString))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[EstimateZeroRatedSales]]()))
+        .thenReturn(Future.successful(None))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(emptyVatScheme))
+
+      callAuthorised(TestEstimateZeroRatedSalesController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("Estimated zero-rated sales for the next 12 months")
+      }
+    }
 
   }
 

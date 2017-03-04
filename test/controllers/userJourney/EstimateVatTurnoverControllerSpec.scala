@@ -47,7 +47,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return HTML Estimate Vat Turnover page with no data in the form" in {
       when(mockS4LService.fetchAndGet[EstimateVatTurnover](Matchers.eq(CacheKeys.EstimateVatTurnover.toString))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(EstimateVatTurnover(Some(0L)))))
+        .thenReturn(Future.successful(Some(EstimateVatTurnover())))
 
       AuthBuilder.submitWithAuthorisedUser(TestEstimateVatTurnoverController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "turnoverEstimate" -> ""
@@ -60,7 +60,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       }
     }
 
-    "return HTML when there's nothing in S4L" in {
+    "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[EstimateVatTurnover](Matchers.eq(CacheKeys.EstimateVatTurnover.toString))
         (Matchers.any[HeaderCarrier](), Matchers.any[Format[EstimateVatTurnover]]()))
         .thenReturn(Future.successful(None))
@@ -77,9 +77,23 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       }
     }
 
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      when(mockS4LService.fetchAndGet[EstimateVatTurnover](Matchers.eq(CacheKeys.EstimateVatTurnover.toString))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[EstimateVatTurnover]]()))
+        .thenReturn(Future.successful(None))
 
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(emptyVatScheme))
+
+      callAuthorised(TestEstimateVatTurnoverController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("Estimated VAT taxable turnover for the next 12 months")
+      }
+    }
   }
-
 
   s"POST ${routes.EstimateVatTurnoverController.submit()} with Empty data" should {
 
