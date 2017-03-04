@@ -39,6 +39,6 @@ object CompanyBankAccount {
     }.getOrElse(CompanyBankAccount())
   }
 
-  implicit val cacheKeyProvider = CacheKey[CompanyBankAccount](CacheKeys.CompanyBankAccount.toString)
+  implicit val cacheKey = CacheKey[CompanyBankAccount](CacheKeys.CompanyBankAccount)
 
 }

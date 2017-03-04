@@ -37,6 +37,6 @@ object EstimateVatTurnover {
     g.copy(turnoverEstimate = c.vatTurnoverEstimate.getOrElse(0L))
   }
 
-  implicit val cacheKeyProvider = CacheKey[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString)
+  implicit val cacheKey = CacheKey[EstimateVatTurnover](CacheKeys.EstimateVatTurnover)
 
 }

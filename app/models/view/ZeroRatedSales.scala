@@ -38,5 +38,5 @@ object ZeroRatedSales {
     } getOrElse ZeroRatedSales()
   }
 
-  implicit val cacheKeyProvider = CacheKey[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString)
+  implicit val cacheKey = CacheKey[ZeroRatedSales](CacheKeys.ZeroRatedSales)
 }

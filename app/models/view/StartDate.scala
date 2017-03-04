@@ -61,7 +61,7 @@ object StartDate {
     g.copy(startDate = c.toDateTime)
   }
 
-  implicit val cacheKeyProvider = CacheKey[StartDate](CacheKeys.StartDate.toString)
+  implicit val cacheKey = CacheKey[StartDate](CacheKeys.StartDate)
 
   def fromDateTime(d: DateTime): StartDate =
   // TODO: Remove check when start date becomes optional in next story

@@ -42,6 +42,6 @@ object VatChargeExpectancy {
     g.copy(reclaimVatOnMostReturns = c.yesNo == VAT_CHARGE_YES)
   }
 
-  implicit val cacheKeyProvider = CacheKey[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString)
+  implicit val cacheKey = CacheKey[VatChargeExpectancy](CacheKeys.VatChargeExpectancy)
 
 }

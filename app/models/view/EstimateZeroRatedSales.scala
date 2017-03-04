@@ -39,6 +39,6 @@ object EstimateZeroRatedSales {
     g.copy(zeroRatedSalesEstimate = c.zeroRatedSalesEstimate)
   }
 
-  implicit val cacheKeyProvider = CacheKey[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString)
+  implicit val cacheKey = CacheKey[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales)
 
 }
