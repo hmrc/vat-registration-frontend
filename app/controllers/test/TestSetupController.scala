@@ -56,7 +56,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
         if (tradingName.isDefined) tradingName.get.yesNo else "",
         if (tradingName.isDefined) tradingName.get.tradingName.getOrElse("") else "",
         if (companyBankAccount.isDefined) companyBankAccount.get.yesNo else "",
-        if (estimateVatTurnover.isDefined) estimateVatTurnover.get.vatTurnoverEstimate.toString else "",
+        if (estimateVatTurnover.isDefined) estimateVatTurnover.get.vatTurnoverEstimate.getOrElse("").toString else "",
         if (zeroRatedSales.isDefined) zeroRatedSales.get.yesNo else "",
         if (estimateZeroRatedSales.isDefined) estimateZeroRatedSales.get.zeroRatedSalesEstimate.getOrElse("").toString else "",
         if (vatChargeExpectancy.isDefined) vatChargeExpectancy.get.yesNo else "",
@@ -110,7 +110,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
 
             _ <- s4LService.saveForm[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString, data.estimateVatTurnover
             match {
-//              case "" => EstimateVatTurnover()
+              case "" => EstimateVatTurnover()
               case _ => EstimateVatTurnover(Some(data.estimateVatTurnover.toLong))
             })
 

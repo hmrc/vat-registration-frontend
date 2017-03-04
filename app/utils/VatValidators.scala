@@ -18,6 +18,7 @@ package utils
 
 import forms.vatDetails.AccountingPeriodForm.RADIO_ACCOUNTING_PERIOD
 import forms.vatDetails.EstimateVatTurnoverForm._
+import forms.vatDetails.EstimateZeroRatedSalesForm._
 import models.view.{AccountingPeriod, EstimateVatTurnover, EstimateZeroRatedSales}
 import org.apache.commons.lang3.StringUtils
 import play.api.data.validation.{ValidationError, _}
@@ -46,11 +47,11 @@ object VatValidators {
     text =>
       val errors = text match {
         case EstimateVatTurnover(None)
-          => Seq(ValidationError(TURNOVER_ESTIMATE_EMPTY_MSG_KEY, INPUT_ESTIMATE))
+          => Seq(ValidationError(TURNOVER_ESTIMATE_EMPTY_MSG_KEY, TURNOVER_ESTIMATE))
         case EstimateVatTurnover(Some(estimateVatTurnover)) if estimateVatTurnover < MIN_TURNOVER_ESTIMATE
-          => Seq(ValidationError(TURNOVER_ESTIMATE_LOW_MSG_KEY, INPUT_ESTIMATE))
+          => Seq(ValidationError(TURNOVER_ESTIMATE_LOW_MSG_KEY, TURNOVER_ESTIMATE))
         case EstimateVatTurnover(Some(estimateVatTurnover)) if estimateVatTurnover > MAX_TURNOVER_ESTIMATE
-          => Seq(ValidationError(TURNOVER_ESTIMATE_HIGH_MSG_KEY, INPUT_ESTIMATE))
+          => Seq(ValidationError(TURNOVER_ESTIMATE_HIGH_MSG_KEY, TURNOVER_ESTIMATE))
         case _ => Nil
       }
       if (errors.isEmpty) Valid else Invalid(errors)
@@ -60,11 +61,11 @@ object VatValidators {
     text =>
       val errors = text match {
         case EstimateZeroRatedSales(None)
-          => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_EMPTY_MSG_KEY, INPUT_ESTIMATE))
+          => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_EMPTY_MSG_KEY, ZERO_RATED_SALES_ESTIMATE))
         case EstimateZeroRatedSales(Some(zeroRatedSalesEstimate)) if zeroRatedSalesEstimate < MIN_TURNOVER_ESTIMATE
-          => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_LOW_MSG_KEY, INPUT_ESTIMATE))
+          => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_LOW_MSG_KEY, ZERO_RATED_SALES_ESTIMATE))
         case EstimateZeroRatedSales(Some(zeroRatedSalesEstimate)) if zeroRatedSalesEstimate > MAX_TURNOVER_ESTIMATE
-          => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_HIGH_MSG_KEY, INPUT_ESTIMATE))
+          => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_HIGH_MSG_KEY, ZERO_RATED_SALES_ESTIMATE))
         case _ => Nil
       }
       if (errors.isEmpty) Valid else Invalid(errors)

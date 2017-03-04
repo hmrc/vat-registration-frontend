@@ -45,7 +45,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
   s"GET ${routes.TaxableTurnoverController.show()}" should {
 
-    "return HTML when there's a start date in S4Ln" in {
+    "return HTML when there's a start date in S4L" in {
       val taxableTurnover = TaxableTurnover("")
 
       when(mockS4LService.fetchAndGet[TaxableTurnover](Matchers.eq(CacheKeys.TaxableTurnover.toString))(Matchers.any(), Matchers.any()))
@@ -63,13 +63,31 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
       }
     }
 
-    "return HTML when there's nothing in S4L" in {
+    "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[TaxableTurnover](Matchers.eq(CacheKeys.TaxableTurnover.toString))
         (Matchers.any[HeaderCarrier](), Matchers.any[Format[TaxableTurnover]]()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
+
+      callAuthorised(TestTaxableTurnoverController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("VAT taxable turnover to be more than £83,000")
+      }
+    }
+
+
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      when(mockS4LService.fetchAndGet[TaxableTurnover](Matchers.eq(CacheKeys.TaxableTurnover.toString))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[TaxableTurnover]]()))
+        .thenReturn(Future.successful(None))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestTaxableTurnoverController.show, mockAuthConnector) {
         result =>

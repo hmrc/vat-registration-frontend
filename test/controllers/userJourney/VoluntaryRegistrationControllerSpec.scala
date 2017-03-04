@@ -79,7 +79,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       }
     }
 
-    "return HTML when there's nothing in S4L" in {
+    "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString))
         (Matchers.any[HeaderCarrier](), Matchers.any[Format[VoluntaryRegistration]]()))
         .thenReturn(Future.successful(None))
@@ -95,8 +95,24 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
           contentAsString(result) must include("Do you want to register voluntarily for VAT?")
       }
     }
-  }
 
+      "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+        when(mockS4LService.fetchAndGet[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString))
+          (Matchers.any[HeaderCarrier](), Matchers.any[Format[VoluntaryRegistration]]()))
+          .thenReturn(Future.successful(None))
+
+        when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+          .thenReturn(Future.successful(emptyVatScheme))
+
+        callAuthorised(TestVoluntaryRegistrationController.show, mockAuthConnector) {
+          result =>
+            status(result) mustBe OK
+            contentType(result) mustBe Some("text/html")
+            charset(result) mustBe Some("utf-8")
+            contentAsString(result) must include("Do you want to register voluntarily for VAT?")
+        }
+      }
+  }
 
   s"POST ${routes.VoluntaryRegistrationController.submit()} with Empty data" should {
 

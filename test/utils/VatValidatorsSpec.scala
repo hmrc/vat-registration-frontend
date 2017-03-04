@@ -19,6 +19,10 @@ package utils
 import forms.vatDetails.{EstimateVatTurnoverForm, EstimateZeroRatedSalesForm, TradingNameForm}
 import helpers.VatRegSpec
 import models.view.TradingName
+import org.apache.commons.lang3.StringUtils
+import play.api.data.validation.{Constraint, Invalid, Valid}
+
+import scala.util.matching.Regex
 
 class VatValidatorsSpec extends VatRegSpec {
 
@@ -106,5 +110,29 @@ class VatValidatorsSpec extends VatRegSpec {
 
     val boundForm = zeroRatedSalesEstimateForm.bind(data)
     boundForm.errors.map(err => (err.key, err.message)) mustBe List()
+  }
+
+  "nonEmptyValidText" should {
+    val regex = """^[A-Za-z]{0,10}$""".r
+
+    "return valid when string matches regex" in {
+      val validText = "abcdef"
+      val constraint = VatValidators.nonEmptyValidText(validText, regex)
+      constraint mustBe  Constraint[String] { _:String => Valid }
+    }
+
+    "return invalid when string does not match regex" in {
+      val invalidText = "a123"
+      val constraint = VatValidators.nonEmptyValidText(invalidText, regex)
+      constraint mustBe Constraint[String] { _:String => Invalid(s"validation.$invalidText.invalid") }
+    }
+
+    "return invalid when string is empty" in {
+      val emptyText = ""
+      val constraint = VatValidators.nonEmptyValidText(emptyText, regex)
+      constraint mustBe Constraint[String] { _:String => Invalid(s"validation.$emptyText.empty") }
+    }
+
+
   }
 }
