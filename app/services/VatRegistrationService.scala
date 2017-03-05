@@ -61,7 +61,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   private def s4l[T: Format : CacheKey]()(implicit headerCarrier: HeaderCarrier) = s4LService.fetchAndGet[T]()
 
   private def update[C, G](c: Option[C], vs: VatScheme)(implicit apiTransformer: ApiModelTransformer[C], vmTransformer: ViewModelTransformer[C, G]) =
-    State[G, Unit](s => (vmTransformer.toApi(c.getOrElse(apiTransformer.toViewModel(vs)), s), ()))
+    State.modify[G](g => vmTransformer.toApi(c.getOrElse(apiTransformer.toViewModel(vs)), g))
 
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
