@@ -18,21 +18,21 @@ package models.view
 
 import play.api.libs.json.Json
 
-case class TestSetup(taxableTurnoverChoice: String,
-                     voluntaryChoice: String,
-                     startDateChoice: String,
-                     startDateDay: String,
-                     startDateMonth: String,
-                     startDateYear: String,
-                     tradingNameChoice: String,
-                     tradingName: String,
-                     companyBankAccountChoice: String,
-                     estimateVatTurnover: String,
-                     zeroRatedSalesChoice: String,
-                     zeroRatedSalesEstimate: String,
-                     vatChargeExpectancyChoice: String,
-                     vatReturnFrequency: String,
-                     accountingPeriod: String ) {
+case class TestSetup(taxableTurnoverChoice: Option[String],
+                     voluntaryChoice: Option[String],
+                     startDateChoice: Option[String],
+                     startDateDay: Option[String],
+                     startDateMonth: Option[String],
+                     startDateYear: Option[String],
+                     tradingNameChoice: Option[String],
+                     tradingName: Option[String],
+                     companyBankAccountChoice: Option[String],
+                     estimateVatTurnover: Option[String],
+                     zeroRatedSalesChoice: Option[String],
+                     zeroRatedSalesEstimate: Option[String],
+                     vatChargeExpectancyChoice: Option[String],
+                     vatReturnFrequency: Option[String],
+                     accountingPeriod: Option[String] ) {
 
 }
 
