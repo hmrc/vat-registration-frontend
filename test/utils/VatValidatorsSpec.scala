@@ -113,26 +113,21 @@ class VatValidatorsSpec extends VatRegSpec {
   }
 
   "nonEmptyValidText" should {
-    val regex = """^[A-Za-z]{0,10}$""".r
+    val regex = """^[A-Za-z]{1,10}$""".r
 
     "return valid when string matches regex" in {
-      val validText = "abcdef"
-      val constraint = VatValidators.nonEmptyValidText(validText, regex)
-      constraint mustBe  Constraint[String] { _:String => Valid }
+      val constraint = VatValidators.nonEmptyValidText("fieldName", regex)
+      constraint("abcdef") mustBe Valid
     }
 
     "return invalid when string does not match regex" in {
-      val invalidText = "a123"
-      val constraint = VatValidators.nonEmptyValidText(invalidText, regex)
-      constraint mustBe Constraint[String] { _:String => Invalid(s"validation.$invalidText.invalid") }
+      val constraint = VatValidators.nonEmptyValidText("fieldName", regex)
+      constraint("a123") mustBe Invalid(s"validation.fieldName.invalid")
     }
 
     "return invalid when string is empty" in {
-      val emptyText = ""
-      val constraint = VatValidators.nonEmptyValidText(emptyText, regex)
-      constraint mustBe Constraint[String] { _:String => Invalid(s"validation.$emptyText.empty") }
+      val constraint = VatValidators.nonEmptyValidText("fieldName", regex)
+      constraint("") mustBe Invalid(s"validation.fieldName.empty")
     }
-
-
   }
 }
