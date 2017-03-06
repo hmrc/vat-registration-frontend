@@ -18,6 +18,7 @@ package services
 
 import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, S4LConnector}
+import models.CacheKey
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
@@ -28,36 +29,19 @@ import scala.concurrent.Future
 @ImplementedBy(classOf[PersistenceService])
 trait S4LService extends CommonService {
 
-  val s4LConnector: S4LConnector
+  private[services] val s4LConnector: S4LConnector
 
-  def saveForm[T](formId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
-    for {
-      regId    <- fetchRegistrationId
-      cacheMap <- s4LConnector.saveForm[T](regId, formId, data)
-    } yield cacheMap
-  }
+  def saveForm[T: CacheKey](data: T)(implicit headerCarrier: HeaderCarrier, format: Format[T]): Future[CacheMap] =
+    fetchRegistrationId.flatMap(s4LConnector.saveForm[T](_, CacheKey[T].cacheKey, data))
 
-  def fetchAndGet[T](formId: String)(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] = {
-    for {
-      regId <- fetchRegistrationId
-      data  <- s4LConnector.fetchAndGet[T](regId, formId)
-    } yield data
-  }
+  def fetchAndGet[T: CacheKey]()(implicit headerCarrier: HeaderCarrier, format: Format[T]): Future[Option[T]] =
+    fetchRegistrationId.flatMap(s4LConnector.fetchAndGet[T](_, CacheKey[T].cacheKey))
 
+  def clear()(implicit hc: HeaderCarrier): Future[HttpResponse] =
+    fetchRegistrationId.flatMap(s4LConnector.clear)
 
-  def clear()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    for {
-      regId <- fetchRegistrationId
-      resp <- s4LConnector.clear(regId)
-    } yield resp
-  }
-
-  def fetchAll()(implicit hc: HeaderCarrier): Future[Option[CacheMap]] = {
-    for {
-      regId <- fetchRegistrationId
-      cacheMap <- s4LConnector.fetchAll(regId)
-    } yield cacheMap
-  }
+  def fetchAll()(implicit hc: HeaderCarrier): Future[Option[CacheMap]] =
+    fetchRegistrationId.flatMap(s4LConnector.fetchAll)
 
 }
 

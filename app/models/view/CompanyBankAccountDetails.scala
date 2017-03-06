@@ -17,30 +17,25 @@
 package models.view
 
 import enums.CacheKeys
-import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
-import models.api.{VatChoice, VatScheme}
+import models.api.{VatBankAccount, VatFinancials, VatScheme}
 import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class VoluntaryRegistration(yesNo: String = "")
+case class CompanyBankAccountDetails(accountName: String = "", accountNumber: String = "", sortCode: String = "")
 
-object VoluntaryRegistration {
+object CompanyBankAccountDetails {
 
-  val REGISTER_YES = "REGISTER_YES"
-  val REGISTER_NO = "REGISTER_NO"
-
-  implicit val format = Json.format[VoluntaryRegistration]
+  implicit val format = Json.format[CompanyBankAccountDetails]
 
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
-    vs.vatChoice.map(_.necessity).collect {
-      case NECESSITY_VOLUNTARY => VoluntaryRegistration(REGISTER_YES)
-    }
+    vs.financials.flatMap(_.bankAccount)
+      .map(account => CompanyBankAccountDetails(account.accountName, account.accountNumber, account.accountSortCode))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: VoluntaryRegistration, g: VatChoice) =>
-    g.copy(necessity = if (REGISTER_YES == c.yesNo) NECESSITY_VOLUNTARY else NECESSITY_OBLIGATORY)
+  implicit val viewModelTransformer = ViewModelTransformer { (c: CompanyBankAccountDetails, g: VatFinancials) =>
+    g.copy(bankAccount = Some(VatBankAccount(c.accountName, c.accountNumber, c.sortCode)))
   }
 
-  implicit val cacheKey = CacheKey[VoluntaryRegistration](CacheKeys.VoluntaryRegistration)
 
+  implicit val cacheKey = CacheKey[CompanyBankAccountDetails](CacheKeys.CompanyBankAccountDetails)
 }

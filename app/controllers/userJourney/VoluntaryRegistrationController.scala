@@ -19,30 +19,23 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
-import forms.vatDetails.{VatReturnFrequencyForm, VoluntaryRegistrationForm}
-import models.ApiModelTransformer
+import forms.vatDetails.VoluntaryRegistrationForm
 import models.view.VoluntaryRegistration
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
-class VoluntaryRegistrationController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                                ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class VoluntaryRegistrationController @Inject()(ds: CommonPlayDependencies)
+                                               (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService)
+  extends VatRegistrationController(ds) {
+
+  import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
-    s4LService.fetchAndGet[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString) flatMap {
-      case Some(viewModel) => Future.successful(Some(viewModel))
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[VoluntaryRegistration].toViewModel
-    } map {
-      case Some(vm) => {
-        val form = VoluntaryRegistrationForm.form.fill(vm)
-        Ok(views.html.pages.voluntary_registration(form))
-      }
-      case None => Ok(views.html.pages.voluntary_registration(VoluntaryRegistrationForm.form))
-    }
+    viewModel[VoluntaryRegistration].map { vm =>
+      Ok(views.html.pages.voluntary_registration(VoluntaryRegistrationForm.form.fill(vm)))
+    }.getOrElse(Ok(views.html.pages.voluntary_registration(VoluntaryRegistrationForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
@@ -52,7 +45,7 @@ class VoluntaryRegistrationController @Inject()(s4LService: S4LService, vatRegis
       }, {
 
         data: VoluntaryRegistration => {
-          s4LService.saveForm[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString, data) flatMap { _ =>
+          s4LService.saveForm[VoluntaryRegistration](data) flatMap { _ =>
             if (VoluntaryRegistration.REGISTER_YES == data.yesNo) {
               Future.successful(Redirect(controllers.userJourney.routes.StartDateController.show()))
             } else {

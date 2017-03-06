@@ -19,9 +19,7 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
 import forms.vatDetails.AccountingPeriodForm
-import models.ApiModelTransformer
 import models.view._
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -29,21 +27,15 @@ import services.{S4LService, VatRegistrationService}
 import scala.concurrent.Future
 
 
-class AccountingPeriodController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                           ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class AccountingPeriodController @Inject()(ds: CommonPlayDependencies)
+                                          (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+
+  import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
-    s4LService.fetchAndGet[AccountingPeriod](CacheKeys.AccountingPeriod.toString) flatMap {
-      case Some(viewModel) => Future.successful(Some(viewModel))
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[AccountingPeriod].toViewModel
-    } map {
-      case Some(vm) => {
-        val form = AccountingPeriodForm.form.fill(vm)
-        Ok(views.html.pages.accounting_period(form))
-      }
-      case None => Ok(views.html.pages.accounting_period(AccountingPeriodForm.form))
-    }
+    viewModel[AccountingPeriod].map { vm =>
+      Ok(views.html.pages.accounting_period(AccountingPeriodForm.form.fill(vm)))
+    }.getOrElse(Ok(views.html.pages.accounting_period(AccountingPeriodForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
@@ -52,7 +44,7 @@ class AccountingPeriodController @Inject()(s4LService: S4LService, vatRegistrati
         Future.successful(BadRequest(views.html.pages.accounting_period(formWithErrors)))
       }, {
         data: AccountingPeriod => {
-          s4LService.saveForm[AccountingPeriod](CacheKeys.AccountingPeriod.toString, data) map { _ =>
+          s4LService.saveForm(data) map { _ =>
             Redirect(controllers.userJourney.routes.SummaryController.show())
           }
         }

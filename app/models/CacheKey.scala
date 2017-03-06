@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-package models.api
+package models
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import enums.CacheKeys
 
-case class VatBankAccount(accountName: String = "", accountNumber: String = "", accountSortCode: String = "")
+trait CacheKey[T] {
 
-object VatBankAccount {
+  def cacheKey: String
 
-  implicit val format = (
-    (__ \ "accountName").format[String] and
-      (__ \ "accountNumber").format[String] and
-      (__ \ "accountSortCode").format[String]
-    ) (VatBankAccount.apply, unlift(VatBankAccount.unapply))
+}
+
+object CacheKey {
+
+  def apply[T: CacheKey]: CacheKey[T] = implicitly
+
+  def apply[T](key: => CacheKeys.Value): CacheKey[T] = new CacheKey[T]() {
+    override def cacheKey: String = key.toString
+  }
 
 }

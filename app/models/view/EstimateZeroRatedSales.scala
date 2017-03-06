@@ -16,8 +16,9 @@
 
 package models.view
 
+import enums.CacheKeys
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
 case class EstimateZeroRatedSales(zeroRatedSalesEstimate: Option[Long] = None)
@@ -26,7 +27,6 @@ object EstimateZeroRatedSales {
 
   implicit val format: OFormat[EstimateZeroRatedSales] = Json.format[EstimateZeroRatedSales]
 
-  // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[EstimateZeroRatedSales] { (vs: VatScheme) =>
     vs.financials.map(_.zeroRatedSalesEstimate).collect {
       case Some(sales) => EstimateZeroRatedSales(Some(sales))
@@ -36,5 +36,7 @@ object EstimateZeroRatedSales {
   implicit val viewModelTransformer = ViewModelTransformer { (c: EstimateZeroRatedSales, g: VatFinancials) =>
     g.copy(zeroRatedSalesEstimate = c.zeroRatedSalesEstimate)
   }
+
+  implicit val cacheKey = CacheKey[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales)
 
 }

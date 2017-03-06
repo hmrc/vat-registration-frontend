@@ -33,14 +33,14 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
-import enums.CacheKeys
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.CacheKey
 import models.view.VoluntaryRegistration
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.VatRegistrationService
@@ -53,7 +53,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
   implicit val hc = HeaderCarrier()
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object TestVoluntaryRegistrationController extends VoluntaryRegistrationController(mockS4LService, mockVatRegistrationService, ds) {
+  object TestVoluntaryRegistrationController extends VoluntaryRegistrationController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -64,12 +64,12 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     "return HTML Voluntary Registration  page with no Selection" in {
       val voluntaryRegistration = VoluntaryRegistration("")
 
-      when(mockS4LService.fetchAndGet[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString))(Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[VoluntaryRegistration]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(voluntaryRegistration)))
 
       AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationRadio" -> ""
-      )){
+      )) {
 
         result =>
           status(result) mustBe OK
@@ -80,8 +80,8 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString))
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[VoluntaryRegistration]]()))
+      when(mockS4LService.fetchAndGet[VoluntaryRegistration]()
+        (Matchers.eq(CacheKey[VoluntaryRegistration]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -96,22 +96,22 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       }
     }
 
-      "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-        when(mockS4LService.fetchAndGet[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString))
-          (Matchers.any[HeaderCarrier](), Matchers.any[Format[VoluntaryRegistration]]()))
-          .thenReturn(Future.successful(None))
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      when(mockS4LService.fetchAndGet[VoluntaryRegistration]()
+        (Matchers.eq(CacheKey[VoluntaryRegistration]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
 
-        when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-          .thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(emptyVatScheme))
 
-        callAuthorised(TestVoluntaryRegistrationController.show, mockAuthConnector) {
-          result =>
-            status(result) mustBe OK
-            contentType(result) mustBe Some("text/html")
-            charset(result) mustBe Some("utf-8")
-            contentAsString(result) must include("Do you want to register voluntarily for VAT?")
-        }
+      callAuthorised(TestVoluntaryRegistrationController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("Do you want to register voluntarily for VAT?")
       }
+    }
   }
 
   s"POST ${routes.VoluntaryRegistrationController.submit()} with Empty data" should {
@@ -120,7 +120,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
-          status(result) mustBe  Status.BAD_REQUEST
+          status(result) mustBe Status.BAD_REQUEST
       }
 
     }
@@ -131,7 +131,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration())))
 
-      when(mockS4LService.saveForm[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[VoluntaryRegistration](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -139,8 +139,8 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/start-date"
-     }
+          redirectLocation(response).getOrElse("") mustBe "/vat-registration/start-date"
+      }
 
     }
   }
@@ -151,8 +151,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration())))
 
       when(mockS4LService.clear()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validHttpResponse))
-      when(mockS4LService.saveForm[VoluntaryRegistration](Matchers.eq(CacheKeys.VoluntaryRegistration.toString),
-        Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[VoluntaryRegistration](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
       when(mockVatRegistrationService.deleteVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(true))
@@ -162,7 +161,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration"
+          redirectLocation(response).getOrElse("") mustBe "/vat-registration"
       }
 
     }

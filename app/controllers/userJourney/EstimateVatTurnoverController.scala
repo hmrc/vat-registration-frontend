@@ -19,9 +19,7 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
 import forms.vatDetails.EstimateVatTurnoverForm
-import models.ApiModelTransformer
 import models.view.EstimateVatTurnover
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -29,21 +27,16 @@ import services.{S4LService, VatRegistrationService}
 import scala.concurrent.Future
 
 
-class EstimateVatTurnoverController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                              ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
+                                             (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+
+  import cats.instances.future._
+
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
-    s4LService.fetchAndGet[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString) flatMap {
-      case Some(viewModel) => Future.successful(Some(viewModel))
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[EstimateVatTurnover].toViewModel
-    } map {
-      case Some(vm) => {
-        val form = EstimateVatTurnoverForm.form.fill(vm)
-        Ok(views.html.pages.estimate_vat_turnover(form))
-      }
-      case None => Ok(views.html.pages.estimate_vat_turnover(EstimateVatTurnoverForm.form))
-    }
+    viewModel[EstimateVatTurnover].map { vm =>
+      Ok(views.html.pages.estimate_vat_turnover(EstimateVatTurnoverForm.form.fill(vm)))
+    }.getOrElse(Ok(views.html.pages.estimate_vat_turnover(EstimateVatTurnoverForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
@@ -52,7 +45,7 @@ class EstimateVatTurnoverController @Inject()(s4LService: S4LService, vatRegistr
         Future.successful(BadRequest(views.html.pages.estimate_vat_turnover(formWithErrors)))
       }, {
         data: EstimateVatTurnover => {
-          s4LService.saveForm[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString, data) map { _ =>
+          s4LService.saveForm[EstimateVatTurnover](data) map { _ =>
             Redirect(controllers.userJourney.routes.ZeroRatedSalesController.show())
           }
         }

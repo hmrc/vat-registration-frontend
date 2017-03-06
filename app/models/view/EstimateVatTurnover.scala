@@ -16,8 +16,9 @@
 
 package models.view
 
+import enums.CacheKeys
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
 case class EstimateVatTurnover(vatTurnoverEstimate: Option[Long] = None)
@@ -33,11 +34,13 @@ object EstimateVatTurnover {
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: EstimateVatTurnover, g: VatFinancials) => {
-      c.vatTurnoverEstimate match {
-        case Some(turnover) => g.copy(turnoverEstimate = turnover)
-        case None => g
-      }
+    c.vatTurnoverEstimate match {
+      case Some(turnover) => g.copy(turnoverEstimate = turnover)
+      case None => g
     }
   }
+  }
+
+  implicit val cacheKey = CacheKey[EstimateVatTurnover](CacheKeys.EstimateVatTurnover)
 
 }
