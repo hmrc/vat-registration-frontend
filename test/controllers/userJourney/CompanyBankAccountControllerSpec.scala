@@ -20,7 +20,7 @@ import builders.AuthBuilder
 import enums.CacheKeys
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.view.{CompanyBankAccount, EstimateZeroRatedSales, ZeroRatedSales}
+import models.view.{CompanyBankAccount, ZeroRatedSales}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -63,9 +63,9 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
       }
     }
 
-    "return HTML when there's nothing in S4L" in {
-      when(mockS4LService.fetchAndGet[ZeroRatedSales](Matchers.eq(CacheKeys.CompanyBankAccount.toString))
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[ZeroRatedSales]]()))
+    "return HTML when there's nothing in S4L and vatScheme contains data" in {
+      when(mockS4LService.fetchAndGet[CompanyBankAccount](Matchers.eq(CacheKeys.CompanyBankAccount.toString))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[CompanyBankAccount]]()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -81,6 +81,22 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
     }
   }
 
+  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+    when(mockS4LService.fetchAndGet[ZeroRatedSales](Matchers.eq(CacheKeys.CompanyBankAccount.toString))
+      (Matchers.any[HeaderCarrier](), Matchers.any[Format[ZeroRatedSales]]()))
+      .thenReturn(Future.successful(None))
+
+    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      .thenReturn(Future.successful(emptyVatScheme))
+
+    callAuthorised(CompanyBankAccountController.show, mockAuthConnector) {
+      result =>
+        status(result) mustBe OK
+        contentType(result) mustBe Some("text/html")
+        charset(result) mustBe Some("utf-8")
+        contentAsString(result) must include("Do you have a bank account set up in the name of your company?")
+    }
+  }
 
   s"POST ${routes.ZeroRatedSalesController.submit()} with Empty data" should {
 
@@ -135,5 +151,4 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
 
     }
   }
-
 }

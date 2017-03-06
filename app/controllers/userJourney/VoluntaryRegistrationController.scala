@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.VoluntaryRegistrationForm
+import forms.vatDetails.{VatReturnFrequencyForm, VoluntaryRegistrationForm}
 import models.ApiModelTransformer
 import models.view.VoluntaryRegistration
 import play.api.mvc._
@@ -34,11 +34,14 @@ class VoluntaryRegistrationController @Inject()(s4LService: S4LService, vatRegis
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
     s4LService.fetchAndGet[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString) flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
+      case Some(viewModel) => Future.successful(Some(viewModel))
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[VoluntaryRegistration].toViewModel
-    } map { viewModel =>
-      val form = VoluntaryRegistrationForm.form.fill(viewModel)
-      Ok(views.html.pages.voluntary_registration(form))
+    } map {
+      case Some(vm) => {
+        val form = VoluntaryRegistrationForm.form.fill(vm)
+        Ok(views.html.pages.voluntary_registration(form))
+      }
+      case None => Ok(views.html.pages.voluntary_registration(VoluntaryRegistrationForm.form))
     }
   })
 

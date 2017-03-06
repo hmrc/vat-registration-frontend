@@ -39,7 +39,7 @@ object TradingName {
         case tn if !tn.isEmpty => TradingName(TRADING_NAME_YES, tradingName = Some(tn))
         case _ => TradingName(TRADING_NAME_NO, tradingName = None)
       }
-    } getOrElse TradingName()
+    }
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: TradingName, g: VatTradingDetails) =>

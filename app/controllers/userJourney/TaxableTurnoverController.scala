@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.TaxableTurnoverForm
+import forms.vatDetails.{StartDateForm, TaxableTurnoverForm}
 import models.ApiModelTransformer
 import models.view.StartDate.COMPANY_REGISTRATION_DATE
 import models.view.VoluntaryRegistration.REGISTER_NO
@@ -36,11 +36,14 @@ class TaxableTurnoverController @Inject()(s4LService: S4LService, vatRegistratio
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     s4LService.fetchAndGet[TaxableTurnover](CacheKeys.TaxableTurnover.toString) flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
+      case Some(viewModel) => Future.successful(Some(viewModel))
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[TaxableTurnover].toViewModel
-    } map { viewModel =>
-      val form = TaxableTurnoverForm.form.fill(viewModel)
-      Ok(views.html.pages.taxable_turnover(form))
+    } map {
+      case Some(vm) => {
+        val form = TaxableTurnoverForm.form.fill(vm)
+        Ok(views.html.pages.taxable_turnover(form))
+      }
+      case None => Ok(views.html.pages.taxable_turnover(TaxableTurnoverForm.form))
     }
   })
 

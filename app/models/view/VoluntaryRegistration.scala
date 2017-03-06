@@ -33,7 +33,7 @@ object VoluntaryRegistration {
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
     vs.vatChoice.map(_.necessity).collect {
       case NECESSITY_VOLUNTARY => VoluntaryRegistration(REGISTER_YES)
-    }.getOrElse(VoluntaryRegistration())
+    }
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: VoluntaryRegistration, g: VatChoice) =>

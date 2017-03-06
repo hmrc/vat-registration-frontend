@@ -22,11 +22,11 @@ import play.api.data.Forms.{longNumber, mapping, optional}
 import utils.VatValidators.zeroRatedSalesEstimateValidation
 
 object EstimateZeroRatedSalesForm {
-  val INPUT_ESTIMATE: String = "zeroRatedSalesEstimate"
+  val ZERO_RATED_SALES_ESTIMATE: String = "zeroRatedSalesEstimate"
 
   val form = Form(
     mapping(
-      INPUT_ESTIMATE -> optional(longNumber)
+      ZERO_RATED_SALES_ESTIMATE -> optional(longNumber)
     )(EstimateZeroRatedSales.apply)(EstimateZeroRatedSales.unapply).verifying(zeroRatedSalesEstimateValidation)
   )
 }

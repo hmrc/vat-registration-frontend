@@ -34,7 +34,7 @@ object VatChargeExpectancy {
     vs.financials.map(_.reclaimVatOnMostReturns).collect {
       case true => VatChargeExpectancy(VAT_CHARGE_YES)
       case false => VatChargeExpectancy(VAT_CHARGE_NO)
-    } getOrElse VatChargeExpectancy()
+    }
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: VatChargeExpectancy, g: VatFinancials) =>

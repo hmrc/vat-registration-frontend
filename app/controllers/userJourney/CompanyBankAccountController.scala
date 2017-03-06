@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.{CompanyBankAccountForm, VoluntaryRegistrationForm}
+import forms.vatDetails.{AccountingPeriodForm, CompanyBankAccountForm, EstimateVatTurnoverForm, VoluntaryRegistrationForm}
 import models.ApiModelTransformer
 import models.view.{CompanyBankAccount, VoluntaryRegistration}
 import play.api.mvc._
@@ -33,11 +33,14 @@ class CompanyBankAccountController @Inject()(s4LService: S4LService, vatRegistra
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     s4LService.fetchAndGet[CompanyBankAccount](CacheKeys.CompanyBankAccount.toString) flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
+      case Some(viewModel) => Future.successful(Some(viewModel))
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[CompanyBankAccount].toViewModel
-    } map { viewModel =>
-      val form = CompanyBankAccountForm.form.fill(viewModel)
-      Ok(views.html.pages.company_bank_account(form))
+    } map {
+      case Some(vm) => {
+        val form = CompanyBankAccountForm.form.fill(vm)
+        Ok(views.html.pages.company_bank_account(form))
+      }
+      case None => Ok(views.html.pages.company_bank_account(CompanyBankAccountForm.form))
     }
   })
 
@@ -46,7 +49,6 @@ class CompanyBankAccountController @Inject()(s4LService: S4LService, vatRegistra
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.company_bank_account(formWithErrors)))
       }, {
-
         data: CompanyBankAccount => {
           s4LService.saveForm[CompanyBankAccount](CacheKeys.CompanyBankAccount.toString, data) flatMap { _ =>
             if (CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES == data.yesNo) {
