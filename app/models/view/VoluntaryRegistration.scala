@@ -22,7 +22,7 @@ import models.api.{VatChoice, VatScheme}
 import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class VoluntaryRegistration(yesNo: String = "")
+case class VoluntaryRegistration(yesNo: String)
 
 object VoluntaryRegistration {
 

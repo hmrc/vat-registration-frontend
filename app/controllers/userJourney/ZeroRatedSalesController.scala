@@ -45,7 +45,7 @@ class ZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
         data: ZeroRatedSales => {
           s4LService.saveForm[ZeroRatedSales](data) flatMap { _ =>
             if (ZeroRatedSales.ZERO_RATED_SALES_NO == data.yesNo) {
-              s4LService.saveForm[EstimateZeroRatedSales](EstimateZeroRatedSales())
+              s4LService.saveForm[EstimateZeroRatedSales](EstimateZeroRatedSales(None))
                 .map { _ => Redirect(controllers.userJourney.routes.VatChargeExpectancyController.show()) }
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.EstimateZeroRatedSalesController.show()))

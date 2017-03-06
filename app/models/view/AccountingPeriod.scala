@@ -21,7 +21,7 @@ import models.api.{VatFinancials, VatScheme}
 import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
-case class AccountingPeriod(accountingPeriod: Option[String] = None)
+case class AccountingPeriod(accountingPeriod: Option[String])
 
 object AccountingPeriod {
 

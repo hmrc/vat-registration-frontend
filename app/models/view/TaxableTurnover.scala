@@ -22,7 +22,7 @@ import models.api.VatScheme
 import models.{ApiModelTransformer, CacheKey}
 import play.api.libs.json.Json
 
-case class TaxableTurnover(yesNo: String = "")
+case class TaxableTurnover(yesNo: String)
 
 object TaxableTurnover {
 

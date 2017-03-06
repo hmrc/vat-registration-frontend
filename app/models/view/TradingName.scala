@@ -21,8 +21,8 @@ import models.api.{VatScheme, VatTradingDetails}
 import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class TradingName(yesNo: String = "",
-                       tradingName: Option[String] = None) {
+case class TradingName(yesNo: String,
+                       tradingName: Option[String]) {
   override def toString: String = tradingName.getOrElse("")
 }
 

@@ -21,7 +21,7 @@ import models.api.{VatFinancials, VatScheme}
 import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
-case class VatChargeExpectancy(yesNo: String = "")
+case class VatChargeExpectancy(yesNo: String)
 
 object VatChargeExpectancy {
 
