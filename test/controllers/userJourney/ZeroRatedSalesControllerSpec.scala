@@ -46,7 +46,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
   s"GET ${routes.ZeroRatedSalesController.show()}" should {
 
     "return HTML when there's a Zero Rated Sales model in S4L" in {
-      val zeroRatedSales = ZeroRatedSales()
+      val zeroRatedSales = ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_YES)
 
       when(mockS4LService.fetchAndGet[ZeroRatedSales]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(zeroRatedSales)))
@@ -109,7 +109,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
   s"POST ${routes.ZeroRatedSalesController.submit()} with Zero Rated Sales selected Yes" should {
 
     "return 303" in {
-      val returnCacheMapZeroRatedSales = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales())))
+      val returnCacheMapZeroRatedSales = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_NO))))
 
       when(mockS4LService.saveForm[ZeroRatedSales]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -129,8 +129,8 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
   s"POST ${routes.ZeroRatedSalesController.submit()} with Zero Rated Sales selected No" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales())))
-      val returnCacheMapEstimateZeroRatedSales = CacheMap("", Map("" -> Json.toJson(EstimateZeroRatedSales())))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_NO))))
+      val returnCacheMapEstimateZeroRatedSales = CacheMap("", Map("" -> Json.toJson(EstimateZeroRatedSales(None))))
 
       when(mockS4LService.saveForm[ZeroRatedSales](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))

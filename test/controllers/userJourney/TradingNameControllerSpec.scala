@@ -113,7 +113,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${routes.TradingNameController.submit()} with valid data no trading name" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingName())))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingName(TradingName.TRADING_NAME_NO, None))))
 
       when(mockS4LService.saveForm[TradingName](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
@@ -132,7 +132,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${routes.TradingNameController.submit()} with valid data with trading name" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingName())))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingName(TradingName.TRADING_NAME_YES, Some("some name")))))
 
       when(mockS4LService.saveForm[TradingName](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))

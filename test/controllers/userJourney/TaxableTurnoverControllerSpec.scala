@@ -46,7 +46,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
   s"GET ${routes.TaxableTurnoverController.show()}" should {
 
     "return HTML when there's a start date in S4L" in {
-      val taxableTurnover = TaxableTurnover()
+      val taxableTurnover = TaxableTurnover(TaxableTurnover.TAXABLE_YES)
 
       when(mockS4LService.fetchAndGet[TaxableTurnover]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(taxableTurnover)))
@@ -111,9 +111,9 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
   s"POST ${routes.TaxableTurnoverController.submit()} with Taxable Turnover selected Yes" should {
 
     "return 303" in {
-      val returnCacheMapTaxableTurnover = CacheMap("", Map("" -> Json.toJson(TaxableTurnover())))
-      val returnCacheMapVoluntaryRegistration = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration())))
-      val returnCacheMapStartDate = CacheMap("", Map("" -> Json.toJson(StartDate())))
+      val returnCacheMapTaxableTurnover = CacheMap("", Map("" -> Json.toJson(TaxableTurnover(TaxableTurnover.TAXABLE_YES))))
+      val returnCacheMapVoluntaryRegistration = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration(VoluntaryRegistration.REGISTER_NO))))
+      val returnCacheMapStartDate = CacheMap("", Map("" -> Json.toJson(StartDate.default)))
 
       when(mockS4LService.saveForm[TaxableTurnover](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapTaxableTurnover))
@@ -140,7 +140,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
   s"POST ${routes.TaxableTurnoverController.submit()} with Taxable Turnover selected No" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TaxableTurnover())))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TaxableTurnover(TaxableTurnover.TAXABLE_NO))))
 
       when(mockS4LService.saveForm[TaxableTurnover](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
