@@ -47,7 +47,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
   s"GET ${routes.VatReturnFrequencyController.show()}" should {
 
     "return HTML when there's a Vat Return Frequency model in S4L" in {
-      val vatReturnFrequency = VatReturnFrequency()
+      val vatReturnFrequency = VatReturnFrequency(VatReturnFrequency.MONTHLY)
 
       when(mockS4LService.fetchAndGet[VatReturnFrequency]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(vatReturnFrequency)))
@@ -115,8 +115,8 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Monthly" should {
 
     "return 303" in {
-      val returnCacheMapVatReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency())))
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod())))
+      val returnCacheMapVatReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.MONTHLY))))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(None))))
 
       when(mockS4LService.saveForm[VatReturnFrequency]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -140,8 +140,8 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Quarterly" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency())))
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod())))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.QUARTERLY))))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(Some(AccountingPeriod.FEB_MAY_AUG_NOV)))))
 
       when(mockS4LService.saveForm[VatReturnFrequency](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
