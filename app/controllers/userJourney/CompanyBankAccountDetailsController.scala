@@ -18,6 +18,7 @@ package controllers.userJourney
 
 import javax.inject.Inject
 
+import cats.Show
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.{CompanyBankAccountDetailsForm, SortCode}
 import models.view.CompanyBankAccountDetails
@@ -33,10 +34,11 @@ class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     viewModel[CompanyBankAccountDetails].map { vm =>
-      Ok(views.html.pages.bank_account_details(CompanyBankAccountDetailsForm.form.fill(CompanyBankAccountDetailsForm(
-        accountName = vm.accountName,
-        accountNumber = vm.accountNumber,
-        sortCode = SortCode.parse(vm.sortCode).getOrElse(SortCode("", "", ""))))))
+      Ok(views.html.pages.bank_account_details(CompanyBankAccountDetailsForm.form.fill(
+        CompanyBankAccountDetailsForm(
+          accountName = vm.accountName,
+          accountNumber = vm.accountNumber,
+          sortCode = SortCode.parse(vm.sortCode).getOrElse(SortCode("", "", ""))))))
     }.getOrElse(Ok(views.html.pages.bank_account_details(CompanyBankAccountDetailsForm.form)))
   })
 
@@ -49,7 +51,7 @@ class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
           CompanyBankAccountDetails(
             accountName = form.accountName,
             accountNumber = form.accountNumber,
-            sortCode = form.sortCode.toString
+            sortCode = Show[SortCode].show(form.sortCode)
           )).map(_ => Redirect(controllers.userJourney.routes.EstimateVatTurnoverController.show()))
       })
   })

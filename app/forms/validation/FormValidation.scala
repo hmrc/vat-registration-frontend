@@ -16,27 +16,45 @@
 
 package forms.validation
 
+import cats.Show
 import forms.vatDetails.SortCode
-import play.api.data.validation.{Constraint, Constraints}
+import org.apache.commons.lang3.StringUtils
+import play.api.data.validation.{Constraint, Constraints, Invalid, Valid}
 
-object FormValidation {
+import scala.util.matching.Regex
+
+private[forms] object FormValidation {
+
+  def patternCheckingConstraint[T: Show](pattern: Regex, errorSubCode: String, mandatory: Boolean): Constraint[T] = Constraint {
+    input: T =>
+      val s: String = Show[T].show(input)
+      mandatoryText(errorSubCode)(s) match {
+        case Valid => Constraints.pattern(pattern, error = s"validation.$errorSubCode.invalid")(s)
+        case err => if (mandatory) err else Valid
+      }
+  }
+
+  def mandatoryText(specificCode: String): Constraint[String] = Constraint {
+    (input: String) => if (StringUtils.isNotBlank(input)) Valid else Invalid(s"validation.$specificCode.missing")
+  }
 
   object BankAccount {
+
+    import cats.instances.string._
 
     private val SortCode = """^([0-9]{2})-([0-9]{2})-([0-9]{2})$""".r
     private val AccountName = """[A-Za-z0-9\-',/& ]{1,150}""".r
     private val AccountNumber = """[0-9]{8}""".r
 
-    def accountNameConstraint(accountType: String): Constraint[String] =
-      Constraints.pattern(AccountName, error = s"validation.$accountType.bankAccount.name.invalid")
 
+    def accountName(errorSubstring: String, mandatory: Boolean = true): Constraint[String] =
+      patternCheckingConstraint(AccountName, s"$errorSubstring.name", mandatory)
 
-    def accountNumberConstraint(accountType: String): Constraint[String] =
-      Constraints.pattern(AccountNumber, error = s"validation.$accountType.bankAccount.number.invalid")
+    def accountNumber(errorSubstring: String, mandatory: Boolean = true): Constraint[String] =
+      patternCheckingConstraint(AccountNumber, s"$errorSubstring.number", mandatory)
 
-    def sortCodeConstraint(accountType: String): Constraint[SortCode] = Constraint { sortCode: SortCode =>
-      Constraints.pattern(SortCode, error = s"validation.$accountType.bankAccount.sortCode.invalid")(sortCode.toString)
-    }
+    def accountSortCode(errorSubstring: String, mandatory: Boolean = true): Constraint[SortCode] =
+      patternCheckingConstraint(SortCode, errorSubCode = s"$errorSubstring.sortCode", mandatory)
 
   }
 
