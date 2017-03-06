@@ -49,14 +49,14 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
     "sortCode.part3" -> "33"
   )
 
+  val validCompanyBankAccountDetails = CompanyBankAccountDetails("name", "12345678", "11-11-11")
+
   s"GET ${routes.CompanyBankAccountDetailsController.show()}" should {
 
     "return HTML when there's a CompanyBankAccountDetails model in S4L" in {
-      val companyBankAccountDetails = CompanyBankAccountDetails()
-
       when(mockS4LService.fetchAndGet[CompanyBankAccountDetails]()
         (Matchers.eq(CacheKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(companyBankAccountDetails)))
+        .thenReturn(Future.successful(Some(validCompanyBankAccountDetails)))
 
       callAuthorised(CompanyBankAccountDetailsController.show(), mockAuthConnector) {
         result =>
@@ -117,7 +117,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
   s"POST ${routes.CompanyBankAccountDetailsController.submit()} with valid Company Bank Account Details" should {
 
     "return 303" in {
-      val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccountDetails())))
+      val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(validCompanyBankAccountDetails)))
 
       when(mockS4LService.saveForm[CompanyBankAccountDetails]
         (Matchers.any())(Matchers.eq(CacheKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
@@ -135,7 +135,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
   s"POST ${routes.CompanyBankAccountDetailsController.submit()} with invalid Company Bank Account Details" should {
 
     "return 400" in {
-      val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccountDetails())))
+      val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(validCompanyBankAccountDetails)))
 
       when(mockS4LService.saveForm[CompanyBankAccountDetails]
         (Matchers.any())(Matchers.eq(CacheKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
