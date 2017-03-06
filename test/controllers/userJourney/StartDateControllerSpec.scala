@@ -17,14 +17,14 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
-import enums.CacheKeys
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.CacheKey
 import models.view.StartDate
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.VatRegistrationService
@@ -37,7 +37,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object TestStartDateController extends StartDateController(mockS4LService, mockVatRegistrationService, ds) {
+  object TestStartDateController extends StartDateController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -48,8 +48,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return HTML when there's a start date in S4L" in {
       val startDate = StartDate(StartDate.SPECIFIC_DATE, Some(30), Some(1), Some(2017))
 
-      when(mockS4LService.fetchAndGet[StartDate](Matchers.eq(CacheKeys.StartDate.toString))
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
+      when(mockS4LService.fetchAndGet[StartDate]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(startDate)))
 
       callAuthorised(TestStartDateController.show, mockAuthConnector) {
@@ -62,8 +61,8 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[StartDate](Matchers.eq(CacheKeys.StartDate.toString))
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
+      when(mockS4LService.fetchAndGet[StartDate]()
+        (Matchers.eq(CacheKey[StartDate]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -79,8 +78,8 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockS4LService.fetchAndGet[StartDate](Matchers.eq(CacheKeys.StartDate.toString))
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
+      when(mockS4LService.fetchAndGet[StartDate]()
+        (Matchers.eq(CacheKey[StartDate]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -113,8 +112,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDate())))
 
-      when(mockS4LService.saveForm[StartDate](Matchers.eq(CacheKeys.StartDate.toString), Matchers.any())
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
+      when(mockS4LService.saveForm[StartDate](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -122,7 +120,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe  "/vat-registration/trading-name"
+          redirectLocation(result).getOrElse("") mustBe "/vat-registration/trading-name"
 
       }
 
@@ -134,8 +132,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDate())))
 
-      when(mockS4LService.saveForm[StartDate](Matchers.eq(CacheKeys.StartDate.toString), Matchers.any())
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[StartDate]]()))
+      when(mockS4LService.saveForm[StartDate](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -143,7 +140,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe  "/vat-registration/trading-name"
+          redirectLocation(result).getOrElse("") mustBe "/vat-registration/trading-name"
       }
 
     }

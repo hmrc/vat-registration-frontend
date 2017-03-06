@@ -20,8 +20,8 @@ import javax.inject.Inject
 
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
 import forms.vatDetails.test.TestSetupForm
+import models.CacheKey
 import models.view.{EstimateVatTurnover, StartDate, TradingName, _}
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
@@ -36,17 +36,17 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
 
   def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request => {
     for {
-      taxableTurnover <- s4LService.fetchAndGet[TaxableTurnover](CacheKeys.TaxableTurnover.toString)
-      voluntaryRegistration <- s4LService.fetchAndGet[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString)
-      startDate <- s4LService.fetchAndGet[StartDate](CacheKeys.StartDate.toString)
-      tradingName <- s4LService.fetchAndGet[TradingName](CacheKeys.TradingName.toString)
-      companyBankAccount <- s4LService.fetchAndGet[CompanyBankAccount](CacheKeys.CompanyBankAccount.toString)
-      estimateVatTurnover <- s4LService.fetchAndGet[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString)
-      zeroRatedSales <- s4LService.fetchAndGet[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString)
-      estimateZeroRatedSales <- s4LService.fetchAndGet[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString)
-      vatChargeExpectancy <- s4LService.fetchAndGet[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString)
-      vatReturnFrequency <- s4LService.fetchAndGet[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString)
-      accountingPeriod <- s4LService.fetchAndGet[AccountingPeriod](CacheKeys.AccountingPeriod.toString)
+      taxableTurnover <- s4LService.fetchAndGet[TaxableTurnover]()
+      voluntaryRegistration <- s4LService.fetchAndGet[VoluntaryRegistration]()
+      startDate <- s4LService.fetchAndGet[StartDate]()
+      tradingName <- s4LService.fetchAndGet[TradingName]()
+      companyBankAccount <- s4LService.fetchAndGet[CompanyBankAccount]()
+      estimateVatTurnover <- s4LService.fetchAndGet[EstimateVatTurnover]()
+      zeroRatedSales <- s4LService.fetchAndGet[ZeroRatedSales]()
+      estimateZeroRatedSales <- s4LService.fetchAndGet[EstimateZeroRatedSales]()
+      vatChargeExpectancy <- s4LService.fetchAndGet[VatChargeExpectancy]()
+      vatReturnFrequency <- s4LService.fetchAndGet[VatReturnFrequency]()
+      accountingPeriod <- s4LService.fetchAndGet[AccountingPeriod]()
 
       testSetup = TestSetup(
         taxableTurnover.map(_.yesNo),
@@ -72,7 +72,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     // TODO Special case
     def saveStartDate(data: TestSetup) = {
-      s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, data.startDateChoice
+      s4LService.saveForm[StartDate](data.startDateChoice
       match {
         case None => StartDate()
         case Some(a) => StartDate(a,
@@ -82,23 +82,8 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       })
     }
 
-    def saveToS4Later[T](data: Option[String], key: CacheKeys.Value, f: Option[String] => T, fmt: Format[T]): Future[Any] = {
-      implicit val format = fmt
-      data
-      match {
-        case None => Future.successful()
-        case Some(_) => s4LService.saveForm(key.toString, f(data))
-      }
-    }
-
-    def saveToS4LaterData[T](matchData: Option[String], data: TestSetup, key: CacheKeys.Value, f: TestSetup => T, fmt: Format[T]): Future[Any] = {
-      implicit val format = fmt
-      matchData
-      match {
-        case None => Future.successful()
-        case Some(_) => s4LService.saveForm(key.toString, f(data))
-      }
-    }
+    def saveToS4Later[T: Format : CacheKey](userEntered: Option[String], data: TestSetup, f: TestSetup => T): Future[Unit] =
+      userEntered.map(_ => s4LService.saveForm(f(data)).map(_ => ())).getOrElse(Future.successful(()))
 
     TestSetupForm.form.bindFromRequest().fold(
       formWithErrors => {
@@ -106,18 +91,17 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       }, {
         data: TestSetup => {
           for {
-            _ <- saveToS4Later(data.taxableTurnoverChoice, CacheKeys.TaxableTurnover, { x => TaxableTurnover(x.get) }, TaxableTurnover.format )
-            _ <- saveToS4Later(data.voluntaryChoice, CacheKeys.VoluntaryRegistration, { x => VoluntaryRegistration(x.get) }, VoluntaryRegistration.format )
             _ <- saveStartDate(data)
-            _ <- saveToS4LaterData(data.tradingNameChoice, data, CacheKeys.TradingName, { d => TradingName(d.tradingNameChoice.get, Some(data.tradingName.getOrElse("")))}, TradingName.format)
-            _ <- saveToS4Later(data.companyBankAccountChoice, CacheKeys.CompanyBankAccount, { x => CompanyBankAccount(x.get) }, CompanyBankAccount.format )
-            _ <- saveToS4Later(data.estimateVatTurnover, CacheKeys.EstimateVatTurnover, { x => EstimateVatTurnover(Some(x.get.toLong))}, EstimateVatTurnover.format)
-            _ <- saveToS4Later(data.zeroRatedSalesChoice, CacheKeys.ZeroRatedSales, { x => ZeroRatedSales(x.get) }, ZeroRatedSales.format )
-            _ <- saveToS4Later(data.zeroRatedSalesEstimate, CacheKeys.EstimateZeroRatedSales, { x => EstimateZeroRatedSales(Some(x.get.toLong))}, EstimateZeroRatedSales.format)
-            _ <- saveToS4Later(data.vatChargeExpectancyChoice, CacheKeys.VatChargeExpectancy, { x => VatChargeExpectancy(x.get) }, VatChargeExpectancy.format )
-            _ <- saveToS4Later(data.vatReturnFrequency, CacheKeys.VatReturnFrequency, { x => VatReturnFrequency(x.get) }, VatReturnFrequency.format )
-            _ <- saveToS4Later(data.accountingPeriod, CacheKeys.AccountingPeriod, { x => AccountingPeriod(x) }, AccountingPeriod.format)
-
+            _ <- saveToS4Later(data.taxableTurnoverChoice, data, { x => TaxableTurnover(x.taxableTurnoverChoice.get) })
+            _ <- saveToS4Later(data.voluntaryChoice, data, { x => VoluntaryRegistration(x.voluntaryChoice.get) })
+            _ <- saveToS4Later(data.tradingNameChoice, data, { x => TradingName(x.tradingNameChoice.get, Some(data.tradingName.getOrElse(""))) })
+            _ <- saveToS4Later(data.companyBankAccountChoice, data, { x => CompanyBankAccount(x.companyBankAccountChoice.get) })
+            _ <- saveToS4Later(data.estimateVatTurnover, data, { x => EstimateVatTurnover(Some(x.estimateVatTurnover.get.toLong)) })
+            _ <- saveToS4Later(data.zeroRatedSalesChoice, data, { x => ZeroRatedSales(x.zeroRatedSalesChoice.get) })
+            _ <- saveToS4Later(data.zeroRatedSalesEstimate, data, { x => EstimateZeroRatedSales(Some(x.zeroRatedSalesEstimate.get.toLong)) })
+            _ <- saveToS4Later(data.vatChargeExpectancyChoice, data, { x => VatChargeExpectancy(x.vatChargeExpectancyChoice.get) })
+            _ <- saveToS4Later(data.vatReturnFrequency, data, { x => VatReturnFrequency(x.vatReturnFrequency.get) })
+            _ <- saveToS4Later(data.accountingPeriod, data, { x => AccountingPeriod(x.accountingPeriod) })
           } yield Ok("Test setup complete")
         }
       })

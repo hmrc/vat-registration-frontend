@@ -19,30 +19,22 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
-import forms.vatDetails.{CompanyBankAccountForm, EstimateZeroRatedSalesForm}
-import models.ApiModelTransformer
+import forms.vatDetails.EstimateZeroRatedSalesForm
 import models.view.EstimateZeroRatedSales
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
-class EstimateZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                                 ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class EstimateZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
+                                                (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+
+  import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
-    s4LService.fetchAndGet[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString) flatMap {
-      case Some(viewModel) => Future.successful(Some(viewModel))
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[EstimateZeroRatedSales].toViewModel
-    } map {
-      case Some(vm) => {
-        val form = EstimateZeroRatedSalesForm.form.fill(vm)
-        Ok(views.html.pages.estimate_zero_rated_sales(form))
-      }
-      case None => Ok(views.html.pages.estimate_zero_rated_sales(EstimateZeroRatedSalesForm.form))
-    }
+    viewModel[EstimateZeroRatedSales].map { vm =>
+      Ok(views.html.pages.estimate_zero_rated_sales(EstimateZeroRatedSalesForm.form.fill(vm)))
+    }.getOrElse(Ok(views.html.pages.estimate_zero_rated_sales(EstimateZeroRatedSalesForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
@@ -51,7 +43,7 @@ class EstimateZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegi
         Future.successful(BadRequest(views.html.pages.estimate_zero_rated_sales(formWithErrors)))
       }, {
         data: EstimateZeroRatedSales => {
-          s4LService.saveForm[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString, data) map { _ =>
+          s4LService.saveForm[EstimateZeroRatedSales](data) map { _ =>
             Redirect(controllers.userJourney.routes.VatChargeExpectancyController.show())
           }
         }

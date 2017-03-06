@@ -19,30 +19,21 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
-import forms.vatDetails.{VatChargeExpectancyForm, VatReturnFrequencyForm}
-import models.ApiModelTransformer
+import forms.vatDetails.VatReturnFrequencyForm
 import models.view.{AccountingPeriod, VatReturnFrequency}
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
-class VatReturnFrequencyController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                             ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
+                                            (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+  import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
-    s4LService.fetchAndGet[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString) flatMap {
-      case Some(viewModel) => Future.successful(Some(viewModel))
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[VatReturnFrequency].toViewModel
-    } map {
-      case Some(vm) => {
-        val form = VatReturnFrequencyForm.form.fill(vm)
-        Ok(views.html.pages.vat_return_frequency(form))
-      }
-      case None => Ok(views.html.pages.vat_return_frequency(VatReturnFrequencyForm.form))
-    }
+    viewModel[VatReturnFrequency].map { vm =>
+      Ok(views.html.pages.vat_return_frequency(VatReturnFrequencyForm.form.fill(vm)))
+    }.getOrElse(Ok(views.html.pages.vat_return_frequency(VatReturnFrequencyForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
@@ -51,9 +42,9 @@ class VatReturnFrequencyController @Inject()(s4LService: S4LService, vatRegistra
         Future.successful(BadRequest(views.html.pages.vat_return_frequency(formWithErrors)))
       }, {
         data: VatReturnFrequency => {
-          s4LService.saveForm[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString, data) flatMap { _ =>
+          s4LService.saveForm[VatReturnFrequency](data) flatMap { _ =>
             if (VatReturnFrequency.MONTHLY == data.frequencyType) {
-              s4LService.saveForm[AccountingPeriod](CacheKeys.AccountingPeriod.toString, AccountingPeriod())
+              s4LService.saveForm[AccountingPeriod](AccountingPeriod())
                 .map { _ => Redirect(controllers.userJourney.routes.SummaryController.show()) }
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.AccountingPeriodController.show()))

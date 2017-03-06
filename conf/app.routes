@@ -54,6 +54,11 @@ POST        /vat-return-frequency           controllers.userJourney.VatReturnFre
 GET         /company-bank-account           controllers.userJourney.CompanyBankAccountController.show
 POST        /company-bank-account           controllers.userJourney.CompanyBankAccountController.submit
 
+
+## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
+GET         /bank-details                   controllers.userJourney.CompanyBankAccountDetailsController.show
+POST        /bank-details                   controllers.userJourney.CompanyBankAccountDetailsController.submit
+
 ## FEEDBACK
 GET         /feedback                       controllers.feedback.FeedbackController.show
 
@@ -65,3 +70,6 @@ GET         /post-sign-in                   controllers.userJourney.SignInOutCon
 
 ## APPLICATION SUBMISSION CONFIRMATION
 GET         /submission-confirmation        controllers.userJourney.ApplicationSubmissionController.show
+
+
+

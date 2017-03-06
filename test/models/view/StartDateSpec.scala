@@ -66,7 +66,7 @@ class StartDateSpec extends UnitSpec with VatRegistrationFixture {
     "convert a DateTime object to a StartDate model when it's a default value" in {
       val defaultDateTime = DateTimeFormat.forPattern("dd/MM/yyyy").parseDateTime("31/12/1969")
       val startDate = StartDate.fromDateTime(defaultDateTime)
-      startDate shouldBe StartDate()
+      startDate shouldBe StartDate.default
     }
   }
 

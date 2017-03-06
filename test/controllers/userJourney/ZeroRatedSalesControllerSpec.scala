@@ -17,14 +17,14 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
-import enums.CacheKeys
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.CacheKey
 import models.view.{EstimateZeroRatedSales, ZeroRatedSales}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.VatRegistrationService
@@ -37,7 +37,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object TestZeroRatedSalesController extends ZeroRatedSalesController(mockS4LService, mockVatRegistrationService, ds) {
+  object TestZeroRatedSalesController extends ZeroRatedSalesController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -46,14 +46,14 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
   s"GET ${routes.ZeroRatedSalesController.show()}" should {
 
     "return HTML when there's a Zero Rated Sales model in S4L" in {
-      val zeroRatedSales = ZeroRatedSales("")
+      val zeroRatedSales = ZeroRatedSales()
 
-      when(mockS4LService.fetchAndGet[ZeroRatedSales](Matchers.eq(CacheKeys.ZeroRatedSales.toString))(Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[ZeroRatedSales]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(zeroRatedSales)))
 
       AuthBuilder.submitWithAuthorisedUser(TestZeroRatedSalesController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "zeroRatedSalesRadio" -> ""
-      )){
+      )) {
 
         result =>
           status(result) mustBe OK
@@ -64,8 +64,8 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[ZeroRatedSales](Matchers.eq(CacheKeys.ZeroRatedSales.toString))
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[ZeroRatedSales]]()))
+      when(mockS4LService.fetchAndGet[ZeroRatedSales]()
+        (Matchers.eq(CacheKey[ZeroRatedSales]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -81,8 +81,8 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockS4LService.fetchAndGet[ZeroRatedSales](Matchers.eq(CacheKeys.ZeroRatedSales.toString))
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[ZeroRatedSales]]()))
+      when(mockS4LService.fetchAndGet[ZeroRatedSales]()
+        (Matchers.eq(CacheKey[ZeroRatedSales]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -102,11 +102,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(TestZeroRatedSalesController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe  Status.BAD_REQUEST
-      }
-
+      ))(status(_) mustBe Status.BAD_REQUEST)
     }
   }
 
@@ -116,8 +112,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       val returnCacheMapZeroRatedSales = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales())))
 
       when(mockS4LService.saveForm[ZeroRatedSales]
-        (Matchers.eq(CacheKeys.ZeroRatedSales.toString), Matchers.any())
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[ZeroRatedSales]]()))
+        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapZeroRatedSales))
 
       AuthBuilder.submitWithAuthorisedUser(TestZeroRatedSalesController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -125,7 +120,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/estimate-zero-rated-sales"
+          redirectLocation(response).getOrElse("") mustBe "/vat-registration/estimate-zero-rated-sales"
       }
 
     }
@@ -137,11 +132,11 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales())))
       val returnCacheMapEstimateZeroRatedSales = CacheMap("", Map("" -> Json.toJson(EstimateZeroRatedSales())))
 
-      when(mockS4LService.saveForm[ZeroRatedSales](Matchers.eq(CacheKeys.ZeroRatedSales.toString), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[ZeroRatedSales](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       when(mockS4LService.saveForm[EstimateZeroRatedSales]
-        (Matchers.eq(CacheKeys.EstimateZeroRatedSales.toString), Matchers.any())(Matchers.any(), Matchers.any()))
+        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapEstimateZeroRatedSales))
 
       AuthBuilder.submitWithAuthorisedUser(TestZeroRatedSalesController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -149,7 +144,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/vat-charge-expectancy"
+          redirectLocation(response).getOrElse("") mustBe "/vat-registration/vat-charge-expectancy"
       }
 
     }

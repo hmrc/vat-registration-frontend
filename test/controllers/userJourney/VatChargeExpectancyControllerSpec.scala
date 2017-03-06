@@ -17,14 +17,14 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
-import enums.CacheKeys
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.CacheKey
 import models.view.{VatChargeExpectancy, VatReturnFrequency}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.VatRegistrationService
@@ -37,7 +37,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object TestVatChargeExpectancyController extends VatChargeExpectancyController(mockS4LService, mockVatRegistrationService, ds) {
+  object TestVatChargeExpectancyController extends VatChargeExpectancyController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -46,14 +46,14 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"GET ${routes.VatChargeExpectancyController.show()}" should {
 
     "return HTML when there's a Vat Charge Expectancy model in S4L" in {
-      val vatChargeExpectancy = VatChargeExpectancy("")
+      val vatChargeExpectancy = VatChargeExpectancy()
 
-      when(mockS4LService.fetchAndGet[VatChargeExpectancy](Matchers.eq(CacheKeys.VatChargeExpectancy.toString))(Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[VatChargeExpectancy]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(vatChargeExpectancy)))
 
       AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> ""
-      )){
+      )) {
 
         result =>
           status(result) mustBe OK
@@ -64,8 +64,8 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[VatChargeExpectancy](Matchers.eq(CacheKeys.VatChargeExpectancy.toString))
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[VatChargeExpectancy]]()))
+      when(mockS4LService.fetchAndGet[VatChargeExpectancy]()
+        (Matchers.eq(CacheKey[VatChargeExpectancy]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -81,8 +81,8 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockS4LService.fetchAndGet[VatChargeExpectancy](Matchers.eq(CacheKeys.VatChargeExpectancy.toString))
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[VatChargeExpectancy]]()))
+      when(mockS4LService.fetchAndGet[VatChargeExpectancy]()
+        (Matchers.eq(CacheKey[VatChargeExpectancy]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -105,7 +105,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
-          status(result) mustBe  Status.BAD_REQUEST
+          status(result) mustBe Status.BAD_REQUEST
       }
 
     }
@@ -117,8 +117,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       val returnCacheMapVatChargeExpectancy = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy())))
 
       when(mockS4LService.saveForm[VatChargeExpectancy]
-        (Matchers.eq(CacheKeys.VatChargeExpectancy.toString), Matchers.any())
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[VatChargeExpectancy]]()))
+        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapVatChargeExpectancy))
 
       AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -126,7 +125,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/vat-return-frequency"
+          redirectLocation(response).getOrElse("") mustBe "/vat-registration/vat-return-frequency"
       }
 
     }
@@ -138,12 +137,10 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy())))
       val returnCacheMapReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency())))
 
-      when(mockS4LService.saveForm[VatChargeExpectancy](Matchers.eq(CacheKeys.VatChargeExpectancy.toString), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[VatChargeExpectancy](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      when(mockS4LService.saveForm[VatReturnFrequency]
-        (Matchers.eq(CacheKeys.VatReturnFrequency.toString), Matchers.any())
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[VatReturnFrequency]]()))
+      when(mockS4LService.saveForm[VatReturnFrequency](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapReturnFrequency))
 
       AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -151,7 +148,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/accounting-period"
+          redirectLocation(response).getOrElse("") mustBe "/vat-registration/accounting-period"
       }
 
     }
