@@ -18,7 +18,6 @@ package services
 
 import javax.inject.Inject
 
-import cats.data.State
 import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.DownstreamOutcome
@@ -60,9 +59,9 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
 
   private def s4l[T: Format : CacheKey]()(implicit headerCarrier: HeaderCarrier) = s4LService.fetchAndGet[T]()
 
-  private def update[C, G](c: Option[C], vs: VatScheme)(implicit apiTransformer: ApiModelTransformer[C], vmTransformer: ViewModelTransformer[C, G]) =
-    State.modify[G](g => vmTransformer.toApi(c.getOrElse(apiTransformer.toViewModel(vs)), g))
-
+  private def update[C, G](c: Option[C], vs: VatScheme)
+                          (implicit apiTransformer: ApiModelTransformer[C], vmTransformer: ViewModelTransformer[C, G]): G => G =
+    g => vmTransformer.toApi(c.getOrElse(apiTransformer.toViewModel(vs)), g)
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
     fetchRegistrationId.flatMap(vatRegConnector.getRegistration)
@@ -81,26 +80,17 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
 
-    def mergeWithS4L(vs: VatScheme) = {
-      val vatFinancialsFromS4L = s4l[EstimateVatTurnover]() |@|
+    def mergeWithS4L(vs: VatScheme) =
+      (s4l[EstimateVatTurnover]() |@|
         s4l[EstimateZeroRatedSales]() |@|
         s4l[VatChargeExpectancy]() |@|
         s4l[VatReturnFrequency]() |@|
         s4l[AccountingPeriod]() |@|
-        s4l[CompanyBankAccountDetails] map S4LVatFinancials
-
-      vatFinancialsFromS4L.map { vf =>
-        val updateOperation = for {
-          _ <- update(vf.estimateVatTurnover, vs)
-          _ <- update(vf.zeroRatedSalesEstimate, vs)
-          _ <- update(vf.vatChargeExpectancy, vs)
-          _ <- update(vf.vatReturnFrequency, vs)
-          _ <- update(vf.accountingPeriod, vs)
-          _ <- update(vf.companyBankAccountDetails, vs)
-        } yield ()
-        updateOperation.runS(vs.financials.getOrElse(VatFinancials.default)).value
+        s4l[CompanyBankAccountDetails]).map(S4LVatFinancials).map { vf =>
+        (update(vf.estimateVatTurnover, vs) andThen update(vf.zeroRatedSalesEstimate, vs) andThen
+          update(vf.vatChargeExpectancy, vs) andThen update(vf.vatReturnFrequency, vs) andThen
+          update(vf.accountingPeriod, vs) andThen update(vf.companyBankAccountDetails, vs)) (vs.financials.getOrElse(VatFinancials.default))
       }
-    }
 
     for {
       vs <- getVatScheme()
@@ -110,16 +100,10 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   }
 
   def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
-    //for now we only store trading name for trading details, so the below is total overkill
-    //but trading details object will grow
-    def mergeWithS4L(vs: VatScheme) = {
-      s4l[TradingName]().map { tn =>
-        val updateOperation = for {
-          _ <- update(tn, vs)
-        } yield ()
-        updateOperation.runS(vs.tradingDetails.getOrElse(VatTradingDetails())).value
-      }
-    }
+    //revisit this; make it look like other `mergeWithS4L` once there's >1 thing coming from S4L
+    def mergeWithS4L(vs: VatScheme) = s4l[TradingName]().map { tn =>
+      update(tn, vs)
+    }.map(_.apply(vs.tradingDetails.getOrElse(VatTradingDetails())))
 
     for {
       vs <- getVatScheme()
@@ -129,17 +113,10 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   }
 
   def submitVatChoice()(implicit hc: HeaderCarrier): Future[VatChoice] = {
-    def mergeWithS4L(vs: VatScheme) = {
-      val vatChoiceFromS4L =
-        s4l[StartDate]() |@| s4l[VoluntaryRegistration]() map S4LVatChoice
-      vatChoiceFromS4L.map { vc =>
-        val updateOperation = for {
-          _ <- update(vc.startDate, vs)
-          _ <- update(vc.voluntaryRegistration, vs)
-        } yield ()
-        updateOperation.runS(vs.vatChoice.getOrElse(VatChoice())).value
+    def mergeWithS4L(vs: VatScheme) =
+      (s4l[StartDate]() |@| s4l[VoluntaryRegistration]()).map(S4LVatChoice).map { vc =>
+        (update(vc.startDate, vs) andThen update(vc.voluntaryRegistration, vs)) (vs.vatChoice.getOrElse(VatChoice()))
       }
-    }
 
     for {
       vs <- getVatScheme()
