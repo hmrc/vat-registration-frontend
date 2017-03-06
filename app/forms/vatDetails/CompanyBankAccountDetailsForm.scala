@@ -20,7 +20,7 @@ import forms.validation.FormValidation.BankAccount._
 import play.api.data.Form
 import play.api.data.Forms._
 
-case class BankDetailsForm(accountName: String, accountNumber: String, sortCode: SortCode)
+case class CompanyBankAccountDetailsForm(accountName: String, accountNumber: String, sortCode: SortCode)
 
 case class SortCode(part1: String, part2: String, part3: String) {
   override def toString: String = Seq(part1, part2, part3).mkString("-")
@@ -35,7 +35,7 @@ object SortCode {
   }
 }
 
-object BankDetailsForm {
+object CompanyBankAccountDetailsForm {
 
   private val ACCOUNT_TYPE = "business"
 
@@ -48,7 +48,7 @@ object BankDetailsForm {
         "part2" -> text,
         "part3" -> text
       )(SortCode.apply)(SortCode.unapply).verifying(sortCodeConstraint(ACCOUNT_TYPE))
-    )(BankDetailsForm.apply)(BankDetailsForm.unapply)
+    )(CompanyBankAccountDetailsForm.apply)(CompanyBankAccountDetailsForm.unapply)
   )
 
 }

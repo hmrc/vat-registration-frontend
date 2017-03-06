@@ -23,16 +23,18 @@ import forms.vatDetails.CompanyBankAccountForm
 import models.view.CompanyBankAccount
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
-
 import scala.concurrent.Future
+
 
 class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
+  import cats.instances.future._
+
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[CompanyBankAccount] map { vm =>
+    viewModel[CompanyBankAccount].map { vm =>
       Ok(views.html.pages.company_bank_account(CompanyBankAccountForm.form.fill(vm)))
-    }
+    }.getOrElse(Ok(views.html.pages.company_bank_account(CompanyBankAccountForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
@@ -43,7 +45,7 @@ class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
         data: CompanyBankAccount => {
           s4l.saveForm[CompanyBankAccount](data) map { _ =>
             if (CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES == data.yesNo) {
-              Redirect(controllers.userJourney.routes.BankDetailsController.show())
+              Redirect(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
             } else {
               Redirect(controllers.userJourney.routes.EstimateVatTurnoverController.show())
             }

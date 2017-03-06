@@ -34,7 +34,7 @@ class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
           VatChoice.NECESSITY_OBLIGATORY
         ))
       )
-      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeObligatory) shouldBe TaxableTurnover(TAXABLE_YES)
+      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeObligatory) shouldBe Some(TaxableTurnover(TAXABLE_YES))
     }
 
     "convert a VatChoice (Voluntary) to view model" in {
@@ -45,17 +45,17 @@ class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
           VatChoice.NECESSITY_VOLUNTARY
         ))
       )
-      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe TaxableTurnover(TAXABLE_NO)
+      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe Some(TaxableTurnover(TAXABLE_NO))
     }
 
     "convert an invalid VatChoice to empty view model" in {
       val vatSchemeVoluntary = VatScheme(validRegId, vatChoice = Some(VatChoice(DateTime.now, "GARBAGE")))
-      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe TaxableTurnover()
+      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe None
     }
 
     "convert a none VatChoice to empty view model" in {
       val vatSchemeVoluntary = VatScheme(validRegId)
-      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe TaxableTurnover()
+      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe None
     }
 
   }

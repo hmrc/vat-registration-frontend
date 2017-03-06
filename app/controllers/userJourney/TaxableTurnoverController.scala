@@ -31,11 +31,12 @@ import scala.concurrent.Future
 
 class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies)
                                          (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+  import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[TaxableTurnover]() map { vm =>
+    viewModel[TaxableTurnover].map { vm =>
       Ok(views.html.pages.taxable_turnover(TaxableTurnoverForm.form.fill(vm)))
-    }
+    }.getOrElse(Ok(views.html.pages.taxable_turnover(TaxableTurnoverForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {

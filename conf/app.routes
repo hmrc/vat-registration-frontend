@@ -56,8 +56,8 @@ POST        /company-bank-account           controllers.userJourney.CompanyBankA
 
 
 ## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
-GET         /bank-details                   controllers.userJourney.BankDetailsController.show
-POST        /bank-details                   controllers.userJourney.BankDetailsController.submit
+GET         /bank-details                   controllers.userJourney.CompanyBankAccountDetailsController.show
+POST        /bank-details                   controllers.userJourney.CompanyBankAccountDetailsController.submit
 
 ## FEEDBACK
 GET         /feedback                       controllers.feedback.FeedbackController.show

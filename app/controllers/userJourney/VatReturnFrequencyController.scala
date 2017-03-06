@@ -28,11 +28,12 @@ import scala.concurrent.Future
 
 class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+  import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[VatReturnFrequency]() map { vm =>
+    viewModel[VatReturnFrequency].map { vm =>
       Ok(views.html.pages.vat_return_frequency(VatReturnFrequencyForm.form.fill(vm)))
-    }
+    }.getOrElse(Ok(views.html.pages.vat_return_frequency(VatReturnFrequencyForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {

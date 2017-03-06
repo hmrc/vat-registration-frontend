@@ -29,10 +29,12 @@ import scala.concurrent.Future
 class EstimateZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
                                                 (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
+  import cats.instances.future._
+
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[EstimateZeroRatedSales]() map { vm =>
+    viewModel[EstimateZeroRatedSales].map { vm =>
       Ok(views.html.pages.estimate_zero_rated_sales(EstimateZeroRatedSalesForm.form.fill(vm)))
-    }
+    }.getOrElse(Ok(views.html.pages.estimate_zero_rated_sales(EstimateZeroRatedSalesForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {

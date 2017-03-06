@@ -19,6 +19,7 @@ package models.view
 import fixtures.VatRegistrationFixture
 import models.ApiModelTransformer
 import models.api.{VatAccountingPeriod, VatBankAccount, VatFinancials, VatScheme}
+import models.view.CompanyBankAccount.{COMPANY_BANK_ACCOUNT_NO, COMPANY_BANK_ACCOUNT_YES}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CompanyBankAccountSpec extends UnitSpec with VatRegistrationFixture {
@@ -35,7 +36,7 @@ class CompanyBankAccountSpec extends UnitSpec with VatRegistrationFixture {
         vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
       )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithAccount))
-      ApiModelTransformer[CompanyBankAccount].toViewModel(vs) shouldBe CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES)
+      ApiModelTransformer[CompanyBankAccount].toViewModel(vs) shouldBe Some(CompanyBankAccount(COMPANY_BANK_ACCOUNT_YES))
     }
 
     "convert VatFinancials without bank account to view model" in {
@@ -46,12 +47,12 @@ class CompanyBankAccountSpec extends UnitSpec with VatRegistrationFixture {
       )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithoutAccount))
 
-      ApiModelTransformer[CompanyBankAccount].toViewModel(vs) shouldBe CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_NO)
+      ApiModelTransformer[CompanyBankAccount].toViewModel(vs) shouldBe Some(CompanyBankAccount(COMPANY_BANK_ACCOUNT_NO))
     }
 
     "convert VatScheme without VatFinancials to empty view model" in {
       val vs = vatScheme.copy(financials = None)
-      ApiModelTransformer[CompanyBankAccount].toViewModel(vs) shouldBe CompanyBankAccount()
+      ApiModelTransformer[CompanyBankAccount].toViewModel(vs) shouldBe None
     }
   }
 }

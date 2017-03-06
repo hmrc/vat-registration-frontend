@@ -32,15 +32,15 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
-class BankDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object BankDetailsController extends BankDetailsController(ds)(mockS4LService, mockVatRegistrationService) {
+  object CompanyBankAccountDetailsController extends CompanyBankAccountDetailsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.BankDetailsController.show())
+  val fakeRequest = FakeRequest(routes.CompanyBankAccountDetailsController.show())
   val validBankAccountFormData = Seq(
     "accountName" -> "Some account name",
     "accountNumber" -> "12345678",
@@ -49,7 +49,7 @@ class BankDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "sortCode.part3" -> "33"
   )
 
-  s"GET ${routes.BankDetailsController.show()}" should {
+  s"GET ${routes.CompanyBankAccountDetailsController.show()}" should {
 
     "return HTML when there's a CompanyBankAccountDetails model in S4L" in {
       val companyBankAccountDetails = CompanyBankAccountDetails()
@@ -58,7 +58,7 @@ class BankDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture {
         (Matchers.eq(CacheKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(companyBankAccountDetails)))
 
-      callAuthorised(BankDetailsController.show(), mockAuthConnector) {
+      callAuthorised(CompanyBankAccountDetailsController.show(), mockAuthConnector) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -67,7 +67,7 @@ class BankDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture {
       }
     }
 
-    "return HTML when there's nothing in S4L" in {
+    "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[CompanyBankAccountDetails]()
         (Matchers.eq(CacheKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
@@ -75,7 +75,25 @@ class BankDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(BankDetailsController.show, mockAuthConnector) {
+      callAuthorised(CompanyBankAccountDetailsController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("What are your business bank account details?")
+      }
+    }
+
+
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      when(mockS4LService.fetchAndGet[CompanyBankAccountDetails]()
+        (Matchers.eq(CacheKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
+        .thenReturn(Future.successful(emptyVatScheme))
+
+      callAuthorised(CompanyBankAccountDetailsController.show, mockAuthConnector) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -89,17 +107,14 @@ class BankDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${routes.ZeroRatedSalesController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(BankDetailsController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
-      }
-
+      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountDetailsController.submit(), mockAuthConnector,
+        fakeRequest.withFormUrlEncodedBody(
+        ))(status(_) mustBe Status.BAD_REQUEST)
     }
   }
 
 
-  s"POST ${routes.BankDetailsController.submit()} with valid Company Bank Account Details" should {
+  s"POST ${routes.CompanyBankAccountDetailsController.submit()} with valid Company Bank Account Details" should {
 
     "return 303" in {
       val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccountDetails())))
@@ -108,7 +123,7 @@ class BankDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture {
         (Matchers.any())(Matchers.eq(CacheKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapCompanyBankAccount))
 
-      AuthBuilder.submitWithAuthorisedUser(BankDetailsController.submit(), mockAuthConnector,
+      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountDetailsController.submit(), mockAuthConnector,
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
         response =>
           status(response) mustBe Status.SEE_OTHER
@@ -117,7 +132,7 @@ class BankDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
-  s"POST ${routes.BankDetailsController.submit()} with invalid Company Bank Account Details" should {
+  s"POST ${routes.CompanyBankAccountDetailsController.submit()} with invalid Company Bank Account Details" should {
 
     "return 400" in {
       val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccountDetails())))
@@ -128,7 +143,7 @@ class BankDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
       val invalidBankAccountFormData = validBankAccountFormData.drop(1)
 
-      AuthBuilder.submitWithAuthorisedUser(BankDetailsController.submit(), mockAuthConnector,
+      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountDetailsController.submit(), mockAuthConnector,
         fakeRequest.withFormUrlEncodedBody(invalidBankAccountFormData: _*)) {
         response =>
           status(response) mustBe Status.BAD_REQUEST

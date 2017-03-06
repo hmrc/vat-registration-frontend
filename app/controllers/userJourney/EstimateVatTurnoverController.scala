@@ -30,10 +30,13 @@ import scala.concurrent.Future
 class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
                                              (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
+  import cats.instances.future._
+
+
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[EstimateVatTurnover] map { vm =>
+    viewModel[EstimateVatTurnover].map { vm =>
       Ok(views.html.pages.estimate_vat_turnover(EstimateVatTurnoverForm.form.fill(vm)))
-    }
+    }.getOrElse(Ok(views.html.pages.estimate_vat_turnover(EstimateVatTurnoverForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {

@@ -22,13 +22,11 @@ import play.api.data.Forms._
 import utils.VatValidators.turnoverEstimateValidation
 
 object EstimateVatTurnoverForm {
-
-  val INPUT_ESTIMATE: String = "turnoverEstimate"
+  val TURNOVER_ESTIMATE: String = "turnoverEstimate"
 
   val form = Form(
     mapping(
-      INPUT_ESTIMATE -> optional(longNumber)
+      TURNOVER_ESTIMATE -> optional(longNumber)
     )(EstimateVatTurnover.apply)(EstimateVatTurnover.unapply).verifying(turnoverEstimateValidation)
   )
-
 }

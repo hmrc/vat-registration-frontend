@@ -29,11 +29,12 @@ import scala.concurrent.Future
 
 class VatChargeExpectancyController @Inject()(ds: CommonPlayDependencies)
                                              (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService) extends VatRegistrationController(ds) {
+  import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[VatChargeExpectancy]() map { vm =>
+    viewModel[VatChargeExpectancy].map { vm =>
       Ok(views.html.pages.vat_charge_expectancy(VatChargeExpectancyForm.form.fill(vm)))
-    }
+    }.getOrElse(Ok(views.html.pages.vat_charge_expectancy(VatChargeExpectancyForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {

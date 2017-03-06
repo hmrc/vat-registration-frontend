@@ -54,8 +54,8 @@ object StartDate {
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
     vs.vatChoice match {
-      case Some(vatChoice) => fromDateTime(vatChoice.startDate)
-      case None => StartDate()
+      case Some(vc) => Some(fromDateTime(vc.startDate))
+      case None => None
     }
   }
 

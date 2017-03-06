@@ -28,11 +28,12 @@ import scala.concurrent.Future
 
 class TradingNameController @Inject()(ds: CommonPlayDependencies)
                                      (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService) extends VatRegistrationController(ds) {
+  import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[TradingName]() map { vm =>
+    viewModel[TradingName].map { vm =>
       Ok(views.html.pages.trading_name(TradingNameForm.form.fill(vm)))
-    }
+    }.getOrElse(Ok(views.html.pages.trading_name(TradingNameForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {

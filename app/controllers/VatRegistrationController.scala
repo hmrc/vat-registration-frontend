@@ -58,9 +58,11 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
   protected def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
 
   import cats.instances.future._
-  protected def viewModel[T: ApiModelTransformer : CacheKey : Format]()
-  (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService, headerCarrier: HeaderCarrier): Future[T] =
-    OptionT(s4LService.fetchAndGet[T]()).getOrElseF(vatRegistrationService.getVatScheme() map ApiModelTransformer[T].toViewModel)
+
+  protected def viewModel[T: ApiModelTransformer : CacheKey : Format]
+  ()
+  (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService, headerCarrier: HeaderCarrier): OptionT[Future, T] =
+    OptionT(s4LService.fetchAndGet[T]()).orElseF(vatRegistrationService.getVatScheme() map ApiModelTransformer[T].toViewModel)
 
 }
 

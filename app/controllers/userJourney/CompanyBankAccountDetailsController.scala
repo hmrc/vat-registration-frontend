@@ -19,32 +19,32 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatDetails.{BankDetailsForm, SortCode}
+import forms.vatDetails.{CompanyBankAccountDetailsForm, SortCode}
 import models.view.CompanyBankAccountDetails
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
-class BankDetailsController @Inject()(ds: CommonPlayDependencies)
-                                     (implicit s4l: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
+                                                   (implicit s4l: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+
+  import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[CompanyBankAccountDetails] map { vm =>
-      val form = BankDetailsForm.form.fill(
-        BankDetailsForm(
-          accountName = vm.accountName,
-          accountNumber = vm.accountNumber,
-          sortCode = SortCode.parse(vm.sortCode).getOrElse(SortCode("", "", ""))))
-      Ok(views.html.pages.bank_account_details(form))
-    }
+    viewModel[CompanyBankAccountDetails].map { vm =>
+      Ok(views.html.pages.bank_account_details(CompanyBankAccountDetailsForm.form.fill(CompanyBankAccountDetailsForm(
+        accountName = vm.accountName,
+        accountNumber = vm.accountNumber,
+        sortCode = SortCode.parse(vm.sortCode).getOrElse(SortCode("", "", ""))))))
+    }.getOrElse(Ok(views.html.pages.bank_account_details(CompanyBankAccountDetailsForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    BankDetailsForm.form.bindFromRequest().fold(
+    CompanyBankAccountDetailsForm.form.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.bank_account_details(formWithErrors)))
-      }, (form: BankDetailsForm) => {
+      }, (form: CompanyBankAccountDetailsForm) => {
         s4l.saveForm[CompanyBankAccountDetails](
           CompanyBankAccountDetails(
             accountName = form.accountName,
