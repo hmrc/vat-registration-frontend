@@ -236,6 +236,9 @@ pages.bankDetails.accountName.hint = For example, Company Name Limited
 pages.bankDetails.accountNumber.label = Business account number
 pages.bankDetails.sortCode.label = Sort code
 
-validation.business.bankAccount.name.invalid = Enter a valid account name
-validation.business.bankAccount.number.invalid = Enter a valid bank account number
-validation.business.bankAccount.sortCode.invalid = Enter a valid sort code
+validation.companyBankAccount.name.missing = Enter a business account name
+validation.companyBankAccount.name.invalid = Enter a valid business account name
+validation.companyBankAccount.number.missing = Enter a business account number
+validation.companyBankAccount.number.invalid = Enter a valid business account number
+validation.companyBankAccount.sortCode.missing = Enter a sort code
+validation.companyBankAccount.sortCode.invalid = Enter a valid sort code

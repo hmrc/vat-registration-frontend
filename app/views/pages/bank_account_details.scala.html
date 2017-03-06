@@ -20,86 +20,84 @@
 
             @govHelpers.form(action = controllers.userJourney.routes.CompanyBankAccountDetailsController.submit()) {
                 <div class="form-group">
-                        <div class="form-bank-details">
+                    <div class="form-bank-details">
 
-                            <span class="form-hint"></span>
-                            @govHelpers.input(
-                                bankDetailsForm("accountName"),
-                                '_divClass -> "form-group",
-                                '_inputClass -> "form-control",
-                                '_labelClass -> "cascading",
-                                '_maxlength -> 150,
-                                '_inputHint -> messages("pages.bankDetails.accountName.hint"),
-                                '_label -> messages("pages.bankDetails.accountName.label"),
-                                '_required -> true
-                            )
+                        <span class="form-hint"></span>
+                        @govHelpers.input(
+                            bankDetailsForm("accountName"),
+                            '_divClass -> "form-group",
+                            '_inputClass -> "form-control",
+                            '_labelClass -> "cascading",
+                            '_maxlength -> 150,
+                            '_inputHint -> messages("pages.bankDetails.accountName.hint"),
+                            '_label -> messages("pages.bankDetails.accountName.label")
+                        )
 
-                            @govHelpers.input(
-                                bankDetailsForm("accountNumber"),
-                                '_divClass -> "form-group",
-                                '_inputClass -> "form-control",
-                                '_labelClass -> "cascading",
-                                '_pattern -> "[0-9]{8}",
-                                '_maxlength -> 8,
-                                '_label -> messages("pages.bankDetails.accountNumber.label"),
-                                '_required -> true
-                            )
+                        @govHelpers.input(
+                            bankDetailsForm("accountNumber"),
+                            '_type -> "number",
+                            '_divClass -> "form-group",
+                            '_inputClass -> "form-control",
+                            '_labelClass -> "cascading",
+                            '_maxlength -> 8,
+                            '_label -> messages("pages.bankDetails.accountNumber.label")
+                        )
 
-                            <div class="form-date">
+                        <div class="form-date">
 
 
-                                <fieldset id="sort-code">
+                            <fieldset id="sort-code">
 
-                                    <legend id="sort-code-legend">@messages("pages.bankDetails.sortCode.label")</legend>
+                                <legend id="sort-code-legend">@messages("pages.bankDetails.sortCode.label")</legend>
 
-                                    @bankDetailsForm("sortCode").errors.map { error =>
-                                        <span class="error-notification form-field--error" role="tooltip">
-                                            @messages(error.message, error.args: _*)
-                                    }
+                                @bankDetailsForm("sortCode").errors.map { error =>
+                                    <span class="error-notification form-field--error" role="tooltip">
+                                        @messages(error.message, error.args: _*)
+                                }
 
-                                    @govHelpers.input(
-                                        bankDetailsForm("sortCode.part1"),
-                                        'type -> "text",
-                                        '_pattern -> "[0-9]{2}",
-                                        '_divClass -> "form-group",
-                                        '_inputClass -> "form-control",
-                                        '_label -> "first two digits",
-                                        '_labelTextClass -> "hidden",
-                                        '_error_id -> "sort-code-legend",
-                                        '_required -> true
-                                    )
+                                @govHelpers.input(
+                                    bankDetailsForm("sortCode.part1"),
+                                    '_type -> "number",
+                                    '_divClass -> "form-group",
+                                    '_inputClass -> "form-control",
+                                    '_label -> "first two digits",
+                                    '_maxlength -> 2,
+                                    '_max -> 99,
+                                    '_labelTextClass -> "hidden",
+                                    '_error_id -> "sort-code-legend"
+                                )
 
-                                    @govHelpers.input(
-                                        bankDetailsForm("sortCode.part2"),
-                                        'type -> "text",
-                                        '_pattern -> "[0-9]{2}",
-                                        '_divClass -> "form-group",
-                                        '_inputClass -> "form-control",
-                                        '_label -> "second two digits",
-                                        '_labelTextClass -> "hidden",
-                                        '_error_id -> "sort-code-legend",
-                                        '_required -> true
-                                    )
+                                @govHelpers.input(
+                                    bankDetailsForm("sortCode.part2"),
+                                    '_type -> "number",
+                                    '_divClass -> "form-group",
+                                    '_inputClass -> "form-control",
+                                    '_label -> "second two digits",
+                                    '_maxlength -> 2,
+                                    '_max -> 99,
+                                    '_labelTextClass -> "hidden",
+                                    '_error_id -> "sort-code-legend"
+                                )
 
-                                    @govHelpers.input(
-                                        bankDetailsForm("sortCode.part3"),
-                                        'type -> "text",
-                                        '_pattern -> "[0-9]{2}",
-                                        '_divClass -> "form-group",
-                                        '_inputClass -> "form-control",
-                                        '_label -> "last two digits",
-                                        '_labelTextClass -> "hidden",
-                                        '_error_id -> "sort-code-legend",
-                                        '_required -> true
-                                    )
+                                @govHelpers.input(
+                                    bankDetailsForm("sortCode.part3"),
+                                    '_type -> "number",
+                                    '_divClass -> "form-group",
+                                    '_inputClass -> "form-control",
+                                    '_label -> "last two digits",
+                                    '_maxlength -> 2,
+                                    '_max -> 99,
+                                    '_labelTextClass -> "hidden",
+                                    '_error_id -> "sort-code-legend"
+                                )
 
-                                    @bankDetailsForm("sortCode").errors.map { error =>
-                                        </span>
-                                    }
+                                @bankDetailsForm("sortCode").errors.map { error =>
+                                </span>
+                                }
 
-                                    </fieldset>
-                            </div>
+                            </fieldset>
                         </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
