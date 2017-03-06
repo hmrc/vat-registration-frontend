@@ -36,7 +36,7 @@ object CompanyBankAccount {
         case Some(_) => CompanyBankAccount(COMPANY_BANK_ACCOUNT_YES)
         case None => CompanyBankAccount(COMPANY_BANK_ACCOUNT_NO)
       }
-    }.getOrElse(CompanyBankAccount())
+    }
   }
 
   implicit val cacheKey = CacheKey[CompanyBankAccount](CacheKeys.CompanyBankAccount)

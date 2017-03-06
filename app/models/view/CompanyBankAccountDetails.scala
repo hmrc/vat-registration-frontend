@@ -30,7 +30,6 @@ object CompanyBankAccountDetails {
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
     vs.financials.flatMap(_.bankAccount)
       .map(account => CompanyBankAccountDetails(account.accountName, account.accountNumber, account.accountSortCode))
-      .getOrElse(CompanyBankAccountDetails())
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: CompanyBankAccountDetails, g: VatFinancials) =>

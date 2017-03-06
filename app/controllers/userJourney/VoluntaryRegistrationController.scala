@@ -30,10 +30,12 @@ class VoluntaryRegistrationController @Inject()(ds: CommonPlayDependencies)
                                                (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
+  import cats.instances.future._
+
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[VoluntaryRegistration]() map { vm =>
+    viewModel[VoluntaryRegistration].map { vm =>
       Ok(views.html.pages.voluntary_registration(VoluntaryRegistrationForm.form.fill(vm)))
-    }
+    }.getOrElse(Ok(views.html.pages.voluntary_registration(VoluntaryRegistrationForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {

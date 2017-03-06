@@ -36,7 +36,7 @@ class CompanyBankAccountDetailsSpec extends UnitSpec with VatRegistrationFixture
       )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithAccount))
       ApiModelTransformer[CompanyBankAccountDetails].toViewModel(vs) shouldBe
-        CompanyBankAccountDetails(someBankAccount.accountName, someBankAccount.accountNumber, someBankAccount.accountSortCode)
+        Some(CompanyBankAccountDetails(someBankAccount.accountName, someBankAccount.accountNumber, someBankAccount.accountSortCode))
     }
 
     "convert VatFinancials without bank account to view model" in {
@@ -47,12 +47,12 @@ class CompanyBankAccountDetailsSpec extends UnitSpec with VatRegistrationFixture
       )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithoutAccount))
 
-      ApiModelTransformer[CompanyBankAccountDetails].toViewModel(vs) shouldBe CompanyBankAccountDetails()
+      ApiModelTransformer[CompanyBankAccountDetails].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme without VatFinancials to empty view model" in {
       val vs = vatScheme.copy(financials = None)
-      ApiModelTransformer[CompanyBankAccountDetails].toViewModel(vs) shouldBe CompanyBankAccountDetails()
+      ApiModelTransformer[CompanyBankAccountDetails].toViewModel(vs) shouldBe None
     }
   }
 

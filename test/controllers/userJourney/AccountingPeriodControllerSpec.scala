@@ -19,6 +19,7 @@ package controllers.userJourney
 import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.CacheKey
 import models.view.AccountingPeriod
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -45,7 +46,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"GET ${routes.AccountingPeriodController.show()}" should {
 
     "return HTML when there's a Accounting Period model in S4L" in {
-      val accountingPeriod = AccountingPeriod(None)
+      val accountingPeriod = AccountingPeriod()
 
       when(mockS4LService.fetchAndGet[AccountingPeriod]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(accountingPeriod)))
@@ -62,12 +63,29 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
       }
     }
 
-    "return HTML when there's nothing in S4L" in {
-      when(mockS4LService.fetchAndGet[AccountingPeriod]()(Matchers.any(), Matchers.any(), Matchers.any()))
+    "return HTML when there's nothing in S4L and vatScheme contain data" in {
+      when(mockS4LService.fetchAndGet[AccountingPeriod]()(Matchers.eq(CacheKey[AccountingPeriod]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
+
+      callAuthorised(TestAccountingPeriodController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("When do you want your VAT Return periods to end?")
+      }
+    }
+
+    "return HTML when there's nothing in S4L and vatScheme contain no data" in {
+      when(mockS4LService.fetchAndGet[AccountingPeriod]()
+        (Matchers.eq(CacheKey[AccountingPeriod]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestAccountingPeriodController.show, mockAuthConnector) {
         result =>
@@ -82,12 +100,10 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"POST ${routes.AccountingPeriodController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestAccountingPeriodController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
-      }
-
+      AuthBuilder.submitWithAuthorisedUser(
+        TestAccountingPeriodController.submit(), mockAuthConnector,
+        fakeRequest.withFormUrlEncodedBody(
+        ))(status(_) mustBe Status.BAD_REQUEST)
     }
   }
 

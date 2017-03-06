@@ -28,9 +28,8 @@ object EstimateZeroRatedSales {
   implicit val format: OFormat[EstimateZeroRatedSales] = Json.format[EstimateZeroRatedSales]
 
   implicit val modelTransformer = ApiModelTransformer[EstimateZeroRatedSales] { (vs: VatScheme) =>
-    vs.financials match {
-      case Some(financials) => EstimateZeroRatedSales(financials.zeroRatedSalesEstimate)
-      case _ => EstimateZeroRatedSales()
+    vs.financials.map(_.zeroRatedSalesEstimate).collect {
+      case Some(sales) => EstimateZeroRatedSales(Some(sales))
     }
   }
 

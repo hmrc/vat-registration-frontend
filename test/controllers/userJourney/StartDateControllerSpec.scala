@@ -19,6 +19,7 @@ package controllers.userJourney
 import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.CacheKey
 import models.view.StartDate
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -59,12 +60,30 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
       }
     }
 
-    "return HTML when there's nothing in S4L" in {
-      when(mockS4LService.fetchAndGet[StartDate]()(Matchers.any(), Matchers.any(), Matchers.any()))
+    "return HTML when there's nothing in S4L and vatScheme contains data" in {
+      when(mockS4LService.fetchAndGet[StartDate]()
+        (Matchers.eq(CacheKey[StartDate]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
+
+      callAuthorised(TestStartDateController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("start date")
+      }
+    }
+
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      when(mockS4LService.fetchAndGet[StartDate]()
+        (Matchers.eq(CacheKey[StartDate]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestStartDateController.show, mockAuthConnector) {
         result =>

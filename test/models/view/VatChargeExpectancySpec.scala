@@ -18,6 +18,7 @@ package models.view
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
+import models.view.VatChargeExpectancy.{VAT_CHARGE_NO, VAT_CHARGE_YES}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -25,8 +26,8 @@ class VatChargeExpectancySpec extends UnitSpec with VatRegistrationFixture {
 
   val turnover = 100L
   val vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
-  val vatChargeExpectancyNo = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_NO)
-  val vatChargeExpectancyYes = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
+  val vatChargeExpectancyNo = VatChargeExpectancy(VAT_CHARGE_NO)
+  val vatChargeExpectancyYes = VatChargeExpectancy(VAT_CHARGE_YES)
 
   val vatFinancialsWithReclaimTrue = VatFinancials(
     turnoverEstimate = turnover,
@@ -56,15 +57,15 @@ class VatChargeExpectancySpec extends UnitSpec with VatRegistrationFixture {
 
     "convert VatFinancials with vat charge expectancy yes to view model" in {
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithReclaimTrue))
-      ApiModelTransformer[VatChargeExpectancy].toViewModel(vs) shouldBe VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
+      ApiModelTransformer[VatChargeExpectancy].toViewModel(vs) shouldBe Some(VatChargeExpectancy(VAT_CHARGE_YES))
     }
     "convert VatFinancials with vat charge expectancy no to view model" in {
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithReclaimFalse))
-      ApiModelTransformer[VatChargeExpectancy].toViewModel(vs) shouldBe VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_NO)
+      ApiModelTransformer[VatChargeExpectancy].toViewModel(vs) shouldBe Some(VatChargeExpectancy(VAT_CHARGE_NO))
     }
     "convert VatScheme without VatFinancials to empty view model" in {
       val vs = vatScheme.copy(financials = None)
-      ApiModelTransformer[VatChargeExpectancy].toViewModel(vs) shouldBe VatChargeExpectancy()
+      ApiModelTransformer[VatChargeExpectancy].toViewModel(vs) shouldBe None
     }
   }
 }

@@ -35,7 +35,7 @@ object TaxableTurnover {
     vs.vatChoice.map(_.necessity).collect {
       case NECESSITY_VOLUNTARY => TaxableTurnover(TAXABLE_NO)
       case NECESSITY_OBLIGATORY => TaxableTurnover(TAXABLE_YES)
-    } getOrElse TaxableTurnover()
+    }
   }
 
   implicit val cacheKey = CacheKey[TaxableTurnover](CacheKeys.TaxableTurnover)

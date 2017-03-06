@@ -35,7 +35,7 @@ object ZeroRatedSales {
     vs.financials.map {
       case VatFinancials(_, _, Some(_), _, _) => ZeroRatedSales(ZERO_RATED_SALES_YES)
       case VatFinancials(_, _, None, _, _) => ZeroRatedSales(ZERO_RATED_SALES_NO)
-    } getOrElse ZeroRatedSales()
+    }
   }
 
   implicit val cacheKey = CacheKey[ZeroRatedSales](CacheKeys.ZeroRatedSales)
