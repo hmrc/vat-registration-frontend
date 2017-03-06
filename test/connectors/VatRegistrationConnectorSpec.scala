@@ -36,8 +36,8 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   "Calling createNewRegistration" should {
     "return a successful outcome when the microservice successfully creates a new Vat Registration" in new Setup {
-      mockHttpPOSTEmpty[VatScheme]("tst-url", validNewVatScheme)
-      ScalaFutures.whenReady(connector.createNewRegistration())(_ mustBe validNewVatScheme)
+      mockHttpPOSTEmpty[VatScheme]("tst-url", emptyVatScheme)
+      ScalaFutures.whenReady(connector.createNewRegistration())(_ mustBe emptyVatScheme)
     }
     "return a Bad Request response" in new Setup {
       mockHttpFailedPOSTEmpty[HttpResponse]("tst-url", badRequest)

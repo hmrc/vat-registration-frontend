@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.EstimateZeroRatedSalesForm
+import forms.vatDetails.{CompanyBankAccountForm, EstimateZeroRatedSalesForm}
 import models.ApiModelTransformer
 import models.view.EstimateZeroRatedSales
 import play.api.mvc.{Action, AnyContent}
@@ -34,11 +34,14 @@ class EstimateZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegi
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
     s4LService.fetchAndGet[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString) flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
+      case Some(viewModel) => Future.successful(Some(viewModel))
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[EstimateZeroRatedSales].toViewModel
-    } map { viewModel =>
-      val form = EstimateZeroRatedSalesForm.form.fill(viewModel)
-      Ok(views.html.pages.estimate_zero_rated_sales(form))
+    } map {
+      case Some(vm) => {
+        val form = EstimateZeroRatedSalesForm.form.fill(vm)
+        Ok(views.html.pages.estimate_zero_rated_sales(form))
+      }
+      case None => Ok(views.html.pages.estimate_zero_rated_sales(EstimateZeroRatedSalesForm.form))
     }
   })
 

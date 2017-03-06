@@ -63,13 +63,30 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       }
     }
 
-    "return HTML when there's nothing in S4L" in {
+    "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[VatChargeExpectancy](Matchers.eq(CacheKeys.VatChargeExpectancy.toString))
         (Matchers.any[HeaderCarrier](), Matchers.any[Format[VatChargeExpectancy]]()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
+
+      callAuthorised(TestVatChargeExpectancyController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("Do you expect to reclaim more VAT than you charge?")
+      }
+    }
+
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      when(mockS4LService.fetchAndGet[VatChargeExpectancy](Matchers.eq(CacheKeys.VatChargeExpectancy.toString))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[VatChargeExpectancy]]()))
+        .thenReturn(Future.successful(None))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestVatChargeExpectancyController.show, mockAuthConnector) {
         result =>

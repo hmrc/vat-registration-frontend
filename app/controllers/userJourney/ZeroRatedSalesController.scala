@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.ZeroRatedSalesForm
+import forms.vatDetails.{VoluntaryRegistrationForm, ZeroRatedSalesForm}
 import models.ApiModelTransformer
 import models.view._
 import play.api.mvc.{Action, AnyContent}
@@ -35,11 +35,14 @@ class ZeroRatedSalesController @Inject()(s4LService: S4LService, vatRegistration
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
     s4LService.fetchAndGet[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString) flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
+      case Some(viewModel) => Future.successful(Some(viewModel))
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[ZeroRatedSales].toViewModel
-    } map { viewModel =>
-      val form = ZeroRatedSalesForm.form.fill(viewModel)
-      Ok(views.html.pages.zero_rated_sales(form))
+    } map {
+      case Some(vm) => {
+        val form = ZeroRatedSalesForm.form.fill(vm)
+        Ok(views.html.pages.zero_rated_sales(form))
+      }
+      case None => Ok(views.html.pages.zero_rated_sales(ZeroRatedSalesForm.form))
     }
   })
 

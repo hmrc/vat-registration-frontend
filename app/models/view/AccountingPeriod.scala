@@ -32,11 +32,10 @@ object AccountingPeriod {
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
-    val res = for {
+    for {
       f <- vs.financials
       ps <- f.vatAccountingPeriod.periodStart
     } yield AccountingPeriod(Some(ps.toUpperCase()))
-    res.getOrElse(AccountingPeriod())
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: AccountingPeriod, g: VatFinancials) =>

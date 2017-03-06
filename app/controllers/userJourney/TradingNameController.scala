@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
-import forms.vatDetails.TradingNameForm
+import forms.vatDetails.{TaxableTurnoverForm, TradingNameForm}
 import models.ApiModelTransformer
 import models.view.TradingName
 import play.api.mvc._
@@ -34,11 +34,14 @@ class TradingNameController @Inject()(s4LService: S4LService, vatRegistrationSer
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
     s4LService.fetchAndGet[TradingName](CacheKeys.TradingName.toString) flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
+      case Some(viewModel) => Future.successful(Some(viewModel))
       case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[TradingName].toViewModel
-    } map { viewModel =>
-      val form = TradingNameForm.form.fill(viewModel)
-      Ok(views.html.pages.trading_name(form))
+    } map {
+      case Some(vm) => {
+        val form = TradingNameForm.form.fill(vm)
+        Ok(views.html.pages.trading_name(form))
+      }
+      case None => Ok(views.html.pages.trading_name(TradingNameForm.form))
     }
   })
 

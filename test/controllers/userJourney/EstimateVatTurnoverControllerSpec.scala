@@ -52,7 +52,6 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       AuthBuilder.submitWithAuthorisedUser(TestEstimateVatTurnoverController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "turnoverEstimate" -> ""
       )){
-
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -61,7 +60,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       }
     }
 
-    "return HTML when there's nothing in S4L" in {
+    "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[EstimateVatTurnover](Matchers.eq(CacheKeys.EstimateVatTurnover.toString))
         (Matchers.any[HeaderCarrier](), Matchers.any[Format[EstimateVatTurnover]]()))
         .thenReturn(Future.successful(None))
@@ -78,9 +77,23 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       }
     }
 
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      when(mockS4LService.fetchAndGet[EstimateVatTurnover](Matchers.eq(CacheKeys.EstimateVatTurnover.toString))
+        (Matchers.any[HeaderCarrier](), Matchers.any[Format[EstimateVatTurnover]]()))
+        .thenReturn(Future.successful(None))
 
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(emptyVatScheme))
+
+      callAuthorised(TestEstimateVatTurnoverController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("Estimated VAT taxable turnover for the next 12 months")
+      }
+    }
   }
-
 
   s"POST ${routes.EstimateVatTurnoverController.submit()} with Empty data" should {
 
@@ -97,7 +110,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.EstimateVatTurnoverController.submit()} with a valid turnover estimate entered" should {
 
     "return 303" in {
-      val returnCacheMapEstimateVatTurnover = CacheMap("", Map("" -> Json.toJson(EstimateVatTurnover())))
+      val returnCacheMapEstimateVatTurnover = CacheMap("", Map("" -> Json.toJson(EstimateVatTurnover(Some(50000)))))
 
       when(mockS4LService.saveForm[EstimateVatTurnover]
         (Matchers.eq(CacheKeys.EstimateVatTurnover.toString), Matchers.any())

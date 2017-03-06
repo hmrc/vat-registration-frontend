@@ -23,6 +23,7 @@ import controllers.{CommonPlayDependencies, VatRegistrationController}
 import enums.CacheKeys
 import forms.vatDetails.test.TestSetupForm
 import models.view.{EstimateVatTurnover, StartDate, TradingName, _}
+import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService}
 
@@ -33,7 +34,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
 
   override val keystoreConnector: KeystoreConnector = KeystoreConnector
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request => {
     for {
       taxableTurnover <- s4LService.fetchAndGet[TaxableTurnover](CacheKeys.TaxableTurnover.toString)
       voluntaryRegistration <- s4LService.fetchAndGet[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString)
@@ -47,107 +48,79 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       vatReturnFrequency <- s4LService.fetchAndGet[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString)
       accountingPeriod <- s4LService.fetchAndGet[AccountingPeriod](CacheKeys.AccountingPeriod.toString)
 
-      testSetup = TestSetup(if (taxableTurnover.isDefined) taxableTurnover.get.yesNo else "",
-        if (voluntaryRegistration.isDefined) voluntaryRegistration.get.yesNo else "",
-        if (startDate.isDefined) startDate.get.dateType else "",
-        if (startDate.isDefined) s"${startDate.get.day.getOrElse("").toString}" else "",
-        if (startDate.isDefined) s"${startDate.get.month.getOrElse("").toString}" else "",
-        if (startDate.isDefined) s"${startDate.get.year.getOrElse("").toString}" else "",
-        if (tradingName.isDefined) tradingName.get.yesNo else "",
-        if (tradingName.isDefined) tradingName.get.tradingName.getOrElse("") else "",
-        if (companyBankAccount.isDefined) companyBankAccount.get.yesNo else "",
-        if (estimateVatTurnover.isDefined) estimateVatTurnover.get.vatTurnoverEstimate.getOrElse("").toString else "",
-        if (zeroRatedSales.isDefined) zeroRatedSales.get.yesNo else "",
-        if (estimateZeroRatedSales.isDefined) estimateZeroRatedSales.get.zeroRatedSalesEstimate.getOrElse("").toString else "",
-        if (vatChargeExpectancy.isDefined) vatChargeExpectancy.get.yesNo else "",
-        if (vatReturnFrequency.isDefined) vatReturnFrequency.get.frequencyType else "",
-        if (accountingPeriod.isDefined) accountingPeriod.get.accountingPeriod.getOrElse("") else ""
+      testSetup = TestSetup(
+        taxableTurnover.map(_.yesNo),
+        voluntaryRegistration.map(_.yesNo),
+        startDate.map(_.dateType),
+        startDate.flatMap(_.day.map(_.toString)),
+        startDate.flatMap(_.month.map(_.toString)),
+        startDate.flatMap(_.year.map(_.toString)),
+        tradingName.map(_.yesNo),
+        tradingName.flatMap(_.tradingName),
+        companyBankAccount.map(_.yesNo),
+        estimateVatTurnover.flatMap(_.vatTurnoverEstimate.map(_.toString)),
+        zeroRatedSales.map(_.yesNo),
+        estimateZeroRatedSales.flatMap(_.zeroRatedSalesEstimate.map(_.toString)),
+        vatChargeExpectancy.map(_.yesNo),
+        vatReturnFrequency.map(_.frequencyType),
+        accountingPeriod.flatMap(_.accountingPeriod)
       )
       form = TestSetupForm.form.fill(testSetup)
     } yield Ok(views.html.pages.test_setup(form))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    // TODO Special case
+    def saveStartDate(data: TestSetup) = {
+      s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, data.startDateChoice
+      match {
+        case None => StartDate()
+        case Some(a) => StartDate(a,
+          data.startDateDay.map(_.toInt),
+          data.startDateMonth.map(_.toInt),
+          data.startDateYear.map(_.toInt))
+      })
+    }
+
+    def saveToS4Later[T](data: Option[String], key: CacheKeys.Value, f: Option[String] => T, fmt: Format[T]): Future[Any] = {
+      implicit val format = fmt
+      data
+      match {
+        case None => Future.successful()
+        case Some(_) => s4LService.saveForm(key.toString, f(data))
+      }
+    }
+
+    def saveToS4LaterData[T](matchData: Option[String], data: TestSetup, key: CacheKeys.Value, f: TestSetup => T, fmt: Format[T]): Future[Any] = {
+      implicit val format = fmt
+      matchData
+      match {
+        case None => Future.successful()
+        case Some(_) => s4LService.saveForm(key.toString, f(data))
+      }
+    }
+
     TestSetupForm.form.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.test_setup(formWithErrors)))
       }, {
         data: TestSetup => {
           for {
-            regId <- fetchRegistrationId
-            _ <- s4LService.saveForm[TaxableTurnover](CacheKeys.TaxableTurnover.toString, data.taxableTurnoverChoice
-            match {
-              case "" => TaxableTurnover()
-              case _ => TaxableTurnover(data.taxableTurnoverChoice)
-            })
-
-            _ <- s4LService.saveForm[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString, data.voluntaryChoice
-            match {
-              case "" => VoluntaryRegistration()
-              case _ => VoluntaryRegistration(data.voluntaryChoice)
-            })
-
-            _ <- s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, data.startDateChoice
-            match {
-              case "" => StartDate()
-              case _ => StartDate(data.startDateChoice,
-                Some(data.startDateDay.toInt),
-                Some(data.startDateMonth.toInt),
-                Some(data.startDateYear.toInt))
-            })
-
-            _ <- s4LService.saveForm[TradingName](CacheKeys.TradingName.toString, data.tradingNameChoice
-            match {
-              case "" => TradingName()
-              case _ => TradingName(data.tradingNameChoice, Some(data.tradingName))
-            })
-
-            _ <- s4LService.saveForm[CompanyBankAccount](CacheKeys.CompanyBankAccount.toString, data.companyBankAccountChoice
-            match{
-              case "" => CompanyBankAccount()
-              case _ => CompanyBankAccount(data.companyBankAccountChoice)
-            })
-
-            _ <- s4LService.saveForm[EstimateVatTurnover](CacheKeys.EstimateVatTurnover.toString, data.estimateVatTurnover
-            match {
-              case "" => EstimateVatTurnover()
-              case _ => EstimateVatTurnover(Some(data.estimateVatTurnover.toLong))
-            })
-
-            _ <- s4LService.saveForm[ZeroRatedSales](CacheKeys.ZeroRatedSales.toString, data.zeroRatedSalesChoice
-            match {
-              case "" => ZeroRatedSales()
-              case _ => ZeroRatedSales(data.zeroRatedSalesChoice)
-            })
-
-            _ <- s4LService.saveForm[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales.toString, data.zeroRatedSalesEstimate
-            match {
-              case "" => EstimateZeroRatedSales()
-              case _ => EstimateZeroRatedSales(Some(data.zeroRatedSalesEstimate.toLong))
-            })
-
-            _ <- s4LService.saveForm[VatChargeExpectancy](CacheKeys.VatChargeExpectancy.toString, data.vatChargeExpectancyChoice
-            match {
-              case "" => VatChargeExpectancy()
-              case _ => VatChargeExpectancy(data.vatChargeExpectancyChoice)
-            })
-
-            _ <- s4LService.saveForm[VatReturnFrequency](CacheKeys.VatReturnFrequency.toString, data.vatReturnFrequency
-            match {
-              case "" => VatReturnFrequency()
-              case _ => VatReturnFrequency(data.vatReturnFrequency)
-            })
-
-            _ <- s4LService.saveForm[AccountingPeriod](CacheKeys.AccountingPeriod.toString, data.accountingPeriod
-            match {
-              case "" => AccountingPeriod()
-              case _ => AccountingPeriod(Some(data.accountingPeriod))
-            })
+            _ <- saveToS4Later(data.taxableTurnoverChoice, CacheKeys.TaxableTurnover, { x => TaxableTurnover(x.get) }, TaxableTurnover.format )
+            _ <- saveToS4Later(data.voluntaryChoice, CacheKeys.VoluntaryRegistration, { x => VoluntaryRegistration(x.get) }, VoluntaryRegistration.format )
+            _ <- saveStartDate(data)
+            _ <- saveToS4LaterData(data.tradingNameChoice, data, CacheKeys.TradingName, { d => TradingName(d.tradingNameChoice.get, Some(data.tradingName.getOrElse("")))}, TradingName.format)
+            _ <- saveToS4Later(data.companyBankAccountChoice, CacheKeys.CompanyBankAccount, { x => CompanyBankAccount(x.get) }, CompanyBankAccount.format )
+            _ <- saveToS4Later(data.estimateVatTurnover, CacheKeys.EstimateVatTurnover, { x => EstimateVatTurnover(Some(x.get.toLong))}, EstimateVatTurnover.format)
+            _ <- saveToS4Later(data.zeroRatedSalesChoice, CacheKeys.ZeroRatedSales, { x => ZeroRatedSales(x.get) }, ZeroRatedSales.format )
+            _ <- saveToS4Later(data.zeroRatedSalesEstimate, CacheKeys.EstimateZeroRatedSales, { x => EstimateZeroRatedSales(Some(x.get.toLong))}, EstimateZeroRatedSales.format)
+            _ <- saveToS4Later(data.vatChargeExpectancyChoice, CacheKeys.VatChargeExpectancy, { x => VatChargeExpectancy(x.get) }, VatChargeExpectancy.format )
+            _ <- saveToS4Later(data.vatReturnFrequency, CacheKeys.VatReturnFrequency, { x => VatReturnFrequency(x.get) }, VatReturnFrequency.format )
+            _ <- saveToS4Later(data.accountingPeriod, CacheKeys.AccountingPeriod, { x => AccountingPeriod(x) }, AccountingPeriod.format)
 
           } yield Ok("Test setup complete")
         }
       })
   })
-
 
 }

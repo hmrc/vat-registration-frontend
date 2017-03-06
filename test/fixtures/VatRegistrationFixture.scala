@@ -55,10 +55,10 @@ trait VatRegistrationFixture {
   val validVatReturnFrequency = VatReturnFrequency(VatReturnFrequency.QUARTERLY)
   val validAccountingPeriod = AccountingPeriod(Some(AccountingPeriod.MAR_JUN_SEP_DEC))
 
-
   private val sortCode = "10-10-10"
   private val accountNumber = "12345678"
   private val period = "monthly"
+
   val validVatFinancials = VatFinancials(
     bankAccount = Some(VatBankAccount(tradingName, sortCode, accountNumber)),
     turnoverEstimate = turnoverEstimate,
@@ -67,7 +67,7 @@ trait VatRegistrationFixture {
     vatAccountingPeriod = VatAccountingPeriod(None, period)
   )
 
-  val validNewVatScheme = VatScheme.blank(validRegId)
+  val emptyVatScheme = VatScheme.blank(validRegId)
 
   val validVatScheme = VatScheme(
     id = validRegId,
