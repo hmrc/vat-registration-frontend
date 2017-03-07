@@ -46,7 +46,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"GET ${routes.VatChargeExpectancyController.show()}" should {
 
     "return HTML when there's a Vat Charge Expectancy model in S4L" in {
-      val vatChargeExpectancy = VatChargeExpectancy()
+      val vatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
 
       when(mockS4LService.fetchAndGet[VatChargeExpectancy]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(vatChargeExpectancy)))
@@ -114,7 +114,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.VatChargeExpectancyController.submit()} with Vat Charge Expectancy selected Yes" should {
 
     "return 303" in {
-      val returnCacheMapVatChargeExpectancy = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy())))
+      val returnCacheMapVatChargeExpectancy = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES))))
 
       when(mockS4LService.saveForm[VatChargeExpectancy]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -134,8 +134,8 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.VatChargeExpectancyController.submit()} with Vat Charge Expectancy selected No" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy())))
-      val returnCacheMapReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency())))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_NO))))
+      val returnCacheMapReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.MONTHLY))))
 
       when(mockS4LService.saveForm[VatChargeExpectancy](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))

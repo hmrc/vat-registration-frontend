@@ -47,7 +47,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return HTML Estimate Vat Turnover page with no data in the form" in {
       when(mockS4LService.fetchAndGet[EstimateVatTurnover]()(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(EstimateVatTurnover())))
+        .thenReturn(Future.successful(Some(EstimateVatTurnover(Some(100L)))))
 
       AuthBuilder.submitWithAuthorisedUser(TestEstimateVatTurnoverController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "turnoverEstimate" -> ""

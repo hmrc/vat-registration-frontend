@@ -21,7 +21,7 @@ import models.api.{VatFinancials, VatScheme}
 import models.{ApiModelTransformer, CacheKey}
 import play.api.libs.json.{Json, OFormat}
 
-case class ZeroRatedSales(yesNo: String = "")
+case class ZeroRatedSales(yesNo: String)
 
 object ZeroRatedSales {
 

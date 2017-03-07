@@ -129,7 +129,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
   s"POST ${routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected Yes" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration())))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES))))
 
       when(mockS4LService.saveForm[VoluntaryRegistration](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
@@ -148,7 +148,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
   s"POST ${routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected No" should {
 
     "redirect to the welcome page" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration())))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration(VoluntaryRegistration.REGISTER_NO))))
 
       when(mockS4LService.clear()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validHttpResponse))
       when(mockS4LService.saveForm[VoluntaryRegistration](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
