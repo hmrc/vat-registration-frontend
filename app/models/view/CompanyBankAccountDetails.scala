@@ -21,7 +21,7 @@ import models.api.{VatBankAccount, VatFinancials, VatScheme}
 import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class CompanyBankAccountDetails(accountName: String = "", accountNumber: String = "", sortCode: String = "")
+case class CompanyBankAccountDetails(accountName: String, accountNumber: String, sortCode: String)
 
 object CompanyBankAccountDetails {
 

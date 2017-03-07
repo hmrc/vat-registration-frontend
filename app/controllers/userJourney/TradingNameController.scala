@@ -46,7 +46,7 @@ class TradingNameController @Inject()(ds: CommonPlayDependencies)
           s4LService.saveForm[TradingName](data) flatMap { _ =>
             if (TradingName.TRADING_NAME_NO == data.yesNo) {
               for {
-                _ <- s4LService.saveForm[TradingName](TradingName())
+                _ <- s4LService.saveForm[TradingName](TradingName(TradingName.TRADING_NAME_NO, None))
               } yield Redirect(controllers.userJourney.routes.CompanyBankAccountController.show())
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.CompanyBankAccountController.show()))

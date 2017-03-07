@@ -46,7 +46,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
   s"GET ${routes.CompanyBankAccountController.show()}" should {
 
     "return HTML when there's a Company Bank Account model in S4L" in {
-      val companyBankAccount = CompanyBankAccount()
+      val companyBankAccount = CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES)
 
       when(mockS4LService.fetchAndGet[CompanyBankAccount]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(companyBankAccount)))
@@ -113,7 +113,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.CompanyBankAccountController.submit()} with Company Bank Account selected Yes" should {
 
     "return 303" in {
-      val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccount())))
+      val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES))))
 
       when(mockS4LService.saveForm[CompanyBankAccount]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -133,7 +133,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.CompanyBankAccountController.submit()} with Company Bank Account selected No" should {
 
     "return 303" in {
-      val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccount())))
+      val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_NO))))
 
       when(mockS4LService.saveForm[CompanyBankAccount]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))

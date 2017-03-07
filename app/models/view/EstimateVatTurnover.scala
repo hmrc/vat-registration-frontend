@@ -21,7 +21,7 @@ import models.api.{VatFinancials, VatScheme}
 import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
-case class EstimateVatTurnover(vatTurnoverEstimate: Option[Long] = None)
+case class EstimateVatTurnover(vatTurnoverEstimate: Option[Long])
 
 object EstimateVatTurnover {
 

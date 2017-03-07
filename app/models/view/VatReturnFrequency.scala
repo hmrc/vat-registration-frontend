@@ -21,7 +21,7 @@ import models.api.{VatFinancials, VatScheme}
 import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class VatReturnFrequency(frequencyType: String = "")
+case class VatReturnFrequency(frequencyType: String)
 
 object VatReturnFrequency {
 
