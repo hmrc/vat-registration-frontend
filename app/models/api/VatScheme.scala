@@ -25,17 +25,19 @@ case class VatScheme(
                       id: String,
                       tradingDetails: Option[VatTradingDetails] = None,
                       vatChoice: Option[VatChoice] = None,
-                      financials: Option[VatFinancials] = None
+                      financials: Option[VatFinancials] = None,
+                      sicAndCompliance : Option[SicAndCompliance] =None
                     )
 
 object VatScheme {
 
-  def blank(id: String)(implicit now: Now[DateTime]): VatScheme = VatScheme(id, None, None, None)
+  def blank(id: String)(implicit now: Now[DateTime]): VatScheme = VatScheme(id, None, None, None,None)
 
   implicit val format = (
     (__ \ "ID").format[String] and
       (__ \ "trading-details").formatNullable[VatTradingDetails] and
       (__ \ "vat-choice").formatNullable[VatChoice] and
-      (__ \ "financials").formatNullable[VatFinancials]
+      (__ \ "financials").formatNullable[VatFinancials] and
+      (__ \ "sicAndCompliance").formatNullable[SicAndCompliance]
     )  (VatScheme.apply, unlift(VatScheme.unapply))
 }
