@@ -32,12 +32,9 @@ object CompanyBankAccountDetails {
       .map(account => CompanyBankAccountDetails(account.accountName, account.accountNumber, account.accountSortCode))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer (
-    // toApi
-    (c: CompanyBankAccountDetails, g: VatFinancials) => g.copy(bankAccount = Some(VatBankAccount(c.accountName, c.accountNumber, c.sortCode))),
-    // setEmptyValue
-    (g: VatFinancials) => g.copy(bankAccount = None)
-  )
+  implicit val viewModelTransformer = ViewModelTransformer { (c: CompanyBankAccountDetails, g: VatFinancials) =>
+    g.copy(bankAccount = Some(VatBankAccount(c.accountName, c.accountNumber, c.sortCode)))
+  }
 
   implicit val cacheKey = CacheKey[CompanyBankAccountDetails](CacheKeys.CompanyBankAccountDetails)
 }

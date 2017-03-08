@@ -39,17 +39,9 @@ object AccountingPeriod {
     } yield AccountingPeriod(ps.toUpperCase())
   }
 
-//  implicit val viewModelTransformer = ViewModelTransformer { (c: AccountingPeriod, g: VatFinancials) =>
-//    g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(periodStart = Some(c.accountingPeriod.toLowerCase)))
-//  }
-
-  implicit val viewModelTransformer = ViewModelTransformer (
-    // toApi
-    (c: AccountingPeriod, g: VatFinancials) =>
-      g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(periodStart = Some(c.accountingPeriod.toLowerCase))),
-    // setEmptyValue
-    (g: VatFinancials) => g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(periodStart = None))
-  )
+  implicit val viewModelTransformer = ViewModelTransformer { (c: AccountingPeriod, g: VatFinancials) =>
+    g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(periodStart = Some(c.accountingPeriod.toLowerCase)))
+  }
 
   implicit val cacheKey = CacheKey[AccountingPeriod](CacheKeys.AccountingPeriod)
 
