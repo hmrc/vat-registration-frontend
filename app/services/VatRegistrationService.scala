@@ -104,7 +104,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
           update(vf.accountingPeriod, vs) andThen update(vf.companyBankAccountDetails, vs)) (vs.financials.getOrElse(VatFinancials.default))
       }
 
-
     for {
       vs <- getVatScheme()
       vatFinancials <- mergeWithS4L(vs)
