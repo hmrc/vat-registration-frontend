@@ -50,7 +50,7 @@ class AccountingPeriodSpec extends UnitSpec with VatRegistrationFixture {
   val vatScheme = VatScheme(validRegId)
 
   "toApi" should {
-    val accountingPeriod = AccountingPeriod(Some(JAN_APR_JUL_OCT))
+    val accountingPeriod = AccountingPeriod(JAN_APR_JUL_OCT)
 
     val vatFinancials = VatFinancials(
       turnoverEstimate = turnover,
@@ -74,17 +74,17 @@ class AccountingPeriodSpec extends UnitSpec with VatRegistrationFixture {
 
     "convert VatFinancials with accounting period jan_apr_jul_oct to view model" in {
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithAccountingPeriod1))
-      ApiModelTransformer[AccountingPeriod].toViewModel(vs) shouldBe Some(AccountingPeriod(Some(JAN_APR_JUL_OCT)))
+      ApiModelTransformer[AccountingPeriod].toViewModel(vs) shouldBe Some(AccountingPeriod(JAN_APR_JUL_OCT))
     }
 
     "convert VatFinancials with accounting period feb_may_aug_nov to view model" in {
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithAccountingPeriod2))
-      ApiModelTransformer[AccountingPeriod].toViewModel(vs) shouldBe Some(AccountingPeriod(Some(FEB_MAY_AUG_NOV)))
+      ApiModelTransformer[AccountingPeriod].toViewModel(vs) shouldBe Some(AccountingPeriod(FEB_MAY_AUG_NOV))
     }
 
     "convert VatFinancials with accounting period mar_jun_sep_dec to view model" in {
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithAccountingPeriod3))
-      ApiModelTransformer[AccountingPeriod].toViewModel(vs) shouldBe Some(AccountingPeriod(Some(MAR_JUN_SEP_DEC)))
+      ApiModelTransformer[AccountingPeriod].toViewModel(vs) shouldBe Some(AccountingPeriod(MAR_JUN_SEP_DEC))
     }
 
     "convert VatScheme without VatFinancials to empty view model" in {

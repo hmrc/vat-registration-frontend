@@ -58,12 +58,12 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
         tradingName.map(_.yesNo),
         tradingName.flatMap(_.tradingName),
         companyBankAccount.map(_.yesNo),
-        estimateVatTurnover.flatMap(_.vatTurnoverEstimate.map(_.toString)),
+        estimateVatTurnover.map(_.vatTurnoverEstimate.toString),
         zeroRatedSales.map(_.yesNo),
-        estimateZeroRatedSales.flatMap(_.zeroRatedSalesEstimate.map(_.toString)),
+        estimateZeroRatedSales.map(_.zeroRatedSalesEstimate.toString),
         vatChargeExpectancy.map(_.yesNo),
         vatReturnFrequency.map(_.frequencyType),
-        accountingPeriod.flatMap(_.accountingPeriod)
+        accountingPeriod.map(_.accountingPeriod)
       )
       form = TestSetupForm.form.fill(testSetup)
     } yield Ok(views.html.pages.test_setup(form))
@@ -96,12 +96,12 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveToS4Later(data.voluntaryChoice, data, { x => VoluntaryRegistration(x.voluntaryChoice.get) })
             _ <- saveToS4Later(data.tradingNameChoice, data, { x => TradingName(x.tradingNameChoice.get, Some(data.tradingName.getOrElse(""))) })
             _ <- saveToS4Later(data.companyBankAccountChoice, data, { x => CompanyBankAccount(x.companyBankAccountChoice.get) })
-            _ <- saveToS4Later(data.estimateVatTurnover, data, { x => EstimateVatTurnover(Some(x.estimateVatTurnover.get.toLong)) })
+            _ <- saveToS4Later(data.estimateVatTurnover, data, { x => EstimateVatTurnover(x.estimateVatTurnover.get.toLong) })
             _ <- saveToS4Later(data.zeroRatedSalesChoice, data, { x => ZeroRatedSales(x.zeroRatedSalesChoice.get) })
-            _ <- saveToS4Later(data.zeroRatedSalesEstimate, data, { x => EstimateZeroRatedSales(Some(x.zeroRatedSalesEstimate.get.toLong)) })
+            _ <- saveToS4Later(data.zeroRatedSalesEstimate, data, { x => EstimateZeroRatedSales(x.zeroRatedSalesEstimate.get.toLong) })
             _ <- saveToS4Later(data.vatChargeExpectancyChoice, data, { x => VatChargeExpectancy(x.vatChargeExpectancyChoice.get) })
             _ <- saveToS4Later(data.vatReturnFrequency, data, { x => VatReturnFrequency(x.vatReturnFrequency.get) })
-            _ <- saveToS4Later(data.accountingPeriod, data, { x => AccountingPeriod(x.accountingPeriod) })
+            _ <- saveToS4Later(data.accountingPeriod, data, { x => AccountingPeriod(x.accountingPeriod.get) })
           } yield Ok("Test setup complete")
         }
       })

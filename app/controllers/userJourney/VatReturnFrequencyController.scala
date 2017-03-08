@@ -44,8 +44,7 @@ class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
         data: VatReturnFrequency => {
           s4LService.saveForm[VatReturnFrequency](data) flatMap { _ =>
             if (VatReturnFrequency.MONTHLY == data.frequencyType) {
-              s4LService.saveForm[AccountingPeriod](AccountingPeriod(None))
-                .map { _ => Redirect(controllers.userJourney.routes.SummaryController.show()) }
+              Future.successful(Redirect(controllers.userJourney.routes.SummaryController.show()))
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.AccountingPeriodController.show()))
             }

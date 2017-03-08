@@ -26,7 +26,7 @@ object EstimateVatTurnoverForm {
 
   val form = Form(
     mapping(
-      TURNOVER_ESTIMATE -> optional(longNumber)
+      TURNOVER_ESTIMATE -> longNumber
     )(EstimateVatTurnover.apply)(EstimateVatTurnover.unapply).verifying(turnoverEstimateValidation)
   )
 }

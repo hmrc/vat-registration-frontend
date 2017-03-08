@@ -19,6 +19,8 @@ package models
 import models.api.VatScheme
 
 trait ViewModelTransformer[C, G] {
+  def setEmptyValue(g: G): G = g
+
   // Upserts (selectively converts) a View model object to its API model counterpart
   def toApi(component: C, group: G): G
 }
@@ -28,6 +30,11 @@ object ViewModelTransformer {
 
   def apply[C, G](f: (C, G) => G): ViewModelTransformer[C, G] = new ViewModelTransformer[C, G] {
     override def toApi(component: C, group: G): G = f(component, group)
+  }
+
+  def apply[C, G](f: (C, G) => G, g: (G) => G): ViewModelTransformer[C, G] = new ViewModelTransformer[C, G] {
+    override def toApi(component: C, group: G): G = f(component, group)
+    override def setEmptyValue(group: G): G = g(group)
   }
 }
 
