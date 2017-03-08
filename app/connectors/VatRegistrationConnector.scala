@@ -76,9 +76,30 @@ trait RegistrationConnector {
   }
 
   def deleteVatScheme(regId: String)
-                         (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
+                     (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
     http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-scheme") recover {
       case e: Exception => throw logResponse(e, "deleteVatScheme", "delete VatScheme details")
+    }
+  }
+
+  def deleteBankAccount(regId: String)
+                       (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
+    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-bank-account") recover {
+      case e: Exception => throw logResponse(e, "deleteBankAccount", "delete VatBankAccount details")
+    }
+  }
+
+  def deleteZeroRatedTurnover(regId: String)
+                             (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
+    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-zero-rated_turnover") recover {
+      case e: Exception => throw logResponse(e, "deleteZeroRatedTurnover", "delete ZeroRatedTurnoverEstimate details")
+    }
+  }
+
+  def deleteAccountingPeriodStart(regId: String)
+                             (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
+    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-accounting-period") recover {
+      case e: Exception => throw logResponse(e, "deleteAccountingPeriodStart", "delete AccountingPeriodStart details")
     }
   }
 

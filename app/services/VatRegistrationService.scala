@@ -45,7 +45,11 @@ trait RegistrationService {
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme]
 
-  def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Boolean]
+  def deleteBankAccountDetails()(implicit hc: HeaderCarrier): Future[Boolean]
+
+  def deleteZeroRatedTurnover()(implicit hc: HeaderCarrier): Future[Boolean]
+
+  def deleteAccountingPeriodStart()(implicit hc: HeaderCarrier): Future[Boolean]
 }
 
 class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: VatRegistrationConnector)
@@ -67,6 +71,15 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
 
   def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Boolean] =
     fetchRegistrationId.flatMap(vatRegConnector.deleteVatScheme)
+
+  def deleteBankAccountDetails()(implicit hc: HeaderCarrier): Future[Boolean] =
+    fetchRegistrationId.flatMap(vatRegConnector.deleteBankAccount)
+
+  def deleteZeroRatedTurnover()(implicit hc: HeaderCarrier): Future[Boolean] =
+    fetchRegistrationId.flatMap(vatRegConnector.deleteZeroRatedTurnover)
+
+  def deleteAccountingPeriodStart()(implicit hc: HeaderCarrier): Future[Boolean] =
+    fetchRegistrationId.flatMap(vatRegConnector.deleteAccountingPeriodStart)
 
   def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] =
     for {

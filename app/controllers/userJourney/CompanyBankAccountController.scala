@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.CompanyBankAccountForm
-import models.view.{CompanyBankAccount, CompanyBankAccountDetails}
+import models.view.CompanyBankAccount
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
@@ -44,15 +44,15 @@ class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.company_bank_account(formWithErrors)))
       }, {
         data: CompanyBankAccount => {
-          s4l.saveForm[CompanyBankAccount](data) map { _ =>
+          s4l.saveForm[CompanyBankAccount](data) flatMap { _ =>
             if (CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES == data.yesNo) {
-              Redirect(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
+              Future.successful(Redirect(controllers.userJourney.routes.CompanyBankAccountDetailsController.show()))
             } else {
-              Redirect(controllers.userJourney.routes.EstimateVatTurnoverController.show())
+              vrs.deleteBankAccountDetails().map { _ =>
+                Redirect(controllers.userJourney.routes.EstimateVatTurnoverController.show()) }
             }
           }
         }
       })
   })
-
 }
