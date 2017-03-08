@@ -35,7 +35,11 @@ object SortCode {
     case _ => None
   }
 
-  implicit val show: Show[SortCode] = Show.show(sc => Seq(sc.part1, sc.part2, sc.part3).mkString("-"))
+  implicit val show: Show[SortCode] = Show.show(sc => {
+    val str = Seq(sc.part1, sc.part2, sc.part3).mkString("-")
+    //to avoid producing a "--" for sort codes where all double-digits are blank (not entered)
+    if (str == "--") "" else str
+  })
 
 }
 
