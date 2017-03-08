@@ -73,15 +73,15 @@ class VatValidatorsSpec extends VatRegSpec {
   }
 
   //Estimate Zero Rated Vat Turnover Page Form
-  "return an error when user enters a empty zero-rated sales estimate" in {
-    val data : Map[String, String] =
-      Map(
-        "zeroRatedSalesEstimate" -> ""
-      )
-
-    val boundForm = zeroRatedSalesEstimateForm.bind(data)
-    boundForm.errors.map(err => (err.key, err.message)) mustBe List(("", VatValidators.ZERO_RATED_SALES_ESTIMATE_EMPTY_MSG_KEY))
-  }
+//  "return an error when user enters a empty zero-rated sales estimate" in {
+//    val data : Map[String, String] =
+//      Map(
+//        "zeroRatedSalesEstimate" -> ""
+//      )
+//
+//    val boundForm = zeroRatedSalesEstimateForm.bind(data)
+//    boundForm.errors.map(err => (err.key, err.message)) mustBe List(("", VatValidators.ZERO_RATED_SALES_ESTIMATE_EMPTY_MSG_KEY))
+//  }
 
   "return an error when user enters a zero rated sales greater than 1,000,000,000,000,000" in {
     val data : Map[String, String] =
