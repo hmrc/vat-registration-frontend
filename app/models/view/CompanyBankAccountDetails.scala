@@ -36,6 +36,5 @@ object CompanyBankAccountDetails {
     g.copy(bankAccount = Some(VatBankAccount(c.accountName, c.accountNumber, c.sortCode)))
   }
 
-
   implicit val cacheKey = CacheKey[CompanyBankAccountDetails](CacheKeys.CompanyBankAccountDetails)
 }

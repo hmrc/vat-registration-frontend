@@ -46,11 +46,11 @@ object VatValidators {
   def turnoverEstimateValidation : Constraint[EstimateVatTurnover] = Constraint("constraint.turnoverEstimate")({
     text =>
       val errors = text match {
-        case EstimateVatTurnover(None)
-          => Seq(ValidationError(TURNOVER_ESTIMATE_EMPTY_MSG_KEY, TURNOVER_ESTIMATE))
-        case EstimateVatTurnover(Some(estimateVatTurnover)) if estimateVatTurnover < MIN_TURNOVER_ESTIMATE
+//        case EstimateVatTurnover(None)
+//          => Seq(ValidationError(TURNOVER_ESTIMATE_EMPTY_MSG_KEY, TURNOVER_ESTIMATE))
+        case EstimateVatTurnover(estimateVatTurnover) if estimateVatTurnover < MIN_TURNOVER_ESTIMATE
           => Seq(ValidationError(TURNOVER_ESTIMATE_LOW_MSG_KEY, TURNOVER_ESTIMATE))
-        case EstimateVatTurnover(Some(estimateVatTurnover)) if estimateVatTurnover > MAX_TURNOVER_ESTIMATE
+        case EstimateVatTurnover(estimateVatTurnover) if estimateVatTurnover > MAX_TURNOVER_ESTIMATE
           => Seq(ValidationError(TURNOVER_ESTIMATE_HIGH_MSG_KEY, TURNOVER_ESTIMATE))
         case _ => Nil
       }
@@ -60,11 +60,11 @@ object VatValidators {
   def zeroRatedSalesEstimateValidation : Constraint[EstimateZeroRatedSales] = Constraint("constraint.zeroRatedSalesEstimate")({
     text =>
       val errors = text match {
-        case EstimateZeroRatedSales(None)
-          => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_EMPTY_MSG_KEY, ZERO_RATED_SALES_ESTIMATE))
-        case EstimateZeroRatedSales(Some(zeroRatedSalesEstimate)) if zeroRatedSalesEstimate < MIN_TURNOVER_ESTIMATE
+//        case EstimateZeroRatedSales(None)
+//          => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_EMPTY_MSG_KEY, ZERO_RATED_SALES_ESTIMATE))
+        case EstimateZeroRatedSales(zeroRatedSalesEstimate) if zeroRatedSalesEstimate < MIN_TURNOVER_ESTIMATE
           => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_LOW_MSG_KEY, ZERO_RATED_SALES_ESTIMATE))
-        case EstimateZeroRatedSales(Some(zeroRatedSalesEstimate)) if zeroRatedSalesEstimate > MAX_TURNOVER_ESTIMATE
+        case EstimateZeroRatedSales(zeroRatedSalesEstimate) if zeroRatedSalesEstimate > MAX_TURNOVER_ESTIMATE
           => Seq(ValidationError(ZERO_RATED_SALES_ESTIMATE_HIGH_MSG_KEY, ZERO_RATED_SALES_ESTIMATE))
         case _ => Nil
       }
@@ -74,7 +74,7 @@ object VatValidators {
   def accountingPeriodValidation : Constraint[AccountingPeriod] = Constraint("constraint.accountingPeriod")({
     text =>
       val errors = text match {
-        case AccountingPeriod(None) => Seq(ValidationError(EMPTY_ACCOUNTING_PERIOD_MSG_KEY, RADIO_ACCOUNTING_PERIOD))
+        case AccountingPeriod("") => Seq(ValidationError(EMPTY_ACCOUNTING_PERIOD_MSG_KEY, RADIO_ACCOUNTING_PERIOD))
         case _ => Nil
       }
       if (errors.isEmpty) Valid else Invalid(errors)

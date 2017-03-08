@@ -116,7 +116,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return 303" in {
       val returnCacheMapVatReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.MONTHLY))))
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(None))))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(""))))
 
       when(mockS4LService.saveForm[VatReturnFrequency]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -125,6 +125,9 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockS4LService.saveForm[AccountingPeriod]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
+
+      when(mockVatRegistrationService.deleteAccountingPeriodStart()(Matchers.any()))
+        .thenReturn(Future.successful(true))
 
       AuthBuilder.submitWithAuthorisedUser(TestVatReturnFrequencyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY
@@ -141,7 +144,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.QUARTERLY))))
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(Some(AccountingPeriod.FEB_MAY_AUG_NOV)))))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.FEB_MAY_AUG_NOV))))
 
       when(mockS4LService.saveForm[VatReturnFrequency](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))

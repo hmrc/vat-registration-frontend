@@ -24,16 +24,16 @@ import uk.gov.hmrc.play.test.UnitSpec
 class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
   val turnover = 5000L
   val turnoverNew = 1000L
-  val estimatedVatTurnover = EstimateVatTurnover(Some(turnover))
-  val newEstimateVatTurnover = EstimateVatTurnover(Some(turnoverNew))
+  val estimatedVatTurnover = EstimateVatTurnover(turnover)
+  val newEstimateVatTurnover = EstimateVatTurnover(turnoverNew)
 
   val vatFinancials = VatFinancials(
-    turnoverEstimate = estimatedVatTurnover.vatTurnoverEstimate.get,
+    turnoverEstimate = estimatedVatTurnover.vatTurnoverEstimate,
     reclaimVatOnMostReturns = true,
     vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
   )
   val differentVatFinancials = VatFinancials(
-    turnoverEstimate = newEstimateVatTurnover.vatTurnoverEstimate.get,
+    turnoverEstimate = newEstimateVatTurnover.vatTurnoverEstimate,
     reclaimVatOnMostReturns = true,
     vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
   )
