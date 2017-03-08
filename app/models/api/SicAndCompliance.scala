@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package enums
+package models.api
 
-object CacheKeys extends Enumeration {
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-  val StartDate = Value
-  val TradingName = Value
-  val VoluntaryRegistration = Value
-  val TaxableTurnover = Value
-  val EstimateVatTurnover = Value
-  val ZeroRatedSales = Value
-  val EstimateZeroRatedSales = Value
-  val VatChargeExpectancy = Value
-  val VatReturnFrequency = Value
-  val AccountingPeriod = Value
-  val BusinessActivityDescription = Value
+case class SicAndCompliance(description: String)
 
+
+object SicAndCompliance {
+
+  val apiReads: Reads[SicAndCompliance] =
+    (__ \ "description").read[String].map(SicAndCompliance.apply)
+
+  val apiWrites: Writes[SicAndCompliance] =
+    (__ \ "description").write[String].contramap(_.description)
+
+  implicit val format = Format(apiReads, apiWrites)
 
 }
