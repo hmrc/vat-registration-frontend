@@ -91,6 +91,39 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
+  "Calling deleteAccountingPeriodStart" should {
+    "return a successful outcome given an existing registration" in new Setup {
+      mockHttpDELETE[Boolean]("tst-url", true)
+      ScalaFutures.whenReady(connector.deleteAccountingPeriodStart("regId"))(_ mustBe true)
+    }
+    "return the notFound exception when trying to DELETE non-existent registration" in new Setup {
+      mockHttpFailedDELETE[Boolean]("tst-url", notFound)
+      ScalaFutures.whenReady(connector.deleteAccountingPeriodStart("regId").failed)(_ mustBe notFound)
+    }
+  }
+
+  "Calling deleteBankAccount" should {
+    "return a successful outcome given an existing registration" in new Setup {
+      mockHttpDELETE[Boolean]("tst-url", true)
+      ScalaFutures.whenReady(connector.deleteBankAccount("regId"))(_ mustBe true)
+    }
+    "return the notFound exception when trying to DELETE non-existent registration" in new Setup {
+      mockHttpFailedDELETE[Boolean]("tst-url", notFound)
+      ScalaFutures.whenReady(connector.deleteBankAccount("regId").failed)(_ mustBe notFound)
+    }
+  }
+
+  "Calling deleteZeroRatedTurnover" should {
+    "return a successful outcome given an existing registration" in new Setup {
+      mockHttpDELETE[Boolean]("tst-url", true)
+      ScalaFutures.whenReady(connector.deleteZeroRatedTurnover("regId"))(_ mustBe true)
+    }
+    "return the notFound exception when trying to DELETE non-existent registration" in new Setup {
+      mockHttpFailedDELETE[Boolean]("tst-url", notFound)
+      ScalaFutures.whenReady(connector.deleteZeroRatedTurnover("regId").failed)(_ mustBe notFound)
+    }
+  }
+
   "Calling upsertVatChoice" should {
     "return the correct VatResponse when the microservice completes and returns a VatChoice model" in new Setup {
       mockHttpPATCH[VatChoice, VatChoice]("tst-url", validVatChoice)
