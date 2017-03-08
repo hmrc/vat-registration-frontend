@@ -46,7 +46,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"GET ${routes.AccountingPeriodController.show()}" should {
 
     "return HTML when there's a Accounting Period model in S4L" in {
-      val accountingPeriod = AccountingPeriod(None)
+      val accountingPeriod = AccountingPeriod("")
 
       when(mockS4LService.fetchAndGet[AccountingPeriod]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(accountingPeriod)))
@@ -110,7 +110,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"POST ${routes.AccountingPeriodController.submit()} with accounting period selected is January, April, July and October" should {
 
     "return 303" in {
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(Some(AccountingPeriod.JAN_APR_JUL_OCT)))))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.JAN_APR_JUL_OCT))))
 
       when(mockS4LService.saveForm[AccountingPeriod]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -130,7 +130,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"POST ${routes.AccountingPeriodController.submit()} with accounting period selected is February, May, August and November" should {
 
     "return 303" in {
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(Some(AccountingPeriod.FEB_MAY_AUG_NOV)))))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.FEB_MAY_AUG_NOV))))
 
       when(mockS4LService.saveForm[AccountingPeriod]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -150,7 +150,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"POST ${routes.AccountingPeriodController.submit()} with accounting period selected is March, June, September and December" should {
 
     "return 303" in {
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(Some(AccountingPeriod.MAR_JUN_SEP_DEC)))))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.MAR_JUN_SEP_DEC))))
 
       when(mockS4LService.saveForm[AccountingPeriod]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))

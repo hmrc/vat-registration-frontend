@@ -26,7 +26,7 @@ object EstimateZeroRatedSalesForm {
 
   val form = Form(
     mapping(
-      ZERO_RATED_SALES_ESTIMATE -> optional(longNumber)
+      ZERO_RATED_SALES_ESTIMATE -> longNumber
     )(EstimateZeroRatedSales.apply)(EstimateZeroRatedSales.unapply).verifying(zeroRatedSalesEstimateValidation)
   )
 }

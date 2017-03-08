@@ -44,4 +44,6 @@ trait S4LConnector {
   def fetchAll(userId: String)(implicit hc: HeaderCarrier): Future[Option[CacheMap]] = {
     shortCache.fetch(userId)
   }
+
+
 }
