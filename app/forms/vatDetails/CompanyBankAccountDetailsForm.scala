@@ -16,38 +16,46 @@
 
 package forms.vatDetails
 
+import cats.Show
 import forms.validation.FormValidation.BankAccount._
 import play.api.data.Form
 import play.api.data.Forms._
 
 case class CompanyBankAccountDetailsForm(accountName: String, accountNumber: String, sortCode: SortCode)
 
-case class SortCode(part1: String, part2: String, part3: String) {
-  override def toString: String = Seq(part1, part2, part3).mkString("-")
-}
+case class SortCode(part1: String, part2: String, part3: String)
 
 object SortCode {
-  val SortCodePattern = """^([0-9]{2})-([0-9]{2})-([0-9]{2})$""".r
+
+  val Pattern = """^([0-9]{2})-([0-9]{2})-([0-9]{2})$""".r
+  val PartPattern = """^[0-9]{2}$""".r
 
   def parse(sortCode: String): Option[SortCode] = sortCode match {
-    case SortCodePattern(p1, p2, p3) => Some(SortCode(p1, p2, p3))
+    case Pattern(p1, p2, p3) => Some(SortCode(p1, p2, p3))
     case _ => None
   }
+
+  implicit val show: Show[SortCode] = Show.show(sc => {
+    val str = Seq(sc.part1.trim, sc.part2.trim, sc.part3.trim).mkString("-")
+    //to avoid producing a "--" for sort codes where all double-digits are blank (not entered)
+    if (str == "--") "" else str
+  })
+
 }
 
 object CompanyBankAccountDetailsForm {
 
-  private val ACCOUNT_TYPE = "business"
+  private val ACCOUNT_TYPE = "companyBankAccount"
 
   val form = Form(
     mapping(
-      "accountName" -> text.verifying(accountNameConstraint(ACCOUNT_TYPE)),
-      "accountNumber" -> text.verifying(accountNumberConstraint(ACCOUNT_TYPE)),
+      "accountName" -> text.verifying(accountName(ACCOUNT_TYPE)),
+      "accountNumber" -> text.verifying(accountNumber(ACCOUNT_TYPE)),
       "sortCode" -> mapping(
         "part1" -> text,
         "part2" -> text,
         "part3" -> text
-      )(SortCode.apply)(SortCode.unapply).verifying(sortCodeConstraint(ACCOUNT_TYPE))
+      )(SortCode.apply)(SortCode.unapply).verifying(accountSortCode(ACCOUNT_TYPE))
     )(CompanyBankAccountDetailsForm.apply)(CompanyBankAccountDetailsForm.unapply)
   )
 

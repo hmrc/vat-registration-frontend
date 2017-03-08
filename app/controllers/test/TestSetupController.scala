@@ -41,6 +41,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       startDate <- s4LService.fetchAndGet[StartDate]()
       tradingName <- s4LService.fetchAndGet[TradingName]()
       companyBankAccount <- s4LService.fetchAndGet[CompanyBankAccount]()
+      companyBankAccountDetails <- s4LService.fetchAndGet[CompanyBankAccountDetails]()
       estimateVatTurnover <- s4LService.fetchAndGet[EstimateVatTurnover]()
       zeroRatedSales <- s4LService.fetchAndGet[ZeroRatedSales]()
       estimateZeroRatedSales <- s4LService.fetchAndGet[EstimateZeroRatedSales]()
@@ -58,6 +59,9 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
         tradingName.map(_.yesNo),
         tradingName.flatMap(_.tradingName),
         companyBankAccount.map(_.yesNo),
+        companyBankAccountDetails.map(_.accountName),
+        companyBankAccountDetails.map(_.accountNumber),
+        companyBankAccountDetails.map(_.sortCode),
         estimateVatTurnover.map(_.vatTurnoverEstimate.toString),
         zeroRatedSales.map(_.yesNo),
         estimateZeroRatedSales.map(_.zeroRatedSalesEstimate.toString),
@@ -96,6 +100,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveToS4Later(data.voluntaryChoice, data, { x => VoluntaryRegistration(x.voluntaryChoice.get) })
             _ <- saveToS4Later(data.tradingNameChoice, data, { x => TradingName(x.tradingNameChoice.get, Some(data.tradingName.getOrElse(""))) })
             _ <- saveToS4Later(data.companyBankAccountChoice, data, { x => CompanyBankAccount(x.companyBankAccountChoice.get) })
+            _ <- saveToS4Later(data.companyBankAccountName, data, { x => CompanyBankAccountDetails(x.companyBankAccountName.get, x.companyBankAccountNumber.get, x.sortCode.get) })
             _ <- saveToS4Later(data.estimateVatTurnover, data, { x => EstimateVatTurnover(x.estimateVatTurnover.get.toLong) })
             _ <- saveToS4Later(data.zeroRatedSalesChoice, data, { x => ZeroRatedSales(x.zeroRatedSalesChoice.get) })
             _ <- saveToS4Later(data.zeroRatedSalesEstimate, data, { x => EstimateZeroRatedSales(x.zeroRatedSalesEstimate.get.toLong) })
