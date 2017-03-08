@@ -47,7 +47,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return HTML Estimate Vat Turnover page with no data in the form" in {
       when(mockS4LService.fetchAndGet[EstimateVatTurnover]()(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(EstimateVatTurnover(Some(100L)))))
+        .thenReturn(Future.successful(Some(EstimateVatTurnover(100L))))
 
       AuthBuilder.submitWithAuthorisedUser(TestEstimateVatTurnoverController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "turnoverEstimate" -> ""
@@ -106,7 +106,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.EstimateVatTurnoverController.submit()} with a valid turnover estimate entered" should {
 
     "return 303" in {
-      val returnCacheMapEstimateVatTurnover = CacheMap("", Map("" -> Json.toJson(EstimateVatTurnover(Some(50000)))))
+      val returnCacheMapEstimateVatTurnover = CacheMap("", Map("" -> Json.toJson(EstimateVatTurnover(50000L))))
 
       when(mockS4LService.saveForm[EstimateVatTurnover]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))

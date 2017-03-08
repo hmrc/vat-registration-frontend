@@ -25,11 +25,11 @@ class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
 
   val sales = 60000L
   val turnover = 100L
-  val estimateZeroRatedSales = EstimateZeroRatedSales(Some(sales))
+  val estimateZeroRatedSales = EstimateZeroRatedSales(sales)
 
   val vatFinancials = VatFinancials(
     turnoverEstimate = turnover,
-    zeroRatedSalesEstimate = estimateZeroRatedSales.zeroRatedSalesEstimate,
+    zeroRatedSalesEstimate = Some(estimateZeroRatedSales.zeroRatedSalesEstimate),
     reclaimVatOnMostReturns = true,
     vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
   )
@@ -38,7 +38,7 @@ class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
     "update VatFinancials with new EstimateZeroRatedSales" in {
       val updatedVatFinancials = VatFinancials(
         turnoverEstimate = turnover,
-        zeroRatedSalesEstimate = estimateZeroRatedSales.zeroRatedSalesEstimate,
+        zeroRatedSalesEstimate = Some(estimateZeroRatedSales.zeroRatedSalesEstimate),
         reclaimVatOnMostReturns = true,
         vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
       )

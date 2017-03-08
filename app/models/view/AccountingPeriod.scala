@@ -21,7 +21,7 @@ import models.api.{VatFinancials, VatScheme}
 import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
-case class AccountingPeriod(accountingPeriod: Option[String])
+case class AccountingPeriod(accountingPeriod: String)
 
 object AccountingPeriod {
 
@@ -36,12 +36,20 @@ object AccountingPeriod {
     for {
       f <- vs.financials
       ps <- f.vatAccountingPeriod.periodStart
-    } yield AccountingPeriod(Some(ps.toUpperCase()))
+    } yield AccountingPeriod(ps.toUpperCase())
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: AccountingPeriod, g: VatFinancials) =>
-    g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(periodStart = c.accountingPeriod.map(_.toLowerCase)))
-  }
+//  implicit val viewModelTransformer = ViewModelTransformer { (c: AccountingPeriod, g: VatFinancials) =>
+//    g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(periodStart = Some(c.accountingPeriod.toLowerCase)))
+//  }
+
+  implicit val viewModelTransformer = ViewModelTransformer (
+    // toApi
+    (c: AccountingPeriod, g: VatFinancials) =>
+      g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(periodStart = Some(c.accountingPeriod.toLowerCase))),
+    // setEmptyValue
+    (g: VatFinancials) => g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(periodStart = None))
+  )
 
   implicit val cacheKey = CacheKey[AccountingPeriod](CacheKeys.AccountingPeriod)
 

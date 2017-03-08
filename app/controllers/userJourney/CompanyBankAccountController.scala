@@ -20,9 +20,10 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.CompanyBankAccountForm
-import models.view.CompanyBankAccount
+import models.view.{CompanyBankAccount, CompanyBankAccountDetails}
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
+
 import scala.concurrent.Future
 
 

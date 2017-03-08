@@ -39,6 +39,7 @@ object VatReturnFrequency {
     g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(frequency = c.frequencyType))
   }
 
+
   implicit val cacheKey = CacheKey[VatReturnFrequency](CacheKeys.VatReturnFrequency)
 
 }
