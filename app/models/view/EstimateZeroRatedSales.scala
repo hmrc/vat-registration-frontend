@@ -33,12 +33,9 @@ object EstimateZeroRatedSales {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer (
-    // toApi
-    (c: EstimateZeroRatedSales, g: VatFinancials) => g.copy(zeroRatedSalesEstimate = Some(c.zeroRatedSalesEstimate)),
-    // setEmptyValue
-    (g: VatFinancials) => g.copy(zeroRatedSalesEstimate = None)
-  )
+  implicit val viewModelTransformer = ViewModelTransformer { (c: EstimateZeroRatedSales, g: VatFinancials) =>
+    g.copy(zeroRatedSalesEstimate = Some(c.zeroRatedSalesEstimate))
+  }
 
   implicit val cacheKey = CacheKey[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales)
 
