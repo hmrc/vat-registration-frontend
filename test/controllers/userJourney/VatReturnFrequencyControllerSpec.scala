@@ -126,6 +126,9 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
 
+      when(mockVatRegistrationService.deleteAccountingPeriodStart()(Matchers.any()))
+        .thenReturn(Future.successful(true))
+
       AuthBuilder.submitWithAuthorisedUser(TestVatReturnFrequencyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY
       )) {

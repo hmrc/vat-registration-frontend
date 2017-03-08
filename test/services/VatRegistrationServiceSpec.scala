@@ -157,11 +157,38 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   }
 
   "Calling deleteVatScheme" should {
-    "return a success response when the delete VatScheme is successfully" in new Setup {
+    "return a success response when the delete VatScheme is successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
       when(mockRegConnector.deleteVatScheme(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(true))
       ScalaFutures.whenReady(service.deleteVatScheme())(_ mustBe true)
+    }
+  }
+
+  "Calling deleteAccountingPeriodStart" should {
+    "return a success response when successful" in new Setup {
+      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+      when(mockRegConnector.deleteAccountingPeriodStart(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(true))
+      ScalaFutures.whenReady(service.deleteAccountingPeriodStart())(_ mustBe true)
+    }
+  }
+
+  "Calling deleteBankAccountDetails" should {
+    "return a success response when successful" in new Setup {
+      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+      when(mockRegConnector.deleteBankAccount(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(true))
+      ScalaFutures.whenReady(service.deleteBankAccountDetails())(_ mustBe true)
+    }
+  }
+
+  "Calling deleteZeroRatedTurnover" should {
+    "return a success response when successful" in new Setup {
+      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+      when(mockRegConnector.deleteZeroRatedTurnover(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(true))
+      ScalaFutures.whenReady(service.deleteZeroRatedTurnover())(_ mustBe true)
     }
   }
 }
