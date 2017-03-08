@@ -147,7 +147,7 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
         SortCode("", "", ""),
         SortCode(" ", " ", " "),
         SortCode("    \t   ", "    \t   ", "    \t   ")))(in => inside(constraint(in)) {
-        case Invalid(err :: _) => err.message shouldBe "validation.account.sortCode.invalid"
+        case Invalid(err :: _) => err.message shouldBe "validation.account.sortCode.missing"
       })
     }
 

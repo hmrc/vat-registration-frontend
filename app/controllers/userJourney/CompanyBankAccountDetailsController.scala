@@ -34,18 +34,18 @@ class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     viewModel[CompanyBankAccountDetails].map { vm =>
-      Ok(views.html.pages.bank_account_details(CompanyBankAccountDetailsForm.form.fill(
+      Ok(views.html.pages.company_bank_account_details(CompanyBankAccountDetailsForm.form.fill(
         CompanyBankAccountDetailsForm(
           accountName = vm.accountName,
           accountNumber = vm.accountNumber,
           sortCode = SortCode.parse(vm.sortCode).getOrElse(SortCode("", "", ""))))))
-    }.getOrElse(Ok(views.html.pages.bank_account_details(CompanyBankAccountDetailsForm.form)))
+    }.getOrElse(Ok(views.html.pages.company_bank_account_details(CompanyBankAccountDetailsForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     CompanyBankAccountDetailsForm.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.bank_account_details(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.company_bank_account_details(formWithErrors)))
       }, (form: CompanyBankAccountDetailsForm) => {
         s4l.saveForm[CompanyBankAccountDetails](
           CompanyBankAccountDetails(
