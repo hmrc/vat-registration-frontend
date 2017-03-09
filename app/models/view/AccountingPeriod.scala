@@ -29,6 +29,8 @@ object AccountingPeriod {
   val FEB_MAY_AUG_NOV = "FEB_MAY_AUG_NOV"
   val MAR_JUN_SEP_DEC = "MAR_JUN_SEP_DEC"
 
+  val valid = (item: String) => List(JAN_APR_JUL_OCT, FEB_MAY_AUG_NOV, MAR_JUN_SEP_DEC).contains(item.toUpperCase)
+
   implicit val format: OFormat[AccountingPeriod] = Json.format[AccountingPeriod]
 
   // Returns a view model for a specific part of a given VatScheme API model

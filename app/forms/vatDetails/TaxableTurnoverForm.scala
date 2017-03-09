@@ -16,6 +16,7 @@
 
 package forms.vatDetails
 
+import forms.validation.FormValidation.missingFieldMapping
 import models.view.TaxableTurnover
 import play.api.data.Form
 import play.api.data.Forms._
@@ -25,7 +26,7 @@ object TaxableTurnoverForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> nonEmptyText
+      RADIO_YES_NO -> missingFieldMapping("taxable.turnover").verifying(TaxableTurnover.valid)
     )(TaxableTurnover.apply)(TaxableTurnover.unapply)
   )
 

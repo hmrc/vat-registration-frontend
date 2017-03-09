@@ -21,6 +21,7 @@ import org.scalatest.{Inside, Inspectors}
 import play.api.data.validation.{Invalid, Valid}
 import uk.gov.hmrc.play.test.UnitSpec
 
+
 class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
   import cats.instances.string._
@@ -34,15 +35,35 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
     }
 
     "reject null string" in {
-      constraint(null) shouldBe Invalid("validation.errorCode.missing")
+      constraint(null) shouldBe Invalid("validation.errorCode.empty")
     }
 
     "reject empty string" in {
-      constraint("") shouldBe Invalid("validation.errorCode.missing")
+      constraint("") shouldBe Invalid("validation.errorCode.empty")
     }
 
     "reject blank string" in {
-      constraint("    ") shouldBe Invalid("validation.errorCode.missing")
+      constraint("    ") shouldBe Invalid("validation.errorCode.empty")
+    }
+  }
+
+
+  "nonEmptyValidText" should {
+    val regex = """^[A-Za-z]{1,10}$""".r
+
+    "return valid when string matches regex" in {
+      val constraint = FormValidation.nonEmptyValidText("fieldName", regex)
+      constraint("abcdef") shouldBe Valid
+    }
+
+    "return invalid when string does not match regex" in {
+      val constraint = FormValidation.nonEmptyValidText("fieldName", regex)
+      constraint("a123") shouldBe Invalid("validation.fieldName.invalid")
+    }
+
+    "return invalid when string is empty" in {
+      val constraint = FormValidation.nonEmptyValidText("fieldName", regex)
+      constraint("") shouldBe Invalid("validation.fieldName.empty")
     }
   }
 

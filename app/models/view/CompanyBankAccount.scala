@@ -28,6 +28,8 @@ object CompanyBankAccount {
   val COMPANY_BANK_ACCOUNT_YES = "COMPANY_BANK_ACCOUNT_YES"
   val COMPANY_BANK_ACCOUNT_NO = "COMPANY_BANK_ACCOUNT_NO"
 
+  val valid = (item: String) => List(COMPANY_BANK_ACCOUNT_YES, COMPANY_BANK_ACCOUNT_NO).contains(item.toUpperCase)
+
   implicit val format = Json.format[CompanyBankAccount]
 
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
@@ -40,5 +42,4 @@ object CompanyBankAccount {
   }
 
   implicit val cacheKey = CacheKey[CompanyBankAccount](CacheKeys.CompanyBankAccount)
-
 }

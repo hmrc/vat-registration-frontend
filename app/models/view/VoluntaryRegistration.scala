@@ -29,6 +29,8 @@ object VoluntaryRegistration {
   val REGISTER_YES = "REGISTER_YES"
   val REGISTER_NO = "REGISTER_NO"
 
+  val valid = (item: String) => List(REGISTER_YES, REGISTER_NO).contains(item.toUpperCase)
+
   implicit val format = Json.format[VoluntaryRegistration]
 
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>

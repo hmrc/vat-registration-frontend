@@ -28,6 +28,8 @@ object VatReturnFrequency {
   val MONTHLY = "monthly"
   val QUARTERLY = "quarterly"
 
+  val valid = (item: String) => List(MONTHLY, QUARTERLY).contains(item.toLowerCase)
+
   implicit val format = Json.format[VatReturnFrequency]
 
   // Returns a view model for a specific part of a given VatScheme API model
