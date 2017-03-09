@@ -28,8 +28,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class SummaryController @Inject()(ds: CommonPlayDependencies)
-                                 (implicit s4LService: S4LService, vrs: VatRegistrationService)
+class SummaryController @Inject()(implicit ds: CommonPlayDependencies, s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async { implicit user =>
@@ -45,9 +44,9 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
     vrs.getVatScheme().map(registrationToSummary)
 
   def registrationToSummary(vatScheme: VatScheme): Summary = {
-    val vatDetailsSectionBuilder = new SummaryVatDetailsSectionBuilder(ds)(vatScheme.vatChoice.getOrElse(VatChoice()))
+    val vatDetailsSectionBuilder = new SummaryVatDetailsSectionBuilder(vatScheme.vatChoice.getOrElse(VatChoice()))
     val companyDetailsSectionBuilder =
-      new SummaryCompanyDetailsSectionBuilder(ds)(
+      new SummaryCompanyDetailsSectionBuilder(
         vatScheme.tradingDetails.getOrElse(VatTradingDetails()),
         vatScheme.financials.getOrElse(VatFinancials.default)
       )
