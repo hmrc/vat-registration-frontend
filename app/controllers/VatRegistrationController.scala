@@ -39,7 +39,6 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
   lazy val conf: Configuration = ds.conf
   implicit lazy val messagesApi: MessagesApi = ds.messagesApi
   override val authConnector: AuthConnector = FrontendAuthConnector
-
   //$COVERAGE-ON$
 
   /**
