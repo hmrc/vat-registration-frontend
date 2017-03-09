@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package models
+package models.view
 
 import fixtures.VatRegistrationFixture
+import models.ApiModelTransformer
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
-import models.view.ZeroRatedSales
+import models.view.ZeroRatedSales.{ZERO_RATED_SALES_NO, ZERO_RATED_SALES_YES}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
@@ -34,7 +35,7 @@ class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
         vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
       )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithZeroRated))
-      ApiModelTransformer[ZeroRatedSales].toViewModel(vs) shouldBe ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_YES)
+      ApiModelTransformer[ZeroRatedSales].toViewModel(vs) shouldBe Some(ZeroRatedSales(ZERO_RATED_SALES_YES))
     }
 
     "convert VatFinancials without zero rated sales to view model" in {
@@ -45,12 +46,12 @@ class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
       )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithoutZeroRated))
 
-      ApiModelTransformer[ZeroRatedSales].toViewModel(vs) shouldBe ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_NO)
+      ApiModelTransformer[ZeroRatedSales].toViewModel(vs) shouldBe Some(ZeroRatedSales(ZERO_RATED_SALES_NO))
     }
 
     "convert VatScheme without VatFinancials to empty view model" in {
       val vs = vatScheme.copy(financials = None)
-      ApiModelTransformer[ZeroRatedSales].toViewModel(vs) shouldBe ZeroRatedSales()
+      ApiModelTransformer[ZeroRatedSales].toViewModel(vs) shouldBe None
     }
   }
 }

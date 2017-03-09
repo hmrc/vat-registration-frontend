@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package models
+package models.view
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatScheme, VatTradingDetails}
-import models.view.TradingName
 import models.view.TradingName._
+import models.{ApiModelTransformer, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class TradingNameSpec extends UnitSpec with VatRegistrationFixture {
@@ -44,17 +44,17 @@ class TradingNameSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
     "extract a TradingName from a VatScheme" in {
-      ApiModelTransformer[TradingName].toViewModel(validVatScheme) shouldBe validTradingName
+      ApiModelTransformer[TradingName].toViewModel(validVatScheme) shouldBe Some(validTradingName)
     }
 
     "extract a TradingName from VatScheme with no trading name returns empty trading name" in {
       val vatSchemeEmptyTradingName = VatScheme(id = validRegId, tradingDetails = Some(VatTradingDetails()))
-      ApiModelTransformer[TradingName].toViewModel(vatSchemeEmptyTradingName) shouldBe TradingName(yesNo = TRADING_NAME_NO, tradingName = None)
+      ApiModelTransformer[TradingName].toViewModel(vatSchemeEmptyTradingName) shouldBe Some(TradingName(yesNo = TRADING_NAME_NO, tradingName = None))
     }
 
     "extract a TradingName from VatScheme with no VatTradingDetails returns empty trading name" in {
       val vatSchemeEmptyTradingDetails = VatScheme(id = validRegId, tradingDetails = None)
-      ApiModelTransformer[TradingName].toViewModel(vatSchemeEmptyTradingDetails) shouldBe TradingName()
+      ApiModelTransformer[TradingName].toViewModel(vatSchemeEmptyTradingDetails) shouldBe None
     }
 
   }

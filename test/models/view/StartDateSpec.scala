@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package models
+package models.view
 
 import fixtures.VatRegistrationFixture
+import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import models.api.{VatChoice, VatScheme}
-import models.view.StartDate
+import models.{ApiModelTransformer, ViewModelTransformer}
 import org.joda.time.format.DateTimeFormat
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -36,22 +37,22 @@ class StartDateSpec extends UnitSpec with VatRegistrationFixture {
 
   "toApi" should {
     "update a VatChoice a new StartDate" in {
-      val vatChoice = VatChoice(newStartDate.toDateTime, VatChoice.NECESSITY_OBLIGATORY)
+      val vatChoice = VatChoice(newStartDate.toDateTime, NECESSITY_OBLIGATORY)
       ViewModelTransformer[StartDate, VatChoice]
-        .toApi(startDate, vatChoice) shouldBe VatChoice(startDate.toDateTime, VatChoice.NECESSITY_OBLIGATORY)
+        .toApi(startDate, vatChoice) shouldBe VatChoice(startDate.toDateTime, NECESSITY_OBLIGATORY)
     }
   }
 
   "apply" should {
     "extract a StartDate from a VatScheme" in {
-      val vatChoice = VatChoice(startDate.toDateTime, VatChoice.NECESSITY_VOLUNTARY)
+      val vatChoice = VatChoice(startDate.toDateTime, NECESSITY_VOLUNTARY)
       val vatScheme = VatScheme(id = validRegId, vatChoice = Some(vatChoice))
-      ApiModelTransformer[StartDate].toViewModel(vatScheme) shouldBe startDate
+      ApiModelTransformer[StartDate].toViewModel(vatScheme) shouldBe Some(startDate)
     }
 
     "extract a default StartDate from a VatScheme that has no VatChoice " in {
       val vatScheme = VatScheme(id = validRegId, vatChoice = None)
-      ApiModelTransformer[StartDate].toViewModel(vatScheme) shouldBe StartDate()
+      ApiModelTransformer[StartDate].toViewModel(vatScheme) shouldBe None
     }
   }
 
@@ -65,7 +66,7 @@ class StartDateSpec extends UnitSpec with VatRegistrationFixture {
     "convert a DateTime object to a StartDate model when it's a default value" in {
       val defaultDateTime = DateTimeFormat.forPattern("dd/MM/yyyy").parseDateTime("31/12/1969")
       val startDate = StartDate.fromDateTime(defaultDateTime)
-      startDate shouldBe StartDate()
+      startDate shouldBe StartDate.default
     }
   }
 

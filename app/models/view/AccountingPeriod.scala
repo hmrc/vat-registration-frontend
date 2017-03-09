@@ -16,11 +16,12 @@
 
 package models.view
 
+import enums.CacheKeys
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
-case class AccountingPeriod(accountingPeriod: Option[String] = None)
+case class AccountingPeriod(accountingPeriod: Option[String])
 
 object AccountingPeriod {
 
@@ -32,15 +33,16 @@ object AccountingPeriod {
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
-    val res = for {
+    for {
       f <- vs.financials
       ps <- f.vatAccountingPeriod.periodStart
     } yield AccountingPeriod(Some(ps.toUpperCase()))
-    res.getOrElse(AccountingPeriod())
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: AccountingPeriod, g: VatFinancials) =>
     g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(periodStart = c.accountingPeriod.map(_.toLowerCase)))
   }
+
+  implicit val cacheKey = CacheKey[AccountingPeriod](CacheKeys.AccountingPeriod)
 
 }

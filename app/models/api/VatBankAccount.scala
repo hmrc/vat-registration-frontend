@@ -19,18 +19,14 @@ package models.api
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatBankAccount(accountName: String, accountSortCode: String, accountNumber: String)
+case class VatBankAccount(accountName: String = "", accountNumber: String = "", accountSortCode: String = "")
 
 object VatBankAccount {
 
   implicit val format = (
     (__ \ "accountName").format[String] and
-      (__ \ "accountSortCode").format[String] and
-      (__ \ "accountNumber").format[String]
+      (__ \ "accountNumber").format[String] and
+      (__ \ "accountSortCode").format[String]
     ) (VatBankAccount.apply, unlift(VatBankAccount.unapply))
 
-  def empty: VatBankAccount = VatBankAccount("", "", "")
-
-  // TODO remove 'default' once we have Bank Account details story is in place
-  def default: VatBankAccount = VatBankAccount("default", "99-99-99", "12345678")
 }

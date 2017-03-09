@@ -24,20 +24,24 @@ object TestSetupForm {
 
   val form = Form(
     mapping(
-      "taxableTurnoverChoice" -> text,
-      "voluntaryChoice" -> text,
-      "startDateChoice" -> text,
-      "startDateDay" -> text,
-      "startDateMonth" -> text,
-      "startDateYear" -> text,
-      "tradingNameChoice" -> text,
-      "tradingName" -> text,
-      "estimateVatTurnover" -> text,
-      "zeroRatedSalesChoice" -> text,
-      "zeroRatedSalesEstimate" -> text,
-      "vatChargeExpectancyChoice" -> text,
-      "vatReturnFrequency" -> text,
-      "accountingPeriod" -> text
+      "taxableTurnoverChoice" -> optional(text),
+      "voluntaryChoice" -> optional(text),
+      "startDateChoice" -> optional(text),
+      "startDateDay" -> optional(text),
+      "startDateMonth" -> optional(text),
+      "startDateYear" -> optional(text),
+      "tradingNameChoice" -> optional(text),
+      "tradingName" -> optional(text),
+      "companyBankAccountChoice" -> optional(text),
+      "companyBankAccountName" -> optional(text),
+      "companyBankAccountNumber" -> optional(text),
+      "sortCode" -> optional(text),
+      "estimateVatTurnover" -> optional(text),
+      "zeroRatedSalesChoice" -> optional(text),
+      "zeroRatedSalesEstimate" -> optional(text),
+      "vatChargeExpectancyChoice" -> optional(text),
+      "vatReturnFrequency" -> optional(text),
+      "accountingPeriod" -> optional(text)
     )(TestSetup.apply)(TestSetup.unapply)
   )
 

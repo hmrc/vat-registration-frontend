@@ -19,7 +19,7 @@ package models.api
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class SicAndCompliance(description: String)
+case class SicAndCompliance(description: String = "")
 
 
 object SicAndCompliance {

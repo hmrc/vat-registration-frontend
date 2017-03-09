@@ -16,12 +16,13 @@
 
 package models.view
 
-import models.ApiModelTransformer
+import enums.CacheKeys
 import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import models.api.VatScheme
+import models.{ApiModelTransformer, CacheKey}
 import play.api.libs.json.Json
 
-case class TaxableTurnover(yesNo: String = "")
+case class TaxableTurnover(yesNo: String)
 
 object TaxableTurnover {
 
@@ -34,7 +35,9 @@ object TaxableTurnover {
     vs.vatChoice.map(_.necessity).collect {
       case NECESSITY_VOLUNTARY => TaxableTurnover(TAXABLE_NO)
       case NECESSITY_OBLIGATORY => TaxableTurnover(TAXABLE_YES)
-    } getOrElse TaxableTurnover()
+    }
   }
+
+  implicit val cacheKey = CacheKey[TaxableTurnover](CacheKeys.TaxableTurnover)
 
 }

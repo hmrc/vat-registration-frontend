@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package models
+package models.view
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
-import models.view.EstimateZeroRatedSales
+import models.{ApiModelTransformer, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
@@ -50,12 +50,12 @@ class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
   "apply" should {
     "convert a VatFinancials to a view model" in {
       val vatScheme = VatScheme(id = validRegId, financials = Some(vatFinancials))
-      ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vatScheme) shouldBe estimateZeroRatedSales
+      ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vatScheme) shouldBe Some(estimateZeroRatedSales)
     }
 
     "convert a VatScheme without a VatFinancials to an empty view model" in {
       val vatScheme = VatScheme(id = validRegId)
-      ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vatScheme) shouldBe EstimateZeroRatedSales()
+      ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vatScheme) shouldBe None
     }
   }
 

@@ -16,24 +16,31 @@
 
 package models.view
 
+import enums.CacheKeys
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
-import play.api.libs.json.Json
+import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
+import play.api.libs.json.{Json, OFormat}
 
-case class EstimateVatTurnover(vatTurnoverEstimate: Option[Long] = None)
+case class EstimateVatTurnover(vatTurnoverEstimate: Option[Long])
 
 object EstimateVatTurnover {
 
-  implicit val format = Json.format[EstimateVatTurnover]
+  implicit val format: OFormat[EstimateVatTurnover] = Json.format[EstimateVatTurnover]
 
-  implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
+  implicit val modelTransformer = ApiModelTransformer[EstimateVatTurnover] { (vs: VatScheme) =>
     vs.financials.map(_.turnoverEstimate).collect {
       case turnoverEstimate => EstimateVatTurnover(Some(turnoverEstimate))
-    }.getOrElse(EstimateVatTurnover())
+    }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: EstimateVatTurnover, g: VatFinancials) =>
-    g.copy(turnoverEstimate = c.vatTurnoverEstimate.getOrElse(0L))
+  implicit val viewModelTransformer = ViewModelTransformer { (c: EstimateVatTurnover, g: VatFinancials) => {
+    c.vatTurnoverEstimate match {
+      case Some(turnover) => g.copy(turnoverEstimate = turnover)
+      case None => g
+    }
   }
+  }
+
+  implicit val cacheKey = CacheKey[EstimateVatTurnover](CacheKeys.EstimateVatTurnover)
 
 }

@@ -17,14 +17,14 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
-import enums.CacheKeys
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.CacheKey
 import models.view.TradingName
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.VatRegistrationService
@@ -37,7 +37,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object TestTradingNameController extends TradingNameController(mockS4LService, mockVatRegistrationService, ds) {
+  object TestTradingNameController extends TradingNameController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -48,8 +48,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return HTML when there's a trading name in S4L" in {
       val tradingName = TradingName(TradingName.TRADING_NAME_YES, Some("Test Trading Name"))
 
-      when(mockS4LService.fetchAndGet[TradingName](Matchers.eq(CacheKeys.TradingName.toString))
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[TradingName]]()))
+      when(mockS4LService.fetchAndGet[TradingName]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(tradingName)))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -64,10 +63,30 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
       }
     }
 
-    "return HTML when there's nothing in S4L" in {
-      when(mockS4LService.fetchAndGet[TradingName](Matchers.eq(CacheKeys.TradingName.toString))
-        (Matchers.any(), Matchers.any()))
+    "return HTML when there's nothing in S4L and vatScheme contains data" in {
+      when(mockS4LService.fetchAndGet[TradingName]()
+        (Matchers.eq(CacheKey[TradingName]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(validVatScheme))
+
+      callAuthorised(TestTradingNameController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("Trading name")
+      }
+    }
+
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      when(mockS4LService.fetchAndGet[TradingName]()
+        (Matchers.eq(CacheKey[TradingName]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestTradingNameController.show, mockAuthConnector) {
         result =>
@@ -94,9 +113,9 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${routes.TradingNameController.submit()} with valid data no trading name" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingName())))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingName(TradingName.TRADING_NAME_NO, None))))
 
-      when(mockS4LService.saveForm[TradingName](Matchers.eq(CacheKeys.TradingName.toString), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[TradingName](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       AuthBuilder.submitWithAuthorisedUser(TestTradingNameController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -104,7 +123,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe  "/vat-registration/estimate-vat-turnover"
+          redirectLocation(result).getOrElse("") mustBe "/vat-registration/business-activity-description"
       }
 
     }
@@ -113,9 +132,9 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${routes.TradingNameController.submit()} with valid data with trading name" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingName())))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingName(TradingName.TRADING_NAME_YES, Some("some name")))))
 
-      when(mockS4LService.saveForm[TradingName](Matchers.eq(CacheKeys.TradingName.toString), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[TradingName](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       AuthBuilder.submitWithAuthorisedUser(TestTradingNameController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -124,7 +143,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe  "/vat-registration/estimate-vat-turnover"
+          redirectLocation(result).getOrElse("") mustBe "/vat-registration/business-activity-description"
 
       }
 

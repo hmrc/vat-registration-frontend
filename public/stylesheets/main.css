@@ -15,6 +15,10 @@ label.cascading span {
 	display: block;
 }
 
+.error-notification {
+	display: inline;
+}
+
 .hidden {
 	display: none;
 }
@@ -53,4 +57,13 @@ label.cascading span {
 td {
 	width: 50%;
 	vertical-align: top
+}
+
+#sort-code legend{
+	margin-bottom: 0;
+}
+
+.form-bank-details .form-hint {
+	margin-top: 0;
+	margin-bottom:0;
 }

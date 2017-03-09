@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package models
+package models.view
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
-import models.view.EstimateVatTurnover
+import models.{ApiModelTransformer, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
@@ -48,11 +48,11 @@ class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
     "Extract a EstimateVatTurnover view model from a VatScheme" in {
-      ApiModelTransformer[EstimateVatTurnover].toViewModel(vatScheme) shouldBe estimatedVatTurnover
+      ApiModelTransformer[EstimateVatTurnover].toViewModel(vatScheme) shouldBe Some(estimatedVatTurnover)
     }
     "Extract an empty EstimateVatTurnover view model from a VatScheme without financials" in {
       val vatSchemeWithoutFinancials = VatScheme(id = validRegId, financials = None)
-      ApiModelTransformer[EstimateVatTurnover].toViewModel(vatSchemeWithoutFinancials) shouldBe EstimateVatTurnover()
+      ApiModelTransformer[EstimateVatTurnover].toViewModel(vatSchemeWithoutFinancials) shouldBe None
     }
   }
 }
