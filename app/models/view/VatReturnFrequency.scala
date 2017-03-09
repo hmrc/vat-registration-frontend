@@ -16,11 +16,12 @@
 
 package models.view
 
+import enums.CacheKeys
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class VatReturnFrequency(frequencyType: String = "")
+case class VatReturnFrequency(frequencyType: String)
 
 object VatReturnFrequency {
 
@@ -31,11 +32,13 @@ object VatReturnFrequency {
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
-    vs.financials map (vf => VatReturnFrequency(vf.vatAccountingPeriod.frequency)) getOrElse VatReturnFrequency()
+    vs.financials map (vf => VatReturnFrequency(vf.vatAccountingPeriod.frequency))
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: VatReturnFrequency, g: VatFinancials) =>
     g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(frequency = c.frequencyType))
   }
+
+  implicit val cacheKey = CacheKey[VatReturnFrequency](CacheKeys.VatReturnFrequency)
 
 }

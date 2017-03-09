@@ -22,13 +22,10 @@ import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
 import services.S4LService
 
+class TestCacheController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies)
+  extends VatRegistrationController(ds) {
 
-class TestCacheController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
-
-  def tearDownS4L: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    s4LService.clear() map {
-      response => Ok("Save4Later cleared")
-    }
-  })
-
+  def tearDownS4L: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    s4LService.clear().map(_ => Ok("Save4Later cleared"))
+  )
 }

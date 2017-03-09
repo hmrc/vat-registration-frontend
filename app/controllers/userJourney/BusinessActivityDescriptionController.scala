@@ -19,38 +19,33 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
-import forms.vatDetails.EstimateVatTurnoverForm
-import models.ApiModelTransformer
-import models.view.EstimateVatTurnover
+import forms.vatDetails.BusinessActivityDescriptionForm
+import models.view.BusinessActivityDescription
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
 
-class BusinessActivityDescriptionController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                                      ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class BusinessActivityDescriptionController @Inject()(ds: CommonPlayDependencies)
+                                                     (implicit s4l: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+  import cats.instances.future._
+
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
-    s4LService.fetchAndGet[EstimateVatTurnover](CacheKeys.BusinessActivityDescription.toString) flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[EstimateVatTurnover].toViewModel
-    } map { viewModel =>
-      val form = EstimateVatTurnoverForm.form.fill(viewModel)
-      Ok(views.html.pages.estimate_vat_turnover(form))
-    }
+    viewModel[BusinessActivityDescription].map { vm =>
+      Ok(views.html.pages.business_activity_description(BusinessActivityDescriptionForm.form.fill(vm)))
+    }.getOrElse(Ok(views.html.pages.business_activity_description(BusinessActivityDescriptionForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    EstimateVatTurnoverForm.form.bindFromRequest().fold(
+    BusinessActivityDescriptionForm.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.estimate_vat_turnover(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.business_activity_description(formWithErrors)))
       }, {
-        data: EstimateVatTurnover => {
-          s4LService.saveForm[EstimateVatTurnover](CacheKeys.BusinessActivityDescription.toString, data) map { _ =>
-            Redirect(controllers.userJourney.routes.ZeroRatedSalesController.show())
+        data: BusinessActivityDescription => {
+            s4l.saveForm[BusinessActivityDescription](data) map { _ =>
+            Redirect(controllers.userJourney.routes.CompanyBankAccountController.show())
           }
         }
       })

@@ -19,9 +19,7 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import enums.CacheKeys
 import forms.vatDetails.TaxableTurnoverForm
-import models.ApiModelTransformer
 import models.view.StartDate.COMPANY_REGISTRATION_DATE
 import models.view.VoluntaryRegistration.REGISTER_NO
 import models.view.{StartDate, TaxableTurnover, VoluntaryRegistration}
@@ -31,17 +29,14 @@ import services.{S4LService, VatRegistrationService}
 import scala.concurrent.Future
 
 
-class TaxableTurnoverController @Inject()(s4LService: S4LService, vatRegistrationService: VatRegistrationService,
-                                          ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies)
+                                         (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+  import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    s4LService.fetchAndGet[TaxableTurnover](CacheKeys.TaxableTurnover.toString) flatMap {
-      case Some(viewModel) => Future.successful(viewModel)
-      case None => vatRegistrationService.getVatScheme() map ApiModelTransformer[TaxableTurnover].toViewModel
-    } map { viewModel =>
-      val form = TaxableTurnoverForm.form.fill(viewModel)
-      Ok(views.html.pages.taxable_turnover(form))
-    }
+    viewModel[TaxableTurnover].map { vm =>
+      Ok(views.html.pages.taxable_turnover(TaxableTurnoverForm.form.fill(vm)))
+    }.getOrElse(Ok(views.html.pages.taxable_turnover(TaxableTurnoverForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
@@ -50,11 +45,11 @@ class TaxableTurnoverController @Inject()(s4LService: S4LService, vatRegistratio
         Future.successful(BadRequest(views.html.pages.taxable_turnover(formWithErrors)))
       }, {
         data: TaxableTurnover => {
-          s4LService.saveForm[TaxableTurnover](CacheKeys.TaxableTurnover.toString, data) flatMap { _ =>
+          s4LService.saveForm[TaxableTurnover](data) flatMap { _ =>
             if (TaxableTurnover.TAXABLE_YES == data.yesNo) {
               for {
-                _ <- s4LService.saveForm[VoluntaryRegistration](CacheKeys.VoluntaryRegistration.toString, VoluntaryRegistration(REGISTER_NO))
-                _ <- s4LService.saveForm[StartDate](CacheKeys.StartDate.toString, StartDate(COMPANY_REGISTRATION_DATE))
+                _ <- s4LService.saveForm[VoluntaryRegistration](VoluntaryRegistration(REGISTER_NO))
+                _ <- s4LService.saveForm[StartDate](StartDate(COMPANY_REGISTRATION_DATE))
               } yield Redirect(controllers.userJourney.routes.MandatoryStartDateController.show())
             } else {
               Future.successful(Redirect(controllers.userJourney.routes.VoluntaryRegistrationController.show()))

@@ -17,6 +17,7 @@
 package services
 
 import fixtures.{S4LFixture, VatRegistrationFixture}
+import models.CacheKey
 import models.view.StartDate
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -39,14 +40,14 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
 
     "save a form with the correct key" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
-      mockS4LSaveForm[StartDate]("startDate", CacheMap("s-date", Map.empty))
-      await(service.saveForm[StartDate]("startDate", tstStartDateModel)).id shouldBe "s-date"
+      mockS4LSaveForm[StartDate](CacheMap("s-date", Map.empty))
+      await(service.saveForm[StartDate](tstStartDateModel)).id shouldBe "s-date"
     }
 
     "fetch a form with the correct key" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
-      mockS4LFetchAndGet[StartDate]("startDate2", Some(tstStartDateModel))
-      await(service.fetchAndGet[StartDate]("startDate2")) shouldBe Some(tstStartDateModel)
+      mockS4LFetchAndGet[StartDate](CacheKey[StartDate].cacheKey, Some(tstStartDateModel))
+      await(service.fetchAndGet[StartDate]()) shouldBe Some(tstStartDateModel)
     }
 
     "clear down S4L data" in new Setup {

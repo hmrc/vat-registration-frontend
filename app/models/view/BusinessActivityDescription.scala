@@ -16,12 +16,12 @@
 
 package models.view
 
-import models.{ApiModelTransformer, ViewModelTransformer}
+import enums.CacheKeys
 import models.api.{SicAndCompliance, VatScheme}
+import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.Json
 
-
-case class BusinessActivityDescription(description: String)
+case class BusinessActivityDescription(description: String = "")
 
 object BusinessActivityDescription {
 
@@ -30,11 +30,14 @@ object BusinessActivityDescription {
   implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
     vs.sicAndCompliance.map(_.description).collect {
       case description => BusinessActivityDescription((description))
-    }.getOrElse(BusinessActivityDescription(""))
+    }
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: BusinessActivityDescription, g: SicAndCompliance) =>
     g.copy(description = c.description)
   }
+
+  implicit val cacheKey = CacheKey[BusinessActivityDescription](CacheKeys.BusinessActivityDescription)
+
 
 }

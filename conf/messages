@@ -50,12 +50,16 @@ pages.startDate.panels.specificDate.inputField.day    = Day
 pages.startDate.panels.specificDate.inputField.month  = Month
 pages.startDate.panels.specificDate.inputField.year   = Year
 
+## Company Bank Account
+pages.company.bank.account.title                    = Company Bank Account
+pages.company.bank.account.heading                  = Do you have a bank account set up in the name of your company?
+
 ## Trading Name Page
 pages.tradingName.title                             = Trading Name
 pages.tradingName.heading                           = Does the company trade under any other name?
 pages.tradingName.panels.tradingName                = Trading name
-pages.tradingName.validation.invalid.tradingName    = Please enter a valid trading name
-pages.tradingName.validation.empty.tradingName      = Please enter a trading name
+validation.tradingName.invalid                      = Please enter a valid trading name
+validation.tradingName.empty                        = Please enter a trading name
 
 ## Voluntary Registration Page
 pages.voluntary.registration.title                            = Voluntary Registration
@@ -198,6 +202,15 @@ pages.summary.directorDetails.previousAddress          = Previous address
 pages.summary.directorDetails.dateOfBirth              = Date of birth
 pages.summary.directorDetails.nino                     = National Insurance number
 
+##Business Activity Description
+pages.business.activity.description.title                     = Business Activity Description
+pages.business.activity.description.heading                   = Describe what the company does
+pages.business.activity.description.para1                     = Tell us about the type of goods or services the company sells.
+pages.business.activity.description.hint                     = For example, cleaning services
+
+validation.BusinessActivity.description.missing = Enter a business account name
+validation.BusinessActivity.description.invalid = Enter a valid business account name
+
 ## Summary Page Company details
 pages.summary.companyDetails.sectionHeading                     = Company details
 pages.summary.companyDetails.tradingName                        = Other Trading Name
@@ -222,3 +235,20 @@ errorPages.title                        = Something went wrong
 errorPages.restart.heading              = Sorry, we''re having technical issues.
 errorPages.restart.p1                   = You can try again by <a href="{0}" >restarting</a> your VAT registration.
 
+## Bank Details page
+pages.bankDetails.title = Bank details
+pages.bankDetails.heading = What are your business bank account details?
+pages.bankDetails.para1 = For legal reasons, HMRC will only pay any VAT refunds you''re owed into a UK bank account or building society that''s in the name of the business.
+pages.bankDetails.info = The only money HMRC will take out of this account is what you declare on your VAT Returns.
+pages.bankDetails.accountName.label = Business account name
+pages.bankDetails.accountName.hint = For example, Company Name Limited
+pages.bankDetails.accountNumber.label = Business account number
+pages.bankDetails.sortCode.label = Sort code
+
+
+validation.companyBankAccount.name.missing = Enter a business account name
+validation.companyBankAccount.name.invalid = Enter a valid business account name
+validation.companyBankAccount.number.missing = Enter a business account number
+validation.companyBankAccount.number.invalid = Enter a valid business account number
+validation.companyBankAccount.sortCode.missing = Enter a sort code
+validation.companyBankAccount.sortCode.invalid = Enter a valid sort code

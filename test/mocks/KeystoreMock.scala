@@ -33,7 +33,7 @@ trait KeystoreMock {
   lazy val mockKeystoreConnector = mock[KeystoreConnector]
 
   def mockKeystoreFetchAndGet[T](key: String, model: Option[T]): OngoingStubbing[Future[Option[T]]] = {
-    when(mockKeystoreConnector.fetchAndGet[T](Matchers.contains(key))(Matchers.any[HeaderCarrier](), Matchers.any[Format[T]]()))
+    when(mockKeystoreConnector.fetchAndGet[T](Matchers.contains(key))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(model))
   }
 
@@ -43,7 +43,7 @@ trait KeystoreMock {
   }
 
   def mockKeystoreCacheError[T](key: String, err: Exception): OngoingStubbing[Future[CacheMap]] = {
-    when(mockKeystoreConnector.cache(Matchers.contains(key), Matchers.any[T]())(Matchers.any[HeaderCarrier](), Matchers.any[Format[T]]()))
+    when(mockKeystoreConnector.cache(Matchers.contains(key), Matchers.any[T]())(Matchers.any(), Matchers.any()))
       .thenReturn(Future.failed(err))
   }
 
@@ -53,7 +53,7 @@ trait KeystoreMock {
   }
 
   def mockFetchRegId(regID: String = "12345"): OngoingStubbing[Future[Option[String]]] = {
-    when(mockKeystoreConnector.fetchAndGet[String](Matchers.any())(Matchers.any[HeaderCarrier](), Matchers.any[Format[String]]()))
+    when(mockKeystoreConnector.fetchAndGet[String](Matchers.any())(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Some(regID)))
   }
 

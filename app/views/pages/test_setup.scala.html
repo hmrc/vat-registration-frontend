@@ -10,27 +10,31 @@
             <div class="form-group">
                 <fieldset>
 
-                    @govHelpers.input(testSetupForm("taxableTurnoverChoice"), '_label -> "Taxable turnover choice (TAXABLE_YES or TAXABLE_NO)")
-                    <p>@govHelpers.input(testSetupForm("voluntaryChoice"), '_label -> "Voluntary registration choice (REGISTER_YES or REGISTER_NO)")
-                    <p>@govHelpers.input(testSetupForm("startDateChoice"), '_label -> "Start date choice (COMPANY_REGISTRATION_DATE or BUSINESS_START_DATE or SPECIFIC_DATE)")
-                    <p>@govHelpers.input(testSetupForm("startDateDay"), '_label -> "Start date day (DD)")
-                    <p>@govHelpers.input(testSetupForm("startDateMonth"), '_label -> "Start date month (MM)")
-                    <p>@govHelpers.input(testSetupForm("startDateYear"), '_label -> "Start date year (YYYY)")
-                    <p>@govHelpers.input(testSetupForm("tradingNameChoice"), '_label -> "Trading name choice (TRADING_NAME_YES or TRADING_NAME_NO)")
-                    <p>@govHelpers.input(testSetupForm("tradingName"), '_label -> "Trading name")
-                    <p>@govHelpers.input(testSetupForm("estimateVatTurnover"), '_label -> "Estimated vat turnover")
-                    <p>@govHelpers.input(testSetupForm("zeroRatedSalesChoice"), '_label -> "Zero rated sales choice (ZERO_RATED_SALES_YES or ZERO_RATED_SALES_NO)")
-                    <p>@govHelpers.input(testSetupForm("zeroRatedSalesEstimate"), '_label -> "Zero rate sales estimate")
-                    <p>@govHelpers.input(testSetupForm("vatChargeExpectancyChoice"), '_label -> "Vat Charge Expectancy (VAT_CHARGE_YES or VAT_CHARGE_NO)")
-                    <p>@govHelpers.input(testSetupForm("vatReturnFrequency"), '_label -> "Vat Return Frequency (monthly or quarterly) ")
-                    <p>@govHelpers.input(testSetupForm("accountingPeriod"), '_label -> "Accounting Period (JAN_APR_JUL_OCT or FEB_MAY_AUG_NOV or MAR_JUN_SEP_DEC)")
+                    <p>@govHelpers.input(testSetupForm("taxableTurnoverChoice"), '_label -> "Taxable turnover choice (TAXABLE_YES or TAXABLE_NO)")</p>
+                    <p>@govHelpers.input(testSetupForm("voluntaryChoice"), '_label -> "Voluntary registration choice (REGISTER_YES or REGISTER_NO)")</p>
+                    <p>@govHelpers.input(testSetupForm("startDateChoice"), '_label -> "Start date choice (COMPANY_REGISTRATION_DATE or BUSINESS_START_DATE or SPECIFIC_DATE)")</p>
+                    <p>@govHelpers.input(testSetupForm("startDateDay"), '_label -> "Start date day (DD)")</p>
+                    <p>@govHelpers.input(testSetupForm("startDateMonth"), '_label -> "Start date month (MM)")</p>
+                    <p>@govHelpers.input(testSetupForm("startDateYear"), '_label -> "Start date year (YYYY)")</p>
+                    <p>@govHelpers.input(testSetupForm("tradingNameChoice"), '_label -> "Trading name choice (TRADING_NAME_YES or TRADING_NAME_NO)")</p>
+                    <p>@govHelpers.input(testSetupForm("tradingName"), '_label -> "Trading name")</p>
+                    <p>@govHelpers.input(testSetupForm("companyBankAccountChoice"), '_label -> "Company Bank Account Choice (COMPANY_BANK_ACCOUNT_YES or COMPANY_BANK_ACCOUNT_NO)")</p>
+                    <p>@govHelpers.input(testSetupForm("companyBankAccountName"), '_label -> "Company Bank Account Name")</p>
+                    <p>@govHelpers.input(testSetupForm("companyBankAccountNumber"), '_label -> "Company Bank Account Number (8 digit number)")</p>
+                    <p>@govHelpers.input(testSetupForm("sortCode"), '_label -> "Sort Code (11-22-33)")</p>
+                    <p>@govHelpers.input(testSetupForm("estimateVatTurnover"), '_label -> "Estimated vat turnover")</p>
+                    <p>@govHelpers.input(testSetupForm("zeroRatedSalesChoice"), '_label -> "Zero rated sales choice (ZERO_RATED_SALES_YES or ZERO_RATED_SALES_NO)")</p>
+                    <p>@govHelpers.input(testSetupForm("zeroRatedSalesEstimate"), '_label -> "Zero rate sales estimate")</p>
+                    <p>@govHelpers.input(testSetupForm("vatChargeExpectancyChoice"), '_label -> "Vat Charge Expectancy (VAT_CHARGE_YES or VAT_CHARGE_NO)")</p>
+                    <p>@govHelpers.input(testSetupForm("vatReturnFrequency"), '_label -> "Vat Return Frequency (monthly or quarterly)")</p>
+                    <p>@govHelpers.input(testSetupForm("accountingPeriod"), '_label -> "Accounting Period (JAN_APR_JUL_OCT or FEB_MAY_AUG_NOV or MAR_JUN_SEP_DEC)")</p>
 
                 </fieldset>
 
             </div>
 
             <div class="form-group">
-                <button class="btn button" type="next" id="submit">Submit</button>
+                <button class="btn button" type="submit" id="submit">Submit</button>
             </div>
         }
 

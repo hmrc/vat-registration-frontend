@@ -16,17 +16,20 @@
 
 package forms.vatDetails
 
-import models.view.EstimateZeroRatedSales
+import forms.validation.FormValidation._
+import models.view.BusinessActivityDescription
 import play.api.data.Form
-import play.api.data.Forms.{longNumber, mapping, optional}
-import utils.VatValidators.zeroRatedSalesEstimateValidation
+import play.api.data.Forms._
 
 object BusinessActivityDescriptionForm {
   val INPUT_DESCRIPTION: String = "description"
+  val PartPattern = """^[A-Za-z0-9\-',/& ]{1,250}$""".r
+
+ import cats.instances.string._
 
   val form = Form(
     mapping(
-      INPUT_DESCRIPTION -> text(longNumber)
-    )(EstimateZeroRatedSales.apply)(EstimateZeroRatedSales.unapply).verifying(zeroRatedSalesEstimateValidation)
+      INPUT_DESCRIPTION -> text.verifying(patternCheckingConstraint(PartPattern,"BusinessActivity.description", true))
+    )(BusinessActivityDescription.apply)(BusinessActivityDescription.unapply)
   )
 }

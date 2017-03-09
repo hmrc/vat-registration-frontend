@@ -16,12 +16,13 @@
 
 package models.view
 
+import enums.CacheKeys
 import models.api.{VatScheme, VatTradingDetails}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class TradingName(yesNo: String = "",
-                       tradingName: Option[String] = None) {
+case class TradingName(yesNo: String,
+                       tradingName: Option[String]) {
   override def toString: String = tradingName.getOrElse("")
 }
 
@@ -39,11 +40,13 @@ object TradingName {
         case tn if !tn.isEmpty => TradingName(TRADING_NAME_YES, tradingName = Some(tn))
         case _ => TradingName(TRADING_NAME_NO, tradingName = None)
       }
-    } getOrElse TradingName()
+    }
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: TradingName, g: VatTradingDetails) =>
     g.copy(tradingName = c.tradingName.getOrElse(""))
   }
+
+  implicit val cacheKey = CacheKey[TradingName](CacheKeys.TradingName)
 
 }

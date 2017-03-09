@@ -1,0 +1,115 @@
+@import forms.vatDetails.CompanyBankAccountDetailsForm
+@(bankDetailsForm: Form[CompanyBankAccountDetailsForm])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.bankDetails.title")) {
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+
+            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.bankDetails.heading")</h1>
+
+            @errorSummary(
+                Messages("app.common.errorSummaryLabel"),
+                bankDetailsForm
+            )
+
+            <p>@messages("pages.bankDetails.para1")</p>
+
+            <div class="notice form-group">
+                <i class="icon icon-important">
+                    <span class="visuallyhidden">Warning</span>
+                </i>
+                <strong class="bold-small">@messages("pages.bankDetails.info")</strong>
+            </div>
+
+            @govHelpers.form(action = controllers.userJourney.routes.CompanyBankAccountDetailsController.submit()) {
+                <div class="form-group">
+                    <div class="form-bank-details">
+
+                        @govHelpers.input(
+                            bankDetailsForm("accountName"),
+                            '_divClass -> "form-group",
+                            '_inputClass -> "form-control",
+                            '_labelClass -> "cascading",
+                            '_maxlength -> 150,
+                            '_inputHint -> messages("pages.bankDetails.accountName.hint"),
+                            '_label -> messages("pages.bankDetails.accountName.label")
+                        )
+
+                        @govHelpers.input(
+                            bankDetailsForm("accountNumber"),
+                            '_type -> "number",
+                            '_divClass -> "form-group",
+                            '_inputClass -> "form-control",
+                            '_labelClass -> "cascading",
+                            '_maxlength -> 8,
+                            '_label -> messages("pages.bankDetails.accountNumber.label")
+                        )
+
+                        @defining(bankDetailsForm("sortCode").errors.nonEmpty) { sortCodeErrorPresent =>
+                            <div class="form-date @if(sortCodeErrorPresent) { form-field--error }">
+
+                                <fieldset id="sort-code">
+
+                                    <label>
+                                        @bankDetailsForm("sortCode").errors.map { error =>
+                                            <span class="error-notification" role="tooltip">
+                                                @messages(error.message, error.args: _*)
+                                            </span>
+                                        }
+                                        @messages("pages.bankDetails.sortCode.label")
+                                        @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
+                                        <input type="text" name="sortCode" value="" id="sortCode" class="hidden" />
+                                    </label>
+
+                                    @govHelpers.input(
+                                        bankDetailsForm("sortCode.part1"),
+                                        '_type -> "number",
+                                        '_divClass -> "form-group",
+                                        '_inputClass -> "form-control",
+                                        '_label -> "first two digits",
+                                        '_maxlength -> 2,
+                                        '_max -> 99,
+                                        '_labelTextClass -> "hidden",
+                                        '_error_id -> "sort-code-legend"
+                                    )
+
+                                    @govHelpers.input(
+                                        bankDetailsForm("sortCode.part2"),
+                                        '_type -> "number",
+                                        '_divClass -> "form-group",
+                                        '_inputClass -> "form-control",
+                                        '_label -> "second two digits",
+                                        '_maxlength -> 2,
+                                        '_max -> 99,
+                                        '_labelTextClass -> "hidden",
+                                        '_error_id -> "sort-code-legend"
+                                    )
+
+                                    @govHelpers.input(
+                                        bankDetailsForm("sortCode.part3"),
+                                        '_type -> "number",
+                                        '_divClass -> "form-group",
+                                        '_inputClass -> "form-control",
+                                        '_label -> "last two digits",
+                                        '_maxlength -> 2,
+                                        '_max -> 99,
+                                        '_labelTextClass -> "hidden",
+                                        '_error_id -> "sort-code-legend"
+                                    )
+                                </fieldset>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn button" type="submit" id="save-and-continue">Save and continue</button>
+                </div>
+            }
+
+        </div>
+    </div>
+}

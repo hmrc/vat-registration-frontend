@@ -17,14 +17,14 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
-import enums.CacheKeys
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.CacheKey
 import models.view.AccountingPeriod
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.VatRegistrationService
@@ -37,7 +37,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object TestAccountingPeriodController extends AccountingPeriodController(mockS4LService, mockVatRegistrationService, ds) {
+  object TestAccountingPeriodController extends AccountingPeriodController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -48,12 +48,12 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     "return HTML when there's a Accounting Period model in S4L" in {
       val accountingPeriod = AccountingPeriod(None)
 
-      when(mockS4LService.fetchAndGet[AccountingPeriod](Matchers.eq(CacheKeys.AccountingPeriod.toString))(Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[AccountingPeriod]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(accountingPeriod)))
 
       AuthBuilder.submitWithAuthorisedUser(TestAccountingPeriodController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "accountingPeriodRadio" -> ""
-      )){
+      )) {
 
         result =>
           status(result) mustBe OK
@@ -63,13 +63,29 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
       }
     }
 
-    "return HTML when there's nothing in S4L" in {
-      when(mockS4LService.fetchAndGet[AccountingPeriod](Matchers.eq(CacheKeys.AccountingPeriod.toString))
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[AccountingPeriod]]()))
+    "return HTML when there's nothing in S4L and vatScheme contain data" in {
+      when(mockS4LService.fetchAndGet[AccountingPeriod]()(Matchers.eq(CacheKey[AccountingPeriod]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
+
+      callAuthorised(TestAccountingPeriodController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("When do you want your VAT Return periods to end?")
+      }
+    }
+
+    "return HTML when there's nothing in S4L and vatScheme contain no data" in {
+      when(mockS4LService.fetchAndGet[AccountingPeriod]()
+        (Matchers.eq(CacheKey[AccountingPeriod]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestAccountingPeriodController.show, mockAuthConnector) {
         result =>
@@ -84,23 +100,20 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"POST ${routes.AccountingPeriodController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestAccountingPeriodController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe  Status.BAD_REQUEST
-      }
-
+      AuthBuilder.submitWithAuthorisedUser(
+        TestAccountingPeriodController.submit(), mockAuthConnector,
+        fakeRequest.withFormUrlEncodedBody(
+        ))(status(_) mustBe Status.BAD_REQUEST)
     }
   }
 
   s"POST ${routes.AccountingPeriodController.submit()} with accounting period selected is January, April, July and October" should {
 
     "return 303" in {
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod())))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(Some(AccountingPeriod.JAN_APR_JUL_OCT)))))
 
       when(mockS4LService.saveForm[AccountingPeriod]
-        (Matchers.eq(CacheKeys.AccountingPeriod.toString), Matchers.any())
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[AccountingPeriod]]()))
+        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
 
       AuthBuilder.submitWithAuthorisedUser(TestAccountingPeriodController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -108,7 +121,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/summary"
+          redirectLocation(response).getOrElse("") mustBe "/vat-registration/summary"
       }
 
     }
@@ -117,11 +130,10 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"POST ${routes.AccountingPeriodController.submit()} with accounting period selected is February, May, August and November" should {
 
     "return 303" in {
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod())))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(Some(AccountingPeriod.FEB_MAY_AUG_NOV)))))
 
       when(mockS4LService.saveForm[AccountingPeriod]
-        (Matchers.eq(CacheKeys.AccountingPeriod.toString), Matchers.any())
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[AccountingPeriod]]()))
+        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
 
       AuthBuilder.submitWithAuthorisedUser(TestAccountingPeriodController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -129,7 +141,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/summary"
+          redirectLocation(response).getOrElse("") mustBe "/vat-registration/summary"
       }
 
     }
@@ -138,11 +150,10 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"POST ${routes.AccountingPeriodController.submit()} with accounting period selected is March, June, September and December" should {
 
     "return 303" in {
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod())))
+      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(Some(AccountingPeriod.MAR_JUN_SEP_DEC)))))
 
       when(mockS4LService.saveForm[AccountingPeriod]
-        (Matchers.eq(CacheKeys.AccountingPeriod.toString), Matchers.any())
-        (Matchers.any[HeaderCarrier](), Matchers.any[Format[AccountingPeriod]]()))
+        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
 
       AuthBuilder.submitWithAuthorisedUser(TestAccountingPeriodController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -150,7 +161,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe  "/vat-registration/summary"
+          redirectLocation(response).getOrElse("") mustBe "/vat-registration/summary"
       }
 
     }
