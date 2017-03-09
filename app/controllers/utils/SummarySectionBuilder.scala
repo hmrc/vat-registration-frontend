@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.helpers
+package controllers.utils
 
 import controllers.CommonPlayDependencies
 import models.view.SummarySection
@@ -28,5 +28,5 @@ abstract class SummarySectionBuilder(ds: CommonPlayDependencies) {
   implicit lazy val messagesApi: MessagesApi = ds.messagesApi
   //$COVERAGE-ON$
 
-  protected def summarySection: SummarySection
+  protected def section: SummarySection
 }

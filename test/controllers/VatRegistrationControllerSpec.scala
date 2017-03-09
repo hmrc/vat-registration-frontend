@@ -16,7 +16,7 @@
 
 package controllers
 
-import helpers.VatRegSpec
+import utils.VatRegSpec
 import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{redirectLocation, status, _}
