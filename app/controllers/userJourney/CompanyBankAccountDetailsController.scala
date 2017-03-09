@@ -36,7 +36,7 @@ class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
     viewModel[CompanyBankAccountDetails].map { vm =>
       Ok(views.html.pages.company_bank_account_details(CompanyBankAccountDetailsForm.form.fill(
         CompanyBankAccountDetailsForm(
-          accountName = vm.accountName,
+          accountName = vm.accountName.trim,
           accountNumber = vm.accountNumber,
           sortCode = SortCode.parse(vm.sortCode).getOrElse(SortCode("", "", ""))))))
     }.getOrElse(Ok(views.html.pages.company_bank_account_details(CompanyBankAccountDetailsForm.form)))
@@ -49,7 +49,7 @@ class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
       }, (form: CompanyBankAccountDetailsForm) => {
         s4l.saveForm[CompanyBankAccountDetails](
           CompanyBankAccountDetails(
-            accountName = form.accountName,
+            accountName = form.accountName.trim,
             accountNumber = form.accountNumber,
             sortCode = Show[SortCode].show(form.sortCode)
           )).map(_ => Redirect(controllers.userJourney.routes.EstimateVatTurnoverController.show()))
