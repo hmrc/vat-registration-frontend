@@ -23,8 +23,8 @@ import models.api.{VatFinancials, VatTradingDetails}
 import models.view.{SummaryRow, SummarySection, VatReturnFrequency}
 import play.api.UnexpectedException
 
-class SummaryCompanyDetailsSectionBuilder(ds: CommonPlayDependencies)
-                                         (vatTradingDetails: VatTradingDetails, vatFinancials: VatFinancials)
+class SummaryCompanyDetailsSectionBuilder(vatTradingDetails: VatTradingDetails, vatFinancials: VatFinancials)
+                                         (implicit ds: CommonPlayDependencies)
   extends SummarySectionBuilder(ds) {
 
   def tradingNameRow: SummaryRow = SummaryRow(

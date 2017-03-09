@@ -22,7 +22,7 @@ import controllers.CommonPlayDependencies
 import models.api.{VatChoice, VatFinancials, VatTradingDetails}
 import models.view.{SummaryRow, SummarySection}
 
-class SummaryVatDetailsSectionBuilder(ds: CommonPlayDependencies)(vatChoice: VatChoice)
+class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice)(implicit ds: CommonPlayDependencies)
   extends SummarySectionBuilder(ds) {
 
   def taxableTurnoverRow: SummaryRow = SummaryRow(
