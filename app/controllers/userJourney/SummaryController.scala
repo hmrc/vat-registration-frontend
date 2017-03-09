@@ -18,7 +18,7 @@ package controllers.userJourney
 
 import javax.inject.Inject
 
-import controllers.helpers.{SummaryCompanyDetailsSectionBuilder, SummaryVatDetailsSectionBuilder}
+import controllers.utils.{SummaryCompanyDetailsSectionBuilder, SummaryVatDetailsSectionBuilder}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import models.api._
 import models.view._
@@ -44,16 +44,16 @@ class SummaryController @Inject()(implicit ds: CommonPlayDependencies, s4LServic
     vrs.getVatScheme().map(registrationToSummary)
 
   def registrationToSummary(vatScheme: VatScheme): Summary = {
-    val vatDetailsSectionBuilder = new SummaryVatDetailsSectionBuilder(vatScheme.vatChoice.getOrElse(VatChoice()))
-    val companyDetailsSectionBuilder =
-      new SummaryCompanyDetailsSectionBuilder(
-        vatScheme.tradingDetails.getOrElse(VatTradingDetails()),
-        vatScheme.financials.getOrElse(VatFinancials.default)
-      )
-    Summary(
-      Seq(
-        vatDetailsSectionBuilder.summarySection,
-        companyDetailsSectionBuilder.summarySection
+    val vatChoice = vatScheme.vatChoice.getOrElse(VatChoice())
+    val vatTradingDetails = vatScheme.tradingDetails.getOrElse(VatTradingDetails())
+    val vatFinancials = vatScheme.financials.getOrElse(VatFinancials.default)
+
+    val vatDetailsSectionBuilder = new SummaryVatDetailsSectionBuilder(vatChoice)
+    val companyDetailsSectionBuilder = new SummaryCompanyDetailsSectionBuilder(vatTradingDetails, vatFinancials)
+
+    Summary(Seq(
+        vatDetailsSectionBuilder.section,
+        companyDetailsSectionBuilder.section
       )
     )
   }

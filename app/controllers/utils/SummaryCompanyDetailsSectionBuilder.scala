@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.helpers
+package controllers.utils
 
 import javax.inject.Inject
 
@@ -115,7 +115,7 @@ class SummaryCompanyDetailsSectionBuilder(vatTradingDetails: VatTradingDetails, 
     Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
   )
 
-  def summarySection: SummarySection = SummarySection(
+  def section: SummarySection = SummarySection(
       id = "companyDetails",
       Seq(
         (tradingNameRow, true),

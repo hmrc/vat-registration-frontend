@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.helpers
+package controllers.utils
 
 import javax.inject.Inject
 
@@ -64,7 +64,7 @@ class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice)(implicit ds: CommonP
     }
   )
 
-  def summarySection: SummarySection = SummarySection(
+  def section: SummarySection = SummarySection(
       id = "vatDetails",
       Seq(
         (taxableTurnoverRow, true),
