@@ -16,6 +16,7 @@
 
 package forms.vatDetails
 
+import forms.validation.FormValidation.missingFieldMapping
 import models.view.ZeroRatedSales
 import play.api.data.Form
 import play.api.data.Forms._
@@ -25,7 +26,7 @@ object ZeroRatedSalesForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> nonEmptyText
+      RADIO_YES_NO -> missingFieldMapping("zero.rated.sales").verifying(ZeroRatedSales.valid)
     )(ZeroRatedSales.apply)(ZeroRatedSales.unapply)
   )
 

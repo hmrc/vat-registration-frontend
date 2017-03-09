@@ -28,6 +28,8 @@ object VatChargeExpectancy {
   val VAT_CHARGE_YES = "VAT_CHARGE_YES"
   val VAT_CHARGE_NO = "VAT_CHARGE_NO"
 
+  val valid = (item: String) => List(VAT_CHARGE_YES, VAT_CHARGE_NO).contains(item.toUpperCase)
+
   implicit val format: OFormat[VatChargeExpectancy] = Json.format[VatChargeExpectancy]
 
   // Returns a view model for a specific part of a given VatScheme API model

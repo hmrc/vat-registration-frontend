@@ -19,7 +19,9 @@ package forms.validation
 import cats.Show
 import forms.vatDetails.SortCode
 import org.apache.commons.lang3.StringUtils
-import play.api.data.validation.{Constraint, Constraints, Invalid, Valid}
+import play.api.data.format.Formatter
+import play.api.data.validation._
+import play.api.data.{FieldMapping, FormError, Mapping}
 
 import scala.util.matching.Regex
 
@@ -37,6 +39,48 @@ private[forms] object FormValidation {
   def mandatoryText(specificCode: String): Constraint[String] = Constraint {
     (input: String) => if (StringUtils.isNotBlank(input)) Valid else Invalid(s"validation.$specificCode.missing")
   }
+
+  val taxEstimateTextToLong = textToLong(0, 1000000000000000L) _
+  def textToLong(min: Long, max: Long)(s: String): Long = {
+    // assumes input string will be numeric
+    val bigInt = BigInt(s)
+    if (bigInt < min) {
+      Long.MinValue
+    } else if (bigInt > max) {
+      Long.MaxValue
+    } else {
+      bigInt.toLong
+    }
+  }
+
+  def longToText(l: Long): String = l.toString
+
+  def boundedLong(specificCode: String): Constraint[Long] = Constraint {
+    (input: Long) => if (input == Long.MaxValue) {
+      Invalid(s"validation.$specificCode.high")
+    } else if (input == Long.MinValue) {
+      Invalid(s"validation.$specificCode.low")
+    } else {
+      Valid
+    }
+  }
+
+  def nonEmptyValidText(specificCode: String, pattern: Regex): Constraint[String] = Constraint[String] {
+    input: String =>
+      input match {
+        case `pattern`(_*) => Valid
+        case s if StringUtils.isNotBlank(s) => Invalid(s"validation.$specificCode.invalid")
+        case _ => Invalid(s"validation.$specificCode.empty")
+      }
+  }
+
+  def stringFormat(specificCode: String): Formatter[String] = new Formatter[String] {
+    def bind(key: String, data: Map[String, String]) = data.get(key).toRight(Seq(FormError(key, s"validation.$specificCode.option.missing", Nil)))
+    def unbind(key: String, value: String) = Map(key -> value)
+  }
+
+  def missingFieldMapping(specificCode: String): Mapping[String] = FieldMapping[String]()(stringFormat(specificCode))
+
 
   object BankAccount {
 
