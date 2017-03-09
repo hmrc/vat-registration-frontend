@@ -47,9 +47,9 @@ class TradingNameController @Inject()(ds: CommonPlayDependencies)
             if (TradingName.TRADING_NAME_NO == data.yesNo) {
               for {
                 _ <- s4LService.saveForm[TradingName](TradingName(TradingName.TRADING_NAME_NO, None))
-              } yield Redirect(controllers.userJourney.routes.CompanyBankAccountController.show())
+              } yield Redirect(controllers.userJourney.routes.BusinessActivityDescriptionController.show())
             } else {
-              Future.successful(Redirect(controllers.userJourney.routes.CompanyBankAccountController.show()))
+              Future.successful(Redirect(controllers.userJourney.routes.BusinessActivityDescriptionController.show()))
             }
           }
         }

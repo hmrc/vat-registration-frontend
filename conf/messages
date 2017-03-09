@@ -202,6 +202,15 @@ pages.summary.directorDetails.previousAddress          = Previous address
 pages.summary.directorDetails.dateOfBirth              = Date of birth
 pages.summary.directorDetails.nino                     = National Insurance number
 
+##Business Activity Description
+pages.business.activity.description.title                     = Business Activity Description
+pages.business.activity.description.heading                   = Describe what the company does
+pages.business.activity.description.para1                     = Tell us about the type of goods or services the company sells.
+pages.business.activity.description.hint                     = For example, cleaning services
+
+validation.BusinessActivity.description.missing = Enter a business account name
+validation.BusinessActivity.description.invalid = Enter a valid business account name
+
 ## Summary Page Company details
 pages.summary.companyDetails.sectionHeading                     = Company details
 pages.summary.companyDetails.tradingName                        = Other Trading Name
@@ -235,6 +244,7 @@ pages.bankDetails.accountName.label = Business account name
 pages.bankDetails.accountName.hint = For example, Company Name Limited
 pages.bankDetails.accountNumber.label = Business account number
 pages.bankDetails.sortCode.label = Sort code
+
 
 validation.companyBankAccount.name.missing = Enter a business account name
 validation.companyBankAccount.name.invalid = Enter a valid business account name

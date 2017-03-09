@@ -111,6 +111,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
     } yield response
   }
 
+
+
   def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
     //revisit this; make it look like other `mergeWithS4L` once there's >1 thing coming from S4L
     def mergeWithS4L(vs: VatScheme) = s4l[TradingName]().map { tn =>
