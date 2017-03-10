@@ -27,7 +27,17 @@ $(document).ready($(function () {
         radioGroup.on("change", function () {
             updateState(buttonToAreaMap);
         }).trigger("change");
-    }
+    };
+
+    UI.preventNonNumericInput = function(inputs) {
+        $.each(inputs, function(idx, inputName){
+            $('input[name='+inputName+']').keypress (function(evt) {
+                if (evt.which < 48 || evt.which > 57) {
+                    return evt.preventDefault();
+                }
+            });
+        });
+    };
 }(window.UI = window.UI || {}, jQuery));
 
 // StartDatePage module
@@ -55,6 +65,17 @@ $(document).ready($(function () {
             { "#voluntaryRegistrationRadio-register_no": "#no_panel" });
     }
 }(window.VoluntaryRegistrationPage = window.VoluntaryRegistrationPage || {}, jQuery));
+
+
+
+// Company Bank Account Details module
+(function (CompanyBankAccountDetailsPage, $, undefined) {
+    CompanyBankAccountDetailsPage.init = function() {
+        var numericInputs = ["accountNumber",  "sortCode\\.part1", "sortCode\\.part2", "sortCode\\.part3"];
+        UI.preventNonNumericInput(numericInputs);
+    }
+}(window.CompanyBankAccountDetailsPage = window.CompanyBankAccountDetailsPage || {}, jQuery));
+
 
 
 /*

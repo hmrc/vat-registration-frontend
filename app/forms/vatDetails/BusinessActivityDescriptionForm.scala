@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package enums
+package forms.vatDetails
 
-object CacheKeys extends Enumeration {
+import forms.validation.FormValidation._
+import models.view.BusinessActivityDescription
+import play.api.data.Form
+import play.api.data.Forms._
 
-  val StartDate = Value
-  val TradingName = Value
-  val VoluntaryRegistration = Value
-  val TaxableTurnover = Value
-  val EstimateVatTurnover = Value
-  val ZeroRatedSales = Value
-  val EstimateZeroRatedSales = Value
-  val VatChargeExpectancy = Value
-  val VatReturnFrequency = Value
-  val AccountingPeriod = Value
-  val CompanyBankAccount = Value
-  val CompanyBankAccountDetails = Value
-  val BusinessActivityDescription = Value
+object BusinessActivityDescriptionForm {
+  val INPUT_DESCRIPTION: String = "description"
+  val PartPattern = """^[A-Za-z0-9\-',/& ]{1,250}$""".r
 
+ import cats.instances.string._
 
+  val form = Form(
+    mapping(
+      INPUT_DESCRIPTION -> text.verifying(patternCheckingConstraint(PartPattern,"BusinessActivity.description", true))
+    )(BusinessActivityDescription.apply)(BusinessActivityDescription.unapply)
+  )
 }
