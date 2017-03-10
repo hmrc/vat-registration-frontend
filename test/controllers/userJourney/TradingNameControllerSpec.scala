@@ -123,7 +123,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe "/vat-registration/company-bank-account"
+          redirectLocation(result).getOrElse("") mustBe "/vat-registration/business-activity-description"
       }
 
     }
@@ -143,7 +143,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe "/vat-registration/company-bank-account"
+          redirectLocation(result).getOrElse("") mustBe "/vat-registration/business-activity-description"
 
       }
 
