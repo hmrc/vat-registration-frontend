@@ -93,6 +93,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.upsertVatFinancials(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(validVatFinancials))
 
+      when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.eq(CacheKey[BusinessActivityDescription]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(validBusinessActivityDescription)))
+
+      when(mockRegConnector.upsertSicAndCompliance(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(validSicAndCompliance))
+
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
