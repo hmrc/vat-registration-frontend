@@ -16,6 +16,7 @@
 
 package forms.vatDetails
 
+import forms.validation.FormValidation.missingFieldMapping
 import models.view.VatReturnFrequency
 import play.api.data.Form
 import play.api.data.Forms._
@@ -26,7 +27,7 @@ object VatReturnFrequencyForm {
 
   val form = Form(
     mapping(
-      RADIO_FREQUENCY -> nonEmptyText
+      RADIO_FREQUENCY -> missingFieldMapping("vat.return.frequency").verifying(VatReturnFrequency.valid)
     )(VatReturnFrequency.apply)(VatReturnFrequency.unapply)
   )
 }

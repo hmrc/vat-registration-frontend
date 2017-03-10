@@ -17,31 +17,27 @@
 package models.view
 
 import enums.CacheKeys
-import models.api.{VatFinancials, VatScheme}
+import models.api.{SicAndCompliance, VatScheme}
 import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class VatReturnFrequency(frequencyType: String)
+case class BusinessActivityDescription(description: String = "")
 
-object VatReturnFrequency {
+object BusinessActivityDescription {
 
-  val MONTHLY = "monthly"
-  val QUARTERLY = "quarterly"
+  implicit val format = Json.format[BusinessActivityDescription]
 
-  val valid = (item: String) => List(MONTHLY, QUARTERLY).contains(item.toLowerCase)
-
-  implicit val format = Json.format[VatReturnFrequency]
-
-  // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
-    vs.financials map (vf => VatReturnFrequency(vf.vatAccountingPeriod.frequency))
+    vs.sicAndCompliance.map(_.description).collect {
+      case description => BusinessActivityDescription((description))
+    }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: VatReturnFrequency, g: VatFinancials) =>
-    g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(frequency = c.frequencyType))
+  implicit val viewModelTransformer = ViewModelTransformer { (c: BusinessActivityDescription, g: SicAndCompliance) =>
+    g.copy(description = c.description)
   }
 
+  implicit val cacheKey = CacheKey[BusinessActivityDescription](CacheKeys.BusinessActivityDescription)
 
-  implicit val cacheKey = CacheKey[VatReturnFrequency](CacheKeys.VatReturnFrequency)
 
 }

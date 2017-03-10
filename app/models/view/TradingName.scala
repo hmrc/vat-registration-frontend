@@ -31,6 +31,8 @@ object TradingName {
   val TRADING_NAME_YES = "TRADING_NAME_YES"
   val TRADING_NAME_NO = "TRADING_NAME_NO"
 
+  val valid = (item: String) => List(TRADING_NAME_YES, TRADING_NAME_NO).contains(item.toUpperCase)
+
   implicit val format = Json.format[TradingName]
 
   // Returns a view model for a specific part of a given VatScheme API model

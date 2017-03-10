@@ -16,6 +16,7 @@
 
 package forms.vatDetails
 
+import forms.validation.FormValidation.missingFieldMapping
 import models.view.VoluntaryRegistration
 import play.api.data.Form
 import play.api.data.Forms._
@@ -25,7 +26,7 @@ object VoluntaryRegistrationForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> nonEmptyText
+      RADIO_YES_NO -> missingFieldMapping("voluntary.registration").verifying(VoluntaryRegistration.valid)
     )(VoluntaryRegistration.apply)(VoluntaryRegistration.unapply)
   )
 
