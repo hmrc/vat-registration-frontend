@@ -41,28 +41,26 @@ private[forms] object FormValidation {
   }
 
   val taxEstimateTextToLong = textToLong(0, 1000000000000000L) _
-  def textToLong(min: Long, max: Long)(s: String): Long = {
+
+  private def textToLong(min: Long, max: Long)(s: String): Long = {
     // assumes input string will be numeric
     val bigInt = BigInt(s)
-    if (bigInt < min) {
-      Long.MinValue
-    } else if (bigInt > max) {
-      Long.MaxValue
-    } else {
-      bigInt.toLong
+    bigInt match {
+      case _ if bigInt < min => Long.MinValue
+      case _ if bigInt > max => Long.MaxValue
+      case _ => bigInt.toLong
     }
   }
 
   def longToText(l: Long): String = l.toString
 
   def boundedLong(specificCode: String): Constraint[Long] = Constraint {
-    (input: Long) => if (input == Long.MaxValue) {
-      Invalid(s"validation.$specificCode.high")
-    } else if (input == Long.MinValue) {
-      Invalid(s"validation.$specificCode.low")
-    } else {
-      Valid
-    }
+    input: Long =>
+      input match {
+        case Long.MaxValue => Invalid(s"validation.$specificCode.high")
+        case Long.MinValue => Invalid(s"validation.$specificCode.low")
+        case _ => Valid
+      }
   }
 
   def nonEmptyValidText(specificCode: String, pattern: Regex): Constraint[String] = Constraint[String] {
@@ -74,13 +72,13 @@ private[forms] object FormValidation {
       }
   }
 
-  def stringFormat(specificCode: String): Formatter[String] = new Formatter[String] {
+  /* overrides Play's implicit stringFormatter and handles missing options (e.g. no radio button selected) */
+  private def stringFormat(specificCode: String): Formatter[String] = new Formatter[String] {
     def bind(key: String, data: Map[String, String]) = data.get(key).toRight(Seq(FormError(key, s"validation.$specificCode.option.missing", Nil)))
     def unbind(key: String, value: String) = Map(key -> value)
   }
 
   def missingFieldMapping(specificCode: String): Mapping[String] = FieldMapping[String]()(stringFormat(specificCode))
-
 
   object BankAccount {
 
