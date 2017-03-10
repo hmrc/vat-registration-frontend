@@ -213,10 +213,10 @@ pages.summary.directorDetails.nino                     = National Insurance numb
 pages.business.activity.description.title                     = Business Activity Description
 pages.business.activity.description.heading                   = Describe what the company does
 pages.business.activity.description.para1                     = Tell us about the type of goods or services the company sells.
-pages.business.activity.description.hint                     = For example, cleaning services
+pages.business.activity.description.hint                      = For example, cleaning services
 
-validation.BusinessActivity.description.missing = Enter a business account name
-validation.BusinessActivity.description.invalid = Enter a valid business account name
+validation.BusinessActivity.description.missing = Tell us what the company does
+validation.BusinessActivity.description.invalid = Tell us what the company does
 
 ## Summary Page Company details
 pages.summary.companyDetails.sectionHeading                     = Company details

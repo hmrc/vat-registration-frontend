@@ -23,6 +23,7 @@
       @govHelpers.form(action = controllers.userJourney.routes.AccountingPeriodController.submit()) {
       <div class="form-group @fieldSetClasses">
         <fieldset class="block">
+            <span id="accountingPeriodRadio"/>
             @accountingPeriodForm.errors.find(_.args.contains("accountingPeriodRadio")).map { error =>
                 @govHelpers.errorInline("accountingPeriodRadio", Messages(error.message))
             }
