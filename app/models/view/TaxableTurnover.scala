@@ -29,6 +29,8 @@ object TaxableTurnover {
   val TAXABLE_YES = "TAXABLE_YES"
   val TAXABLE_NO = "TAXABLE_NO"
 
+  val valid = (item: String) => List(TAXABLE_YES, TAXABLE_NO).contains(item.toUpperCase)
+
   implicit val format = Json.format[TaxableTurnover]
 
   implicit val modelTransformer = ApiModelTransformer[TaxableTurnover] { (vs: VatScheme) =>

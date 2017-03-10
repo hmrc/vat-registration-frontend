@@ -9,6 +9,7 @@ app.common.errorSummaryLabel            = The following errors were identified o
 app.common.change                       = Change
 app.common.gbp.symbol                   = £
 error.required                          = Select an option
+error.unknown                           = Invalid input
 
 ## Welcome Page
 pages.welcome.title                     = Before you register for VAT
@@ -50,16 +51,13 @@ pages.startDate.panels.specificDate.inputField.day    = Day
 pages.startDate.panels.specificDate.inputField.month  = Month
 pages.startDate.panels.specificDate.inputField.year   = Year
 
-## Company Bank Account
-pages.company.bank.account.title                    = Company Bank Account
-pages.company.bank.account.heading                  = Do you have a bank account set up in the name of your company?
-
 ## Trading Name Page
 pages.tradingName.title                             = Trading Name
 pages.tradingName.heading                           = Does the company trade under any other name?
 pages.tradingName.panels.tradingName                = Trading name
-validation.tradingName.invalid                      = Please enter a valid trading name
-validation.tradingName.empty                        = Please enter a trading name
+validation.tradingName.invalid                      = Enter a valid trading name
+validation.tradingName.empty                        = Enter a trading name
+validation.tradingName.option.missing               = Tell us if the company trades under any other name
 
 ## Voluntary Registration Page
 pages.voluntary.registration.title                            = Voluntary Registration
@@ -77,12 +75,14 @@ pages.voluntary.registration.vatVoluntarily.para3             = You can cancel y
 pages.voluntary.registration.panels.no.para1                  = You must register for VAT if:
 pages.voluntary.registration.panels.no.bullet1                = at the end of any month, the value of your company''s taxable sales in the previous 12 months or less is over the £83,000 registration threshold
 pages.voluntary.registration.panels.no.bullet2                = you expect the value of your company''s taxable sales in the next 30-day period alone to go over the £83,000 registration threshold
+validation.voluntary.registration.option.missing              = Tell us if you want to register voluntarily for VAT
 
 ## Taxable Turnover Page
 pages.taxable.turnover.title                            = Taxable Turnover
 pages.taxable.turnover.heading                          = Do you expect the company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered with Companies House?
 pages.taxable.turnover.what.is.turnover.title           = What is ''VAT taxable turnover''?
 pages.taxable.turnover.what.is.turnover.para1           = VAT taxable turnover is the total value of everything you sell that isn''t <a href="https://www.gov.uk/vat-businesses/when-not-to-charge-vatexempt">exempt from VAT</a>.
+validation.taxable.turnover.option.missing              = Tell us if you expect the company''s turnover to be more than £83,000 in the 30 days after it''s registered
 
 ## Mandatory Start Date Confirmation page
 pages.start.date.confirmation.title                          = Start Date Confirmation page
@@ -106,9 +106,12 @@ pages.estimate.vat.turnover.include.bullet3                 = goods you <a href=
 pages.estimate.vat.turnover.include.bullet4                 = services you received from businesses in other countries that you had to <a href="https://www.gov.uk/government/publications/vat-notice-735-vat-reverse-charge-on-specified-goods-and-services/vat-notice-735-vat-reverse-charge-on-specified-goods-and-services">''reverse charge''</a>
 pages.estimate.vat.turnover.include.bullet5                 = <a href="https://www.gov.uk/government/publications/vat-notice-708-buildings-and-construction">building work over £100,000</a> your business did for itself
 pages.estimate.vat.turnover.include.para2                   = Include any <a href="https://www.gov.uk/vat-businesses/vat-rates">zero-rated items</a> - only exclude VAT-exempt sales, and goods or services you supply outside of the UK.
-pages.estimate.vat.turnover.validation.empty                = Enter an estimate
 pages.estimate.vat.turnover.validation.low                  = Enter a positive estimate
 pages.estimate.vat.turnover.validation.high                 = Enter an estimate which is less than 1,000,000,000,000,000
+validation.estimate.vat.turnover.missing                    = Estimate the company''s VAT taxable turnover for the next 12 months
+
+validation.estimate.low = Enter a positive estimate
+validation.estimate.high = Enter an estimate which is less than 1,000,000,000,000,000
 
 ## Zero Rated Sales Page
 pages.zero.rated.sales.title                                = Zero-Rated sales
@@ -121,6 +124,7 @@ pages.zero.rated.sales.examples.bullet2                     = books and newspape
 pages.zero.rated.sales.examples.bullet3                     = children''s clothes and shoes
 pages.zero.rated.sales.examples.bullet4                     = motorcycle helmets
 pages.zero.rated.sales.examples.para2                       = Find out about <a href="https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services">VAT rates on different goods and services</a>.
+validation.zero.rated.sales.option.missing                  = Tell us if you expect to sell any zero-rated items in the next 12 months
 
 ## Estimate Zero-Rated Sales Page
 pages.estimate.zero.rated.sales.title                       = Estimate value of zero-rated sales
@@ -134,9 +138,9 @@ pages.estimate.zero.rated.sales.include.bullet1             = books and newspape
 pages.estimate.zero.rated.sales.include.bullet2             = children''s clothes and shoes
 pages.estimate.zero.rated.sales.include.bullet3             = motorcycle helmets
 pages.estimate.zero.rated.sales.include.para2               = Find out about <a href="https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services">VAT rates on different goods and services</a>.
-pages.estimate.zero.rated.sales.validation.empty            = Enter an estimate
 pages.estimate.zero.rated.sales.validation.low              = Enter a positive estimate
 pages.estimate.zero.rated.sales.validation.high             = Enter an estimate which is less than 1,000,000,000,000,000
+validation.estimate.zero.rated.sales.missing                = Estimate the value of the company''s zero-rated sales for the next 12 months
 
 ## Vat Charge Expectancy Page
 pages.vat.charge.expectancy.title                           = VAT charge expectancy
@@ -144,13 +148,15 @@ pages.vat.charge.expectancy.heading                         = Do you expect to r
 pages.vat.charge.expectancy.para1                           = If the VAT you pay for business-related purchases is more than the VAT you charge your customers, you can reclaim the difference from HMRC.
 pages.vat.charge.expectancy.para2                           = If the VAT you charge is more than the VAT you pay, you have to pay the difference to HMRC.
 pages.vat.charge.expectancy.radio.yes                       = Yes, I expect to reclaim more VAT than I charge
-pages.vat.charge.expectancy.radio.no                       = No, I expect to charge more VAT than I reclaim
+pages.vat.charge.expectancy.radio.no                        = No, I expect to charge more VAT than I reclaim
+validation.vat.charge.expectancy.option.missing             = Tell us if you expect to reclaim more VAT than you charge
 
 ## Vat Return Frequency
 pages.vat.return.frequency.title                           = Vat Return Frequency
 pages.vat.return.frequency.heading                         = How often do you want to submit VAT Returns?
 pages.vat.return.frequency.radio.monthly                   = Once a month
 pages.vat.return.frequency.radio.quarterly                 = Every 3 months
+validation.vat.return.frequency.option.missing             = Tell us how often you want to submit VAT Returns
 
 ## Accounting Period Page
 pages.accounting.period.title                               = Account period
@@ -159,6 +165,7 @@ pages.accounting.period.para1                               = You usually submit
 pages.accounting.period.radio.january                       = January, April, July and October
 pages.accounting.period.radio.february                      = February, May, August and November
 pages.accounting.period.radio.march                         = March, June, September and December
+validation.accounting.period.option.missing                 = Tell us when you want your VAT Return periods to end
 
 ## Summary Page
 pages.summary.title                                         = Summary
@@ -234,6 +241,11 @@ pages.summary.companyDetails.flatRateScheme                     = Flat rate sche
 errorPages.title                        = Something went wrong
 errorPages.restart.heading              = Sorry, we''re having technical issues.
 errorPages.restart.p1                   = You can try again by <a href="{0}" >restarting</a> your VAT registration.
+
+## Company Bank Account
+pages.company.bank.account.title                = Company Bank Account
+pages.company.bank.account.heading              = Do you have a bank account set up in the name of your company?
+validation.company.bank.account.option.missing  = Tell us if you have a bank account set up in the name of the company
 
 ## Bank Details page
 pages.bankDetails.title = Bank details

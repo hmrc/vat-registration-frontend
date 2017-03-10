@@ -16,17 +16,18 @@
 
 package forms.vatDetails
 
+import forms.validation.FormValidation.{boundedLong, longToText, mandatoryText, taxEstimateTextToLong}
 import models.view.EstimateVatTurnover
 import play.api.data.Form
 import play.api.data.Forms._
-import utils.VatValidators.turnoverEstimateValidation
 
 object EstimateVatTurnoverForm {
   val TURNOVER_ESTIMATE: String = "turnoverEstimate"
 
   val form = Form(
     mapping(
-      TURNOVER_ESTIMATE -> longNumber
-    )(EstimateVatTurnover.apply)(EstimateVatTurnover.unapply).verifying(turnoverEstimateValidation)
+      TURNOVER_ESTIMATE -> text.verifying(mandatoryText("estimate.vat.turnover")).
+        transform(taxEstimateTextToLong, longToText).verifying(boundedLong("estimate.vat.turnover"))
+    )(EstimateVatTurnover.apply)(EstimateVatTurnover.unapply)
   )
 }

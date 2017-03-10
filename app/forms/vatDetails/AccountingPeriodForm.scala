@@ -16,18 +16,17 @@
 
 package forms.vatDetails
 
+import forms.validation.FormValidation._
 import models.view.AccountingPeriod
 import play.api.data.Form
 import play.api.data.Forms._
-import utils.VatValidators._
 
 object AccountingPeriodForm {
   val RADIO_ACCOUNTING_PERIOD: String = "accountingPeriodRadio"
 
   val form = Form(
     mapping(
-      RADIO_ACCOUNTING_PERIOD -> nonEmptyText
-    )(AccountingPeriod.apply)(AccountingPeriod.unapply).verifying(accountingPeriodValidation)
+      RADIO_ACCOUNTING_PERIOD -> missingFieldMapping("accounting.period").verifying(AccountingPeriod.valid)
+    )(AccountingPeriod.apply)(AccountingPeriod.unapply)
   )
-
 }

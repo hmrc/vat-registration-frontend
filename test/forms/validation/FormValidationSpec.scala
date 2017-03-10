@@ -21,6 +21,7 @@ import org.scalatest.{Inside, Inspectors}
 import play.api.data.validation.{Invalid, Valid}
 import uk.gov.hmrc.play.test.UnitSpec
 
+
 class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
   import cats.instances.string._
@@ -46,6 +47,72 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
     }
   }
 
+
+  "nonEmptyValidText" should {
+    val regex = """^[A-Za-z]{1,10}$""".r
+
+    "return valid when string matches regex" in {
+      val constraint = FormValidation.nonEmptyValidText("fieldName", regex)
+      constraint("abcdef") shouldBe Valid
+    }
+
+    "return invalid when string does not match regex" in {
+      val constraint = FormValidation.nonEmptyValidText("fieldName", regex)
+      constraint("a123") shouldBe Invalid("validation.fieldName.invalid")
+    }
+
+    "return invalid when string is empty" in {
+      val constraint = FormValidation.nonEmptyValidText("fieldName", regex)
+      constraint("") shouldBe Invalid("validation.fieldName.empty")
+    }
+  }
+
+  "taxEstimateTextToLong" must {
+    "return MinValue when input converts to value less than zero" in {
+      FormValidation.taxEstimateTextToLong("-1") shouldBe Long.MinValue
+    }
+
+    "return MaxValue when input converts to value greater than 1e15" in {
+      FormValidation.taxEstimateTextToLong("100000000000000000") shouldBe Long.MaxValue
+    }
+
+    "return value when input converts to value between 0 and 1e15" in {
+      FormValidation.taxEstimateTextToLong("1000") shouldBe 1000
+    }
+  }
+
+  /*
+  57   def boundedLong(specificCode: String): Constraint[Long] = Constraint {
+58     input: Long =>
+59       input match {
+60         case Long.MaxValue => Invalid(s"validation.$specificCode.high")
+61         case Long.MinValue => Invalid(s"validation.$specificCode.low")
+62         case _ => Valid
+63       }
+64   }
+   */
+
+  "boundedLong constraint" must {
+    val specificCode = "specific.code"
+    val boundedLongConstraint = FormValidation.boundedLong(specificCode)
+
+    "return Invalid-low if input is Long.MinValue" in {
+      inside(boundedLongConstraint(Long.MinValue)) {
+        case Invalid(err :: _) => err.message shouldBe s"validation.$specificCode.low"
+      }
+    }
+
+    "return Invalid-high if input is Long.MaxValue" in {
+      inside(boundedLongConstraint(Long.MaxValue)) {
+        case Invalid(err :: _) => err.message shouldBe s"validation.$specificCode.high"
+      }
+    }
+
+    "return Valid if input is not Long.MinValue or Long.MaxValue" in {
+      boundedLongConstraint(100) shouldBe Valid
+    }
+
+  }
 
   "patternCheckingConstraint" must {
 
