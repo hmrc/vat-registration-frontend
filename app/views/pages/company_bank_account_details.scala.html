@@ -28,7 +28,6 @@
                 <div class="form-group">
                     <div class="form-bank-details">
 
-                        <span class="form-hint"></span>
                         @govHelpers.input(
                             bankDetailsForm("accountName"),
                             '_divClass -> "form-group",
@@ -41,7 +40,7 @@
 
                         @govHelpers.input(
                             bankDetailsForm("accountNumber"),
-                            '_type -> "number",
+                            '_type -> "text",
                             '_divClass -> "form-group",
                             '_inputClass -> "form-control",
                             '_labelClass -> "cascading",
@@ -67,36 +66,33 @@
 
                                     @govHelpers.input(
                                         bankDetailsForm("sortCode.part1"),
-                                        '_type -> "number",
+                                        '_type -> "text",
                                         '_divClass -> "form-group",
                                         '_inputClass -> "form-control",
                                         '_label -> "first two digits",
                                         '_maxlength -> 2,
-                                        '_max -> 99,
                                         '_labelTextClass -> "hidden",
                                         '_error_id -> "sort-code-legend"
                                     )
 
                                     @govHelpers.input(
                                         bankDetailsForm("sortCode.part2"),
-                                        '_type -> "number",
+                                        '_type -> "text",
                                         '_divClass -> "form-group",
                                         '_inputClass -> "form-control",
                                         '_label -> "second two digits",
                                         '_maxlength -> 2,
-                                        '_max -> 99,
                                         '_labelTextClass -> "hidden",
                                         '_error_id -> "sort-code-legend"
                                     )
 
                                     @govHelpers.input(
                                         bankDetailsForm("sortCode.part3"),
-                                        '_type -> "number",
+                                        '_type -> "text",
                                         '_divClass -> "form-group",
                                         '_inputClass -> "form-control",
                                         '_label -> "last two digits",
                                         '_maxlength -> 2,
-                                        '_max -> 99,
                                         '_labelTextClass -> "hidden",
                                         '_error_id -> "sort-code-legend"
                                     )
@@ -114,3 +110,9 @@
         </div>
     </div>
 }
+
+<script type="text/javascript">
+    $(document).ready($(function () {
+        CompanyBankAccountDetailsPage.init()
+    }));
+</script>

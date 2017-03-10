@@ -28,6 +28,8 @@ object ZeroRatedSales {
   val ZERO_RATED_SALES_YES = "ZERO_RATED_SALES_YES"
   val ZERO_RATED_SALES_NO = "ZERO_RATED_SALES_NO"
 
+  val valid = (item: String) => List(ZERO_RATED_SALES_YES, ZERO_RATED_SALES_NO).contains(item.toUpperCase)
+
   implicit val format: OFormat[ZeroRatedSales] = Json.format[ZeroRatedSales]
 
   // Returns a view model for a specific part of a given VatScheme API model

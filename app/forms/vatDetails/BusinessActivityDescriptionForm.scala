@@ -16,18 +16,20 @@
 
 package forms.vatDetails
 
-import forms.validation.FormValidation.missingFieldMapping
-import models.view.TaxableTurnover
+import forms.validation.FormValidation._
+import models.view.BusinessActivityDescription
 import play.api.data.Form
 import play.api.data.Forms._
 
-object TaxableTurnoverForm {
-  val RADIO_YES_NO: String = "taxableTurnoverRadio"
+object BusinessActivityDescriptionForm {
+  val INPUT_DESCRIPTION: String = "description"
+  val PartPattern = """^[A-Za-z0-9\-',/& ]{1,250}$""".r
+
+ import cats.instances.string._
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping("taxable.turnover").verifying(TaxableTurnover.valid)
-    )(TaxableTurnover.apply)(TaxableTurnover.unapply)
+      INPUT_DESCRIPTION -> text.verifying(patternCheckingConstraint(PartPattern,"BusinessActivity.description", true))
+    )(BusinessActivityDescription.apply)(BusinessActivityDescription.unapply)
   )
-
 }

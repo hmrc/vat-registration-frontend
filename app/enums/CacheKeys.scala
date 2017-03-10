@@ -30,5 +30,7 @@ object CacheKeys extends Enumeration {
   val AccountingPeriod = Value
   val CompanyBankAccount = Value
   val CompanyBankAccountDetails = Value
+  val BusinessActivityDescription = Value
+
 
 }

@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package forms.vatDetails
+package models.api
 
-import forms.validation.FormValidation.missingFieldMapping
-import models.view.TaxableTurnover
-import play.api.data.Form
-import play.api.data.Forms._
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-object TaxableTurnoverForm {
-  val RADIO_YES_NO: String = "taxableTurnoverRadio"
+case class SicAndCompliance(description: String = "")
 
-  val form = Form(
-    mapping(
-      RADIO_YES_NO -> missingFieldMapping("taxable.turnover").verifying(TaxableTurnover.valid)
-    )(TaxableTurnover.apply)(TaxableTurnover.unapply)
-  )
+
+object SicAndCompliance {
+
+  val apiReads: Reads[SicAndCompliance] =
+    (__ \ "description").read[String].map(SicAndCompliance.apply)
+
+  val apiWrites: Writes[SicAndCompliance] =
+    (__ \ "description").write[String].contramap(_.description)
+
+  implicit val format = Format(apiReads, apiWrites)
 
 }
