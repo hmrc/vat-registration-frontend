@@ -36,6 +36,7 @@ class CacheKeySpec extends UnitSpec {
       CacheKey[AccountingPeriod].cacheKey shouldBe CacheKeys.AccountingPeriod.toString
       CacheKey[CompanyBankAccount].cacheKey shouldBe CacheKeys.CompanyBankAccount.toString
       CacheKey[CompanyBankAccountDetails].cacheKey shouldBe CacheKeys.CompanyBankAccountDetails.toString
+      CacheKey[BusinessActivityDescription].cacheKey shouldBe CacheKeys.BusinessActivityDescription.toString
     }
   }
 
