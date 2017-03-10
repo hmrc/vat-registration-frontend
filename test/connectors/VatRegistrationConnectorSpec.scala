@@ -150,7 +150,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   "Calling upsertSicAndCompliance" should {
     "return the correct VatResponse when the microservice completes and returns a SicAndCompliance model" in new Setup {
-      mockHttpPATCH[VatFinancials, VatFinancials]("tst-url", VatFinancials.default)
+      mockHttpPATCH[VatFinancials, SicAndCompliance]("tst-url", SicAndCompliance.default)
       ScalaFutures.whenReady(connector.upsertSicAndCompliance("tstID", SicAndCompliance.default))(_ mustBe SicAndCompliance.default)
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
