@@ -93,6 +93,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.upsertVatFinancials(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(validVatFinancials))
 
+      when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.eq(CacheKey[BusinessActivityDescription]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(validBusinessActivityDescription)))
+
+      when(mockRegConnector.upsertSicAndCompliance(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(validSicAndCompliance))
+
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
@@ -153,6 +159,42 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(validVatTradingDetails))
 
       ScalaFutures.whenReady(service.submitTradingDetails())(_ mustBe validVatTradingDetails)
+    }
+  }
+
+  "Calling submitSicAndCompliance" should {
+    "return a success response when SicAndCompliance is submitted" in new Setup {
+      mockFetchRegId(validRegId)
+
+      when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.eq(CacheKey[BusinessActivityDescription]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(validBusinessActivityDescription)))
+
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
+      (Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatScheme]]()))
+        .thenReturn(Future.successful(validVatScheme))
+
+      when(mockRegConnector.upsertSicAndCompliance(Matchers.any(), Matchers.any())
+      (Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(validSicAndCompliance))
+
+      ScalaFutures.whenReady(service.submitSicAndCompliance())(_ mustBe validSicAndCompliance)
+    }
+
+    "return a success response when SicAndCompliance is submitted and no Business Activity Description is found in S4L" in new Setup {
+      mockFetchRegId(validRegId)
+
+      when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.eq(CacheKey[BusinessActivityDescription]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
+      (Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatScheme]]()))
+        .thenReturn(Future.successful(validVatScheme))
+
+      when(mockRegConnector.upsertSicAndCompliance(regId = Matchers.any(), sicAndCompliance = Matchers.any())
+      (hc = Matchers.any(), rds = Matchers.any()))
+        .thenReturn(Future.successful(validSicAndCompliance))
+
+      ScalaFutures.whenReady(service.submitSicAndCompliance())(_ mustBe validSicAndCompliance)
     }
   }
 
