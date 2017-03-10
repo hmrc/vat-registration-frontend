@@ -16,12 +16,12 @@
 
 package forms.vatDetails
 
+import forms.validation.FormValidation._
 import models.view.TradingName
 import models.view.TradingName.TRADING_NAME_YES
 import play.api.data.Form
 import play.api.data.Forms._
 import uk.gov.voa.play.form.ConditionalMappings._
-import utils.VatValidators._
 
 object TradingNameForm {
   val RADIO_YES_NO: String = "tradingNameRadio"
@@ -31,7 +31,7 @@ object TradingNameForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> text,
+      RADIO_YES_NO -> missingFieldMapping("tradingName").verifying(TradingName.valid),
       INPUT_TRADING_NAME -> mandatoryIf(isEqual(RADIO_YES_NO, TRADING_NAME_YES), text.verifying(nonEmptyValidText(INPUT_TRADING_NAME, TRADING_NAME_REGEX)))
     )(TradingName.apply)(TradingName.unapply)
   )

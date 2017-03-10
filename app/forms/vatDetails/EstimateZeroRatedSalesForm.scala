@@ -16,17 +16,19 @@
 
 package forms.vatDetails
 
+import forms.validation.FormValidation._
 import models.view.EstimateZeroRatedSales
 import play.api.data.Form
-import play.api.data.Forms.{longNumber, mapping, optional}
-import utils.VatValidators.zeroRatedSalesEstimateValidation
+import play.api.data.Forms._
 
 object EstimateZeroRatedSalesForm {
   val ZERO_RATED_SALES_ESTIMATE: String = "zeroRatedSalesEstimate"
 
   val form = Form(
     mapping(
-      ZERO_RATED_SALES_ESTIMATE -> longNumber
-    )(EstimateZeroRatedSales.apply)(EstimateZeroRatedSales.unapply).verifying(zeroRatedSalesEstimateValidation)
+      ZERO_RATED_SALES_ESTIMATE -> text.verifying(mandatoryText("estimate.zero.rated.sales")).
+                                        transform(taxEstimateTextToLong, longToText).verifying(boundedLong("estimate"))
+    )(EstimateZeroRatedSales.apply)(EstimateZeroRatedSales.unapply)
   )
+
 }
