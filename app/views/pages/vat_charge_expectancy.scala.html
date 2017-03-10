@@ -20,16 +20,16 @@
       @govHelpers.form(action = controllers.userJourney.routes.VatChargeExpectancyController.submit()) {
       <div class="form-group">
         <fieldset class="block">
-
-          @govHelpers.inputRadioGroup(
-            field = vatChargeExpectancyForm("vatChargeRadio"),
-            Seq(
-              VatChargeExpectancy.VAT_CHARGE_YES -> Messages("pages.vat.charge.expectancy.radio.yes"),
-              VatChargeExpectancy.VAT_CHARGE_NO -> Messages("pages.vat.charge.expectancy.radio.no")
-            ),
-            '_labelAfter -> true,
-            '_labelClass -> "block-label"
-          )
+            <span id="vatChargeRadio"/>
+            @govHelpers.inputRadioGroup(
+                field = vatChargeExpectancyForm("vatChargeRadio"),
+                Seq(
+                  VatChargeExpectancy.VAT_CHARGE_YES -> Messages("pages.vat.charge.expectancy.radio.yes"),
+                  VatChargeExpectancy.VAT_CHARGE_NO -> Messages("pages.vat.charge.expectancy.radio.no")
+                ),
+                '_labelAfter -> true,
+                '_labelClass -> "block-label"
+            )
         </fieldset>
        
       </div>

@@ -25,16 +25,16 @@
       @govHelpers.form(action = controllers.userJourney.routes.VoluntaryRegistrationController.submit()) {
       <div class="form-group">
         <fieldset class="inline">
-
-          @govHelpers.inputRadioGroup(
-            field = voluntaryRegistrationForm("voluntaryRegistrationRadio"),
-            Seq(
-              VoluntaryRegistration.REGISTER_YES -> Messages("app.common.yes"),
-              VoluntaryRegistration.REGISTER_NO -> Messages("app.common.no")
-            ),
-            '_labelAfter -> true,
-            '_labelClass -> "block-label"
-          )
+            <span id="voluntaryRegistrationRadio"/>
+            @govHelpers.inputRadioGroup(
+                field = voluntaryRegistrationForm("voluntaryRegistrationRadio"),
+                Seq(
+                  VoluntaryRegistration.REGISTER_YES -> Messages("app.common.yes"),
+                  VoluntaryRegistration.REGISTER_NO -> Messages("app.common.no")
+                ),
+                '_labelAfter -> true,
+                '_labelClass -> "block-label"
+            )
         </fieldset>
 
 
