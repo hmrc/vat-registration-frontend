@@ -17,16 +17,16 @@
       @govHelpers.form(action = controllers.userJourney.routes.TaxableTurnoverController.submit()) {
       <div class="form-group">
         <fieldset class="inline">
-
-          @govHelpers.inputRadioGroup(
-            field = taxableTurnoverForm("taxableTurnoverRadio"),
-            Seq(
-              TaxableTurnover.TAXABLE_YES -> Messages("app.common.yes"),
-              TaxableTurnover.TAXABLE_NO -> Messages("app.common.no")
-            ),
-            '_labelAfter -> true,
-            '_labelClass -> "block-label"
-          )
+            <span id="taxableTurnoverRadio"/>
+            @govHelpers.inputRadioGroup(
+                field = taxableTurnoverForm("taxableTurnoverRadio"),
+                Seq(
+                  TaxableTurnover.TAXABLE_YES -> Messages("app.common.yes"),
+                  TaxableTurnover.TAXABLE_NO -> Messages("app.common.no")
+                ),
+                '_labelAfter -> true,
+                '_labelClass -> "block-label"
+            )
         </fieldset>
        
       </div>

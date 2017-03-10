@@ -19,15 +19,15 @@
       @govHelpers.form(action = controllers.userJourney.routes.VatReturnFrequencyController.submit()) {
       <div class="form-group">
         <fieldset>
-
+          <span id="vatReturnFrequencyRadio"/>
           @govHelpers.inputRadioGroup(
-          field = vatReturnFrequencyForm(VatReturnFrequencyForm.RADIO_FREQUENCY),
-          Seq(
-            VatReturnFrequency.MONTHLY -> Messages("pages.vat.return.frequency.radio.monthly"),
-            VatReturnFrequency.QUARTERLY -> Messages("pages.vat.return.frequency.radio.quarterly")
-          ),
-          '_labelAfter -> true,
-          '_labelClass -> "block-label"
+            field = vatReturnFrequencyForm("vatReturnFrequencyRadio"),
+            Seq(
+              VatReturnFrequency.MONTHLY -> Messages("pages.vat.return.frequency.radio.monthly"),
+              VatReturnFrequency.QUARTERLY -> Messages("pages.vat.return.frequency.radio.quarterly")
+            ),
+            '_labelAfter -> true,
+            '_labelClass -> "block-label"
           )
         </fieldset>
       </div>

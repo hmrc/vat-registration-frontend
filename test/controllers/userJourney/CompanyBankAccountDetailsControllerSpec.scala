@@ -18,6 +18,7 @@ package controllers.userJourney
 
 import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
+import forms.vatDetails.SortCode
 import helpers.VatRegSpec
 import models.CacheKey
 import models.view.CompanyBankAccountDetails
@@ -57,6 +58,20 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       when(mockS4LService.fetchAndGet[CompanyBankAccountDetails]()
         (Matchers.eq(CacheKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validCompanyBankAccountDetails)))
+
+      callAuthorised(CompanyBankAccountDetailsController.show(), mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("What are your business bank account details?")
+      }
+    }
+
+    "return HTML when there's invalid sort code stored in S4L" in {
+      when(mockS4LService.fetchAndGet[CompanyBankAccountDetails]()
+        (Matchers.eq(CacheKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(validCompanyBankAccountDetails.copy(sortCode = "foo--bar"))))
 
       callAuthorised(CompanyBankAccountDetailsController.show(), mockAuthConnector) {
         result =>
