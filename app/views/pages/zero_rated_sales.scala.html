@@ -19,16 +19,16 @@
       @govHelpers.form(action = controllers.userJourney.routes.ZeroRatedSalesController.submit()) {
       <div class="form-group">
         <fieldset class="inline">
-
-          @govHelpers.inputRadioGroup(
-            field = zeroRatedSalesForm("zeroRatedSalesRadio"),
-            Seq(
-              ZeroRatedSales.ZERO_RATED_SALES_YES -> Messages("app.common.yes"),
-              ZeroRatedSales.ZERO_RATED_SALES_NO -> Messages("app.common.no")
-            ),
-            '_labelAfter -> true,
-            '_labelClass -> "block-label"
-          )
+            <span id="zeroRatedSalesRadio"/>
+            @govHelpers.inputRadioGroup(
+                field = zeroRatedSalesForm("zeroRatedSalesRadio"),
+                Seq(
+                  ZeroRatedSales.ZERO_RATED_SALES_YES -> Messages("app.common.yes"),
+                  ZeroRatedSales.ZERO_RATED_SALES_NO -> Messages("app.common.no")
+                ),
+                '_labelAfter -> true,
+                '_labelClass -> "block-label"
+            )
         </fieldset>
        
       </div>

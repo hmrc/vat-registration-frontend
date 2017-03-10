@@ -17,8 +17,9 @@
       @govHelpers.form(action = controllers.userJourney.routes.CompanyBankAccountController.submit()) {
       <div class="form-group">
         <fieldset class="inline">
+            <span id="companyBankAccountRadio"/>
 
-          @govHelpers.inputRadioGroup(
+            @govHelpers.inputRadioGroup(
             field = companyBankAccountForm("companyBankAccountRadio"),
             Seq(
               CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES -> Messages("app.common.yes"),
