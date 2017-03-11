@@ -16,9 +16,8 @@
 
 package models.view
 
-import enums.CacheKeys
 import models.api.{VatScheme, VatTradingDetails}
-import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
+import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class TradingName(yesNo: String,
@@ -48,7 +47,5 @@ object TradingName {
   implicit val viewModelTransformer = ViewModelTransformer { (c: TradingName, g: VatTradingDetails) =>
     g.copy(tradingName = c.tradingName.getOrElse(""))
   }
-
-  implicit val cacheKey = CacheKey[TradingName](CacheKeys.TradingName)
 
 }

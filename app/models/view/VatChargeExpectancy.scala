@@ -16,9 +16,8 @@
 
 package models.view
 
-import enums.CacheKeys
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
+import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
 case class VatChargeExpectancy(yesNo: String)
@@ -43,7 +42,5 @@ object VatChargeExpectancy {
   implicit val viewModelTransformer = ViewModelTransformer { (c: VatChargeExpectancy, g: VatFinancials) =>
     g.copy(reclaimVatOnMostReturns = c.yesNo == VAT_CHARGE_YES)
   }
-
-  implicit val cacheKey = CacheKey[VatChargeExpectancy](CacheKeys.VatChargeExpectancy)
 
 }
