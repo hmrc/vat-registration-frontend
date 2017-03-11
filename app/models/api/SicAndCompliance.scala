@@ -32,4 +32,6 @@ object SicAndCompliance {
 
   implicit val format = Format(apiReads, apiWrites)
 
+  val default = SicAndCompliance()
+
 }

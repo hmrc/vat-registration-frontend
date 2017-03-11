@@ -29,7 +29,7 @@ object BusinessActivityDescription {
 
   implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
     vs.sicAndCompliance.map(_.description).collect {
-      case description => BusinessActivityDescription((description))
+      case description => BusinessActivityDescription(description)
     }
   }
 

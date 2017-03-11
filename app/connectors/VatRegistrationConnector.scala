@@ -75,6 +75,13 @@ trait RegistrationConnector {
     }
   }
 
+  def upsertSicAndCompliance(regId: String, sicAndCompliance: SicAndCompliance)
+                         (implicit hc: HeaderCarrier, rds: HttpReads[SicAndCompliance]): Future[SicAndCompliance] = {
+    http.PATCH[SicAndCompliance, SicAndCompliance](s"$vatRegUrl/vatreg/$regId/sic-and-compliance", sicAndCompliance) recover {
+      case e: Exception => throw logResponse(e, "upsertSicAndCompliance", "upserting sicAndCompliance details")
+    }
+  }
+
   def deleteVatScheme(regId: String)
                      (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
     http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-scheme") recover {
