@@ -101,7 +101,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
         s4l[CompanyBankAccountDetails]).map(S4LVatFinancials).map { vf =>
         (update(vf.estimateVatTurnover, vs) andThen update(vf.zeroRatedSalesEstimate, vs) andThen
           update(vf.vatChargeExpectancy, vs) andThen update(vf.vatReturnFrequency, vs) andThen
-          update(vf.accountingPeriod, vs) andThen update(vf.companyBankAccountDetails, vs)) (vs.financials.getOrElse(VatFinancials.default))
+          update(vf.accountingPeriod, vs) andThen update(vf.companyBankAccountDetails, vs)) (vs.financials.getOrElse(VatFinancials.empty))
       }
 
     for {
