@@ -16,9 +16,8 @@
 
 package models.view
 
-import enums.CacheKeys
 import models.api.{SicAndCompliance, VatScheme}
-import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
+import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class BusinessActivityDescription(description: String = "")
@@ -36,8 +35,5 @@ object BusinessActivityDescription {
   implicit val viewModelTransformer = ViewModelTransformer { (c: BusinessActivityDescription, g: SicAndCompliance) =>
     g.copy(description = c.description)
   }
-
-  implicit val cacheKey = CacheKey[BusinessActivityDescription](CacheKeys.BusinessActivityDescription)
-
 
 }

@@ -25,11 +25,9 @@ object BusinessActivityDescriptionForm {
   val INPUT_DESCRIPTION: String = "description"
   val PartPattern = """^[A-Za-z0-9\-',/& ]{1,250}$""".r
 
- import cats.instances.string._
-
   val form = Form(
     mapping(
-      INPUT_DESCRIPTION -> text.verifying(patternCheckingConstraint(PartPattern,"BusinessActivity.description", true))
+      INPUT_DESCRIPTION -> text.verifying(regexPattern(PartPattern, "BusinessActivity.description"))
     )(BusinessActivityDescription.apply)(BusinessActivityDescription.unapply)
   )
 }

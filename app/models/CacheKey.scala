@@ -16,7 +16,7 @@
 
 package models
 
-import enums.CacheKeys
+import models.view._
 
 trait CacheKey[T] {
 
@@ -26,10 +26,24 @@ trait CacheKey[T] {
 
 object CacheKey {
 
-  def apply[T: CacheKey]: CacheKey[T] = implicitly
+  def apply[T](implicit cacheKey: CacheKey[T]): CacheKey[T] = cacheKey
 
-  def apply[T](key: => CacheKeys.Value): CacheKey[T] = new CacheKey[T]() {
-    override def cacheKey: String = key.toString
+  def apply[T](key: String): CacheKey[T] = new CacheKey[T] {
+    override def cacheKey = key
   }
+
+  implicit val startDateCacheKey: CacheKey[StartDate] = CacheKey("StartDate")
+  implicit val tradingNameCacheKey: CacheKey[TradingName] = CacheKey("TradingName")
+  implicit val voluntaryRegistrationCacheKey: CacheKey[VoluntaryRegistration] = CacheKey("VoluntaryRegistration")
+  implicit val taxableTurnoverCacheKey: CacheKey[TaxableTurnover] = CacheKey("TaxableTurnover")
+  implicit val estimateVatTurnoverCacheKey: CacheKey[EstimateVatTurnover] = CacheKey("EstimateVatTurnover")
+  implicit val zeroRatedSalesCacheKey: CacheKey[ZeroRatedSales] = CacheKey("ZeroRatedSales")
+  implicit val estimateZeroRatedSalesCacheKey: CacheKey[EstimateZeroRatedSales] = CacheKey("EstimateZeroRatedSales")
+  implicit val vatChargeExpectancyCacheKey: CacheKey[VatChargeExpectancy] = CacheKey("VatChargeExpectancy")
+  implicit val vatReturnFrequencyCacheKey: CacheKey[VatReturnFrequency] = CacheKey("VatReturnFrequency")
+  implicit val accountingPeriodCacheKey: CacheKey[AccountingPeriod] = CacheKey("AccountingPeriod")
+  implicit val companyBankAccountCacheKey: CacheKey[CompanyBankAccount] = CacheKey("CompanyBankAccount")
+  implicit val companyBankAccountDetailsCacheKey: CacheKey[CompanyBankAccountDetails] = CacheKey("CompanyBankAccountDetails")
+  implicit val businessActivityDescriptionCacheKey: CacheKey[BusinessActivityDescription] = CacheKey("BusinessActivityDescription")
 
 }

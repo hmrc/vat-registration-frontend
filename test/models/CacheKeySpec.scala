@@ -16,7 +16,6 @@
 
 package models
 
-import enums.CacheKeys
 import models.view._
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -24,19 +23,19 @@ class CacheKeySpec extends UnitSpec {
 
   "cacheKey" should {
     "be generated for each view model" in {
-      CacheKey[StartDate].cacheKey shouldBe CacheKeys.StartDate.toString
-      CacheKey[TradingName].cacheKey shouldBe CacheKeys.TradingName.toString
-      CacheKey[VoluntaryRegistration].cacheKey shouldBe CacheKeys.VoluntaryRegistration.toString
-      CacheKey[TaxableTurnover].cacheKey shouldBe CacheKeys.TaxableTurnover.toString
-      CacheKey[EstimateVatTurnover].cacheKey shouldBe CacheKeys.EstimateVatTurnover.toString
-      CacheKey[ZeroRatedSales].cacheKey shouldBe CacheKeys.ZeroRatedSales.toString
-      CacheKey[EstimateZeroRatedSales].cacheKey shouldBe CacheKeys.EstimateZeroRatedSales.toString
-      CacheKey[VatChargeExpectancy].cacheKey shouldBe CacheKeys.VatChargeExpectancy.toString
-      CacheKey[VatReturnFrequency].cacheKey shouldBe CacheKeys.VatReturnFrequency.toString
-      CacheKey[AccountingPeriod].cacheKey shouldBe CacheKeys.AccountingPeriod.toString
-      CacheKey[CompanyBankAccount].cacheKey shouldBe CacheKeys.CompanyBankAccount.toString
-      CacheKey[CompanyBankAccountDetails].cacheKey shouldBe CacheKeys.CompanyBankAccountDetails.toString
-      CacheKey[BusinessActivityDescription].cacheKey shouldBe CacheKeys.BusinessActivityDescription.toString
+      CacheKey[StartDate].cacheKey shouldBe "StartDate"
+      CacheKey[TradingName].cacheKey shouldBe "TradingName"
+      CacheKey[VoluntaryRegistration].cacheKey shouldBe "VoluntaryRegistration"
+      CacheKey[TaxableTurnover].cacheKey shouldBe "TaxableTurnover"
+      CacheKey[EstimateVatTurnover].cacheKey shouldBe "EstimateVatTurnover"
+      CacheKey[ZeroRatedSales].cacheKey shouldBe "ZeroRatedSales"
+      CacheKey[EstimateZeroRatedSales].cacheKey shouldBe "EstimateZeroRatedSales"
+      CacheKey[VatChargeExpectancy].cacheKey shouldBe "VatChargeExpectancy"
+      CacheKey[VatReturnFrequency].cacheKey shouldBe "VatReturnFrequency"
+      CacheKey[AccountingPeriod].cacheKey shouldBe "AccountingPeriod"
+      CacheKey[CompanyBankAccount].cacheKey shouldBe "CompanyBankAccount"
+      CacheKey[CompanyBankAccountDetails].cacheKey shouldBe "CompanyBankAccountDetails"
+      CacheKey[BusinessActivityDescription].cacheKey shouldBe "BusinessActivityDescription"
     }
   }
 
