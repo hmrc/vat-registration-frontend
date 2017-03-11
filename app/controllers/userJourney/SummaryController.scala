@@ -56,7 +56,7 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
           bankAccount = None,
           turnoverEstimate = 0L,
           reclaimVatOnMostReturns = false,
-          vatAccountingPeriod = VatAccountingPeriod(None, ""))))
+          vatAccountingPeriod = VatAccountingPeriod.empty)))
     )
   )
 

@@ -21,7 +21,7 @@ import models.api.{SicAndCompliance, VatScheme}
 import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class BusinessActivityDescription(description: String = "")
+case class BusinessActivityDescription(description: String)
 
 object BusinessActivityDescription {
 
@@ -38,6 +38,5 @@ object BusinessActivityDescription {
   }
 
   implicit val cacheKey = CacheKey[BusinessActivityDescription](CacheKeys.BusinessActivityDescription)
-
 
 }
