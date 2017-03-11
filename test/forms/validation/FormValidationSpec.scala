@@ -116,8 +116,8 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
   "patternCheckingConstraint" must {
 
-    val constraintMandatory = FormValidation.patternCheckingConstraint("""[a-z]{3}""".r, "errorCode", mandatory = true)
-    val constraintNonMandatory = FormValidation.patternCheckingConstraint("""[a-z]{3}""".r, "errorCode", mandatory = false)
+    val constraintMandatory = FormValidation.regexPattern("""[a-z]{3}""".r, "errorCode", mandatory = true)
+    val constraintNonMandatory = FormValidation.regexPattern("""[a-z]{3}""".r, "errorCode", mandatory = false)
 
     "accept a string matching regex pattern as Valid" in {
       constraintMandatory.apply("abc") shouldBe Valid

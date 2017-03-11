@@ -16,9 +16,8 @@
 
 package models.view
 
-import enums.CacheKeys
-import models.api.{VatBankAccount, VatFinancials, VatScheme}
-import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
+import models.api.{VatFinancials, VatScheme}
+import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
 case class EstimateZeroRatedSales(zeroRatedSalesEstimate: Long)
@@ -36,7 +35,5 @@ object EstimateZeroRatedSales {
   implicit val viewModelTransformer = ViewModelTransformer { (c: EstimateZeroRatedSales, g: VatFinancials) =>
     g.copy(zeroRatedSalesEstimate = Some(c.zeroRatedSalesEstimate))
   }
-
-  implicit val cacheKey = CacheKey[EstimateZeroRatedSales](CacheKeys.EstimateZeroRatedSales)
 
 }
