@@ -84,7 +84,7 @@ trait VatRegistrationFixture {
     financials = Some(validVatFinancials)
   )
 
-  val validBusinessActivityDescription = BusinessActivityDescription()
+  val validBusinessActivityDescription = BusinessActivityDescription("Some description")
 
   lazy val validSummaryView = Summary(
     Seq(

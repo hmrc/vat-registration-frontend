@@ -20,7 +20,7 @@ import models.api.{SicAndCompliance, VatScheme}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class BusinessActivityDescription(description: String = "")
+case class BusinessActivityDescription(description: String)
 
 object BusinessActivityDescription {
 
