@@ -164,20 +164,20 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   "Calling upsertVatFinancials" should {
     "return the correct VatResponse when the microservice completes and returns a VatFinancials model" in new Setup {
-      mockHttpPATCH[VatFinancials, VatFinancials]("tst-url", VatFinancials.default)
-      ScalaFutures.whenReady(connector.upsertVatFinancials("tstID", VatFinancials.default))(_ mustBe VatFinancials.default)
+      mockHttpPATCH[VatFinancials, VatFinancials]("tst-url", VatFinancials.empty)
+      ScalaFutures.whenReady(connector.upsertVatFinancials("tstID", VatFinancials.empty))(_ mustBe VatFinancials.empty)
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH[VatFinancials, VatFinancials]("tst-url", forbidden)
-      ScalaFutures.whenReady(connector.upsertVatFinancials("tstID", VatFinancials.default).failed)(_ mustBe forbidden)
+      ScalaFutures.whenReady(connector.upsertVatFinancials("tstID", VatFinancials.empty).failed)(_ mustBe forbidden)
     }
     "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
       mockHttpFailedPATCH[VatFinancials, VatFinancials]("tst-url", notFound)
-      ScalaFutures.whenReady(connector.upsertVatFinancials("tstID", VatFinancials.default).failed)(_ mustBe notFound)
+      ScalaFutures.whenReady(connector.upsertVatFinancials("tstID", VatFinancials.empty).failed)(_ mustBe notFound)
     }
     "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH[VatFinancials, VatFinancials]("tst-url", internalServiceException)
-      ScalaFutures.whenReady(connector.upsertVatFinancials("tstID", VatFinancials.default).failed)(_ mustBe internalServiceException)
+      ScalaFutures.whenReady(connector.upsertVatFinancials("tstID", VatFinancials.empty).failed)(_ mustBe internalServiceException)
     }
   }
 

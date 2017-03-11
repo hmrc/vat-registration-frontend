@@ -36,6 +36,6 @@ object VatFinancials {
       (__ \ "accountingPeriods").format[VatAccountingPeriod]
     ) (VatFinancials.apply, unlift(VatFinancials.unapply))
 
-  val default = VatFinancials(turnoverEstimate = 0L, vatAccountingPeriod = VatAccountingPeriod.default, reclaimVatOnMostReturns = false)
+  val empty = VatFinancials(turnoverEstimate = 0L, vatAccountingPeriod = VatAccountingPeriod.empty, reclaimVatOnMostReturns = false)
 
 }
