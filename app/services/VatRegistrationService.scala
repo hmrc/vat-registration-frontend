@@ -101,7 +101,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
         s4l[CompanyBankAccountDetails]).map(S4LVatFinancials).map { vf =>
         (update(vf.estimateVatTurnover, vs) andThen update(vf.zeroRatedSalesEstimate, vs) andThen
           update(vf.vatChargeExpectancy, vs) andThen update(vf.vatReturnFrequency, vs) andThen
-          update(vf.accountingPeriod, vs) andThen update(vf.companyBankAccountDetails, vs)) (vs.financials.getOrElse(VatFinancials.default))
+          update(vf.accountingPeriod, vs) andThen update(vf.companyBankAccountDetails, vs)) (vs.financials.getOrElse(VatFinancials.empty))
       }
 
     for {
@@ -110,8 +110,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
       response <- vatRegConnector.upsertVatFinancials(vs.id, vatFinancials)
     } yield response
   }
-
-
 
   def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
     //revisit this; make it look like other `mergeWithS4L` once there's >1 thing coming from S4L
