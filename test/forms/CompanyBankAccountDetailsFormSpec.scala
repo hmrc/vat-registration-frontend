@@ -16,12 +16,12 @@
 
 package forms
 
-import forms.vatDetails.CompanyBankAccountForm
+import forms.vatDetails.CompanyBankAccountDetailsForm
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class CompanyBankAccountFormSpec extends UnitSpec with WithFakeApplication {
+class CompanyBankAccountDetailsFormSpec extends UnitSpec with WithFakeApplication {
 
-  val testForm = CompanyBankAccountForm.form
+  val testForm = CompanyBankAccountDetailsForm.form
 
   "Creating a form using an empty model" should {
     "return an empty string" in {
