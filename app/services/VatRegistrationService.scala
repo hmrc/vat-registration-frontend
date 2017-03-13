@@ -88,7 +88,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
     } yield Success
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] =
-    submitTradingDetails |@| submitVatChoice |@| submitVatFinancials map { case res@_ => Success }
+    submitTradingDetails |@| submitVatChoice |@| submitVatFinancials |@| submitSicAndCompliance map { case res@_ => Success }
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
 
@@ -101,7 +101,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
         s4l[CompanyBankAccountDetails]).map(S4LVatFinancials).map { vf =>
         (update(vf.estimateVatTurnover, vs) andThen update(vf.zeroRatedSalesEstimate, vs) andThen
           update(vf.vatChargeExpectancy, vs) andThen update(vf.vatReturnFrequency, vs) andThen
-          update(vf.accountingPeriod, vs) andThen update(vf.companyBankAccountDetails, vs)) (vs.financials.getOrElse(VatFinancials.default))
+          update(vf.accountingPeriod, vs) andThen update(vf.companyBankAccountDetails, vs)) (vs.financials.getOrElse(VatFinancials.empty))
       }
 
     for {
@@ -111,7 +111,18 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
     } yield response
   }
 
+  def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[SicAndCompliance] = {
+    //revisit this; make it look like other `mergeWithS4L` once there's >1 thing coming from S4L
+    def mergeWithS4L(vs: VatScheme) = s4l[BusinessActivityDescription]().map { description =>
+      update(description, vs)
+    }.map(_.apply(vs.sicAndCompliance.getOrElse(SicAndCompliance())))
 
+    for {
+      vs <- getVatScheme()
+      businessActivityDescription <- mergeWithS4L(vs)
+      response <- vatRegConnector.upsertSicAndCompliance(vs.id, businessActivityDescription)
+    } yield response
+  }
 
   def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
     //revisit this; make it look like other `mergeWithS4L` once there's >1 thing coming from S4L

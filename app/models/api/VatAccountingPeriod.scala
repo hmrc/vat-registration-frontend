@@ -29,7 +29,4 @@ object VatAccountingPeriod {
       (__ \ "frequency").format[String]) (VatAccountingPeriod.apply, unlift(VatAccountingPeriod.unapply))
 
   def empty: VatAccountingPeriod = VatAccountingPeriod(None, "")
-
-  // TODO remove 'default' once we have VatAccountingPeriod story is in place
-  def default: VatAccountingPeriod = VatAccountingPeriod(None, "monthly")
 }
