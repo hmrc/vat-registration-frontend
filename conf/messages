@@ -106,12 +106,9 @@ pages.estimate.vat.turnover.include.bullet3                 = goods you <a href=
 pages.estimate.vat.turnover.include.bullet4                 = services you received from businesses in other countries that you had to <a href="https://www.gov.uk/government/publications/vat-notice-735-vat-reverse-charge-on-specified-goods-and-services/vat-notice-735-vat-reverse-charge-on-specified-goods-and-services">''reverse charge''</a>
 pages.estimate.vat.turnover.include.bullet5                 = <a href="https://www.gov.uk/government/publications/vat-notice-708-buildings-and-construction">building work over £100,000</a> your business did for itself
 pages.estimate.vat.turnover.include.para2                   = Include any <a href="https://www.gov.uk/vat-businesses/vat-rates">zero-rated items</a> - only exclude VAT-exempt sales, and goods or services you supply outside of the UK.
-pages.estimate.vat.turnover.validation.low                  = Enter a positive estimate
-pages.estimate.vat.turnover.validation.high                 = Enter an estimate which is less than 1,000,000,000,000,000
+validation.estimate.vat.turnover.low                        = Enter a positive estimate
+validation.estimate.vat.turnover.high                       = Enter an estimate which is less than 1,000,000,000,000,000
 validation.estimate.vat.turnover.missing                    = Estimate the company''s VAT taxable turnover for the next 12 months
-
-validation.estimate.low = Enter a positive estimate
-validation.estimate.high = Enter an estimate which is less than 1,000,000,000,000,000
 
 ## Zero Rated Sales Page
 pages.zero.rated.sales.title                                = Zero-Rated sales
@@ -138,8 +135,8 @@ pages.estimate.zero.rated.sales.include.bullet1             = books and newspape
 pages.estimate.zero.rated.sales.include.bullet2             = children''s clothes and shoes
 pages.estimate.zero.rated.sales.include.bullet3             = motorcycle helmets
 pages.estimate.zero.rated.sales.include.para2               = Find out about <a href="https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services">VAT rates on different goods and services</a>.
-pages.estimate.zero.rated.sales.validation.low              = Enter a positive estimate
-pages.estimate.zero.rated.sales.validation.high             = Enter an estimate which is less than 1,000,000,000,000,000
+validation.estimate.zero.rated.sales.low                    = Enter a positive estimate
+validation.estimate.zero.rated.sales.high                   = Enter an estimate which is less than 1,000,000,000,000,000
 validation.estimate.zero.rated.sales.missing                = Estimate the value of the company''s zero-rated sales for the next 12 months
 
 ## Vat Charge Expectancy Page
