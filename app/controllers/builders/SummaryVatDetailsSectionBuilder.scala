@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package controllers.utils
+package controllers.builders
 
-import javax.inject.Inject
-
-import controllers.CommonPlayDependencies
-import models.api.{VatChoice, VatFinancials, VatTradingDetails}
+import models.api.VatChoice
 import models.view.{SummaryRow, SummarySection}
 
-class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice)(implicit ds: CommonPlayDependencies)
-  extends SummarySectionBuilder(ds) {
+case class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice)
+  extends SummarySectionBuilder {
 
   def taxableTurnoverRow: SummaryRow = SummaryRow(
     "vatDetails.taxableTurnover",
     vatChoice.necessity match {
-      case VatChoice.NECESSITY_VOLUNTARY => Right(messagesApi("app.common.no"))
-      case _ => Right(messagesApi("app.common.yes"))
+      case VatChoice.NECESSITY_VOLUNTARY => "app.common.no"
+      case _ => "app.common.yes"
     },
     Some(controllers.userJourney.routes.TaxableTurnoverController.show())
   )
@@ -37,8 +34,8 @@ class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice)(implicit ds: CommonP
   def necessityRow: SummaryRow = SummaryRow(
     "vatDetails.necessity",
     vatChoice.necessity match {
-      case VatChoice.NECESSITY_VOLUNTARY => Right(messagesApi("app.common.yes"))
-      case _ => Right(messagesApi("app.common.no"))
+      case VatChoice.NECESSITY_VOLUNTARY => "app.common.yes"
+      case _ => "app.common.no"
     },
     vatChoice.necessity match {
       case VatChoice.NECESSITY_VOLUNTARY => Some(controllers.userJourney.routes.VoluntaryRegistrationController.show())
@@ -52,11 +49,11 @@ class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice)(implicit ds: CommonP
       case VatChoice.NECESSITY_VOLUNTARY =>
         val startdate = vatChoice.startDate.toString("dd/MM/yyyy")
         if (startdate == "31/12/1969" || startdate == "01/01/1970") {
-          Right(messagesApi("pages.summary.vatDetails.mandatoryStartDate"))
+          "pages.summary.vatDetails.mandatoryStartDate"
         } else {
-          Right(vatChoice.startDate.toString("d MMMM y"))
+          vatChoice.startDate.toString("d MMMM y")
         }
-      case _ => Right(messagesApi("pages.summary.vatDetails.mandatoryStartDate"))
+      case _ => "pages.summary.vatDetails.mandatoryStartDate"
     },
     vatChoice.necessity match {
       case VatChoice.NECESSITY_VOLUNTARY => Some(controllers.userJourney.routes.StartDateController.show())

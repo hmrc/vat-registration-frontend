@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package controllers.utils
+package controllers.builders
 
-import controllers.CommonPlayDependencies
 import models.view.SummarySection
-import play.api.Configuration
-import play.api.i18n.MessagesApi
 
-abstract class SummarySectionBuilder(ds: CommonPlayDependencies) {
-
-  //$COVERAGE-OFF$
-  lazy val conf: Configuration = ds.conf
-  implicit lazy val messagesApi: MessagesApi = ds.messagesApi
-  //$COVERAGE-ON$
+abstract class SummarySectionBuilder {
 
   protected def section: SummarySection
 }

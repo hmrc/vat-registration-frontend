@@ -5,20 +5,17 @@
 <tr>
     <td id="@{
         row.id
-    }Question">@Html(Messages(s"pages.summary.${row.id}"))</td>
+    }Question">@Html(messages(s"pages.summary.${row.id}"))</td>
     <td id="@{
         row.id
     }Answer">
-    @row.answer.fold(
-        messageKey => Messages(s"pages.summary.${row.id}.answers.$messageKey"),
-        answer => answer
-    )
+    @messages(row.answerMessageKey)
     </td>
     <td class="change-answer">
     @row.changeLink.map { linkLocation =>
         <a href="@linkLocation" id="@{
             row.id
-        }ChangeLink">@Messages("app.common.change")</a>
+        }ChangeLink">@messages("app.common.change")</a>
     }
     </td>
 </tr>

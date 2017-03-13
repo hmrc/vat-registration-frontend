@@ -28,7 +28,8 @@ import scala.concurrent.Future
 
 
 class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
-                                             (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+                                             (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) {
 
   import cats.instances.future._
 
