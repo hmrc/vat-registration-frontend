@@ -46,7 +46,7 @@ class SummaryController @Inject()(implicit ds: CommonPlayDependencies, s4LServic
   def registrationToSummary(vatScheme: VatScheme): Summary = {
     val vatChoice = vatScheme.vatChoice.getOrElse(VatChoice())
     val vatTradingDetails = vatScheme.tradingDetails.getOrElse(VatTradingDetails())
-    val vatFinancials = vatScheme.financials.getOrElse(VatFinancials.default)
+    val vatFinancials = vatScheme.financials.getOrElse(VatFinancials.empty)
 
     val vatDetailsSectionBuilder = new SummaryVatDetailsSectionBuilder(vatChoice)
     val companyDetailsSectionBuilder = new SummaryCompanyDetailsSectionBuilder(vatTradingDetails, vatFinancials)

@@ -59,6 +59,8 @@ trait VatRegistrationFixture {
   private val sortCode = "10-10-10"
   private val accountNumber = "12345678"
   private val period = "monthly"
+  private val businessActivityDescription = "description"
+
 
   val validVatFinancials = VatFinancials(
     bankAccount = Some(VatBankAccount(tradingName, accountNumber, sortCode)),
@@ -66,6 +68,11 @@ trait VatRegistrationFixture {
     zeroRatedSalesEstimate = Some(estimatedSales),
     reclaimVatOnMostReturns = true,
     vatAccountingPeriod = VatAccountingPeriod(None, period)
+  )
+
+
+  val validSicAndCompliance = SicAndCompliance(
+    description = businessActivityDescription
   )
 
   val emptyVatScheme = VatScheme.blank(validRegId)
@@ -76,6 +83,8 @@ trait VatRegistrationFixture {
     vatChoice = Some(validVatChoice),
     financials = Some(validVatFinancials)
   )
+
+  val validBusinessActivityDescription = BusinessActivityDescription("Some description")
 
   lazy val validSummaryView = Summary(
     Seq(

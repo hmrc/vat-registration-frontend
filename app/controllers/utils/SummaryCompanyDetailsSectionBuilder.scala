@@ -76,7 +76,7 @@ class SummaryCompanyDetailsSectionBuilder(vatTradingDetails: VatTradingDetails, 
         case None => throw UnexpectedException(Some(s"selected quarterly accounting period, but periodStart was None"))
       }
     },
-    Some(controllers.userJourney.routes.VatReturnFrequencyController.show())
+    Some(controllers.userJourney.routes.AccountingPeriodController.show())
   )
 
   def companyBankAccountRow: SummaryRow = SummaryRow(

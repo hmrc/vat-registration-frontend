@@ -29,6 +29,7 @@ import scala.concurrent.Future
 
 class BusinessActivityDescriptionController @Inject()(ds: CommonPlayDependencies)
                                                      (implicit s4l: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+
   import cats.instances.future._
 
 
@@ -44,7 +45,7 @@ class BusinessActivityDescriptionController @Inject()(ds: CommonPlayDependencies
         Future.successful(BadRequest(views.html.pages.business_activity_description(formWithErrors)))
       }, {
         data: BusinessActivityDescription => {
-            s4l.saveForm[BusinessActivityDescription](data) map { _ =>
+          s4l.saveForm[BusinessActivityDescription](data.copy(description = data.description.trim)) map { _ =>
             Redirect(controllers.userJourney.routes.CompanyBankAccountController.show())
           }
         }
