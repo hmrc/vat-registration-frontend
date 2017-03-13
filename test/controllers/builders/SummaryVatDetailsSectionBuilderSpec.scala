@@ -19,7 +19,7 @@ package controllers.builders
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api.{VatChoice, VatTradingDetails}
-import models.view.SummaryRow
+import models.view.{SummaryRow, SummarySection}
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 
@@ -83,6 +83,15 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
       "a 'No' if there isn't a trading name" in {
         val builder = SummaryVatDetailsSectionBuilder(VatChoice(), VatTradingDetails())
         builder.tradingNameRow mustBe SummaryRow("vatDetails.tradingName", "app.common.no", Some(controllers.userJourney.routes.TradingNameController.show()))
+      }
+    }
+
+    "with section generate" should {
+
+      "a valid summary section" in {
+        val builder = SummaryVatDetailsSectionBuilder(VatChoice(), VatTradingDetails())
+        builder.section.id mustBe "vatDetails"
+        builder.section.rows.length mustEqual 4
       }
     }
 
