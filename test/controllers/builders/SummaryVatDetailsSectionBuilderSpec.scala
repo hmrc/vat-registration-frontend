@@ -16,16 +16,15 @@
 
 package controllers.builders
 
-import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api.{VatChoice, VatTradingDetails}
-import models.view.{SummaryRow, SummarySection}
+import models.view.SummaryRow
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 
-class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
+class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec {
 
-  "The section builder composing a VatDetails section" should {
+  "The section builder composing a vat details section" should {
 
     "with taxableTurnoverRow render" should {
 
