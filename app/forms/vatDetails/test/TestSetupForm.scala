@@ -32,6 +32,7 @@ object TestSetupForm {
       "startDateYear" -> optional(text),
       "tradingNameChoice" -> optional(text),
       "tradingName" -> optional(text),
+      "businessActivityDescription" -> optional(text),
       "companyBankAccountChoice" -> optional(text),
       "companyBankAccountName" -> optional(text),
       "companyBankAccountNumber" -> optional(text),
