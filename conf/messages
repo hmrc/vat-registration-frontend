@@ -214,7 +214,7 @@ pages.business.activity.description.para1                     = Tell us about th
 pages.business.activity.description.hint                      = For example, cleaning services
 
 validation.BusinessActivity.description.missing = Tell us what the company does
-validation.BusinessActivity.description.invalid = Tell us what the company does
+validation.BusinessActivity.description.invalid = Enter a valid business activity description
 
 ## Summary Page Company details
 pages.summary.companyDetails.sectionHeading                     = Company details
