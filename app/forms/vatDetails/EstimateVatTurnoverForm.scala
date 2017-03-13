@@ -16,7 +16,7 @@
 
 package forms.vatDetails
 
-import forms.validation.FormValidation.{boundedLong, longToText, mandatoryText, taxEstimateTextToLong}
+import forms.validation.FormValidation._
 import models.view.EstimateVatTurnover
 import play.api.data.Form
 import play.api.data.Forms._
@@ -26,7 +26,7 @@ object EstimateVatTurnoverForm {
 
   val form = Form(
     mapping(
-      TURNOVER_ESTIMATE -> text.verifying(mandatoryText("estimate.vat.turnover")).
+      TURNOVER_ESTIMATE -> text.verifying(mandatoryNumericText("estimate.vat.turnover")).
         transform(taxEstimateTextToLong, longToText).verifying(boundedLong("estimate.vat.turnover"))
     )(EstimateVatTurnover.apply)(EstimateVatTurnover.unapply)
   )
