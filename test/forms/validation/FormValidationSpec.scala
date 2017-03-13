@@ -48,6 +48,28 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
   }
 
 
+  "mandatoryNumericText" must {
+
+    val constraint = FormValidation.mandatoryNumericText("errorCode")
+
+    "accept a numeric string integer" in {
+      constraint("1234") shouldBe Valid
+    }
+
+    "reject null string" in {
+      constraint(null) shouldBe Invalid("validation.errorCode.missing")
+    }
+
+    "reject empty string" in {
+      constraint("") shouldBe Invalid("validation.errorCode.missing")
+    }
+
+    "reject non-numeric string" in {
+      constraint("1e10") shouldBe Invalid("validation.numeric")
+    }
+  }
+
+
   "nonEmptyValidText" should {
     val regex = """^[A-Za-z]{1,10}$""".r
 
