@@ -34,16 +34,8 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
       constraint("non-blank string") shouldBe Valid
     }
 
-    "reject null string" in {
-      constraint(null) shouldBe Invalid("validation.errorCode.missing")
-    }
-
-    "reject empty string" in {
-      constraint("") shouldBe Invalid("validation.errorCode.missing")
-    }
-
     "reject blank string" in {
-      constraint("    ") shouldBe Invalid("validation.errorCode.missing")
+      forAll(Seq("", "  ", "    \t   "))(constraint(_) shouldBe Invalid("validation.errorCode.missing"))
     }
   }
 
@@ -56,12 +48,8 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
       constraint("1234") shouldBe Valid
     }
 
-    "reject null string" in {
-      constraint(null) shouldBe Invalid("validation.errorCode.missing")
-    }
-
-    "reject empty string" in {
-      constraint("") shouldBe Invalid("validation.errorCode.missing")
+    "reject blank string" in {
+      forAll(Seq("", "  ", "    \t   "))(constraint(_) shouldBe Invalid("validation.errorCode.missing"))
     }
 
     "reject non-numeric string" in {
@@ -102,17 +90,6 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
       FormValidation.taxEstimateTextToLong("1000") shouldBe 1000
     }
   }
-
-  /*
-  57   def boundedLong(specificCode: String): Constraint[Long] = Constraint {
-58     input: Long =>
-59       input match {
-60         case Long.MaxValue => Invalid(s"validation.$specificCode.high")
-61         case Long.MinValue => Invalid(s"validation.$specificCode.low")
-62         case _ => Valid
-63       }
-64   }
-   */
 
   "boundedLong constraint" must {
     val specificCode = "specific.code"
