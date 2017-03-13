@@ -77,6 +77,24 @@ $(document).ready($(function () {
 }(window.CompanyBankAccountDetailsPage = window.CompanyBankAccountDetailsPage || {}, jQuery));
 
 
+// Estimate Vat Turnover
+(function (EstimateVatTurnoverPage, $, undefined) {
+    EstimateVatTurnoverPage.init = function() {
+        var numericInputs = ["turnoverEstimate"];
+        UI.preventNonNumericInput(numericInputs);
+    }
+}(window.EstimateVatTurnoverPage = window.EstimateVatTurnoverPage || {}, jQuery));
+
+
+// Estimate Zero Rated Sales
+(function (EstimateZeroRatedSalesPage, $, undefined) {
+    EstimateZeroRatedSalesPage.init = function() {
+        var numericInputs = ["zeroRatedSalesEstimate"];
+        UI.preventNonNumericInput(numericInputs);
+    }
+}(window.EstimateZeroRatedSalesPage = window.EstimateZeroRatedSalesPage || {}, jQuery));
+
+
 
 /*
  example of multiple hide/show areas

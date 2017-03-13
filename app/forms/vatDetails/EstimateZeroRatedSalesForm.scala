@@ -26,7 +26,7 @@ object EstimateZeroRatedSalesForm {
 
   val form = Form(
     mapping(
-      ZERO_RATED_SALES_ESTIMATE -> text.verifying(mandatoryText("estimate.zero.rated.sales")).
+      ZERO_RATED_SALES_ESTIMATE -> text.verifying(mandatoryNumericText("estimate.zero.rated.sales")).
                                         transform(taxEstimateTextToLong, longToText).verifying(boundedLong("estimate.zero.rated.sales"))
     )(EstimateZeroRatedSales.apply)(EstimateZeroRatedSales.unapply)
   )
