@@ -18,7 +18,7 @@ package controllers.userJourney
 
 import javax.inject.Inject
 
-import controllers.utils.{SummaryCompanyDetailsSectionBuilder, SummaryVatDetailsSectionBuilder}
+import controllers.builders.{SummaryCompanyDetailsSectionBuilder, SummaryVatDetailsSectionBuilder}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import models.api._
 import models.view._
@@ -28,7 +28,8 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class SummaryController @Inject()(implicit ds: CommonPlayDependencies, s4LService: S4LService, vrs: VatRegistrationService)
+class SummaryController @Inject()(ds: CommonPlayDependencies)
+                                 (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised.async { implicit user =>
@@ -48,13 +49,9 @@ class SummaryController @Inject()(implicit ds: CommonPlayDependencies, s4LServic
     val vatTradingDetails = vatScheme.tradingDetails.getOrElse(VatTradingDetails())
     val vatFinancials = vatScheme.financials.getOrElse(VatFinancials.empty)
 
-    val vatDetailsSectionBuilder = new SummaryVatDetailsSectionBuilder(vatChoice)
-    val companyDetailsSectionBuilder = new SummaryCompanyDetailsSectionBuilder(vatTradingDetails, vatFinancials)
-
     Summary(Seq(
-        vatDetailsSectionBuilder.section,
-        companyDetailsSectionBuilder.section
-      )
-    )
+        SummaryVatDetailsSectionBuilder(vatChoice).section,
+        SummaryCompanyDetailsSectionBuilder(vatTradingDetails, vatFinancials).section
+      ))
   }
 }

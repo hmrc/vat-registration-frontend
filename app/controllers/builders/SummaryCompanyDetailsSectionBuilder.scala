@@ -14,55 +14,51 @@
  * limitations under the License.
  */
 
-package controllers.utils
+package controllers.builders
 
-import javax.inject.Inject
-
-import controllers.CommonPlayDependencies
 import models.api.{VatFinancials, VatTradingDetails}
 import models.view.{SummaryRow, SummarySection, VatReturnFrequency}
 import play.api.UnexpectedException
 
-class SummaryCompanyDetailsSectionBuilder(vatTradingDetails: VatTradingDetails, vatFinancials: VatFinancials)
-                                         (implicit ds: CommonPlayDependencies)
-  extends SummarySectionBuilder(ds) {
+case class SummaryCompanyDetailsSectionBuilder(vatTradingDetails: VatTradingDetails, vatFinancials: VatFinancials)
+  extends SummarySectionBuilder {
 
   def tradingNameRow: SummaryRow = SummaryRow(
     "companyDetails.tradingName",
     vatTradingDetails.tradingName match {
-      case "" => Right(messagesApi("app.common.no"))
-      case _ => Right(vatTradingDetails.tradingName)
+      case "" => "app.common.no"
+      case _ => vatTradingDetails.tradingName
     },
     Some(controllers.userJourney.routes.TradingNameController.show())
   )
 
   def estimatedSalesValueRow: SummaryRow = SummaryRow(
     "companyDetails.estimatedSalesValue",
-    Right(s"£${vatFinancials.turnoverEstimate.toString}"),
+    s"£${vatFinancials.turnoverEstimate.toString}",
     Some(controllers.userJourney.routes.EstimateVatTurnoverController.show())
   )
 
   def zeroRatedSalesRow: SummaryRow = SummaryRow(
     "companyDetails.zeroRatedSales",
     vatFinancials.zeroRatedSalesEstimate match {
-      case Some(_) => Right(messagesApi("app.common.yes"))
-      case None => Right(messagesApi("app.common.no"))
+      case Some(_) => "app.common.yes"
+      case None => "app.common.no"
     },
     Some(controllers.userJourney.routes.ZeroRatedSalesController.show())
   )
 
   def estimatedZeroRatedSalesRow: SummaryRow = SummaryRow(
     "companyDetails.zeroRatedSalesValue",
-    Right(s"£${vatFinancials.zeroRatedSalesEstimate.getOrElse("").toString}"),
+    s"£${vatFinancials.zeroRatedSalesEstimate.getOrElse("").toString}",
     Some(controllers.userJourney.routes.EstimateZeroRatedSalesController.show())
   )
 
   def vatChargeExpectancyRow: SummaryRow = SummaryRow(
     "companyDetails.reclaimMoreVat",
     if (vatFinancials.reclaimVatOnMostReturns) {
-      Right(messagesApi("pages.summary.companyDetails.reclaimMoreVat.yes"))
+      "pages.summary.companyDetails.reclaimMoreVat.yes"
     } else {
-      Right(messagesApi("pages.summary.companyDetails.reclaimMoreVat.no"))
+      "pages.summary.companyDetails.reclaimMoreVat.no"
     },
     Some(controllers.userJourney.routes.VatChargeExpectancyController.show())
   )
@@ -70,9 +66,9 @@ class SummaryCompanyDetailsSectionBuilder(vatTradingDetails: VatTradingDetails, 
   def accountingPeriodRow: SummaryRow = SummaryRow(
     "companyDetails.accountingPeriod",
     vatFinancials.vatAccountingPeriod.frequency match {
-      case VatReturnFrequency.MONTHLY => Right(messagesApi("pages.summary.companyDetails.accountingPeriod.monthly"))
+      case VatReturnFrequency.MONTHLY => "pages.summary.companyDetails.accountingPeriod.monthly"
       case VatReturnFrequency.QUARTERLY => vatFinancials.vatAccountingPeriod.periodStart match {
-        case Some(period) => Right(messagesApi(s"pages.summary.companyDetails.accountingPeriod.${period.substring(0, 3)}"))
+        case Some(period) => s"pages.summary.companyDetails.accountingPeriod.${period.substring(0, 3)}"
         case None => throw UnexpectedException(Some(s"selected quarterly accounting period, but periodStart was None"))
       }
     },
@@ -82,8 +78,8 @@ class SummaryCompanyDetailsSectionBuilder(vatTradingDetails: VatTradingDetails, 
   def companyBankAccountRow: SummaryRow = SummaryRow(
     "companyDetails.companyBankAccount",
     vatFinancials.bankAccount match {
-      case Some(_) => Right(messagesApi("app.common.yes"))
-      case None => Right(messagesApi("app.common.no"))
+      case Some(_) => "app.common.yes"
+      case None => "app.common.no"
     },
     Some(controllers.userJourney.routes.CompanyBankAccountController.show())
   )
@@ -91,8 +87,8 @@ class SummaryCompanyDetailsSectionBuilder(vatTradingDetails: VatTradingDetails, 
   def companyBankAccountNameRow: SummaryRow = SummaryRow(
     "companyDetails.companyBankAccount.name",
     vatFinancials.bankAccount match {
-      case Some(account) => Right(account.accountName)
-      case None => Right(messagesApi("app.common.no"))
+      case Some(account) => account.accountName
+      case None => "app.common.no"
     },
     Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
   )
@@ -100,8 +96,8 @@ class SummaryCompanyDetailsSectionBuilder(vatTradingDetails: VatTradingDetails, 
   def companyBankAccountNumberRow: SummaryRow = SummaryRow(
     "companyDetails.companyBankAccount.number",
     vatFinancials.bankAccount match {
-      case Some(account) => Right("****" + account.accountNumber.substring(4))
-      case None => Right(messagesApi("app.common.no"))
+      case Some(account) => "****" + account.accountNumber.substring(4)
+      case None => "app.common.no"
     },
     Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
   )
@@ -109,8 +105,8 @@ class SummaryCompanyDetailsSectionBuilder(vatTradingDetails: VatTradingDetails, 
   def companyBankAccountSortCodeRow: SummaryRow = SummaryRow(
     "companyDetails.companyBankAccount.sortCode",
     vatFinancials.bankAccount match {
-      case Some(account) => Right(account.accountSortCode)
-      case None => Right(messagesApi("app.common.no"))
+      case Some(account) => account.accountSortCode
+      case None => "app.common.no"
     },
     Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
   )
