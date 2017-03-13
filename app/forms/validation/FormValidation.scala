@@ -27,11 +27,10 @@ import scala.util.matching.Regex
 
 private[forms] object FormValidation {
 
-  def patternCheckingConstraint[T: Show](pattern: Regex, errorSubCode: String, mandatory: Boolean): Constraint[T] = Constraint {
-    input: T =>
-      val s: String = Show[T].show(input)
-      mandatoryText(errorSubCode)(s) match {
-        case Valid => Constraints.pattern(pattern, error = s"validation.$errorSubCode.invalid")(s)
+  def regexPattern(pattern: Regex, errorSubCode: String, mandatory: Boolean = true): Constraint[String] = Constraint {
+    input: String =>
+      mandatoryText(errorSubCode)(input) match {
+        case Valid => Constraints.pattern(pattern, error = s"validation.$errorSubCode.invalid")(input)
         case err => if (mandatory) err else Valid
       }
   }
@@ -72,10 +71,10 @@ private[forms] object FormValidation {
       }
   }
 
-  def nonEmptyValidText(specificCode: String, pattern: Regex): Constraint[String] = Constraint[String] {
+  def nonEmptyValidText(specificCode: String, Pattern: Regex): Constraint[String] = Constraint[String] {
     input: String =>
       input match {
-        case `pattern`(_*) => Valid
+        case Pattern(_*) => Valid
         case s if StringUtils.isNotBlank(s) => Invalid(s"validation.$specificCode.invalid")
         case _ => Invalid(s"validation.$specificCode.empty")
       }
@@ -84,6 +83,7 @@ private[forms] object FormValidation {
   /* overrides Play's implicit stringFormatter and handles missing options (e.g. no radio button selected) */
   private def stringFormat(specificCode: String): Formatter[String] = new Formatter[String] {
     def bind(key: String, data: Map[String, String]) = data.get(key).toRight(Seq(FormError(key, s"validation.$specificCode.option.missing", Nil)))
+
     def unbind(key: String, value: String) = Map(key -> value)
   }
 
@@ -97,17 +97,17 @@ private[forms] object FormValidation {
     private val AccountName = """[A-Za-z0-9\-',/& ]{1,150}""".r
     private val AccountNumber = """[0-9]{8}""".r
 
-
     def accountName(errorSubstring: String, mandatory: Boolean = true): Constraint[String] =
-      patternCheckingConstraint(AccountName, s"$errorSubstring.name", mandatory)
+      regexPattern(AccountName, s"$errorSubstring.name", mandatory)
 
     def accountNumber(errorSubstring: String, mandatory: Boolean = true): Constraint[String] =
-      patternCheckingConstraint(AccountNumber, s"$errorSubstring.number", mandatory)
+      regexPattern(AccountNumber, s"$errorSubstring.number", mandatory)
 
-    def accountSortCode(errorSubstring: String, mandatory: Boolean = true): Constraint[SortCode] =
-      patternCheckingConstraint(SortCode, errorSubCode = s"$errorSubstring.sortCode", mandatory)
+    def accountSortCode(errorSubstring: String, mandatory: Boolean = true): Constraint[SortCode] = Constraint {
+      (in: SortCode) =>
+        regexPattern(SortCode, errorSubCode = s"$errorSubstring.sortCode", mandatory)(Show[SortCode].show(in))
+    }
 
   }
-
 
 }

@@ -16,9 +16,8 @@
 
 package models.view
 
-import enums.CacheKeys
 import models.api.{VatBankAccount, VatFinancials, VatScheme}
-import models.{ApiModelTransformer, CacheKey, ViewModelTransformer}
+import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class CompanyBankAccountDetails(accountName: String, accountNumber: String, sortCode: String)
@@ -36,5 +35,4 @@ object CompanyBankAccountDetails {
     g.copy(bankAccount = Some(VatBankAccount(c.accountName, c.accountNumber, c.sortCode)))
   }
 
-  implicit val cacheKey = CacheKey[CompanyBankAccountDetails](CacheKeys.CompanyBankAccountDetails)
 }
