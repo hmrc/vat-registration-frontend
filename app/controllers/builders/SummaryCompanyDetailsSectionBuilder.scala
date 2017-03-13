@@ -16,7 +16,7 @@
 
 package controllers.builders
 
-import models.api.{SicAndCompliance, VatFinancials, VatTradingDetails}
+import models.api.{SicAndCompliance, VatFinancials}
 import models.view.{SummaryRow, SummarySection, VatReturnFrequency}
 import org.apache.commons.lang3.StringUtils
 import play.api.UnexpectedException
