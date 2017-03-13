@@ -35,7 +35,8 @@
                             '_labelClass -> "cascading",
                             '_maxlength -> 150,
                             '_inputHint -> messages("pages.bankDetails.accountName.hint"),
-                            '_label -> messages("pages.bankDetails.accountName.label")
+                            '_label -> messages("pages.bankDetails.accountName.label"),
+                            '_autoComplete -> "off"
                         )
 
                         @govHelpers.input(
@@ -45,7 +46,8 @@
                             '_inputClass -> "form-control",
                             '_labelClass -> "cascading",
                             '_maxlength -> 8,
-                            '_label -> messages("pages.bankDetails.accountNumber.label")
+                            '_label -> messages("pages.bankDetails.accountNumber.label"),
+                            '_autoComplete -> "off"
                         )
 
                         @defining(bankDetailsForm("sortCode").errors.nonEmpty) { sortCodeErrorPresent =>
@@ -72,7 +74,8 @@
                                         '_label -> "first two digits",
                                         '_maxlength -> 2,
                                         '_labelTextClass -> "hidden",
-                                        '_error_id -> "sort-code-legend"
+                                        '_error_id -> "sort-code-legend",
+                                        '_autoComplete -> "off"
                                     )
 
                                     @govHelpers.input(
@@ -83,7 +86,8 @@
                                         '_label -> "second two digits",
                                         '_maxlength -> 2,
                                         '_labelTextClass -> "hidden",
-                                        '_error_id -> "sort-code-legend"
+                                        '_error_id -> "sort-code-legend",
+                                        '_autoComplete -> "off"
                                     )
 
                                     @govHelpers.input(
@@ -94,7 +98,8 @@
                                         '_label -> "last two digits",
                                         '_maxlength -> 2,
                                         '_labelTextClass -> "hidden",
-                                        '_error_id -> "sort-code-legend"
+                                        '_error_id -> "sort-code-legend",
+                                        '_autoComplete -> "off"
                                     )
                                 </fieldset>
                             </div>
