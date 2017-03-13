@@ -40,6 +40,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       voluntaryRegistration <- s4LService.fetchAndGet[VoluntaryRegistration]()
       startDate <- s4LService.fetchAndGet[StartDate]()
       tradingName <- s4LService.fetchAndGet[TradingName]()
+      businessActivityDescription <- s4LService.fetchAndGet[BusinessActivityDescription]()
       companyBankAccount <- s4LService.fetchAndGet[CompanyBankAccount]()
       companyBankAccountDetails <- s4LService.fetchAndGet[CompanyBankAccountDetails]()
       estimateVatTurnover <- s4LService.fetchAndGet[EstimateVatTurnover]()
@@ -58,6 +59,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
         startDate.flatMap(_.year.map(_.toString)),
         tradingName.map(_.yesNo),
         tradingName.flatMap(_.tradingName),
+        businessActivityDescription.map(_.description),
         companyBankAccount.map(_.yesNo),
         companyBankAccountDetails.map(_.accountName),
         companyBankAccountDetails.map(_.accountNumber),
@@ -99,6 +101,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveToS4Later(data.taxableTurnoverChoice, data, { x => TaxableTurnover(x.taxableTurnoverChoice.get) })
             _ <- saveToS4Later(data.voluntaryChoice, data, { x => VoluntaryRegistration(x.voluntaryChoice.get) })
             _ <- saveToS4Later(data.tradingNameChoice, data, { x => TradingName(x.tradingNameChoice.get, Some(data.tradingName.getOrElse(""))) })
+            _ <- saveToS4Later(data.businessActivityDescription, data, { x => BusinessActivityDescription(x.businessActivityDescription.get) })
             _ <- saveToS4Later(data.companyBankAccountChoice, data, { x => CompanyBankAccount(x.companyBankAccountChoice.get) })
             _ <- saveToS4Later(data.companyBankAccountName, data, { x => CompanyBankAccountDetails(x.companyBankAccountName.get, x.companyBankAccountNumber.get, x.sortCode.get) })
             _ <- saveToS4Later(data.estimateVatTurnover, data, { x => EstimateVatTurnover(x.estimateVatTurnover.get.toLong) })
