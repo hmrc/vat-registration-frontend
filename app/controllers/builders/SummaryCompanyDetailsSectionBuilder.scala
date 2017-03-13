@@ -16,21 +16,13 @@
 
 package controllers.builders
 
-import models.api.{VatFinancials, VatTradingDetails}
+import models.api.{SicAndCompliance, VatFinancials, VatTradingDetails}
 import models.view.{SummaryRow, SummarySection, VatReturnFrequency}
+import org.apache.commons.lang3.StringUtils
 import play.api.UnexpectedException
 
-case class SummaryCompanyDetailsSectionBuilder(vatTradingDetails: VatTradingDetails, vatFinancials: VatFinancials)
+case class SummaryCompanyDetailsSectionBuilder(vatFinancials: VatFinancials, vatSicAndCompliance : SicAndCompliance)
   extends SummarySectionBuilder {
-
-  def tradingNameRow: SummaryRow = SummaryRow(
-    "companyDetails.tradingName",
-    vatTradingDetails.tradingName match {
-      case "" => "app.common.no"
-      case _ => vatTradingDetails.tradingName
-    },
-    Some(controllers.userJourney.routes.TradingNameController.show())
-  )
 
   def estimatedSalesValueRow: SummaryRow = SummaryRow(
     "companyDetails.estimatedSalesValue",
@@ -111,10 +103,20 @@ case class SummaryCompanyDetailsSectionBuilder(vatTradingDetails: VatTradingDeta
     Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
   )
 
+  def companyBusinessDescriptionRow: SummaryRow = SummaryRow(
+    "companyDetails.businessActivity.description",
+    vatSicAndCompliance.description match {
+      case description if StringUtils.isNotBlank(description) => description
+      case _ => "app.common.no"
+    },
+    Some(controllers.userJourney.routes.BusinessActivityDescriptionController.show())
+  )
+
+
   def section: SummarySection = SummarySection(
       id = "companyDetails",
       Seq(
-        (tradingNameRow, true),
+        (companyBusinessDescriptionRow, true),
         (companyBankAccountRow, true),
         (companyBankAccountNameRow, vatFinancials.bankAccount.isDefined),
         (companyBankAccountNumberRow, vatFinancials.bankAccount.isDefined),
