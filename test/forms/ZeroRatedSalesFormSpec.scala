@@ -24,7 +24,7 @@ class ZeroRatedSalesFormSpec extends UnitSpec with WithFakeApplication {
   val testForm = ZeroRatedSalesForm.form
 
   "Creating a form using an empty model" should {
-    "return an empty string for the trading name" in {
+    "return an empty string" in {
       testForm.data.isEmpty shouldBe true
     }
   }
