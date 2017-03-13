@@ -190,6 +190,7 @@ pages.summary.vatDetails.taxableTurnover                = Will earn more than £
 pages.summary.vatDetails.necessity                      = Register voluntarily
 pages.summary.vatDetails.startDate                      = VAT start date
 pages.summary.vatDetails.mandatoryStartDate             = The date the company is registered with Companies House
+pages.summary.vatDetails.tradingName                    = Other Trading Name
 
 ## Summary Page Director contact details
 pages.summary.directorContactDetails.sectionHeading    = Director contact details
@@ -217,7 +218,6 @@ validation.BusinessActivity.description.invalid = Tell us what the company does
 
 ## Summary Page Company details
 pages.summary.companyDetails.sectionHeading                     = Company details
-pages.summary.companyDetails.tradingName                        = Other Trading Name
 pages.summary.companyDetails.businessDescription                = Business description
 pages.summary.companyDetails.mainActivity                       = Main activity
 pages.summary.companyDetails.estimatedSalesValue                = Estimated sales value
@@ -237,6 +237,7 @@ pages.summary.companyDetails.companyBankAccount                 = Bank account
 pages.summary.companyDetails.companyBankAccount.name            = Account name
 pages.summary.companyDetails.companyBankAccount.number          = Account number
 pages.summary.companyDetails.companyBankAccount.sortCode        = Sort code
+pages.summary.companyDetails.businessActivity.description       = Business activity description
 
 ## Error Pages
 errorPages.title                        = Something went wrong

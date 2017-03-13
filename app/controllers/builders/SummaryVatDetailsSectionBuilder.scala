@@ -16,10 +16,10 @@
 
 package controllers.builders
 
-import models.api.VatChoice
+import models.api.{VatChoice, VatTradingDetails}
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice)
+case class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice, vatTradingDetails: VatTradingDetails)
   extends SummarySectionBuilder {
 
   def taxableTurnoverRow: SummaryRow = SummaryRow(
@@ -61,12 +61,23 @@ case class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice)
     }
   )
 
+  def tradingNameRow: SummaryRow = SummaryRow(
+    "vatDetails.tradingName",
+    vatTradingDetails.tradingName match {
+      case "" => "app.common.no"
+      case _ => vatTradingDetails.tradingName
+    },
+    Some(controllers.userJourney.routes.TradingNameController.show())
+  )
+
   def section: SummarySection = SummarySection(
       id = "vatDetails",
       Seq(
         (taxableTurnoverRow, true),
         (necessityRow, vatChoice.necessity == VatChoice.NECESSITY_VOLUNTARY),
-        (startDateRow, true)
+        (startDateRow, true),
+        (tradingNameRow, true)
+
       )
     )
 }

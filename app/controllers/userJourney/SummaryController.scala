@@ -48,10 +48,12 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
     val vatChoice = vatScheme.vatChoice.getOrElse(VatChoice())
     val vatTradingDetails = vatScheme.tradingDetails.getOrElse(VatTradingDetails())
     val vatFinancials = vatScheme.financials.getOrElse(VatFinancials.empty)
+    val vatSicAndCompliance = vatScheme.sicAndCompliance.getOrElse(SicAndCompliance())
+
 
     Summary(Seq(
-        SummaryVatDetailsSectionBuilder(vatChoice).section,
-        SummaryCompanyDetailsSectionBuilder(vatTradingDetails, vatFinancials).section
+        SummaryVatDetailsSectionBuilder(vatChoice, vatTradingDetails).section,
+        SummaryCompanyDetailsSectionBuilder(vatFinancials, vatSicAndCompliance).section
       ))
   }
 }
