@@ -18,6 +18,7 @@ package controllers.builders
 
 import models.api.{SicAndCompliance, VatFinancials, VatTradingDetails}
 import models.view.{SummaryRow, SummarySection, VatReturnFrequency}
+import org.apache.commons.lang3.StringUtils
 import play.api.UnexpectedException
 
 case class SummaryCompanyDetailsSectionBuilder(vatFinancials: VatFinancials, vatSicAndCompliance : SicAndCompliance)
@@ -105,7 +106,7 @@ case class SummaryCompanyDetailsSectionBuilder(vatFinancials: VatFinancials, vat
   def companyBusinessDescriptionRow: SummaryRow = SummaryRow(
     "companyDetails.businessActivity.description",
     vatSicAndCompliance.description match {
-      case description => description
+      case description if StringUtils.isNotBlank(description) => description
       case _ => "app.common.no"
     },
     Some(controllers.userJourney.routes.BusinessActivityDescriptionController.show())
