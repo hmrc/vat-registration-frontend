@@ -10,6 +10,7 @@ app.common.change                       = Change
 app.common.gbp.symbol                   = £
 error.required                          = Select an option
 error.unknown                           = Invalid input
+validation.numeric                      = Enter a numeric value
 
 ## Welcome Page
 pages.welcome.title                     = Before you register for VAT

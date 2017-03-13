@@ -40,6 +40,15 @@ private[forms] object FormValidation {
     (input: String) => if (StringUtils.isNotBlank(input)) Valid else Invalid(s"validation.$specificCode.missing")
   }
 
+  def mandatoryNumericText(specificCode: String): Constraint[String] = Constraint {
+    val numericText = """[0-9]+"""
+    (input: String) => input match {
+      case _ if (StringUtils.isBlank(input)) => Invalid(s"validation.$specificCode.missing")
+      case _ if ( ! input.matches(numericText)) => Invalid("validation.numeric")
+      case _ => Valid
+    }
+  }
+
   val taxEstimateTextToLong = textToLong(0, 1000000000000000L) _
 
   private def textToLong(min: Long, max: Long)(s: String): Long = {
