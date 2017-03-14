@@ -61,8 +61,9 @@ case class SummaryCompanyDetailsSectionBuilder(vatFinancials: VatFinancials, vat
       case VatReturnFrequency.MONTHLY => "pages.summary.companyDetails.accountingPeriod.monthly"
       case VatReturnFrequency.QUARTERLY => vatFinancials.vatAccountingPeriod.periodStart match {
         case Some(period) => s"pages.summary.companyDetails.accountingPeriod.${period.substring(0, 3)}"
-        case None => throw UnexpectedException(Some(s"selected quarterly accounting period, but periodStart was None"))
+        case None => throw UnexpectedException(Some(s"Quarterly accounting period selected, but periodStart is None"))
       }
+      case _ => throw UnexpectedException(Some(s"Accounting period frequency not set"))
     },
     Some(controllers.userJourney.routes.AccountingPeriodController.show())
   )
