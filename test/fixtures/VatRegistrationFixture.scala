@@ -76,6 +76,15 @@ trait VatRegistrationFixture {
 
   val emptyVatScheme = VatScheme.blank(validRegId)
 
+  val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
+    id = validRegId,
+    tradingDetails = None,
+    vatChoice = None,
+    financials = Some(
+      VatFinancials(None, 0L, None, reclaimVatOnMostReturns = false, VatAccountingPeriod(None, VatReturnFrequency.MONTHLY))
+    )
+  )
+
   val validVatScheme = VatScheme(
     id = validRegId,
     tradingDetails = Some(validVatTradingDetails),

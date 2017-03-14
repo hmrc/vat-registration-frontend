@@ -20,9 +20,11 @@ import controllers.builders.{SummaryCompanyDetailsSectionBuilder, SummaryVatDeta
 import enums.DownstreamOutcome
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.view.Summary
+import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
+import models.view.{Summary, VatReturnFrequency}
 import org.mockito.Matchers
 import org.mockito.Mockito.when
+import play.api.UnexpectedException
 import play.api.http.Status
 import play.api.mvc.Result
 import play.api.test.Helpers._
@@ -63,12 +65,21 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
     "getRegistrationSummary maps a valid VatScheme object to a Summary object" in {
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validVatScheme))
-      implicit val hc: HeaderCarrier = new HeaderCarrier
-      TestSummaryController2.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)
+      TestSummaryController2.getRegistrationSummary()(new HeaderCarrier).map(summary => summary.sections.length mustEqual 2)
     }
 
     "registrationToSummary maps a valid VatScheme object to a Summary object" in {
       TestSummaryController.registrationToSummary(validVatScheme).sections.length mustEqual 2
+    }
+
+    "registrationToSummary maps a valid empty VatScheme object to a Summary object" in {
+      TestSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency).sections.length mustEqual 2
+    }
+
+    "registrationToSummary throws an exception when a non-valid empty VatScheme object is mapped to a Summary object" in {
+      assertThrows[UnexpectedException] {
+        TestSummaryController.registrationToSummary(emptyVatScheme)
+      }
     }
 
     // TODO: Need to resolve why raising a new InternalError gives a Boxed Error exception yet this works for PAYE

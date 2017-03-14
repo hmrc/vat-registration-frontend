@@ -92,6 +92,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
 
+    // TODO: review this line (...(vs.financials.getOrElse(VatFinancials.empty))
     def mergeWithS4L(vs: VatScheme) =
       (s4l[EstimateVatTurnover]() |@|
         s4l[EstimateZeroRatedSales]() |@|

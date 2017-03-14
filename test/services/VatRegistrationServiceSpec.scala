@@ -21,7 +21,7 @@ import enums.DownstreamOutcome
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.CacheKey
-import models.api.{VatChoice, VatScheme}
+import models.api._
 import models.view._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -232,5 +232,37 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(true))
       ScalaFutures.whenReady(service.deleteZeroRatedTurnover())(_ mustBe true)
     }
+  }
+
+  "When this is the first time the user starts a journey and we're persisting to the backend" should {
+
+    "submitVatFinancials should process the submission even if VatScheme does not contain a VatFinancials object" in new Setup {
+      val mergedVatFinancials = VatFinancials(
+        Some(VatBankAccount("ACME INC", "12345678", "10-10-10")),
+        50000,
+        Some(60000),
+        true,
+        VatAccountingPeriod(None, "monthly")
+      )
+
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatScheme]]()))
+        .thenReturn(Future.successful(emptyVatScheme))
+      ScalaFutures.whenReady(service.submitVatFinancials())(_ mustBe mergedVatFinancials)
+    }
+
+    "submitTradingDetails should process the submission even if VatScheme does not contain a VatFinancials object" in new Setup {
+      val mergedVatTradingDetails = VatTradingDetails("ACME INC")
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatScheme]]()))
+        .thenReturn(Future.successful(emptyVatScheme))
+      ScalaFutures.whenReady(service.submitTradingDetails())(_ mustBe mergedVatTradingDetails)
+    }
+
+    "submitVatChoice should process the submission even if VatScheme does not contain a VatFinancials object" in new Setup {
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatScheme]]()))
+        .thenReturn(Future.successful(emptyVatScheme))
+      ScalaFutures.whenReady(service.submitVatChoice())(_ mustBe validVatChoice)
+    }
+
+
   }
 }
