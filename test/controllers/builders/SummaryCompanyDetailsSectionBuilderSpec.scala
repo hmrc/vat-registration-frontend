@@ -154,7 +154,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.accountingPeriod",
             "pages.summary.companyDetails.accountingPeriod.monthly",
-            Some(controllers.userJourney.routes.AccountingPeriodController.show())
+            Some(controllers.userJourney.routes.VatReturnFrequencyController.show())
           )
       }
 
@@ -170,7 +170,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.accountingPeriod",
             "pages.summary.companyDetails.accountingPeriod.jan",
-            Some(controllers.userJourney.routes.AccountingPeriodController.show())
+            Some(controllers.userJourney.routes.VatReturnFrequencyController.show())
           )
       }
 
@@ -186,7 +186,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.accountingPeriod",
             "pages.summary.companyDetails.accountingPeriod.feb",
-            Some(controllers.userJourney.routes.AccountingPeriodController.show())
+            Some(controllers.userJourney.routes.VatReturnFrequencyController.show())
           )
       }
 
@@ -202,7 +202,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.accountingPeriod",
             "pages.summary.companyDetails.accountingPeriod.mar",
-            Some(controllers.userJourney.routes.AccountingPeriodController.show())
+            Some(controllers.userJourney.routes.VatReturnFrequencyController.show())
           )
       }
 

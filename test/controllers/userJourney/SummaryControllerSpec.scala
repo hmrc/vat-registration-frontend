@@ -16,6 +16,7 @@
 
 package controllers.userJourney
 
+import controllers.builders.{SummaryCompanyDetailsSectionBuilder, SummaryVatDetailsSectionBuilder}
 import enums.DownstreamOutcome
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
@@ -29,6 +30,7 @@ import services.VatRegistrationService
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -39,6 +41,10 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
   object TestSummaryController extends SummaryController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
     override def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] = Future.successful(Summary(sections = Seq()))
+  }
+
+  object TestSummaryController2 extends SummaryController(ds)(mockS4LService, mockVatRegistrationService) {
+    override val authConnector = mockAuthConnector
   }
 
   "Calling summary to show the summary page" should {
@@ -53,6 +59,16 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
           charset(result) mustBe Some("utf-8")
           contentAsString(result) must include("Check your answers")
       }
+    }
+
+    "getRegistrationSummary maps a valid VatScheme object to a Summary object" in {
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validVatScheme))
+      implicit val hc: HeaderCarrier = new HeaderCarrier
+      TestSummaryController2.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)
+    }
+
+    "registrationToSummary maps a valid VatScheme object to a Summary object" in {
+      TestSummaryController.registrationToSummary(validVatScheme).sections.length mustEqual 2
     }
 
     // TODO: Need to resolve why raising a new InternalError gives a Boxed Error exception yet this works for PAYE

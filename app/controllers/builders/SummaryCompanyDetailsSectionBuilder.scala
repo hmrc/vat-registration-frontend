@@ -65,7 +65,7 @@ case class SummaryCompanyDetailsSectionBuilder(vatFinancials: VatFinancials, vat
       }
       case _ => throw UnexpectedException(Some(s"Accounting period frequency not set"))
     },
-    Some(controllers.userJourney.routes.AccountingPeriodController.show())
+    Some(controllers.userJourney.routes.VatReturnFrequencyController.show())
   )
 
   def companyBankAccountRow: SummaryRow = SummaryRow(
