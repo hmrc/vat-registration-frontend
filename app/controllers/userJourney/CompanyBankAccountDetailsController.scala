@@ -32,8 +32,14 @@ class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
 
   import cats.instances.future._
 
-  def show: Action[AnyContent] = authorised(implicit user => implicit request => {
-    Ok(views.html.pages.company_bank_account_details(CompanyBankAccountDetailsForm.form))
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    viewModel[CompanyBankAccountDetails].map { vm =>
+      Ok(views.html.pages.company_bank_account_details(CompanyBankAccountDetailsForm.form.fill(
+        CompanyBankAccountDetailsForm(
+          accountName = vm.accountName.trim,
+          accountNumber = "",
+          sortCode = SortCode.parse(vm.sortCode).getOrElse(SortCode("", "", ""))))))
+    }.getOrElse(Ok(views.html.pages.company_bank_account_details(CompanyBankAccountDetailsForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
