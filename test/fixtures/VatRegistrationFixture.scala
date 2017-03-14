@@ -98,17 +98,17 @@ trait VatRegistrationFixture {
     Seq(
       (SummaryRow(
         id = "vatDetails.taxableTurnover",
-        answer = Right("No"),
+        answerMessageKey = "No",
         changeLink = Some(controllers.userJourney.routes.TaxableTurnoverController.show())
       ), true),
       (SummaryRow(
         id = "vatDetails.necessity",
-        answer = Right("Yes"),
+        answerMessageKey = "Yes",
         changeLink = Some(controllers.userJourney.routes.VoluntaryRegistrationController.show())
       ), true),
       (SummaryRow(
         id = "vatDetails.startDate",
-        answer = Right("1 February 2017"),
+        answerMessageKey = "1 February 2017",
         changeLink = Some(controllers.userJourney.routes.StartDateController.show())
       ), true)
     )
@@ -119,22 +119,22 @@ trait VatRegistrationFixture {
     Seq(
       (SummaryRow(
         "companyDetails.tradingName",
-        Right(tradingName),
+        tradingName,
         Some(controllers.userJourney.routes.TradingNameController.show())
       ), true),
       (SummaryRow(
         "companyDetails.estimatedSalesValue",
-        Right("£10000000000"),
+        "£10000000000",
         Some(controllers.userJourney.routes.EstimateVatTurnoverController.show())
       ), true),
       (SummaryRow(
         "companyDetails.zeroRatedSales",
-        Right("Yes"),
+        "Yes",
         Some(controllers.userJourney.routes.ZeroRatedSalesController.show())
       ), true),
       (SummaryRow(
         "companyDetails.zeroRatedSalesValue",
-        Right("£10000000000"),
+        "£10000000000",
         Some(controllers.userJourney.routes.EstimateZeroRatedSalesController.show())
       ), true)
     )

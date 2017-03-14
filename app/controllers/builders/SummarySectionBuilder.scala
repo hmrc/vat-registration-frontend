@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package models.view
+package controllers.builders
 
-import play.api.mvc.Call
+import models.view.SummarySection
 
-case class Summary(sections: Seq[SummarySection])
+abstract class SummarySectionBuilder {
 
-case class SummarySection(
-                           id: String,
-                           rows: Seq[Tuple2[SummaryRow, Boolean]]
-                         )
-
-case class SummaryRow(
-                       id: String,
-                       answerMessageKey: String,
-                       changeLink: Option[Call]
-                     )
+  protected def section: SummarySection
+}

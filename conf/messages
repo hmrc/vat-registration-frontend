@@ -65,8 +65,8 @@ pages.voluntary.registration.title                            = Voluntary Regist
 pages.voluntary.registration.heading                          = Do you want to register voluntarily for VAT?
 pages.voluntary.registration.para1                            = Based on the answers you provided, you don’t need to register for VAT right now.
 pages.voluntary.registration.para2                            = But you can register voluntarily if:
-pages.voluntary.registration.bullet1                          = Your company''s taxable turnover will be less than £83,000 within the next 30 days
-pages.voluntary.registration.bullet2                          = Your company sells or intends to sell goods or services that aren''t exempt from VAT
+pages.voluntary.registration.bullet1                          = the company''s taxable turnover will be less than £83,000 within the next 30 days
+pages.voluntary.registration.bullet2                          = the company sells or intends to sell goods or services that aren''t exempt from VAT
 pages.voluntary.registration.vatVoluntarily.title             = Find out more about voluntary VAT registration
 pages.voluntary.registration.vatVoluntarily.para1             = If you''re registered for VAT you:
 pages.voluntary.registration.vatVoluntarily.bullet.charge     = must <a href="https://www.gov.uk/vat-businesses/how-vat-works">charge VAT</a> on the goods or services you sell
@@ -191,6 +191,7 @@ pages.summary.vatDetails.taxableTurnover                = Will earn more than £
 pages.summary.vatDetails.necessity                      = Register voluntarily
 pages.summary.vatDetails.startDate                      = VAT start date
 pages.summary.vatDetails.mandatoryStartDate             = The date the company is registered with Companies House
+pages.summary.vatDetails.tradingName                    = Other Trading Name
 
 ## Summary Page Director contact details
 pages.summary.directorContactDetails.sectionHeading    = Director contact details
@@ -218,7 +219,6 @@ validation.BusinessActivity.description.invalid = Enter a valid business activit
 
 ## Summary Page Company details
 pages.summary.companyDetails.sectionHeading                     = Company details
-pages.summary.companyDetails.tradingName                        = Other Trading Name
 pages.summary.companyDetails.businessDescription                = Business description
 pages.summary.companyDetails.mainActivity                       = Main activity
 pages.summary.companyDetails.estimatedSalesValue                = Estimated sales value
@@ -234,6 +234,11 @@ pages.summary.companyDetails.accountingPeriod.feb               = February, May,
 pages.summary.companyDetails.accountingPeriod.mar               = March, June, September and December
 pages.summary.companyDetails.eori                               = Economic Operator Registration and Identification number
 pages.summary.companyDetails.flatRateScheme                     = Flat rate scheme
+pages.summary.companyDetails.companyBankAccount                 = Bank account
+pages.summary.companyDetails.companyBankAccount.name            = Account name
+pages.summary.companyDetails.companyBankAccount.number          = Account number
+pages.summary.companyDetails.companyBankAccount.sortCode        = Sort code
+pages.summary.companyDetails.businessActivity.description       = Business activity description
 
 ## Error Pages
 errorPages.title                        = Something went wrong
