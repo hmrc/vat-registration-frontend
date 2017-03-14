@@ -70,7 +70,6 @@ trait VatRegistrationFixture {
     vatAccountingPeriod = VatAccountingPeriod(None, period)
   )
 
-
   val validSicAndCompliance = SicAndCompliance(
     description = businessActivityDescription
   )
