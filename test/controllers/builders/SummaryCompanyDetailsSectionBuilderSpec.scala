@@ -250,5 +250,119 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
       }
     }
 
+    "with companyBankAccountNameRow render" should {
+
+      "a 'No' value should be returned with an empty bank account name in vat financials" in {
+        val builder = SummaryCompanyDetailsSectionBuilder(VatFinancials.empty, SicAndCompliance())
+        builder.companyBankAccountNameRow mustBe
+          SummaryRow(
+            "companyDetails.companyBankAccount.name",
+            "app.common.no",
+            Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
+          )
+      }
+
+      "a real name value should be returned with bank account name set in vat financials" in {
+        val financials = VatFinancials(
+          turnoverEstimate = 0L,
+          vatAccountingPeriod = VatAccountingPeriod.empty,
+          reclaimVatOnMostReturns = false,
+          zeroRatedSalesEstimate = None,
+          bankAccount = Some(VatBankAccount(accountName = "John Smith"))
+        )
+        val builder = SummaryCompanyDetailsSectionBuilder(financials, SicAndCompliance())
+        builder.companyBankAccountNameRow mustBe
+          SummaryRow(
+            "companyDetails.companyBankAccount.name",
+            "John Smith",
+            Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
+          )
+      }
+    }
+
+    "with companyBankAccountNumberRow render" should {
+
+      "a 'No' value should be returned with an empty bank account number in vat financials" in {
+        val builder = SummaryCompanyDetailsSectionBuilder(VatFinancials.empty, SicAndCompliance())
+        builder.companyBankAccountNumberRow mustBe
+          SummaryRow(
+            "companyDetails.companyBankAccount.number",
+            "app.common.no",
+            Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
+          )
+      }
+
+      "a real bank account number's last 4 digits the rest being masked, should be returned with bank account number set in vat financials" in {
+        val financials = VatFinancials(
+          turnoverEstimate = 0L,
+          vatAccountingPeriod = VatAccountingPeriod.empty,
+          reclaimVatOnMostReturns = false,
+          zeroRatedSalesEstimate = None,
+          bankAccount = Some(VatBankAccount(accountNumber = "12345678"))
+        )
+        val builder = SummaryCompanyDetailsSectionBuilder(financials, SicAndCompliance())
+        builder.companyBankAccountNumberRow mustBe
+          SummaryRow(
+            "companyDetails.companyBankAccount.number",
+            "****5678",
+            Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
+          )
+      }
+    }
+
+    "with companyBankAccountSortCodeRow render" should {
+
+      "a 'No' value should be returned with an empty bank account sort code in vat financials" in {
+        val builder = SummaryCompanyDetailsSectionBuilder(VatFinancials.empty, SicAndCompliance())
+        builder.companyBankAccountSortCodeRow mustBe
+          SummaryRow(
+            "companyDetails.companyBankAccount.sortCode",
+            "app.common.no",
+            Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
+          )
+      }
+
+      "a real sort code value should be returned with bank account sort code set in vat financials" in {
+        val financials = VatFinancials(
+          turnoverEstimate = 0L,
+          vatAccountingPeriod = VatAccountingPeriod.empty,
+          reclaimVatOnMostReturns = false,
+          zeroRatedSalesEstimate = None,
+          bankAccount = Some(VatBankAccount(accountSortCode = "01-23-45"))
+        )
+        val builder = SummaryCompanyDetailsSectionBuilder(financials, SicAndCompliance())
+        builder.companyBankAccountSortCodeRow mustBe
+          SummaryRow(
+            "companyDetails.companyBankAccount.sortCode",
+            "01-23-45",
+            Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
+          )
+      }
+    }
+
+    "with companyBusinessDescriptionRow render" should {
+
+      "a 'No' value should be returned with an empty description in sic and compliance" in {
+        val builder = SummaryCompanyDetailsSectionBuilder(VatFinancials.empty, SicAndCompliance())
+        builder.companyBusinessDescriptionRow mustBe
+          SummaryRow(
+            "companyDetails.businessActivity.description",
+            "app.common.no",
+            Some(controllers.userJourney.routes.BusinessActivityDescriptionController.show())
+          )
+      }
+
+      "a real sort code value should be returned with bank account sort code set in vat financials" in {
+        val compliance = SicAndCompliance("Business Described")
+        val builder = SummaryCompanyDetailsSectionBuilder(VatFinancials.empty, compliance)
+        builder.companyBusinessDescriptionRow mustBe
+          SummaryRow(
+            "companyDetails.businessActivity.description",
+            "Business Described",
+            Some(controllers.userJourney.routes.BusinessActivityDescriptionController.show())
+          )
+      }
+    }
+
   }
 }
