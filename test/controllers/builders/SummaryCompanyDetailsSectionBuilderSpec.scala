@@ -206,6 +206,11 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           )
       }
 
+      "an exception should be thrown when accounting period frequency isn't set" in {
+        val builder = SummaryCompanyDetailsSectionBuilder(VatFinancials.empty, SicAndCompliance())
+        assertThrows[UnexpectedException](builder.accountingPeriodRow)
+      }
+
       "an exception should be thrown when accounting period frequency is set to quarterly with no accounting period set" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
@@ -214,9 +219,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           zeroRatedSalesEstimate = None
         )
         val builder = SummaryCompanyDetailsSectionBuilder(financials, SicAndCompliance())
-        assertThrows[UnexpectedException] {
-          builder.accountingPeriodRow
-        }
+        assertThrows[UnexpectedException](builder.accountingPeriodRow)
       }
     }
 
@@ -361,6 +364,22 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
             "Business Described",
             Some(controllers.userJourney.routes.BusinessActivityDescriptionController.show())
           )
+      }
+    }
+
+    "with section generate" should {
+
+      "a valid summary section" in {
+        val financials = VatFinancials(
+          turnoverEstimate = 0L,
+          vatAccountingPeriod = VatAccountingPeriod(None, VatReturnFrequency.MONTHLY),
+          reclaimVatOnMostReturns = false,
+          zeroRatedSalesEstimate = None,
+          bankAccount = None
+        )
+        val builder = SummaryCompanyDetailsSectionBuilder(financials, SicAndCompliance())
+        builder.section.id mustBe "companyDetails"
+        builder.section.rows.length mustEqual 10
       }
     }
 
