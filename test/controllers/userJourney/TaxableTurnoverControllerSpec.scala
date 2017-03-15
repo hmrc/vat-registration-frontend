@@ -131,7 +131,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/start-date-confirmation"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/start-date-confirmation"
       }
 
     }
@@ -150,7 +150,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/voluntary-registration"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/voluntary-registration"
       }
 
     }

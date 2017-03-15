@@ -124,7 +124,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/bank-details"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/bank-details"
       }
 
     }
@@ -147,7 +147,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/estimate-vat-turnover"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/estimate-vat-turnover"
       }
 
     }
