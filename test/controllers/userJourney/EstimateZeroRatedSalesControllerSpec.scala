@@ -123,7 +123,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/vat-charge-expectancy"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/vat-charge-expectancy"
       }
 
     }

@@ -134,7 +134,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/summary"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/summary"
       }
 
     }
@@ -158,7 +158,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/accounting-period"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/accounting-period"
       }
 
     }
