@@ -40,7 +40,7 @@ case class StartDate(dateType: String = "",
 
 object StartDate {
 
-  def default = StartDate(COMPANY_REGISTRATION_DATE)
+  def default: StartDate = StartDate(COMPANY_REGISTRATION_DATE)
 
   val pattern = DateTimeFormat.forPattern("dd/MM/yyyy")
 

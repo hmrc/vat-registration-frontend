@@ -103,7 +103,10 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveToS4Later(data.tradingNameChoice, data, { x => TradingName(x.tradingNameChoice.get, Some(data.tradingName.getOrElse(""))) })
             _ <- saveToS4Later(data.businessActivityDescription, data, { x => BusinessActivityDescription(x.businessActivityDescription.get) })
             _ <- saveToS4Later(data.companyBankAccountChoice, data, { x => CompanyBankAccount(x.companyBankAccountChoice.get) })
-            _ <- saveToS4Later(data.companyBankAccountName, data, { x => CompanyBankAccountDetails(x.companyBankAccountName.get, x.companyBankAccountNumber.get, x.sortCode.get) })
+            _ <- saveToS4Later(data.companyBankAccountName, data, {
+              x => CompanyBankAccountDetails(x.companyBankAccountName.get,
+              x.companyBankAccountNumber.get, x.sortCode.get)
+            })
             _ <- saveToS4Later(data.estimateVatTurnover, data, { x => EstimateVatTurnover(x.estimateVatTurnover.get.toLong) })
             _ <- saveToS4Later(data.zeroRatedSalesChoice, data, { x => ZeroRatedSales(x.zeroRatedSalesChoice.get) })
             _ <- saveToS4Later(data.zeroRatedSalesEstimate, data, { x => EstimateZeroRatedSales(x.zeroRatedSalesEstimate.get.toLong) })
