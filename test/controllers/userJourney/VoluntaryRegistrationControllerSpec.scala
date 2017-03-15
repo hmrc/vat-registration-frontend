@@ -139,7 +139,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/start-date"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/start-date"
       }
 
     }
@@ -161,7 +161,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}"
       }
 
     }

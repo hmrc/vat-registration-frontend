@@ -120,7 +120,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe "/vat-registration/trading-name"
+          redirectLocation(result).getOrElse("") mustBe s"${contextRoot}/trading-name"
 
       }
 
@@ -140,7 +140,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe "/vat-registration/trading-name"
+          redirectLocation(result).getOrElse("") mustBe s"${contextRoot}/trading-name"
       }
 
     }
