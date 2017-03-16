@@ -27,9 +27,9 @@ class MandatoryStartDateControllerSpec extends VatRegSpec {
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.StartDateController.show())
+  val fakeRequest = FakeRequest(vatChoice.routes.StartDateController.show())
 
-  s"GET ${routes.MandatoryStartDateController.show()}" should {
+  s"GET ${vatChoice.routes.MandatoryStartDateController.show()}" should {
 
     "display the mandatory start date confirmation page to the user" in {
       callAuthorised(MandatoryStartDateController.show, mockAuthConnector) {
@@ -42,7 +42,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec {
     }
   }
 
-  s"POST ${routes.MandatoryStartDateController.submit()}" should {
+  s"POST ${vatChoice.routes.MandatoryStartDateController.submit()}" should {
 
     "redirect the user to the trading name page after clicking continue on the mandatory start date confirmation page" in {
       callAuthorised(MandatoryStartDateController.submit, mockAuthConnector) {

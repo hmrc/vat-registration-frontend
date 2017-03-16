@@ -23,7 +23,6 @@ import forms.vatDetails.vatFinancials.VatReturnFrequencyForm
 import helpers.VatRegSpec
 import models.CacheKey
 import models.view.vatFinancials.{AccountingPeriod, VatReturnFrequency}
-import models.view.{AccountingPeriod, VatReturnFrequency}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -44,9 +43,9 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.VatReturnFrequencyController.show())
+  val fakeRequest = FakeRequest(vatFinancials.routes.VatReturnFrequencyController.show())
 
-  s"GET ${routes.VatReturnFrequencyController.show()}" should {
+  s"GET ${vatFinancials.routes.VatReturnFrequencyController.show()}" should {
 
     "return HTML when there's a Vat Return Frequency model in S4L" in {
       val vatReturnFrequency = VatReturnFrequency(VatReturnFrequency.MONTHLY)
@@ -102,7 +101,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
   }
 
 
-  s"POST ${routes.VatReturnFrequencyController.submit()} with Empty data" should {
+  s"POST ${vatFinancials.routes.VatReturnFrequencyController.submit()} with Empty data" should {
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(TestVatReturnFrequencyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -114,7 +113,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
     }
   }
 
-  s"POST ${routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Monthly" should {
+  s"POST ${vatFinancials.routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Monthly" should {
 
     "return 303" in {
       val returnCacheMapVatReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.MONTHLY))))
@@ -142,7 +141,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
     }
   }
 
-  s"POST ${routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Quarterly" should {
+  s"POST ${vatFinancials.routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Quarterly" should {
 
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.QUARTERLY))))

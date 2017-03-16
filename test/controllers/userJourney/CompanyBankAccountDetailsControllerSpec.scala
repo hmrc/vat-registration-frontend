@@ -42,7 +42,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.CompanyBankAccountDetailsController.show())
+  val fakeRequest = FakeRequest(vatFinancials.routes.CompanyBankAccountDetailsController.show())
   val validBankAccountFormData = Seq(
     "accountName" -> "Some account name",
     "accountNumber" -> "12345678",
@@ -53,7 +53,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
 
   val validCompanyBankAccountDetails = CompanyBankAccountDetails("name", "12345678", "11-11-11")
 
-  s"GET ${routes.CompanyBankAccountDetailsController.show()}" should {
+  s"GET ${vatFinancials.routes.CompanyBankAccountDetailsController.show()}" should {
 
     "return HTML when there's a CompanyBankAccountDetails model in S4L" in {
       when(mockS4LService.fetchAndGet[CompanyBankAccountDetails]()
@@ -120,7 +120,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
   }
 
 
-  s"POST ${routes.ZeroRatedSalesController.submit()} with Empty data" should {
+  s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()} with Empty data" should {
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountDetailsController.submit(), mockAuthConnector,
@@ -130,7 +130,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
   }
 
 
-  s"POST ${routes.CompanyBankAccountDetailsController.submit()} with valid Company Bank Account Details" should {
+  s"POST ${vatFinancials.routes.CompanyBankAccountDetailsController.submit()} with valid Company Bank Account Details" should {
 
     "return 303" in {
       val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(validCompanyBankAccountDetails)))
@@ -148,7 +148,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
     }
   }
 
-  s"POST ${routes.CompanyBankAccountDetailsController.submit()} with invalid Company Bank Account Details" should {
+  s"POST ${vatFinancials.routes.CompanyBankAccountDetailsController.submit()} with invalid Company Bank Account Details" should {
 
     "return 400" in {
       val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(validCompanyBankAccountDetails)))

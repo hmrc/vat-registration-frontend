@@ -113,17 +113,17 @@ trait VatRegistrationFixture {
       (SummaryRow(
         id = "vatDetails.taxableTurnover",
         answerMessageKey = "No",
-        changeLink = Some(controllers.userJourney.routes.TaxableTurnoverController.show())
+        changeLink = Some(controllers.userJourney.vatChoice.routes.TaxableTurnoverController.show())
       ), true),
       (SummaryRow(
         id = "vatDetails.necessity",
         answerMessageKey = "Yes",
-        changeLink = Some(controllers.userJourney.routes.VoluntaryRegistrationController.show())
+        changeLink = Some(controllers.userJourney.vatChoice.routes.VoluntaryRegistrationController.show())
       ), true),
       (SummaryRow(
         id = "vatDetails.startDate",
         answerMessageKey = "1 February 2017",
-        changeLink = Some(controllers.userJourney.routes.StartDateController.show())
+        changeLink = Some(controllers.userJourney.vatChoice.routes.StartDateController.show())
       ), true)
     )
   )
@@ -134,22 +134,22 @@ trait VatRegistrationFixture {
       (SummaryRow(
         "companyDetails.tradingName",
         tradingName,
-        Some(controllers.userJourney.routes.TradingNameController.show())
+        Some(controllers.userJourney.vatTradingDetails.routes.TradingNameController.show())
       ), true),
       (SummaryRow(
         "companyDetails.estimatedSalesValue",
         "£10000000000",
-        Some(controllers.userJourney.routes.EstimateVatTurnoverController.show())
+        Some(controllers.userJourney.vatFinancials.routes.EstimateVatTurnoverController.show())
       ), true),
       (SummaryRow(
         "companyDetails.zeroRatedSales",
         "Yes",
-        Some(controllers.userJourney.routes.ZeroRatedSalesController.show())
+        Some(controllers.userJourney.vatFinancials.routes.ZeroRatedSalesController.show())
       ), true),
       (SummaryRow(
         "companyDetails.zeroRatedSalesValue",
         "£10000000000",
-        Some(controllers.userJourney.routes.EstimateZeroRatedSalesController.show())
+        Some(controllers.userJourney.vatFinancials.routes.EstimateZeroRatedSalesController.show())
       ), true)
     )
   )
