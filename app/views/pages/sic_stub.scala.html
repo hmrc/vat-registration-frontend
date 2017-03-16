@@ -1,0 +1,26 @@
+@import models.view.SicStub
+@(sicStubForm:  Form[SicStub])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">Enter 1-4, 8 digit SIC codes:</h1>
+
+        @govHelpers.form(action = controllers.test.routes.SicStubController.submit()) {
+            <div class="form-group">
+                <fieldset>
+
+                    <p>@govHelpers.input(sicStubForm("sicCode1"))</p>
+                    <p>@govHelpers.input(sicStubForm("sicCode2"))</p>
+                    <p>@govHelpers.input(sicStubForm("sicCode3"))</p>
+                    <p>@govHelpers.input(sicStubForm("sicCode4"))</p>
+
+                </fieldset>
+
+            </div>
+
+            <div class="form-group">
+                <button class="btn button" type="submit" id="submit">Submit</button>
+            </div>
+        }
+
+
+

@@ -32,7 +32,6 @@ class BusinessActivityDescriptionController @Inject()(ds: CommonPlayDependencies
 
   import cats.instances.future._
 
-
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     viewModel[BusinessActivityDescription].map { vm =>
       Ok(views.html.pages.business_activity_description(BusinessActivityDescriptionForm.form.fill(vm)))
@@ -46,7 +45,7 @@ class BusinessActivityDescriptionController @Inject()(ds: CommonPlayDependencies
       }, {
         data: BusinessActivityDescription => {
           s4l.saveForm[BusinessActivityDescription](data.copy(description = data.description.trim)) map { _ =>
-            Redirect(controllers.userJourney.routes.CompanyBankAccountController.show())
+            Redirect(controllers.test.routes.SicStubController.show())
           }
         }
       })
