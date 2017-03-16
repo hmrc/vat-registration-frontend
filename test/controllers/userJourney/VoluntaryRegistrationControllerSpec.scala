@@ -33,10 +33,11 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import controllers.userJourney.vatChoice.VoluntaryRegistrationController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.CacheKey
-import models.view.VoluntaryRegistration
+import models.view.vatChoice.VoluntaryRegistration
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status

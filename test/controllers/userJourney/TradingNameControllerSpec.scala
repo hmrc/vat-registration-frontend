@@ -17,10 +17,11 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import controllers.userJourney.vatTradingDetails.TradingNameController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.CacheKey
-import models.view.TradingName
+import models.view.vatTradingDetails.TradingName
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status

@@ -16,7 +16,7 @@
 
 package forms.vatDetails.test
 
-import models.view.TestSetup
+import models.view.test.TestSetup
 import play.api.data.Form
 import play.api.data.Forms._
 

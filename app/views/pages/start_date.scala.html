@@ -1,4 +1,4 @@
-@import models.view.StartDate
+@import models.view.vatChoice.StartDate
 @(startDateForm: Form[StartDate])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 
@@ -11,7 +11,7 @@
 
       <p>@messages("pages.startDate.para1")</p>
 
-        @govHelpers.form(action = controllers.userJourney.routes.StartDateController.submit()) {
+        @govHelpers.form(action = controllers.userJourney.vatChoice.routes.StartDateController.submit()) {
             <div class="form-group">
                 <fieldset>
                     <span id="startDateRadio"/>

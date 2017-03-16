@@ -17,10 +17,11 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import controllers.userJourney.vatChoice.StartDateController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.CacheKey
-import models.view.StartDate
+import models.view.vatChoice.StartDate
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status

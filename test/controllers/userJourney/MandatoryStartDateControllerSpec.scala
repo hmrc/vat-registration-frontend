@@ -16,6 +16,7 @@
 
 package controllers.userJourney
 
+import controllers.userJourney.vatChoice.MandatoryStartDateController
 import helpers.VatRegSpec
 import play.api.test.FakeRequest
 import play.api.test.Helpers._

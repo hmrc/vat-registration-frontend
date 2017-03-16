@@ -7,60 +7,60 @@ GET         /                               controllers.userJourney.WelcomeContr
 GET         /start                          controllers.userJourney.WelcomeController.start
 
 ## VOLUNTARY START DATE PAGE
-GET         /start-date                     controllers.userJourney.StartDateController.show
-POST        /start-date                     controllers.userJourney.StartDateController.submit
+GET         /start-date                     controllers.userJourney.vatChoice.StartDateController.show
+POST        /start-date                     controllers.userJourney.vatChoice.StartDateController.submit
 
 ## MANDATORY START DATE PAGE
-GET         /start-date-confirmation        controllers.userJourney.MandatoryStartDateController.show
-POST        /start-date-confirmation        controllers.userJourney.MandatoryStartDateController.submit
+GET         /start-date-confirmation        controllers.userJourney.vatChoice.MandatoryStartDateController.show
+POST        /start-date-confirmation        controllers.userJourney.vatChoice.MandatoryStartDateController.submit
 
 ## TRADING NAME PAGE
-GET         /trading-name                   controllers.userJourney.TradingNameController.show
-POST        /trading-name                   controllers.userJourney.TradingNameController.submit
+GET         /trading-name                   controllers.userJourney.vatTradingDetails.TradingNameController.show
+POST        /trading-name                   controllers.userJourney.vatTradingDetails.TradingNameController.submit
 
 ## VOLUNTARY REGISTRATION PAGE
-GET         /voluntary-registration         controllers.userJourney.VoluntaryRegistrationController.show
-POST        /voluntary-registration         controllers.userJourney.VoluntaryRegistrationController.submit
+GET         /voluntary-registration         controllers.userJourney.vatChoice.VoluntaryRegistrationController.show
+POST        /voluntary-registration         controllers.userJourney.vatChoice.VoluntaryRegistrationController.submit
 
 ## ESTIMATE VAT TAXABLE TURNOVER PAGE
-GET         /estimate-vat-turnover          controllers.userJourney.EstimateVatTurnoverController.show
-POST        /estimate-vat-turnover          controllers.userJourney.EstimateVatTurnoverController.submit
+GET         /estimate-vat-turnover          controllers.userJourney.vatFinancials.EstimateVatTurnoverController.show
+POST        /estimate-vat-turnover          controllers.userJourney.vatFinancials.EstimateVatTurnoverController.submit
 
 ## ZERO RATED SALES PAGE
-GET         /zero-rated-sales               controllers.userJourney.ZeroRatedSalesController.show
-POST        /zero-rated-sales               controllers.userJourney.ZeroRatedSalesController.submit
+GET         /zero-rated-sales               controllers.userJourney.vatFinancials.ZeroRatedSalesController.show
+POST        /zero-rated-sales               controllers.userJourney.vatFinancials.ZeroRatedSalesController.submit
 
 ## ESTIMATE ZERO RATED SALES PAGE
-GET         /estimate-zero-rated-sales      controllers.userJourney.EstimateZeroRatedSalesController.show
-POST        /estimate-zero-rated-sales      controllers.userJourney.EstimateZeroRatedSalesController.submit
+GET         /estimate-zero-rated-sales      controllers.userJourney.vatFinancials.EstimateZeroRatedSalesController.show
+POST        /estimate-zero-rated-sales      controllers.userJourney.vatFinancials.EstimateZeroRatedSalesController.submit
 
 ## VAT CHARGE EXPECTANCY PAGE
-GET         /vat-charge-expectancy          controllers.userJourney.VatChargeExpectancyController.show
-POST        /vat-charge-expectancy          controllers.userJourney.VatChargeExpectancyController.submit
+GET         /vat-charge-expectancy          controllers.userJourney.vatFinancials.VatChargeExpectancyController.show
+POST        /vat-charge-expectancy          controllers.userJourney.vatFinancials.VatChargeExpectancyController.submit
 
 ## ACCOUNTING PERIOD PAGE
-GET         /accounting-period              controllers.userJourney.AccountingPeriodController.show
-POST        /accounting-period              controllers.userJourney.AccountingPeriodController.submit
+GET         /accounting-period              controllers.userJourney.vatFinancials.AccountingPeriodController.show
+POST        /accounting-period              controllers.userJourney.vatFinancials.AccountingPeriodController.submit
 
 ## TAXABLE TURNOVER PAGE
-GET         /taxable-turnover               controllers.userJourney.TaxableTurnoverController.show
-POST        /taxable-turnover               controllers.userJourney.TaxableTurnoverController.submit
+GET         /taxable-turnover               controllers.userJourney.vatChoice.TaxableTurnoverController.show
+POST        /taxable-turnover               controllers.userJourney.vatChoice.TaxableTurnoverController.submit
 
 ## VAT RETURN FREQUENCY
-GET         /vat-return-frequency           controllers.userJourney.VatReturnFrequencyController.show
-POST        /vat-return-frequency           controllers.userJourney.VatReturnFrequencyController.submit
+GET         /vat-return-frequency           controllers.userJourney.vatFinancials.VatReturnFrequencyController.show
+POST        /vat-return-frequency           controllers.userJourney.vatFinancials.VatReturnFrequencyController.submit
 
 ## COMPANY BANK ACCOUNT
-GET         /company-bank-account           controllers.userJourney.CompanyBankAccountController.show
-POST        /company-bank-account           controllers.userJourney.CompanyBankAccountController.submit
+GET         /company-bank-account           controllers.userJourney.vatFinancials.CompanyBankAccountController.show
+POST        /company-bank-account           controllers.userJourney.vatFinancials.CompanyBankAccountController.submit
 
 ## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
-GET         /bank-details                   controllers.userJourney.CompanyBankAccountDetailsController.show
-POST        /bank-details                   controllers.userJourney.CompanyBankAccountDetailsController.submit
+GET         /bank-details                   controllers.userJourney.vatFinancials.CompanyBankAccountDetailsController.show
+POST        /bank-details                   controllers.userJourney.vatFinancials.CompanyBankAccountDetailsController.submit
 
 ## BUSINESS ACTIVITY DESCRIPTION
-GET         /business-activity-description  controllers.userJourney.BusinessActivityDescriptionController.show
-POST        /business-activity-description  controllers.userJourney.BusinessActivityDescriptionController.submit
+GET         /business-activity-description  controllers.userJourney.sicAndCompliance.BusinessActivityDescriptionController.show
+POST        /business-activity-description  controllers.userJourney.sicAndCompliance.BusinessActivityDescriptionController.submit
 
 ## FEEDBACK
 GET         /feedback                       controllers.feedback.FeedbackController.show

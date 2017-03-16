@@ -18,7 +18,8 @@ package models.view
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
-import models.view.VatChargeExpectancy.{VAT_CHARGE_NO, VAT_CHARGE_YES}
+import models.view.vatFinancials.VatChargeExpectancy
+import models.view.vatFinancials.VatChargeExpectancy.{VAT_CHARGE_NO, VAT_CHARGE_YES}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 

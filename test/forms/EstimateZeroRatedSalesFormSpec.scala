@@ -16,7 +16,7 @@
 
 package forms
 
-import forms.vatDetails.EstimateZeroRatedSalesForm
+import forms.vatDetails.vatFinancials.EstimateZeroRatedSalesForm
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 class EstimateZeroRatedSalesFormSpec extends UnitSpec with WithFakeApplication {

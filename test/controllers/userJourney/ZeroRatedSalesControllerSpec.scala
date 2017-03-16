@@ -17,10 +17,11 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import controllers.userJourney.vatFinancials.ZeroRatedSalesController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.CacheKey
-import models.view.{EstimateZeroRatedSales, ZeroRatedSales}
+import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status

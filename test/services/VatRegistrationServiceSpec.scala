@@ -23,6 +23,10 @@ import helpers.VatRegSpec
 import models.CacheKey
 import models.api._
 import models.view._
+import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.vatChoice.{StartDate, VoluntaryRegistration}
+import models.view.vatFinancials._
+import models.view.vatTradingDetails.TradingName
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures

@@ -1,4 +1,4 @@
-@import models.view.VoluntaryRegistration
+@import models.view.vatChoice.VoluntaryRegistration
 @(voluntaryRegistrationForm:  Form[VoluntaryRegistration])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
@@ -22,7 +22,7 @@
           <li>@messages("pages.voluntary.registration.bullet2")</li>
       </ul>
 
-      @govHelpers.form(action = controllers.userJourney.routes.VoluntaryRegistrationController.submit()) {
+      @govHelpers.form(action = controllers.userJourney.vatChoice.routes.VoluntaryRegistrationController.submit()) {
       <div class="form-group">
         <fieldset class="inline">
             <span id="voluntaryRegistrationRadio"/>

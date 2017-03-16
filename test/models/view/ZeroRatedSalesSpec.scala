@@ -19,7 +19,8 @@ package models.view
 import fixtures.VatRegistrationFixture
 import models.ApiModelTransformer
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
-import models.view.ZeroRatedSales.{ZERO_RATED_SALES_NO, ZERO_RATED_SALES_YES}
+import models.view.vatFinancials.ZeroRatedSales
+import models.view.vatFinancials.ZeroRatedSales.{ZERO_RATED_SALES_NO, ZERO_RATED_SALES_YES}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {

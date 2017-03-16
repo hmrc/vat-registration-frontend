@@ -19,7 +19,8 @@ package models.view
 import fixtures.VatRegistrationFixture
 import models.ApiModelTransformer
 import models.api.{VatAccountingPeriod, VatBankAccount, VatFinancials, VatScheme}
-import models.view.CompanyBankAccount.{COMPANY_BANK_ACCOUNT_NO, COMPANY_BANK_ACCOUNT_YES}
+import models.view.vatFinancials.CompanyBankAccount
+import models.view.vatFinancials.CompanyBankAccount.{COMPANY_BANK_ACCOUNT_NO, COMPANY_BANK_ACCOUNT_YES}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CompanyBankAccountSpec extends UnitSpec with VatRegistrationFixture {

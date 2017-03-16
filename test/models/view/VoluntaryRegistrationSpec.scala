@@ -19,7 +19,8 @@ package models.view
 import fixtures.VatRegistrationFixture
 import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import models.api.{VatChoice, VatScheme}
-import models.view.VoluntaryRegistration._
+import models.view.vatChoice.VoluntaryRegistration
+import models.view.vatChoice.VoluntaryRegistration._
 import models.{ApiModelTransformer, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 

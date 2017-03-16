@@ -16,7 +16,7 @@
 
 package forms
 
-import forms.vatDetails.StartDateForm
+import forms.vatDetails.vatChoice.StartDateForm
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 class StartDateFormSpec extends UnitSpec with WithFakeApplication {

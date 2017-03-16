@@ -1,4 +1,4 @@
-@import models.view.TaxableTurnover
+@import models.view.vatChoice.TaxableTurnover
 @(taxableTurnoverForm:  Form[TaxableTurnover])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
@@ -14,7 +14,7 @@
           taxableTurnoverForm
       )
 
-      @govHelpers.form(action = controllers.userJourney.routes.TaxableTurnoverController.submit()) {
+      @govHelpers.form(action = controllers.userJourney.vatChoice.routes.TaxableTurnoverController.submit()) {
       <div class="form-group">
         <fieldset class="inline">
             <span id="taxableTurnoverRadio"/>
