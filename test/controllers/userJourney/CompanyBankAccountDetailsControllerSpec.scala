@@ -142,7 +142,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/estimate-vat-turnover"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/estimate-vat-turnover"
       }
     }
   }

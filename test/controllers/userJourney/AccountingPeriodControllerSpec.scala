@@ -121,7 +121,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/summary"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/summary"
       }
 
     }
@@ -141,7 +141,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/summary"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/summary"
       }
 
     }
@@ -161,7 +161,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/summary"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/summary"
       }
 
     }

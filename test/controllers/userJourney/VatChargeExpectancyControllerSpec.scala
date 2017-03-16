@@ -125,7 +125,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/vat-return-frequency"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/vat-return-frequency"
       }
 
     }
@@ -148,7 +148,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/accounting-period"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/accounting-period"
       }
 
     }

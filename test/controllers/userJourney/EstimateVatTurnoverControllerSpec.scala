@@ -117,7 +117,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/zero-rated-sales"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/zero-rated-sales"
       }
 
     }
