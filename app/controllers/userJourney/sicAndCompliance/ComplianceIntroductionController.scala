@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.userJourney
+package controllers.userJourney.sicAndCompliance
 
 import javax.inject.Inject
 
@@ -29,6 +29,6 @@ class ComplianceIntroductionController @Inject()(s4LService: S4LService, ds: Com
   })
 
   def submit: Action[AnyContent] = authorised(implicit user => implicit request => {
-    Redirect(controllers.userJourney.routes.CompanyBankAccountController.show())
+    Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
   })
 }

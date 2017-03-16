@@ -16,6 +16,7 @@
 
 package controllers.userJourney
 
+import controllers.userJourney.sicAndCompliance.ComplianceIntroductionController
 import helpers.VatRegSpec
 import play.api.test.Helpers._
 
@@ -25,7 +26,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec {
     override val authConnector = mockAuthConnector
   }
 
-  s"GET ${routes.ComplianceIntroductionController.show()}" should {
+  s"GET ${sicAndCompliance.routes.ComplianceIntroductionController.show()}" should {
 
     "display the introduction page to a set of compliance questions" in {
       callAuthorised(ComplianceIntroductionController.show, mockAuthConnector) {
@@ -38,7 +39,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec {
     }
   }
 
-  s"POST ${routes.ComplianceIntroductionController.submit()}" should {
+  s"POST ${sicAndCompliance.routes.ComplianceIntroductionController.submit()}" should {
 
     "redirect the user to the next page in the flow" in {
       callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {

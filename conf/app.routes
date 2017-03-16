@@ -64,8 +64,8 @@ POST        /business-activity-description  controllers.userJourney.sicAndCompli
 
 
 ## COMPLIANCE INTRODUCTION
-GET         /compliance/compliance-help     controllers.userJourney.ComplianceIntroductionController.show
-POST        /compliance/compliance-help     controllers.userJourney.ComplianceIntroductionController.submit
+GET         /compliance/compliance-help     controllers.userJourney.sicAndCompliance.ComplianceIntroductionController.show
+POST        /compliance/compliance-help     controllers.userJourney.sicAndCompliance.ComplianceIntroductionController.submit
 
 
 ## FEEDBACK
