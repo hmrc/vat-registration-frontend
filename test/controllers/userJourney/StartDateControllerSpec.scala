@@ -42,9 +42,9 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.StartDateController.show())
+  val fakeRequest = FakeRequest(vatChoice.routes.StartDateController.show())
 
-  s"GET ${routes.StartDateController.show()}" should {
+  s"GET ${vatChoice.routes.StartDateController.show()}" should {
 
     "return HTML when there's a start date in S4L" in {
       val startDate = StartDate(StartDate.SPECIFIC_DATE, Some(30), Some(1), Some(2017))
@@ -96,7 +96,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
-  s"POST ${routes.StartDateController.submit()} with Empty data" should {
+  s"POST ${vatChoice.routes.StartDateController.submit()} with Empty data" should {
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -108,7 +108,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
-  s"POST ${routes.StartDateController.submit()} with valid data" should {
+  s"POST ${vatChoice.routes.StartDateController.submit()} with valid data" should {
 
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDate())))
@@ -128,7 +128,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
-  s"POST ${routes.StartDateController.submit()} with StartDate having a specific date" should {
+  s"POST ${vatChoice.routes.StartDateController.submit()} with StartDate having a specific date" should {
 
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDate())))

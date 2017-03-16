@@ -58,9 +58,9 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.VoluntaryRegistrationController.show())
+  val fakeRequest = FakeRequest(vatChoice.routes.VoluntaryRegistrationController.show())
 
-  s"GET ${routes.VoluntaryRegistrationController.show()}" should {
+  s"GET ${vatChoice.routes.VoluntaryRegistrationController.show()}" should {
 
     "return HTML Voluntary Registration  page with no Selection" in {
       val voluntaryRegistration = VoluntaryRegistration("")
@@ -115,7 +115,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     }
   }
 
-  s"POST ${routes.VoluntaryRegistrationController.submit()} with Empty data" should {
+  s"POST ${vatChoice.routes.VoluntaryRegistrationController.submit()} with Empty data" should {
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -127,7 +127,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     }
   }
 
-  s"POST ${routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected Yes" should {
+  s"POST ${vatChoice.routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected Yes" should {
 
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES))))
@@ -146,7 +146,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     }
   }
 
-  s"POST ${routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected No" should {
+  s"POST ${vatChoice.routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected No" should {
 
     "redirect to the welcome page" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration(VoluntaryRegistration.REGISTER_NO))))

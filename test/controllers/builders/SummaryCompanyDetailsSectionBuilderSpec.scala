@@ -18,8 +18,8 @@ package controllers.builders
 
 import helpers.VatRegSpec
 import models.api.{SicAndCompliance, VatAccountingPeriod, VatBankAccount, VatFinancials}
+import models.view.SummaryRow
 import models.view.vatFinancials.VatReturnFrequency
-import models.view.{SummaryRow, VatReturnFrequency}
 import play.api.UnexpectedException
 
 class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
@@ -34,7 +34,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.estimatedSalesValue",
             "£0",
-            Some(controllers.userJourney.routes.EstimateVatTurnoverController.show())
+            Some(controllers.userJourney.vatFinancials.routes.EstimateVatTurnoverController.show())
           )
       }
 
@@ -49,7 +49,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.estimatedSalesValue",
             "£15000000",
-            Some(controllers.userJourney.routes.EstimateVatTurnoverController.show())
+            Some(controllers.userJourney.vatFinancials.routes.EstimateVatTurnoverController.show())
           )
       }
     }
@@ -62,7 +62,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.zeroRatedSales",
             "app.common.no",
-            Some(controllers.userJourney.routes.ZeroRatedSalesController.show())
+            Some(controllers.userJourney.vatFinancials.routes.ZeroRatedSalesController.show())
           )
       }
 
@@ -78,7 +78,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.zeroRatedSales",
             "app.common.yes",
-            Some(controllers.userJourney.routes.ZeroRatedSalesController.show())
+            Some(controllers.userJourney.vatFinancials.routes.ZeroRatedSalesController.show())
           )
       }
     }
@@ -91,7 +91,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.zeroRatedSalesValue",
             "£",
-            Some(controllers.userJourney.routes.EstimateZeroRatedSalesController.show())
+            Some(controllers.userJourney.vatFinancials.routes.EstimateZeroRatedSalesController.show())
           )
       }
 
@@ -107,7 +107,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.zeroRatedSalesValue",
             "£10000",
-            Some(controllers.userJourney.routes.EstimateZeroRatedSalesController.show())
+            Some(controllers.userJourney.vatFinancials.routes.EstimateZeroRatedSalesController.show())
           )
       }
     }
@@ -120,7 +120,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.reclaimMoreVat",
             "pages.summary.companyDetails.reclaimMoreVat.no",
-            Some(controllers.userJourney.routes.VatChargeExpectancyController.show())
+            Some(controllers.userJourney.vatFinancials.routes.VatChargeExpectancyController.show())
           )
       }
 
@@ -136,7 +136,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.reclaimMoreVat",
             "pages.summary.companyDetails.reclaimMoreVat.yes",
-            Some(controllers.userJourney.routes.VatChargeExpectancyController.show())
+            Some(controllers.userJourney.vatFinancials.routes.VatChargeExpectancyController.show())
           )
       }
     }
@@ -155,7 +155,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.accountingPeriod",
             "pages.summary.companyDetails.accountingPeriod.monthly",
-            Some(controllers.userJourney.routes.VatReturnFrequencyController.show())
+            Some(controllers.userJourney.vatFinancials.routes.VatReturnFrequencyController.show())
           )
       }
 
@@ -171,7 +171,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.accountingPeriod",
             "pages.summary.companyDetails.accountingPeriod.jan",
-            Some(controllers.userJourney.routes.VatReturnFrequencyController.show())
+            Some(controllers.userJourney.vatFinancials.routes.VatReturnFrequencyController.show())
           )
       }
 
@@ -187,7 +187,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.accountingPeriod",
             "pages.summary.companyDetails.accountingPeriod.feb",
-            Some(controllers.userJourney.routes.VatReturnFrequencyController.show())
+            Some(controllers.userJourney.vatFinancials.routes.VatReturnFrequencyController.show())
           )
       }
 
@@ -203,7 +203,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.accountingPeriod",
             "pages.summary.companyDetails.accountingPeriod.mar",
-            Some(controllers.userJourney.routes.VatReturnFrequencyController.show())
+            Some(controllers.userJourney.vatFinancials.routes.VatReturnFrequencyController.show())
           )
       }
 
@@ -232,7 +232,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.companyBankAccount",
             "app.common.no",
-            Some(controllers.userJourney.routes.CompanyBankAccountController.show())
+            Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
           )
       }
 
@@ -249,7 +249,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.companyBankAccount",
             "app.common.yes",
-            Some(controllers.userJourney.routes.CompanyBankAccountController.show())
+            Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
           )
       }
     }
@@ -262,7 +262,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.companyBankAccount.name",
             "app.common.no",
-            Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
+            Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountDetailsController.show())
           )
       }
 
@@ -279,7 +279,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.companyBankAccount.name",
             "John Smith",
-            Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
+            Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountDetailsController.show())
           )
       }
     }
@@ -292,7 +292,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.companyBankAccount.number",
             "app.common.no",
-            Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
+            Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountDetailsController.show())
           )
       }
 
@@ -309,7 +309,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.companyBankAccount.number",
             "****5678",
-            Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
+            Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountDetailsController.show())
           )
       }
     }
@@ -322,7 +322,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.companyBankAccount.sortCode",
             "app.common.no",
-            Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
+            Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountDetailsController.show())
           )
       }
 
@@ -339,7 +339,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.companyBankAccount.sortCode",
             "01-23-45",
-            Some(controllers.userJourney.routes.CompanyBankAccountDetailsController.show())
+            Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountDetailsController.show())
           )
       }
     }
@@ -352,7 +352,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.businessActivity.description",
             "app.common.no",
-            Some(controllers.userJourney.routes.BusinessActivityDescriptionController.show())
+            Some(controllers.userJourney.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
           )
       }
 
@@ -363,7 +363,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
           SummaryRow(
             "companyDetails.businessActivity.description",
             "Business Described",
-            Some(controllers.userJourney.routes.BusinessActivityDescriptionController.show())
+            Some(controllers.userJourney.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
           )
       }
     }

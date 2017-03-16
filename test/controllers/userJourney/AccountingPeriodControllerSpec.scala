@@ -42,9 +42,9 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.AccountingPeriodController.show())
+  val fakeRequest = FakeRequest(vatFinancials.routes.AccountingPeriodController.show())
 
-  s"GET ${routes.AccountingPeriodController.show()}" should {
+  s"GET ${vatFinancials.routes.AccountingPeriodController.show()}" should {
 
     "return HTML when there's a Accounting Period model in S4L" in {
       val accountingPeriod = AccountingPeriod("")
@@ -98,7 +98,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     }
   }
 
-  s"POST ${routes.AccountingPeriodController.submit()} with Empty data" should {
+  s"POST ${vatFinancials.routes.AccountingPeriodController.submit()} with Empty data" should {
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(
@@ -108,7 +108,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     }
   }
 
-  s"POST ${routes.AccountingPeriodController.submit()} with accounting period selected is January, April, July and October" should {
+  s"POST ${vatFinancials.routes.AccountingPeriodController.submit()} with accounting period selected is January, April, July and October" should {
 
     "return 303" in {
       val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.JAN_APR_JUL_OCT))))
@@ -128,7 +128,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     }
   }
 
-  s"POST ${routes.AccountingPeriodController.submit()} with accounting period selected is February, May, August and November" should {
+  s"POST ${vatFinancials.routes.AccountingPeriodController.submit()} with accounting period selected is February, May, August and November" should {
 
     "return 303" in {
       val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.FEB_MAY_AUG_NOV))))
@@ -148,7 +148,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     }
   }
 
-  s"POST ${routes.AccountingPeriodController.submit()} with accounting period selected is March, June, September and December" should {
+  s"POST ${vatFinancials.routes.AccountingPeriodController.submit()} with accounting period selected is March, June, September and December" should {
 
     "return 303" in {
       val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.MAR_JUN_SEP_DEC))))

@@ -42,9 +42,9 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.TradingNameController.show())
+  val fakeRequest = FakeRequest(vatTradingDetails.routes.TradingNameController.show())
 
-  s"GET ${routes.TradingNameController.show()}" should {
+  s"GET ${vatTradingDetails.routes.TradingNameController.show()}" should {
 
     "return HTML when there's a trading name in S4L" in {
       val tradingName = TradingName(TradingName.TRADING_NAME_YES, Some("Test Trading Name"))
@@ -99,7 +99,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
-  s"POST ${routes.TradingNameController.submit()} with Empty data" should {
+  s"POST ${vatTradingDetails.routes.TradingNameController.submit()} with Empty data" should {
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(TestTradingNameController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -111,7 +111,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
-  s"POST ${routes.TradingNameController.submit()} with valid data no trading name" should {
+  s"POST ${vatTradingDetails.routes.TradingNameController.submit()} with valid data no trading name" should {
 
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingName(TradingName.TRADING_NAME_NO, None))))
@@ -130,7 +130,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
-  s"POST ${routes.TradingNameController.submit()} with valid data with trading name" should {
+  s"POST ${vatTradingDetails.routes.TradingNameController.submit()} with valid data with trading name" should {
 
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingName(TradingName.TRADING_NAME_YES, Some("some name")))))
