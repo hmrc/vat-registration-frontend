@@ -21,7 +21,6 @@ import javax.inject.Inject
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.test.SicStubForm
-import models.view._
 import models.view.test.SicStub
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService}
@@ -33,14 +32,15 @@ class SicStubController @Inject()(s4LService: S4LService, vatRegistrationConnect
 
   override val keystoreConnector: KeystoreConnector = KeystoreConnector
 
-  val culturalComplianceCodes:Map[String,String] = Map("90010" -> "Performing arts",
-                                                       "90020" -> "Support activities to performing arts",
-                                                       "90030" -> "Artistic creation",
-                                                       "90040" -> "Operation of arts facilities",
-                                                       "91012" -> "Archive activities",
-                                                       "91020" -> "Museum activities",
-                                                       "91030" -> "Operation of historical sites and buildings and similar visitor attractions",
-                                                       "91040" -> "Botanical and zoological gardens and nature reserve activities")
+  val culturalComplianceCodes: Map[String, String] = Map(
+    "90010" -> "Performing arts",
+    "90020" -> "Support activities to performing arts",
+    "90030" -> "Artistic creation",
+    "90040" -> "Operation of arts facilities",
+    "91012" -> "Archive activities",
+    "91020" -> "Museum activities",
+    "91030" -> "Operation of historical sites and buildings and similar visitor attractions",
+    "91040" -> "Botanical and zoological gardens and nature reserve activities")
 
   def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request => {
 
@@ -58,26 +58,22 @@ class SicStubController @Inject()(s4LService: S4LService, vatRegistrationConnect
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
     SicStubForm.form.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.sic_stub(formWithErrors)))
       }, {
         data: SicStub => {
           s4LService.saveForm[SicStub](data) map { _ =>
-
-            val codes = List(data.sicCode1, data.sicCode2, data.sicCode3, data.sicCode4).flatten.filter(_.size == 8).map(_.substring(0,5))
-
-            if(codes.isEmpty) {
-              Redirect(controllers.test.routes.SicStubController.show())
-            } else {
-              if(codes.forall(culturalComplianceCodes.contains)) {
+            data.productIterator.toList.collect {
+              case Some(s: String) if s.length == 8 => s.substring(0, 5)
+            } match {
+              case codes@h :: t if codes.forall(culturalComplianceCodes.contains) =>
+                Redirect(controllers.userJourney.sicAndCompliance.routes.ComplianceIntroductionController.show())
+              case h :: t =>
                 Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
-              } else {
-                Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
-              }
+              case Nil =>
+                Redirect(controllers.test.routes.SicStubController.show())
             }
-
           }
         }
       })
