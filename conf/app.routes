@@ -62,6 +62,12 @@ POST        /bank-details                   controllers.userJourney.CompanyBankA
 GET         /business-activity-description  controllers.userJourney.BusinessActivityDescriptionController.show
 POST        /business-activity-description  controllers.userJourney.BusinessActivityDescriptionController.submit
 
+
+## COMPLIANCE INTRODUCTION
+GET         /compliance/compliance-help     controllers.userJourney.ComplianceIntroductionController.show
+POST        /compliance/compliance-help     controllers.userJourney.ComplianceIntroductionController.submit
+
+
 ## FEEDBACK
 GET         /feedback                       controllers.feedback.FeedbackController.show
 
