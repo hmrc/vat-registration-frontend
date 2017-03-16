@@ -17,32 +17,31 @@
 package controllers.userJourney
 
 import helpers.VatRegSpec
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
-class MandatoryStartDateControllerSpec extends VatRegSpec {
+class ComplianceIntroductionControllerSpec extends VatRegSpec {
 
-  object MandatoryStartDateController extends MandatoryStartDateController(mockS4LService, ds) {
+  object ComplianceIntroductionController extends ComplianceIntroductionController(mockS4LService, ds) {
     override val authConnector = mockAuthConnector
   }
 
-  s"GET ${routes.MandatoryStartDateController.show()}" should {
+  s"GET ${routes.ComplianceIntroductionController.show()}" should {
 
-    "display the mandatory start date confirmation page to the user" in {
-      callAuthorised(MandatoryStartDateController.show, mockAuthConnector) {
+    "display the introduction page to a set of compliance questions" in {
+      callAuthorised(ComplianceIntroductionController.show, mockAuthConnector) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("VAT start date")
+          contentAsString(result) must include("Tell us more")
       }
     }
   }
 
-  s"POST ${routes.MandatoryStartDateController.submit()}" should {
+  s"POST ${routes.ComplianceIntroductionController.submit()}" should {
 
-    "redirect the user to the trading name page after clicking continue on the mandatory start date confirmation page" in {
-      callAuthorised(MandatoryStartDateController.submit, mockAuthConnector) {
+    "redirect the user to the next page in the flow" in {
+      callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
         result =>
           status(result) mustBe SEE_OTHER
       }
