@@ -19,6 +19,7 @@ package models.view
 import fixtures.VatRegistrationFixture
 import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import models.api.{VatChoice, VatScheme}
+import models.view.vatChoice.StartDate
 import models.{ApiModelTransformer, ViewModelTransformer}
 import org.joda.time.format.DateTimeFormat
 import uk.gov.hmrc.play.test.UnitSpec

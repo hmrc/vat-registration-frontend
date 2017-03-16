@@ -17,10 +17,11 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import controllers.userJourney.vatFinancials.EstimateVatTurnoverController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.CacheKey
-import models.view.EstimateVatTurnover
+import models.view.vatFinancials.EstimateVatTurnover
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -41,9 +42,9 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.EstimateVatTurnoverController.show())
+  val fakeRequest = FakeRequest(vatFinancials.routes.EstimateVatTurnoverController.show())
 
-  s"GET ${routes.EstimateVatTurnoverController.show()}" should {
+  s"GET ${vatFinancials.routes.EstimateVatTurnoverController.show()}" should {
 
     "return HTML Estimate Vat Turnover page with no data in the form" in {
       when(mockS4LService.fetchAndGet[EstimateVatTurnover]()(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -95,7 +96,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
     }
   }
 
-  s"POST ${routes.EstimateVatTurnoverController.submit()} with Empty data" should {
+  s"POST ${vatFinancials.routes.EstimateVatTurnoverController.submit()} with Empty data" should {
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(TestEstimateVatTurnoverController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -103,7 +104,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
     }
   }
 
-  s"POST ${routes.EstimateVatTurnoverController.submit()} with a valid turnover estimate entered" should {
+  s"POST ${vatFinancials.routes.EstimateVatTurnoverController.submit()} with a valid turnover estimate entered" should {
 
     "return 303" in {
       val returnCacheMapEstimateVatTurnover = CacheMap("", Map("" -> Json.toJson(EstimateVatTurnover(50000L))))

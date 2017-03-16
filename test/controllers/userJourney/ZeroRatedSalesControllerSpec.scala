@@ -17,10 +17,11 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import controllers.userJourney.vatFinancials.ZeroRatedSalesController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.CacheKey
-import models.view.{EstimateZeroRatedSales, ZeroRatedSales}
+import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -41,9 +42,9 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.ZeroRatedSalesController.show())
+  val fakeRequest = FakeRequest(vatFinancials.routes.ZeroRatedSalesController.show())
 
-  s"GET ${routes.ZeroRatedSalesController.show()}" should {
+  s"GET ${vatFinancials.routes.ZeroRatedSalesController.show()}" should {
 
     "return HTML when there's a Zero Rated Sales model in S4L" in {
       val zeroRatedSales = ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_YES)
@@ -98,7 +99,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  s"POST ${routes.ZeroRatedSalesController.submit()} with Empty data" should {
+  s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()} with Empty data" should {
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(TestZeroRatedSalesController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -106,7 +107,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  s"POST ${routes.ZeroRatedSalesController.submit()} with Zero Rated Sales selected Yes" should {
+  s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()} with Zero Rated Sales selected Yes" should {
 
     "return 303" in {
       val returnCacheMapZeroRatedSales = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_NO))))
@@ -126,7 +127,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  s"POST ${routes.ZeroRatedSalesController.submit()} with Zero Rated Sales selected No" should {
+  s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()} with Zero Rated Sales selected No" should {
 
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_NO))))

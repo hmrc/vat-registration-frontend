@@ -17,10 +17,11 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import controllers.userJourney.vatChoice.TaxableTurnoverController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.CacheKey
-import models.view.{StartDate, TaxableTurnover, VoluntaryRegistration}
+import models.view.vatChoice.{StartDate, TaxableTurnover, VoluntaryRegistration}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -41,9 +42,9 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.TaxableTurnoverController.show())
+  val fakeRequest = FakeRequest(vatChoice.routes.TaxableTurnoverController.show())
 
-  s"GET ${routes.TaxableTurnoverController.show()}" should {
+  s"GET ${vatChoice.routes.TaxableTurnoverController.show()}" should {
 
     "return HTML when there's a start date in S4L" in {
       val taxableTurnover = TaxableTurnover(TaxableTurnover.TAXABLE_YES)
@@ -100,7 +101,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
   }
 
 
-  s"POST ${routes.TaxableTurnoverController.submit()} with Empty data" should {
+  s"POST ${vatChoice.routes.TaxableTurnoverController.submit()} with Empty data" should {
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(TestTaxableTurnoverController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -108,7 +109,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
     }
   }
 
-  s"POST ${routes.TaxableTurnoverController.submit()} with Taxable Turnover selected Yes" should {
+  s"POST ${vatChoice.routes.TaxableTurnoverController.submit()} with Taxable Turnover selected Yes" should {
 
     "return 303" in {
       val returnCacheMapTaxableTurnover = CacheMap("", Map("" -> Json.toJson(TaxableTurnover(TaxableTurnover.TAXABLE_YES))))
@@ -137,7 +138,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
     }
   }
 
-  s"POST ${routes.TaxableTurnoverController.submit()} with Taxable Turnover selected No" should {
+  s"POST ${vatChoice.routes.TaxableTurnoverController.submit()} with Taxable Turnover selected No" should {
 
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TaxableTurnover(TaxableTurnover.TAXABLE_NO))))

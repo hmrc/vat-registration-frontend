@@ -28,7 +28,7 @@ case class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice, vatTradingDetai
       case VatChoice.NECESSITY_VOLUNTARY => "app.common.no"
       case _ => "app.common.yes"
     },
-    Some(controllers.userJourney.routes.TaxableTurnoverController.show())
+    Some(controllers.userJourney.vatChoice.routes.TaxableTurnoverController.show())
   )
 
   def necessityRow: SummaryRow = SummaryRow(
@@ -38,7 +38,7 @@ case class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice, vatTradingDetai
       case _ => "app.common.no"
     },
     vatChoice.necessity match {
-      case VatChoice.NECESSITY_VOLUNTARY => Some(controllers.userJourney.routes.VoluntaryRegistrationController.show())
+      case VatChoice.NECESSITY_VOLUNTARY => Some(controllers.userJourney.vatChoice.routes.VoluntaryRegistrationController.show())
       case _ => None
     }
   )
@@ -56,7 +56,7 @@ case class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice, vatTradingDetai
       case _ => "pages.summary.vatDetails.mandatoryStartDate"
     },
     vatChoice.necessity match {
-      case VatChoice.NECESSITY_VOLUNTARY => Some(controllers.userJourney.routes.StartDateController.show())
+      case VatChoice.NECESSITY_VOLUNTARY => Some(controllers.userJourney.vatChoice.routes.StartDateController.show())
       case _ => None
     }
   )
@@ -67,7 +67,7 @@ case class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice, vatTradingDetai
       case "" => "app.common.no"
       case _ => vatTradingDetails.tradingName
     },
-    Some(controllers.userJourney.routes.TradingNameController.show())
+    Some(controllers.userJourney.vatTradingDetails.routes.TradingNameController.show())
   )
 
   def section: SummarySection = SummarySection(

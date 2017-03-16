@@ -1,4 +1,4 @@
-@import models.view.ZeroRatedSales
+@import models.view.vatFinancials.ZeroRatedSales
 @(zeroRatedSalesForm:  Form[ZeroRatedSales])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
@@ -16,7 +16,7 @@
 
       <p>@Html(Messages("pages.zero.rated.sales.para1"))</p>
 
-      @govHelpers.form(action = controllers.userJourney.routes.ZeroRatedSalesController.submit()) {
+      @govHelpers.form(action = controllers.userJourney.vatFinancials.routes.ZeroRatedSalesController.submit()) {
       <div class="form-group">
         <fieldset class="inline">
             <span id="zeroRatedSalesRadio"/>

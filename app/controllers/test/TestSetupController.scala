@@ -22,7 +22,11 @@ import connectors.{KeystoreConnector, VatRegistrationConnector}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.test.TestSetupForm
 import models.CacheKey
-import models.view.{EstimateVatTurnover, StartDate, TradingName, _}
+import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.test.TestSetup
+import models.view.vatChoice.{StartDate, TaxableTurnover, VoluntaryRegistration}
+import models.view.vatFinancials._
+import models.view.vatTradingDetails.TradingName
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService}

@@ -21,7 +21,7 @@ import javax.inject.Inject
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.test.SicStubForm
-import models.view._
+import models.view.test.SicStub
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService}
 
@@ -68,9 +68,9 @@ class SicStubController @Inject()(s4LService: S4LService, vatRegistrationConnect
               case Some(s: String) if s.length == 8 => s.substring(0, 5)
             } match {
               case codes@h :: t if codes.forall(culturalComplianceCodes.contains) =>
-                Redirect(controllers.userJourney.routes.ComplianceIntroductionController.show())
+                Redirect(controllers.userJourney.sicAndCompliance.routes.ComplianceIntroductionController.show())
               case h :: t =>
-                Redirect(controllers.userJourney.routes.CompanyBankAccountController.show())
+                Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
               case Nil =>
                 Redirect(controllers.test.routes.SicStubController.show())
             }

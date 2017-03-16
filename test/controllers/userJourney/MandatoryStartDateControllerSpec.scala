@@ -16,6 +16,7 @@
 
 package controllers.userJourney
 
+import controllers.userJourney.vatChoice.MandatoryStartDateController
 import helpers.VatRegSpec
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -26,7 +27,9 @@ class MandatoryStartDateControllerSpec extends VatRegSpec {
     override val authConnector = mockAuthConnector
   }
 
-  s"GET ${routes.MandatoryStartDateController.show()}" should {
+  val fakeRequest = FakeRequest(vatChoice.routes.StartDateController.show())
+
+  s"GET ${vatChoice.routes.MandatoryStartDateController.show()}" should {
 
     "display the mandatory start date confirmation page to the user" in {
       callAuthorised(MandatoryStartDateController.show, mockAuthConnector) {
@@ -39,7 +42,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec {
     }
   }
 
-  s"POST ${routes.MandatoryStartDateController.submit()}" should {
+  s"POST ${vatChoice.routes.MandatoryStartDateController.submit()}" should {
 
     "redirect the user to the trading name page after clicking continue on the mandatory start date confirmation page" in {
       callAuthorised(MandatoryStartDateController.submit, mockAuthConnector) {

@@ -18,7 +18,8 @@ package models.view
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
-import models.view.VatReturnFrequency.{MONTHLY, QUARTERLY}
+import models.view.vatFinancials.VatReturnFrequency
+import models.view.vatFinancials.VatReturnFrequency.{MONTHLY, QUARTERLY}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 

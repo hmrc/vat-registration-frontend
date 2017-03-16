@@ -16,7 +16,7 @@
 
 package fixtures
 
-import models.view.StartDate
+import models.view.vatChoice.StartDate
 
 trait S4LFixture {
 

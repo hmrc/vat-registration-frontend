@@ -1,5 +1,4 @@
-@import forms.vatDetails.VatReturnFrequencyForm
-@import models.view.VatReturnFrequency
+@import models.view.vatFinancials.VatReturnFrequency
 @(vatReturnFrequencyForm: Form[VatReturnFrequency])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
@@ -16,7 +15,7 @@
         vatReturnFrequencyForm
       )
       
-      @govHelpers.form(action = controllers.userJourney.routes.VatReturnFrequencyController.submit()) {
+      @govHelpers.form(action = controllers.userJourney.vatFinancials.routes.VatReturnFrequencyController.submit()) {
       <div class="form-group">
         <fieldset>
           <span id="vatReturnFrequencyRadio"/>
