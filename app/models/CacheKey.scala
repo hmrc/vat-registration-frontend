@@ -45,5 +45,6 @@ object CacheKey {
   implicit val companyBankAccountCacheKey: CacheKey[CompanyBankAccount] = CacheKey("CompanyBankAccount")
   implicit val companyBankAccountDetailsCacheKey: CacheKey[CompanyBankAccountDetails] = CacheKey("CompanyBankAccountDetails")
   implicit val businessActivityDescriptionCacheKey: CacheKey[BusinessActivityDescription] = CacheKey("BusinessActivityDescription")
+  implicit val sicStub: CacheKey[SicStub] = CacheKey("SicStub")
 
 }

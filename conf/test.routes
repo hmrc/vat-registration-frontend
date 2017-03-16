@@ -6,3 +6,6 @@ GET        /db-teardown                  controllers.test.TestVatRegistrationAdm
 
 GET        /test-setup                   controllers.test.TestSetupController.show()
 POST       /test-setup                   controllers.test.TestSetupController.submit()
+
+GET         /sic-stub                    controllers.test.SicStubController.show()
+POST        /sic-stub                    controllers.test.SicStubController.submit()
