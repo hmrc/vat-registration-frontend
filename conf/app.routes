@@ -62,11 +62,13 @@ POST        /bank-details                   controllers.userJourney.vatFinancial
 GET         /business-activity-description  controllers.userJourney.sicAndCompliance.BusinessActivityDescriptionController.show
 POST        /business-activity-description  controllers.userJourney.sicAndCompliance.BusinessActivityDescriptionController.submit
 
-
 ## COMPLIANCE INTRODUCTION
 GET         /compliance/compliance-help     controllers.userJourney.sicAndCompliance.ComplianceIntroductionController.show
 POST        /compliance/compliance-help     controllers.userJourney.sicAndCompliance.ComplianceIntroductionController.submit
 
+## CULTURAL COMPLIANCE Q1
+GET         /cultural-compliance/q1         controllers.userJourney.sicAndCompliance.CulturalComplianceQ1Controller.show
+POST        /cultural-compliance/q1         controllers.userJourney.sicAndCompliance.CulturalComplianceQ1Controller.submit
 
 ## FEEDBACK
 GET         /feedback                       controllers.feedback.FeedbackController.show

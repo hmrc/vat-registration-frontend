@@ -32,7 +32,7 @@ object CulturalComplianceQ1 {
   implicit val format = Json.format[CulturalComplianceQ1]
 
   implicit val modelTransformer = ApiModelTransformer[CulturalComplianceQ1] { (vs: VatScheme) =>
-    Some(CulturalComplianceQ1(NOT_PROFIT_NO))
+    None
   }
 
 }
