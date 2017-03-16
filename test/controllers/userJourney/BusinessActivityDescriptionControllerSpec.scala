@@ -118,7 +118,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/company-bank-account"
+          redirectLocation(response).getOrElse("") mustBe "/sic-stub"
       }
 
     }
