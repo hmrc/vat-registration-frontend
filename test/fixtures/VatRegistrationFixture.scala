@@ -23,6 +23,8 @@ import uk.gov.hmrc.play.http._
 
 trait VatRegistrationFixture {
 
+  val contextRoot = "/register-for-vat"
+  
   val IM_A_TEAPOT = 418
   val badRequest = new BadRequestException(BAD_REQUEST.toString)
   val forbidden = Upstream4xxResponse(FORBIDDEN.toString, FORBIDDEN, FORBIDDEN)

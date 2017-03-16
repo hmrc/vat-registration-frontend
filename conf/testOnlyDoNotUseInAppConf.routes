@@ -12,4 +12,4 @@
 
 # Add all the application routes to the prod.routes file
 ->         /                                            prod.Routes
-->         /vat-registration/test-only                  test.Routes
+->         /register-for-vat/test-only                  test.Routes

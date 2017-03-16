@@ -120,7 +120,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/estimate-zero-rated-sales"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/estimate-zero-rated-sales"
       }
 
     }
@@ -147,7 +147,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/vat-registration/vat-charge-expectancy"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/vat-charge-expectancy"
       }
 
     }

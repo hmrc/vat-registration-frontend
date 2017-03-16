@@ -1,6 +1,6 @@
 
 # Add all the application routes to the app.routes file
-->         /vat-registration            app.Routes
+->         /register-for-vat            app.Routes
 ->         /                            health.Routes
 ->     	   /template                    template.Routes
 
