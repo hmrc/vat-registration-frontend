@@ -1,4 +1,4 @@
-@import models.view.BusinessActivityDescription
+@import models.view.sicAndCompliance.BusinessActivityDescription
 @(businessActivityDescriptionForm:  Form[BusinessActivityDescription])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
@@ -15,7 +15,7 @@
         )
       <p>@Html(Messages("pages.business.activity.description.para1"))</p>
 
-      @govHelpers.form(action = controllers.userJourney.routes.BusinessActivityDescriptionController.submit()) {
+      @govHelpers.form(action = controllers.userJourney.sicAndCompliance.routes.BusinessActivityDescriptionController.submit()) {
           <div class="form-group">
               <fieldset>
 

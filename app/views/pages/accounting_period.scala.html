@@ -1,4 +1,4 @@
-@import models.view.AccountingPeriod
+@import models.view.vatFinancials.AccountingPeriod
 @(accountingPeriodForm:  Form[AccountingPeriod])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
@@ -20,7 +20,7 @@
 
       <p>@Html(Messages("pages.accounting.period.para1"))</p>
 
-      @govHelpers.form(action = controllers.userJourney.routes.AccountingPeriodController.submit()) {
+      @govHelpers.form(action = controllers.userJourney.vatFinancials.routes.AccountingPeriodController.submit()) {
       <div class="form-group @fieldSetClasses">
         <fieldset class="block">
             <span id="accountingPeriodRadio"/>

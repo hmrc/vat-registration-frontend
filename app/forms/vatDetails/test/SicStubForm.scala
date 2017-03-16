@@ -16,7 +16,7 @@
 
 package forms.vatDetails.test
 
-import models.view.SicStub
+import models.view.test.SicStub
 import play.api.data.Form
 import play.api.data.Forms._
 

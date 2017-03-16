@@ -17,10 +17,11 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import controllers.userJourney.vatFinancials.VatChargeExpectancyController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.CacheKey
-import models.view.{VatChargeExpectancy, VatReturnFrequency}
+import models.view.vatFinancials.{VatChargeExpectancy, VatReturnFrequency}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -41,9 +42,9 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.VatChargeExpectancyController.show())
+  val fakeRequest = FakeRequest(vatFinancials.routes.VatChargeExpectancyController.show())
 
-  s"GET ${routes.VatChargeExpectancyController.show()}" should {
+  s"GET ${vatFinancials.routes.VatChargeExpectancyController.show()}" should {
 
     "return HTML when there's a Vat Charge Expectancy model in S4L" in {
       val vatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
@@ -99,7 +100,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
   }
 
 
-  s"POST ${routes.VatChargeExpectancyController.submit()} with Empty data" should {
+  s"POST ${vatFinancials.routes.VatChargeExpectancyController.submit()} with Empty data" should {
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -111,7 +112,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
     }
   }
 
-  s"POST ${routes.VatChargeExpectancyController.submit()} with Vat Charge Expectancy selected Yes" should {
+  s"POST ${vatFinancials.routes.VatChargeExpectancyController.submit()} with Vat Charge Expectancy selected Yes" should {
 
     "return 303" in {
       val returnCacheMapVatChargeExpectancy = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES))))
@@ -131,7 +132,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
     }
   }
 
-  s"POST ${routes.VatChargeExpectancyController.submit()} with Vat Charge Expectancy selected No" should {
+  s"POST ${vatFinancials.routes.VatChargeExpectancyController.submit()} with Vat Charge Expectancy selected No" should {
 
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_NO))))

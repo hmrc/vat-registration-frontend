@@ -1,4 +1,4 @@
-@import models.view.EstimateZeroRatedSales
+@import models.view.vatFinancials.EstimateZeroRatedSales
 @(estimateZeroRatedSalesForm:  Form[EstimateZeroRatedSales])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
@@ -27,7 +27,7 @@
           <strong class="bold-small">@messages("pages.estimate.zero.rated.sales.info")</strong>
       </div>
 
-      @govHelpers.form(action = controllers.userJourney.routes.EstimateZeroRatedSalesController.submit()) {
+      @govHelpers.form(action = controllers.userJourney.vatFinancials.routes.EstimateZeroRatedSalesController.submit()) {
           <div class="form-group @fieldSetClasses">
               <fieldset>
 

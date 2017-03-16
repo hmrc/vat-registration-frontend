@@ -1,4 +1,4 @@
-@import models.view.CompanyBankAccount
+@import models.view.vatFinancials.CompanyBankAccount
 @(companyBankAccountForm:  Form[CompanyBankAccount])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
@@ -14,7 +14,7 @@
         companyBankAccountForm
       )
 
-      @govHelpers.form(action = controllers.userJourney.routes.CompanyBankAccountController.submit()) {
+      @govHelpers.form(action = controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.submit()) {
       <div class="form-group">
         <fieldset class="inline">
             <span id="companyBankAccountRadio"/>

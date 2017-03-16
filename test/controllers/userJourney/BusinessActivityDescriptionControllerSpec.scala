@@ -17,10 +17,11 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import controllers.userJourney.sicAndCompliance.BusinessActivityDescriptionController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.CacheKey
-import models.view.BusinessActivityDescription
+import models.view.sicAndCompliance.BusinessActivityDescription
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -42,9 +43,9 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.BusinessActivityDescriptionController.show())
+  val fakeRequest = FakeRequest(sicAndCompliance.routes.BusinessActivityDescriptionController.show())
 
-  s"GET ${routes.BusinessActivityDescriptionController.show()}" should {
+  s"GET ${sicAndCompliance.routes.BusinessActivityDescriptionController.show()}" should {
 
     "return HTML Business Activity Description page with no data in the form" in {
       when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -96,7 +97,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
     }
   }
 
-  s"POST ${routes.BusinessActivityDescriptionController.submit()} with Empty data" should {
+  s"POST ${sicAndCompliance.routes.BusinessActivityDescriptionController.submit()} with Empty data" should {
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(TestBusinessActivityDescriptionController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -104,7 +105,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
     }
   }
 
-  s"POST ${routes.BusinessActivityDescriptionController.submit()} with a valid business description entered" should {
+  s"POST ${sicAndCompliance.routes.BusinessActivityDescriptionController.submit()} with a valid business description entered" should {
 
     "return 303" in {
       val returnCacheMapBusinessActivityDescription = CacheMap("", Map("" -> Json.toJson(BusinessActivityDescription(DESCRIPTION))))

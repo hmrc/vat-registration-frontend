@@ -1,4 +1,4 @@
-@import models.view.VatChargeExpectancy
+@import models.view.vatFinancials.VatChargeExpectancy
 @(vatChargeExpectancyForm:  Form[VatChargeExpectancy])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
@@ -17,7 +17,7 @@
       <p>@Html(Messages("pages.vat.charge.expectancy.para1"))</p>
       <p>@Html(Messages("pages.vat.charge.expectancy.para2"))</p>
 
-      @govHelpers.form(action = controllers.userJourney.routes.VatChargeExpectancyController.submit()) {
+      @govHelpers.form(action = controllers.userJourney.vatFinancials.routes.VatChargeExpectancyController.submit()) {
       <div class="form-group">
         <fieldset class="block">
             <span id="vatChargeRadio"/>

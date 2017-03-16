@@ -17,10 +17,11 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import controllers.userJourney.vatFinancials.EstimateZeroRatedSalesController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.CacheKey
-import models.view.EstimateZeroRatedSales
+import models.view.vatFinancials.EstimateZeroRatedSales
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -41,9 +42,9 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.EstimateZeroRatedSalesController.show())
+  val fakeRequest = FakeRequest(vatFinancials.routes.EstimateZeroRatedSalesController.show())
 
-  s"GET ${routes.EstimateZeroRatedSalesController.show()}" should {
+  s"GET ${vatFinancials.routes.EstimateZeroRatedSalesController.show()}" should {
 
     "return HTML Estimate Zero Rated Sales page with no data in the form" in {
       when(mockS4LService.fetchAndGet[EstimateZeroRatedSales]()(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -98,7 +99,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
   }
 
 
-  s"POST ${routes.EstimateZeroRatedSalesController.submit()} with Empty data" should {
+  s"POST ${vatFinancials.routes.EstimateZeroRatedSalesController.submit()} with Empty data" should {
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -109,7 +110,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
     }
   }
 
-  s"POST ${routes.EstimateZeroRatedSalesController.submit()} with a valid turnover estimate entered" should {
+  s"POST ${vatFinancials.routes.EstimateZeroRatedSalesController.submit()} with a valid turnover estimate entered" should {
 
     "return 303" in {
       val returnCacheMapEstimateZeroRatedSales = CacheMap("", Map("" -> Json.toJson(EstimateZeroRatedSales(100L))))

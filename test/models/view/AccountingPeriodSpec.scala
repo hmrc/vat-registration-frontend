@@ -18,7 +18,8 @@ package models.view
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
-import models.view.AccountingPeriod.{FEB_MAY_AUG_NOV, JAN_APR_JUL_OCT, MAR_JUN_SEP_DEC}
+import models.view.vatFinancials.AccountingPeriod
+import models.view.vatFinancials.AccountingPeriod.{FEB_MAY_AUG_NOV, JAN_APR_JUL_OCT, MAR_JUN_SEP_DEC}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 

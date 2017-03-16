@@ -1,0 +1,42 @@
+@import models.view.sicAndCompliance.CulturalComplianceQ1
+@(culturalComplianceQ1Form: Form[CulturalComplianceQ1])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.culturalCompliance.q1.title")) {
+
+    <div class="column-one-third">
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.culturalCompliance.q1.heading")</h1>
+
+        @errorSummary(
+            Messages("app.common.errorSummaryLabel"),
+            culturalComplianceQ1Form
+        )
+
+        @govHelpers.form(action = controllers.userJourney.sicAndCompliance.routes.CulturalComplianceQ1Controller.submit()) {
+            <div class="form-group">
+                <fieldset class="inline">
+                    <span id="notForProfitRadio"/>
+
+                    @govHelpers.inputRadioGroup(
+                        field = culturalComplianceQ1Form("notForProfitRadio"),
+                        Seq(
+                            CulturalComplianceQ1.NOT_PROFIT_YES -> Messages("app.common.yes"),
+                            CulturalComplianceQ1.NOT_PROFIT_NO -> Messages("app.common.no")
+                        ),
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label"
+                    )
+                </fieldset>
+            </div>
+
+            <div class="form-group">
+                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+            </div>
+
+        }
+
+    </div>
+
+}

@@ -17,10 +17,11 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import controllers.userJourney.vatFinancials.CompanyBankAccountController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.CacheKey
-import models.view.CompanyBankAccount
+import models.view.vatFinancials.CompanyBankAccount
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -41,9 +42,9 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.CompanyBankAccountController.show())
+  val fakeRequest = FakeRequest(vatFinancials.routes.CompanyBankAccountController.show())
 
-  s"GET ${routes.CompanyBankAccountController.show()}" should {
+  s"GET ${vatFinancials.routes.CompanyBankAccountController.show()}" should {
 
     "return HTML when there's a Company Bank Account model in S4L" in {
       val companyBankAccount = CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES)
@@ -98,7 +99,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
     }
   }
 
-  s"POST ${routes.ZeroRatedSalesController.submit()} with Empty data" should {
+  s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()} with Empty data" should {
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -110,7 +111,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
     }
   }
 
-  s"POST ${routes.CompanyBankAccountController.submit()} with Company Bank Account selected Yes" should {
+  s"POST ${vatFinancials.routes.CompanyBankAccountController.submit()} with Company Bank Account selected Yes" should {
 
     "return 303" in {
       val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES))))
@@ -130,7 +131,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
     }
   }
 
-  s"POST ${routes.CompanyBankAccountController.submit()} with Company Bank Account selected No" should {
+  s"POST ${vatFinancials.routes.CompanyBankAccountController.submit()} with Company Bank Account selected No" should {
 
     "return 303" in {
       val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_NO))))

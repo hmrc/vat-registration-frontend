@@ -18,6 +18,7 @@ package models.view
 
 import fixtures.VatRegistrationFixture
 import models.api.{SicAndCompliance, VatScheme}
+import models.view.sicAndCompliance.BusinessActivityDescription
 import models.{ApiModelTransformer, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
