@@ -17,6 +17,10 @@
 package models
 
 import models.view._
+import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.vatChoice.{StartDate, TaxableTurnover, VoluntaryRegistration}
+import models.view.vatFinancials._
+import models.view.vatTradingDetails.TradingName
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CacheKeySpec extends UnitSpec {

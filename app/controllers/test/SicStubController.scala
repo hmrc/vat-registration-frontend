@@ -22,6 +22,7 @@ import connectors.{KeystoreConnector, VatRegistrationConnector}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.test.SicStubForm
 import models.view._
+import models.view.test.SicStub
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService}
 
@@ -71,9 +72,9 @@ class SicStubController @Inject()(s4LService: S4LService, vatRegistrationConnect
               Redirect(controllers.test.routes.SicStubController.show())
             } else {
               if(codes.forall(culturalComplianceCodes.contains)) {
-                Redirect(controllers.userJourney.routes.CompanyBankAccountController.show())
+                Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
               } else {
-                Redirect(controllers.userJourney.routes.CompanyBankAccountController.show())
+                Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
               }
             }
 

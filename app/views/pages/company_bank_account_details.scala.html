@@ -1,4 +1,4 @@
-@import forms.vatDetails.CompanyBankAccountDetailsForm
+@import forms.vatDetails.vatFinancials.CompanyBankAccountDetailsForm
 @(bankDetailsForm: Form[CompanyBankAccountDetailsForm])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
@@ -24,7 +24,7 @@
                 <strong class="bold-small">@messages("pages.bankDetails.info")</strong>
             </div>
 
-            @govHelpers.form(action = controllers.userJourney.routes.CompanyBankAccountDetailsController.submit()) {
+            @govHelpers.form(action = controllers.userJourney.vatFinancials.routes.CompanyBankAccountDetailsController.submit()) {
                 <div class="form-group">
                     <div class="form-bank-details">
 

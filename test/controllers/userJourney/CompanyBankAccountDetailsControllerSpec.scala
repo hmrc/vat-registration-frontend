@@ -17,11 +17,12 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import controllers.userJourney.vatFinancials.CompanyBankAccountDetailsController
 import fixtures.VatRegistrationFixture
-import forms.vatDetails.SortCode
+import forms.vatDetails.vatFinancials.SortCode
 import helpers.VatRegSpec
 import models.CacheKey
-import models.view.CompanyBankAccountDetails
+import models.view.vatFinancials.CompanyBankAccountDetails
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status

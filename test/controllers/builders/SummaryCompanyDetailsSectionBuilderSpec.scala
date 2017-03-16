@@ -18,6 +18,7 @@ package controllers.builders
 
 import helpers.VatRegSpec
 import models.api.{SicAndCompliance, VatAccountingPeriod, VatBankAccount, VatFinancials}
+import models.view.vatFinancials.VatReturnFrequency
 import models.view.{SummaryRow, VatReturnFrequency}
 import play.api.UnexpectedException
 

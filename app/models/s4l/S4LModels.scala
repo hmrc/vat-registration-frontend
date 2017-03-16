@@ -17,6 +17,8 @@
 package models.s4l
 
 import models.view._
+import models.view.vatChoice.{StartDate, VoluntaryRegistration}
+import models.view.vatFinancials._
 
 
 case class S4LVatFinancials(

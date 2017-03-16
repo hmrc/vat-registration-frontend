@@ -17,10 +17,12 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import controllers.userJourney.vatFinancials.VatReturnFrequencyController
 import fixtures.VatRegistrationFixture
-import forms.vatDetails.VatReturnFrequencyForm
+import forms.vatDetails.vatFinancials.VatReturnFrequencyForm
 import helpers.VatRegSpec
 import models.CacheKey
+import models.view.vatFinancials.{AccountingPeriod, VatReturnFrequency}
 import models.view.{AccountingPeriod, VatReturnFrequency}
 import org.mockito.Matchers
 import org.mockito.Mockito._

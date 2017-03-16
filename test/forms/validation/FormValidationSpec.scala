@@ -16,7 +16,7 @@
 
 package forms.validation
 
-import forms.vatDetails.SortCode
+import forms.vatDetails.vatFinancials.SortCode
 import org.scalatest.{Inside, Inspectors}
 import play.api.data.validation.{Invalid, Valid}
 import uk.gov.hmrc.play.test.UnitSpec

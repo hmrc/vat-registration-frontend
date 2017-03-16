@@ -16,7 +16,11 @@
 
 package models
 
-import models.view._
+import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
+import models.view.test.SicStub
+import models.view.vatChoice.{StartDate, TaxableTurnover, VoluntaryRegistration}
+import models.view.vatFinancials._
+import models.view.vatTradingDetails.TradingName
 
 trait CacheKey[T] {
 
@@ -46,5 +50,6 @@ object CacheKey {
   implicit val companyBankAccountDetailsCacheKey: CacheKey[CompanyBankAccountDetails] = CacheKey("CompanyBankAccountDetails")
   implicit val businessActivityDescriptionCacheKey: CacheKey[BusinessActivityDescription] = CacheKey("BusinessActivityDescription")
   implicit val sicStub: CacheKey[SicStub] = CacheKey("SicStub")
+  implicit val culturalComplianceQ1: CacheKey[CulturalComplianceQ1] = CacheKey("CulturalComplianceQ1")
 
 }

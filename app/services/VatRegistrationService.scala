@@ -24,7 +24,10 @@ import enums.DownstreamOutcome
 import enums.DownstreamOutcome._
 import models.api._
 import models.s4l.{S4LVatChoice, S4LVatFinancials}
-import models.view._
+import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.vatChoice.{StartDate, VoluntaryRegistration}
+import models.view.vatFinancials._
+import models.view.vatTradingDetails.TradingName
 import models.{CacheKey, ViewModelTransformer}
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier

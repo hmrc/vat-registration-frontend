@@ -1,4 +1,4 @@
-@import models.view.EstimateVatTurnover
+@import models.view.vatFinancials.EstimateVatTurnover
 @(estimateVatTurnoverForm:  Form[EstimateVatTurnover])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
@@ -27,7 +27,7 @@
           <strong class="bold-small">@messages("pages.estimate.vat.turnover.info")</strong>
       </div>
 
-      @govHelpers.form(action = controllers.userJourney.routes.EstimateVatTurnoverController.submit()) {
+      @govHelpers.form(action = controllers.userJourney.vatFinancials.routes.EstimateVatTurnoverController.submit()) {
           <div class="form-group @fieldSetClasses">
               <fieldset>
 

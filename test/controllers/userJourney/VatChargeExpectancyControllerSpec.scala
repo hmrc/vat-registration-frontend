@@ -17,9 +17,11 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import controllers.userJourney.vatFinancials.VatChargeExpectancyController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.CacheKey
+import models.view.vatFinancials.{VatChargeExpectancy, VatReturnFrequency}
 import models.view.{VatChargeExpectancy, VatReturnFrequency}
 import org.mockito.Matchers
 import org.mockito.Mockito._

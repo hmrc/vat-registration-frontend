@@ -17,9 +17,11 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
+import controllers.userJourney.vatChoice.TaxableTurnoverController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.CacheKey
+import models.view.vatChoice.{StartDate, TaxableTurnover, VoluntaryRegistration}
 import models.view.{StartDate, TaxableTurnover, VoluntaryRegistration}
 import org.mockito.Matchers
 import org.mockito.Mockito._

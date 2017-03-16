@@ -17,7 +17,7 @@
 package forms.validation
 
 import cats.Show
-import forms.vatDetails.SortCode
+import forms.vatDetails.vatFinancials.SortCode
 import org.apache.commons.lang3.StringUtils
 import play.api.data.format.Formatter
 import play.api.data.validation._

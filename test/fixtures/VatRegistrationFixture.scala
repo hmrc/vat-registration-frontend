@@ -18,6 +18,10 @@ package fixtures
 
 import models.api._
 import models.view._
+import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.vatChoice.StartDate
+import models.view.vatFinancials._
+import models.view.vatTradingDetails.TradingName
 import play.api.http.Status._
 import uk.gov.hmrc.play.http._
 
