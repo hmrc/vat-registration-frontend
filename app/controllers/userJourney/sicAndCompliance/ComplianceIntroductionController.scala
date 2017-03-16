@@ -29,6 +29,6 @@ class ComplianceIntroductionController @Inject()(s4LService: S4LService, ds: Com
   })
 
   def submit: Action[AnyContent] = authorised(implicit user => implicit request => {
-    Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
+    Redirect(controllers.userJourney.sicAndCompliance.routes.CulturalComplianceQ1Controller.show())
   })
 }

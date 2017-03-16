@@ -272,3 +272,7 @@ validation.companyBankAccount.sortCode.invalid = Enter a valid sort code
 pages.compliance.introduction.title                          = Compliance questions
 pages.compliance.introduction.heading                        = Tell us more about your company
 pages.compliance.introduction.para1                          = So we can understand what your company does, we''re going to ask you a few questions about your business activities.
+
+## Cultural Compliance - Q1
+pages.culturalCompliance.q1.title                          = Not-for-profit organisation
+pages.culturalCompliance.q1.heading                        = Is your company a not-for-profit organisation or public body?

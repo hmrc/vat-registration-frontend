@@ -20,11 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.sicAndCompliance.CulturalComplianceQ1Form
-import forms.vatDetails.vatChoice.TaxableTurnoverForm
 import models.view.sicAndCompliance.CulturalComplianceQ1
-import models.view.vatChoice.StartDate.COMPANY_REGISTRATION_DATE
-import models.view.vatChoice.VoluntaryRegistration.REGISTER_NO
-import models.view.vatChoice.{StartDate, TaxableTurnover, VoluntaryRegistration}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -42,20 +38,13 @@ class CulturalComplianceQ1Controller @Inject()(ds: CommonPlayDependencies)
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    TaxableTurnoverForm.form.bindFromRequest().fold(
+    CulturalComplianceQ1Form.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.taxable_turnover(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.cultural_compliance_q1(formWithErrors)))
       }, {
-        data: TaxableTurnover => {
-          s4LService.saveForm[TaxableTurnover](data) flatMap { _ =>
-            if (TaxableTurnover.TAXABLE_YES == data.yesNo) {
-              for {
-                _ <- s4LService.saveForm[VoluntaryRegistration](VoluntaryRegistration(REGISTER_NO))
-                _ <- s4LService.saveForm[StartDate](StartDate(COMPANY_REGISTRATION_DATE))
-              } yield Redirect(controllers.userJourney.vatChoice.routes.MandatoryStartDateController.show())
-            } else {
-              Future.successful(Redirect(controllers.userJourney.vatChoice.routes.VoluntaryRegistrationController.show()))
-            }
+        data: CulturalComplianceQ1 => {
+          s4LService.saveForm[CulturalComplianceQ1](data) map { _ =>
+            Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
           }
         }
       })
