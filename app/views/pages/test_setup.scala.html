@@ -10,26 +10,37 @@
             <div class="form-group">
                 <fieldset>
 
-                    <p>@govHelpers.input(testSetupForm("taxableTurnoverChoice"), '_label -> "Taxable turnover choice (TAXABLE_YES or TAXABLE_NO)")</p>
-                    <p>@govHelpers.input(testSetupForm("voluntaryChoice"), '_label -> "Voluntary registration choice (REGISTER_YES or REGISTER_NO)")</p>
-                    <p>@govHelpers.input(testSetupForm("startDateChoice"), '_label -> "Start date choice (COMPANY_REGISTRATION_DATE or BUSINESS_START_DATE or SPECIFIC_DATE)")</p>
-                    <p>@govHelpers.input(testSetupForm("startDateDay"), '_label -> "Start date day (DD)")</p>
-                    <p>@govHelpers.input(testSetupForm("startDateMonth"), '_label -> "Start date month (MM)")</p>
-                    <p>@govHelpers.input(testSetupForm("startDateYear"), '_label -> "Start date year (YYYY)")</p>
-                    <p>@govHelpers.input(testSetupForm("tradingNameChoice"), '_label -> "Trading name choice (TRADING_NAME_YES or TRADING_NAME_NO)")</p>
-                    <p>@govHelpers.input(testSetupForm("tradingName"), '_label -> "Trading name")</p>
-                    <p>@govHelpers.input(testSetupForm("businessActivityDescription"), '_label -> "Business activity description")</p>
-                    <p>@govHelpers.input(testSetupForm("companyBankAccountChoice"), '_label -> "Company Bank Account Choice (COMPANY_BANK_ACCOUNT_YES or COMPANY_BANK_ACCOUNT_NO)")</p>
-                    <p>@govHelpers.input(testSetupForm("companyBankAccountName"), '_label -> "Company Bank Account Name")</p>
-                    <p>@govHelpers.input(testSetupForm("companyBankAccountNumber"), '_label -> "Company Bank Account Number (8 digit number)")</p>
-                    <p>@govHelpers.input(testSetupForm("sortCode"), '_label -> "Sort Code (11-22-33)")</p>
-                    <p>@govHelpers.input(testSetupForm("estimateVatTurnover"), '_label -> "Estimated vat turnover")</p>
-                    <p>@govHelpers.input(testSetupForm("zeroRatedSalesChoice"), '_label -> "Zero rated sales choice (ZERO_RATED_SALES_YES or ZERO_RATED_SALES_NO)")</p>
-                    <p>@govHelpers.input(testSetupForm("zeroRatedSalesEstimate"), '_label -> "Zero rate sales estimate")</p>
-                    <p>@govHelpers.input(testSetupForm("vatChargeExpectancyChoice"), '_label -> "Vat Charge Expectancy (VAT_CHARGE_YES or VAT_CHARGE_NO)")</p>
-                    <p>@govHelpers.input(testSetupForm("vatReturnFrequency"), '_label -> "Vat Return Frequency (monthly or quarterly)")</p>
-                    <p>@govHelpers.input(testSetupForm("accountingPeriod"), '_label -> "Accounting Period (JAN_APR_JUL_OCT or FEB_MAY_AUG_NOV or MAR_JUN_SEP_DEC)")</p>
+                    <b>VAT CHOICE</b>
+                    <p>@govHelpers.input(testSetupForm("vatChoice.taxableTurnoverChoice"), '_label -> "Taxable turnover choice (TAXABLE_YES or TAXABLE_NO)")</p>
+                    <p>@govHelpers.input(testSetupForm("vatChoice.voluntaryChoice"), '_label -> "Voluntary registration choice (REGISTER_YES or REGISTER_NO)")</p>
+                    <p>@govHelpers.input(testSetupForm("vatChoice.startDateChoice"), '_label -> "Start date choice (COMPANY_REGISTRATION_DATE or BUSINESS_START_DATE or SPECIFIC_DATE)")</p>
+                    <p>@govHelpers.input(testSetupForm("vatChoice.startDateDay"), '_label -> "Start date day (DD)")</p>
+                    <p>@govHelpers.input(testSetupForm("vatChoice.startDateMonth"), '_label -> "Start date month (MM)")</p>
+                    <p>@govHelpers.input(testSetupForm("vatChoice.startDateYear"), '_label -> "Start date year (YYYY)")</p>
 
+                    <b>VAT TRADING DETAILS</b>
+                    <p>@govHelpers.input(testSetupForm("vatTradingDetails.tradingNameChoice"), '_label -> "Trading name choice (TRADING_NAME_YES or TRADING_NAME_NO)")</p>
+                    <p>@govHelpers.input(testSetupForm("vatTradingDetails.tradingName"), '_label -> "Trading name")</p>
+
+                    <b>VAT FINANCIALS</b>
+                    <p>@govHelpers.input(testSetupForm("vatFinancials.companyBankAccountChoice"), '_label -> "Company Bank Account Choice (COMPANY_BANK_ACCOUNT_YES or COMPANY_BANK_ACCOUNT_NO)")</p>
+                    <p>@govHelpers.input(testSetupForm("vatFinancials.companyBankAccountName"), '_label -> "Company Bank Account Name")</p>
+                    <p>@govHelpers.input(testSetupForm("vatFinancials.companyBankAccountNumber"), '_label -> "Company Bank Account Number (8 digit number)")</p>
+                    <p>@govHelpers.input(testSetupForm("vatFinancials.sortCode"), '_label -> "Sort Code (11-22-33)")</p>
+                    <p>@govHelpers.input(testSetupForm("vatFinancials.estimateVatTurnover"), '_label -> "Estimated vat turnover")</p>
+                    <p>@govHelpers.input(testSetupForm("vatFinancials.zeroRatedSalesChoice"), '_label -> "Zero rated sales choice (ZERO_RATED_SALES_YES or ZERO_RATED_SALES_NO)")</p>
+                    <p>@govHelpers.input(testSetupForm("vatFinancials.zeroRatedSalesEstimate"), '_label -> "Zero rate sales estimate")</p>
+                    <p>@govHelpers.input(testSetupForm("vatFinancials.vatChargeExpectancyChoice"), '_label -> "Vat Charge Expectancy (VAT_CHARGE_YES or VAT_CHARGE_NO)")</p>
+                    <p>@govHelpers.input(testSetupForm("vatFinancials.vatReturnFrequency"), '_label -> "Vat Return Frequency (monthly or quarterly)")</p>
+                    <p>@govHelpers.input(testSetupForm("vatFinancials.accountingPeriod"), '_label -> "Accounting Period (JAN_APR_JUL_OCT or FEB_MAY_AUG_NOV or MAR_JUN_SEP_DEC)")</p>
+
+                    <b>SIC AND COMPLIANCE</b>
+                    <p>@govHelpers.input(testSetupForm("sicAndCompliance.businessActivityDescription"), '_label -> "Business activity description")</p>
+                    <p>@govHelpers.input(testSetupForm("sicAndCompliance.sicCode1"), '_label -> "SIC code 1")</p>
+                    <p>@govHelpers.input(testSetupForm("sicAndCompliance.sicCode2"), '_label -> "SIC code 2")</p>
+                    <p>@govHelpers.input(testSetupForm("sicAndCompliance.sicCode3"), '_label -> "SIC code 3")</p>
+                    <p>@govHelpers.input(testSetupForm("sicAndCompliance.sicCode4"), '_label -> "SIC code 4")</p>
+                    <p>@govHelpers.input(testSetupForm("sicAndCompliance.culturalComplianceQ1"), '_label -> "Cultural Compliance Q1 (NOT_PROFIT_YES or NOT_PROFIT_NO)")</p>
                 </fieldset>
 
             </div>

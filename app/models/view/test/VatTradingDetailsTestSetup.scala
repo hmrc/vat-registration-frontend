@@ -19,13 +19,15 @@ package models.view.test
 import play.api.libs.json.Json
 
 
-case class TestSetup(vatChoice: VatChoiceTestSetup,
-                     vatTradingDetails: VatTradingDetailsTestSetup,
-                     vatFinancials: VatFinancialsTestSetup,
-                     sicAndCompliance: SicAndComplianceTestSetup)
+case class VatTradingDetailsTestSetup(tradingNameChoice: Option[String],
+                                      tradingName: Option[String])
 
-object TestSetup {
-  implicit val format = Json.format[TestSetup]
+object VatTradingDetailsTestSetup {
+  implicit val format = Json.format[VatTradingDetailsTestSetup]
 }
+
+
+
+
 
 

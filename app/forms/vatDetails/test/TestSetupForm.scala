@@ -16,34 +16,59 @@
 
 package forms.vatDetails.test
 
-import models.view.test.TestSetup
+import models.view.test._
 import play.api.data.Form
 import play.api.data.Forms._
 
 object TestSetupForm {
 
-  val form = Form(
-    mapping(
-      "taxableTurnoverChoice" -> optional(text),
-      "voluntaryChoice" -> optional(text),
-      "startDateChoice" -> optional(text),
-      "startDateDay" -> optional(text),
-      "startDateMonth" -> optional(text),
-      "startDateYear" -> optional(text),
-      "tradingNameChoice" -> optional(text),
-      "tradingName" -> optional(text),
-      "businessActivityDescription" -> optional(text),
-      "companyBankAccountChoice" -> optional(text),
-      "companyBankAccountName" -> optional(text),
-      "companyBankAccountNumber" -> optional(text),
-      "sortCode" -> optional(text),
-      "estimateVatTurnover" -> optional(text),
-      "zeroRatedSalesChoice" -> optional(text),
-      "zeroRatedSalesEstimate" -> optional(text),
-      "vatChargeExpectancyChoice" -> optional(text),
-      "vatReturnFrequency" -> optional(text),
-      "accountingPeriod" -> optional(text)
-    )(TestSetup.apply)(TestSetup.unapply)
-  )
+  val vatChoiceTestSetupMapping = mapping(
+    "taxableTurnoverChoice" -> optional(text),
+    "voluntaryChoice" -> optional(text),
+    "startDateChoice" -> optional(text),
+    "startDateDay" -> optional(text),
+    "startDateMonth" -> optional(text),
+    "startDateYear" -> optional(text)
+  )(VatChoiceTestSetup.apply)(VatChoiceTestSetup.unapply)
+
+  val sicAndComplianceTestSetupMapping = mapping(
+    "businessActivityDescription" -> optional(text),
+    "sicCode1" -> optional(text),
+    "sicCode2" -> optional(text),
+    "sicCode3" -> optional(text),
+    "sicCode4" -> optional(text),
+    "culturalComplianceQ1" -> optional(text)
+  )(SicAndComplianceTestSetup.apply)(SicAndComplianceTestSetup.unapply)
+
+  val vatTradingDetailsTestSetupMapping = mapping(
+    "tradingNameChoice" -> optional(text),
+    "tradingName" -> optional(text)
+  )(VatTradingDetailsTestSetup.apply)(VatTradingDetailsTestSetup.unapply)
+
+  val vatFinancialsTestSetupMapping = mapping(
+    "companyBankAccountChoice" -> optional(text),
+    "companyBankAccountName" -> optional(text),
+    "companyBankAccountNumber" -> optional(text),
+    "sortCode" -> optional(text),
+    "estimateVatTurnover" -> optional(text),
+    "zeroRatedSalesChoice" -> optional(text),
+    "zeroRatedSalesEstimate" -> optional(text),
+    "vatChargeExpectancyChoice" -> optional(text),
+    "vatReturnFrequency" -> optional(text),
+    "accountingPeriod" -> optional(text)
+  )(VatFinancialsTestSetup.apply)(VatFinancialsTestSetup.unapply)
+
+  val form = Form(mapping(
+    "vatChoice" -> vatChoiceTestSetupMapping,
+    "vatTradingDetails" -> vatTradingDetailsTestSetupMapping,
+    "vatFinancials" -> vatFinancialsTestSetupMapping,
+    "sicAndCompliance" -> sicAndComplianceTestSetupMapping
+  )(TestSetup.apply)(TestSetup.unapply))
 
 }
+
+
+
+
+
+
