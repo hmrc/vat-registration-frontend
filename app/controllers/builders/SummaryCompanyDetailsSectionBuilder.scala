@@ -107,7 +107,7 @@ case class SummaryCompanyDetailsSectionBuilder(vatFinancials: VatFinancials, vat
 
   def companyBusinessDescriptionRow: SummaryRow = SummaryRow(
     "companyDetails.businessActivity.description",
-    vatSicAndCompliance.description match {
+    vatSicAndCompliance.businessDescription match {
       case description if StringUtils.isNotBlank(description) => description
       case _ => "app.common.no"
     },

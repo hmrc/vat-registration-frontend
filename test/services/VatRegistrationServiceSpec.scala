@@ -23,7 +23,7 @@ import helpers.VatRegSpec
 import models.CacheKey
 import models.api._
 import models.view._
-import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
 import models.view.vatChoice.{StartDate, VoluntaryRegistration}
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.TradingName
@@ -100,6 +100,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.eq(CacheKey[BusinessActivityDescription]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validBusinessActivityDescription)))
 
+      when(mockS4LService.fetchAndGet[CulturalComplianceQ1]()(Matchers.eq(CacheKey[CulturalComplianceQ1]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(validCulturalComplianceQ1)))
+
       when(mockRegConnector.upsertSicAndCompliance(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(validSicAndCompliance))
 
@@ -172,6 +175,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.eq(CacheKey[BusinessActivityDescription]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validBusinessActivityDescription)))
+
+      when(mockS4LService.fetchAndGet[CulturalComplianceQ1]()(Matchers.eq(CacheKey[CulturalComplianceQ1]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(validCulturalComplianceQ1)))
 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
       (Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatScheme]]()))
