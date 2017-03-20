@@ -20,15 +20,15 @@ import models.api.compliance.VatCulturalCompliance
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatSicAndCompliance(description: String, culturalCompliance: Option[VatCulturalCompliance])
+case class VatSicAndCompliance(businessDescription: String, culturalCompliance: Option[VatCulturalCompliance])
 
 
 object VatSicAndCompliance {
 
   implicit val format = (
-    (__ \ "description").format[String] and
+    (__ \ "businessDescription").format[String] and
       (__ \ "culturalCompliance").formatNullable[VatCulturalCompliance]) (VatSicAndCompliance.apply, unlift(VatSicAndCompliance.unapply))
 
-  val empty = VatSicAndCompliance(description = "", culturalCompliance = None)
+  val empty = VatSicAndCompliance(businessDescription = "", culturalCompliance = None)
 
 }
