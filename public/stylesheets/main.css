@@ -67,3 +67,7 @@ td {
 	margin-top: 0;
 	margin-bottom:0;
 }
+
+.form-field--error {
+	box-sizing: initial;
+}

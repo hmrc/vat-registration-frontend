@@ -38,6 +38,6 @@ object VatScheme {
       (__ \ "trading-details").formatNullable[VatTradingDetails] and
       (__ \ "vat-choice").formatNullable[VatChoice] and
       (__ \ "financials").formatNullable[VatFinancials] and
-      (__ \ "sicAndCompliance").formatNullable[VatSicAndCompliance]
+      (__ \ "vatSicAndCompliance").formatNullable[VatSicAndCompliance]
     )  (VatScheme.apply, unlift(VatScheme.unapply))
 }
