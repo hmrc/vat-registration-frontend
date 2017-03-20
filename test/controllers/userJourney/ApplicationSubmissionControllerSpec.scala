@@ -16,23 +16,47 @@
 
 package controllers.userJourney
 
+import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import org.mockito.Matchers
+import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.VatRegistrationService
 
-class ApplicationSubmissionControllerSpec extends VatRegSpec {
+import scala.concurrent.Future
 
-  object TestApplicationSubmissionController extends ApplicationSubmissionController(mockS4LService, ds) {
+class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistrationFixture {
+
+  val mockVatRegistrationService = mock[VatRegistrationService]
+
+  object TestApplicationSubmissionController extends ApplicationSubmissionController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
   val fakeRequest = FakeRequest(routes.ApplicationSubmissionController.show())
 
-
-
   s"GET ${routes.ApplicationSubmissionController.show()}" should {
 
     "display the submission confirmation page to the user" in {
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
+        .thenReturn(Future.successful(validVatScheme))
+
+      callAuthorised(TestApplicationSubmissionController.show, mockAuthConnector) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("Application submitted")
+      }
+    }
+
+    "display the submission confirmation page to the user when VatFinancials is empty" in {
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
+        .thenReturn(Future.successful(emptyVatScheme))
+
       callAuthorised(TestApplicationSubmissionController.show, mockAuthConnector) {
         result =>
           status(result) mustBe OK
