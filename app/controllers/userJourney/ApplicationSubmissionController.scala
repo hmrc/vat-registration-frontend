@@ -35,13 +35,18 @@ package controllers.userJourney
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
+import models.api.VatFinancials
 import play.api.mvc._
-import services.S4LService
+import services.{S4LService, VatRegistrationService}
 
-class ApplicationSubmissionController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class ApplicationSubmissionController @Inject()(ds: CommonPlayDependencies)
+                                 (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = authorised(implicit user => implicit request => {
-    Ok(views.html.pages.application_submission_confirmation())
-  })
-
+  def show: Action[AnyContent] = authorised.async { implicit user =>
+    implicit request =>
+        for {
+          vatScheme <- vrs.getVatScheme()
+        } yield Ok(views.html.pages.application_submission_confirmation(vatScheme.financials.getOrElse(VatFinancials.empty)))
+      }
 }
