@@ -16,13 +16,13 @@
 
 package controllers.builders
 
-import models.api.{SicAndCompliance, VatFinancials}
+import models.api.{VatFinancials, VatSicAndCompliance}
 import models.view.vatFinancials.VatReturnFrequency
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 import play.api.UnexpectedException
 
-case class SummaryCompanyDetailsSectionBuilder(vatFinancials: VatFinancials, vatSicAndCompliance : SicAndCompliance)
+case class SummaryCompanyDetailsSectionBuilder(vatFinancials: VatFinancials, vatSicAndCompliance : VatSicAndCompliance)
   extends SummarySectionBuilder {
 
   def estimatedSalesValueRow: SummaryRow = SummaryRow(

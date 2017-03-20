@@ -75,9 +75,9 @@ trait RegistrationConnector {
     }
   }
 
-  def upsertSicAndCompliance(regId: String, sicAndCompliance: SicAndCompliance)
-                         (implicit hc: HeaderCarrier, rds: HttpReads[SicAndCompliance]): Future[SicAndCompliance] = {
-    http.PATCH[SicAndCompliance, SicAndCompliance](s"$vatRegUrl/vatreg/$regId/sic-and-compliance", sicAndCompliance) recover {
+  def upsertSicAndCompliance(regId: String, sicAndCompliance: VatSicAndCompliance)
+                         (implicit hc: HeaderCarrier, rds: HttpReads[VatSicAndCompliance]): Future[VatSicAndCompliance] = {
+    http.PATCH[VatSicAndCompliance, VatSicAndCompliance](s"$vatRegUrl/vatreg/$regId/sic-and-compliance", sicAndCompliance) recover {
       case e: Exception => throw logResponse(e, "upsertSicAndCompliance", "upserting sicAndCompliance details")
     }
   }
