@@ -17,8 +17,9 @@
 package fixtures
 
 import models.api._
+import models.api.compliance.VatCulturalCompliance
 import models.view._
-import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
 import models.view.vatChoice.StartDate
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.TradingName
@@ -100,6 +101,7 @@ trait VatRegistrationFixture {
   )
 
   val validBusinessActivityDescription = BusinessActivityDescription(businessActivityDescription)
+  val validCulturalComplianceQ1 = CulturalComplianceQ1(CulturalComplianceQ1.NOT_PROFIT_YES)
 
   lazy val validSummaryView = Summary(
     Seq(
