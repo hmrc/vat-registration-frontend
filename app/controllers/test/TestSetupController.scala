@@ -21,7 +21,7 @@ import javax.inject.Inject
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.test.TestSetupForm
-import models.CacheKey
+import models.{CacheKey, DateModel}
 import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
 import models.view.test._
 import models.view.vatChoice.{StartDate, TaxableTurnover, VoluntaryRegistration}
@@ -56,14 +56,17 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       sicStub <- s4LService.fetchAndGet[SicStub]()
       culturalComplianceQ1 <- s4LService.fetchAndGet[CulturalComplianceQ1]()
 
+      (dateType:String, dateModel:DateModel) = StartDate.toDateModel(startDate.get).get
+
       testSetup = TestSetup(
         VatChoiceTestSetup(
           taxableTurnover.map(_.yesNo),
           voluntaryRegistration.map(_.yesNo),
-          startDate.map(_.dateType),
-          startDate.flatMap(_.day.map(_.toString)),
-          startDate.flatMap(_.month.map(_.toString)),
-          startDate.flatMap(_.year.map(_.toString))),
+          Some(dateType),
+          Some(dateModel.day.toString),
+          Some(dateModel.month.toString),
+          Some(dateModel.year.toString)
+        ),
         VatTradingDetailsTestSetup(
           tradingName.map(_.yesNo),
           tradingName.flatMap(_.tradingName)),
@@ -96,10 +99,11 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       s4LService.saveForm[StartDate](data.vatChoice.startDateChoice
       match {
         case None => StartDate()
-        case Some(a) => StartDate(a,
-          data.vatChoice.startDateDay.map(_.toInt),
-          data.vatChoice.startDateMonth.map(_.toInt),
-          data.vatChoice.startDateYear.map(_.toInt))
+        case Some(foo) => StartDate()
+//        case Some(a) => StartDate(a,
+//          data.vatChoice.startDateDay.map(_.toInt),
+//          data.vatChoice.startDateMonth.map(_.toInt),
+//          data.vatChoice.startDateYear.map(_.toInt))
       })
     }
 

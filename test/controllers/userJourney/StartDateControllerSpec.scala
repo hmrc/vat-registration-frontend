@@ -19,6 +19,7 @@ package controllers.userJourney
 import builders.AuthBuilder
 import controllers.userJourney.vatChoice.StartDateController
 import fixtures.VatRegistrationFixture
+import forms.vatDetails.vatChoice.StartDateFormFactory
 import helpers.VatRegSpec
 import models.CacheKey
 import models.view.vatChoice.StartDate
@@ -38,7 +39,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object TestStartDateController extends StartDateController(ds)(mockS4LService, mockVatRegistrationService) {
+  object TestStartDateController extends StartDateController(mock[StartDateFormFactory], ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -121,7 +122,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe s"${contextRoot}/trading-name"
+          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/trading-name"
 
       }
 
@@ -141,7 +142,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe s"${contextRoot}/trading-name"
+          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/trading-name"
       }
 
     }

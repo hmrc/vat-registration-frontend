@@ -25,6 +25,7 @@ object FrontendBuild extends Build with MicroService {
   override lazy val appDependencies: Seq[ModuleID] = compile ++ test()
 
   val compile = Seq(
+    cache,
     ws,
     "uk.gov.hmrc" %% "frontend-bootstrap" % "7.17.0",
     "uk.gov.hmrc" %% "play-partials" % "5.3.0",
@@ -36,6 +37,7 @@ object FrontendBuild extends Build with MicroService {
     "uk.gov.hmrc" %% "play-ui" % "7.0.0",
     "uk.gov.hmrc" %% "http-caching-client" % "6.2.0",
     "uk.gov.hmrc" %% "play-conditional-form-mapping" % "0.2.0",
+    "uk.gov.hmrc" %% "time" % "3.0.0",
     "org.typelevel" %% "cats" % "0.9.0"
   )
 

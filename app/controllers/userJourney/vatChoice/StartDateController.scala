@@ -19,27 +19,29 @@ package controllers.userJourney.vatChoice
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatDetails.vatChoice.StartDateForm
+import forms.vatDetails.vatChoice.StartDateFormFactory
 import models.view.vatChoice.StartDate
+import play.api.data.Form
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
-class StartDateController @Inject()(ds: CommonPlayDependencies)
+class StartDateController @Inject()(startDateFormFactory: StartDateFormFactory, ds: CommonPlayDependencies)
                                    (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
   import cats.instances.future._
 
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    val form: Form[StartDate] = startDateFormFactory.form()
     viewModel[StartDate].map { vm =>
-      Ok(views.html.pages.start_date(StartDateForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.start_date(StartDateForm.form)))
+      Ok(views.html.pages.start_date(form.fill(vm)))
+    }.getOrElse(Ok(views.html.pages.start_date(form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    StartDateForm.form.bindFromRequest().fold(
+    startDateFormFactory.form().bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.start_date(formWithErrors)))
       }, {

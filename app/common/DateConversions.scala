@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package forms.vatDetails.vatChoice
+package common
 
-import models.view.vatChoice.StartDate
-import play.api.data.Form
-import play.api.data.Forms._
 
-object StartDateForm {
+object DateConversions {
 
-  val form = Form(
-    mapping(
-      "startDateRadio" -> nonEmptyText,
-      "day" -> optional(number),
-      "month" -> optional(number),
-      "year" -> optional(number)
-    )(StartDate.apply)(StartDate.unapply)
-  )
+  import scala.language.implicitConversions
+
+  implicit def jodaToJava(jodaLocalDate: org.joda.time.LocalDate): java.time.LocalDate =
+    java.time.LocalDate.of(jodaLocalDate.getYear, jodaLocalDate.getMonthOfYear, jodaLocalDate.getDayOfMonth)
+
+  implicit def javaToJoda(javaLocalDate: java.time.LocalDate): org.joda.time.LocalDate =
+    new org.joda.time.LocalDate(javaLocalDate.getYear, javaLocalDate.getMonthValue, javaLocalDate.getDayOfMonth)
+
 }

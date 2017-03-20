@@ -30,6 +30,8 @@ object Now {
 
   // $COVERAGE-OFF$
 
+  def apply[T]()(implicit now: Now[T]) = now
+
   def apply[T](value: => T): Now[T] = new Now[T] {
     override def apply(): T = value
   }
