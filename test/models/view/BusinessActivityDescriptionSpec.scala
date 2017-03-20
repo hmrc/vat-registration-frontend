@@ -17,7 +17,7 @@
 package models.view
 
 import fixtures.VatRegistrationFixture
-import models.api.{SicAndCompliance, VatScheme}
+import models.api.{VatScheme, VatSicAndCompliance}
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.{ApiModelTransformer, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
@@ -28,14 +28,14 @@ class BusinessActivityDescriptionSpec extends UnitSpec with VatRegistrationFixtu
   val businessActivityDescription_1 = BusinessActivityDescription(description_1)
   val businessActivityDescription_2 = BusinessActivityDescription(description_2)
 
-  val sicAndCompliance = SicAndCompliance(description_1)
-  val differentSicAndCompliance = SicAndCompliance(description_2)
+  val sicAndCompliance = VatSicAndCompliance(description_1, None)
+  val differentSicAndCompliance = VatSicAndCompliance(description_2, None)
 
   val vatScheme = VatScheme(id = validRegId, sicAndCompliance = Some(sicAndCompliance))
 
   "toApi" should {
     "update a SicAndCompliance with new BusinessActivityDescription" in {
-      ViewModelTransformer[BusinessActivityDescription, SicAndCompliance]
+      ViewModelTransformer[BusinessActivityDescription, VatSicAndCompliance]
         .toApi(businessActivityDescription_2, sicAndCompliance) shouldBe differentSicAndCompliance
     }
   }
