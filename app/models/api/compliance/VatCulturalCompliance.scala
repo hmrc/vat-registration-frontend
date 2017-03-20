@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-package models.api
+package models.api.compliance
 
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
-case class SicAndCompliance(description: String = "")
+case class VatCulturalCompliance(notForProfit: Boolean)
 
+object VatCulturalCompliance {
 
-object SicAndCompliance {
+  val apiReads: Reads[VatCulturalCompliance] =
+    (__ \ "notForProfit").read[Boolean].map(VatCulturalCompliance(_))
 
-  val apiReads: Reads[SicAndCompliance] =
-    (__ \ "description").read[String].map(SicAndCompliance.apply)
+  val apiWrites: OWrites[VatCulturalCompliance] =
+    (__ \ "notForProfit").write[Boolean].contramap(_.notForProfit)
 
-  val apiWrites: Writes[SicAndCompliance] =
-    (__ \ "description").write[String].contramap(_.description)
-
-  implicit val format = Format(apiReads, apiWrites)
-
-  val default = SicAndCompliance()
-
+  implicit val format: OFormat[VatCulturalCompliance] = OFormat(apiReads, apiWrites)
 }

@@ -16,7 +16,7 @@
 
 package models.s4l
 
-import models.view._
+import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
 import models.view.vatChoice.{StartDate, VoluntaryRegistration}
 import models.view.vatFinancials._
 
@@ -33,4 +33,9 @@ case class S4LVatFinancials(
 case class S4LVatChoice(
                          startDate: Option[StartDate],
                          voluntaryRegistration: Option[VoluntaryRegistration]
+                       )
+
+case class S4LVatSicAndCompliance(
+                                   description: Option[BusinessActivityDescription],
+                                   culturalCompliance: Option[CulturalComplianceQ1]
                        )
