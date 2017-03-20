@@ -76,8 +76,9 @@ trait VatRegistrationFixture {
     vatAccountingPeriod = VatAccountingPeriod(None, period)
   )
 
-  val validSicAndCompliance = SicAndCompliance(
-    description = businessActivityDescription
+  val validSicAndCompliance = VatSicAndCompliance(
+    description = businessActivityDescription,
+    culturalCompliance = None
   )
 
   val emptyVatScheme = VatScheme.blank(validRegId)

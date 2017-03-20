@@ -16,7 +16,7 @@
 
 package models.view.sicAndCompliance
 
-import models.api.{SicAndCompliance, VatScheme}
+import models.api.{VatScheme, VatSicAndCompliance}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
@@ -32,7 +32,7 @@ object BusinessActivityDescription {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: BusinessActivityDescription, g: SicAndCompliance) =>
+  implicit val viewModelTransformer = ViewModelTransformer { (c: BusinessActivityDescription, g: VatSicAndCompliance) =>
     g.copy(description = c.description)
   }
 

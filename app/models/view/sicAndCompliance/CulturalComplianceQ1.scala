@@ -16,8 +16,9 @@
 
 package models.view.sicAndCompliance
 
-import models.ApiModelTransformer
-import models.api.VatScheme
+import models.api.compliance.VatCulturalCompliance
+import models.{ApiModelTransformer, ViewModelTransformer}
+import models.api.{VatScheme, VatSicAndCompliance}
 import play.api.libs.json.Json
 
 case class CulturalComplianceQ1(yesNo: String)
@@ -33,6 +34,10 @@ object CulturalComplianceQ1 {
 
   implicit val modelTransformer = ApiModelTransformer[CulturalComplianceQ1] { (vs: VatScheme) =>
     None
+  }
+
+  implicit val viewModelTransformer = ViewModelTransformer { (c: CulturalComplianceQ1, g: VatSicAndCompliance) =>
+    g.copy(culturalCompliance = Some(VatCulturalCompliance(c.yesNo == NOT_PROFIT_YES)))
   }
 
 }

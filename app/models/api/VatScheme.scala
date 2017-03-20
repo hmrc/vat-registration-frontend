@@ -26,7 +26,7 @@ case class VatScheme(
                       tradingDetails: Option[VatTradingDetails] = None,
                       vatChoice: Option[VatChoice] = None,
                       financials: Option[VatFinancials] = None,
-                      sicAndCompliance : Option[SicAndCompliance] =None
+                      sicAndCompliance : Option[VatSicAndCompliance] =None
                     )
 
 object VatScheme {
@@ -38,6 +38,6 @@ object VatScheme {
       (__ \ "trading-details").formatNullable[VatTradingDetails] and
       (__ \ "vat-choice").formatNullable[VatChoice] and
       (__ \ "financials").formatNullable[VatFinancials] and
-      (__ \ "sicAndCompliance").formatNullable[SicAndCompliance]
+      (__ \ "sicAndCompliance").formatNullable[VatSicAndCompliance]
     )  (VatScheme.apply, unlift(VatScheme.unapply))
 }

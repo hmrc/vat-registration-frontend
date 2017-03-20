@@ -23,8 +23,8 @@ import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.DownstreamOutcome
 import enums.DownstreamOutcome._
 import models.api._
-import models.s4l.{S4LVatChoice, S4LVatFinancials}
-import models.view.sicAndCompliance.BusinessActivityDescription
+import models.s4l.{S4LVatChoice, S4LVatFinancials, S4LVatSicAndCompliance}
+import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
 import models.view.vatChoice.{StartDate, VoluntaryRegistration}
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.TradingName
@@ -115,29 +115,16 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
     } yield response
   }
 
-  def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[SicAndCompliance] = {
-    //revisit this; make it look like other `mergeWithS4L` once there's >1 thing coming from S4L
-    def mergeWithS4L(vs: VatScheme) = s4l[BusinessActivityDescription]().map { description =>
-      update(description, vs)
-    }.map(_.apply(vs.sicAndCompliance.getOrElse(SicAndCompliance())))
+  def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[VatSicAndCompliance] = {
+    def mergeWithS4L(vs: VatScheme) =
+      (s4l[BusinessActivityDescription]() |@| s4l[CulturalComplianceQ1]()).map(S4LVatSicAndCompliance).map { sac =>
+        (update(sac.description, vs) andThen update(sac.culturalCompliance, vs)) (vs.sicAndCompliance.getOrElse(VatSicAndCompliance.empty))
+    }
 
     for {
       vs <- getVatScheme()
-      businessActivityDescription <- mergeWithS4L(vs)
-      response <- vatRegConnector.upsertSicAndCompliance(vs.id, businessActivityDescription)
-    } yield response
-  }
-
-  def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
-    //revisit this; make it look like other `mergeWithS4L` once there's >1 thing coming from S4L
-    def mergeWithS4L(vs: VatScheme) = s4l[TradingName]().map { tn =>
-      update(tn, vs)
-    }.map(_.apply(vs.tradingDetails.getOrElse(VatTradingDetails())))
-
-    for {
-      vs <- getVatScheme()
-      vatTradingDetails <- mergeWithS4L(vs)
-      response <- vatRegConnector.upsertVatTradingDetails(vs.id, vatTradingDetails)
+      sicAndCompliance <- mergeWithS4L(vs)
+      response <- vatRegConnector.upsertSicAndCompliance(vs.id, sicAndCompliance)
     } yield response
   }
 
@@ -151,6 +138,19 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
       vs <- getVatScheme()
       vatChoice <- mergeWithS4L(vs)
       response <- vatRegConnector.upsertVatChoice(vs.id, vatChoice)
+    } yield response
+  }
+
+  def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
+    //revisit this; make it look like other `mergeWithS4L` once there's >1 thing coming from S4L
+    def mergeWithS4L(vs: VatScheme) = s4l[TradingName]().map { tn =>
+      update(tn, vs)
+    }.map(_.apply(vs.tradingDetails.getOrElse(VatTradingDetails())))
+
+    for {
+      vs <- getVatScheme()
+      vatTradingDetails <- mergeWithS4L(vs)
+      response <- vatRegConnector.upsertVatTradingDetails(vs.id, vatTradingDetails)
     } yield response
   }
 
