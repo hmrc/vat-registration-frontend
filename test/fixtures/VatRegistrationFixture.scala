@@ -78,7 +78,7 @@ trait VatRegistrationFixture {
   )
 
   val validSicAndCompliance = VatSicAndCompliance(
-    description = businessActivityDescription,
+    businessDescription = businessActivityDescription,
     culturalCompliance = None
   )
 
@@ -101,7 +101,8 @@ trait VatRegistrationFixture {
   )
 
   val validBusinessActivityDescription = BusinessActivityDescription(businessActivityDescription)
-  val validCulturalComplianceQ1 = CulturalComplianceQ1(CulturalComplianceQ1.NOT_PROFIT_YES)
+  val validVatCulturalCompliance = VatCulturalCompliance(true)
+  val validCulturalComplianceQ1 = CulturalComplianceQ1(CulturalComplianceQ1.NOT_PROFIT_NO)
 
   lazy val validSummaryView = Summary(
     Seq(
