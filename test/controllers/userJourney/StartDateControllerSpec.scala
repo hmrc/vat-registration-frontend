@@ -42,7 +42,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val mockVatRegistrationService = mock[VatRegistrationService]
   val mockDateService = mock[DateService]
-  when(mockDateService.addWorkingDays(any[org.joda.time.LocalDate](),anyInt())).thenReturn(new org.joda.time.LocalDate())
+  when(mockDateService.addWorkingDays(any[org.joda.time.LocalDate](), anyInt())).thenReturn(new org.joda.time.LocalDate())
 
   val startDateFormFactory = new StartDateFormFactory(mockDateService)
 
@@ -106,11 +106,22 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   s"POST ${vatChoice.routes.StartDateController.submit()} with Empty data" should {
 
-    "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
+    "return 400 when no data posted" in {
+      AuthBuilder.submitWithAuthorisedUser(
+        TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody()) {
+        status(_) mustBe Status.BAD_REQUEST
+      }
+    }
+
+    "return 400 when partial data is posted" in {
+      AuthBuilder.submitWithAuthorisedUser(
+        TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+          "startDateRadio" -> StartDate.SPECIFIC_DATE,
+          "startDate.day" -> "1",
+          "startDate.month" -> "",
+          "startDate.year" -> "2017"
+        )) {
+        status(_) mustBe Status.BAD_REQUEST
       }
     }
   }

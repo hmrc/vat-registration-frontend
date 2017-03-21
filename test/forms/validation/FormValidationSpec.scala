@@ -17,14 +17,13 @@
 package forms.validation
 
 import forms.vatDetails.vatFinancials.SortCode
+import models.DateModel
 import org.scalatest.{Inside, Inspectors}
-import play.api.data.validation.{Invalid, Valid}
+import play.api.data.validation.{Constraint, Invalid, Valid}
 import uk.gov.hmrc.play.test.UnitSpec
 
 
 class FormValidationSpec extends UnitSpec with Inside with Inspectors {
-
-  import cats.instances.string._
 
   "mandatoryText" must {
 
@@ -233,4 +232,69 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
     }
 
   }
+
+
+  "Date validation" must {
+
+    "accept valid date" in {
+      val constraint: Constraint[DateModel] = FormValidation.Dates.validDateModel(errorSubCode = "date")
+
+      forAll(Seq(
+        DateModel("1", "1", "1970"),
+        DateModel("31", "12", "2100"),
+        DateModel("29", "2", "2016"),
+        DateModel("21", "3", "2017")
+      ))(constraint(_) shouldBe Valid)
+    }
+
+    "reject invalid date" in {
+      val constraint: Constraint[DateModel] = FormValidation.Dates.validDateModel(errorSubCode = "date")
+
+      forAll(Seq(
+        DateModel("1", "1", "0"),
+        DateModel("foo", "bar", ""),
+        DateModel("29", "2", "2017"),
+        DateModel("32", "3", "2017")
+      ))(in => inside(constraint(in)) {
+        case Invalid(err :: _) => err.message shouldBe "validation.date.invalid"
+      })
+    }
+
+    "reject empty date" in {
+      val constraint: Constraint[DateModel] = FormValidation.Dates.nonEmptyDateModel(errorSubCode = "date")
+
+      forAll(Seq(
+        DateModel("  ", " ", ""),
+        DateModel("   ", "   ", "   "),
+        DateModel("", "", "")
+      ))(in => inside(constraint(in)) {
+        case Invalid(err :: _) => err.message shouldBe "validation.date.missing"
+      })
+    }
+
+  }
+
+
+  "Range validation" must {
+
+    val constraint = FormValidation.inRange[Int](0, 100, "test")
+
+    "accept values in range" in {
+      forAll(Seq(0,1,2,3,50,98,99,100))(constraint(_) shouldBe Valid)
+    }
+
+    "reject values below acceptable minimum" in {
+      forAll(Seq(Int.MinValue,-10000, -1))(in => inside(constraint(in)){
+        case Invalid(err:: _) => err.message shouldBe "validation.test.range.below"
+      })
+    }
+
+    "reject values above acceptable maximum" in {
+      forAll(Seq(Int.MaxValue, 10000, 101))(in => inside(constraint(in)){
+        case Invalid(err:: _) => err.message shouldBe "validation.test.range.above"
+      })
+    }
+
+  }
+
 }
