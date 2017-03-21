@@ -59,7 +59,6 @@ private[forms] object FormValidation {
   def inRange[T](minValue: T, maxValue: T, errorSubCode: String = "")(implicit ordering: Ordering[T]): Constraint[T] =
     Constraint[T] { (t: T) =>
       Logger.info(s"Checking constraint for value $t in the range of [$minValue, $maxValue]")
-      assert(ordering.compare(minValue, maxValue) < 0, "min bound must be less than max bound")
       (ordering.compare(t, minValue).signum, ordering.compare(t, maxValue).signum) match {
         case (1, -1) | (0, _) | (_, 0) => Valid
         case (_, 1) => Invalid(ValidationError(s"validation.$errorSubCode.range.above", maxValue))

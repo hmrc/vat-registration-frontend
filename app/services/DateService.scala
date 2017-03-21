@@ -37,20 +37,30 @@ trait DateService {
 class WorkingDaysService @Inject()(bankHolidaysConnector: BankHolidaysConnector, cacheApi: CacheApi)
   extends DateService {
 
-  private val bankHolidaySetCacheKey = "bankHolidaySet"
-
+  import services.WorkingDaysService.BANK_HOLIDAYS_CACHE_KEY
   import uk.gov.hmrc.time.workingdays._
+
+
+  //TODO use scalamock, as Mockito can't mock CacheApi#getOrElse : call-by-name parameters
+  // $COVERAGE-OFF$
 
   override def addWorkingDays(date: LocalDate, days: Int): LocalDate = {
     import scala.concurrent.duration._
     import scala.language.postfixOps
 
-    implicit val hols: BankHolidaySet = cacheApi.getOrElse(bankHolidaySetCacheKey, 1 day) {
-      Logger.info(s"Reloading cache entry for $bankHolidaySetCacheKey")
-      val headerCarrier: HeaderCarrier = HeaderCarrier()
-      Await.result(bankHolidaysConnector.bankHolidays()(headerCarrier), 5 seconds)
+    implicit val hols: BankHolidaySet = cacheApi.getOrElse(BANK_HOLIDAYS_CACHE_KEY, 1 day) {
+      Logger.info(s"Reloading cache entry for $BANK_HOLIDAYS_CACHE_KEY")
+      Await.result(bankHolidaysConnector.bankHolidays()(HeaderCarrier()), 5 seconds)
     }
 
     date.plusWorkingDays(days)
   }
+
+  // $COVERAGE-ON$
+
+}
+
+
+object WorkingDaysService {
+  val BANK_HOLIDAYS_CACHE_KEY = "bankHolidaySet"
 }
