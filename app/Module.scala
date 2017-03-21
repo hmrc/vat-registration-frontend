@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package mocks
+import javax.inject.Singleton
 
-import connectors.BankHolidaysConnector
-import org.scalatest.mockito.MockitoSugar
-import services.S4LService
-import uk.gov.hmrc.http.cache.client.SessionCache
-import uk.gov.hmrc.play.audit.model.Audit
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import com.google.inject.AbstractModule
+import uk.gov.hmrc.play.http.hooks.HttpHook
+import uk.gov.hmrc.play.http.ws.WSHttp
 
-trait VatMocks
-  extends SaveForLaterMock
-    with KeystoreMock
-    with WSHTTPMock {
+@Singleton
+class WSHttpObjectWrapper extends WSHttp {
+  override val hooks: Seq[HttpHook] = NoneRequired
+}
 
-  this: MockitoSugar =>
-  lazy val mockAuthConnector = mock[AuthConnector]
-  lazy val mockSessionCache = mock[SessionCache]
-  lazy val mockAudit = mock[Audit]
-  lazy val mockS4LService = mock[S4LService]
+class Module extends AbstractModule {
+
+  override def configure(): Unit = {
+    bind(classOf[WSHttp]).to(classOf[WSHttpObjectWrapper])
+  }
+
+
 }
