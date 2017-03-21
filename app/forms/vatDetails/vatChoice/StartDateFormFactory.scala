@@ -57,7 +57,7 @@ class StartDateFormFactory @Inject()(dateService: DateService) {
               nonEmptyDateModel("startDate"),
               validDateModel(inRange(minDate, maxDate, "startDate"), "startDate")
             ))
-      )(StartDate.fromDateModel)(StartDate.toDateModel)
+      )(StartDate.bind)(StartDate.unbind)
     )
   }
 

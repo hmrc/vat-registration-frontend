@@ -56,16 +56,14 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       sicStub <- s4LService.fetchAndGet[SicStub]()
       culturalComplianceQ1 <- s4LService.fetchAndGet[CulturalComplianceQ1]()
 
-      (dateType:String, dateModel:DateModel) = StartDate.toDateModel(startDate.get).get
-
       testSetup = TestSetup(
         VatChoiceTestSetup(
           taxableTurnover.map(_.yesNo),
           voluntaryRegistration.map(_.yesNo),
-          Some(dateType),
-          Some(dateModel.day.toString),
-          Some(dateModel.month.toString),
-          Some(dateModel.year.toString)
+          startDate.map(_.dateType),
+          startDate.flatMap(_.date).map(_.getDayOfMonth.toString),
+          startDate.flatMap(_.date).map(_.getMonthValue.toString),
+          startDate.flatMap(_.date).map(_.getYear.toString)
         ),
         VatTradingDetailsTestSetup(
           tradingName.map(_.yesNo),
