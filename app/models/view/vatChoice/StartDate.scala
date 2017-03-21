@@ -46,14 +46,14 @@ object StartDate {
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[StartDate] { vs: VatScheme =>
-    vs.vatChoice.map(vc => fromDateTime(vc.startDate))
+    vs.vatChoice.map(vc => fromLocalDate(vc.startDate))
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: StartDate, g: VatChoice) =>
     g.copy(startDate = c.date.getOrElse(DEFAULT_DATE))
   }
 
-  def fromDateTime(d: LocalDate): StartDate =
+  def fromLocalDate(d: LocalDate): StartDate =
   // TODO: Remove check when start date becomes optional in next story
     if (d.isEqual(DEFAULT_DATE)) {
       StartDate(StartDate.COMPANY_REGISTRATION_DATE)

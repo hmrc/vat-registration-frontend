@@ -21,6 +21,7 @@ import java.time.LocalDate
 import helpers.VatRegSpec
 import models.api.{VatChoice, VatTradingDetails}
 import models.view.SummaryRow
+import models.view.vatChoice.StartDate
 
 class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec {
 
@@ -55,17 +56,35 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec {
     "with startDateRow render" should {
 
       "a date with format 'd MMMM y' if it's a voluntary registration" in {
-        val builder = SummaryVatDetailsSectionBuilder(VatChoice(necessity = VatChoice.NECESSITY_VOLUNTARY), VatTradingDetails())
-        builder.startDateRow mustBe SummaryRow("vatDetails.startDate", LocalDate.now().toString, Some(controllers.userJourney.vatChoice.routes.StartDateController.show()))
+        val builder = SummaryVatDetailsSectionBuilder(
+          VatChoice(
+            necessity = VatChoice.NECESSITY_VOLUNTARY,
+            startDate = LocalDate.of(2017, 3, 21)),
+          VatTradingDetails())
+
+        val expectedRow = SummaryRow(
+          "vatDetails.startDate",
+          "21 March 2017",
+          Some(controllers.userJourney.vatChoice.routes.StartDateController.show())
+        )
+
+        builder.startDateRow mustBe expectedRow
       }
 
       "a Companies House incorporation date message, if it's a voluntary registration and the date is a default date" in {
-        val startDate = LocalDate.of(2017, 3, 21)
-        val builder = SummaryVatDetailsSectionBuilder(VatChoice(startDate, necessity = VatChoice.NECESSITY_VOLUNTARY), VatTradingDetails())
-        builder.startDateRow mustBe SummaryRow(
+        val builder = SummaryVatDetailsSectionBuilder(
+          VatChoice(
+            StartDate.DEFAULT_DATE,
+            necessity = VatChoice.NECESSITY_VOLUNTARY),
+          VatTradingDetails()
+        )
+
+        val expectedRow = SummaryRow(
           "vatDetails.startDate",
           "pages.summary.vatDetails.mandatoryStartDate",
           Some(controllers.userJourney.vatChoice.routes.StartDateController.show()))
+
+        builder.startDateRow mustBe expectedRow
       }
 
       "a Companies House incorporation date message, if it's a mandatory registration" in {
