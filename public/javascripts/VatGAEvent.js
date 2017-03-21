@@ -10,9 +10,8 @@ var submitVatPeriodsToGA = function() {
     if($("#vatAccountPeriod").length) {
         ga('send', 'event', {
             'eventCategory': 'vat_register',
-            'eventAction': 'select',
-            'eventLabel': 'vat_account_period',
-            'eventValue': $('#vatAccountPeriod').text()
+            'eventAction': 'select_vat_account_period',
+            'eventLabel': $('#vatAccountPeriod').text()
         });
     } 
 };
