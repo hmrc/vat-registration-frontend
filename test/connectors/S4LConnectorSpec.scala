@@ -17,26 +17,18 @@
 package connectors
 
 import models.view.vatChoice.StartDate
-import models.view.vatChoice.{StartDate => StartDateView}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
-import play.api.test.FakeApplication
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache}
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class S4LConnectorSpec  extends UnitSpec with MockitoSugar with WithFakeApplication {
-
-  override lazy val fakeApplication = FakeApplication(additionalConfiguration = Map(
-    "Test.microservices.services.cachable.short-lived.cache.host" -> "test-only",
-    "Test.microservices.services.cachable.short-lived.cache.port" -> 99999,
-    "Test.microservices.services.cachable.short-lived.cache.domain" -> "save4later"
-  ))
+class S4LConnectorSpec extends UnitSpec with MockitoSugar {
 
   val mockShortLivedCache = mock[ShortLivedCache]
 
@@ -46,7 +38,7 @@ class S4LConnectorSpec  extends UnitSpec with MockitoSugar with WithFakeApplicat
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val sDateModel = StartDateView(StartDateView.COMPANY_REGISTRATION_DATE, None)
+  val sDateModel = StartDate(StartDate.COMPANY_REGISTRATION_DATE, None)
   val cacheMap = CacheMap("", Map("" -> Json.toJson(sDateModel)))
 
   "Fetching from save4later" should {

@@ -60,7 +60,9 @@ class WorkingDaysService @Inject()(bankHolidaysConnector: BankHolidaysConnector,
 
 }
 
-
+// $COVERAGE-OFF$
 object WorkingDaysService {
   val BANK_HOLIDAYS_CACHE_KEY = "bankHolidaySet"
 }
+// $COVERAGE-ON$
+//
