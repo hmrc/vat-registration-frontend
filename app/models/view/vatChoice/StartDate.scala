@@ -26,13 +26,11 @@ case class StartDate(dateType: String = "", date: Option[LocalDate] = None)
 
 object StartDate {
 
-  def fromDateModel(dateType: String, dateModel: DateModel): StartDate =
-    StartDate(dateType, dateModel.toLocalDate)
+  def fromDateModel(dateType: String, dateModel: Option[DateModel]): StartDate =
+    StartDate(dateType, dateModel.flatMap(_.toLocalDate))
 
-  def toDateModel(startDate: StartDate): Option[(String, DateModel)] =
-    startDate.date.map(d => (startDate.dateType, DateModel.fromLocalDate(d)))
-
-  def default: StartDate = StartDate(COMPANY_REGISTRATION_DATE)
+  def toDateModel(startDate: StartDate): Option[(String, Option[DateModel])] =
+    startDate.date.map(d => (startDate.dateType, Some(DateModel.fromLocalDate(d))))
 
   val DEFAULT_DATE: LocalDate = LocalDate.of(1970, 1, 1)
 

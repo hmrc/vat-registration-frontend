@@ -114,7 +114,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
     "return 303" in {
       val returnCacheMapTaxableTurnover = CacheMap("", Map("" -> Json.toJson(TaxableTurnover(TaxableTurnover.TAXABLE_YES))))
       val returnCacheMapVoluntaryRegistration = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration(VoluntaryRegistration.REGISTER_NO))))
-      val returnCacheMapStartDate = CacheMap("", Map("" -> Json.toJson(StartDate.default)))
+      val returnCacheMapStartDate = CacheMap("", Map("" -> Json.toJson(StartDate(dateType = StartDate.COMPANY_REGISTRATION_DATE))))
 
       when(mockS4LService.saveForm[TaxableTurnover](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapTaxableTurnover))
