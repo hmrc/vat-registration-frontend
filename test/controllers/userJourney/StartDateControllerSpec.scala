@@ -16,6 +16,8 @@
 
 package controllers.userJourney
 
+import java.time.LocalDate
+
 import builders.AuthBuilder
 import controllers.userJourney.vatChoice.StartDateController
 import fixtures.VatRegistrationFixture
@@ -48,7 +50,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"GET ${vatChoice.routes.StartDateController.show()}" should {
 
     "return HTML when there's a start date in S4L" in {
-      val startDate = StartDate(StartDate.SPECIFIC_DATE, Some(30), Some(1), Some(2017))
+      val startDate = StartDate(StartDate.SPECIFIC_DATE,Some(LocalDate.of(2017,3,21)))
 
       when(mockS4LService.fetchAndGet[StartDate]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(startDate)))
