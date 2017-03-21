@@ -50,13 +50,9 @@ case class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice, vatTradingDetai
 
   def startDateRow: SummaryRow = SummaryRow(
     "vatDetails.startDate",
-    vatChoice.necessity match {
-      case VatChoice.NECESSITY_VOLUNTARY =>
-        if (vatChoice.startDate == StartDate.DEFAULT_DATE) {
-          "pages.summary.vatDetails.mandatoryStartDate"
-        } else {
+    vatChoice match {
+      case VatChoice(d, VatChoice.NECESSITY_VOLUNTARY) if d != StartDate.DEFAULT_DATE =>
           vatChoice.startDate.format(presentationFormatter)
-        }
       case _ => "pages.summary.vatDetails.mandatoryStartDate"
     },
     vatChoice.necessity match {
