@@ -16,12 +16,13 @@
 
 package models.view
 
+import java.time.LocalDate
+
 import fixtures.VatRegistrationFixture
 import models.ApiModelTransformer
 import models.api.{VatChoice, VatScheme}
 import models.view.vatChoice.TaxableTurnover
 import models.view.vatChoice.TaxableTurnover._
-import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.UnitSpec
 
 class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
@@ -31,7 +32,7 @@ class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
       val vatSchemeObligatory = VatScheme(
         validRegId,
         vatChoice = Some(VatChoice(
-          DateTime.now,
+          LocalDate.now(),
           VatChoice.NECESSITY_OBLIGATORY
         ))
       )
@@ -42,7 +43,7 @@ class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
       val vatSchemeVoluntary = VatScheme(
         validRegId,
         vatChoice = Some(VatChoice(
-          DateTime.now,
+          LocalDate.now(),
           VatChoice.NECESSITY_VOLUNTARY
         ))
       )
@@ -50,7 +51,7 @@ class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
     }
 
     "convert an invalid VatChoice to empty view model" in {
-      val vatSchemeVoluntary = VatScheme(validRegId, vatChoice = Some(VatChoice(DateTime.now, "GARBAGE")))
+      val vatSchemeVoluntary = VatScheme(validRegId, vatChoice = Some(VatChoice(LocalDate.now(), "GARBAGE")))
       ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe None
     }
 

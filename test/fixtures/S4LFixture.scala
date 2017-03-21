@@ -16,10 +16,12 @@
 
 package fixtures
 
+import java.time.LocalDate
+
 import models.view.vatChoice.StartDate
 
 trait S4LFixture {
 
-  lazy val validFutureDate = StartDate("SPECIFIC_DATE", Some(10), Some(3), Some(2017))
+  lazy val validFutureDate = StartDate("SPECIFIC_DATE", Some(LocalDate.of(2017, 3, 21)))
 
 }

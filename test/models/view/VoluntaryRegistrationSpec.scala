@@ -28,21 +28,21 @@ class VoluntaryRegistrationSpec extends UnitSpec with VatRegistrationFixture {
 
   "toApi" should {
     "update a VatChoice with new VoluntaryRegistration (YES)" in {
-      val vatChoiceObligatory = VatChoice(validStartDate.toDateTime, NECESSITY_OBLIGATORY)
+      val vatChoiceObligatory = VatChoice(validStartDate.date.get, NECESSITY_OBLIGATORY)
       ViewModelTransformer[VoluntaryRegistration, VatChoice]
-        .toApi(VoluntaryRegistration(REGISTER_YES), vatChoiceObligatory) shouldBe VatChoice(validStartDate.toDateTime, NECESSITY_VOLUNTARY)
+        .toApi(VoluntaryRegistration(REGISTER_YES), vatChoiceObligatory) shouldBe VatChoice(validStartDate.date.get, NECESSITY_VOLUNTARY)
     }
 
     "update a VatChoice with new VoluntaryRegistration (NO)" in {
-      val vatChoiceVoluntary = VatChoice(validStartDate.toDateTime, NECESSITY_VOLUNTARY)
+      val vatChoiceVoluntary = VatChoice(validStartDate.date.get, NECESSITY_VOLUNTARY)
       ViewModelTransformer[VoluntaryRegistration, VatChoice]
-        .toApi(VoluntaryRegistration(REGISTER_NO), vatChoiceVoluntary) shouldBe VatChoice(validStartDate.toDateTime, NECESSITY_OBLIGATORY)
+        .toApi(VoluntaryRegistration(REGISTER_NO), vatChoiceVoluntary) shouldBe VatChoice(validStartDate.date.get, NECESSITY_OBLIGATORY)
     }
   }
 
   "apply" should {
-    val vatChoiceVoluntary = VatChoice(validStartDate.toDateTime, NECESSITY_VOLUNTARY)
-    val vatChoiceObligatory = VatChoice(validStartDate.toDateTime, NECESSITY_OBLIGATORY)
+    val vatChoiceVoluntary = VatChoice(validStartDate.date.get, NECESSITY_VOLUNTARY)
+    val vatChoiceObligatory = VatChoice(validStartDate.date.get, NECESSITY_OBLIGATORY)
     val vatScheme = VatScheme(validRegId)
 
     "convert voluntary vatChoice to view model" in {
