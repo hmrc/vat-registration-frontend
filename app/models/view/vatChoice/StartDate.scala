@@ -22,15 +22,21 @@ import models.api.{VatChoice, VatScheme}
 import models.{ApiModelTransformer, DateModel, ViewModelTransformer}
 import play.api.libs.json.Json
 
+import scala.util.Try
+
 case class StartDate(dateType: String = "", date: Option[LocalDate] = None)
 
 object StartDate {
 
-  def fromDateModel(dateType: String, dateModel: Option[DateModel]): StartDate =
+  def bind(dateType: String, dateModel: Option[DateModel]): StartDate =
     StartDate(dateType, dateModel.flatMap(_.toLocalDate))
 
-  def toDateModel(startDate: StartDate): Option[(String, Option[DateModel])] =
-    startDate.date.map(d => (startDate.dateType, Some(DateModel.fromLocalDate(d))))
+  def unbind(startDate: StartDate): Option[(String, Option[DateModel])] =
+    Try {
+      startDate.date.fold((startDate.dateType, None: Option[DateModel])) {
+        d => (startDate.dateType, Some(DateModel.fromLocalDate(d)))
+      }
+    }.toOption
 
   val DEFAULT_DATE: LocalDate = LocalDate.of(1970, 1, 1)
 

@@ -35,10 +35,7 @@ class StartDateController @Inject()(startDateFormFactory: StartDateFormFactory, 
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     val form: Form[StartDate] = startDateFormFactory.form()
-    viewModel[StartDate].map { vm =>
-      val viewModel = if (vm.dateType == StartDate.COMPANY_REGISTRATION_DATE) vm.copy(date = None) else vm
-      Ok(views.html.pages.start_date(form.fill(viewModel)))
-    }.getOrElse(Ok(views.html.pages.start_date(form)))
+    viewModel[StartDate].fold(form)(form.fill).map(f => Ok(views.html.pages.start_date(f)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
@@ -47,7 +44,7 @@ class StartDateController @Inject()(startDateFormFactory: StartDateFormFactory, 
         Future.successful(BadRequest(views.html.pages.start_date(formWithErrors)))
       }, {
         data: StartDate =>
-          val d = if (data.dateType == StartDate.COMPANY_REGISTRATION_DATE) data.copy(date=None) else data
+          val d = if (data.dateType == StartDate.COMPANY_REGISTRATION_DATE) data.copy(date = None) else data
           s4LService.saveForm(d).map { _ =>
             Redirect(controllers.userJourney.vatTradingDetails.routes.TradingNameController.show())
           }
