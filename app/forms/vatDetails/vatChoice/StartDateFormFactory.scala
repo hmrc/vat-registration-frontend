@@ -27,12 +27,15 @@ import models.view.vatChoice.StartDate
 import play.api.data.Form
 import play.api.data.Forms._
 import services.DateService
+import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
 class StartDateFormFactory @Inject()(dateService: DateService) {
 
   implicit object LocalDateOrdering extends Ordering[LocalDate] {
     override def compare(x: LocalDate, y: LocalDate): Int = x.compareTo(y)
   }
+
+  val RADIO_INPUT_NAME = "startDateRadio"
 
   def form()(implicit today: Now[LocalDate]): Form[StartDate] = {
 
@@ -42,15 +45,18 @@ class StartDateFormFactory @Inject()(dateService: DateService) {
 
     Form(
       mapping(
-        "startDateRadio" -> nonEmptyText,
-        "startDate" -> mapping(
-          "day" -> text,
-          "month" -> text,
-          "year" -> text
-        )(DateModel.apply)(DateModel.unapply).verifying(
-          nonEmptyDateModel("startDate"),
-          validDateModel(inRange(minDate, maxDate, "startDate"), "startDate")
-        )
+        RADIO_INPUT_NAME -> nonEmptyText.verifying(StartDate.validSelection),
+        "startDate" -> mandatoryIf(
+          isEqual(RADIO_INPUT_NAME, StartDate.SPECIFIC_DATE),
+          mapping(
+            "day" -> text,
+            "month" -> text,
+            "year" -> text
+          )(DateModel.apply)(DateModel.unapply)
+            .verifying(
+              nonEmptyDateModel("startDate"),
+              validDateModel(inRange(minDate, maxDate, "startDate"), "startDate")
+            ))
       )(StartDate.fromDateModel)(StartDate.toDateModel)
     )
   }

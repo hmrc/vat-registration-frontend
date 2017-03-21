@@ -21,7 +21,7 @@
             <div class="form-group">
 
                     @govHelpers.inputRadioGroup(
-                        field = startDateForm("startDateRadio"),
+                        startDateForm("startDateRadio"),
                         Seq(
                             StartDate.COMPANY_REGISTRATION_DATE -> Messages("pages.startDate.radio.whenRegistered"),
                             StartDate.SPECIFIC_DATE -> Messages("pages.startDate.radio.specificDate")
