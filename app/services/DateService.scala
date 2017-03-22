@@ -26,6 +26,7 @@ import play.api.cache.CacheApi
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Await
+import scala.util.Try
 
 @ImplementedBy(classOf[WorkingDaysService])
 trait DateService {
@@ -40,22 +41,27 @@ class WorkingDaysService @Inject()(bankHolidaysConnector: BankHolidaysConnector,
   import services.WorkingDaysService.BANK_HOLIDAYS_CACHE_KEY
   import uk.gov.hmrc.time.workingdays._
 
+  import scala.concurrent.duration._
+  import scala.language.postfixOps
+
+  val defaultHolidaySet = Await.result(bankHolidaysConnector.bankHolidays()(HeaderCarrier()), 5 seconds)
 
   //TODO use scalamock, as Mockito can't mock CacheApi#getOrElse : call-by-name parameters
   // $COVERAGE-OFF$
 
   override def addWorkingDays(date: LocalDate, days: Int): LocalDate = {
     import scala.concurrent.duration._
-    import scala.language.postfixOps
 
     implicit val hols: BankHolidaySet = cacheApi.getOrElse(BANK_HOLIDAYS_CACHE_KEY, 1 day) {
       Logger.info(s"Reloading cache entry for $BANK_HOLIDAYS_CACHE_KEY")
-      Await.result(bankHolidaysConnector.bankHolidays()(HeaderCarrier()), 5 seconds)
+      Try {
+        Await.result(bankHolidaysConnector.bankHolidays()(HeaderCarrier()), 5 seconds)
+      }.getOrElse(defaultHolidaySet)
     }
 
     import common.DateConversions._
-    val d: org.joda.time.LocalDate = date
-    d.plusWorkingDays(days)
+    val jodaDate: org.joda.time.LocalDate = date
+    jodaDate.plusWorkingDays(days)
   }
 
   // $COVERAGE-ON$
@@ -68,3 +74,4 @@ object WorkingDaysService {
 }
 
 // $COVERAGE-ON$
+//
