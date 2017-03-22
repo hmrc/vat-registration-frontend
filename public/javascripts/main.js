@@ -48,6 +48,8 @@ $(document).ready($(function () {
     StartDatePage.init = function() {
         UI.hideShowOnRadioButton("startDateRadio",
             { "#startDateRadio-specific_date": "#specific_date_panel" });
+        var numericInputs = ["startDate\\.day", "startDate\\.month", "startDate\\.year"];
+        UI.preventNonNumericInput(numericInputs);
     }
 }(window.StartDatePage = window.StartDatePage || {}, jQuery));
 

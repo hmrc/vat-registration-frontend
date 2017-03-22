@@ -16,6 +16,7 @@
 
 package mocks
 
+import connectors.BankHolidaysConnector
 import org.scalatest.mockito.MockitoSugar
 import services.S4LService
 import uk.gov.hmrc.http.cache.client.SessionCache

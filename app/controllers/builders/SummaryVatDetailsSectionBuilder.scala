@@ -16,7 +16,10 @@
 
 package controllers.builders
 
+import java.time.format.DateTimeFormatter
+
 import models.api.{VatChoice, VatTradingDetails}
+import models.view.vatChoice.StartDate
 import models.view.{SummaryRow, SummarySection}
 
 case class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice, vatTradingDetails: VatTradingDetails)
@@ -43,16 +46,13 @@ case class SummaryVatDetailsSectionBuilder(vatChoice: VatChoice, vatTradingDetai
     }
   )
 
+  val presentationFormatter = DateTimeFormatter.ofPattern("d MMMM y")
+
   def startDateRow: SummaryRow = SummaryRow(
     "vatDetails.startDate",
-    vatChoice.necessity match {
-      case VatChoice.NECESSITY_VOLUNTARY =>
-        val startdate = vatChoice.startDate.toString("dd/MM/yyyy")
-        if (startdate == "31/12/1969" || startdate == "01/01/1970") {
-          "pages.summary.vatDetails.mandatoryStartDate"
-        } else {
-          vatChoice.startDate.toString("d MMMM y")
-        }
+    vatChoice match {
+      case VatChoice(d, VatChoice.NECESSITY_VOLUNTARY) if d != StartDate.DEFAULT_DATE =>
+          vatChoice.startDate.format(presentationFormatter)
       case _ => "pages.summary.vatDetails.mandatoryStartDate"
     },
     vatChoice.necessity match {

@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package models.api
+package models
 
 import java.time.LocalDate
+import java.time.format.{DateTimeFormatter, ResolverStyle}
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import scala.util.Try
 
-case class VatChoice(
-                      startDate: LocalDate = LocalDate.now(),
-                      necessity: String = "" // "obligatory" or "voluntary"
-                    )
 
-object VatChoice {
+case class DateModel(day: String, month: String, year: String) {
 
-  val NECESSITY_OBLIGATORY = "obligatory"
-  val NECESSITY_VOLUNTARY = "voluntary"
+  def toLocalDate: Option[LocalDate] = Try {
+    LocalDate.parse(s"$day-$month-$year", DateModel.formatter)
+  }.toOption
 
-  implicit val format: OFormat[VatChoice] = (
-    (__ \ "start-date").format[LocalDate] and
-      (__ \ "necessity").format[String]) (VatChoice.apply, unlift(VatChoice.unapply))
+}
+
+object DateModel {
+
+  //uuuu for year as we're using STRICT ResolverStyle
+  val formatter = DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT)
+
+  def fromLocalDate(localDate: LocalDate): DateModel =
+    DateModel(localDate.getDayOfMonth.toString, localDate.getMonthValue.toString, localDate.getYear.toString)
 
 }

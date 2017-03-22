@@ -16,9 +16,13 @@
 
 package forms.validation
 
+import java.time.LocalDate
+
 import cats.Show
 import forms.vatDetails.vatFinancials.SortCode
+import models.DateModel
 import org.apache.commons.lang3.StringUtils
+import play.api.Logger
 import play.api.data.format.Formatter
 import play.api.data.validation._
 import play.api.data.{FieldMapping, FormError, Mapping}
@@ -35,18 +39,32 @@ private[forms] object FormValidation {
       }
   }
 
-  def mandatoryText(specificCode: String): Constraint[String] = Constraint {
-    (input: String) => if (StringUtils.isNotBlank(input)) Valid else Invalid(s"validation.$specificCode.missing")
+  def mandatoryText(errorSubCode: String): Constraint[String] = Constraint { input: String =>
+    if (StringUtils.isNotBlank(input)) Valid else Invalid(s"validation.$errorSubCode.missing")
   }
 
-  def mandatoryNumericText(specificCode: String): Constraint[String] = Constraint {
-    val numericText = """[0-9]+"""
-    (input: String) => input match {
-      case _ if (StringUtils.isBlank(input)) => Invalid(s"validation.$specificCode.missing")
-      case _ if ( ! input.matches(numericText)) => Invalid("validation.numeric")
-      case _ => Valid
-    }
+  def mandatoryNumericText(errorSubCode: String): Constraint[String] = Constraint {
+    val NumericText = """[0-9]+""".r
+    (input: String) =>
+      input match {
+        case NumericText(_*) => Valid
+        case _ if StringUtils.isBlank(input) => Invalid(s"validation.$errorSubCode.missing")
+        case _ => Invalid("validation.numeric")
+      }
   }
+
+
+  private def unconstrained[T] = Constraint[T] { (t: T) => Valid }
+
+  def inRange[T](minValue: T, maxValue: T, errorSubCode: String = "")(implicit ordering: Ordering[T]): Constraint[T] =
+    Constraint[T] { (t: T) =>
+      Logger.info(s"Checking constraint for value $t in the range of [$minValue, $maxValue]")
+      (ordering.compare(t, minValue).signum, ordering.compare(t, maxValue).signum) match {
+        case (1, -1) | (0, _) | (_, 0) => Valid
+        case (_, 1) => Invalid(ValidationError(s"validation.$errorSubCode.range.above", maxValue))
+        case (-1, _) => Invalid(ValidationError(s"validation.$errorSubCode.range.below", minValue))
+      }
+    }
 
   val taxEstimateTextToLong = textToLong(0, 1000000000000000L) _
 
@@ -62,32 +80,32 @@ private[forms] object FormValidation {
 
   def longToText(l: Long): String = l.toString
 
-  def boundedLong(specificCode: String): Constraint[Long] = Constraint {
+  def boundedLong(errorSubCode: String): Constraint[Long] = Constraint {
     input: Long =>
       input match {
-        case Long.MaxValue => Invalid(s"validation.$specificCode.high")
-        case Long.MinValue => Invalid(s"validation.$specificCode.low")
+        case Long.MaxValue => Invalid(s"validation.$errorSubCode.high")
+        case Long.MinValue => Invalid(s"validation.$errorSubCode.low")
         case _ => Valid
       }
   }
 
-  def nonEmptyValidText(specificCode: String, Pattern: Regex): Constraint[String] = Constraint[String] {
+  def nonEmptyValidText(errorSubCode: String, Pattern: Regex): Constraint[String] = Constraint[String] {
     input: String =>
       input match {
         case Pattern(_*) => Valid
-        case s if StringUtils.isNotBlank(s) => Invalid(s"validation.$specificCode.invalid")
-        case _ => Invalid(s"validation.$specificCode.empty")
+        case s if StringUtils.isNotBlank(s) => Invalid(s"validation.$errorSubCode.invalid")
+        case _ => Invalid(s"validation.$errorSubCode.empty")
       }
   }
 
   /* overrides Play's implicit stringFormatter and handles missing options (e.g. no radio button selected) */
-  private def stringFormat(specificCode: String): Formatter[String] = new Formatter[String] {
-    def bind(key: String, data: Map[String, String]) = data.get(key).toRight(Seq(FormError(key, s"validation.$specificCode.option.missing", Nil)))
+  private def stringFormat(errorSubCode: String): Formatter[String] = new Formatter[String] {
+    def bind(key: String, data: Map[String, String]) = data.get(key).toRight(Seq(FormError(key, s"validation.$errorSubCode.option.missing", Nil)))
 
     def unbind(key: String, value: String) = Map(key -> value)
   }
 
-  def missingFieldMapping(specificCode: String): Mapping[String] = FieldMapping[String]()(stringFormat(specificCode))
+  def missingFieldMapping(errorSubCode: String): Mapping[String] = FieldMapping[String]()(stringFormat(errorSubCode))
 
   object BankAccount {
 
@@ -107,6 +125,16 @@ private[forms] object FormValidation {
       (in: SortCode) =>
         regexPattern(SortCode, errorSubCode = s"$errorSubstring.sortCode", mandatory)(Show[SortCode].show(in))
     }
+
+  }
+
+  object Dates {
+
+    def nonEmptyDateModel(errorSubCode: String): Constraint[DateModel] =
+      Constraint(dm => mandatoryText(errorSubCode)(Seq(dm.day, dm.month, dm.day).mkString.trim))
+
+    def validDateModel(dateConstraint: Constraint[LocalDate] = unconstrained, errorSubCode: => String): Constraint[DateModel] =
+      Constraint(dm => dm.toLocalDate.fold[ValidationResult](Invalid(s"validation.$errorSubCode.invalid"))(dateConstraint(_)))
 
   }
 
