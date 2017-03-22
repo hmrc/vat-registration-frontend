@@ -16,6 +16,8 @@
 
 package fixtures
 
+import java.time.LocalDate
+
 import models.api._
 import models.api.compliance.VatCulturalCompliance
 import models.view._
@@ -29,7 +31,7 @@ import uk.gov.hmrc.play.http._
 trait VatRegistrationFixture {
 
   val contextRoot = "/register-for-vat"
-  
+
   val IM_A_TEAPOT = 418
   val badRequest = new BadRequestException(BAD_REQUEST.toString)
   val forbidden = Upstream4xxResponse(FORBIDDEN.toString, FORBIDDEN, FORBIDDEN)
@@ -43,10 +45,10 @@ trait VatRegistrationFixture {
 
   val validRegId = "VAT123456"
 
-  val validStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(1), Some(2), Some(2017))
+  val validStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(LocalDate.of(2017, 3, 21)))
 
   val validVatChoice = VatChoice(
-    validStartDate.toDateTime,
+    validStartDate.date.get,
     VatChoice.NECESSITY_VOLUNTARY
   )
 
@@ -56,18 +58,18 @@ trait VatRegistrationFixture {
 
   private val turnoverEstimate = 50000L
   private val estimatedSales = 60000L
-  val validEstimateVatTurnover = EstimateVatTurnover(turnoverEstimate)
-  val validEstimateZeroRatedSales = EstimateZeroRatedSales(estimatedSales)
-  val validVatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
-  val validVatReturnFrequency = VatReturnFrequency(VatReturnFrequency.QUARTERLY)
-  val validAccountingPeriod = AccountingPeriod(AccountingPeriod.MAR_JUN_SEP_DEC)
-  val validBankAccountDetails = CompanyBankAccountDetails(tradingName, accountNumber, sortCode)
 
   private val sortCode = "10-10-10"
   private val accountNumber = "12345678"
   private val period = "monthly"
   private val businessActivityDescription = "description"
 
+  val validEstimateVatTurnover = EstimateVatTurnover(turnoverEstimate)
+  val validEstimateZeroRatedSales = EstimateZeroRatedSales(estimatedSales)
+  val validVatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
+  val validVatReturnFrequency = VatReturnFrequency(VatReturnFrequency.QUARTERLY)
+  val validAccountingPeriod = AccountingPeriod(AccountingPeriod.MAR_JUN_SEP_DEC)
+  val validBankAccountDetails = CompanyBankAccountDetails(tradingName, accountNumber, sortCode)
 
   val validVatFinancials = VatFinancials(
     bankAccount = Some(VatBankAccount(tradingName, accountNumber, sortCode)),

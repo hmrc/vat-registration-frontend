@@ -16,12 +16,13 @@
 
 package controllers.test
 
+import java.time.LocalDate
 import javax.inject.Inject
 
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.test.TestSetupForm
-import models.CacheKey
+import models.{CacheKey, DateModel}
 import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
 import models.view.test._
 import models.view.vatChoice.{StartDate, TaxableTurnover, VoluntaryRegistration}
@@ -61,9 +62,10 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
           taxableTurnover.map(_.yesNo),
           voluntaryRegistration.map(_.yesNo),
           startDate.map(_.dateType),
-          startDate.flatMap(_.day.map(_.toString)),
-          startDate.flatMap(_.month.map(_.toString)),
-          startDate.flatMap(_.year.map(_.toString))),
+          startDate.flatMap(_.date).map(_.getDayOfMonth.toString),
+          startDate.flatMap(_.date).map(_.getMonthValue.toString),
+          startDate.flatMap(_.date).map(_.getYear.toString)
+        ),
         VatTradingDetailsTestSetup(
           tradingName.map(_.yesNo),
           tradingName.flatMap(_.tradingName)),
@@ -93,13 +95,13 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     // TODO Special case
     def saveStartDate(data: TestSetup) = {
-      s4LService.saveForm[StartDate](data.vatChoice.startDateChoice
-      match {
+      s4LService.saveForm[StartDate](data.vatChoice.startDateChoice match {
         case None => StartDate()
-        case Some(a) => StartDate(a,
-          data.vatChoice.startDateDay.map(_.toInt),
-          data.vatChoice.startDateMonth.map(_.toInt),
-          data.vatChoice.startDateYear.map(_.toInt))
+        case Some(a) => StartDate(a, Some(LocalDate.of(
+          data.vatChoice.startDateYear.map(_.toInt).getOrElse(1970),
+          data.vatChoice.startDateMonth.map(_.toInt).getOrElse(1),
+          data.vatChoice.startDateDay.map(_.toInt).getOrElse(1)
+        )))
       })
     }
 

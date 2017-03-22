@@ -16,8 +16,6 @@
 
 package models.api
 
-import common.Now
-import org.joda.time.DateTime
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -31,7 +29,7 @@ case class VatScheme(
 
 object VatScheme {
 
-  def blank(id: String)(implicit now: Now[DateTime]): VatScheme = VatScheme(id, None, None, None,None)
+  def blank(id: String): VatScheme = VatScheme(id, None, None, None,None)
 
   implicit val format = (
     (__ \ "ID").format[String] and

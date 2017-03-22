@@ -16,37 +16,69 @@
 
 package models.view
 
+import java.time.LocalDate
+
 import fixtures.VatRegistrationFixture
 import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import models.api.{VatChoice, VatScheme}
 import models.view.vatChoice.StartDate
-import models.{ApiModelTransformer, ViewModelTransformer}
-import org.joda.time.format.DateTimeFormat
+import models.{ApiModelTransformer, DateModel, ViewModelTransformer}
+import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
-class StartDateSpec extends UnitSpec with VatRegistrationFixture {
+class StartDateSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
-  val startDateTime = DateTimeFormat.forPattern("dd/MM/yyyy").parseDateTime("01/02/2017")
-  val startDate = StartDate(StartDate.SPECIFIC_DATE, Some(1), Some(2), Some(2017))
-  val newStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(30), Some(12), Some(2001))
+  val date = LocalDate.of(2017, 3, 21)
+  val startDate = StartDate(StartDate.SPECIFIC_DATE, Some(date))
+  val newStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(date))
 
-  "toDateTime" should {
-    "convert a populated StartDate model to a DateTime" in {
-      startDate.toDateTime shouldBe startDateTime
+  "unbind" should {
+    "decompose a COMPANY_REGISTRATION_DATE StartDate" in {
+      val testStartDate = StartDate(StartDate.COMPANY_REGISTRATION_DATE)
+      inside(StartDate.unbind(testStartDate)) {
+        case Some((dateChoice, odm)) =>
+          dateChoice shouldBe StartDate.COMPANY_REGISTRATION_DATE
+          odm shouldBe None
+      }
+    }
+
+    "decompose a SPECIFIC_DATE StartDate" in {
+      val testStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(date))
+      inside(StartDate.unbind(testStartDate)) {
+        case Some((dateChoice, odm)) =>
+          dateChoice shouldBe StartDate.SPECIFIC_DATE
+          odm shouldBe Some(DateModel.fromLocalDate(date))
+      }
+    }
+  }
+
+  "bind" should {
+    "create StartDate when DateModel is present" in {
+      StartDate.bind("any", Some(DateModel.fromLocalDate(date))) shouldBe StartDate("any", Some(date))
+    }
+    "create StartDate when DateModel is NOT present" in {
+      StartDate.bind("any", None) shouldBe StartDate("any", None)
     }
   }
 
   "toApi" should {
     "update a VatChoice a new StartDate" in {
-      val vatChoice = VatChoice(newStartDate.toDateTime, NECESSITY_OBLIGATORY)
+      val vatChoice = VatChoice(newStartDate.date.get, NECESSITY_OBLIGATORY)
       ViewModelTransformer[StartDate, VatChoice]
-        .toApi(startDate, vatChoice) shouldBe VatChoice(startDate.toDateTime, NECESSITY_OBLIGATORY)
+        .toApi(startDate, vatChoice) shouldBe VatChoice(startDate.date.get, NECESSITY_OBLIGATORY)
+    }
+
+    "use DEFAULT date when no date present" in {
+      val vatChoice = VatChoice(newStartDate.date.get, NECESSITY_OBLIGATORY)
+
+      ViewModelTransformer[StartDate, VatChoice]
+        .toApi(StartDate("any", None),vatChoice ) shouldBe vatChoice.copy(startDate = StartDate.DEFAULT_DATE)
     }
   }
 
   "apply" should {
     "extract a StartDate from a VatScheme" in {
-      val vatChoice = VatChoice(startDate.toDateTime, NECESSITY_VOLUNTARY)
+      val vatChoice = VatChoice(startDate.date.get, NECESSITY_VOLUNTARY)
       val vatScheme = VatScheme(id = validRegId, vatChoice = Some(vatChoice))
       ApiModelTransformer[StartDate].toViewModel(vatScheme) shouldBe Some(startDate)
     }
@@ -57,17 +89,10 @@ class StartDateSpec extends UnitSpec with VatRegistrationFixture {
     }
   }
 
-  "fromDateTime" should {
-    "convert a DateTime object to a StartDate model" in {
-      val startDate = StartDate.fromDateTime(startDateTime)
-      startDate shouldBe startDate
-    }
-
-    // TODO: remove when we play the VatChoice refactoring story
-    "convert a DateTime object to a StartDate model when it's a default value" in {
-      val defaultDateTime = DateTimeFormat.forPattern("dd/MM/yyyy").parseDateTime("31/12/1969")
-      val startDate = StartDate.fromDateTime(defaultDateTime)
-      startDate shouldBe StartDate.default
+  //TODO this is testing a TODO'ed piece of code - remove asap
+  "fromLocalDate" should {
+    "craete a COMPANY_REGISTRATION_DATE StartDate if input LocalDate is 1/1/1970" in {
+      StartDate.fromLocalDate(LocalDate.of(1970, 1, 1)) shouldBe StartDate(StartDate.COMPANY_REGISTRATION_DATE)
     }
   }
 

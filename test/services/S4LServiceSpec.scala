@@ -34,7 +34,7 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
 
   implicit val hc = new HeaderCarrier()
 
-  val tstStartDateModel = StartDate("", None, None, None)
+  val tstStartDateModel = StartDate("", None)
 
   "S4L Service" should {
 

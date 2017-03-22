@@ -1,6 +1,7 @@
 @import models.view.vatChoice.StartDate
 @(startDateForm: Form[StartDate])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
 
 @main_template(title = messages("pages.startDate.title")) {
 
@@ -9,14 +10,18 @@
 
       <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.startDate.heading")</h1>
 
+      @errorSummary(
+          Messages("app.common.errorSummaryLabel"),
+          startDateForm
+      )
+
       <p>@messages("pages.startDate.para1")</p>
 
         @govHelpers.form(action = controllers.userJourney.vatChoice.routes.StartDateController.submit()) {
             <div class="form-group">
-                <fieldset>
-                    <span id="startDateRadio"/>
+
                     @govHelpers.inputRadioGroup(
-                        field = startDateForm("startDateRadio"),
+                        startDateForm("startDateRadio"),
                         Seq(
                             StartDate.COMPANY_REGISTRATION_DATE -> Messages("pages.startDate.radio.whenRegistered"),
                             StartDate.SPECIFIC_DATE -> Messages("pages.startDate.radio.specificDate")
@@ -35,33 +40,51 @@
                         <span class="form-hint">@messages("pages.startDate.panels.specificDate.hint")</span>
 
 
-                        <div class="form-date">
-                                @govHelpers.input(
-                                    startDateForm("day"),
-                                    '_divClass -> "form-group",
-                                    '_inputClass -> "form-control",
-                                    '_label -> Messages("pages.startDate.panels.specificDate.inputField.day"),
-                                    '_labelClass -> "form-label"
-                                )
+                        @defining(startDateForm("startDate").errors.nonEmpty) { errorPresent =>
+                            <div class="form-date @if(errorPresent) { form-field--error }">
 
-                                @govHelpers.input(
-                                    startDateForm("month"),
-                                    '_divClass -> "form-group",
-                                    '_inputClass -> "form-control",
-                                    '_label -> Messages("pages.startDate.panels.specificDate.inputField.month"),
-                                    '_labelClass -> "form-label"
-                                )
+                                <fieldset id="start-date">
 
-                                @govHelpers.input(
-                                    startDateForm("year"),
-                                    '_divClass -> "form-group form-group-year",
-                                    '_inputClass -> "form-control",
-                                    '_label -> Messages("pages.startDate.panels.specificDate.inputField.year"),
-                                    '_labelClass -> "form-label"
-                                )
-                        </div>
+                                    <lebel>
+                                    @startDateForm.error("startDate").map { error =>
+                                        <span class="error-notification" role="tooltip">
+                                            @messages(error.message, error.args: _*)
+                                        </span>
+                                    }
+                                        @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
+                                        <input type="text" name="startDate" value="" id="startDate" class="hidden" />
+                                    </lebel>
+
+                                    @govHelpers.input(
+                                        startDateForm("startDate.day"),
+                                        '_divClass -> "form-group",
+                                        '_inputClass -> "form-control",
+                                        '_maxlength -> 2,
+                                        '_label -> Messages("pages.startDate.panels.specificDate.inputField.day"),
+                                        '_labelClass -> "form-label"
+                                    )
+
+                                    @govHelpers.input(
+                                        startDateForm("startDate.month"),
+                                        '_divClass -> "form-group",
+                                        '_inputClass -> "form-control",
+                                        '_maxlength -> 2,
+                                        '_label -> Messages("pages.startDate.panels.specificDate.inputField.month"),
+                                        '_labelClass -> "form-label"
+                                    )
+
+                                    @govHelpers.input(
+                                        startDateForm("startDate.year"),
+                                        '_divClass -> "form-group form-group-year",
+                                        '_inputClass -> "form-control",
+                                        '_maxlength -> 4,
+                                        '_label -> Messages("pages.startDate.panels.specificDate.inputField.year"),
+                                        '_labelClass -> "form-label"
+                                    )
+                                </fieldset>
+                            </div>
+                        }
                     </div>
-                </fieldset>
             </div>
 
             <div class="form-group">

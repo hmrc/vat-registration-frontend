@@ -51,6 +51,12 @@ pages.startDate.panels.specificDate.hint              = For example, 30 6 2017
 pages.startDate.panels.specificDate.inputField.day    = Day
 pages.startDate.panels.specificDate.inputField.month  = Month
 pages.startDate.panels.specificDate.inputField.year   = Year
+validation.startDate.range.below                      = Date must be more than 2 working days in the future
+validation.startDate.range.above                      = Date must be within the next 3 months
+validation.startDate.invalid                          = Enter a valid start date
+validation.startDate.missing                          = Enter a start date
+
+
 
 ## Trading Name Page
 pages.tradingName.title                             = Trading Name

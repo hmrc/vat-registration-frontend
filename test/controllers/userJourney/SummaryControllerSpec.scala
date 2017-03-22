@@ -16,11 +16,9 @@
 
 package controllers.userJourney
 
-import controllers.builders.{SummaryCompanyDetailsSectionBuilder, SummaryVatDetailsSectionBuilder}
 import enums.DownstreamOutcome
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
 import models.view.Summary
 import org.mockito.Matchers
 import org.mockito.Mockito.when
