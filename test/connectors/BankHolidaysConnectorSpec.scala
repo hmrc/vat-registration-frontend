@@ -16,19 +16,17 @@
 
 package connectors
 
-import mocks.VatMocks
 import org.joda.time.LocalDate
-import org.scalatest.mockito.MockitoSugar
+import testHelpers.VatRegSpec
+import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
-class BankHolidaysConnectorSpec extends UnitSpec with MockitoSugar with VatMocks {
+class BankHolidaysConnectorSpec extends VatRegSpec {
 
-  object TestConnector extends BankHolidaysConnector(mockWSHttp)
+  val testConnector = new BankHolidaysConnector(mockWSHttp, fakeApplication.injector.instanceOf[ServicesConfig])
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
-
 
   "bankHolidays" must {
 
@@ -42,7 +40,7 @@ class BankHolidaysConnectorSpec extends UnitSpec with MockitoSugar with VatMocks
       )
       mockHttpGET[Map[String, BankHolidaySet]]("any-url", testHolidaySet)
 
-      await(TestConnector.bankHolidays("division1")) shouldBe BankHolidaySet("division1", List(
+      await(testConnector.bankHolidays("division1")) shouldBe BankHolidaySet("division1", List(
         BankHoliday("one", new LocalDate(2017, 3, 22))))
     }
 
