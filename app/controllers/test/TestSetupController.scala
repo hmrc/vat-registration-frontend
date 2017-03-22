@@ -16,6 +16,7 @@
 
 package controllers.test
 
+import java.time.LocalDate
 import javax.inject.Inject
 
 import connectors.{KeystoreConnector, VatRegistrationConnector}
@@ -94,14 +95,13 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     // TODO Special case
     def saveStartDate(data: TestSetup) = {
-      s4LService.saveForm[StartDate](data.vatChoice.startDateChoice
-      match {
+      s4LService.saveForm[StartDate](data.vatChoice.startDateChoice match {
         case None => StartDate()
-        case Some(foo) => StartDate()
-//        case Some(a) => StartDate(a,
-//          data.vatChoice.startDateDay.map(_.toInt),
-//          data.vatChoice.startDateMonth.map(_.toInt),
-//          data.vatChoice.startDateYear.map(_.toInt))
+        case Some(a) => StartDate(a, Some(LocalDate.of(
+          data.vatChoice.startDateYear.map(_.toInt).getOrElse(1970),
+          data.vatChoice.startDateMonth.map(_.toInt).getOrElse(1),
+          data.vatChoice.startDateDay.map(_.toInt).getOrElse(1)
+        )))
       })
     }
 

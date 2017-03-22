@@ -29,7 +29,7 @@ import play.api.data.Forms._
 import services.DateService
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
-class StartDateFormFactory @Inject()(dateService: DateService) {
+class StartDateFormFactory @Inject()(dateService: DateService, today: Now[LocalDate]) {
 
   implicit object LocalDateOrdering extends Ordering[LocalDate] {
     override def compare(x: LocalDate, y: LocalDate): Int = x.compareTo(y)
@@ -37,9 +37,8 @@ class StartDateFormFactory @Inject()(dateService: DateService) {
 
   val RADIO_INPUT_NAME = "startDateRadio"
 
-  def form()(implicit today: Now[LocalDate]): Form[StartDate] = {
+  def form(): Form[StartDate] = {
 
-    import common.DateConversions._
     val minDate: LocalDate = dateService.addWorkingDays(today(), 2)
     val maxDate: LocalDate = today().plusMonths(3)
 

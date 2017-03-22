@@ -16,11 +16,11 @@
 
 package services
 
+import java.time.LocalDate
 import javax.inject.Inject
 
 import com.google.inject.ImplementedBy
 import connectors.BankHolidaysConnector
-import org.joda.time.LocalDate
 import play.api.Logger
 import play.api.cache.CacheApi
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -53,7 +53,9 @@ class WorkingDaysService @Inject()(bankHolidaysConnector: BankHolidaysConnector,
       Await.result(bankHolidaysConnector.bankHolidays()(HeaderCarrier()), 5 seconds)
     }
 
-    date.plusWorkingDays(days)
+    import common.DateConversions._
+    val d: org.joda.time.LocalDate = date
+    d.plusWorkingDays(days)
   }
 
   // $COVERAGE-ON$
@@ -64,5 +66,5 @@ class WorkingDaysService @Inject()(bankHolidaysConnector: BankHolidaysConnector,
 object WorkingDaysService {
   val BANK_HOLIDAYS_CACHE_KEY = "bankHolidaySet"
 }
+
 // $COVERAGE-ON$
-//

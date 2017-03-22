@@ -17,8 +17,10 @@
 package controllers.userJourney
 
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit.DAYS
 
 import builders.AuthBuilder
+import common.Now
 import controllers.userJourney.vatChoice.StartDateController
 import fixtures.VatRegistrationFixture
 import forms.vatDetails.vatChoice.StartDateFormFactory
@@ -39,14 +41,18 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.Future
 
 class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
+  
+  val today: LocalDate = LocalDate.of(2017, 3, 21)
 
   val mockVatRegistrationService = mock[VatRegistrationService]
-  val mockDateService = mock[DateService]
-  when(mockDateService.addWorkingDays(any[org.joda.time.LocalDate](), anyInt())).thenReturn(new org.joda.time.LocalDate())
 
-  val startDateFormFactory = new StartDateFormFactory(mockDateService)
+  val mockDateService = mock[DateService]
+  when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
+
+  val startDateFormFactory = new StartDateFormFactory(mockDateService, Now[LocalDate](today))
 
   object TestStartDateController extends StartDateController(startDateFormFactory, ds)(mockS4LService, mockVatRegistrationService) {
+    implicit val fixedToday = Now[LocalDate](today)
     override val authConnector = mockAuthConnector
   }
 
@@ -157,7 +163,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
       AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDate.SPECIFIC_DATE,
-        "startDate.day" -> "21",
+        "startDate.day" -> "24",
         "startDate.month" -> "3",
         "startDate.year" -> "2017"
       )) {
