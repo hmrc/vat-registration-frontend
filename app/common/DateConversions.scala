@@ -19,6 +19,8 @@ package common
 
 object DateConversions {
 
+  // $COVERAGE-OFF$
+
   import scala.language.implicitConversions
 
   implicit def jodaToJava(jodaLocalDate: org.joda.time.LocalDate): java.time.LocalDate =
@@ -27,4 +29,5 @@ object DateConversions {
   implicit def javaToJoda(javaLocalDate: java.time.LocalDate): org.joda.time.LocalDate =
     new org.joda.time.LocalDate(javaLocalDate.getYear, javaLocalDate.getMonthValue, javaLocalDate.getDayOfMonth)
 
+  // $COVERAGE-ON$
 }

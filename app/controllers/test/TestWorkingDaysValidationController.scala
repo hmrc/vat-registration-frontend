@@ -19,8 +19,6 @@ package controllers.test
 import java.time.LocalDate
 import javax.inject.Inject
 
-import common.Now
-import forms.vatDetails.vatChoice.StartDateFormFactory
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results._
 import play.api.mvc.{Action, AnyContent, Request}
@@ -28,15 +26,13 @@ import play.twirl.api.Html
 import services.DateService
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-class TestWorkingDaysValidationController @Inject()(dateService: DateService, startDateFormFactory: StartDateFormFactory)
+class TestWorkingDaysValidationController @Inject()(dateService: DateService)
                                                    (implicit val messagesApi: MessagesApi) {
 
   implicit def hc(implicit request: Request[_]): HeaderCarrier =
     HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
 
   def show(): Action[AnyContent] = Action { implicit req =>
-    import common.DateConversions._
-    startDateFormFactory.form()(Now(LocalDate.of(2017, 3, 31)))
     Ok(Html {
       (1 to 100).map(n => s"$n working days from today => ${dateService.addWorkingDays(LocalDate.now(), n)}")
         .mkString("<ul><li>", "</li><li>", "</li></ul>")

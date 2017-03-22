@@ -14,21 +14,32 @@
  * limitations under the License.
  */
 
+import java.time.LocalDate
 import javax.inject.Singleton
 
-import com.google.inject.AbstractModule
+import com.google.inject.{AbstractModule, Scopes, TypeLiteral}
+import common.Now
 import uk.gov.hmrc.play.http.hooks.HttpHook
 import uk.gov.hmrc.play.http.ws.WSHttp
 
 @Singleton
-class WSHttpObjectWrapper extends WSHttp {
+class HmrcHttpClient extends WSHttp {
   override val hooks: Seq[HttpHook] = NoneRequired
+}
+
+@Singleton
+class LocalDateNow extends Now[LocalDate] {
+  override def apply(): LocalDate = LocalDate.now()
 }
 
 class Module extends AbstractModule {
 
   override def configure(): Unit = {
-    bind(classOf[WSHttp]).to(classOf[WSHttpObjectWrapper])
+    bind(classOf[WSHttp]).to(classOf[HmrcHttpClient])
+
+    bind(new TypeLiteral[Now[LocalDate]] {})
+      .to(classOf[LocalDateNow])
+      .in(Scopes.SINGLETON)
   }
 
 
