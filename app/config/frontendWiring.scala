@@ -63,3 +63,4 @@ object VatSessionCache extends SessionCache with AppName with ServicesConfig {
     throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
 }
 
+
