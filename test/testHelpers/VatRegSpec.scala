@@ -20,6 +20,4 @@ import mocks.VatMocks
 import org.scalatest.mockito.MockitoSugar
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-trait VatRegSpec extends UnitSpec with WithFakeApplication with MockitoSugar with VatMocks {
-
-}
+trait VatRegSpec extends UnitSpec with WithFakeApplication with MockitoSugar with VatMocks

@@ -19,6 +19,7 @@ import javax.inject.Singleton
 
 import com.google.inject.{AbstractModule, Scopes, TypeLiteral}
 import common.Now
+import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
 import uk.gov.hmrc.play.http.hooks.HttpHook
 import uk.gov.hmrc.play.http.ws.WSHttp
 
@@ -40,6 +41,8 @@ class Module extends AbstractModule {
     bind(new TypeLiteral[Now[LocalDate]] {})
       .to(classOf[LocalDateNow])
       .in(Scopes.SINGLETON)
+
+    bind(classOf[ServicesConfig]).to(classOf[DefaultServicesConfig])
   }
 
 

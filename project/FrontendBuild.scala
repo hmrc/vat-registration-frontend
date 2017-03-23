@@ -50,7 +50,8 @@ object FrontendBuild extends Build with MicroService {
     "org.scoverage" % "scalac-scoverage-runtime_2.11" % "1.3.0" % scope,
     "org.jsoup" % "jsoup" % "1.8.1" % scope,
     "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
-    "org.mockito" % "mockito-core" % "1.9.5" % scope
+    "org.mockito" % "mockito-core" % "1.9.5" % scope,
+    "org.scalamock" %% "scalamock-scalatest-support" % "3.5.0" % scope
   )
 
 }
