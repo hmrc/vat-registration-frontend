@@ -17,8 +17,10 @@
 import java.time.LocalDate
 import javax.inject.Singleton
 
+import com.google.inject.name.Names
 import com.google.inject.{AbstractModule, Scopes, TypeLiteral}
 import common.Now
+import connectors.{BankHolidaysConnector, FallbackBankHolidaysConnector, WSBankHolidaysConnector}
 import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
 import uk.gov.hmrc.play.http.hooks.HttpHook
 import uk.gov.hmrc.play.http.ws.WSHttp
@@ -41,6 +43,12 @@ class Module extends AbstractModule {
     bind(new TypeLiteral[Now[LocalDate]] {})
       .to(classOf[LocalDateNow])
       .in(Scopes.SINGLETON)
+
+    bind(classOf[BankHolidaysConnector])
+      .annotatedWith(Names.named("fallback"))
+      .to(classOf[FallbackBankHolidaysConnector])
+    bind(classOf[BankHolidaysConnector])
+      .to(classOf[WSBankHolidaysConnector])
 
     bind(classOf[ServicesConfig]).to(classOf[DefaultServicesConfig])
   }
