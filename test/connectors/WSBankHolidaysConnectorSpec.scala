@@ -22,9 +22,9 @@ import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
-class BankHolidaysConnectorSpec extends VatRegSpec {
+class WSBankHolidaysConnectorSpec extends VatRegSpec {
 
-  val testConnector = new BankHolidaysConnector(mockWSHttp, fakeApplication.injector.instanceOf[ServicesConfig])
+  val testConnector = new WSBankHolidaysConnector(mockWSHttp, fakeApplication.injector.instanceOf[ServicesConfig])
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 

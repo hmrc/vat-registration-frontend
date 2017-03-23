@@ -17,7 +17,7 @@
 package services
 
 import java.time.LocalDate
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
 
 import com.google.inject.ImplementedBy
 import connectors.BankHolidaysConnector
@@ -36,35 +36,29 @@ trait DateService {
 
 }
 
-// $COVERAGE-OFF$
-
-
-class WorkingDaysService @Inject()(bankHolidaysConnector: BankHolidaysConnector, cache: CacheApi) extends DateService {
+class WorkingDaysService @Inject()(
+                                    bankHolidaysConnector: BankHolidaysConnector,
+                                    cache: CacheApi,
+                                    @Named("fallback") fallbackBHConnector: BankHolidaysConnector) extends DateService {
 
   import uk.gov.hmrc.time.workingdays._
 
   import scala.concurrent.duration._
   import scala.language.postfixOps
 
-  //TODO use scalamock, as Mockito can't mock CacheApi#getOrElse : call-by-name parameters
-
-  private def fetchBankHolidays() = Await.result(bankHolidaysConnector.bankHolidays()(HeaderCarrier()), 5 seconds)
-
-  lazy val defaultHolidaySet = fetchBankHolidays()
+  val defaultHolidaySet: BankHolidaySet = Await.result(fallbackBHConnector.bankHolidays()(HeaderCarrier()), 1 second)
 
   override def addWorkingDays(date: LocalDate, days: Int): LocalDate = {
-    import scala.concurrent.duration._
+    import common.DateConversions._
 
-    implicit val hols: BankHolidaySet = cache.getOrElse(BANK_HOLIDAYS_CACHE_KEY, 1 day) {
+    implicit val hols: BankHolidaySet = cache.getOrElse[BankHolidaySet](BANK_HOLIDAYS_CACHE_KEY, 1 day) {
       Logger.info(s"Reloading cache entry for $BANK_HOLIDAYS_CACHE_KEY")
       Try {
-        fetchBankHolidays()
+        Await.result(bankHolidaysConnector.bankHolidays()(HeaderCarrier()), 5 seconds)
       }.getOrElse(defaultHolidaySet)
     }
 
-    import common.DateConversions._
-    val jodaDate: org.joda.time.LocalDate = date
-    jodaDate.plusWorkingDays(days)
+    (date: org.joda.time.LocalDate).plusWorkingDays(days)
   }
 
 }
@@ -72,5 +66,3 @@ class WorkingDaysService @Inject()(bankHolidaysConnector: BankHolidaysConnector,
 object WorkingDaysService {
   val BANK_HOLIDAYS_CACHE_KEY = "bankHolidaySet"
 }
-
-// $COVERAGE-ON$
