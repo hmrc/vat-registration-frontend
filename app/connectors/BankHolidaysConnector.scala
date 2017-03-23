@@ -19,6 +19,7 @@ package connectors
 import javax.inject.{Inject, Singleton}
 
 import play.api.libs.json.Json
+import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
@@ -27,14 +28,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class BankHolidaysConnector @Inject()(wsHttp: WSHttp) {
+class BankHolidaysConnector @Inject()(wsHttp: WSHttp, configuration: ServicesConfig) {
 
-  val uri = "https://www.gov.uk/bank-holidays.json"
+  lazy val url = configuration.getConfString("bank-holidays.url", "")
 
   implicit val bankHolidayReads = Json.reads[BankHoliday]
   implicit val bankHolidaySetReads = Json.reads[BankHolidaySet]
 
   def bankHolidays(division: String = "england-and-wales")(implicit headerCarrier: HeaderCarrier): Future[BankHolidaySet] =
-    wsHttp.GET[Map[String, BankHolidaySet]](uri) map { holidaySets => holidaySets(division) }
+    wsHttp.GET[Map[String, BankHolidaySet]](url) map { holidaySets => holidaySets(division) }
 
 }

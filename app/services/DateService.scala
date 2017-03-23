@@ -23,6 +23,7 @@ import com.google.inject.ImplementedBy
 import connectors.BankHolidaysConnector
 import play.api.Logger
 import play.api.cache.CacheApi
+import services.WorkingDaysService.BANK_HOLIDAYS_CACHE_KEY
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Await
@@ -35,27 +36,29 @@ trait DateService {
 
 }
 
-class WorkingDaysService @Inject()(bankHolidaysConnector: BankHolidaysConnector, cacheApi: CacheApi)
-  extends DateService {
+// $COVERAGE-OFF$
 
-  import services.WorkingDaysService.BANK_HOLIDAYS_CACHE_KEY
+
+class WorkingDaysService @Inject()(bankHolidaysConnector: BankHolidaysConnector, cache: CacheApi) extends DateService {
+
   import uk.gov.hmrc.time.workingdays._
 
   import scala.concurrent.duration._
   import scala.language.postfixOps
 
-  val defaultHolidaySet = Await.result(bankHolidaysConnector.bankHolidays()(HeaderCarrier()), 5 seconds)
-
   //TODO use scalamock, as Mockito can't mock CacheApi#getOrElse : call-by-name parameters
-  // $COVERAGE-OFF$
+
+  private def fetchBankHolidays() = Await.result(bankHolidaysConnector.bankHolidays()(HeaderCarrier()), 5 seconds)
+
+  lazy val defaultHolidaySet = fetchBankHolidays()
 
   override def addWorkingDays(date: LocalDate, days: Int): LocalDate = {
     import scala.concurrent.duration._
 
-    implicit val hols: BankHolidaySet = cacheApi.getOrElse(BANK_HOLIDAYS_CACHE_KEY, 1 day) {
+    implicit val hols: BankHolidaySet = cache.getOrElse(BANK_HOLIDAYS_CACHE_KEY, 1 day) {
       Logger.info(s"Reloading cache entry for $BANK_HOLIDAYS_CACHE_KEY")
       Try {
-        Await.result(bankHolidaysConnector.bankHolidays()(HeaderCarrier()), 5 seconds)
+        fetchBankHolidays()
       }.getOrElse(defaultHolidaySet)
     }
 
@@ -64,14 +67,10 @@ class WorkingDaysService @Inject()(bankHolidaysConnector: BankHolidaysConnector,
     jodaDate.plusWorkingDays(days)
   }
 
-  // $COVERAGE-ON$
-
 }
 
-// $COVERAGE-OFF$
 object WorkingDaysService {
   val BANK_HOLIDAYS_CACHE_KEY = "bankHolidaySet"
 }
 
 // $COVERAGE-ON$
-//
