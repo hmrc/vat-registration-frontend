@@ -32,9 +32,11 @@ import uk.gov.hmrc.play.http.logging.filters.FrontendLoggingFilter
 import uk.gov.hmrc.whitelist.AkamaiWhitelistFilter
 
 
-class FrontendGlobal
-  extends DefaultFrontendGlobal {
+object FrontendGlobal
+  extends FrontendGlobal
 
+
+trait FrontendGlobal extends DefaultFrontendGlobal {
   override val auditConnector = FrontendAuditConnector
   override val loggingFilter = LoggingFilter
   override val frontendAuditFilter = AuditFilter
