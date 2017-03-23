@@ -82,7 +82,7 @@ object WhitelistFilter extends AkamaiWhitelistFilter
     }
   }
 
-  override def destination: Call = Call("GET", "https://www.tax.service.gov.uk/???") //todo - have a convo about url
+  override def destination: Call = Call("GET", "https://www.tax.service.gov.uk/outage-register-for-vat")
 }
 
 object ProductionFrontendGlobal extends FrontendGlobal {
