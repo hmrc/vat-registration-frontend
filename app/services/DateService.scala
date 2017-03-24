@@ -55,7 +55,10 @@ class WorkingDaysService @Inject()(
       Logger.info(s"Reloading cache entry for $BANK_HOLIDAYS_CACHE_KEY")
       Try {
         Await.result(bankHolidaysConnector.bankHolidays()(HeaderCarrier()), 5 seconds)
-      }.getOrElse(defaultHolidaySet)
+      }.getOrElse {
+        Logger.error("Failed to load bank holidays schedule from BankHolidaysConnector, using default bank holiday set")
+        defaultHolidaySet
+      }
     }
 
     (date: org.joda.time.LocalDate).plusWorkingDays(days)
