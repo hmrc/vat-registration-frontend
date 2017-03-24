@@ -21,6 +21,7 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.sicAndCompliance.BusinessActivityDescriptionForm
 import models.view.sicAndCompliance.BusinessActivityDescription
+import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -32,23 +33,19 @@ class BusinessActivityDescriptionController @Inject()(ds: CommonPlayDependencies
 
   import cats.instances.future._
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[BusinessActivityDescription].map { vm =>
-      Ok(views.html.pages.business_activity_description(BusinessActivityDescriptionForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.business_activity_description(BusinessActivityDescriptionForm.form)))
-  })
+  val form: Form[BusinessActivityDescription] = BusinessActivityDescriptionForm.form
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    BusinessActivityDescriptionForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.business_activity_description(formWithErrors)))
-      }, {
-        data: BusinessActivityDescription => {
-          s4l.saveForm[BusinessActivityDescription](data.copy(description = data.description.trim)) map { _ =>
-            Redirect(controllers.test.routes.SicStubController.show())
-          }
-        }
-      })
-  })
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel[BusinessActivityDescription].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.business_activity_description(f)))
+  )
+
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    form.bindFromRequest().fold(
+      (formWithErrors) => Future.successful(BadRequest(views.html.pages.business_activity_description(formWithErrors))),
+      (data: BusinessActivityDescription) => s4l.saveForm[BusinessActivityDescription](data.copy(description = data.description.trim))
+        .map(_ => Redirect(controllers.test.routes.SicStubController.show()))
+    )
+  )
 
 }
