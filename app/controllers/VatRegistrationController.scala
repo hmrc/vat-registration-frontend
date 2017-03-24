@@ -58,10 +58,12 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
 
   import cats.instances.future._
 
+  import scala.concurrent.ExecutionContext.Implicits.global
+
   protected def viewModel[T: ApiModelTransformer : CacheKey : Format]
   ()
-  (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService, headerCarrier: HeaderCarrier): OptionT[Future, T] =
-    OptionT(s4LService.fetchAndGet[T]()).orElseF(vatRegistrationService.getVatScheme() map ApiModelTransformer[T].toViewModel)
+  (implicit s4l: S4LService, vrs: VatRegistrationService, hc: HeaderCarrier): OptionT[Future, T] =
+    OptionT(s4l.fetchAndGet[T]()).orElseF(vrs.getVatScheme() map ApiModelTransformer[T].toViewModel)
 
 }
 

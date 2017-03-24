@@ -16,43 +16,110 @@
 
 package services
 
+import java.time.LocalDate
+import java.util.concurrent.TimeoutException
+
 import connectors.BankHolidaysConnector
-import fixtures.VatRegistrationFixture
-import org.mockito.Matchers
-import org.mockito.Mockito.when
+import org.scalamock.scalatest.MockFactory
 import play.api.cache.CacheApi
-import testHelpers.VatRegSpec
 import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
-import scala.concurrent.duration.Duration
+import scala.concurrent.Future
+import scala.concurrent.duration._
+import scala.language.postfixOps
+import scala.reflect.ClassTag
 
-class WorkingDaysServiceSpec extends VatRegSpec with VatRegistrationFixture {
 
-  implicit val hc = HeaderCarrier()
-  val mockBankHolidaysConnector = mock[BankHolidaysConnector]
-  val mockCacheApi = mock[CacheApi]
+class WorkingDaysServiceSpec extends UnitSpec with MockFactory {
+
+  val fixedHolidaySet: BankHolidaySet =
+    BankHolidaySet("england-and-wales",
+      List(
+        BankHoliday("some holiday", new org.joda.time.LocalDate(2017, 3, 24)),
+        //March 25,26 is weekend
+        BankHoliday("some holiday", new org.joda.time.LocalDate(2017, 3, 27))
+      ))
 
   class Setup {
-    val service = new WorkingDaysService(mockBankHolidaysConnector, mockCacheApi)
+
+    val mockConnector = mock[BankHolidaysConnector]
+    val mockCache = mock[CacheApi]
+
+
   }
 
   "addWorkingDays" must {
 
-    "should return Tuesday by adding 1 working day to Monday" ignore {
+    "should skip over weekends as well as bank holidays" in new Setup {
 
-      //this will hurt Mockito. Can't mock methods with call-by-name parameters
-      when(mockCacheApi.getOrElse[BankHolidaySet](
-        Matchers.eq(WorkingDaysService.BANK_HOLIDAYS_CACHE_KEY),
-        Matchers.any[Duration]())(Matchers.any()))
-        .thenReturn(BankHolidaySet("any", List[BankHoliday]()))
+      (mockCache.getOrElse[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
+        .expects(WorkingDaysService.BANK_HOLIDAYS_CACHE_KEY, 1 day, *, *).returns(fixedHolidaySet)
 
-      //      import common.DateConversions._
-      //
-      //      val d1 = LocalDate.of(2017, 3, 20)
-      //      val d2 = service.addWorkingDays(d1, 1)
-      //      d1.getDayOfWeek shouldBe 1
-      //      d2.getDayOfWeek shouldBe 2
+      (mockConnector.bankHolidays(_: String)(_: HeaderCarrier))
+        .expects("england-and-wales", *)
+        .returns(Future.successful(fixedHolidaySet)).once()
+
+      //must setup mocks prior to calling new constructor, as one mock is called during construction
+      val service = new WorkingDaysService(mockConnector, mockCache, mockConnector)
+
+      val date = LocalDate.of(2017, 3, 23)
+      service.addWorkingDays(date, 1) shouldBe LocalDate.of(2017, 3, 28)
+    }
+
+    "should call bank holiday connector when nothing found in cache" in new Setup {
+
+      (mockCache.getOrElse[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
+        .expects(WorkingDaysService.BANK_HOLIDAYS_CACHE_KEY, 1 day, *, *).onCall(product => {
+        // call-by-name parameter of type BankHolidaySet will actually become a
+        // () => BankHolidaySet, i.e. Function0[BankHolidaySet] at runtime
+        // according to http://stackoverflow.com/a/18298495/81520 we need to do this trick:
+        product.productElement(2).asInstanceOf[Function0[BankHolidaySet]]()
+      })
+
+      (mockConnector.bankHolidays(_: String)(_: HeaderCarrier))
+        .expects("england-and-wales", *)
+        .returns(Future.successful(fixedHolidaySet)).noMoreThanTwice()
+
+      //must setup mocks prior to calling new constructor, as one mock is called during construction
+      val service = new WorkingDaysService(mockConnector, mockCache, mockConnector)
+
+      val date = LocalDate.of(2017, 3, 23)
+      service.addWorkingDays(date, 1) shouldBe LocalDate.of(2017, 3, 28)
+    }
+
+
+    "should call bank holiday connector when nothing found in cache and failed to download file from Web" in new Setup {
+
+      /*
+      here the sequence of calls is important:
+      1.) on creating the service instance a call to FallbackBankHolidaysConnector
+          (subtype of BankHolidaysConnector) is made to load the holiday schedule from file on classpath
+      2.) then when the cache is consulted, no value is found
+      3.) then the _second_ call to BankHolidaysConnector fails with a timed out future
+          which will cause the default holiday schedule to be used temporarily
+       */
+      inSequence {
+        (mockConnector.bankHolidays(_: String)(_: HeaderCarrier))
+          .expects("england-and-wales", *)
+          .returns(Future.successful(fixedHolidaySet))
+
+        (mockCache.getOrElse[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
+          .expects(WorkingDaysService.BANK_HOLIDAYS_CACHE_KEY, 1 day, *, *).onCall(product => {
+          product.productElement(2).asInstanceOf[Function0[BankHolidaySet]]()
+        })
+
+        (mockConnector.bankHolidays(_: String)(_: HeaderCarrier))
+          .expects("england-and-wales", *)
+          .returns(Future.failed(new TimeoutException("failed to load from URL")))
+      }
+
+      //must setup mocks prior to calling new constructor, as one mock is called during construction
+      val service = new WorkingDaysService(mockConnector, mockCache, mockConnector)
+
+      val date = LocalDate.of(2017, 3, 23)
+      service.addWorkingDays(date, 1) shouldBe LocalDate.of(2017, 3, 28)
     }
 
   }
