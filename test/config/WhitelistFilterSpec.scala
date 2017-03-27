@@ -53,7 +53,9 @@ class WhitelistFilterSpec extends PlaySpec with OneAppPerTest {
         val request = FakeRequest(GET, "/register-for-vat").withHeaders("True-Client-IP" -> "11.22.33.44")
         val Some(result) = route(app, request)
 
-        status(result) mustBe OK
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some("/register-for-vat/start")
       }
 
       "coming from a IP NOT in the white-list and not with a white-listed path must be redirected" in {
