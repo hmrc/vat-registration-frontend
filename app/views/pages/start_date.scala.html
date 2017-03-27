@@ -27,7 +27,8 @@
                             StartDate.SPECIFIC_DATE -> Messages("pages.startDate.radio.specificDate")
                         ),
                         '_labelAfter -> true,
-                        '_labelClass -> "block-label"
+                        '_labelClass -> "block-label",
+                        '_legend -> ""
                     )
 
                     <div class="panel panel-indent hidden" id="specific_date_panel">
@@ -44,16 +45,16 @@
                             <div class="form-date @if(errorPresent) { form-field--error }">
 
                                 <fieldset id="start-date">
-
-                                    <lebel>
+                                    <legend></legend>
+                                    <label><span class="hidden">Start date input</span>
                                     @startDateForm.error("startDate").map { error =>
                                         <span class="error-notification" role="tooltip">
                                             @messages(error.message, error.args: _*)
                                         </span>
                                     }
                                         @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
-                                        <input type="text" name="startDate" value="" id="startDate" class="hidden" />
-                                    </lebel>
+                                        <input type="hidden" name="startDate" value="" id="startDate" class="hidden" />
+                                    </label>
 
                                     @govHelpers.input(
                                         startDateForm("startDate.day"),
