@@ -16,13 +16,18 @@
 
 package config
 
+import play.api.mvc.Call
 import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.audit.http.config.LoadAuditingConfig
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
 import uk.gov.hmrc.play.config.{AppName, RunMode, ServicesConfig}
+import uk.gov.hmrc.play.filters.MicroserviceFilterSupport
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.http.ws._
+import uk.gov.hmrc.whitelist.AkamaiWhitelistFilter
+
+import scala.language.postfixOps
 
 object FrontendAuditConnector extends Auditing with AppName with RunMode {
   override lazy val auditingConfig = LoadAuditingConfig(s"$env.auditing")
@@ -63,4 +68,17 @@ object VatSessionCache extends SessionCache with AppName with ServicesConfig {
     throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
 }
 
+object WhitelistFilter extends AkamaiWhitelistFilter
+  with RunMode with MicroserviceFilterSupport {
+
+  override def whitelist: Seq[String] = FrontendAppConfig.whitelist
+
+  override def excludedPaths: Seq[Call] = {
+    FrontendAppConfig.whitelistExcluded.map { path =>
+      Call("GET", path)
+    }
+  }
+
+  override def destination: Call = Call("GET", "https://www.tax.service.gov.uk/outage-register-for-vat")
+}
 
