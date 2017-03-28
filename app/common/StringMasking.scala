@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package models.api.compliance
+package common
 
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
+object StringMasking {
 
-case class VatCulturalCompliance(notForProfit: Boolean)
+  implicit class Interpolator(val s: String) extends AnyVal {
 
-object VatCulturalCompliance {
+    def mask(n: Int, char: Char = '*'): String = s.length match {
+      case len if n < len => (char.toString * n) + s.substring(n)
+      case _ => char.toString * n
+    }
 
-  val apiReads: Reads[VatCulturalCompliance] =
-    (__ \ "notForProfit").read[Boolean].map(VatCulturalCompliance(_))
+  }
 
-  val apiWrites: OWrites[VatCulturalCompliance] =
-    (__ \ "notForProfit").write[Boolean].contramap(_.notForProfit)
-
-  implicit val format: OFormat[VatCulturalCompliance] = OFormat(apiReads, apiWrites)
 }

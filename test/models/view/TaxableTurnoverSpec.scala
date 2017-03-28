@@ -21,8 +21,7 @@ import java.time.LocalDate
 import fixtures.VatRegistrationFixture
 import models.ApiModelTransformer
 import models.api.{VatChoice, VatScheme}
-import models.view.vatChoice.TaxableTurnover
-import models.view.vatChoice.TaxableTurnover._
+import models.view.vatTradingDetails.TaxableTurnover
 import uk.gov.hmrc.play.test.UnitSpec
 
 class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {

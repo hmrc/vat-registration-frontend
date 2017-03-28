@@ -16,118 +16,97 @@
 
 package controllers.builders
 
-import models.api.{VatFinancials, VatSicAndCompliance}
+import common.StringMasking._
+import models.api.{VatAccountingPeriod, VatFinancials, VatSicAndCompliance}
 import models.view.vatFinancials.VatReturnFrequency
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
-import play.api.UnexpectedException
 
-case class SummaryCompanyDetailsSectionBuilder(vatFinancials: VatFinancials, vatSicAndCompliance : VatSicAndCompliance)
+case class SummaryCompanyDetailsSectionBuilder(vatFinancials: Option[VatFinancials], vatSicAndCompliance: Option[VatSicAndCompliance])
   extends SummarySectionBuilder {
 
   def estimatedSalesValueRow: SummaryRow = SummaryRow(
     "companyDetails.estimatedSalesValue",
-    s"£${vatFinancials.turnoverEstimate.toString}",
+    s"£${vatFinancials.map(_.turnoverEstimate.toString).getOrElse("")}",
     Some(controllers.userJourney.vatFinancials.routes.EstimateVatTurnoverController.show())
   )
 
   def zeroRatedSalesRow: SummaryRow = SummaryRow(
     "companyDetails.zeroRatedSales",
-    vatFinancials.zeroRatedSalesEstimate match {
-      case Some(_) => "app.common.yes"
-      case None => "app.common.no"
-    },
+    vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).fold("app.common.no")(_ => "app.common.yes"),
     Some(controllers.userJourney.vatFinancials.routes.ZeroRatedSalesController.show())
   )
 
   def estimatedZeroRatedSalesRow: SummaryRow = SummaryRow(
     "companyDetails.zeroRatedSalesValue",
-    s"£${vatFinancials.zeroRatedSalesEstimate.getOrElse("").toString}",
+    s"£${vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).fold("")(_.toString)}",
     Some(controllers.userJourney.vatFinancials.routes.EstimateZeroRatedSalesController.show())
   )
 
   def vatChargeExpectancyRow: SummaryRow = SummaryRow(
     "companyDetails.reclaimMoreVat",
-    if (vatFinancials.reclaimVatOnMostReturns) {
-      "pages.summary.companyDetails.reclaimMoreVat.yes"
-    } else {
-      "pages.summary.companyDetails.reclaimMoreVat.no"
+    vatFinancials.filter(_.reclaimVatOnMostReturns).fold("pages.summary.companyDetails.reclaimMoreVat.no") {
+      _ => "pages.summary.companyDetails.reclaimMoreVat.yes"
     },
     Some(controllers.userJourney.vatFinancials.routes.VatChargeExpectancyController.show())
   )
 
   def accountingPeriodRow: SummaryRow = SummaryRow(
     "companyDetails.accountingPeriod",
-    vatFinancials.vatAccountingPeriod.frequency match {
-      case VatReturnFrequency.MONTHLY => "pages.summary.companyDetails.accountingPeriod.monthly"
-      case VatReturnFrequency.QUARTERLY => vatFinancials.vatAccountingPeriod.periodStart match {
-        case Some(period) => s"pages.summary.companyDetails.accountingPeriod.${period.substring(0, 3)}"
-        case None => throw UnexpectedException(Some(s"Quarterly accounting period selected, but periodStart is None"))
-      }
-      case _ => throw UnexpectedException(Some(s"Accounting period frequency not set"))
-    },
+    vatFinancials.map(_.accountingPeriods).collect {
+      case VatAccountingPeriod(VatReturnFrequency.MONTHLY, _) => "pages.summary.companyDetails.accountingPeriod.monthly"
+      case VatAccountingPeriod(VatReturnFrequency.QUARTERLY, Some(period)) =>
+        s"pages.summary.companyDetails.accountingPeriod.${period.substring(0, 3)}"
+    }.getOrElse(""),
     Some(controllers.userJourney.vatFinancials.routes.VatReturnFrequencyController.show())
   )
 
   def companyBankAccountRow: SummaryRow = SummaryRow(
     "companyDetails.companyBankAccount",
-    vatFinancials.bankAccount match {
-      case Some(_) => "app.common.yes"
-      case None => "app.common.no"
-    },
+    vatFinancials.flatMap(_.bankAccount).fold("app.common.no")(_ => "app.common.yes"),
     Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
   )
 
   def companyBankAccountNameRow: SummaryRow = SummaryRow(
     "companyDetails.companyBankAccount.name",
-    vatFinancials.bankAccount match {
-      case Some(account) => account.accountName
-      case None => "app.common.no"
-    },
+    vatFinancials.flatMap(_.bankAccount).fold("app.common.no")(_.accountName),
     Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountDetailsController.show())
   )
 
   def companyBankAccountNumberRow: SummaryRow = SummaryRow(
     "companyDetails.companyBankAccount.number",
-    vatFinancials.bankAccount match {
-      case Some(account) => "****" + account.accountNumber.substring(4)
-      case None => "app.common.no"
-    },
+    vatFinancials.flatMap(_.bankAccount).fold("app.common.no")(_.accountNumber.mask(4)),
     Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountDetailsController.show())
   )
 
   def companyBankAccountSortCodeRow: SummaryRow = SummaryRow(
     "companyDetails.companyBankAccount.sortCode",
-    vatFinancials.bankAccount match {
-      case Some(account) => account.accountSortCode
-      case None => "app.common.no"
-    },
+    vatFinancials.flatMap(_.bankAccount).fold("app.common.no")(_.accountSortCode),
     Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountDetailsController.show())
   )
 
   def companyBusinessDescriptionRow: SummaryRow = SummaryRow(
     "companyDetails.businessActivity.description",
-    vatSicAndCompliance.businessDescription match {
-      case description if StringUtils.isNotBlank(description) => description
-      case _ => "app.common.no"
-    },
+    vatSicAndCompliance.collect {
+      case VatSicAndCompliance(description, _) if StringUtils.isNotBlank(description) => description
+    }.getOrElse("app.common.no"),
     Some(controllers.userJourney.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
   )
 
 
   def section: SummarySection = SummarySection(
-      id = "companyDetails",
-      Seq(
-        (companyBusinessDescriptionRow, true),
-        (companyBankAccountRow, true),
-        (companyBankAccountNameRow, vatFinancials.bankAccount.isDefined),
-        (companyBankAccountNumberRow, vatFinancials.bankAccount.isDefined),
-        (companyBankAccountSortCodeRow, vatFinancials.bankAccount.isDefined),
-        (estimatedSalesValueRow, true),
-        (zeroRatedSalesRow, true),
-        (estimatedZeroRatedSalesRow, vatFinancials.zeroRatedSalesEstimate.isDefined),
-        (vatChargeExpectancyRow, true),
-        (accountingPeriodRow, true)
-      )
+    id = "companyDetails",
+    Seq(
+      (companyBusinessDescriptionRow, true),
+      (companyBankAccountRow, true),
+      (companyBankAccountNameRow, vatFinancials.flatMap(_.bankAccount).isDefined),
+      (companyBankAccountNumberRow, vatFinancials.flatMap(_.bankAccount).isDefined),
+      (companyBankAccountSortCodeRow, vatFinancials.flatMap(_.bankAccount).isDefined),
+      (estimatedSalesValueRow, true),
+      (zeroRatedSalesRow, true),
+      (estimatedZeroRatedSalesRow, vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).isDefined),
+      (vatChargeExpectancyRow, true),
+      (accountingPeriodRow, true)
     )
+  )
 }

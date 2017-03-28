@@ -41,7 +41,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
       "a real value should be returned as an estimated sales with vat financials containing a turnover estimate" in {
         val financials = VatFinancials(
           turnoverEstimate = 15000000L,
-          vatAccountingPeriod = VatAccountingPeriod.empty,
+          accountingPeriods = VatAccountingPeriod.empty,
           reclaimVatOnMostReturns = false
         )
         val builder = SummaryCompanyDetailsSectionBuilder(financials, VatSicAndCompliance.empty)
@@ -69,9 +69,9 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
       "a 'Yes' value should be returned with a zero rated sales estimate in vat financials" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
-          vatAccountingPeriod = VatAccountingPeriod.empty,
+          accountingPeriods = VatAccountingPeriod.empty,
           reclaimVatOnMostReturns = false,
-          zeroRatedSalesEstimate = Some(10000L)
+          zeroRatedTurnoverEstimate = Some(10000L)
         )
         val builder = SummaryCompanyDetailsSectionBuilder(financials, VatSicAndCompliance.empty)
         builder.zeroRatedSalesRow mustBe
@@ -98,9 +98,9 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
       "a real value should be returned with a zero rated sales estimate in vat financials" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
-          vatAccountingPeriod = VatAccountingPeriod.empty,
+          accountingPeriods = VatAccountingPeriod.empty,
           reclaimVatOnMostReturns = false,
-          zeroRatedSalesEstimate = Some(10000L)
+          zeroRatedTurnoverEstimate = Some(10000L)
         )
         val builder = SummaryCompanyDetailsSectionBuilder(financials, VatSicAndCompliance.empty)
         builder.estimatedZeroRatedSalesRow mustBe
@@ -127,9 +127,9 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
       "a 'Yes' should be returned when vat financials has a positive to reclaiming VAT on more return" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
-          vatAccountingPeriod = VatAccountingPeriod.empty,
+          accountingPeriods = VatAccountingPeriod.empty,
           reclaimVatOnMostReturns = true,
-          zeroRatedSalesEstimate = None
+          zeroRatedTurnoverEstimate = None
         )
         val builder = SummaryCompanyDetailsSectionBuilder(financials, VatSicAndCompliance.empty)
         builder.vatChargeExpectancyRow mustBe
@@ -146,9 +146,9 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
       "a 'Once a month' answer should be returned when vat financials has an accounting period frequency set to monthly" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
-          vatAccountingPeriod = VatAccountingPeriod(None, VatReturnFrequency.MONTHLY),
+          accountingPeriods = VatAccountingPeriod(None, VatReturnFrequency.MONTHLY),
           reclaimVatOnMostReturns = true,
-          zeroRatedSalesEstimate = None
+          zeroRatedTurnoverEstimate = None
         )
         val builder = SummaryCompanyDetailsSectionBuilder(financials, VatSicAndCompliance.empty)
         builder.accountingPeriodRow mustBe
@@ -162,9 +162,9 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
       "a 'January, April, July and October' answer should be returned when accounting period frequency is set to quarterly with January as a start" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
-          vatAccountingPeriod = VatAccountingPeriod(Some("jan_apr_jul_oct"), VatReturnFrequency.QUARTERLY),
+          accountingPeriods = VatAccountingPeriod(Some("jan_apr_jul_oct"), VatReturnFrequency.QUARTERLY),
           reclaimVatOnMostReturns = true,
-          zeroRatedSalesEstimate = None
+          zeroRatedTurnoverEstimate = None
         )
         val builder = SummaryCompanyDetailsSectionBuilder(financials, VatSicAndCompliance.empty)
         builder.accountingPeriodRow mustBe
@@ -178,9 +178,9 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
       "a 'February, May, August and November' answer should be returned when accounting period frequency is set to quarterly with February as a start" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
-          vatAccountingPeriod = VatAccountingPeriod(Some("feb_may_aug_nov"), VatReturnFrequency.QUARTERLY),
+          accountingPeriods = VatAccountingPeriod(Some("feb_may_aug_nov"), VatReturnFrequency.QUARTERLY),
           reclaimVatOnMostReturns = true,
-          zeroRatedSalesEstimate = None
+          zeroRatedTurnoverEstimate = None
         )
         val builder = SummaryCompanyDetailsSectionBuilder(financials, VatSicAndCompliance.empty)
         builder.accountingPeriodRow mustBe
@@ -194,9 +194,9 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
       "a 'March, June, September and December' answer should be returned when accounting period frequency is set to quarterly with March as a start" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
-          vatAccountingPeriod = VatAccountingPeriod(Some("mar_jun_sep_dec"), VatReturnFrequency.QUARTERLY),
+          accountingPeriods = VatAccountingPeriod(Some("mar_jun_sep_dec"), VatReturnFrequency.QUARTERLY),
           reclaimVatOnMostReturns = true,
-          zeroRatedSalesEstimate = None
+          zeroRatedTurnoverEstimate = None
         )
         val builder = SummaryCompanyDetailsSectionBuilder(financials, VatSicAndCompliance.empty)
         builder.accountingPeriodRow mustBe
@@ -215,9 +215,9 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
       "an exception should be thrown when accounting period frequency is set to quarterly with no accounting period set" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
-          vatAccountingPeriod = VatAccountingPeriod(None, VatReturnFrequency.QUARTERLY),
+          accountingPeriods = VatAccountingPeriod(None, VatReturnFrequency.QUARTERLY),
           reclaimVatOnMostReturns = true,
-          zeroRatedSalesEstimate = None
+          zeroRatedTurnoverEstimate = None
         )
         val builder = SummaryCompanyDetailsSectionBuilder(financials, VatSicAndCompliance.empty)
         assertThrows[UnexpectedException](builder.accountingPeriodRow)
@@ -239,9 +239,9 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
       "a 'Yes' value should be returned with bank account number set in vat financials" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
-          vatAccountingPeriod = VatAccountingPeriod.empty,
+          accountingPeriods = VatAccountingPeriod.empty,
           reclaimVatOnMostReturns = false,
-          zeroRatedSalesEstimate = None,
+          zeroRatedTurnoverEstimate = None,
           bankAccount = Some(VatBankAccount(accountNumber = "12345678"))
         )
         val builder = SummaryCompanyDetailsSectionBuilder(financials, VatSicAndCompliance.empty)
@@ -269,9 +269,9 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
       "a real name value should be returned with bank account name set in vat financials" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
-          vatAccountingPeriod = VatAccountingPeriod.empty,
+          accountingPeriods = VatAccountingPeriod.empty,
           reclaimVatOnMostReturns = false,
-          zeroRatedSalesEstimate = None,
+          zeroRatedTurnoverEstimate = None,
           bankAccount = Some(VatBankAccount(accountName = "John Smith"))
         )
         val builder = SummaryCompanyDetailsSectionBuilder(financials, VatSicAndCompliance.empty)
@@ -299,9 +299,9 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
       "a real bank account number's last 4 digits the rest being masked, should be returned with bank account number set in vat financials" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
-          vatAccountingPeriod = VatAccountingPeriod.empty,
+          accountingPeriods = VatAccountingPeriod.empty,
           reclaimVatOnMostReturns = false,
-          zeroRatedSalesEstimate = None,
+          zeroRatedTurnoverEstimate = None,
           bankAccount = Some(VatBankAccount(accountNumber = "12345678"))
         )
         val builder = SummaryCompanyDetailsSectionBuilder(financials, VatSicAndCompliance.empty)
@@ -329,9 +329,9 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
       "a real sort code value should be returned with bank account sort code set in vat financials" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
-          vatAccountingPeriod = VatAccountingPeriod.empty,
+          accountingPeriods = VatAccountingPeriod.empty,
           reclaimVatOnMostReturns = false,
-          zeroRatedSalesEstimate = None,
+          zeroRatedTurnoverEstimate = None,
           bankAccount = Some(VatBankAccount(accountSortCode = "01-23-45"))
         )
         val builder = SummaryCompanyDetailsSectionBuilder(financials, VatSicAndCompliance.empty)
@@ -373,9 +373,9 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec {
       "a valid summary section" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
-          vatAccountingPeriod = VatAccountingPeriod(None, VatReturnFrequency.MONTHLY),
+          accountingPeriods = VatAccountingPeriod(None, VatReturnFrequency.MONTHLY),
           reclaimVatOnMostReturns = false,
-          zeroRatedSalesEstimate = None,
+          zeroRatedTurnoverEstimate = None,
           bankAccount = None
         )
         val builder = SummaryCompanyDetailsSectionBuilder(financials, VatSicAndCompliance.empty)

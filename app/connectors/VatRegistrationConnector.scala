@@ -69,14 +69,14 @@ trait RegistrationConnector {
   }
 
   def upsertVatFinancials(regId: String, vatFinancials: VatFinancials)
-                             (implicit hc: HeaderCarrier, rds: HttpReads[VatFinancials]): Future[VatFinancials] = {
+                         (implicit hc: HeaderCarrier, rds: HttpReads[VatFinancials]): Future[VatFinancials] = {
     http.PATCH[VatFinancials, VatFinancials](s"$vatRegUrl/vatreg/$regId/vat-financials", vatFinancials) recover {
       case e: Exception => throw logResponse(e, "upsertVatFinancials", "upserting financials details")
     }
   }
 
   def upsertSicAndCompliance(regId: String, sicAndCompliance: VatSicAndCompliance)
-                         (implicit hc: HeaderCarrier, rds: HttpReads[VatSicAndCompliance]): Future[VatSicAndCompliance] = {
+                            (implicit hc: HeaderCarrier, rds: HttpReads[VatSicAndCompliance]): Future[VatSicAndCompliance] = {
     http.PATCH[VatSicAndCompliance, VatSicAndCompliance](s"$vatRegUrl/vatreg/$regId/sic-and-compliance", sicAndCompliance) recover {
       case e: Exception => throw logResponse(e, "upsertSicAndCompliance", "upserting sicAndCompliance details")
     }
@@ -104,7 +104,7 @@ trait RegistrationConnector {
   }
 
   def deleteAccountingPeriodStart(regId: String)
-                             (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
+                                 (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
     http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-accounting-period") recover {
       case e: Exception => throw logResponse(e, "deleteAccountingPeriodStart", "delete AccountingPeriodStart details")
     }
@@ -112,6 +112,7 @@ trait RegistrationConnector {
 
   private[connectors] def logResponse(e: Throwable, f: String, m: String): Throwable = {
     def log(s: String) = Logger.warn(s"[VatRegistrationConnector] [$f] received $s when $m")
+
     e match {
       case e: NotFoundException => log("NOT FOUND")
       case e: BadRequestException => log("BAD REQUEST")

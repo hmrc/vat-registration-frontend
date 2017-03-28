@@ -23,7 +23,7 @@ import common.Now
 import forms.validation.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
 import forms.validation.FormValidation.inRange
 import models.DateModel
-import models.view.vatChoice.StartDate
+import models.view.vatTradingDetails.StartDateView
 import play.api.data.Form
 import play.api.data.Forms._
 import services.DateService
@@ -37,16 +37,16 @@ class StartDateFormFactory @Inject()(dateService: DateService, today: Now[LocalD
 
   val RADIO_INPUT_NAME = "startDateRadio"
 
-  def form(): Form[StartDate] = {
+  def form(): Form[StartDateView] = {
 
     val minDate: LocalDate = dateService.addWorkingDays(today(), 2)
     val maxDate: LocalDate = today().plusMonths(3)
 
     Form(
       mapping(
-        RADIO_INPUT_NAME -> nonEmptyText.verifying(StartDate.validSelection),
+        RADIO_INPUT_NAME -> nonEmptyText.verifying(StartDateView.validSelection),
         "startDate" -> mandatoryIf(
-          isEqual(RADIO_INPUT_NAME, StartDate.SPECIFIC_DATE),
+          isEqual(RADIO_INPUT_NAME, StartDateView.SPECIFIC_DATE),
           mapping(
             "day" -> text,
             "month" -> text,
@@ -56,7 +56,7 @@ class StartDateFormFactory @Inject()(dateService: DateService, today: Now[LocalD
               nonEmptyDateModel("startDate"),
               validDateModel(inRange(minDate, maxDate, "startDate"), "startDate")
             ))
-      )(StartDate.bind)(StartDate.unbind)
+      )(StartDateView.bind)(StartDateView.unbind)
     )
   }
 

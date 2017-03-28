@@ -20,7 +20,7 @@ import builders.AuthBuilder
 import controllers.userJourney.vatFinancials.ZeroRatedSalesController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.CacheKey
+import models.S4LKey
 import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -66,7 +66,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[ZeroRatedSales]()
-        (Matchers.eq(CacheKey[ZeroRatedSales]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[ZeroRatedSales]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -83,7 +83,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       when(mockS4LService.fetchAndGet[ZeroRatedSales]()
-        (Matchers.eq(CacheKey[ZeroRatedSales]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[ZeroRatedSales]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))

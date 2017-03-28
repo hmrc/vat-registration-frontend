@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 
-package models.view.vatChoice
+package models.view.vatTradingDetails
 
 import java.time.LocalDate
 
-import models.api.{VatChoice, VatScheme}
+import models.api.{VatChoice, VatScheme, VatStartDate, VatTradingDetails}
 import models.{ApiModelTransformer, DateModel, ViewModelTransformer}
 import play.api.libs.json.Json
 
 import scala.util.Try
 
-case class StartDate(dateType: String = "", date: Option[LocalDate] = None)
+case class StartDateView(dateType: String = "", date: Option[LocalDate] = None)
 
-object StartDate {
+object StartDateView {
 
-  def bind(dateType: String, dateModel: Option[DateModel]): StartDate =
-    StartDate(dateType, dateModel.flatMap(_.toLocalDate))
+  def bind(dateType: String, dateModel: Option[DateModel]): StartDateView =
+    StartDateView(dateType, dateModel.flatMap(_.toLocalDate))
 
-  def unbind(startDate: StartDate): Option[(String, Option[DateModel])] =
+  def unbind(startDate: StartDateView): Option[(String, Option[DateModel])] =
     Try {
-      startDate.date.fold((startDate.dateType, None: Option[DateModel])) {
+      startDate.date.fold((startDate.dateType, Option.empty[DateModel])) {
         d => (startDate.dateType, Some(DateModel.fromLocalDate(d)))
       }
     }.toOption
-
-  val DEFAULT_DATE: LocalDate = LocalDate.of(1970, 1, 1)
 
   val COMPANY_REGISTRATION_DATE = "COMPANY_REGISTRATION_DATE"
   val BUSINESS_START_DATE = "BUSINESS_START_DATE"
@@ -46,23 +44,17 @@ object StartDate {
 
   val validSelection: String => Boolean = Seq(COMPANY_REGISTRATION_DATE, BUSINESS_START_DATE, SPECIFIC_DATE).contains
 
-  implicit val format = Json.format[StartDate]
+  implicit val format = Json.format[StartDateView]
 
   // Returns a view model for a specific part of a given VatScheme API model
-  implicit val modelTransformer = ApiModelTransformer[StartDate] { vs: VatScheme =>
-    vs.vatChoice.map(vc => fromLocalDate(vc.startDate))
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: StartDate, g: VatChoice) =>
-    g.copy(startDate = c.date.getOrElse(DEFAULT_DATE))
-  }
-
-  def fromLocalDate(d: LocalDate): StartDate =
-  // TODO: Remove check when start date becomes optional in next story
-    if (d.isEqual(DEFAULT_DATE)) {
-      StartDate(StartDate.COMPANY_REGISTRATION_DATE)
-    } else {
-      StartDate(StartDate.SPECIFIC_DATE, Some(d))
+  implicit val modelTransformer = ApiModelTransformer[StartDateView] { vs: VatScheme =>
+    vs.tradingDetails.map {
+      case VatTradingDetails(VatChoice(_, VatStartDate(sel, date@Some(_))), _) => StartDateView(sel, date)
     }
+  }
+
+  implicit val viewModelTransformer = ViewModelTransformer { (c: StartDateView, g: VatTradingDetails) =>
+    g.copy(vatChoice = g.vatChoice.copy(vatStartDate = g.vatChoice.vatStartDate.copy(selection = c.dateType, startDate = c.date)))
+  }
 
 }

@@ -18,10 +18,10 @@ package fixtures
 
 import java.time.LocalDate
 
-import models.view.vatChoice.StartDate
+import models.view.vatTradingDetails.StartDateView
 
 trait S4LFixture {
 
-  lazy val validFutureDate = StartDate("SPECIFIC_DATE", Some(LocalDate.of(2017, 3, 21)))
+  lazy val validFutureDate = StartDateView("SPECIFIC_DATE", Some(LocalDate.of(2017, 3, 21)))
 
 }

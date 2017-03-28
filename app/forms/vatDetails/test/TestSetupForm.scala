@@ -52,7 +52,7 @@ object TestSetupForm {
     "sortCode" -> optional(text),
     "estimateVatTurnover" -> optional(text),
     "zeroRatedSalesChoice" -> optional(text),
-    "zeroRatedSalesEstimate" -> optional(text),
+    "zeroRatedTurnoverEstimate" -> optional(text),
     "vatChargeExpectancyChoice" -> optional(text),
     "vatReturnFrequency" -> optional(text),
     "accountingPeriod" -> optional(text)

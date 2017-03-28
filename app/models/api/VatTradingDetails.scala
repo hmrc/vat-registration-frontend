@@ -16,18 +16,18 @@
 
 package models.api
 
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatTradingDetails(tradingName: String = "")
+case class VatTradingDetails(
+                              vatChoice: VatChoice,
+                              tradingName: TradingName
+                            )
 
 object VatTradingDetails {
-  val apiReads: Reads[VatTradingDetails] =
-    (__ \ "trading-name").read[String].map(VatTradingDetails.apply)
 
-  val apiWrites: Writes[VatTradingDetails] =
-    (__ \ "trading-name").write[String].contramap(_.tradingName)
+  implicit val format: OFormat[VatTradingDetails] = Json.format[VatTradingDetails]
 
-  implicit val format = Format(apiReads, apiWrites)
+  //TODO remove
+  val empty: VatTradingDetails = VatTradingDetails(VatChoice(VatChoice.NECESSITY_OBLIGATORY, VatStartDate("", None)), TradingName(selection = false, None))
 
 }

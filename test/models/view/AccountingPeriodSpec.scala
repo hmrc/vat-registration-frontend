@@ -25,27 +25,27 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class AccountingPeriodSpec extends UnitSpec with VatRegistrationFixture {
 
-  val vatAccountingPeriod1 = VatAccountingPeriod(Some("jan_apr_jul_oct"), "quarterly")
-  val vatAccountingPeriod2 = VatAccountingPeriod(Some("feb_may_aug_nov"), "quarterly")
-  val vatAccountingPeriod3 = VatAccountingPeriod(Some("mar_jun_sep_dec"), "quarterly")
+  val accountingPeriods1 = VatAccountingPeriod(Some("jan_apr_jul_oct"), "quarterly")
+  val accountingPeriods2 = VatAccountingPeriod(Some("feb_may_aug_nov"), "quarterly")
+  val accountingPeriods3 = VatAccountingPeriod(Some("mar_jun_sep_dec"), "quarterly")
   val turnover = 100L
 
   val vatFinancialsWithAccountingPeriod1 = VatFinancials(
     turnoverEstimate = turnover,
     reclaimVatOnMostReturns = false,
-    vatAccountingPeriod = vatAccountingPeriod1
+    accountingPeriods = accountingPeriods1
   )
 
   val vatFinancialsWithAccountingPeriod2 = VatFinancials(
     turnoverEstimate = turnover,
     reclaimVatOnMostReturns = false,
-    vatAccountingPeriod = vatAccountingPeriod2
+    accountingPeriods = accountingPeriods2
   )
 
   val vatFinancialsWithAccountingPeriod3 = VatFinancials(
     turnoverEstimate = turnover,
     reclaimVatOnMostReturns = false,
-    vatAccountingPeriod = vatAccountingPeriod3
+    accountingPeriods = accountingPeriods3
   )
 
   val vatScheme = VatScheme(validRegId)
@@ -56,13 +56,13 @@ class AccountingPeriodSpec extends UnitSpec with VatRegistrationFixture {
     val vatFinancials = VatFinancials(
       turnoverEstimate = turnover,
       reclaimVatOnMostReturns = false,
-      vatAccountingPeriod = vatAccountingPeriod2
+      accountingPeriods = accountingPeriods2
     )
 
     val differentVatFinancials = VatFinancials(
       turnoverEstimate = turnover,
       reclaimVatOnMostReturns = false,
-      vatAccountingPeriod = vatAccountingPeriod1
+      accountingPeriods = accountingPeriods1
     )
 
     "update VatFinancials with new AccountingPeriod" in {

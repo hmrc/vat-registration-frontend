@@ -34,7 +34,7 @@ class CompanyBankAccountSpec extends UnitSpec with VatRegistrationFixture {
         bankAccount = Some(someBankAccount),
         turnoverEstimate = 100L,
         reclaimVatOnMostReturns = true,
-        vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
+        accountingPeriods = VatAccountingPeriod(None, "monthly")
       )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithAccount))
       ApiModelTransformer[CompanyBankAccount].toViewModel(vs) shouldBe Some(CompanyBankAccount(COMPANY_BANK_ACCOUNT_YES))
@@ -44,7 +44,7 @@ class CompanyBankAccountSpec extends UnitSpec with VatRegistrationFixture {
       val vatFinancialsWithoutAccount = VatFinancials(
         turnoverEstimate = 100L,
         reclaimVatOnMostReturns = true,
-        vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
+        accountingPeriods = VatAccountingPeriod(None, "monthly")
       )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithoutAccount))
 

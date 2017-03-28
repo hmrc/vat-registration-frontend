@@ -18,13 +18,11 @@ package fixtures
 
 import java.time.LocalDate
 
-import models.api._
-import models.api.compliance.VatCulturalCompliance
+import models.api.{VatComplianceCultural, _}
 import models.view._
 import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
-import models.view.vatChoice.StartDate
 import models.view.vatFinancials._
-import models.view.vatTradingDetails.TradingName
+import models.view.vatTradingDetails.{StartDateView, TradingNameView}
 import play.api.http.Status._
 import uk.gov.hmrc.play.http._
 
@@ -45,23 +43,19 @@ trait VatRegistrationFixture {
 
   val validRegId = "VAT123456"
 
-  val validStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(LocalDate.of(2017, 3, 21)))
+  val vatStartDate = VatStartDate(StartDateView.SPECIFIC_DATE, Some(LocalDate.of(2017, 3, 21)))
 
-  val validVatChoice = VatChoice(
-    validStartDate.date.get,
-    VatChoice.NECESSITY_VOLUNTARY
-  )
+  val validVatChoice = VatChoice(VatChoice.NECESSITY_VOLUNTARY, vatStartDate)
 
-  private val tradingName = "ACME INC"
-  val validVatTradingDetails = VatTradingDetails(tradingName)
-  val validTradingName = TradingName(TradingName.TRADING_NAME_YES, Some(tradingName))
+  private val tradingName ="ACME INC"
+  val validTradingName = TradingName(selection = true, tradingName = Some(tradingName))
+  val validVatTradingDetails = VatTradingDetails(vatChoice = validVatChoice, tradingName = validTradingName)
 
   private val turnoverEstimate = 50000L
   private val estimatedSales = 60000L
 
   private val sortCode = "10-10-10"
   private val accountNumber = "12345678"
-  private val period = "monthly"
   private val businessActivityDescription = "description"
 
   val validEstimateVatTurnover = EstimateVatTurnover(turnoverEstimate)
@@ -74,9 +68,9 @@ trait VatRegistrationFixture {
   val validVatFinancials = VatFinancials(
     bankAccount = Some(VatBankAccount(tradingName, accountNumber, sortCode)),
     turnoverEstimate = turnoverEstimate,
-    zeroRatedSalesEstimate = Some(estimatedSales),
+    zeroRatedTurnoverEstimate = Some(estimatedSales),
     reclaimVatOnMostReturns = true,
-    vatAccountingPeriod = VatAccountingPeriod(None, period)
+    accountingPeriods = VatAccountingPeriod("monthly")
   )
 
   val validSicAndCompliance = VatSicAndCompliance(
@@ -84,7 +78,7 @@ trait VatRegistrationFixture {
     culturalCompliance = None
   )
 
-  val emptyVatScheme = VatScheme.blank(validRegId)
+  val emptyVatScheme = VatScheme(validRegId)
 
   val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
     id = validRegId,
@@ -103,7 +97,7 @@ trait VatRegistrationFixture {
   )
 
   val validBusinessActivityDescription = BusinessActivityDescription(businessActivityDescription)
-  val validVatCulturalCompliance = VatCulturalCompliance(true)
+  val validVatCulturalCompliance = VatComplianceCultural(true)
   val validCulturalComplianceQ1 = CulturalComplianceQ1(CulturalComplianceQ1.NOT_PROFIT_NO)
 
   lazy val validSummaryView = Summary(

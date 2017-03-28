@@ -28,11 +28,19 @@ object CompanyBankAccountDetails {
 
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
     vs.financials.flatMap(_.bankAccount)
-      .map(account => CompanyBankAccountDetails(account.accountName, account.accountNumber, account.accountSortCode))
+      .map(account => CompanyBankAccountDetails(
+        accountName = account.accountName,
+        accountNumber = account.accountNumber,
+        sortCode = account.accountSortCode
+      ))
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: CompanyBankAccountDetails, g: VatFinancials) =>
-    g.copy(bankAccount = Some(VatBankAccount(c.accountName, c.accountNumber, c.sortCode)))
+    g.copy(bankAccount = Some(VatBankAccount(
+      accountName = c.accountName,
+      accountSortCode = c.sortCode,
+      accountNumber = c.accountNumber
+    )))
   }
 
 }
