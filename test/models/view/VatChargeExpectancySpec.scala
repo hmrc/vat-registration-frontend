@@ -26,20 +26,20 @@ import uk.gov.hmrc.play.test.UnitSpec
 class VatChargeExpectancySpec extends UnitSpec with VatRegistrationFixture {
 
   val turnover = 100L
-  val vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
+  val accountingPeriods = VatAccountingPeriod(None, "monthly")
   val vatChargeExpectancyNo = VatChargeExpectancy(VAT_CHARGE_NO)
   val vatChargeExpectancyYes = VatChargeExpectancy(VAT_CHARGE_YES)
 
   val vatFinancialsWithReclaimTrue = VatFinancials(
     turnoverEstimate = turnover,
     reclaimVatOnMostReturns = true,
-    vatAccountingPeriod = vatAccountingPeriod
+    accountingPeriods = accountingPeriods
   )
 
   val vatFinancialsWithReclaimFalse = VatFinancials(
     turnoverEstimate = turnover,
     reclaimVatOnMostReturns = false,
-    vatAccountingPeriod = vatAccountingPeriod
+    accountingPeriods = accountingPeriods
   )
 
   "toApi" should {

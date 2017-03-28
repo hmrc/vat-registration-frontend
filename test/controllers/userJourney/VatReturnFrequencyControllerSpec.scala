@@ -21,7 +21,7 @@ import controllers.userJourney.vatFinancials.VatReturnFrequencyController
 import fixtures.VatRegistrationFixture
 import forms.vatDetails.vatFinancials.VatReturnFrequencyForm
 import helpers.VatRegSpec
-import models.CacheKey
+import models.S4LKey
 import models.view.vatFinancials.{AccountingPeriod, VatReturnFrequency}
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -67,7 +67,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[VatReturnFrequency]()
-        (Matchers.eq(CacheKey[VatReturnFrequency]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[VatReturnFrequency]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -84,7 +84,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       when(mockS4LService.fetchAndGet[VatReturnFrequency]()
-        (Matchers.eq(CacheKey[VatReturnFrequency]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[VatReturnFrequency]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))

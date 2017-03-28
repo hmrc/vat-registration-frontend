@@ -21,7 +21,7 @@ import java.time.LocalDate
 import helpers.VatRegSpec
 import models.api.{VatChoice, VatTradingDetails}
 import models.view.SummaryRow
-import models.view.vatChoice.StartDate
+import models.view.vatTradingDetails.StartDateView
 
 class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec {
 
@@ -74,7 +74,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec {
       "a Companies House incorporation date message, if it's a voluntary registration and the date is a default date" in {
         val builder = SummaryVatDetailsSectionBuilder(
           VatChoice(
-            StartDate.DEFAULT_DATE,
+            StartDateView.DEFAULT_DATE,
             necessity = VatChoice.NECESSITY_VOLUNTARY),
           VatTradingDetails()
         )

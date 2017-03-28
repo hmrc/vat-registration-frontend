@@ -20,7 +20,7 @@ import builders.AuthBuilder
 import controllers.userJourney.vatFinancials.CompanyBankAccountController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.CacheKey
+import models.S4LKey
 import models.view.vatFinancials.CompanyBankAccount
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -66,7 +66,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[CompanyBankAccount]()
-        (Matchers.eq(CacheKey[CompanyBankAccount]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[CompanyBankAccount]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
@@ -84,7 +84,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     when(mockS4LService.fetchAndGet[CompanyBankAccount]()
-      (Matchers.eq(CacheKey[CompanyBankAccount]), Matchers.any(), Matchers.any()))
+      (Matchers.eq(S4LKey[CompanyBankAccount]), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(None))
 
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))

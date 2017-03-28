@@ -36,12 +36,12 @@ object AccountingPeriod {
   implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
     for {
       f <- vs.financials
-      ps <- f.vatAccountingPeriod.periodStart
+      ps <- f.accountingPeriods.periodStart
     } yield AccountingPeriod(ps.toUpperCase())
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: AccountingPeriod, g: VatFinancials) =>
-    g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(periodStart = Some(c.accountingPeriod.toLowerCase)))
+    g.copy(accountingPeriods = g.accountingPeriods.copy(periodStart = Some(c.accountingPeriod.toLowerCase)))
   }
 
 }

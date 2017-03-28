@@ -94,7 +94,7 @@ $(document).ready($(function () {
 // Estimate Zero Rated Sales
 (function (EstimateZeroRatedSalesPage, $, undefined) {
     EstimateZeroRatedSalesPage.init = function() {
-        var numericInputs = ["zeroRatedSalesEstimate"];
+        var numericInputs = ["zeroRatedTurnoverEstimate"];
         UI.preventNonNumericInput(numericInputs);
     }
 }(window.EstimateZeroRatedSalesPage = window.EstimateZeroRatedSalesPage || {}, jQuery));

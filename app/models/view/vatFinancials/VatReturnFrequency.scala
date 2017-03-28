@@ -33,11 +33,11 @@ object VatReturnFrequency {
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
-    vs.financials map (vf => VatReturnFrequency(vf.vatAccountingPeriod.frequency))
+    vs.financials map (vf => VatReturnFrequency(vf.accountingPeriods.frequency))
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: VatReturnFrequency, g: VatFinancials) =>
-    g.copy(vatAccountingPeriod = g.vatAccountingPeriod.copy(frequency = c.frequencyType))
+    g.copy(accountingPeriods = g.accountingPeriods.copy(frequency = c.frequencyType))
   }
 
 }

@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package forms.vatDetails.vatChoice
+package models.api
 
-import forms.validation.FormValidation.missingFieldMapping
-import models.view.vatTradingDetails.TaxableTurnover
-import play.api.data.Form
-import play.api.data.Forms._
+import play.api.libs.json._
 
-object TaxableTurnoverForm {
-  val RADIO_YES_NO: String = "taxableTurnoverRadio"
+case class VatComplianceCultural(notForProfit: Boolean)
 
-  val form = Form(
-    mapping(
-      RADIO_YES_NO -> missingFieldMapping("taxable.turnover").verifying(TaxableTurnover.valid)
-    )(TaxableTurnover.apply)(TaxableTurnover.unapply)
-  )
+object VatComplianceCultural {
+
+  implicit val format: OFormat[VatComplianceCultural] = Json.format[VatComplianceCultural]
 
 }

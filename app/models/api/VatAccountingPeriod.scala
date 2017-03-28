@@ -16,17 +16,18 @@
 
 package models.api
 
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatAccountingPeriod(periodStart: Option[String], frequency: String)
-
+case class VatAccountingPeriod(
+                                frequency: String, // "monthly" or "quarterly"
+                                periodStart: Option[String] = None // "jan_apr_jul_oct", "feb_may_aug_nov" or "mar_jun_sep_dec"
+                              )
 
 object VatAccountingPeriod {
 
-  implicit val format = (
-    (__ \ "periodStart").formatNullable[String] and
-      (__ \ "frequency").format[String]) (VatAccountingPeriod.apply, unlift(VatAccountingPeriod.unapply))
+  implicit val format: OFormat[VatAccountingPeriod] = Json.format[VatAccountingPeriod]
 
-  def empty: VatAccountingPeriod = VatAccountingPeriod(None, "")
+  // TODO remove
+  val empty: VatAccountingPeriod = VatAccountingPeriod("")
+
 }

@@ -16,36 +16,39 @@
 
 package models.view.vatTradingDetails
 
-import models.api.{VatScheme, VatTradingDetails}
+import models.api.{TradingName, VatScheme, VatTradingDetails}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class TradingName(yesNo: String,
-                       tradingName: Option[String]) {
+case class TradingNameView(
+                            yesNo: String,
+                            tradingName: Option[String] = None
+                          ) {
+
   override def toString: String = tradingName.getOrElse("")
+
 }
 
-object TradingName {
+object TradingNameView {
 
   val TRADING_NAME_YES = "TRADING_NAME_YES"
   val TRADING_NAME_NO = "TRADING_NAME_NO"
 
   val valid = (item: String) => List(TRADING_NAME_YES, TRADING_NAME_NO).contains(item.toUpperCase)
 
-  implicit val format = Json.format[TradingName]
+  implicit val format = Json.format[TradingNameView]
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
     vs.tradingDetails.map {
-      _.tradingName match {
-        case tn if !tn.isEmpty => TradingName(TRADING_NAME_YES, tradingName = Some(tn))
-        case _ => TradingName(TRADING_NAME_NO, tradingName = None)
-      }
+      case VatTradingDetails(_, TradingName(sel, tn@Some(_))) =>
+        TradingNameView(if (sel) TRADING_NAME_YES else TRADING_NAME_NO, tn)
+      case _ => TradingNameView(TRADING_NAME_NO)
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: TradingName, g: VatTradingDetails) =>
-    g.copy(tradingName = c.tradingName.getOrElse(""))
+  implicit val viewModelTransformer = ViewModelTransformer { (c: TradingNameView, g: VatTradingDetails) =>
+    g.copy(tradingName = models.api.TradingName(c.yesNo == TRADING_NAME_YES, c.tradingName))
   }
 
 }

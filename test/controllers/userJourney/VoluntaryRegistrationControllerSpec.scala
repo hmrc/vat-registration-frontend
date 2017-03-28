@@ -36,8 +36,8 @@ import builders.AuthBuilder
 import controllers.userJourney.vatChoice.VoluntaryRegistrationController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.CacheKey
-import models.view.vatChoice.VoluntaryRegistration
+import models.S4LKey
+import models.view.vatTradingDetails.VoluntaryRegistration
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -82,7 +82,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[VoluntaryRegistration]()
-        (Matchers.eq(CacheKey[VoluntaryRegistration]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[VoluntaryRegistration]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -99,7 +99,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       when(mockS4LService.fetchAndGet[VoluntaryRegistration]()
-        (Matchers.eq(CacheKey[VoluntaryRegistration]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[VoluntaryRegistration]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))

@@ -20,7 +20,7 @@ import builders.AuthBuilder
 import controllers.userJourney.vatFinancials.AccountingPeriodController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.CacheKey
+import models.S4LKey
 import models.view.vatFinancials.AccountingPeriod
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -65,7 +65,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     }
 
     "return HTML when there's nothing in S4L and vatScheme contain data" in {
-      when(mockS4LService.fetchAndGet[AccountingPeriod]()(Matchers.eq(CacheKey[AccountingPeriod]), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[AccountingPeriod]()(Matchers.eq(S4LKey[AccountingPeriod]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -82,7 +82,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
 
     "return HTML when there's nothing in S4L and vatScheme contain no data" in {
       when(mockS4LService.fetchAndGet[AccountingPeriod]()
-        (Matchers.eq(CacheKey[AccountingPeriod]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[AccountingPeriod]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))

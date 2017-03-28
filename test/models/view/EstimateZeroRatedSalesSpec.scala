@@ -30,18 +30,18 @@ class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
 
   val vatFinancials = VatFinancials(
     turnoverEstimate = turnover,
-    zeroRatedSalesEstimate = Some(estimateZeroRatedSales.zeroRatedSalesEstimate),
+    zeroRatedTurnoverEstimate = Some(estimateZeroRatedSales.zeroRatedTurnoverEstimate),
     reclaimVatOnMostReturns = true,
-    vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
+    accountingPeriods = VatAccountingPeriod(None, "monthly")
   )
 
   "toApi" should {
     "update VatFinancials with new EstimateZeroRatedSales" in {
       val updatedVatFinancials = VatFinancials(
         turnoverEstimate = turnover,
-        zeroRatedSalesEstimate = Some(estimateZeroRatedSales.zeroRatedSalesEstimate),
+        zeroRatedTurnoverEstimate = Some(estimateZeroRatedSales.zeroRatedTurnoverEstimate),
         reclaimVatOnMostReturns = true,
-        vatAccountingPeriod = VatAccountingPeriod(None, "monthly")
+        accountingPeriods = VatAccountingPeriod(None, "monthly")
       )
       ViewModelTransformer[EstimateZeroRatedSales, VatFinancials]
         .toApi(estimateZeroRatedSales, vatFinancials) shouldBe updatedVatFinancials

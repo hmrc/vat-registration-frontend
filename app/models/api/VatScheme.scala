@@ -19,23 +19,21 @@ package models.api
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
+
 case class VatScheme(
                       id: String,
                       tradingDetails: Option[VatTradingDetails] = None,
-                      vatChoice: Option[VatChoice] = None,
                       financials: Option[VatFinancials] = None,
-                      sicAndCompliance : Option[VatSicAndCompliance] =None
+                      vatSicAndCompliance: Option[VatSicAndCompliance] = None
                     )
 
 object VatScheme {
 
-  def blank(id: String): VatScheme = VatScheme(id, None, None, None,None)
-
-  implicit val format = (
+  implicit val format: OFormat[VatScheme] = (
     (__ \ "ID").format[String] and
-      (__ \ "trading-details").formatNullable[VatTradingDetails] and
-      (__ \ "vat-choice").formatNullable[VatChoice] and
+      (__ \ "tradingDetails").formatNullable[VatTradingDetails] and
       (__ \ "financials").formatNullable[VatFinancials] and
       (__ \ "vatSicAndCompliance").formatNullable[VatSicAndCompliance]
-    )  (VatScheme.apply, unlift(VatScheme.unapply))
+    ) (VatScheme.apply, unlift(VatScheme.unapply))
+
 }

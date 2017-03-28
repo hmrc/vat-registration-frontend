@@ -44,15 +44,10 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
     vrs.getVatScheme().map(registrationToSummary)
 
-  def registrationToSummary(vatScheme: VatScheme): Summary = {
-    val vatChoice = vatScheme.vatChoice.getOrElse(VatChoice())
-    val vatTradingDetails = vatScheme.tradingDetails.getOrElse(VatTradingDetails())
-    val vatFinancials = vatScheme.financials.getOrElse(VatFinancials.empty)
-    val vatSicAndCompliance = vatScheme.sicAndCompliance.getOrElse(VatSicAndCompliance.empty)
-
+  def registrationToSummary(vatScheme: VatScheme): Summary =
     Summary(Seq(
-        SummaryVatDetailsSectionBuilder(vatChoice, vatTradingDetails).section,
-        SummaryCompanyDetailsSectionBuilder(vatFinancials, vatSicAndCompliance).section
-      ))
-  }
+      SummaryVatDetailsSectionBuilder(vatScheme.tradingDetails.map(_.vatChoice), vatScheme.tradingDetails).section,
+      SummaryCompanyDetailsSectionBuilder(vatScheme.financials, vatScheme.vatSicAndCompliance).section
+    ))
+
 }

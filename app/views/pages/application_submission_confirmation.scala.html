@@ -1,5 +1,5 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
-@import  models.api.VatFinancials
+@import models.api.VatFinancials
 @(vatFinancials: VatFinancials)(implicit request: Request[_], messages: Messages)
 
 @pageScripts = {
@@ -48,8 +48,8 @@
     </div>
 
 
-    @if(vatFinancials.vatAccountingPeriod.periodStart.isDefined){
-        <div class="hidden"><span id="vatAccountPeriod">@vatFinancials.vatAccountingPeriod.periodStart.get</span> </div>
+    @if(vatFinancials.accountingPeriods.periodStart.isDefined){
+        <div class="hidden"><span id="vatAccountPeriod">@vatFinancials.accountingPeriods.periodStart.get</span> </div>
     }
 
 }

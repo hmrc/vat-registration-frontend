@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.view.vatChoice
+package models.view.vatTradingDetails
 
 import models.ApiModelTransformer
 import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
@@ -33,7 +33,7 @@ object TaxableTurnover {
   implicit val format = Json.format[TaxableTurnover]
 
   implicit val modelTransformer = ApiModelTransformer[TaxableTurnover] { (vs: VatScheme) =>
-    vs.vatChoice.map(_.necessity).collect {
+    vs.tradingDetails.map(_.vatChoice.necessity).collect {
       case NECESSITY_VOLUNTARY => TaxableTurnover(TAXABLE_NO)
       case NECESSITY_OBLIGATORY => TaxableTurnover(TAXABLE_YES)
     }

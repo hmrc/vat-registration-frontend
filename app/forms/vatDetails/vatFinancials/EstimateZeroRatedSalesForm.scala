@@ -22,7 +22,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 
 object EstimateZeroRatedSalesForm {
-  val ZERO_RATED_SALES_ESTIMATE: String = "zeroRatedSalesEstimate"
+  val ZERO_RATED_SALES_ESTIMATE: String = "zeroRatedTurnoverEstimate"
 
   val form = Form(
     mapping(

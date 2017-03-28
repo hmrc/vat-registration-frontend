@@ -18,44 +18,44 @@ package models.view
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatScheme, VatTradingDetails}
-import models.view.vatTradingDetails.TradingName
-import models.view.vatTradingDetails.TradingName._
+import models.view.vatTradingDetails.TradingNameView
+import models.view.vatTradingDetails.TradingNameView._
 import models.{ApiModelTransformer, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class TradingNameSpec extends UnitSpec with VatRegistrationFixture {
 
   "toString" should {
-    "TradingName with a trading name returns it when toString is called" in {
-      TradingName("", Some("Test Ltd")).toString shouldBe "Test Ltd"
+    "TradingNameView with a trading name returns it when toString is called" in {
+      TradingNameView("", Some("Test Ltd")).toString shouldBe "Test Ltd"
     }
 
-    "TradingName with an empty trading name returns empty string" in {
-      TradingName("", None).toString shouldBe ""
+    "TradingNameView with an empty trading name returns empty string" in {
+      TradingNameView("", None).toString shouldBe ""
     }
   }
 
   "toApi" should {
-    "update a VatTradingDetails a new TradingName" in {
-      val tradingName = TradingName(TradingName.TRADING_NAME_YES, Some("HOLIDAY INC"))
-      ViewModelTransformer[TradingName, VatTradingDetails]
+    "update a VatTradingDetails a new TradingNameView" in {
+      val tradingName = TradingNameView(TradingNameView.TRADING_NAME_YES, Some("HOLIDAY INC"))
+      ViewModelTransformer[TradingNameView, VatTradingDetails]
         .toApi(tradingName, validVatTradingDetails) shouldBe VatTradingDetails("HOLIDAY INC")
     }
   }
 
   "apply" should {
-    "extract a TradingName from a VatScheme" in {
-      ApiModelTransformer[TradingName].toViewModel(validVatScheme) shouldBe Some(validTradingName)
+    "extract a TradingNameView from a VatScheme" in {
+      ApiModelTransformer[TradingNameView].toViewModel(validVatScheme) shouldBe Some(validTradingName)
     }
 
-    "extract a TradingName from VatScheme with no trading name returns empty trading name" in {
+    "extract a TradingNameView from VatScheme with no trading name returns empty trading name" in {
       val vatSchemeEmptyTradingName = VatScheme(id = validRegId, tradingDetails = Some(VatTradingDetails()))
-      ApiModelTransformer[TradingName].toViewModel(vatSchemeEmptyTradingName) shouldBe Some(TradingName(yesNo = TRADING_NAME_NO, tradingName = None))
+      ApiModelTransformer[TradingNameView].toViewModel(vatSchemeEmptyTradingName) shouldBe Some(TradingNameView(yesNo = TRADING_NAME_NO, tradingName = None))
     }
 
-    "extract a TradingName from VatScheme with no VatTradingDetails returns empty trading name" in {
+    "extract a TradingNameView from VatScheme with no VatTradingDetails returns empty trading name" in {
       val vatSchemeEmptyTradingDetails = VatScheme(id = validRegId, tradingDetails = None)
-      ApiModelTransformer[TradingName].toViewModel(vatSchemeEmptyTradingDetails) shouldBe None
+      ApiModelTransformer[TradingNameView].toViewModel(vatSchemeEmptyTradingDetails) shouldBe None
     }
 
   }
