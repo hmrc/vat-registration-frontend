@@ -21,36 +21,31 @@ import models.api.{VatScheme, VatTradingDetails}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.TradingNameView._
 import models.{ApiModelTransformer, ViewModelTransformer}
+import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
-class TradingNameSpec extends UnitSpec with VatRegistrationFixture {
-
-  "toString" should {
-    "TradingNameView with a trading name returns it when toString is called" in {
-      TradingNameView("", Some("Test Ltd")).toString shouldBe "Test Ltd"
-    }
-
-    "TradingNameView with an empty trading name returns empty string" in {
-      TradingNameView("", None).toString shouldBe ""
-    }
-  }
+class TradingNameSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
   "toApi" should {
     "update a VatTradingDetails a new TradingNameView" in {
-      val tradingName = TradingNameView(TradingNameView.TRADING_NAME_YES, Some("HOLIDAY INC"))
-      ViewModelTransformer[TradingNameView, VatTradingDetails]
-        .toApi(tradingName, validVatTradingDetails) shouldBe VatTradingDetails("HOLIDAY INC")
+      val tn = Some("HOLIDAY INC")
+      val tradingName = TradingNameView(TradingNameView.TRADING_NAME_YES, tn)
+      inside(ViewModelTransformer[TradingNameView, VatTradingDetails].toApi(tradingName, validVatTradingDetails)) {
+        case td => td.tradingName.tradingName shouldBe tn
+      }
     }
   }
 
   "apply" should {
     "extract a TradingNameView from a VatScheme" in {
-      ApiModelTransformer[TradingNameView].toViewModel(validVatScheme) shouldBe Some(validTradingName)
+      val vm = ApiModelTransformer[TradingNameView].toViewModel(validVatScheme)
+      vm shouldBe Some(TradingNameView(TradingNameView.TRADING_NAME_YES, tradingName = Some(tradingName)))
     }
 
     "extract a TradingNameView from VatScheme with no trading name returns empty trading name" in {
-      val vatSchemeEmptyTradingName = VatScheme(id = validRegId, tradingDetails = Some(VatTradingDetails()))
-      ApiModelTransformer[TradingNameView].toViewModel(vatSchemeEmptyTradingName) shouldBe Some(TradingNameView(yesNo = TRADING_NAME_NO, tradingName = None))
+      val vatSchemeEmptyTradingName = VatScheme(id = validRegId, tradingDetails = Some(tradingDetails(tradingName = None)))
+      val expectedVM = Some(TradingNameView(yesNo = TRADING_NAME_NO, tradingName = None))
+      ApiModelTransformer[TradingNameView].toViewModel(vatSchemeEmptyTradingName) shouldBe expectedVM
     }
 
     "extract a TradingNameView from VatScheme with no VatTradingDetails returns empty trading name" in {

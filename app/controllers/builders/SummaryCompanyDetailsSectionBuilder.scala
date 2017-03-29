@@ -22,12 +22,16 @@ import models.view.vatFinancials.VatReturnFrequency
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 
-case class SummaryCompanyDetailsSectionBuilder(vatFinancials: Option[VatFinancials], vatSicAndCompliance: Option[VatSicAndCompliance])
+case class SummaryCompanyDetailsSectionBuilder
+(
+  vatFinancials: Option[VatFinancials] = None,
+  vatSicAndCompliance: Option[VatSicAndCompliance] = None
+)
   extends SummarySectionBuilder {
 
   def estimatedSalesValueRow: SummaryRow = SummaryRow(
     "companyDetails.estimatedSalesValue",
-    s"£${vatFinancials.map(_.turnoverEstimate.toString).getOrElse("")}",
+    s"£${vatFinancials.map(_.turnoverEstimate.toString).getOrElse("0")}",
     Some(controllers.userJourney.vatFinancials.routes.EstimateVatTurnoverController.show())
   )
 

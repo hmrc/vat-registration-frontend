@@ -32,7 +32,7 @@ class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
     turnoverEstimate = turnover,
     zeroRatedTurnoverEstimate = Some(estimateZeroRatedSales.zeroRatedTurnoverEstimate),
     reclaimVatOnMostReturns = true,
-    accountingPeriods = VatAccountingPeriod(None, "monthly")
+    accountingPeriods = monthlyAccountingPeriod
   )
 
   "toApi" should {
@@ -41,7 +41,7 @@ class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
         turnoverEstimate = turnover,
         zeroRatedTurnoverEstimate = Some(estimateZeroRatedSales.zeroRatedTurnoverEstimate),
         reclaimVatOnMostReturns = true,
-        accountingPeriods = VatAccountingPeriod(None, "monthly")
+        accountingPeriods = monthlyAccountingPeriod
       )
       ViewModelTransformer[EstimateZeroRatedSales, VatFinancials]
         .toApi(estimateZeroRatedSales, vatFinancials) shouldBe updatedVatFinancials

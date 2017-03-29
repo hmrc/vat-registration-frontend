@@ -25,9 +25,9 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class AccountingPeriodSpec extends UnitSpec with VatRegistrationFixture {
 
-  val accountingPeriods1 = VatAccountingPeriod(Some("jan_apr_jul_oct"), "quarterly")
-  val accountingPeriods2 = VatAccountingPeriod(Some("feb_may_aug_nov"), "quarterly")
-  val accountingPeriods3 = VatAccountingPeriod(Some("mar_jun_sep_dec"), "quarterly")
+  val accountingPeriods1 = VatAccountingPeriod(periodStart = Some("jan_apr_jul_oct"), frequency = "quarterly")
+  val accountingPeriods2 = VatAccountingPeriod(periodStart = Some("feb_may_aug_nov"), frequency = "quarterly")
+  val accountingPeriods3 = VatAccountingPeriod(periodStart = Some("mar_jun_sep_dec"), frequency = "quarterly")
   val turnover = 100L
 
   val vatFinancialsWithAccountingPeriod1 = VatFinancials(

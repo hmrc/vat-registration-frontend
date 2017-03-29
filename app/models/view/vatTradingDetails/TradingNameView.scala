@@ -23,11 +23,7 @@ import play.api.libs.json.Json
 case class TradingNameView(
                             yesNo: String,
                             tradingName: Option[String] = None
-                          ) {
-
-  override def toString: String = tradingName.getOrElse("")
-
-}
+                          )
 
 object TradingNameView {
 
@@ -41,8 +37,8 @@ object TradingNameView {
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
     vs.tradingDetails.map {
-      case VatTradingDetails(_, TradingName(sel, tn@Some(_))) =>
-        TradingNameView(if (sel) TRADING_NAME_YES else TRADING_NAME_NO, tn)
+      case VatTradingDetails(_, TradingName(sel, Some(tn))) =>
+        TradingNameView(if (sel) TRADING_NAME_YES else TRADING_NAME_NO, Some(tn))
       case _ => TradingNameView(TRADING_NAME_NO)
     }
   }

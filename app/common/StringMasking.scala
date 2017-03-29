@@ -18,11 +18,11 @@ package common
 
 object StringMasking {
 
-  implicit class Interpolator(val s: String) extends AnyVal {
+  implicit class MaskedStringConverter(val s: String) extends AnyVal {
 
     def mask(n: Int, char: Char = '*'): String = s.length match {
-      case len if n < len => (char.toString * n) + s.substring(n)
-      case _ => char.toString * n
+      case len if n <= len => (char.toString * n) + s.substring(n)
+      case len => char.toString * len
     }
 
   }
