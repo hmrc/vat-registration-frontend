@@ -22,31 +22,20 @@ import fixtures.VatRegistrationFixture
 import models.ApiModelTransformer
 import models.api.{VatChoice, VatScheme}
 import models.view.vatTradingDetails.TaxableTurnover
+import models.view.vatTradingDetails.TaxableTurnover._
 import uk.gov.hmrc.play.test.UnitSpec
 
 class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
     "convert a VatChoice (Obligatory) to view model" in {
-//      val vatSchemeObligatory = VatScheme(
-//        validRegId,
-//        vatChoice = Some(VatChoice(
-//          LocalDate.now(),
-//          VatChoice.NECESSITY_OBLIGATORY
-//        ))
-//      )
-//      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeObligatory) shouldBe Some(TaxableTurnover(TAXABLE_YES))
+      val vatSchemeObligatory = vatScheme(vatTradingDetails = Some(tradingDetails(necessity = VatChoice.NECESSITY_OBLIGATORY)))
+      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeObligatory) shouldBe Some(TaxableTurnover(TAXABLE_YES))
     }
 
     "convert a VatChoice (Voluntary) to view model" in {
-//      val vatSchemeVoluntary = VatScheme(
-//        validRegId,
-//        vatChoice = Some(VatChoice(
-//          LocalDate.now(),
-//          VatChoice.NECESSITY_VOLUNTARY
-//        ))
-//      )
-//      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe Some(TaxableTurnover(TAXABLE_NO))
+      val vatSchemeVoluntary = vatScheme(vatTradingDetails = Some(tradingDetails(necessity = VatChoice.NECESSITY_VOLUNTARY)))
+      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe Some(TaxableTurnover(TAXABLE_NO))
     }
 
     "convert an invalid VatChoice to empty view model" in {

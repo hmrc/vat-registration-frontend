@@ -111,26 +111,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     }
   }
 
-  "Calling submitVatChoice" should {
-    "return a success response when a VatChoice is submitted" in new Setup {
-      mockFetchRegId(validRegId)
-
-      when(mockS4LService.fetchAndGet[StartDateView]()(Matchers.eq(S4LKey[StartDateView]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(StartDateView(dateType = StartDateView.SPECIFIC_DATE, date = someTestDate))))
-
-      when(mockS4LService.fetchAndGet[VoluntaryRegistration]()(Matchers.eq(S4LKey[VoluntaryRegistration]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES))))
-
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(validVatScheme))
-
-      when(mockRegConnector.upsertVatChoice(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(validVatChoice))
-
-      //      whenReady(service.submitVatChoice())(_ mustBe validVatChoice)
-    }
-  }
-
   "Calling submitTradingDetails" should {
     "return a success response when VatTradingDetails is submitted" in new Setup {
       mockFetchRegId(validRegId)
@@ -264,12 +244,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(emptyVatScheme))
       whenReady(service.submitTradingDetails())(_ mustBe mergedVatTradingDetails)
     }
-
-    "submitVatChoice should process the submission even if VatScheme does not contain a VatFinancials object" in new Setup {
-      //      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatScheme]]()))
-      //        .thenReturn(Future.successful(emptyVatScheme))
-      //      whenReady(service.submitVatChoice())(_ mustBe validVatChoice)
-    }
-
+    
   }
 }

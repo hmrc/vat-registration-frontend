@@ -18,7 +18,7 @@ package models.view.vatTradingDetails
 
 import java.time.LocalDate
 
-import models.api.{VatChoice, VatScheme, VatStartDate, VatTradingDetails}
+import models.api.{VatScheme, VatStartDate, VatTradingDetails}
 import models.{ApiModelTransformer, DateModel, ViewModelTransformer}
 import play.api.libs.json.Json
 
@@ -48,8 +48,8 @@ object StartDateView {
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[StartDateView] { vs: VatScheme =>
-    vs.tradingDetails.map {
-      case VatTradingDetails(VatChoice(_, VatStartDate(sel, date@Some(_))), _) => StartDateView(sel, date)
+    vs.tradingDetails.map(_.vatChoice.vatStartDate).collect {
+      case VatStartDate(dateType, d@_) => StartDateView(dateType, d)
     }
   }
 

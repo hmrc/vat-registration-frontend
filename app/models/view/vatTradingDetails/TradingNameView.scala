@@ -37,8 +37,8 @@ object TradingNameView {
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
     vs.tradingDetails.map {
-      case VatTradingDetails(_, TradingName(sel, Some(tn))) =>
-        TradingNameView(if (sel) TRADING_NAME_YES else TRADING_NAME_NO, Some(tn))
+      case VatTradingDetails(_, TradingName(_, Some(tn))) =>
+        TradingNameView(TRADING_NAME_YES, Some(tn))
       case _ => TradingNameView(TRADING_NAME_NO)
     }
   }

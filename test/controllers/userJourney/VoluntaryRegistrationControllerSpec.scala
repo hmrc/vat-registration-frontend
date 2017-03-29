@@ -130,7 +130,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
   s"POST ${vatChoice.routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected Yes" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES))))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration.yes)))
 
       when(mockS4LService.saveForm[VoluntaryRegistration](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
@@ -140,7 +140,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/start-date"
+          redirectLocation(response).getOrElse("") mustBe s"$contextRoot/start-date"
       }
 
     }
@@ -149,7 +149,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
   s"POST ${vatChoice.routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected No" should {
 
     "redirect to the welcome page" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration(VoluntaryRegistration.REGISTER_NO))))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration.no)))
 
       when(mockS4LService.clear()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validHttpResponse))
       when(mockS4LService.saveForm[VoluntaryRegistration](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -162,7 +162,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}"
+          redirectLocation(response).getOrElse("") mustBe s"$contextRoot"
       }
 
     }
