@@ -19,10 +19,9 @@ package models.view
 import java.time.LocalDate
 
 import fixtures.VatRegistrationFixture
-import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
-import models.api.{VatChoice, VatScheme, VatTradingDetails}
+import models.api.VatTradingDetails
 import models.view.vatTradingDetails.StartDateView
-import models.{ApiModelTransformer, DateModel, ViewModelTransformer}
+import models.{DateModel, ViewModelTransformer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -69,31 +68,11 @@ class StartDateViewSpec extends UnitSpec with VatRegistrationFixture with Inside
       }
     }
 
-    "use DEFAULT date when no date present" in {
-//      val vatChoice = VatChoice(newStartDate.date.get, NECESSITY_OBLIGATORY)
-
-//      ViewModelTransformer[StartDateView, VatChoice]
-//        .toApi(StartDateView("any", None), vatChoice) shouldBe vatChoice.copy(startDate = StartDateView.DEFAULT_DATE)
-    }
-  }
-
-  "apply" should {
-    "extract a StartDate from a VatScheme" in {
-//      val vatChoice = VatChoice(startDate.date.get, NECESSITY_VOLUNTARY)
-//      val vatScheme = VatScheme(id = validRegId, vatChoice = Some(vatChoice))
-//      ApiModelTransformer[StartDateView].toViewModel(vatScheme) shouldBe Some(startDate)
-    }
-
-    "extract a default StartDate from a VatScheme that has no VatChoice " in {
-//      val vatScheme = VatScheme(id = validRegId, vatChoice = None)
-//      ApiModelTransformer[StartDateView].toViewModel(vatScheme) shouldBe None
-    }
-  }
-
-  //TODO this is testing a TODO'ed piece of code - remove asap
-  "fromLocalDate" should {
-    "craete a COMPANY_REGISTRATION_DATE StartDate if input LocalDate is 1/1/1970" in {
-//      StartDateView.fromLocalDate(LocalDate.of(1970, 1, 1)) shouldBe StartDateView(StartDateView.COMPANY_REGISTRATION_DATE)
+    "when no date present, StardDateView contains date type selection" in {
+      val c = StartDateView("from S4L", None)
+      val g = tradingDetails()
+      val transformed = ViewModelTransformer[StartDateView, VatTradingDetails].toApi(c, g)
+      transformed shouldBe g.copy(vatChoice = g.vatChoice.copy(vatStartDate = g.vatChoice.vatStartDate.copy(selection = "from S4L")))
     }
   }
 

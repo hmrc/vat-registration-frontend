@@ -103,17 +103,19 @@ trait VatRegistrationFixture {
   )
 
   def vatSicAndCompliance(
-                        activityDescription: String = "Some business activity"
-                      ): VatSicAndCompliance =
-    VatSicAndCompliance(businessDescription = activityDescription)
+                           activityDescription: String = "Some business activity",
+                           culturalComplianceSection: Option[VatComplianceCultural] = Some(VatComplianceCultural(notForProfit = false))
+                         ): VatSicAndCompliance =
+    VatSicAndCompliance(businessDescription = activityDescription, culturalCompliance = culturalComplianceSection)
 
 
   def vatScheme(
                  id: String = validRegId,
+                 vatTradingDetails: Option[VatTradingDetails] = None,
                  sicAndCompliance: Option[VatSicAndCompliance] = None
                ): VatScheme = VatScheme(
     id = id,
-    tradingDetails = Some(tradingDetails()),
+    tradingDetails = vatTradingDetails,
     vatSicAndCompliance = sicAndCompliance
   )
 

@@ -24,7 +24,7 @@ import models.{ApiModelTransformer, ViewModelTransformer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
-class TradingNameSpec extends UnitSpec with VatRegistrationFixture with Inside {
+class TradingNameViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
   "toApi" should {
     "update a VatTradingDetails a new TradingNameView" in {

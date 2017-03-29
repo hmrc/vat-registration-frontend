@@ -32,12 +32,9 @@ object CulturalComplianceQ1 {
   implicit val format = Json.format[CulturalComplianceQ1]
 
   implicit val modelTransformer = ApiModelTransformer[CulturalComplianceQ1] { (vs: VatScheme) =>
-    for {
-      compliance <- vs.vatSicAndCompliance
-      cultural <- compliance.culturalCompliance
-      b = cultural.notForProfit
-    } yield
-      CulturalComplianceQ1(if (b) NOT_PROFIT_YES else NOT_PROFIT_NO)
+    vs.vatSicAndCompliance.flatMap(_.culturalCompliance).map { q1 =>
+      CulturalComplianceQ1(if (q1.notForProfit) NOT_PROFIT_YES else NOT_PROFIT_NO)
+    }
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: CulturalComplianceQ1, g: VatSicAndCompliance) =>
