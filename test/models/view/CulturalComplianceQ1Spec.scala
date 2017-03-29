@@ -18,17 +18,15 @@ package models.view
 
 import fixtures.VatRegistrationFixture
 import models.ApiModelTransformer
-import models.api.VatScheme
 import models.view.vatFinancials.CompanyBankAccount
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CulturalComplianceQ1Spec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
-    val vatScheme = VatScheme(validRegId)
 
     "convert VatScheme without SicAndCompliance to empty view model" in {
-      val vs = vatScheme.copy(sicAndCompliance = None)
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(activityDescription = "")))
       ApiModelTransformer[CompanyBankAccount].toViewModel(vs) shouldBe None
     }
   }

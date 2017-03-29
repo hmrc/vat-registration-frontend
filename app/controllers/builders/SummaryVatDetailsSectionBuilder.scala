@@ -21,12 +21,12 @@ import java.time.format.DateTimeFormatter
 import models.api.{VatChoice, VatStartDate, VatTradingDetails}
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryVatDetailsSectionBuilder(vatChoice: Option[VatChoice], vatTradingDetails: Option[VatTradingDetails])
+case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingDetails] = None)
   extends SummarySectionBuilder {
 
   def taxableTurnoverRow: SummaryRow = SummaryRow(
     "vatDetails.taxableTurnover",
-    vatChoice.collect {
+    vatTradingDetails.map(_.vatChoice).collect {
       case VatChoice(VatChoice.NECESSITY_VOLUNTARY, _) => "app.common.no"
     }.getOrElse("app.common.yes"),
     Some(controllers.userJourney.vatChoice.routes.TaxableTurnoverController.show())
@@ -34,10 +34,10 @@ case class SummaryVatDetailsSectionBuilder(vatChoice: Option[VatChoice], vatTrad
 
   def necessityRow: SummaryRow = SummaryRow(
     "vatDetails.necessity",
-    vatChoice.collect {
+    vatTradingDetails.map(_.vatChoice).collect {
       case VatChoice(VatChoice.NECESSITY_VOLUNTARY, _) => "app.common.yes"
     }.getOrElse("app.common.no"),
-    vatChoice.collect {
+    vatTradingDetails.map(_.vatChoice).collect {
       case VatChoice(VatChoice.NECESSITY_VOLUNTARY, _) =>
         controllers.userJourney.vatChoice.routes.VoluntaryRegistrationController.show()
     }
@@ -47,10 +47,10 @@ case class SummaryVatDetailsSectionBuilder(vatChoice: Option[VatChoice], vatTrad
 
   def startDateRow: SummaryRow = SummaryRow(
     "vatDetails.startDate",
-    vatChoice.collect {
+    vatTradingDetails.map(_.vatChoice).collect {
       case VatChoice(VatChoice.NECESSITY_VOLUNTARY, VatStartDate(_, Some(date))) => date.format(presentationFormatter)
     }.getOrElse("pages.summary.vatDetails.mandatoryStartDate"),
-    vatChoice.collect {
+    vatTradingDetails.map(_.vatChoice).collect {
       case VatChoice(VatChoice.NECESSITY_VOLUNTARY, _) => controllers.userJourney.vatChoice.routes.StartDateController.show()
     }
   )
@@ -65,7 +65,7 @@ case class SummaryVatDetailsSectionBuilder(vatChoice: Option[VatChoice], vatTrad
     id = "vatDetails",
     Seq(
       (taxableTurnoverRow, true),
-      (necessityRow, vatChoice.exists(_.necessity == VatChoice.NECESSITY_VOLUNTARY)),
+      (necessityRow, vatTradingDetails.map(_.vatChoice).exists(_.necessity == VatChoice.NECESSITY_VOLUNTARY)),
       (startDateRow, true),
       (tradingNameRow, true)
     )

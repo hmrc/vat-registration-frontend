@@ -27,7 +27,4 @@ object VatAccountingPeriod {
 
   implicit val format: OFormat[VatAccountingPeriod] = Json.format[VatAccountingPeriod]
 
-  // TODO remove
-  val empty: VatAccountingPeriod = VatAccountingPeriod("")
-
 }

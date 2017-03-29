@@ -22,7 +22,7 @@ import models.api.{VatComplianceCultural, _}
 import models.view._
 import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
 import models.view.vatFinancials._
-import models.view.vatTradingDetails.{StartDateView, TradingNameView}
+import models.view.vatTradingDetails.StartDateView
 import play.api.http.Status._
 import uk.gov.hmrc.play.http._
 
@@ -42,21 +42,21 @@ trait VatRegistrationFixture {
   val validHttpResponse = HttpResponse(OK)
 
   val validRegId = "VAT123456"
-
-  val vatStartDate = VatStartDate(StartDateView.SPECIFIC_DATE, Some(LocalDate.of(2017, 3, 21)))
+  val someTestDate = Some(LocalDate.of(2017, 3, 21))
+  val vatStartDate = VatStartDate(StartDateView.SPECIFIC_DATE, someTestDate)
 
   val validVatChoice = VatChoice(VatChoice.NECESSITY_VOLUNTARY, vatStartDate)
 
-  private val tradingName ="ACME INC"
+  val tradingName: String = "ACME INC"
   val validTradingName = TradingName(selection = true, tradingName = Some(tradingName))
   val validVatTradingDetails = VatTradingDetails(vatChoice = validVatChoice, tradingName = validTradingName)
 
   private val turnoverEstimate = 50000L
   private val estimatedSales = 60000L
 
-  private val sortCode = "10-10-10"
-  private val accountNumber = "12345678"
-  private val businessActivityDescription = "description"
+  val sortCode = "12-34-56"
+  val accountNumber = "12345678"
+  val businessActivityDescription = "description"
 
   val validEstimateVatTurnover = EstimateVatTurnover(turnoverEstimate)
   val validEstimateZeroRatedSales = EstimateZeroRatedSales(estimatedSales)
@@ -64,13 +64,15 @@ trait VatRegistrationFixture {
   val validVatReturnFrequency = VatReturnFrequency(VatReturnFrequency.QUARTERLY)
   val validAccountingPeriod = AccountingPeriod(AccountingPeriod.MAR_JUN_SEP_DEC)
   val validBankAccountDetails = CompanyBankAccountDetails(tradingName, accountNumber, sortCode)
+  val monthlyAccountingPeriod = VatAccountingPeriod(frequency = "monthly")
+  val validBankAccount = VatBankAccount(tradingName, accountNumber, sortCode)
 
   val validVatFinancials = VatFinancials(
-    bankAccount = Some(VatBankAccount(tradingName, accountNumber, sortCode)),
+    bankAccount = Some(validBankAccount),
     turnoverEstimate = turnoverEstimate,
     zeroRatedTurnoverEstimate = Some(estimatedSales),
     reclaimVatOnMostReturns = true,
-    accountingPeriods = VatAccountingPeriod("monthly")
+    accountingPeriods = monthlyAccountingPeriod
   )
 
   val validSicAndCompliance = VatSicAndCompliance(
@@ -80,19 +82,56 @@ trait VatRegistrationFixture {
 
   val emptyVatScheme = VatScheme(validRegId)
 
+  def tradingDetails(
+                      necessity: String = VatChoice.NECESSITY_VOLUNTARY,
+                      startDateSelection: String = StartDateView.COMPANY_REGISTRATION_DATE,
+                      startDate: Option[LocalDate] = None,
+                      tradingNameSelection: Boolean = true,
+                      tradingName: Option[String] = Some("ACME Ltd.")
+                    ): VatTradingDetails = VatTradingDetails(
+    vatChoice = VatChoice(
+      necessity = necessity,
+      vatStartDate = VatStartDate(
+        selection = startDateSelection,
+        startDate = startDate
+      )
+    ),
+    tradingName = TradingName(
+      selection = tradingNameSelection,
+      tradingName = tradingName
+    )
+  )
+
+  def vatSicAndCompliance(
+                        activityDescription: String = "Some business activity"
+                      ): VatSicAndCompliance =
+    VatSicAndCompliance(businessDescription = activityDescription)
+
+
+  def vatScheme(
+                 id: String = validRegId,
+                 sicAndCompliance: Option[VatSicAndCompliance] = None
+               ): VatScheme = VatScheme(
+    id = id,
+    tradingDetails = Some(tradingDetails()),
+    vatSicAndCompliance = sicAndCompliance
+  )
+
   val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
     id = validRegId,
-    tradingDetails = None,
-    vatChoice = None,
     financials = Some(
-      VatFinancials(None, 0L, None, reclaimVatOnMostReturns = false, VatAccountingPeriod(None, VatReturnFrequency.MONTHLY))
+      VatFinancials(
+        bankAccount = None,
+        turnoverEstimate = 0L,
+        zeroRatedTurnoverEstimate = None,
+        reclaimVatOnMostReturns = false,
+        accountingPeriods = VatAccountingPeriod(VatReturnFrequency.MONTHLY))
     )
   )
 
   val validVatScheme = VatScheme(
     id = validRegId,
     tradingDetails = Some(validVatTradingDetails),
-    vatChoice = Some(validVatChoice),
     financials = Some(validVatFinancials)
   )
 

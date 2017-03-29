@@ -88,7 +88,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] =
     submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance map { case res@_ => Success }
 
-  private def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
+  private[services] def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
 
     // TODO: review this line (...(vs.financials.getOrElse(VatFinancials.empty))
     def mergeWithS4L(vs: VatScheme) =
@@ -115,7 +115,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
     } yield response
   }
 
-  private def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[VatSicAndCompliance] = {
+  private[services] def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[VatSicAndCompliance] = {
     def mergeWithS4L(vs: VatScheme) =
       (s4l[BusinessActivityDescription]() |@|
         s4l[CulturalComplianceQ1]()).map(S4LVatSicAndCompliance).map {
@@ -132,7 +132,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
     } yield response
   }
 
-  private def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
+  private[services] def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
     def mergeWithS4L(vs: VatScheme) =
       (s4l[TradingNameView]() |@|
         s4l[StartDateView]() |@|
