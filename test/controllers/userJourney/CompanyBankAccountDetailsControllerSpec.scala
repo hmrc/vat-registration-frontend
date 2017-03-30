@@ -21,7 +21,7 @@ import controllers.userJourney.vatFinancials.CompanyBankAccountDetailsController
 import fixtures.VatRegistrationFixture
 import forms.vatDetails.vatFinancials.SortCode
 import helpers.VatRegSpec
-import models.CacheKey
+import models.S4LKey
 import models.view.vatFinancials.CompanyBankAccountDetails
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -57,7 +57,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
 
     "return HTML when there's a CompanyBankAccountDetails model in S4L" in {
       when(mockS4LService.fetchAndGet[CompanyBankAccountDetails]()
-        (Matchers.eq(CacheKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validCompanyBankAccountDetails)))
 
       callAuthorised(CompanyBankAccountDetailsController.show(), mockAuthConnector) {
@@ -71,7 +71,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
 
     "return HTML when there's invalid sort code stored in S4L" in {
       when(mockS4LService.fetchAndGet[CompanyBankAccountDetails]()
-        (Matchers.eq(CacheKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validCompanyBankAccountDetails.copy(sortCode = "foo--bar"))))
 
       callAuthorised(CompanyBankAccountDetailsController.show(), mockAuthConnector) {
@@ -85,7 +85,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[CompanyBankAccountDetails]()
-        (Matchers.eq(CacheKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
@@ -103,7 +103,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       when(mockS4LService.fetchAndGet[CompanyBankAccountDetails]()
-        (Matchers.eq(CacheKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
@@ -136,7 +136,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(validCompanyBankAccountDetails)))
 
       when(mockS4LService.saveForm[CompanyBankAccountDetails]
-        (Matchers.any())(Matchers.eq(CacheKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
+        (Matchers.any())(Matchers.eq(S4LKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapCompanyBankAccount))
 
       AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountDetailsController.submit(), mockAuthConnector,
@@ -154,7 +154,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(validCompanyBankAccountDetails)))
 
       when(mockS4LService.saveForm[CompanyBankAccountDetails]
-        (Matchers.any())(Matchers.eq(CacheKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
+        (Matchers.any())(Matchers.eq(S4LKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapCompanyBankAccount))
 
       val invalidBankAccountFormData = validBankAccountFormData.drop(1)

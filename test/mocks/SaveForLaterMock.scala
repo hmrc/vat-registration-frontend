@@ -17,7 +17,7 @@
 package mocks
 
 import connectors._
-import models.CacheKey
+import models.S4LKey
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
@@ -48,8 +48,8 @@ trait SaveForLaterMock {
       .thenReturn(Future.successful(HttpResponse(200)))
   }
 
-  def mockS4LSaveForm[T:CacheKey](cacheMap: CacheMap, mockS4LConnector: S4LConnector = mockS4LConnector) : OngoingStubbing[Future[CacheMap]] = {
-    when(mockS4LConnector.saveForm[T](Matchers.anyString(), Matchers.contains(CacheKey[T].cacheKey),
+  def mockS4LSaveForm[T:S4LKey](cacheMap: CacheMap, mockS4LConnector: S4LConnector = mockS4LConnector) : OngoingStubbing[Future[CacheMap]] = {
+    when(mockS4LConnector.saveForm[T](Matchers.anyString(), Matchers.contains(S4LKey[T].key),
       Matchers.any[T]())(Matchers.any[HeaderCarrier](), Matchers.any[Format[T]]()))
       .thenReturn(Future.successful(cacheMap))
   }

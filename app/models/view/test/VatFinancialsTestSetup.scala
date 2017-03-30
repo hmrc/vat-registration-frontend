@@ -25,7 +25,7 @@ case class VatFinancialsTestSetup(companyBankAccountChoice: Option[String],
                                   sortCode: Option[String],
                                   estimateVatTurnover: Option[String],
                                   zeroRatedSalesChoice: Option[String],
-                                  zeroRatedSalesEstimate: Option[String],
+                                  zeroRatedTurnoverEstimate: Option[String],
                                   vatChargeExpectancyChoice: Option[String],
                                   vatReturnFrequency: Option[String],
                                   accountingPeriod: Option[String])

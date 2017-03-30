@@ -21,7 +21,7 @@ import javax.inject.{Inject, Singleton}
 import auth.VatTaxRegime
 import cats.data.OptionT
 import config.FrontendAuthConnector
-import models.{ApiModelTransformer, CacheKey}
+import models.{ApiModelTransformer, S4LKey}
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Format
@@ -60,7 +60,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  protected def viewModel[T: ApiModelTransformer : CacheKey : Format]
+  protected def viewModel[T: ApiModelTransformer : S4LKey : Format]
   ()
   (implicit s4l: S4LService, vrs: VatRegistrationService, hc: HeaderCarrier): OptionT[Future, T] =
     OptionT(s4l.fetchAndGet[T]()).orElseF(vrs.getVatScheme() map ApiModelTransformer[T].toViewModel)

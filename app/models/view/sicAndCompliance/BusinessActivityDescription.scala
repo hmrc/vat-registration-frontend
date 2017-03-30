@@ -27,7 +27,7 @@ object BusinessActivityDescription {
   implicit val format = Json.format[BusinessActivityDescription]
 
   implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
-    vs.sicAndCompliance.map(_.businessDescription).collect {
+    vs.vatSicAndCompliance.map(_.businessDescription).collect {
       case description => BusinessActivityDescription(description)
     }
   }

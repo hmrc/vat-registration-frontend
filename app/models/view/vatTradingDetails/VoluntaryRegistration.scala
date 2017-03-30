@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package models.view.vatChoice
+package models.view.vatTradingDetails
 
-import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
-import models.api.{VatChoice, VatScheme}
+import models.api.VatChoice.NECESSITY_VOLUNTARY
+import models.api.{VatChoice, VatScheme, VatTradingDetails}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
@@ -28,18 +28,23 @@ object VoluntaryRegistration {
   val REGISTER_YES = "REGISTER_YES"
   val REGISTER_NO = "REGISTER_NO"
 
+  val yes = VoluntaryRegistration(REGISTER_YES)
+  val no = VoluntaryRegistration(REGISTER_NO)
+
   val valid = (item: String) => List(REGISTER_YES, REGISTER_NO).contains(item.toUpperCase)
 
   implicit val format = Json.format[VoluntaryRegistration]
 
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
-    vs.vatChoice.map(_.necessity).collect {
+    vs.tradingDetails.map(_.vatChoice.necessity).collect {
       case NECESSITY_VOLUNTARY => VoluntaryRegistration(REGISTER_YES)
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: VoluntaryRegistration, g: VatChoice) =>
-    g.copy(necessity = if (REGISTER_YES == c.yesNo) NECESSITY_VOLUNTARY else NECESSITY_OBLIGATORY)
+  implicit val viewModelTransformer = ViewModelTransformer { (c: VoluntaryRegistration, g: VatTradingDetails) =>
+    g.copy(vatChoice = g.vatChoice.copy(
+      necessity = if (c.yesNo == REGISTER_YES) VatChoice.NECESSITY_VOLUNTARY else VatChoice.NECESSITY_OBLIGATORY
+    ))
   }
 
 }

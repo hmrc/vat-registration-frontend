@@ -16,7 +16,7 @@
 
 package connectors
 
-import models.view.vatChoice.StartDate
+import models.view.vatTradingDetails.StartDateView
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
@@ -38,16 +38,16 @@ class S4LConnectorSpec extends UnitSpec with MockitoSugar {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val sDateModel = StartDate(StartDate.COMPANY_REGISTRATION_DATE, None)
+  val sDateModel = StartDateView(StartDateView.COMPANY_REGISTRATION_DATE, None)
   val cacheMap = CacheMap("", Map("" -> Json.toJson(sDateModel)))
 
   "Fetching from save4later" should {
     "return the correct model" in {
 
-      when(mockShortLivedCache.fetchAndGetEntry[StartDate](Matchers.anyString(), Matchers.anyString())(Matchers.any(), Matchers.any()))
+      when(mockShortLivedCache.fetchAndGetEntry[StartDateView](Matchers.anyString(), Matchers.anyString())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(sDateModel)))
 
-      val result = S4LConnectorTest.fetchAndGet[StartDate]("", "")
+      val result = S4LConnectorTest.fetchAndGet[StartDateView]("", "")
       await(result) shouldBe Some(sDateModel)
     }
   }
@@ -56,10 +56,10 @@ class S4LConnectorSpec extends UnitSpec with MockitoSugar {
     "save the model" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(sDateModel)))
 
-      when(mockShortLivedCache.cache[StartDate](Matchers.anyString(), Matchers.anyString(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockShortLivedCache.cache[StartDateView](Matchers.anyString(), Matchers.anyString(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      val result = S4LConnectorTest.saveForm[StartDate]("", "", sDateModel)
+      val result = S4LConnectorTest.saveForm[StartDateView]("", "", sDateModel)
       await(result) shouldBe returnCacheMap
     }
   }

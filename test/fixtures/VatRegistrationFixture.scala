@@ -18,13 +18,11 @@ package fixtures
 
 import java.time.LocalDate
 
-import models.api._
-import models.api.compliance.VatCulturalCompliance
+import models.api.{VatComplianceCultural, _}
 import models.view._
 import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
-import models.view.vatChoice.StartDate
 import models.view.vatFinancials._
-import models.view.vatTradingDetails.TradingName
+import models.view.vatTradingDetails.StartDateView
 import play.api.http.Status._
 import uk.gov.hmrc.play.http._
 
@@ -44,25 +42,21 @@ trait VatRegistrationFixture {
   val validHttpResponse = HttpResponse(OK)
 
   val validRegId = "VAT123456"
+  val someTestDate = Some(LocalDate.of(2017, 3, 21))
+  val vatStartDate = VatStartDate(StartDateView.SPECIFIC_DATE, someTestDate)
 
-  val validStartDate = StartDate(StartDate.SPECIFIC_DATE, Some(LocalDate.of(2017, 3, 21)))
+  val validVatChoice = VatChoice(VatChoice.NECESSITY_VOLUNTARY, vatStartDate)
 
-  val validVatChoice = VatChoice(
-    validStartDate.date.get,
-    VatChoice.NECESSITY_VOLUNTARY
-  )
-
-  private val tradingName = "ACME INC"
-  val validVatTradingDetails = VatTradingDetails(tradingName)
-  val validTradingName = TradingName(TradingName.TRADING_NAME_YES, Some(tradingName))
+  val tradingName: String = "ACME INC"
+  val validTradingName = TradingName(selection = true, tradingName = Some(tradingName))
+  val validVatTradingDetails = VatTradingDetails(vatChoice = validVatChoice, tradingName = validTradingName)
 
   private val turnoverEstimate = 50000L
   private val estimatedSales = 60000L
 
-  private val sortCode = "10-10-10"
-  private val accountNumber = "12345678"
-  private val period = "monthly"
-  private val businessActivityDescription = "description"
+  val sortCode = "12-34-56"
+  val accountNumber = "12345678"
+  val businessActivityDescription = "description"
 
   val validEstimateVatTurnover = EstimateVatTurnover(turnoverEstimate)
   val validEstimateZeroRatedSales = EstimateZeroRatedSales(estimatedSales)
@@ -70,13 +64,15 @@ trait VatRegistrationFixture {
   val validVatReturnFrequency = VatReturnFrequency(VatReturnFrequency.QUARTERLY)
   val validAccountingPeriod = AccountingPeriod(AccountingPeriod.MAR_JUN_SEP_DEC)
   val validBankAccountDetails = CompanyBankAccountDetails(tradingName, accountNumber, sortCode)
+  val monthlyAccountingPeriod = VatAccountingPeriod(frequency = "monthly")
+  val validBankAccount = VatBankAccount(tradingName, accountNumber, sortCode)
 
   val validVatFinancials = VatFinancials(
-    bankAccount = Some(VatBankAccount(tradingName, accountNumber, sortCode)),
+    bankAccount = Some(validBankAccount),
     turnoverEstimate = turnoverEstimate,
-    zeroRatedSalesEstimate = Some(estimatedSales),
+    zeroRatedTurnoverEstimate = Some(estimatedSales),
     reclaimVatOnMostReturns = true,
-    vatAccountingPeriod = VatAccountingPeriod(None, period)
+    accountingPeriods = monthlyAccountingPeriod
   )
 
   val validSicAndCompliance = VatSicAndCompliance(
@@ -84,26 +80,65 @@ trait VatRegistrationFixture {
     culturalCompliance = None
   )
 
-  val emptyVatScheme = VatScheme.blank(validRegId)
+  val emptyVatScheme = VatScheme(validRegId)
+
+  def tradingDetails(
+                      necessity: String = VatChoice.NECESSITY_VOLUNTARY,
+                      startDateSelection: String = StartDateView.COMPANY_REGISTRATION_DATE,
+                      startDate: Option[LocalDate] = None,
+                      tradingNameSelection: Boolean = true,
+                      tradingName: Option[String] = Some("ACME Ltd.")
+                    ): VatTradingDetails = VatTradingDetails(
+    vatChoice = VatChoice(
+      necessity = necessity,
+      vatStartDate = VatStartDate(
+        selection = startDateSelection,
+        startDate = startDate
+      )
+    ),
+    tradingName = TradingName(
+      selection = tradingNameSelection,
+      tradingName = tradingName
+    )
+  )
+
+  def vatSicAndCompliance(
+                           activityDescription: String = "Some business activity",
+                           culturalComplianceSection: Option[VatComplianceCultural] = Some(VatComplianceCultural(notForProfit = false))
+                         ): VatSicAndCompliance =
+    VatSicAndCompliance(businessDescription = activityDescription, culturalCompliance = culturalComplianceSection)
+
+
+  def vatScheme(
+                 id: String = validRegId,
+                 vatTradingDetails: Option[VatTradingDetails] = None,
+                 sicAndCompliance: Option[VatSicAndCompliance] = None
+               ): VatScheme = VatScheme(
+    id = id,
+    tradingDetails = vatTradingDetails,
+    vatSicAndCompliance = sicAndCompliance
+  )
 
   val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
     id = validRegId,
-    tradingDetails = None,
-    vatChoice = None,
     financials = Some(
-      VatFinancials(None, 0L, None, reclaimVatOnMostReturns = false, VatAccountingPeriod(None, VatReturnFrequency.MONTHLY))
+      VatFinancials(
+        bankAccount = None,
+        turnoverEstimate = 0L,
+        zeroRatedTurnoverEstimate = None,
+        reclaimVatOnMostReturns = false,
+        accountingPeriods = VatAccountingPeriod(VatReturnFrequency.MONTHLY))
     )
   )
 
   val validVatScheme = VatScheme(
     id = validRegId,
     tradingDetails = Some(validVatTradingDetails),
-    vatChoice = Some(validVatChoice),
     financials = Some(validVatFinancials)
   )
 
   val validBusinessActivityDescription = BusinessActivityDescription(businessActivityDescription)
-  val validVatCulturalCompliance = VatCulturalCompliance(true)
+  val validVatCulturalCompliance = VatComplianceCultural(true)
   val validCulturalComplianceQ1 = CulturalComplianceQ1(CulturalComplianceQ1.NOT_PROFIT_NO)
 
   lazy val validSummaryView = Summary(

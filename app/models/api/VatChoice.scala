@@ -16,14 +16,11 @@
 
 package models.api
 
-import java.time.LocalDate
-
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class VatChoice(
-                      startDate: LocalDate = LocalDate.now(),
-                      necessity: String = "" // "obligatory" or "voluntary"
+                      necessity: String, // "obligatory" or "voluntary"
+                      vatStartDate: VatStartDate
                     )
 
 object VatChoice {
@@ -31,8 +28,6 @@ object VatChoice {
   val NECESSITY_OBLIGATORY = "obligatory"
   val NECESSITY_VOLUNTARY = "voluntary"
 
-  implicit val format: OFormat[VatChoice] = (
-    (__ \ "start-date").format[LocalDate] and
-      (__ \ "necessity").format[String]) (VatChoice.apply, unlift(VatChoice.unapply))
+  implicit val format: OFormat[VatChoice] = Json.format[VatChoice]
 
 }

@@ -20,8 +20,8 @@ import builders.AuthBuilder
 import controllers.userJourney.vatChoice.TaxableTurnoverController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.CacheKey
-import models.view.vatChoice.{StartDate, TaxableTurnover, VoluntaryRegistration}
+import models.S4LKey
+import models.view.vatTradingDetails.{StartDateView, TaxableTurnover, VoluntaryRegistration}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -66,7 +66,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[TaxableTurnover]()
-        (Matchers.eq(CacheKey[TaxableTurnover]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[TaxableTurnover]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -84,7 +84,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       when(mockS4LService.fetchAndGet[TaxableTurnover]()
-        (Matchers.eq(CacheKey[TaxableTurnover]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[TaxableTurnover]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -114,7 +114,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
     "return 303" in {
       val returnCacheMapTaxableTurnover = CacheMap("", Map("" -> Json.toJson(TaxableTurnover(TaxableTurnover.TAXABLE_YES))))
       val returnCacheMapVoluntaryRegistration = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration(VoluntaryRegistration.REGISTER_NO))))
-      val returnCacheMapStartDate = CacheMap("", Map("" -> Json.toJson(StartDate(dateType = StartDate.COMPANY_REGISTRATION_DATE))))
+      val returnCacheMapStartDate = CacheMap("", Map("" -> Json.toJson(StartDateView(dateType = StartDateView.COMPANY_REGISTRATION_DATE))))
 
       when(mockS4LService.saveForm[TaxableTurnover](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapTaxableTurnover))
@@ -123,7 +123,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapVoluntaryRegistration))
 
-      when(mockS4LService.saveForm[StartDate]
+      when(mockS4LService.saveForm[StartDateView]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapStartDate))
 

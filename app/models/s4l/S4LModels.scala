@@ -17,25 +17,29 @@
 package models.s4l
 
 import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
-import models.view.vatChoice.{StartDate, VoluntaryRegistration}
 import models.view.vatFinancials._
+import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration}
 
 
-case class S4LVatFinancials(
-                             estimateVatTurnover: Option[EstimateVatTurnover],
-                             zeroRatedSalesEstimate: Option[EstimateZeroRatedSales],
-                             vatChargeExpectancy: Option[VatChargeExpectancy],
-                             vatReturnFrequency: Option[VatReturnFrequency],
-                             accountingPeriod: Option[AccountingPeriod],
-                             companyBankAccountDetails: Option[CompanyBankAccountDetails]
-                           )
+case class S4LVatFinancials
+(
+  estimateVatTurnover: Option[EstimateVatTurnover],
+  zeroRatedTurnoverEstimate: Option[EstimateZeroRatedSales],
+  vatChargeExpectancy: Option[VatChargeExpectancy],
+  vatReturnFrequency: Option[VatReturnFrequency],
+  accountingPeriod: Option[AccountingPeriod],
+  companyBankAccountDetails: Option[CompanyBankAccountDetails]
+)
 
-case class S4LVatChoice(
-                         startDate: Option[StartDate],
-                         voluntaryRegistration: Option[VoluntaryRegistration]
-                       )
+case class S4LTradingDetails
+(
+  tradingName: Option[TradingNameView],
+  startDate: Option[StartDateView],
+  voluntaryRegistration: Option[VoluntaryRegistration]
+)
 
-case class S4LVatSicAndCompliance(
-                                   description: Option[BusinessActivityDescription],
-                                   culturalCompliance: Option[CulturalComplianceQ1]
-                       )
+case class S4LVatSicAndCompliance
+(
+  description: Option[BusinessActivityDescription],
+  culturalCompliance: Option[CulturalComplianceQ1]
+)

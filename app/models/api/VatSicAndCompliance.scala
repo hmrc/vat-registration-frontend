@@ -16,19 +16,16 @@
 
 package models.api
 
-import models.api.compliance.VatCulturalCompliance
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatSicAndCompliance(businessDescription: String, culturalCompliance: Option[VatCulturalCompliance])
 
+case class VatSicAndCompliance(
+                                businessDescription: String,
+                                culturalCompliance: Option[VatComplianceCultural] = None
+                              )
 
 object VatSicAndCompliance {
 
-  implicit val format = (
-    (__ \ "businessDescription").format[String] and
-      (__ \ "culturalCompliance").formatNullable[VatCulturalCompliance]) (VatSicAndCompliance.apply, unlift(VatSicAndCompliance.unapply))
-
-  val empty = VatSicAndCompliance(businessDescription = "", culturalCompliance = None)
+  implicit val format: OFormat[VatSicAndCompliance] = Json.format[VatSicAndCompliance]
 
 }

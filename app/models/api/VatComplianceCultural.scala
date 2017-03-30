@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package models.api.compliance
+package models.api
 
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
-case class VatCulturalCompliance(notForProfit: Boolean)
+case class VatComplianceCultural(notForProfit: Boolean)
 
-object VatCulturalCompliance {
+object VatComplianceCultural {
 
-  val apiReads: Reads[VatCulturalCompliance] =
-    (__ \ "notForProfit").read[Boolean].map(VatCulturalCompliance(_))
+  implicit val format: OFormat[VatComplianceCultural] = Json.format[VatComplianceCultural]
 
-  val apiWrites: OWrites[VatCulturalCompliance] =
-    (__ \ "notForProfit").write[Boolean].contramap(_.notForProfit)
-
-  implicit val format: OFormat[VatCulturalCompliance] = OFormat(apiReads, apiWrites)
 }

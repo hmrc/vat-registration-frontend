@@ -20,7 +20,7 @@ import builders.AuthBuilder
 import controllers.userJourney.vatFinancials.EstimateZeroRatedSalesController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.CacheKey
+import models.S4LKey
 import models.view.vatFinancials.EstimateZeroRatedSales
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -51,7 +51,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
         .thenReturn(Future.successful(Some(EstimateZeroRatedSales(100L))))
 
       AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "zeroRatedSalesEstimate" -> ""
+        "zeroRatedTurnoverEstimate" -> ""
       )) {
 
         result =>
@@ -64,7 +64,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[EstimateZeroRatedSales]()
-        (Matchers.eq(CacheKey[EstimateZeroRatedSales]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[EstimateZeroRatedSales]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -81,7 +81,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       when(mockS4LService.fetchAndGet[EstimateZeroRatedSales]()
-        (Matchers.eq(CacheKey[EstimateZeroRatedSales]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[EstimateZeroRatedSales]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -120,7 +120,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
         .thenReturn(Future.successful(returnCacheMapEstimateZeroRatedSales))
 
       AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "zeroRatedSalesEstimate" -> "60000"
+        "zeroRatedTurnoverEstimate" -> "60000"
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER

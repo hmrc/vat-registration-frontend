@@ -20,9 +20,9 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.vatChoice.TaxableTurnoverForm
-import models.view.vatChoice.StartDate.COMPANY_REGISTRATION_DATE
-import models.view.vatChoice.VoluntaryRegistration.REGISTER_NO
-import models.view.vatChoice.{StartDate, TaxableTurnover, VoluntaryRegistration}
+import models.view.vatTradingDetails.StartDateView.COMPANY_REGISTRATION_DATE
+import models.view.vatTradingDetails.VoluntaryRegistration.REGISTER_NO
+import models.view.vatTradingDetails.{StartDateView, TaxableTurnover, VoluntaryRegistration}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -49,7 +49,7 @@ class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies)
             if (TaxableTurnover.TAXABLE_YES == data.yesNo) {
               for {
                 _ <- s4LService.saveForm[VoluntaryRegistration](VoluntaryRegistration(REGISTER_NO))
-                _ <- s4LService.saveForm[StartDate](StartDate(COMPANY_REGISTRATION_DATE))
+                _ <- s4LService.saveForm[StartDateView](StartDateView(COMPANY_REGISTRATION_DATE))
               } yield Redirect(controllers.userJourney.vatChoice.routes.MandatoryStartDateController.show())
             } else {
               Future.successful(Redirect(controllers.userJourney.vatChoice.routes.VoluntaryRegistrationController.show()))

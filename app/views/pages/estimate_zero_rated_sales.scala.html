@@ -1,5 +1,5 @@
 @import models.view.vatFinancials.EstimateZeroRatedSales
-@(estimateZeroRatedSalesForm:  Form[EstimateZeroRatedSales])(implicit request: Request[_], messages: Messages)
+@(estimateZeroRatedSalesForm: Form[EstimateZeroRatedSales])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
 @fieldSetClasses = @{
@@ -15,7 +15,7 @@
       @errorSummary(
           Messages("app.common.errorSummaryLabel"),
           estimateZeroRatedSalesForm,
-          Seq("zeroRatedSalesEstimate")
+          Seq("zeroRatedTurnoverEstimate")
       )
 
       <p>@Html(Messages("pages.estimate.zero.rated.sales.para1"))</p>
@@ -31,14 +31,14 @@
           <div class="form-group @fieldSetClasses">
               <fieldset>
 
-                  @estimateZeroRatedSalesForm.errors.find(_.args.contains("zeroRatedSalesEstimate")).map { error =>
-                      @govHelpers.errorInline("zeroRatedSalesEstimate", Messages(error.message))
+                  @estimateZeroRatedSalesForm.errors.find(_.args.contains("zeroRatedTurnoverEstimate")).map { error =>
+                      @govHelpers.errorInline("zeroRatedTurnoverEstimate", Messages(error.message))
                   }
 
 
                   <label class="form-label">@messages("pages.estimate.zero.rated.sales.form.label")</label>
                       @govHelpers.input(
-                          estimateZeroRatedSalesForm("zeroRatedSalesEstimate"),
+                          estimateZeroRatedSalesForm("zeroRatedTurnoverEstimate"),
                           '_divClass -> "form-group",
                           '_inputClass -> "form-control",
                           '_label -> Messages("app.common.gbp.symbol"),

@@ -18,7 +18,7 @@ package services
 
 import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, S4LConnector}
-import models.CacheKey
+import models.S4LKey
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
@@ -31,11 +31,11 @@ trait S4LService extends CommonService {
 
   private[services] val s4LConnector: S4LConnector
 
-  def saveForm[T: CacheKey](data: T)(implicit headerCarrier: HeaderCarrier, format: Format[T]): Future[CacheMap] =
-    fetchRegistrationId.flatMap(s4LConnector.saveForm[T](_, CacheKey[T].cacheKey, data))
+  def saveForm[T: S4LKey](data: T)(implicit headerCarrier: HeaderCarrier, format: Format[T]): Future[CacheMap] =
+    fetchRegistrationId.flatMap(s4LConnector.saveForm[T](_, S4LKey[T].key, data))
 
-  def fetchAndGet[T: CacheKey]()(implicit headerCarrier: HeaderCarrier, format: Format[T]): Future[Option[T]] =
-    fetchRegistrationId.flatMap(s4LConnector.fetchAndGet[T](_, CacheKey[T].cacheKey))
+  def fetchAndGet[T: S4LKey]()(implicit headerCarrier: HeaderCarrier, format: Format[T]): Future[Option[T]] =
+    fetchRegistrationId.flatMap(s4LConnector.fetchAndGet[T](_, S4LKey[T].key))
 
   def clear()(implicit hc: HeaderCarrier): Future[HttpResponse] =
     fetchRegistrationId.flatMap(s4LConnector.clear)
