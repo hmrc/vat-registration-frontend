@@ -20,20 +20,20 @@ import models.api.{VatFinancials, VatScheme}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
-case class EstimateZeroRatedSales(zeroRatedSalesEstimate: Long)
+case class EstimateZeroRatedSales(zeroRatedTurnoverEstimate: Long)
 
 object EstimateZeroRatedSales {
 
   implicit val format: OFormat[EstimateZeroRatedSales] = Json.format[EstimateZeroRatedSales]
 
   implicit val modelTransformer = ApiModelTransformer[EstimateZeroRatedSales] { (vs: VatScheme) =>
-    vs.financials.map(_.zeroRatedSalesEstimate).collect {
+    vs.financials.map(_.zeroRatedTurnoverEstimate).collect {
       case Some(sales) => EstimateZeroRatedSales(sales)
     }
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: EstimateZeroRatedSales, g: VatFinancials) =>
-    g.copy(zeroRatedSalesEstimate = Some(c.zeroRatedSalesEstimate))
+    g.copy(zeroRatedTurnoverEstimate = Some(c.zeroRatedTurnoverEstimate))
   }
 
 }

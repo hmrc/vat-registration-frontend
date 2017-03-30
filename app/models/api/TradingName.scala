@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package forms.vatDetails.vatChoice
+package models.api
 
-import forms.validation.FormValidation.missingFieldMapping
-import models.view.vatTradingDetails.TaxableTurnover
-import play.api.data.Form
-import play.api.data.Forms._
+import play.api.libs.json.{Json, OFormat}
 
-object TaxableTurnoverForm {
-  val RADIO_YES_NO: String = "taxableTurnoverRadio"
+case class TradingName(selection: Boolean, tradingName: Option[String])
 
-  val form = Form(
-    mapping(
-      RADIO_YES_NO -> missingFieldMapping("taxable.turnover").verifying(TaxableTurnover.valid)
-    )(TaxableTurnover.apply)(TaxableTurnover.unapply)
-  )
+object TradingName {
+
+  implicit val format: OFormat[TradingName] = Json.format[TradingName]
 
 }

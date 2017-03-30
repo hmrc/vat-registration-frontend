@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package forms.vatDetails.vatChoice
+package common
 
-import forms.validation.FormValidation.missingFieldMapping
-import models.view.vatTradingDetails.TaxableTurnover
-import play.api.data.Form
-import play.api.data.Forms._
+object StringMasking {
 
-object TaxableTurnoverForm {
-  val RADIO_YES_NO: String = "taxableTurnoverRadio"
+  implicit class MaskedStringConverter(val s: String) extends AnyVal {
 
-  val form = Form(
-    mapping(
-      RADIO_YES_NO -> missingFieldMapping("taxable.turnover").verifying(TaxableTurnover.valid)
-    )(TaxableTurnover.apply)(TaxableTurnover.unapply)
-  )
+    def mask(n: Int, char: Char = '*'): String = s.length match {
+      case len if n <= len => (char.toString * n) + s.substring(n)
+      case len => char.toString * len
+    }
+
+  }
 
 }

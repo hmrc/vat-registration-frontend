@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.vatChoice.StartDateFormFactory
-import models.view.vatChoice.StartDate
+import models.view.vatTradingDetails.StartDateView
 import play.api.data.Form
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
@@ -32,22 +32,18 @@ class StartDateController @Inject()(startDateFormFactory: StartDateFormFactory, 
 
   import cats.instances.future._
 
+  val form: Form[StartDateView] = startDateFormFactory.form()
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    val form: Form[StartDate] = startDateFormFactory.form()
-    viewModel[StartDate].fold(form)(form.fill).map(f => Ok(views.html.pages.start_date(f)))
+    viewModel[StartDateView].fold(form)(form.fill).map(f => Ok(views.html.pages.start_date(f)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     startDateFormFactory.form().bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.start_date(formWithErrors)))
-      }, {
-        data: StartDate =>
-          val d = if (data.dateType == StartDate.COMPANY_REGISTRATION_DATE) data.copy(date = None) else data
-          s4LService.saveForm(d).map { _ =>
-            Redirect(controllers.userJourney.vatTradingDetails.routes.TradingNameController.show())
-          }
-      })
+      formWithErrors => Future.successful(BadRequest(views.html.pages.start_date(formWithErrors))),
+      (data: StartDateView) => s4LService.saveForm(data).map { _ =>
+        Redirect(controllers.userJourney.vatTradingDetails.routes.TradingNameController.show())
+      }
+    )
   })
 }

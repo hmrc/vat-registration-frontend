@@ -21,7 +21,7 @@ import controllers.userJourney.sicAndCompliance.CulturalComplianceQ1Controller
 import controllers.userJourney.vatFinancials.CompanyBankAccountController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.CacheKey
+import models.S4LKey
 import models.view.sicAndCompliance.CulturalComplianceQ1
 import models.view.vatFinancials.CompanyBankAccount
 import org.mockito.Matchers
@@ -68,7 +68,7 @@ class CulturalComplianceQ1ControllerSpec extends VatRegSpec with VatRegistration
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[CulturalComplianceQ1]()
-        (Matchers.eq(CacheKey[CulturalComplianceQ1]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[CulturalComplianceQ1]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
@@ -86,7 +86,7 @@ class CulturalComplianceQ1ControllerSpec extends VatRegSpec with VatRegistration
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     when(mockS4LService.fetchAndGet[CulturalComplianceQ1]()
-      (Matchers.eq(CacheKey[CulturalComplianceQ1]), Matchers.any(), Matchers.any()))
+      (Matchers.eq(S4LKey[CulturalComplianceQ1]), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(None))
 
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))

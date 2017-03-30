@@ -17,8 +17,8 @@
 package forms.vatDetails.vatTradingDetails
 
 import forms.validation.FormValidation._
-import models.view.vatTradingDetails.TradingName
-import models.view.vatTradingDetails.TradingName.TRADING_NAME_YES
+import models.view.vatTradingDetails.TradingNameView
+import models.view.vatTradingDetails.TradingNameView.TRADING_NAME_YES
 import play.api.data.Form
 import play.api.data.Forms._
 import uk.gov.voa.play.form.ConditionalMappings._
@@ -31,9 +31,9 @@ object TradingNameForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping("tradingName").verifying(TradingName.valid),
+      RADIO_YES_NO -> missingFieldMapping("tradingName").verifying(TradingNameView.valid),
       INPUT_TRADING_NAME -> mandatoryIf(isEqual(RADIO_YES_NO, TRADING_NAME_YES), text.verifying(nonEmptyValidText(INPUT_TRADING_NAME, TRADING_NAME_REGEX)))
-    )(TradingName.apply)(TradingName.unapply)
+    )(TradingNameView.apply)(TradingNameView.unapply)
   )
 
 }

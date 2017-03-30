@@ -16,30 +16,28 @@
 
 package models
 
-import models.view._
 import models.view.sicAndCompliance.BusinessActivityDescription
-import models.view.vatChoice.{StartDate, TaxableTurnover, VoluntaryRegistration}
 import models.view.vatFinancials._
-import models.view.vatTradingDetails.TradingName
+import models.view.vatTradingDetails.{StartDateView, TaxableTurnover, TradingNameView, VoluntaryRegistration}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CacheKeySpec extends UnitSpec {
 
   "cacheKey" should {
     "be generated for each view model" in {
-      CacheKey[StartDate].cacheKey shouldBe "StartDate"
-      CacheKey[TradingName].cacheKey shouldBe "TradingName"
-      CacheKey[VoluntaryRegistration].cacheKey shouldBe "VoluntaryRegistration"
-      CacheKey[TaxableTurnover].cacheKey shouldBe "TaxableTurnover"
-      CacheKey[EstimateVatTurnover].cacheKey shouldBe "EstimateVatTurnover"
-      CacheKey[ZeroRatedSales].cacheKey shouldBe "ZeroRatedSales"
-      CacheKey[EstimateZeroRatedSales].cacheKey shouldBe "EstimateZeroRatedSales"
-      CacheKey[VatChargeExpectancy].cacheKey shouldBe "VatChargeExpectancy"
-      CacheKey[VatReturnFrequency].cacheKey shouldBe "VatReturnFrequency"
-      CacheKey[AccountingPeriod].cacheKey shouldBe "AccountingPeriod"
-      CacheKey[CompanyBankAccount].cacheKey shouldBe "CompanyBankAccount"
-      CacheKey[CompanyBankAccountDetails].cacheKey shouldBe "CompanyBankAccountDetails"
-      CacheKey[BusinessActivityDescription].cacheKey shouldBe "BusinessActivityDescription"
+      S4LKey[StartDateView].key shouldBe "StartDate"
+      S4LKey[TradingNameView].key shouldBe "TradingNameView"
+      S4LKey[VoluntaryRegistration].key shouldBe "VoluntaryRegistration"
+      S4LKey[TaxableTurnover].key shouldBe "TaxableTurnover"
+      S4LKey[EstimateVatTurnover].key shouldBe "EstimateVatTurnover"
+      S4LKey[ZeroRatedSales].key shouldBe "ZeroRatedSales"
+      S4LKey[EstimateZeroRatedSales].key shouldBe "EstimateZeroRatedSales"
+      S4LKey[VatChargeExpectancy].key shouldBe "VatChargeExpectancy"
+      S4LKey[VatReturnFrequency].key shouldBe "VatReturnFrequency"
+      S4LKey[AccountingPeriod].key shouldBe "AccountingPeriod"
+      S4LKey[CompanyBankAccount].key shouldBe "CompanyBankAccount"
+      S4LKey[CompanyBankAccountDetails].key shouldBe "CompanyBankAccountDetails"
+      S4LKey[BusinessActivityDescription].key shouldBe "BusinessActivityDescription"
     }
   }
 

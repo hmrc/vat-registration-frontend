@@ -18,24 +18,26 @@ package controllers.builders
 
 import java.time.LocalDate
 
+import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{VatChoice, VatTradingDetails}
+import models.api.{TradingName, VatChoice, VatStartDate, VatTradingDetails}
 import models.view.SummaryRow
-import models.view.vatChoice.StartDate
+import models.view.vatTradingDetails.StartDateView
 
-class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec {
+class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 
   "The section builder composing a vat details section" should {
 
     "with taxableTurnoverRow render" should {
 
+
       "a 'No' if it's a voluntary registration" in {
-        val builder = SummaryVatDetailsSectionBuilder(VatChoice(necessity = VatChoice.NECESSITY_VOLUNTARY), VatTradingDetails())
+        val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails(VatChoice.NECESSITY_VOLUNTARY)))
         builder.taxableTurnoverRow mustBe SummaryRow("vatDetails.taxableTurnover", "app.common.no", Some(controllers.userJourney.vatChoice.routes.TaxableTurnoverController.show()))
       }
 
       "a 'Yes' if it's a mandatory registration" in {
-        val builder = SummaryVatDetailsSectionBuilder(VatChoice(necessity = VatChoice.NECESSITY_OBLIGATORY), VatTradingDetails())
+        val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails(VatChoice.NECESSITY_OBLIGATORY)))
         builder.taxableTurnoverRow mustBe SummaryRow("vatDetails.taxableTurnover", "app.common.yes", Some(controllers.userJourney.vatChoice.routes.TaxableTurnoverController.show()))
       }
     }
@@ -43,12 +45,12 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec {
     "with necessityRow render" should {
 
       "a 'Yes' if it's a voluntary registration" in {
-        val builder = SummaryVatDetailsSectionBuilder(VatChoice(necessity = VatChoice.NECESSITY_VOLUNTARY), VatTradingDetails())
+        val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails(VatChoice.NECESSITY_VOLUNTARY)))
         builder.necessityRow mustBe SummaryRow("vatDetails.necessity", "app.common.yes", Some(controllers.userJourney.vatChoice.routes.VoluntaryRegistrationController.show()))
       }
 
       "a 'No' if it's a mandatory registration" in {
-        val builder = SummaryVatDetailsSectionBuilder(VatChoice(necessity = VatChoice.NECESSITY_OBLIGATORY), VatTradingDetails())
+        val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails(VatChoice.NECESSITY_OBLIGATORY)))
         builder.necessityRow mustBe SummaryRow("vatDetails.necessity", "app.common.no", None)
       }
     }
@@ -57,10 +59,10 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec {
 
       "a date with format 'd MMMM y' if it's a voluntary registration" in {
         val builder = SummaryVatDetailsSectionBuilder(
-          VatChoice(
-            necessity = VatChoice.NECESSITY_VOLUNTARY,
-            startDate = LocalDate.of(2017, 3, 21)),
-          VatTradingDetails())
+          vatTradingDetails = Some(tradingDetails(
+            startDateSelection = StartDateView.SPECIFIC_DATE,
+            startDate = Some(LocalDate.of(2017, 3, 21))))
+        )
 
         val expectedRow = SummaryRow(
           "vatDetails.startDate",
@@ -73,11 +75,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec {
 
       "a Companies House incorporation date message, if it's a voluntary registration and the date is a default date" in {
         val builder = SummaryVatDetailsSectionBuilder(
-          VatChoice(
-            StartDate.DEFAULT_DATE,
-            necessity = VatChoice.NECESSITY_VOLUNTARY),
-          VatTradingDetails()
-        )
+          vatTradingDetails = Some(tradingDetails(necessity = VatChoice.NECESSITY_VOLUNTARY)))
 
         val expectedRow = SummaryRow(
           "vatDetails.startDate",
@@ -88,7 +86,8 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec {
       }
 
       "a Companies House incorporation date message, if it's a mandatory registration" in {
-        val builder = SummaryVatDetailsSectionBuilder(VatChoice(necessity = VatChoice.NECESSITY_OBLIGATORY), VatTradingDetails())
+        val builder = SummaryVatDetailsSectionBuilder(
+          vatTradingDetails = Some(tradingDetails(necessity = VatChoice.NECESSITY_OBLIGATORY)))
         builder.startDateRow mustBe SummaryRow("vatDetails.startDate", "pages.summary.vatDetails.mandatoryStartDate", None)
       }
     }
@@ -96,7 +95,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec {
     "with tradingNameRow render" should {
 
       "a trading name if there's one" in {
-        val builder = SummaryVatDetailsSectionBuilder(VatChoice(), VatTradingDetails(tradingName = "ACME Ltd."))
+        val builder = SummaryVatDetailsSectionBuilder(Some(tradingDetails()))
         builder.tradingNameRow mustBe SummaryRow(
           "vatDetails.tradingName",
           "ACME Ltd.",
@@ -104,7 +103,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec {
       }
 
       "a 'No' if there isn't a trading name" in {
-        val builder = SummaryVatDetailsSectionBuilder(VatChoice(), VatTradingDetails())
+        val builder = SummaryVatDetailsSectionBuilder()
         builder.tradingNameRow mustBe SummaryRow("vatDetails.tradingName", "app.common.no", Some(controllers.userJourney.vatTradingDetails.routes.TradingNameController.show()))
       }
     }
@@ -112,7 +111,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec {
     "with section generate" should {
 
       "a valid summary section" in {
-        val builder = SummaryVatDetailsSectionBuilder(VatChoice(), VatTradingDetails())
+        val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails()))
         builder.section.id mustBe "vatDetails"
         builder.section.rows.length mustEqual 4
       }

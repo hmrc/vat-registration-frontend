@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package forms.vatDetails.vatChoice
+package models.api
 
-import forms.validation.FormValidation.missingFieldMapping
-import models.view.vatTradingDetails.TaxableTurnover
-import play.api.data.Form
-import play.api.data.Forms._
+import java.time.LocalDate
 
-object TaxableTurnoverForm {
-  val RADIO_YES_NO: String = "taxableTurnoverRadio"
+import play.api.libs.json._
 
-  val form = Form(
-    mapping(
-      RADIO_YES_NO -> missingFieldMapping("taxable.turnover").verifying(TaxableTurnover.valid)
-    )(TaxableTurnover.apply)(TaxableTurnover.unapply)
-  )
+
+case class VatStartDate(selection: String, startDate: Option[LocalDate])
+
+object VatStartDate {
+
+  implicit val format: OFormat[VatStartDate] = Json.format[VatStartDate]
 
 }

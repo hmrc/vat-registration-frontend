@@ -16,26 +16,27 @@
 
 package models.api
 
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatFinancials(bankAccount: Option[VatBankAccount] = None,
-                         turnoverEstimate: Long,
-                         zeroRatedSalesEstimate: Option[Long] = None,
-                         reclaimVatOnMostReturns: Boolean,
-                         vatAccountingPeriod: VatAccountingPeriod
+case class VatFinancials(
+                          bankAccount: Option[VatBankAccount] = None,
+                          turnoverEstimate: Long,
+                          zeroRatedTurnoverEstimate: Option[Long] = None,
+                          reclaimVatOnMostReturns: Boolean,
+                          accountingPeriods: VatAccountingPeriod
                         )
 
 object VatFinancials {
 
-  implicit val format: OFormat[VatFinancials] = (
-    (__ \ "bankAccount").formatNullable[VatBankAccount] and
-      (__ \ "turnoverEstimate").format[Long] and
-      (__ \ "zeroRatedTurnoverEstimate").formatNullable[Long] and
-      (__ \ "reclaimVatOnMostReturns").format[Boolean] and
-      (__ \ "accountingPeriods").format[VatAccountingPeriod]
-    ) (VatFinancials.apply, unlift(VatFinancials.unapply))
+  implicit val format: OFormat[VatFinancials] = Json.format[VatFinancials]
 
-  val empty = VatFinancials(turnoverEstimate = 0L, vatAccountingPeriod = VatAccountingPeriod.empty, reclaimVatOnMostReturns = false)
+  //TODO remove
+  val empty = VatFinancials(
+    turnoverEstimate = 0L,
+    reclaimVatOnMostReturns = false,
+    accountingPeriods = VatAccountingPeriod(
+      frequency = "monthly"
+    )
+  )
 
 }

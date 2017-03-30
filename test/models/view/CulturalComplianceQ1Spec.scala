@@ -18,19 +18,34 @@ package models.view
 
 import fixtures.VatRegistrationFixture
 import models.ApiModelTransformer
-import models.api.VatScheme
-import models.view.vatFinancials.CompanyBankAccount
+import models.api.VatComplianceCultural
+import models.view.sicAndCompliance.CulturalComplianceQ1
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CulturalComplianceQ1Spec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
-    val vatScheme = VatScheme(validRegId)
 
     "convert VatScheme without SicAndCompliance to empty view model" in {
-      val vs = vatScheme.copy(sicAndCompliance = None)
-      ApiModelTransformer[CompanyBankAccount].toViewModel(vs) shouldBe None
+      val vs = vatScheme(sicAndCompliance = None)
+      ApiModelTransformer[CulturalComplianceQ1].toViewModel(vs) shouldBe None
     }
+
+    "convert VatScheme without CulturalCompliance section to empty view model" in {
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(culturalComplianceSection = None)))
+      ApiModelTransformer[CulturalComplianceQ1].toViewModel(vs) shouldBe None
+    }
+
+    "convert VatScheme with CulturalCompliance section to view model - for profit" in {
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(culturalComplianceSection = Some(VatComplianceCultural(notForProfit = false)))))
+      ApiModelTransformer[CulturalComplianceQ1].toViewModel(vs) shouldBe Some(CulturalComplianceQ1(CulturalComplianceQ1.NOT_PROFIT_NO))
+    }
+
+    "convert VatScheme with CulturalCompliance section to view model - not for profit" in {
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(culturalComplianceSection = Some(VatComplianceCultural(notForProfit = true)))))
+      ApiModelTransformer[CulturalComplianceQ1].toViewModel(vs) shouldBe Some(CulturalComplianceQ1(CulturalComplianceQ1.NOT_PROFIT_YES))
+    }
+
   }
 }
 

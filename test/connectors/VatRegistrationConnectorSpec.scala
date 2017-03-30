@@ -182,21 +182,24 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   }
 
   "Calling upsertSicAndCompliance" should {
+
+    val compliance = VatSicAndCompliance(businessDescription = "")
+
     "return the correct VatResponse when the microservice completes and returns a SicAndCompliance model" in new Setup {
-      mockHttpPATCH[VatFinancials, VatSicAndCompliance]("tst-url", VatSicAndCompliance.empty)
-      ScalaFutures.whenReady(connector.upsertSicAndCompliance("tstID", VatSicAndCompliance.empty))(_ mustBe VatSicAndCompliance.empty)
+      mockHttpPATCH[VatFinancials, VatSicAndCompliance]("tst-url", compliance)
+      ScalaFutures.whenReady(connector.upsertSicAndCompliance("tstID", compliance))(_ mustBe compliance)
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH[VatSicAndCompliance, VatSicAndCompliance]("tst-url", forbidden)
-      ScalaFutures.whenReady(connector.upsertSicAndCompliance("tstID", VatSicAndCompliance.empty).failed)(_ mustBe forbidden)
+      ScalaFutures.whenReady(connector.upsertSicAndCompliance("tstID", compliance).failed)(_ mustBe forbidden)
     }
     "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
       mockHttpFailedPATCH[VatSicAndCompliance, VatSicAndCompliance]("tst-url", notFound)
-      ScalaFutures.whenReady(connector.upsertSicAndCompliance("tstID", VatSicAndCompliance.empty).failed)(_ mustBe notFound)
+      ScalaFutures.whenReady(connector.upsertSicAndCompliance("tstID", compliance).failed)(_ mustBe notFound)
     }
     "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH[VatSicAndCompliance, VatSicAndCompliance]("tst-url", internalServiceException)
-      ScalaFutures.whenReady(connector.upsertSicAndCompliance("tstID", VatSicAndCompliance.empty).failed)(_ mustBe internalServiceException)
+      ScalaFutures.whenReady(connector.upsertSicAndCompliance("tstID", compliance).failed)(_ mustBe internalServiceException)
     }
   }
 }

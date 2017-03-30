@@ -16,17 +16,16 @@
 
 package models.api
 
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatBankAccount(accountName: String = "", accountNumber: String = "", accountSortCode: String = "")
+case class VatBankAccount(
+                           accountName: String,
+                           accountSortCode: String,
+                           accountNumber: String
+                         )
 
 object VatBankAccount {
 
-  implicit val format = (
-    (__ \ "accountName").format[String] and
-      (__ \ "accountNumber").format[String] and
-      (__ \ "accountSortCode").format[String]
-    ) (VatBankAccount.apply, unlift(VatBankAccount.unapply))
+  implicit val format: OFormat[VatBankAccount] = Json.format[VatBankAccount]
 
 }

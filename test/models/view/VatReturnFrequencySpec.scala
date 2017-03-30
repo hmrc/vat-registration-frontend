@@ -27,16 +27,16 @@ class VatReturnFrequencySpec extends UnitSpec with VatRegistrationFixture {
 
   val VatReturnFrequencyWithMonthly = VatFinancials(
     turnoverEstimate = 0L,
-    zeroRatedSalesEstimate = Some(0L),
+    zeroRatedTurnoverEstimate = Some(0L),
     reclaimVatOnMostReturns = true,
-    vatAccountingPeriod = VatAccountingPeriod(None, MONTHLY)
+    accountingPeriods = VatAccountingPeriod(frequency = MONTHLY)
   )
 
   val VatReturnFrequencyWithQuarterly = VatFinancials(
     turnoverEstimate = 0L,
-    zeroRatedSalesEstimate = Some(0L),
+    zeroRatedTurnoverEstimate = Some(0L),
     reclaimVatOnMostReturns = true,
-    vatAccountingPeriod = VatAccountingPeriod(None, QUARTERLY)
+    accountingPeriods = VatAccountingPeriod(frequency = QUARTERLY)
   )
 
   val vatScheme = VatScheme(validRegId)
@@ -48,16 +48,16 @@ class VatReturnFrequencySpec extends UnitSpec with VatRegistrationFixture {
 
       val vatFinancials = VatFinancials(
         turnoverEstimate = 100L,
-        zeroRatedSalesEstimate = None,
+        zeroRatedTurnoverEstimate = None,
         reclaimVatOnMostReturns = true,
-        vatAccountingPeriod = VatAccountingPeriod(None, MONTHLY)
+        accountingPeriods = VatAccountingPeriod(frequency = MONTHLY)
       )
 
       val updatedVatFinancials = VatFinancials(
         turnoverEstimate = 100L,
-        zeroRatedSalesEstimate = None,
+        zeroRatedTurnoverEstimate = None,
         reclaimVatOnMostReturns = true,
-        vatAccountingPeriod = VatAccountingPeriod(None, MONTHLY)
+        accountingPeriods = VatAccountingPeriod(frequency = MONTHLY)
       )
       ViewModelTransformer[VatReturnFrequency, VatFinancials]
         .toApi(vatReturnFrequency, vatFinancials) shouldBe updatedVatFinancials

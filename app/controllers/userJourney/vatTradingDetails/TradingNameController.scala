@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.vatTradingDetails.TradingNameForm
-import models.view.vatTradingDetails.TradingName
+import models.view.vatTradingDetails.TradingNameView
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
@@ -31,7 +31,7 @@ class TradingNameController @Inject()(ds: CommonPlayDependencies)
   import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[TradingName].map { vm =>
+    viewModel[TradingNameView].map { vm =>
       Ok(views.html.pages.trading_name(TradingNameForm.form.fill(vm)))
     }.getOrElse(Ok(views.html.pages.trading_name(TradingNameForm.form)))
   })
@@ -41,12 +41,12 @@ class TradingNameController @Inject()(ds: CommonPlayDependencies)
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.trading_name(formWithErrors)))
       }, {
-        data: TradingName => {
+        data: TradingNameView => {
           // Save to S4L
-          s4LService.saveForm[TradingName](data) flatMap { _ =>
-            if (TradingName.TRADING_NAME_NO == data.yesNo) {
+          s4LService.saveForm[TradingNameView](data) flatMap { _ =>
+            if (TradingNameView.TRADING_NAME_NO == data.yesNo) {
               for {
-                _ <- s4LService.saveForm[TradingName](TradingName(TradingName.TRADING_NAME_NO, None))
+                _ <- s4LService.saveForm[TradingNameView](TradingNameView(TradingNameView.TRADING_NAME_NO, None))
               } yield Redirect(controllers.userJourney.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
             } else {
               Future.successful(Redirect(controllers.userJourney.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))

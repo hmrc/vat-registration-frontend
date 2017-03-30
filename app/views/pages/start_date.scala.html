@@ -1,5 +1,5 @@
-@import models.view.vatChoice.StartDate
-@(startDateForm: Form[StartDate])(implicit request: Request[_], messages: Messages)
+@import models.view.vatTradingDetails.StartDateView
+@(startDateForm: Form[StartDateView])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
 
@@ -23,8 +23,8 @@
                     @govHelpers.inputRadioGroup(
                         startDateForm("startDateRadio"),
                         Seq(
-                            StartDate.COMPANY_REGISTRATION_DATE -> Messages("pages.startDate.radio.whenRegistered"),
-                            StartDate.SPECIFIC_DATE -> Messages("pages.startDate.radio.specificDate")
+                            StartDateView.COMPANY_REGISTRATION_DATE -> Messages("pages.startDate.radio.whenRegistered"),
+                            StartDateView.SPECIFIC_DATE -> Messages("pages.startDate.radio.specificDate")
                         ),
                         '_labelAfter -> true,
                         '_labelClass -> "block-label",

@@ -20,7 +20,7 @@ import builders.AuthBuilder
 import controllers.userJourney.sicAndCompliance.BusinessActivityDescriptionController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.CacheKey
+import models.S4LKey
 import models.view.sicAndCompliance.BusinessActivityDescription
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -64,7 +64,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[BusinessActivityDescription]()
-        (Matchers.eq(CacheKey[BusinessActivityDescription]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[BusinessActivityDescription]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
@@ -81,7 +81,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       when(mockS4LService.fetchAndGet[BusinessActivityDescription]()
-        (Matchers.eq(CacheKey[BusinessActivityDescription]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[BusinessActivityDescription]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
