@@ -91,21 +91,21 @@ trait RegistrationConnector {
 
   def deleteBankAccount(regId: String)
                        (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
-    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-bank-account") recover {
+    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete/vat-bank-account") recover {
       case e: Exception => throw logResponse(e, "deleteBankAccount", "delete VatBankAccount details")
     }
   }
 
   def deleteZeroRatedTurnover(regId: String)
                              (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
-    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-zero-rated_turnover") recover {
+    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete/zero-rated-turnover-estimate") recover {
       case e: Exception => throw logResponse(e, "deleteZeroRatedTurnover", "delete ZeroRatedTurnoverEstimate details")
     }
   }
 
   def deleteAccountingPeriodStart(regId: String)
                                  (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
-    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-accounting-period") recover {
+    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete/accounting-period-start") recover {
       case e: Exception => throw logResponse(e, "deleteAccountingPeriodStart", "delete AccountingPeriodStart details")
     }
   }
