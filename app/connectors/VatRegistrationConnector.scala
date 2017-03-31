@@ -20,6 +20,7 @@ import javax.inject.Singleton
 
 import com.google.inject.ImplementedBy
 import config.WSHttp
+import models.{ElementPath, VatBankAccountPath}
 import models.api._
 import play.api.Logger
 import play.api.http.Status
@@ -89,24 +90,10 @@ trait RegistrationConnector {
     }
   }
 
-  def deleteBankAccount(regId: String)
+  def deleteElement(elementPath: ElementPath)(regId: String)
                        (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
-    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete/vat-bank-account") recover {
-      case e: Exception => throw logResponse(e, "deleteBankAccount", "delete VatBankAccount details")
-    }
-  }
-
-  def deleteZeroRatedTurnover(regId: String)
-                             (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
-    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete/zero-rated-turnover-estimate") recover {
-      case e: Exception => throw logResponse(e, "deleteZeroRatedTurnover", "delete ZeroRatedTurnoverEstimate details")
-    }
-  }
-
-  def deleteAccountingPeriodStart(regId: String)
-                                 (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
-    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete/accounting-period-start") recover {
-      case e: Exception => throw logResponse(e, "deleteAccountingPeriodStart", "delete AccountingPeriodStart details")
+    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete/${elementPath.name}") recover {
+      case e: Exception => throw logResponse(e, "deleteElement", s"delete ${elementPath.name}")
     }
   }
 

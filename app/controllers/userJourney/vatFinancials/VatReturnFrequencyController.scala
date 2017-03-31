@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.vatFinancials.VatReturnFrequencyForm
+import models.AccountingPeriodStartPath
 import models.view.vatFinancials.VatReturnFrequency
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
@@ -44,7 +45,7 @@ class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
         data: VatReturnFrequency => {
           s4LService.saveForm[VatReturnFrequency](data) flatMap { _ =>
             if (VatReturnFrequency.MONTHLY == data.frequencyType) {
-              vrs.deleteAccountingPeriodStart().map { _ =>
+              vrs.deleteElement(AccountingPeriodStartPath).map { _ =>
                 Redirect(controllers.userJourney.routes.SummaryController.show()) }
             } else {
               Future.successful(Redirect(controllers.userJourney.vatFinancials.routes.AccountingPeriodController.show()))
