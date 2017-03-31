@@ -19,7 +19,7 @@ package controllers.userJourney.vatChoice
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatDetails.vatChoice.TaxableTurnoverForm
+import forms.vatDetails.vatTradingDetails.TaxableTurnoverForm
 import models.view.vatTradingDetails.StartDateView.COMPANY_REGISTRATION_DATE
 import models.view.vatTradingDetails.VoluntaryRegistration.REGISTER_NO
 import models.view.vatTradingDetails.{StartDateView, TaxableTurnover, VoluntaryRegistration}

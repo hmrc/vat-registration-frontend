@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package models.api
+package forms.vatDetails.vatTradingDetails
 
-import play.api.libs.json._
+import forms.validation.FormValidation.missingFieldMapping
+import models.view.vatTradingDetails.VoluntaryRegistration
+import play.api.data.Form
+import play.api.data.Forms.mapping
 
+object VoluntaryRegistrationForm {
+  val RADIO_YES_NO: String = "voluntaryRegistrationRadio"
 
-case class VatSicAndCompliance(
-                                businessDescription: String,
-                                culturalCompliance: Option[VatComplianceCultural] = None,
-                                labourCompliance: Option[VatComplianceLabour] = None
-                              )
-
-object VatSicAndCompliance {
-
-  implicit val format: OFormat[VatSicAndCompliance] = Json.format[VatSicAndCompliance]
+  val form = Form(
+    mapping(
+      RADIO_YES_NO -> missingFieldMapping("voluntary.registration").verifying(VoluntaryRegistration.valid)
+    )(VoluntaryRegistration.apply)(VoluntaryRegistration.unapply)
+  )
 
 }

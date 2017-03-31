@@ -22,12 +22,11 @@ import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.DownstreamOutcome
 import enums.DownstreamOutcome._
+import models._
 import models.api._
-import models.s4l.{S4LTradingDetails, S4LVatFinancials, S4LVatSicAndCompliance}
 import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration}
-import models.{ElementPath, S4LKey, ViewModelTransformer}
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -68,15 +67,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
 
   def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Boolean] =
     fetchRegistrationId.flatMap(vatRegConnector.deleteElement(elementPath))
-
-//  def deleteBankAccountDetails()(implicit hc: HeaderCarrier): Future[Boolean] =
-//    fetchRegistrationId.flatMap(vatRegConnector.deleteBankAccount)
-//
-//  def deleteZeroRatedTurnover()(implicit hc: HeaderCarrier): Future[Boolean] =
-//    fetchRegistrationId.flatMap(vatRegConnector.deleteZeroRatedTurnover)
-//
-//  def deleteAccountingPeriodStart()(implicit hc: HeaderCarrier): Future[Boolean] =
-//    fetchRegistrationId.flatMap(vatRegConnector.deleteAccountingPeriodStart)
 
   def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] =
     for {
