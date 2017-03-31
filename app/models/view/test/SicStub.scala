@@ -23,6 +23,10 @@ case class SicStub(sicCode1: Option[String],
                    sicCode3: Option[String],
                    sicCode4: Option[String]) {
 
+  def sicCodes: List[String] = this.productIterator.toList.collect {
+    case Some(s: String) if s.length == 8 => s.substring(0, 5)
+  }
+
 }
 
 object SicStub {
