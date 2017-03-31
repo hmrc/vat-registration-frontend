@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.vatFinancials.ZeroRatedSalesForm
+import models.ZeroRatedTurnoverEstimatePath
 import models.view.vatFinancials.ZeroRatedSales
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -45,7 +46,7 @@ class ZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
         data: ZeroRatedSales => {
           s4LService.saveForm[ZeroRatedSales](data) flatMap { _ =>
             if (ZeroRatedSales.ZERO_RATED_SALES_NO == data.yesNo) {
-              vrs.deleteZeroRatedTurnover().map { _ =>
+              vrs.deleteElement(ZeroRatedTurnoverEstimatePath).map { _ =>
                 Redirect(controllers.userJourney.vatFinancials.routes.VatChargeExpectancyController.show()) }
             } else {
               Future.successful(Redirect(controllers.userJourney.vatFinancials.routes.EstimateZeroRatedSalesController.show()))
