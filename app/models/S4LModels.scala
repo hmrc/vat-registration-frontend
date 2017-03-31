@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.s4l
+package models
 
 import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
 import models.view.vatFinancials._
