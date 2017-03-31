@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms.vatDetails.vatChoice
+package forms.vatDetails.vatTradingDetails
 
 import java.time.LocalDate
 import javax.inject.Inject

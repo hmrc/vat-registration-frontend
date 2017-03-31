@@ -22,12 +22,11 @@ import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.DownstreamOutcome
 import enums.DownstreamOutcome._
+import models._
 import models.api._
-import models.s4l.{S4LTradingDetails, S4LVatFinancials, S4LVatSicAndCompliance}
 import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration}
-import models.{S4LKey, ViewModelTransformer}
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
 
