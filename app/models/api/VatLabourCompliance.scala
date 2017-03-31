@@ -18,15 +18,10 @@ package models.api
 
 import play.api.libs.json._
 
+case class VatLabourCompliance(labour: Boolean, workers: Option[Long], temporaryContracts: Option[Boolean], skilledWorkers: Option[Boolean])
 
-case class VatSicAndCompliance(
-                                businessDescription: String,
-                                culturalCompliance: Option[VatComplianceCultural] = None,
-                                labourCompliance: Option[VatLabourCompliance]
-                              )
+object VatLabourCompliance {
 
-object VatSicAndCompliance {
-
-  implicit val format: OFormat[VatSicAndCompliance] = Json.format[VatSicAndCompliance]
+  implicit val format: OFormat[VatLabourCompliance] = Json.format[VatLabourCompliance]
 
 }
