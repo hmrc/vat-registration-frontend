@@ -23,7 +23,7 @@ import builders.AuthBuilder
 import common.Now
 import controllers.userJourney.vatChoice.StartDateController
 import fixtures.VatRegistrationFixture
-import forms.vatDetails.vatChoice.StartDateFormFactory
+import forms.vatDetails.vatTradingDetails.StartDateFormFactory
 import helpers.VatRegSpec
 import models.S4LKey
 import models.view.vatTradingDetails.StartDateView
