@@ -19,7 +19,7 @@ package controllers.userJourney.vatChoice
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatDetails.vatChoice.StartDateFormFactory
+import forms.vatDetails.vatTradingDetails.StartDateFormFactory
 import models.view.vatTradingDetails.StartDateView
 import play.api.data.Form
 import play.api.mvc._

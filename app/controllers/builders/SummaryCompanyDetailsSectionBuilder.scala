@@ -92,7 +92,7 @@ case class SummaryCompanyDetailsSectionBuilder
   def companyBusinessDescriptionRow: SummaryRow = SummaryRow(
     "companyDetails.businessActivity.description",
     vatSicAndCompliance.collect {
-      case VatSicAndCompliance(description, _) if StringUtils.isNotBlank(description) => description
+      case VatSicAndCompliance(description, _, _) if StringUtils.isNotBlank(description) => description
     }.getOrElse("app.common.no"),
     Some(controllers.userJourney.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
   )
