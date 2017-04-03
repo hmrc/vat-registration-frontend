@@ -20,7 +20,8 @@ import java.time.LocalDate
 
 import models.api.{VatComplianceCultural, _}
 import models.view._
-import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
+import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.StartDateView
 import play.api.http.Status._
@@ -139,7 +140,7 @@ trait VatRegistrationFixture {
 
   val validBusinessActivityDescription = BusinessActivityDescription(businessActivityDescription)
   val validVatCulturalCompliance = VatComplianceCultural(true)
-  val validCulturalComplianceQ1 = CulturalComplianceQ1(CulturalComplianceQ1.NOT_PROFIT_NO)
+  val validCulturalComplianceQ1 = NotForProfit(NotForProfit.NOT_PROFIT_NO)
 
   lazy val validSummaryView = Summary(
     Seq(

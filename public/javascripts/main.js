@@ -61,8 +61,6 @@ $(document).ready($(function () {
     }
 }(window.TradingNamePage = window.TradingNamePage || {}, jQuery));
 
-
-
 // VoluntaryRegistrationPage module
 (function (VoluntaryRegistrationPage, $, undefined) {
     VoluntaryRegistrationPage.init = function() {
@@ -71,8 +69,6 @@ $(document).ready($(function () {
     }
 }(window.VoluntaryRegistrationPage = window.VoluntaryRegistrationPage || {}, jQuery));
 
-
-
 // Company Bank Account Details module
 (function (CompanyBankAccountDetailsPage, $, undefined) {
     CompanyBankAccountDetailsPage.init = function() {
@@ -80,7 +76,6 @@ $(document).ready($(function () {
         UI.preventNonNumericInput(numericInputs);
     }
 }(window.CompanyBankAccountDetailsPage = window.CompanyBankAccountDetailsPage || {}, jQuery));
-
 
 // Estimate Vat Turnover
 (function (EstimateVatTurnoverPage, $, undefined) {
@@ -99,7 +94,13 @@ $(document).ready($(function () {
     }
 }(window.EstimateZeroRatedSalesPage = window.EstimateZeroRatedSalesPage || {}, jQuery));
 
-
+// Labour Compliance - Workers
+(function (WorkersPage, $, undefined) {
+    WorkersPage.init = function() {
+        var numericInputs = ["numberOfWorkers"];
+        UI.preventNonNumericInput(numericInputs);
+    }
+}(window.WorkersPage = window.WorkersPage || {}, jQuery));
 
 /*
  example of multiple hide/show areas

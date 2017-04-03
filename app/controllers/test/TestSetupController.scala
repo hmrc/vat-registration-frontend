@@ -23,7 +23,8 @@ import connectors.{KeystoreConnector, VatRegistrationConnector}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.test.TestSetupForm
 import models.S4LKey
-import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
+import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.test._
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TaxableTurnover, TradingNameView, VoluntaryRegistration}
@@ -54,7 +55,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       accountingPeriod <- s4LService.fetchAndGet[AccountingPeriod]()
       businessActivityDescription <- s4LService.fetchAndGet[BusinessActivityDescription]()
       sicStub <- s4LService.fetchAndGet[SicStub]()
-      culturalComplianceQ1 <- s4LService.fetchAndGet[CulturalComplianceQ1]()
+      culturalComplianceQ1 <- s4LService.fetchAndGet[NotForProfit]()
 
       testSetup = TestSetup(
         VatChoiceTestSetup(
@@ -137,7 +138,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
                 Some(x.sicAndCompliance.sicCode3.getOrElse("")),
                 Some(x.sicAndCompliance.sicCode4.getOrElse("")))
             })
-            _ <- saveToS4Later(data.sicAndCompliance.culturalComplianceQ1, data, { x => CulturalComplianceQ1(x.sicAndCompliance.culturalComplianceQ1.get) })
+            _ <- saveToS4Later(data.sicAndCompliance.culturalComplianceQ1, data, { x => NotForProfit(x.sicAndCompliance.culturalComplianceQ1.get) })
           } yield Ok("Test setup complete")
         }
       })
