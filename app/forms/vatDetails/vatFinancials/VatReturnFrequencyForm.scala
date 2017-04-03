@@ -27,7 +27,7 @@ object VatReturnFrequencyForm {
 
   val form = Form(
     mapping(
-      RADIO_FREQUENCY -> missingFieldMapping("vat.return.frequency").verifying(VatReturnFrequency.valid)
+      RADIO_FREQUENCY -> missingFieldMapping()("vat.return.frequency").verifying(VatReturnFrequency.valid)
     )(VatReturnFrequency.apply)(VatReturnFrequency.unapply)
   )
 }

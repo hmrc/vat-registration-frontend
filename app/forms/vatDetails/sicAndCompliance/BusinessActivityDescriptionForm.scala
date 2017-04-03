@@ -27,7 +27,7 @@ object BusinessActivityDescriptionForm {
 
   val form = Form(
     mapping(
-      INPUT_DESCRIPTION -> text.verifying(regexPattern(PartPattern, "BusinessActivity.description"))
+      INPUT_DESCRIPTION -> text.verifying(regexPattern(PartPattern)("BusinessActivity.description"))
     )(BusinessActivityDescription.apply)(BusinessActivityDescription.unapply)
   )
 }

@@ -26,7 +26,7 @@ object NotForProfitForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping("not.profit").verifying(NotForProfit.valid)
+      RADIO_YES_NO -> missingFieldMapping()("not.profit").verifying(NotForProfit.valid)
     )(NotForProfit.apply)(NotForProfit.unapply)
   )
 

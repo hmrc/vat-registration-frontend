@@ -22,12 +22,15 @@ import play.api.data.Form
 import play.api.data.Forms._
 
 object EstimateZeroRatedSalesForm {
+
   val ZERO_RATED_SALES_ESTIMATE: String = "zeroRatedTurnoverEstimate"
+
+  implicit val errorCode: ErrorCode = "estimate.zero.rated.sales"
 
   val form = Form(
     mapping(
-      ZERO_RATED_SALES_ESTIMATE -> text.verifying(mandatoryNumericText("estimate.zero.rated.sales")).
-                                        transform(taxEstimateTextToLong, longToText).verifying(boundedLong("estimate.zero.rated.sales"))
+      ZERO_RATED_SALES_ESTIMATE -> text.verifying(mandatoryNumericText).
+        transform(taxEstimateTextToLong, longToText).verifying(boundedLong)
     )(EstimateZeroRatedSales.apply)(EstimateZeroRatedSales.unapply)
   )
 

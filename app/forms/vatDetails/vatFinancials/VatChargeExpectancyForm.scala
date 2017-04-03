@@ -22,11 +22,12 @@ import play.api.data.Form
 import play.api.data.Forms._
 
 object VatChargeExpectancyForm {
+
   val RADIO_YES_NO: String = "vatChargeRadio"
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping("vat.charge.expectancy").verifying(VatChargeExpectancy.valid)
+      RADIO_YES_NO -> missingFieldMapping()("vat.charge.expectancy").verifying(VatChargeExpectancy.valid)
     )(VatChargeExpectancy.apply)(VatChargeExpectancy.unapply)
   )
 
