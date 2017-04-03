@@ -26,7 +26,7 @@ object ZeroRatedSalesForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping("zero.rated.sales").verifying(ZeroRatedSales.valid)
+      RADIO_YES_NO -> missingFieldMapping()("zero.rated.sales").verifying(ZeroRatedSales.valid)
     )(ZeroRatedSales.apply)(ZeroRatedSales.unapply)
   )
 

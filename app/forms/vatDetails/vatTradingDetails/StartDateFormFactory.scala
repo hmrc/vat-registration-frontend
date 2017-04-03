@@ -41,6 +41,7 @@ class StartDateFormFactory @Inject()(dateService: DateService, today: Now[LocalD
 
     val minDate: LocalDate = dateService.addWorkingDays(today(), 2)
     val maxDate: LocalDate = today().plusMonths(3)
+    implicit val specificErrorCode: String = "startDate"
 
     Form(
       mapping(
@@ -52,10 +53,7 @@ class StartDateFormFactory @Inject()(dateService: DateService, today: Now[LocalD
             "month" -> text,
             "year" -> text
           )(DateModel.apply)(DateModel.unapply)
-            .verifying(
-              nonEmptyDateModel("startDate"),
-              validDateModel(inRange(minDate, maxDate, "startDate"), "startDate")
-            ))
+            .verifying(nonEmptyDateModel(validDateModel(inRange(minDate, maxDate)))))
       )(StartDateView.bind)(StartDateView.unbind)
     )
   }

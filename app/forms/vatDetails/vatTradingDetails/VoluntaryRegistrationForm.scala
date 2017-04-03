@@ -26,7 +26,7 @@ object VoluntaryRegistrationForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping("voluntary.registration").verifying(VoluntaryRegistration.valid)
+      RADIO_YES_NO -> missingFieldMapping()("voluntary.registration").verifying(VoluntaryRegistration.valid)
     )(VoluntaryRegistration.apply)(VoluntaryRegistration.unapply)
   )
 
