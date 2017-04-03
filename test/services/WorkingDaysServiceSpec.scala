@@ -77,7 +77,7 @@ class WorkingDaysServiceSpec extends UnitSpec with MockFactory with Inspectors {
       }
     }
 
-    "should call bank holiday connector when nothing found date cache" in new Setup {
+    "should call bank holiday connector when nothing found in cache" in new Setup {
 
       (mockCache.getOrElse[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
         .expects(WorkingDaysService.BANK_HOLIDAYS_CACHE_KEY, 1 day, *, *).onCall(product => {
@@ -94,19 +94,19 @@ class WorkingDaysServiceSpec extends UnitSpec with MockFactory with Inspectors {
       //must setup mocks prior to calling new constructor, as one mock is called during construction
       val service = new WorkingDaysService(mockConnector, mockCache, mockConnector)
 
-      val date = LocalDate.of(2017, 3, 23)
-      service.addWorkingDays(date, 1) shouldBe LocalDate.of(2017, 3, 28)
+      val date = d(2017, 3, 23)
+      service.addWorkingDays(date, 1) shouldBe d(2017, 3, 28)
     }
 
 
-    "should call bank holiday connector when nothing found date cache and failed to download file from Web" in new Setup {
+    "should call bank holiday connector when nothing found in cache and failed to download file from Web" in new Setup {
 
       /*
       here the sequence of calls is important:
       1.) on creating the service instance a call to FallbackBankHolidaysConnector
           (subtype of BankHolidaysConnector) is made to load the holiday schedule from file on classpath
       2.) then when the cache is consulted, no value is found
-      3.) then the _second_ call to BankHolidaysConnector fails with a timed expected future
+      3.) then the _second_ call to BankHolidaysConnector fails with a timed out future
           which will cause the default holiday schedule to be used temporarily
        */
       inSequence {
@@ -127,8 +127,8 @@ class WorkingDaysServiceSpec extends UnitSpec with MockFactory with Inspectors {
       //must setup mocks prior to calling new constructor, as one mock is called during construction
       val service = new WorkingDaysService(mockConnector, mockCache, mockConnector)
 
-      val date = LocalDate.of(2017, 3, 23)
-      service.addWorkingDays(date, 1) shouldBe LocalDate.of(2017, 3, 28)
+      val date = d(2017, 3, 23)
+      service.addWorkingDays(date, 1) shouldBe d(2017, 3, 28)
     }
 
   }
