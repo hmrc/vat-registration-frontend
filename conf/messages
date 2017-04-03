@@ -276,7 +276,14 @@ pages.compliance.introduction.title                          = Compliance questi
 pages.compliance.introduction.heading                        = Tell us more about your company
 pages.compliance.introduction.para1                          = So we can understand what your company does, we''re going to ask you a few questions about your business activities.
 
-## Cultural Compliance - Not For Profit
+## Cultural Compliance Questions
+## Not For Profit
 pages.culturalCompliance.notForProfit.title                  = Not-for-profit organisation
 pages.culturalCompliance.notForProfit.heading                = Is your company a not-for-profit organisation or public body?
 validation.not.profit.option.missing                         = Tell us if your company is a not-for-profit organisation or public body
+
+## Labour Compliance
+## Workers
+pages.labourCompliance.workers.title                  = How many workers does the company provide at any one time?
+pages.labourCompliance.workers.heading                = How many workers does the company provide at any one time?
+pages.labourCompliance.workers.numberOfWorkers        = Number of workers 
