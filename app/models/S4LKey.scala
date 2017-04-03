@@ -16,6 +16,7 @@
 
 package models
 
+import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
 import models.view.test.SicStub
 import models.view.vatFinancials._
@@ -50,5 +51,7 @@ object S4LKey {
   implicit val businessActivityDescriptionS4LKey: S4LKey[BusinessActivityDescription] = S4LKey("BusinessActivityDescription")
   implicit val sicStub: S4LKey[SicStub] = S4LKey("SicStub")
   implicit val culturalComplianceQ1: S4LKey[CulturalComplianceQ1] = S4LKey("CulturalComplianceQ1")
+  implicit val companyProvideWorkers: S4LKey[CompanyProvideWorkers] = S4LKey("CompanyProvideWorkers")
+
 
 }

@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package models.view.sicAndCompliance
+
+package models.view.sicAndCompliance.labour
 
 import models.api.{VatComplianceLabour, VatScheme, VatSicAndCompliance}
 import models.{ApiModelTransformer, ViewModelTransformer}
@@ -28,11 +29,11 @@ object CompanyProvideWorkers {
 
   val valid = (item: String) => List(PROVIDE_WORKERS_YES, PROVIDE_WORKERS_NO).contains(item.toUpperCase)
 
-  implicit val format = Json.format[CulturalComplianceQ1]
+  implicit val format = Json.format[CompanyProvideWorkers]
 
-  implicit val modelTransformer = ApiModelTransformer[CulturalComplianceQ1] { (vs: VatScheme) =>
-    vs.vatSicAndCompliance.flatMap(_.culturalCompliance).map { q1 =>
-      CulturalComplianceQ1(if (q1.notForProfit) PROVIDE_WORKERS_YES else PROVIDE_WORKERS_NO)
+  implicit val modelTransformer = ApiModelTransformer[CompanyProvideWorkers] { (vs: VatScheme) =>
+    vs.vatSicAndCompliance.flatMap(_.labourCompliance).map { labourCompliance =>
+      CompanyProvideWorkers(if (labourCompliance.labour) PROVIDE_WORKERS_YES else PROVIDE_WORKERS_NO)
     }
   }
 

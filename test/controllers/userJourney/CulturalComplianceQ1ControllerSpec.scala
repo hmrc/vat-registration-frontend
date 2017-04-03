@@ -55,7 +55,7 @@ class CulturalComplianceQ1ControllerSpec extends VatRegSpec with VatRegistration
         .thenReturn(Future.successful(Some(culturalComplianceQ1)))
 
       AuthBuilder.submitWithAuthorisedUser(CulturalComplianceQ1Controller.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "notForProfitRadio" -> ""
+        "companyProvideWorkersRadio" -> ""
       )) {
 
         result =>
@@ -123,7 +123,7 @@ class CulturalComplianceQ1ControllerSpec extends VatRegSpec with VatRegistration
         .thenReturn(Future.successful(returnCacheMapCulturalComplianceQ1))
 
       AuthBuilder.submitWithAuthorisedUser(CulturalComplianceQ1Controller.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "notForProfitRadio" -> CulturalComplianceQ1.NOT_PROFIT_YES
+        "companyProvideWorkersRadio" -> CulturalComplianceQ1.NOT_PROFIT_YES
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
@@ -143,7 +143,7 @@ class CulturalComplianceQ1ControllerSpec extends VatRegSpec with VatRegistration
         .thenReturn(Future.successful(returnCacheMapCulturalComplianceQ1))
 
       AuthBuilder.submitWithAuthorisedUser(CulturalComplianceQ1Controller.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "notForProfitRadio" -> CulturalComplianceQ1.NOT_PROFIT_NO
+        "companyProvideWorkersRadio" -> CulturalComplianceQ1.NOT_PROFIT_NO
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER

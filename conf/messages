@@ -280,3 +280,9 @@ pages.compliance.introduction.para1                          = So we can underst
 pages.culturalCompliance.q1.title                          = Not-for-profit organisation
 pages.culturalCompliance.q1.heading                        = Is your company a not-for-profit organisation or public body?
 validation.not.profit.option.missing                       = Tell us if your company is a not-for-profit organisation or public body
+
+## Labour Compliance - Does Company Provide Workers
+pages.labourCompliance.companyProvideWorkers.title         = Does the company provide workers to other employers?
+pages.labourCompliance.companyProvideWorkers.heading       = Does the company provide workers to other employers?
+pages.labourCompliance.companyProvideWorkers.para          = For example, the company is a third-party supplier of construction workers or cleaners.
+validation.companyProvideWorkers.option.missing            = Tell us if your provide workers to other employers
