@@ -25,10 +25,12 @@ import play.api.data.Forms._
 object WorkersForm {
   val NUMBER_OF_WORKERS: String = "numberOfWorkers"
 
+  implicit val errorCode: ErrorCode = "labourCompliance.numberOfWorkers"
+
   val form = Form(
     mapping(
-      NUMBER_OF_WORKERS -> text.verifying(mandatoryNumericText("labourCompliance.numberOfWorkers")).
-        transform(numberOfWorkersToInt, intToText).verifying(boundedInt("labourCompliance.numberOfWorkers"))
+      NUMBER_OF_WORKERS -> text.verifying(mandatoryNumericText).
+        transform(numberOfWorkersToInt, intToText).verifying(boundedInt)
     )(Workers.apply)(Workers.unapply)
   )
 }
