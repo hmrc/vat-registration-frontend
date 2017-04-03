@@ -103,11 +103,11 @@ private[forms] object FormValidation {
       }
   }
 
-  def boundedInt(errorSubCode: String): Constraint[Int] = Constraint {
+  def boundedInt()(implicit e: ErrorCode): Constraint[Int] = Constraint {
     input: Int =>
       input match {
-        case Int.MaxValue => Invalid(s"validation.$errorSubCode.high")
-        case Int.MinValue => Invalid(s"validation.$errorSubCode.low")
+        case Int.MaxValue => Invalid(s"validation.$e.high")
+        case Int.MinValue => Invalid(s"validation.$e.low")
         case _ => Valid
       }
   }
