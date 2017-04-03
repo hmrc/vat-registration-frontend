@@ -22,12 +22,11 @@ import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.DownstreamOutcome
 import enums.DownstreamOutcome._
+import models._
 import models.api._
-import models.s4l.{S4LTradingDetails, S4LVatFinancials, S4LVatSicAndCompliance}
 import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration}
-import models.{S4LKey, ViewModelTransformer}
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -43,11 +42,7 @@ trait RegistrationService {
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme]
 
-  def deleteBankAccountDetails()(implicit hc: HeaderCarrier): Future[Boolean]
-
-  def deleteZeroRatedTurnover()(implicit hc: HeaderCarrier): Future[Boolean]
-
-  def deleteAccountingPeriodStart()(implicit hc: HeaderCarrier): Future[Boolean]
+  def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Boolean]
 }
 
 class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: VatRegistrationConnector)
@@ -70,14 +65,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Boolean] =
     fetchRegistrationId.flatMap(vatRegConnector.deleteVatScheme)
 
-  def deleteBankAccountDetails()(implicit hc: HeaderCarrier): Future[Boolean] =
-    fetchRegistrationId.flatMap(vatRegConnector.deleteBankAccount)
-
-  def deleteZeroRatedTurnover()(implicit hc: HeaderCarrier): Future[Boolean] =
-    fetchRegistrationId.flatMap(vatRegConnector.deleteZeroRatedTurnover)
-
-  def deleteAccountingPeriodStart()(implicit hc: HeaderCarrier): Future[Boolean] =
-    fetchRegistrationId.flatMap(vatRegConnector.deleteAccountingPeriodStart)
+  def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Boolean] =
+    fetchRegistrationId.flatMap(vatRegConnector.deleteElement(elementPath))
 
   def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] =
     for {
@@ -90,7 +79,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
 
   private[services] def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
 
-    // TODO: review this line (...(vs.financials.getOrElse(VatFinancials.empty))
     def mergeWithS4L(vs: VatScheme) =
       (s4l[EstimateVatTurnover]() |@|
         s4l[EstimateZeroRatedSales]() |@|

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package forms.vatDetails.vatChoice
+package forms.vatDetails.vatTradingDetails
 
 import forms.validation.FormValidation.missingFieldMapping
 import models.view.vatTradingDetails.TaxableTurnover
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.mapping
 
 object TaxableTurnoverForm {
   val RADIO_YES_NO: String = "taxableTurnoverRadio"
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping("taxable.turnover").verifying(TaxableTurnover.valid)
+      RADIO_YES_NO -> missingFieldMapping()("taxable.turnover").verifying(TaxableTurnover.valid)
     )(TaxableTurnover.apply)(TaxableTurnover.unapply)
   )
 

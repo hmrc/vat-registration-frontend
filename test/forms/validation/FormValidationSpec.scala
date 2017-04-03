@@ -16,6 +16,7 @@
 
 package forms.validation
 
+import forms.validation.FormValidation.ErrorCode
 import forms.vatDetails.vatFinancials.SortCode
 import models.DateModel
 import org.scalatest.{Inside, Inspectors}
@@ -27,7 +28,7 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
   "mandatoryText" must {
 
-    val constraint = FormValidation.mandatoryText("errorCode")
+    val constraint = FormValidation.mandatoryText()("errorCode")
 
     "accept a non-blank string as Valid" in {
       constraint("non-blank string") shouldBe Valid
@@ -41,7 +42,7 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
   "mandatoryNumericText" must {
 
-    val constraint = FormValidation.mandatoryNumericText("errorCode")
+    val constraint = FormValidation.mandatoryNumericText()("errorCode")
 
     "accept a numeric string integer" in {
       constraint("1234") shouldBe Valid
@@ -61,17 +62,17 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
     val regex = """^[A-Za-z]{1,10}$""".r
 
     "return valid when string matches regex" in {
-      val constraint = FormValidation.nonEmptyValidText("fieldName", regex)
+      val constraint = FormValidation.nonEmptyValidText(regex)("fieldName")
       constraint("abcdef") shouldBe Valid
     }
 
     "return invalid when string does not match regex" in {
-      val constraint = FormValidation.nonEmptyValidText("fieldName", regex)
+      val constraint = FormValidation.nonEmptyValidText(regex)("fieldName")
       constraint("a123") shouldBe Invalid("validation.fieldName.invalid")
     }
 
     "return invalid when string is empty" in {
-      val constraint = FormValidation.nonEmptyValidText("fieldName", regex)
+      val constraint = FormValidation.nonEmptyValidText(regex)("fieldName")
       constraint("") shouldBe Invalid("validation.fieldName.empty")
     }
   }
@@ -92,7 +93,7 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
   "boundedLong constraint" must {
     val specificCode = "specific.code"
-    val boundedLongConstraint = FormValidation.boundedLong(specificCode)
+    val boundedLongConstraint = FormValidation.boundedLong()(specificCode)
 
     "return Invalid-low if input is Long.MinValue" in {
       inside(boundedLongConstraint(Long.MinValue)) {
@@ -114,8 +115,8 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
   "patternCheckingConstraint" must {
 
-    val constraintMandatory = FormValidation.regexPattern("""[a-z]{3}""".r, "errorCode", mandatory = true)
-    val constraintNonMandatory = FormValidation.regexPattern("""[a-z]{3}""".r, "errorCode", mandatory = false)
+    val constraintMandatory = FormValidation.regexPattern("""[a-z]{3}""".r, mandatory = true)("errorCode")
+    val constraintNonMandatory = FormValidation.regexPattern("""[a-z]{3}""".r, mandatory = false)("errorCode")
 
     "accept a string matching regex pattern as Valid" in {
       constraintMandatory.apply("abc") shouldBe Valid
@@ -237,7 +238,7 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
   "Date validation" must {
 
     "accept valid date" in {
-      val constraint: Constraint[DateModel] = FormValidation.Dates.validDateModel(errorSubCode = "date")
+      val constraint: Constraint[DateModel] = FormValidation.Dates.validDateModel()("date")
 
       forAll(Seq(
         DateModel("1", "1", "1970"),
@@ -248,7 +249,7 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
     }
 
     "reject invalid date" in {
-      val constraint: Constraint[DateModel] = FormValidation.Dates.validDateModel(errorSubCode = "date")
+      val constraint: Constraint[DateModel] = FormValidation.Dates.validDateModel()("date")
 
       forAll(Seq(
         DateModel("1", "1", "0"),
@@ -261,7 +262,7 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
     }
 
     "reject empty date" in {
-      val constraint: Constraint[DateModel] = FormValidation.Dates.nonEmptyDateModel(errorSubCode = "date")
+      val constraint: Constraint[DateModel] = FormValidation.Dates.nonEmptyDateModel()("date")
 
       forAll(Seq(
         DateModel("  ", " ", ""),
@@ -277,21 +278,22 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
   "Range validation" must {
 
-    val constraint = FormValidation.inRange[Int](0, 100, "test")
+    implicit val e:ErrorCode = "test"
+    val constraint = FormValidation.inRange[Int](0, 100)
 
     "accept values in range" in {
-      forAll(Seq(0,1,2,3,50,98,99,100))(constraint(_) shouldBe Valid)
+      forAll(Seq(0, 1, 2, 3, 50, 98, 99, 100))(constraint(_) shouldBe Valid)
     }
 
     "reject values below acceptable minimum" in {
-      forAll(Seq(Int.MinValue,-10000, -1))(in => inside(constraint(in)){
-        case Invalid(err:: _) => err.message shouldBe "validation.test.range.below"
+      forAll(Seq(Int.MinValue, -10000, -1))(in => inside(constraint(in)) {
+        case Invalid(err :: _) => err.message shouldBe "validation.test.range.below"
       })
     }
 
     "reject values above acceptable maximum" in {
-      forAll(Seq(Int.MaxValue, 10000, 101))(in => inside(constraint(in)){
-        case Invalid(err:: _) => err.message shouldBe "validation.test.range.above"
+      forAll(Seq(Int.MaxValue, 10000, 101))(in => inside(constraint(in)) {
+        case Invalid(err :: _) => err.message shouldBe "validation.test.range.above"
       })
     }
 
