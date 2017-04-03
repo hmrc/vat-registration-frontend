@@ -78,7 +78,8 @@ trait VatRegistrationFixture {
 
   val validSicAndCompliance = VatSicAndCompliance(
     businessDescription = businessActivityDescription,
-    culturalCompliance = None
+    culturalCompliance = None,
+    labourCompliance   = None
   )
 
   val emptyVatScheme = VatScheme(validRegId)

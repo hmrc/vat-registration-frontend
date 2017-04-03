@@ -19,9 +19,7 @@ package controllers.userJourney.sicAndCompliance.labour
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatDetails.sicAndCompliance.CulturalComplianceQ1Form
 import forms.vatDetails.sicAndCompliance.labour.CompanyProvideWorkersForm
-import models.view.sicAndCompliance.CulturalComplianceQ1
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -35,14 +33,14 @@ class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     viewModel[CompanyProvideWorkers].map { vm =>
-      Ok(views.html.pages.company_provide_workers(CompanyProvideWorkersForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.company_provide_workers(CompanyProvideWorkersForm.form)))
+      Ok(views.html.pages.sicAndCompliance.labour.company_provide_workers(CompanyProvideWorkersForm.form.fill(vm)))
+    }.getOrElse(Ok(views.html.pages.sicAndCompliance.labour.company_provide_workers(CompanyProvideWorkersForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     CompanyProvideWorkersForm.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.company_provide_workers(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.sicAndCompliance.labour.company_provide_workers(formWithErrors)))
       }, {
         data: CompanyProvideWorkers => {
           s4LService.saveForm[CompanyProvideWorkers](data) map { _ =>

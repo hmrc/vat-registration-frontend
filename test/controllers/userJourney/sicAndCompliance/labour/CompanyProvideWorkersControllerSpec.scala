@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.userJourney
+package controllers.userJourney.sicAndCompliance.labour
 
 import builders.AuthBuilder
-import controllers.userJourney.sicAndCompliance.labour.CompanyProvideWorkersController
+import controllers.userJourney.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.S4LKey
