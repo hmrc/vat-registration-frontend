@@ -74,6 +74,9 @@ POST        /compliance/not-for-profit      controllers.userJourney.sicAndCompli
 GET         /compliance/workers             controllers.userJourney.sicAndCompliance.labour.WorkersController.show
 POST        /compliance/workers             controllers.userJourney.sicAndCompliance.labour.WorkersController.submit
 
+GET         /compliance/temporary-contracts controllers.userJourney.sicAndCompliance.labour.TemporaryContractsController.show
+POST        /compliance/temporary-contracts controllers.userJourney.sicAndCompliance.labour.TemporaryContractsController.submit
+
 ## FEEDBACK
 GET         /feedback                       controllers.feedback.FeedbackController.show
 
