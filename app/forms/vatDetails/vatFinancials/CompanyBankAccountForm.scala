@@ -26,7 +26,7 @@ object CompanyBankAccountForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping("company.bank.account").verifying(CompanyBankAccount.valid)
+      RADIO_YES_NO -> missingFieldMapping()("company.bank.account").verifying(CompanyBankAccount.valid)
     )(CompanyBankAccount.apply)(CompanyBankAccount.unapply)
   )
 
