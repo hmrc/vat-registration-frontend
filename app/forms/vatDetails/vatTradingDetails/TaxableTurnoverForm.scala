@@ -26,7 +26,7 @@ object TaxableTurnoverForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping("taxable.turnover").verifying(TaxableTurnover.valid)
+      RADIO_YES_NO -> missingFieldMapping()("taxable.turnover").verifying(TaxableTurnover.valid)
     )(TaxableTurnover.apply)(TaxableTurnover.unapply)
   )
 

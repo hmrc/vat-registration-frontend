@@ -31,24 +31,26 @@ import scala.util.matching.Regex
 
 private[forms] object FormValidation {
 
-  def regexPattern(pattern: Regex, errorSubCode: String, mandatory: Boolean = true): Constraint[String] = Constraint {
+  type ErrorCode = String
+
+  def regexPattern(pattern: Regex, mandatory: Boolean = true)(implicit e: ErrorCode): Constraint[String] = Constraint {
     input: String =>
-      mandatoryText(errorSubCode)(input) match {
-        case Valid => Constraints.pattern(pattern, error = s"validation.$errorSubCode.invalid")(input)
+      mandatoryText.apply(input) match {
+        case Valid => Constraints.pattern(pattern, error = s"validation.$e.invalid")(input)
         case err => if (mandatory) err else Valid
       }
   }
 
-  def mandatoryText(errorSubCode: String): Constraint[String] = Constraint { input: String =>
-    if (StringUtils.isNotBlank(input)) Valid else Invalid(s"validation.$errorSubCode.missing")
+  def mandatoryText()(implicit e: ErrorCode): Constraint[String] = Constraint { input: String =>
+    if (StringUtils.isNotBlank(input)) Valid else Invalid(s"validation.$e.missing")
   }
 
-  def mandatoryNumericText(errorSubCode: String): Constraint[String] = Constraint {
+  def mandatoryNumericText()(implicit e: ErrorCode): Constraint[String] = Constraint {
     val NumericText = """[0-9]+""".r
     (input: String) =>
       input match {
         case NumericText(_*) => Valid
-        case _ if StringUtils.isBlank(input) => Invalid(s"validation.$errorSubCode.missing")
+        case _ if StringUtils.isBlank(input) => Invalid(s"validation.$e.missing")
         case _ => Invalid("validation.numeric")
       }
   }
@@ -56,13 +58,13 @@ private[forms] object FormValidation {
 
   private def unconstrained[T] = Constraint[T] { (t: T) => Valid }
 
-  def inRange[T](minValue: T, maxValue: T, errorSubCode: String = "")(implicit ordering: Ordering[T]): Constraint[T] =
+  def inRange[T](minValue: T, maxValue: T)(implicit ordering: Ordering[T], e: ErrorCode): Constraint[T] =
     Constraint[T] { (t: T) =>
       Logger.info(s"Checking constraint for value $t in the range of [$minValue, $maxValue]")
       (ordering.compare(t, minValue).signum, ordering.compare(t, maxValue).signum) match {
         case (1, -1) | (0, _) | (_, 0) => Valid
-        case (_, 1) => Invalid(ValidationError(s"validation.$errorSubCode.range.above", maxValue))
-        case (-1, _) => Invalid(ValidationError(s"validation.$errorSubCode.range.below", minValue))
+        case (_, 1) => Invalid(ValidationError(s"validation.$e.range.above", maxValue))
+        case (-1, _) => Invalid(ValidationError(s"validation.$e.range.below", minValue))
       }
     }
 
@@ -92,11 +94,11 @@ private[forms] object FormValidation {
   def intToText(i: Int): String = i.toString
   def longToText(l: Long): String = l.toString
 
-  def boundedLong(errorSubCode: String): Constraint[Long] = Constraint {
+  def boundedLong()(implicit e: ErrorCode): Constraint[Long] = Constraint {
     input: Long =>
       input match {
-        case Long.MaxValue => Invalid(s"validation.$errorSubCode.high")
-        case Long.MinValue => Invalid(s"validation.$errorSubCode.low")
+        case Long.MaxValue => Invalid(s"validation.$e.high")
+        case Long.MinValue => Invalid(s"validation.$e.low")
         case _ => Valid
       }
   }
@@ -110,23 +112,23 @@ private[forms] object FormValidation {
       }
   }
 
-  def nonEmptyValidText(errorSubCode: String, Pattern: Regex): Constraint[String] = Constraint[String] {
+  def nonEmptyValidText(Pattern: Regex)(implicit e: ErrorCode): Constraint[String] = Constraint[String] {
     input: String =>
       input match {
         case Pattern(_*) => Valid
-        case s if StringUtils.isNotBlank(s) => Invalid(s"validation.$errorSubCode.invalid")
-        case _ => Invalid(s"validation.$errorSubCode.empty")
+        case s if StringUtils.isNotBlank(s) => Invalid(s"validation.$e.invalid")
+        case _ => Invalid(s"validation.$e.empty")
       }
   }
 
   /* overrides Play's implicit stringFormatter and handles missing options (e.g. no radio button selected) */
-  private def stringFormat(errorSubCode: String): Formatter[String] = new Formatter[String] {
-    def bind(key: String, data: Map[String, String]) = data.get(key).toRight(Seq(FormError(key, s"validation.$errorSubCode.option.missing", Nil)))
+  private def stringFormat()(implicit e: ErrorCode): Formatter[String] = new Formatter[String] {
+    def bind(key: String, data: Map[String, String]) = data.get(key).toRight(Seq(FormError(key, s"validation.$e.option.missing", Nil)))
 
     def unbind(key: String, value: String) = Map(key -> value)
   }
 
-  def missingFieldMapping(errorSubCode: String): Mapping[String] = FieldMapping[String]()(stringFormat(errorSubCode))
+  def missingFieldMapping()(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat)
 
   object BankAccount {
 
@@ -137,25 +139,30 @@ private[forms] object FormValidation {
     private val AccountNumber = """[0-9]{8}""".r
 
     def accountName(errorSubstring: String, mandatory: Boolean = true): Constraint[String] =
-      regexPattern(AccountName, s"$errorSubstring.name", mandatory)
+      regexPattern(AccountName, mandatory)(s"$errorSubstring.name")
 
     def accountNumber(errorSubstring: String, mandatory: Boolean = true): Constraint[String] =
-      regexPattern(AccountNumber, s"$errorSubstring.number", mandatory)
+      regexPattern(AccountNumber, mandatory)(s"$errorSubstring.number")
 
     def accountSortCode(errorSubstring: String, mandatory: Boolean = true): Constraint[SortCode] = Constraint {
       (in: SortCode) =>
-        regexPattern(SortCode, errorSubCode = s"$errorSubstring.sortCode", mandatory)(Show[SortCode].show(in))
+        regexPattern(SortCode, mandatory)(s"$errorSubstring.sortCode")(Show[SortCode].show(in))
     }
 
   }
 
   object Dates {
 
-    def nonEmptyDateModel(errorSubCode: String): Constraint[DateModel] =
-      Constraint(dm => mandatoryText(errorSubCode)(Seq(dm.day, dm.month, dm.day).mkString.trim))
+    def nonEmptyDateModel(constraint: => Constraint[DateModel] = unconstrained)(implicit e: ErrorCode): Constraint[DateModel] =
+      Constraint { dm =>
+        mandatoryText.apply(Seq(dm.day, dm.month, dm.day).mkString.trim) match {
+          case Valid => constraint(dm)
+          case err@_ => err
+        }
+      }
 
-    def validDateModel(dateConstraint: Constraint[LocalDate] = unconstrained, errorSubCode: => String): Constraint[DateModel] =
-      Constraint(dm => dm.toLocalDate.fold[ValidationResult](Invalid(s"validation.$errorSubCode.invalid"))(dateConstraint(_)))
+    def validDateModel(dateConstraint: => Constraint[LocalDate] = unconstrained)(implicit e: ErrorCode): Constraint[DateModel] =
+      Constraint(dm => dm.toLocalDate.fold[ValidationResult](Invalid(s"validation.$e.invalid"))(dateConstraint(_)))
 
   }
 
