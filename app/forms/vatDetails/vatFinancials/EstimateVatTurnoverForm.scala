@@ -22,12 +22,15 @@ import play.api.data.Form
 import play.api.data.Forms._
 
 object EstimateVatTurnoverForm {
+
   val TURNOVER_ESTIMATE: String = "turnoverEstimate"
+
+  implicit val errorCode: ErrorCode = "estimate.vat.turnover"
 
   val form = Form(
     mapping(
-      TURNOVER_ESTIMATE -> text.verifying(mandatoryNumericText("estimate.vat.turnover")).
-        transform(taxEstimateTextToLong, longToText).verifying(boundedLong("estimate.vat.turnover"))
+      TURNOVER_ESTIMATE -> text.verifying(mandatoryNumericText).
+        transform(taxEstimateTextToLong, longToText).verifying(boundedLong)
     )(EstimateVatTurnover.apply)(EstimateVatTurnover.unapply)
   )
 }
