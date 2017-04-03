@@ -24,6 +24,7 @@ import enums.DownstreamOutcome
 import enums.DownstreamOutcome._
 import models._
 import models.api._
+import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration}
@@ -106,10 +107,13 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   private[services] def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[VatSicAndCompliance] = {
     def mergeWithS4L(vs: VatScheme) =
       (s4l[BusinessActivityDescription]() |@|
-        s4l[CulturalComplianceQ1]()).map(S4LVatSicAndCompliance).map {
+        s4l[CulturalComplianceQ1]()       |@|
+        s4l[CompanyProvideWorkers]()
+        ).map(S4LVatSicAndCompliance).map {
         s4l =>
           update(s4l.description, vs)
             .andThen(update(s4l.culturalCompliance, vs))
+            .andThen(update(s4l.labourComplianceCompanyProvideWorkers, vs))
             .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance(""))) //TODO remove the "seeding" with default
       }
 
