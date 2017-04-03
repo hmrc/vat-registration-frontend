@@ -96,11 +96,12 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
     def saveStartDate(data: TestSetup) = {
       s4LService.saveForm[StartDateView](data.vatChoice.startDateChoice match {
         case None => StartDateView()
-        case Some(a) => StartDateView(a, Some(LocalDate.of(
-          data.vatChoice.startDateYear.map(_.toInt).getOrElse(1970),
-          data.vatChoice.startDateMonth.map(_.toInt).getOrElse(1),
-          data.vatChoice.startDateDay.map(_.toInt).getOrElse(1)
+        case Some("SPECIFIC_DATE") => StartDateView("SPECIFIC_DATE", Some(LocalDate.of(
+          data.vatChoice.startDateYear.map(_.toInt).get,
+          data.vatChoice.startDateMonth.map(_.toInt).get,
+          data.vatChoice.startDateDay.map(_.toInt).get
         )))
+        case Some(t) => StartDateView(t, None)
       })
     }
 
@@ -116,7 +117,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveStartDate(data)
             _ <- saveToS4Later(data.vatChoice.taxableTurnoverChoice, data, { x => TaxableTurnover(x.vatChoice.taxableTurnoverChoice.get) })
             _ <- saveToS4Later(data.vatChoice.voluntaryChoice, data, { x => VoluntaryRegistration(x.vatChoice.voluntaryChoice.get) })
-            _ <- saveToS4Later(data.vatTradingDetails.tradingNameChoice, data, { x => TradingNameView(x.vatTradingDetails.tradingNameChoice.get, Some(data.vatTradingDetails.tradingName.getOrElse(""))) })
+            _ <- saveToS4Later(data.vatTradingDetails.tradingNameChoice, data, { x => TradingNameView(x.vatTradingDetails.tradingNameChoice.get, data.vatTradingDetails.tradingName) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountChoice, data, { x => CompanyBankAccount(x.vatFinancials.companyBankAccountChoice.get) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountName, data, {
               x =>
