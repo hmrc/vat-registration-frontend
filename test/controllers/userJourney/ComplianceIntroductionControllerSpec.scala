@@ -18,11 +18,19 @@ package controllers.userJourney
 
 import controllers.userJourney.sicAndCompliance.ComplianceIntroductionController
 import helpers.VatRegSpec
+import models.view.test.SicStub
+import org.mockito.Matchers.any
+import org.mockito.Mockito._
 import play.api.test.Helpers._
+import uk.gov.hmrc.play.http.HeaderCarrier
+
+import scala.concurrent.Future
 
 class ComplianceIntroductionControllerSpec extends VatRegSpec {
 
   object ComplianceIntroductionController extends ComplianceIntroductionController(mockS4LService, ds) {
+    implicit val headerCarrier = HeaderCarrier()
+
     override val authConnector = mockAuthConnector
   }
 
@@ -42,11 +50,59 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec {
   s"POST ${sicAndCompliance.routes.ComplianceIntroductionController.submit()}" should {
 
     "redirect the user to the next page in the flow" in {
+      when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any()))
+        .thenReturn(Future.successful(Some(SicStub(Some("12345678"), None, None, None))))
       callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
         result =>
           status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(
+            controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show().url
+          )
       }
     }
   }
 
+  s"POST ${sicAndCompliance.routes.ComplianceIntroductionController.submit()} with no SIC code selection" should {
+
+    "redirect the user to the SIC code selection page" in {
+      when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(None))
+      callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
+        result =>
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(controllers.test.routes.SicStubController.show().url)
+      }
+    }
+  }
+
+  s"POST ${sicAndCompliance.routes.ComplianceIntroductionController.submit()} with cultural SIC code selection" should {
+
+    "redirect the user to the first question about cultural compliance" in {
+      when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(
+        Some(SicStub(Some("90010123"), Some("90020123"), None, None))
+      ))
+      callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
+        result =>
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(
+            controllers.userJourney.sicAndCompliance.routes.CulturalComplianceQ1Controller.show().url
+          )
+      }
+    }
+  }
+
+  s"POST ${sicAndCompliance.routes.ComplianceIntroductionController.submit()} with labour SIC code selection" should {
+
+    "redirect the user to the first question about labour compliance" in {
+      when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(
+        Some(SicStub(Some("42110123"), Some("42910123"), None, None))
+      ))
+      callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
+        result =>
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some( //TODO below should be routing to a different controller, once we have that controller
+            controllers.userJourney.sicAndCompliance.routes.CulturalComplianceQ1Controller.show().url
+          )
+      }
+    }
+  }
 }

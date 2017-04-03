@@ -21,7 +21,7 @@ import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TaxableTurnover, TradingNameView, VoluntaryRegistration}
 import uk.gov.hmrc.play.test.UnitSpec
 
-class CacheKeySpec extends UnitSpec {
+class S4LKeySpec extends UnitSpec {
 
   "cacheKey" should {
     "be generated for each view model" in {

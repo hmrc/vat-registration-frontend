@@ -18,17 +18,32 @@ package controllers.userJourney.sicAndCompliance
 
 import javax.inject.Inject
 
+import cats.data.OptionT
 import controllers.{CommonPlayDependencies, VatRegistrationController}
+import models.ComplianceQuestions
+import models.view.test.SicStub
+import play.api.Logger
 import play.api.mvc._
 import services.S4LService
 
-class ComplianceIntroductionController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+import scala.concurrent.ExecutionContext.Implicits.global
+
+
+class ComplianceIntroductionController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies)
+  extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised(implicit user => implicit request => {
-      Ok(views.html.pages.compliance_introduction())
+    Ok(views.html.pages.compliance_introduction())
   })
 
-  def submit: Action[AnyContent] = authorised(implicit user => implicit request => {
-    Redirect(controllers.userJourney.sicAndCompliance.routes.CulturalComplianceQ1Controller.show())
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    import cats.instances.future._
+    OptionT(s4LService.fetchAndGet[SicStub]()).map(ss => ComplianceQuestions(ss.sicCodes))
+      .fold(controllers.test.routes.SicStubController.show()) { //TODO point to non-stub page for SIC code selection
+        complianceQuestions =>
+          Logger.info(s"User needs to answer a series of $complianceQuestions")
+          complianceQuestions.firstQuestion
+      }.map(Redirect)
   })
+
 }
