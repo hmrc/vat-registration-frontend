@@ -16,6 +16,8 @@
 
 package models
 
+import models.api.VatComplianceLabour
+import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration}
@@ -41,5 +43,7 @@ case class S4LTradingDetails
 case class S4LVatSicAndCompliance
 (
   description: Option[BusinessActivityDescription],
-  culturalCompliance: Option[CulturalComplianceQ1]
+  culturalCompliance: Option[CulturalComplianceQ1],
+  labourComplianceCompanyProvideWorkers: Option[CompanyProvideWorkers]
+
 )
