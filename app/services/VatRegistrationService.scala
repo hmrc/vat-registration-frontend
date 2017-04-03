@@ -24,7 +24,8 @@ import enums.DownstreamOutcome
 import enums.DownstreamOutcome._
 import models._
 import models.api._
-import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
+import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration}
 import play.api.libs.json.Format
@@ -106,7 +107,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   private[services] def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[VatSicAndCompliance] = {
     def mergeWithS4L(vs: VatScheme) =
       (s4l[BusinessActivityDescription]() |@|
-        s4l[CulturalComplianceQ1]()).map(S4LVatSicAndCompliance).map {
+        s4l[NotForProfit]()).map(S4LVatSicAndCompliance).map {
         s4l =>
           update(s4l.description, vs)
             .andThen(update(s4l.culturalCompliance, vs))

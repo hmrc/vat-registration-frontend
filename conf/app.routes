@@ -66,9 +66,9 @@ POST        /business-activity-description  controllers.userJourney.sicAndCompli
 GET         /compliance/compliance-help     controllers.userJourney.sicAndCompliance.ComplianceIntroductionController.show
 POST        /compliance/compliance-help     controllers.userJourney.sicAndCompliance.ComplianceIntroductionController.submit
 
-## CULTURAL COMPLIANCE Q1
-GET         /cultural-compliance/q1         controllers.userJourney.sicAndCompliance.CulturalComplianceQ1Controller.show
-POST        /cultural-compliance/q1         controllers.userJourney.sicAndCompliance.CulturalComplianceQ1Controller.submit
+## CULTURAL COMPLIANCE QUESTIONS
+GET         /compliance/not-for-profit      controllers.userJourney.sicAndCompliance.cultural.NotForProfitController.show
+POST        /compliance/not-for-profit      controllers.userJourney.sicAndCompliance.cultural.NotForProfitController.submit
 
 ## FEEDBACK
 GET         /feedback                       controllers.feedback.FeedbackController.show
