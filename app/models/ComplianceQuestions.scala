@@ -27,14 +27,14 @@ sealed trait ComplianceQuestions {
 
 case object CulturalComplianceQuestions extends ComplianceQuestions {
 
-  override def firstQuestion: Call = controllers.userJourney.sicAndCompliance.routes.CulturalComplianceQ1Controller.show()
+  override def firstQuestion: Call = controllers.userJourney.sicAndCompliance.cultural.routes.NotForProfitController.show()
 
 }
 
 case object LabourComplianceQuestions extends ComplianceQuestions {
 
   //TODO change once controller merged
-  override def firstQuestion: Call = controllers.userJourney.sicAndCompliance.routes.CulturalComplianceQ1Controller.show()
+  override def firstQuestion: Call = controllers.userJourney.sicAndCompliance.cultural.routes.NotForProfitController.show()
 
 }
 
