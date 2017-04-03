@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package controllers.userJourney
+package controllers.userJourney.sicAndCompliance
 
-import controllers.userJourney.sicAndCompliance.ComplianceIntroductionController
+import controllers.userJourney.sicAndCompliance
 import helpers.VatRegSpec
 import models.view.test.SicStub
 import org.mockito.Matchers.any
@@ -84,7 +84,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec {
         result =>
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(
-            controllers.userJourney.sicAndCompliance.routes.CulturalComplianceQ1Controller.show().url
+            controllers.userJourney.sicAndCompliance.cultural.routes.NotForProfitController.show().url
           )
       }
     }
@@ -100,7 +100,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec {
         result =>
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some( //TODO below should be routing to a different controller, once we have that controller
-            controllers.userJourney.sicAndCompliance.routes.CulturalComplianceQ1Controller.show().url
+            controllers.userJourney.sicAndCompliance.cultural.routes.NotForProfitController.show().url
           )
       }
     }

@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package forms.vatDetails.sicAndCompliance
+package forms.vatDetails.sicAndCompliance.cultural
 
 import forms.validation.FormValidation.missingFieldMapping
-import models.view.sicAndCompliance.CulturalComplianceQ1
+import models.view.sicAndCompliance.cultural.NotForProfit
 import play.api.data.Form
 import play.api.data.Forms._
 
-object CulturalComplianceQ1Form {
+object NotForProfitForm {
   val RADIO_YES_NO: String = "notForProfitRadio"
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping("not.profit").verifying(CulturalComplianceQ1.valid)
-    )(CulturalComplianceQ1.apply)(CulturalComplianceQ1.unapply)
+      RADIO_YES_NO -> missingFieldMapping("not.profit").verifying(NotForProfit.valid)
+    )(NotForProfit.apply)(NotForProfit.unapply)
   )
 
 }

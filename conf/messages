@@ -276,7 +276,7 @@ pages.compliance.introduction.title                          = Compliance questi
 pages.compliance.introduction.heading                        = Tell us more about your company
 pages.compliance.introduction.para1                          = So we can understand what your company does, we''re going to ask you a few questions about your business activities.
 
-## Cultural Compliance - Q1
-pages.culturalCompliance.q1.title                          = Not-for-profit organisation
-pages.culturalCompliance.q1.heading                        = Is your company a not-for-profit organisation or public body?
-validation.not.profit.option.missing                       = Tell us if your company is a not-for-profit organisation or public body
+## Cultural Compliance - Not For Profit
+pages.culturalCompliance.notForProfit.title                  = Not-for-profit organisation
+pages.culturalCompliance.notForProfit.heading                = Is your company a not-for-profit organisation or public body?
+validation.not.profit.option.missing                         = Tell us if your company is a not-for-profit organisation or public body

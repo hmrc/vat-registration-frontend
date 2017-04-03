@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-package models.view.sicAndCompliance
+package models.view.sicAndCompliance.cultural
 
 import models.api.{VatComplianceCultural, VatScheme, VatSicAndCompliance}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class CulturalComplianceQ1(yesNo: String)
+case class NotForProfit(yesNo: String)
 
-object CulturalComplianceQ1 {
+object NotForProfit {
 
   val NOT_PROFIT_YES = "NOT_PROFIT_YES"
   val NOT_PROFIT_NO = "NOT_PROFIT_NO"
 
   val valid = (item: String) => List(NOT_PROFIT_YES, NOT_PROFIT_NO).contains(item.toUpperCase)
 
-  implicit val format = Json.format[CulturalComplianceQ1]
+  implicit val format = Json.format[NotForProfit]
 
-  implicit val modelTransformer = ApiModelTransformer[CulturalComplianceQ1] { (vs: VatScheme) =>
+  implicit val modelTransformer = ApiModelTransformer[NotForProfit] { (vs: VatScheme) =>
     vs.vatSicAndCompliance.flatMap(_.culturalCompliance).map { q1 =>
-      CulturalComplianceQ1(if (q1.notForProfit) NOT_PROFIT_YES else NOT_PROFIT_NO)
+      NotForProfit(if (q1.notForProfit) NOT_PROFIT_YES else NOT_PROFIT_NO)
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: CulturalComplianceQ1, g: VatSicAndCompliance) =>
+  implicit val viewModelTransformer = ViewModelTransformer { (c: NotForProfit, g: VatSicAndCompliance) =>
     g.copy(culturalCompliance = Some(VatComplianceCultural(c.yesNo == NOT_PROFIT_YES)))
   }
 

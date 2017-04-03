@@ -20,11 +20,12 @@ import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.DownstreamOutcome
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.{S4LKey, VatBankAccountPath}
 import models.api._
-import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
+import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration}
+import models.{S4LKey, VatBankAccountPath}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
@@ -98,7 +99,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.eq(S4LKey[BusinessActivityDescription]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validBusinessActivityDescription)))
 
-      when(mockS4LService.fetchAndGet[CulturalComplianceQ1]()(Matchers.eq(S4LKey[CulturalComplianceQ1]), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[NotForProfit]()(Matchers.eq(S4LKey[NotForProfit]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validCulturalComplianceQ1)))
 
       when(mockRegConnector.upsertSicAndCompliance(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
@@ -154,7 +155,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.eq(S4LKey[BusinessActivityDescription]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validBusinessActivityDescription)))
 
-      when(mockS4LService.fetchAndGet[CulturalComplianceQ1]()(Matchers.eq(S4LKey[CulturalComplianceQ1]), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[NotForProfit]()(Matchers.eq(S4LKey[NotForProfit]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validCulturalComplianceQ1)))
 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
