@@ -104,9 +104,11 @@ trait VatRegistrationFixture {
 
   def vatSicAndCompliance(
                            activityDescription: String = "Some business activity",
-                           culturalComplianceSection: Option[VatComplianceCultural] = Some(VatComplianceCultural(notForProfit = false))
+                           culturalComplianceSection: Option[VatComplianceCultural] = Some(VatComplianceCultural(notForProfit = false)),
+                           labourComplianceSection: Option[VatComplianceLabour] = Some(VatComplianceLabour(false))
+
                          ): VatSicAndCompliance =
-    VatSicAndCompliance(businessDescription = activityDescription, culturalCompliance = culturalComplianceSection)
+    VatSicAndCompliance(businessDescription = activityDescription, culturalCompliance = culturalComplianceSection, labourCompliance = labourComplianceSection)
 
 
   def vatScheme(
