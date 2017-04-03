@@ -16,6 +16,8 @@
 
 package forms.vatDetails.sicAndCompliance.labour
 
+import forms.validation.FormValidation._
+import forms.validation.FormValidation.mandatoryNumericText
 import models.view.sicAndCompliance.labour.Workers
 import play.api.data.Form
 import play.api.data.Forms._
@@ -25,7 +27,8 @@ object WorkersForm {
 
   val form = Form(
     mapping(
-      NUMBER_OF_WORKERS -> number
+      NUMBER_OF_WORKERS -> text.verifying(mandatoryNumericText("labourCompliance.numberOfWorkers")).
+        transform(numberOfWorkersToInt, intToText).verifying(boundedInt("labourCompliance.numberOfWorkers"))
     )(Workers.apply)(Workers.unapply)
   )
 }
