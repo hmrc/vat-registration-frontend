@@ -1,0 +1,53 @@
+@import models.view.sicAndCompliance.labour.Workers
+@(workersForm: Form[Workers])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+@fieldSetClasses = @{
+    if(workersForm.hasErrors && (workersForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
+}
+
+@main_template(title = messages("pages.labourCompliance.workers.title")) {
+
+    <div class="column-one-third">
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.labourCompliance.workers.heading")</h1>
+
+        @errorSummary(
+            Messages("app.common.errorSummaryLabel"),
+            workersForm,
+            Seq("numberOfWorkers")
+        )
+
+        @govHelpers.form(action = controllers.userJourney.sicAndCompliance.labour.routes.WorkersController.submit()) {
+            <div class="form-group @fieldSetClasses">
+                <fieldset>
+
+                    @workersForm.errors.find(_.args.contains("numberOfWorkers")).map { error =>
+                        @govHelpers.errorInline("numberOfWorkers", Messages(error.message))
+                    }
+
+                    @govHelpers.input(
+                        workersForm("numberOfWorkers"),
+                        '_divClass -> "form-group",
+                        '_inputClass -> "form-control",
+                        '_label -> Messages("pages.labourCompliance.workers.numberOfWorkers"),
+                        '_labelClass -> "cascading"
+                    )
+
+                </fieldset>
+            </div>
+
+            <div class="form-group">
+                <button class="btn button" type="submit" id="save-and-continue">Continue</button>
+            </div>
+        }
+
+    </div>
+
+}
+
+<script type="text/javascript">
+        $(document).ready($(function () {
+            WorkersPage.init()
+        }));
+</script>

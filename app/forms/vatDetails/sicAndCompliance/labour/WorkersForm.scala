@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package forms.vatDetails.sicAndCompliance
+package forms.vatDetails.sicAndCompliance.labour
 
-import forms.validation.FormValidation.missingFieldMapping
-import models.view.sicAndCompliance.CulturalComplianceQ1
+import forms.validation.FormValidation._
+import forms.validation.FormValidation.mandatoryNumericText
+import models.view.sicAndCompliance.labour.Workers
 import play.api.data.Form
 import play.api.data.Forms._
 
-object CulturalComplianceQ1Form {
+object WorkersForm {
+  val NUMBER_OF_WORKERS: String = "numberOfWorkers"
 
-  val RADIO_YES_NO: String = "notForProfitRadio"
+  implicit val errorCode: ErrorCode = "labourCompliance.numberOfWorkers"
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping()("not.profit").verifying(CulturalComplianceQ1.valid)
-    )(CulturalComplianceQ1.apply)(CulturalComplianceQ1.unapply)
+      NUMBER_OF_WORKERS -> text.verifying(mandatoryNumericText).
+        transform(numberOfWorkersToInt, intToText).verifying(boundedInt)
+    )(Workers.apply)(Workers.unapply)
   )
-
 }
