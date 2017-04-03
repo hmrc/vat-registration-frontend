@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package controllers.userJourney
+package controllers.userJourney.sicAndCompliance.cultural
 
 import builders.AuthBuilder
-import controllers.userJourney.sicAndCompliance.CulturalComplianceQ1Controller
-import controllers.userJourney.vatFinancials.CompanyBankAccountController
+import controllers.userJourney.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.S4LKey
-import models.view.sicAndCompliance.CulturalComplianceQ1
-import models.view.vatFinancials.CompanyBankAccount
+import models.view.sicAndCompliance.cultural.NotForProfit
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -36,26 +34,26 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class CulturalComplianceQ1ControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object CulturalComplianceQ1Controller extends CulturalComplianceQ1Controller(ds)(mockS4LService, mockVatRegistrationService) {
+  object NotForProfitController extends NotForProfitController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(sicAndCompliance.routes.CulturalComplianceQ1Controller.show())
+  val fakeRequest = FakeRequest(sicAndCompliance.cultural.routes.NotForProfitController.show())
 
-  s"GET ${sicAndCompliance.routes.CulturalComplianceQ1Controller.show()}" should {
+  s"GET ${sicAndCompliance.cultural.routes.NotForProfitController.show()}" should {
 
-    "return HTML when there's a Cultural Compliance Q1 model in S4L" in {
-      val culturalComplianceQ1 = CulturalComplianceQ1(CulturalComplianceQ1.NOT_PROFIT_NO)
+    "return HTML when there's a Not For Profit model in S4L" in {
+      val notForProfit = NotForProfit(NotForProfit.NOT_PROFIT_NO)
 
-      when(mockS4LService.fetchAndGet[CulturalComplianceQ1]()(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(culturalComplianceQ1)))
+      when(mockS4LService.fetchAndGet[NotForProfit]()(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(notForProfit)))
 
-      AuthBuilder.submitWithAuthorisedUser(CulturalComplianceQ1Controller.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "companyProvideWorkersRadio" -> ""
+      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        "notForProfitRadio" -> ""
       )) {
 
         result =>
@@ -67,14 +65,14 @@ class CulturalComplianceQ1ControllerSpec extends VatRegSpec with VatRegistration
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[CulturalComplianceQ1]()
-        (Matchers.eq(S4LKey[CulturalComplianceQ1]), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[NotForProfit]()
+        (Matchers.eq(S4LKey[NotForProfit]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(CulturalComplianceQ1Controller.show, mockAuthConnector) {
+      callAuthorised(NotForProfitController.show, mockAuthConnector) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -85,14 +83,14 @@ class CulturalComplianceQ1ControllerSpec extends VatRegSpec with VatRegistration
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    when(mockS4LService.fetchAndGet[CulturalComplianceQ1]()
-      (Matchers.eq(S4LKey[CulturalComplianceQ1]), Matchers.any(), Matchers.any()))
+    when(mockS4LService.fetchAndGet[NotForProfit]()
+      (Matchers.eq(S4LKey[NotForProfit]), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(None))
 
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(CulturalComplianceQ1Controller.show, mockAuthConnector) {
+    callAuthorised(NotForProfitController.show, mockAuthConnector) {
       result =>
         status(result) mustBe OK
         contentType(result) mustBe Some("text/html")
@@ -101,10 +99,10 @@ class CulturalComplianceQ1ControllerSpec extends VatRegSpec with VatRegistration
     }
   }
 
-  s"POST ${sicAndCompliance.routes.CulturalComplianceQ1Controller.submit()} with Empty data" should {
+  s"POST ${sicAndCompliance.cultural.routes.NotForProfitController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(CulturalComplianceQ1Controller.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe Status.BAD_REQUEST
@@ -113,17 +111,17 @@ class CulturalComplianceQ1ControllerSpec extends VatRegSpec with VatRegistration
     }
   }
 
-  s"POST ${sicAndCompliance.routes.CulturalComplianceQ1Controller.submit()} with not for profit Yes selected" should {
+  s"POST ${sicAndCompliance.cultural.routes.NotForProfitController.submit()} with not for profit Yes selected" should {
 
     "return 303" in {
-      val returnCacheMapCulturalComplianceQ1 = CacheMap("", Map("" -> Json.toJson(CulturalComplianceQ1(CulturalComplianceQ1.NOT_PROFIT_YES))))
+      val returnCacheMapNotForProfit = CacheMap("", Map("" -> Json.toJson(NotForProfit(NotForProfit.NOT_PROFIT_YES))))
 
-      when(mockS4LService.saveForm[CulturalComplianceQ1]
+      when(mockS4LService.saveForm[NotForProfit]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapCulturalComplianceQ1))
+        .thenReturn(Future.successful(returnCacheMapNotForProfit))
 
-      AuthBuilder.submitWithAuthorisedUser(CulturalComplianceQ1Controller.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "companyProvideWorkersRadio" -> CulturalComplianceQ1.NOT_PROFIT_YES
+      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        "notForProfitRadio" -> NotForProfit.NOT_PROFIT_YES
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
@@ -133,17 +131,17 @@ class CulturalComplianceQ1ControllerSpec extends VatRegSpec with VatRegistration
     }
   }
 
-  s"POST ${sicAndCompliance.routes.CulturalComplianceQ1Controller.submit()} with not for profit No selected" should {
+  s"POST ${sicAndCompliance.cultural.routes.NotForProfitController.submit()} with not for profit No selected" should {
 
     "return 303" in {
-      val returnCacheMapCulturalComplianceQ1 = CacheMap("", Map("" -> Json.toJson(CulturalComplianceQ1(CulturalComplianceQ1.NOT_PROFIT_NO))))
+      val returnCacheMapNotForProfit = CacheMap("", Map("" -> Json.toJson(NotForProfit(NotForProfit.NOT_PROFIT_NO))))
 
-      when(mockS4LService.saveForm[CulturalComplianceQ1]
+      when(mockS4LService.saveForm[NotForProfit]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapCulturalComplianceQ1))
+        .thenReturn(Future.successful(returnCacheMapNotForProfit))
 
-      AuthBuilder.submitWithAuthorisedUser(CulturalComplianceQ1Controller.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "companyProvideWorkersRadio" -> CulturalComplianceQ1.NOT_PROFIT_NO
+      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        "notForProfitRadio" -> NotForProfit.NOT_PROFIT_NO
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER

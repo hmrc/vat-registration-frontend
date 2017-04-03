@@ -69,6 +69,17 @@ private[forms] object FormValidation {
     }
 
   val taxEstimateTextToLong = textToLong(0, 1000000000000000L) _
+  val numberOfWorkersToInt = textToInt(1, 99999) _
+
+  private def textToInt(min: Int, max: Int)(s: String): Int = {
+    // assumes input string will be numeric
+    val bigInt = BigInt(s)
+    bigInt match {
+      case _ if bigInt < min => Int.MinValue
+      case _ if bigInt > max => Int.MaxValue
+      case _ => bigInt.toInt
+    }
+  }
 
   private def textToLong(min: Long, max: Long)(s: String): Long = {
     // assumes input string will be numeric
@@ -80,6 +91,7 @@ private[forms] object FormValidation {
     }
   }
 
+  def intToText(i: Int): String = i.toString
   def longToText(l: Long): String = l.toString
 
   def boundedLong()(implicit e: ErrorCode): Constraint[Long] = Constraint {
@@ -87,6 +99,15 @@ private[forms] object FormValidation {
       input match {
         case Long.MaxValue => Invalid(s"validation.$e.high")
         case Long.MinValue => Invalid(s"validation.$e.low")
+        case _ => Valid
+      }
+  }
+
+  def boundedInt()(implicit e: ErrorCode): Constraint[Int] = Constraint {
+    input: Int =>
+      input match {
+        case Int.MaxValue => Invalid(s"validation.$e.high")
+        case Int.MinValue => Invalid(s"validation.$e.low")
         case _ => Valid
       }
   }

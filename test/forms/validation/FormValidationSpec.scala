@@ -91,6 +91,20 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
     }
   }
 
+  "numberOfWorkersTextToInt" must {
+    "return MinValue when input converts to value less than zero" in {
+      FormValidation.numberOfWorkersToInt("-1") shouldBe Int.MinValue
+    }
+
+    "return MaxValue when input converts to value greater than 99999" in {
+      FormValidation.numberOfWorkersToInt("100000") shouldBe Int.MaxValue
+    }
+
+    "return value when input converts to value between 1 and 99999" in {
+      FormValidation.numberOfWorkersToInt("5") shouldBe 5
+    }
+  }
+
   "boundedLong constraint" must {
     val specificCode = "specific.code"
     val boundedLongConstraint = FormValidation.boundedLong()(specificCode)
@@ -109,6 +123,28 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
     "return Valid if input is not Long.MinValue or Long.MaxValue" in {
       boundedLongConstraint(100) shouldBe Valid
+    }
+
+  }
+
+    "boundedInt constraint" must {
+    val specificCode = "specific.code"
+    val boundedIntConstraint = FormValidation.boundedInt()(specificCode)
+
+    "return Invalid-low if input is Int.MinValue" in {
+      inside(boundedIntConstraint(Int.MinValue)) {
+        case Invalid(err :: _) => err.message shouldBe s"validation.$specificCode.low"
+      }
+    }
+
+    "return Invalid-high if input is Int.MaxValue" in {
+      inside(boundedIntConstraint(Int.MaxValue)) {
+        case Invalid(err :: _) => err.message shouldBe s"validation.$specificCode.high"
+      }
+    }
+
+    "return Valid if input is not Int.MinValue or Int.MaxValue" in {
+      boundedIntConstraint(100) shouldBe Valid
     }
 
   }

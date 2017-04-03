@@ -19,31 +19,31 @@ package models.view
 import fixtures.VatRegistrationFixture
 import models.ApiModelTransformer
 import models.api.VatComplianceCultural
-import models.view.sicAndCompliance.CulturalComplianceQ1
+import models.view.sicAndCompliance.cultural.NotForProfit
 import uk.gov.hmrc.play.test.UnitSpec
 
-class CulturalComplianceQ1Spec extends UnitSpec with VatRegistrationFixture {
+class NotForProfitSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
 
     "convert VatScheme without SicAndCompliance to empty view model" in {
       val vs = vatScheme(sicAndCompliance = None)
-      ApiModelTransformer[CulturalComplianceQ1].toViewModel(vs) shouldBe None
+      ApiModelTransformer[NotForProfit].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme without CulturalCompliance section to empty view model" in {
       val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(culturalComplianceSection = None)))
-      ApiModelTransformer[CulturalComplianceQ1].toViewModel(vs) shouldBe None
+      ApiModelTransformer[NotForProfit].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme with CulturalCompliance section to view model - for profit" in {
       val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(culturalComplianceSection = Some(VatComplianceCultural(notForProfit = false)))))
-      ApiModelTransformer[CulturalComplianceQ1].toViewModel(vs) shouldBe Some(CulturalComplianceQ1(CulturalComplianceQ1.NOT_PROFIT_NO))
+      ApiModelTransformer[NotForProfit].toViewModel(vs) shouldBe Some(NotForProfit(NotForProfit.NOT_PROFIT_NO))
     }
 
     "convert VatScheme with CulturalCompliance section to view model - not for profit" in {
       val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(culturalComplianceSection = Some(VatComplianceCultural(notForProfit = true)))))
-      ApiModelTransformer[CulturalComplianceQ1].toViewModel(vs) shouldBe Some(CulturalComplianceQ1(CulturalComplianceQ1.NOT_PROFIT_YES))
+      ApiModelTransformer[NotForProfit].toViewModel(vs) shouldBe Some(NotForProfit(NotForProfit.NOT_PROFIT_YES))
     }
 
   }
