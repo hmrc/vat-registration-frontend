@@ -32,8 +32,8 @@ object Workers {
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: Workers, g: VatSicAndCompliance) => {
-    //TODO: Change businessDescription to numberOfWorkers once the frontend API model is created for labour compliance
-    g.copy(businessDescription = c.numberOfWorkers.toString)
+    //TODO: Return proper logical group once the frontend API model is created for labour compliance
+    g
   }
   }
 

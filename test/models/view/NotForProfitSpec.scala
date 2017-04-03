@@ -22,7 +22,7 @@ import models.api.VatComplianceCultural
 import models.view.sicAndCompliance.cultural.NotForProfit
 import uk.gov.hmrc.play.test.UnitSpec
 
-class CulturalComplianceQ1Spec extends UnitSpec with VatRegistrationFixture {
+class NotForProfitSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
 
