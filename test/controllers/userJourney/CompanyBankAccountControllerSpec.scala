@@ -140,7 +140,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapCompanyBankAccount))
 
-      when(mockVatRegistrationService.deleteBankAccountDetails()(Matchers.any()))
+      when(mockVatRegistrationService.deleteElement(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
 
       AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(

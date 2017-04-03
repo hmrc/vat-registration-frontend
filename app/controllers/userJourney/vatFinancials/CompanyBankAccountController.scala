@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.vatFinancials.CompanyBankAccountForm
+import models.VatBankAccountPath
 import models.view.vatFinancials.CompanyBankAccount
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
@@ -48,7 +49,7 @@ class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
             if (CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES == data.yesNo) {
               Future.successful(Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountDetailsController.show()))
             } else {
-              vrs.deleteBankAccountDetails().map { _ =>
+              vrs.deleteElement(VatBankAccountPath).map { _ =>
                 Redirect(controllers.userJourney.vatFinancials.routes.EstimateVatTurnoverController.show()) }
             }
           }

@@ -140,7 +140,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapEstimateZeroRatedSales))
 
-      when(mockVatRegistrationService.deleteZeroRatedTurnover()(Matchers.any()))
+      when(mockVatRegistrationService.deleteElement(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
 
       AuthBuilder.submitWithAuthorisedUser(TestZeroRatedSalesController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
