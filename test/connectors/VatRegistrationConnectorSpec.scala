@@ -18,6 +18,7 @@ package connectors
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.VatBankAccountPath
 import models.api._
 import org.scalatest.concurrent.ScalaFutures
 import uk.gov.hmrc.play.http._
@@ -91,36 +92,14 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  "Calling deleteAccountingPeriodStart" should {
+  "Calling deleteElement" should {
     "return a successful outcome given an existing registration" in new Setup {
       mockHttpDELETE[Boolean]("tst-url", true)
-      ScalaFutures.whenReady(connector.deleteAccountingPeriodStart("regId"))(_ mustBe true)
+      ScalaFutures.whenReady(connector.deleteElement(VatBankAccountPath)("regId"))(_ mustBe true)
     }
     "return the notFound exception when trying to DELETE non-existent registration" in new Setup {
       mockHttpFailedDELETE[Boolean]("tst-url", notFound)
-      ScalaFutures.whenReady(connector.deleteAccountingPeriodStart("regId").failed)(_ mustBe notFound)
-    }
-  }
-
-  "Calling deleteBankAccount" should {
-    "return a successful outcome given an existing registration" in new Setup {
-      mockHttpDELETE[Boolean]("tst-url", true)
-      ScalaFutures.whenReady(connector.deleteBankAccount("regId"))(_ mustBe true)
-    }
-    "return the notFound exception when trying to DELETE non-existent registration" in new Setup {
-      mockHttpFailedDELETE[Boolean]("tst-url", notFound)
-      ScalaFutures.whenReady(connector.deleteBankAccount("regId").failed)(_ mustBe notFound)
-    }
-  }
-
-  "Calling deleteZeroRatedTurnover" should {
-    "return a successful outcome given an existing registration" in new Setup {
-      mockHttpDELETE[Boolean]("tst-url", true)
-      ScalaFutures.whenReady(connector.deleteZeroRatedTurnover("regId"))(_ mustBe true)
-    }
-    "return the notFound exception when trying to DELETE non-existent registration" in new Setup {
-      mockHttpFailedDELETE[Boolean]("tst-url", notFound)
-      ScalaFutures.whenReady(connector.deleteZeroRatedTurnover("regId").failed)(_ mustBe notFound)
+      ScalaFutures.whenReady(connector.deleteElement(VatBankAccountPath)("regId").failed)(_ mustBe notFound)
     }
   }
 

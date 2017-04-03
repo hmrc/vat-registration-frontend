@@ -20,7 +20,7 @@ import connectors.{KeystoreConnector, VatRegistrationConnector}
 import enums.DownstreamOutcome
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.S4LKey
+import models.{S4LKey, VatBankAccountPath}
 import models.api._
 import models.view.sicAndCompliance.{BusinessActivityDescription, CulturalComplianceQ1}
 import models.view.vatFinancials._
@@ -195,30 +195,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     }
   }
 
-  "Calling deleteAccountingPeriodStart" should {
+  "Calling deleteElement" should {
     "return a success response when successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteAccountingPeriodStart(Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockRegConnector.deleteElement(Matchers.any())(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(true))
-      whenReady(service.deleteAccountingPeriodStart())(_ mustBe true)
-    }
-  }
-
-  "Calling deleteBankAccountDetails" should {
-    "return a success response when successful" in new Setup {
-      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteBankAccount(Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(true))
-      whenReady(service.deleteBankAccountDetails())(_ mustBe true)
-    }
-  }
-
-  "Calling deleteZeroRatedTurnover" should {
-    "return a success response when successful" in new Setup {
-      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteZeroRatedTurnover(Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(true))
-      whenReady(service.deleteZeroRatedTurnover())(_ mustBe true)
+      whenReady(service.deleteElement(VatBankAccountPath))(_ mustBe true)
     }
   }
 

@@ -19,7 +19,7 @@ package controllers.userJourney.vatChoice
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatDetails.vatChoice.VoluntaryRegistrationForm
+import forms.vatDetails.vatTradingDetails.VoluntaryRegistrationForm
 import models.view.vatTradingDetails.VoluntaryRegistration
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}

@@ -22,11 +22,12 @@ import play.api.data.Form
 import play.api.data.Forms._
 
 object CulturalComplianceQ1Form {
+
   val RADIO_YES_NO: String = "notForProfitRadio"
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping("not.profit").verifying(CulturalComplianceQ1.valid)
+      RADIO_YES_NO -> missingFieldMapping()("not.profit").verifying(CulturalComplianceQ1.valid)
     )(CulturalComplianceQ1.apply)(CulturalComplianceQ1.unapply)
   )
 

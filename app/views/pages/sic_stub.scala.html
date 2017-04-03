@@ -1,26 +1,72 @@
 @import models.view.test.SicStub
 @(sicStubForm:  Form[SicStub])(implicit request: Request[_], messages: Messages)
-@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import uk.gov.hmrc.play.views.html.helpers.form
 
-        <h1 class="form-title heading-xlarge" id="pageHeading">Enter 1-4, 8 digit SIC codes:</h1>
+@main_template(title = "SIC codes") {
 
-        @govHelpers.form(action = controllers.test.routes.SicStubController.submit()) {
-            <div class="form-group">
-                <fieldset>
 
-                    <p><input type="text" name="sicCode1" maxlength="8" title="sic1" value="91012001"/></p>
-                    <p><input type="text" name="sicCode2" maxlength="8" title="sic2" value="91020002"/></p>
-                    <p><input type="text" name="sicCode3" maxlength="8" title="sic4" value=""/></p>
-                    <p><input type="text" name="sicCode4" maxlength="8" title="sic4" value=""/></p>
+    <div class="grid-row">
+        <div class="column-one-third">
 
-                </fieldset>
+            <header class="page-header">
+                <h1 class="form-title heading-xlarge" id="pageHeading">Enter 1-4, 8 digit SIC codes:</h1>
+            </header>
 
-            </div>
 
-            <div class="form-group">
-                <button class="btn button" type="submit" id="submit">Submit</button>
-            </div>
+            <p>
+                <button class="btn button" type="button" onclick="clearCodes()">Clear</button>
+                <button class="btn button" type="button" onclick="fillCulturalCodes()">Cultural compliance</button>
+                <button class="btn button" type="button" onclick="fillLabourCodes()">Labour compliance</button>
+            </p>
+
+            @form(action = controllers.test.routes.SicStubController.submit()) {
+                <div class="form-group">
+                    <fieldset>
+
+                        <p><input type="text" name="sicCode1" maxlength="8" title="sic1" value=""/></p>
+                        <p><input type="text" name="sicCode2" maxlength="8" title="sic2" value=""/></p>
+                        <p><input type="text" name="sicCode3" maxlength="8" title="sic4" value=""/></p>
+                        <p><input type="text" name="sicCode4" maxlength="8" title="sic4" value=""/></p>
+
+                    </fieldset>
+
+                </div>
+
+                <div class="form-group">
+                    <button class="btn button" type="submit" id="submit">Submit</button>
+                </div>
+            }
+
+        </div>
+
+    </div>
+}
+
+
+<script type="application/javascript">
+
+        var blanks = ["", "", "", ""];
+        var culturalSicCodes = ["90040123", "91012123", "91030123", ""];
+        var labourSicCodes = ["81221321", "81222321", "81223321", ""];
+
+        function fillInputs(arr) {
+            $('input[type=text]').each(function (index) {
+                $(this).val(arr[index]);
+            });
+            return false;
         }
 
+        function clearCodes() {
+            return fillInputs(blanks)
+        }
 
+        function fillCulturalCodes() {
+            return fillInputs(culturalSicCodes)
+        }
+
+        function fillLabourCodes() {
+            return fillInputs(labourSicCodes)
+        }
+
+</script>
 
