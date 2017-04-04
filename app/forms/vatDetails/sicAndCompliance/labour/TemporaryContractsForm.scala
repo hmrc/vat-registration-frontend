@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package models.api
+package forms.vatDetails.sicAndCompliance.labour
 
-import play.api.libs.json._
+import forms.validation.FormValidation.missingFieldMapping
+import models.view.sicAndCompliance.labour.TemporaryContracts
+import play.api.data.Form
+import play.api.data.Forms._
 
-case class VatComplianceLabour(labour: Boolean,
-                               workers: Option[Int] = None,
-                               temporaryContracts: Option[Boolean] = None,
-                               skilledWorkers: Option[Boolean] = None
-                              )
+object TemporaryContractsForm {
+  val RADIO_YES_NO: String = "temporaryContractsRadio"
 
-object VatComplianceLabour {
-
-  implicit val format: OFormat[VatComplianceLabour] = Json.format[VatComplianceLabour]
+  val form = Form(
+    mapping(
+      RADIO_YES_NO -> missingFieldMapping()("labourCompliance.temporaryContracts").verifying(TemporaryContracts.valid)
+    )(TemporaryContracts.apply)(TemporaryContracts.unapply)
+  )
 
 }

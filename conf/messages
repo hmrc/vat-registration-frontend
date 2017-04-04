@@ -296,3 +296,8 @@ pages.labourCompliance.workers.numberOfWorkers        = Number of workers
 validation.labourCompliance.numberOfWorkers.missing   = Tell us how many workers the company provides at any one time
 validation.labourCompliance.numberOfWorkers.high      = Number of workers must be less than 99999
 validation.labourCompliance.numberOfWorkers.low       = Number of workers must be at least 1
+
+## Temporary Contracts
+pages.labourCompliance.temporaryContracts.title                  = Does the company provide workers on temporary contracts?
+pages.labourCompliance.temporaryContracts.heading                = Does the company provide workers on temporary contracts?
+validation.labourCompliance.temporaryContracts.option.missing    = Tell us if your company provides workers on temporary contracts

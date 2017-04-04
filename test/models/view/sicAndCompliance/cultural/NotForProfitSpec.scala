@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package models.view
+package models.view.sicAndCompliance.cultural
 
 import fixtures.VatRegistrationFixture
 import models.ApiModelTransformer
 import models.api.VatComplianceCultural
-import models.view.sicAndCompliance.cultural.NotForProfit
 import uk.gov.hmrc.play.test.UnitSpec
 
 class NotForProfitSpec extends UnitSpec with VatRegistrationFixture {
