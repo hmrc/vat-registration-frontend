@@ -19,7 +19,7 @@ package models.api
 import play.api.libs.json._
 
 case class VatComplianceLabour(labour: Boolean,
-                               workers: Option[Long] = None,
+                               workers: Option[Int] = None,
                                temporaryContracts: Option[Boolean] = None,
                                skilledWorkers: Option[Boolean] = None
                               )
