@@ -10,7 +10,6 @@ This code is open source software licensed under the [Apache 2.0 License]("http:
 ```
 sbt clean coverage test it:test scalastyle coverageReport
 ```
-
 alternatively, create an alias for the above line, and get in the habit of running it before checking in:
 
 ```bash
@@ -45,7 +44,6 @@ To run with the test-only endpoints, then execute the following command:
 ```
 sbt run -Dapplication.router=testOnlyDoNotUseInAppConf.Routes
 ```
-
 ### Nginx
 if you want to avoid having to include the service port number in the URL, add a rule to your nginx config.
 

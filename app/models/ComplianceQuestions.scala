@@ -33,8 +33,7 @@ case object CulturalComplianceQuestions extends ComplianceQuestions {
 
 case object LabourComplianceQuestions extends ComplianceQuestions {
 
-  //TODO change once controller merged
-  override def firstQuestion: Call = controllers.userJourney.sicAndCompliance.cultural.routes.NotForProfitController.show()
+  override def firstQuestion: Call = controllers.userJourney.sicAndCompliance.labour.routes.CompanyProvideWorkersController.show()
 
 }
 
