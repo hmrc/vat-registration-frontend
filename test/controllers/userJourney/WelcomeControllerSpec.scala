@@ -16,9 +16,8 @@
 
 package controllers.userJourney
 
-import enums.DownstreamOutcome
 import helpers.VatRegSpec
-import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
@@ -40,8 +39,8 @@ class WelcomeControllerSpec extends VatRegSpec {
   "GET /start" should {
 
     "return HTML when user is authorized to access" in {
-      when(mockVatRegistrationService.assertRegistrationFootprint()(Matchers.any()))
-        .thenReturn(Future.successful(DownstreamOutcome.Success))
+      when(mockVatRegistrationService.createRegistrationFootprint()(any()))
+        .thenReturn(Future.successful(()))
 
       callAuthorised(TestController.start, mockAuthConnector) {
         result =>
@@ -58,7 +57,7 @@ class WelcomeControllerSpec extends VatRegSpec {
     "redirect the user to start page" in {
       val result = TestController.show(fakeRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.WelcomeController.start().toString)
+      redirectLocation(result) mustBe Some(routes.WelcomeController.start().url)
     }
   }
 
