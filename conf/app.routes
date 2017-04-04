@@ -75,8 +75,8 @@ GET         /compliance/workers             controllers.userJourney.sicAndCompli
 POST        /compliance/workers             controllers.userJourney.sicAndCompliance.labour.WorkersController.submit
 
 ## LABOUR COMPLIANCE CPMPANY PROVIDE WORKERS
-GET         /company-provide-workers         controllers.userJourney.sicAndCompliance.labour.CompanyProvideWorkersController.show
-POST        /company-provide-workers         controllers.userJourney.sicAndCompliance.labour.CompanyProvideWorkersController.submit
+GET         /compliance/provide-workers     controllers.userJourney.sicAndCompliance.labour.CompanyProvideWorkersController.show
+POST        /compliance/provide-workers     controllers.userJourney.sicAndCompliance.labour.CompanyProvideWorkersController.submit
 
 ## FEEDBACK
 GET         /feedback                       controllers.feedback.FeedbackController.show
