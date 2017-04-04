@@ -14,36 +14,30 @@
  * limitations under the License.
  */
 
-package models.view
+package models.view.sicAndCompliance.labour
 
 import fixtures.VatRegistrationFixture
 import models.ApiModelTransformer
 import models.api.VatComplianceLabour
-import models.view.sicAndCompliance.labour.TemporaryContracts
 import uk.gov.hmrc.play.test.UnitSpec
 
-class TemporaryContractsSpec extends UnitSpec with VatRegistrationFixture {
+class WorkersSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
 
     "convert VatScheme without SicAndCompliance to empty view model" in {
       val vs = vatScheme(sicAndCompliance = None)
-      ApiModelTransformer[TemporaryContracts].toViewModel(vs) shouldBe None
+      ApiModelTransformer[Workers].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme without LabourCompliance section to empty view model" in {
       val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = None)))
-      ApiModelTransformer[TemporaryContracts].toViewModel(vs) shouldBe None
+      ApiModelTransformer[Workers].toViewModel(vs) shouldBe None
     }
 
-    "convert VatScheme with LabourCompliance section to view model - temporary contracts yes" in {
+    "convert VatScheme with LabourCompliance section to view model" in {
       val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = Some(VatComplianceLabour(true, Some(8), Some(true), Some(true))))))
-      ApiModelTransformer[TemporaryContracts].toViewModel(vs) shouldBe Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES))
-    }
-
-    "convert VatScheme with LabourCompliance section to view model - temporary contracts no" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = Some(VatComplianceLabour(true, Some(8), Some(false), Some(true))))))
-      ApiModelTransformer[TemporaryContracts].toViewModel(vs) shouldBe Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO))
+      ApiModelTransformer[Workers].toViewModel(vs) shouldBe Some(Workers(8))
     }
 
   }

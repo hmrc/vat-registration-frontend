@@ -27,13 +27,15 @@ object Workers {
   implicit val format: OFormat[Workers] = Json.format[Workers]
 
   implicit val modelTransformer = ApiModelTransformer[Workers] { (vs: VatScheme) =>
-    //TODO: Return a proper value once the frontend API model is created for labour compliance
-    None
+    for {
+      vsc <- vs.vatSicAndCompliance
+      lc <- vsc.labourCompliance
+      w <- lc.workers
+    } yield Workers(w)
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: Workers, g: VatSicAndCompliance) => {
-    //TODO: Return proper logical group once the frontend API model is created for labour compliance
-    g
+    g.copy(labourCompliance = g.labourCompliance.map(_.copy(workers = Some(c.numberOfWorkers))))
   }
   }
 

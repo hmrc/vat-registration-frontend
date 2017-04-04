@@ -19,9 +19,7 @@ package controllers.userJourney.sicAndCompliance.labour
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatDetails.sicAndCompliance.cultural.NotForProfitForm
 import forms.vatDetails.sicAndCompliance.labour.WorkersForm
-import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.labour.Workers
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -47,7 +45,11 @@ class WorkersController @Inject()(ds: CommonPlayDependencies)
       }, {
         data: Workers => {
           s4LService.saveForm[Workers](data) map { _ =>
-            Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
+            if(data.numberOfWorkers >= 8) {
+              Redirect(controllers.userJourney.sicAndCompliance.labour.routes.TemporaryContractsController.show())
+            }else{
+              Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
+            }
           }
         }
       })

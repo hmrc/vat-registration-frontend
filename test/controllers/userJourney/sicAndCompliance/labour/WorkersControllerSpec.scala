@@ -111,7 +111,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
-  s"POST ${sicAndCompliance.labour.routes.WorkersController.submit()} with data entered" should {
+  s"POST ${sicAndCompliance.labour.routes.WorkersController.submit()} with less than 8 workers entered" should {
 
     "return 303" in {
       val returnCacheMapWorkers = CacheMap("", Map("" -> Json.toJson(Workers(5))))
@@ -126,6 +126,26 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
         response =>
           status(response) mustBe Status.SEE_OTHER
           redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/company-bank-account"
+      }
+
+    }
+  }
+
+  s"POST ${sicAndCompliance.labour.routes.WorkersController.submit()} with 8 or more workers entered" should {
+
+    "return 303" in {
+      val returnCacheMapWorkers = CacheMap("", Map("" -> Json.toJson(Workers(8))))
+
+      when(mockS4LService.saveForm[Workers]
+        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(returnCacheMapWorkers))
+
+      AuthBuilder.submitWithAuthorisedUser(WorkersController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        "numberOfWorkers" -> "8"
+      )) {
+        response =>
+          status(response) mustBe Status.SEE_OTHER
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/compliance/temporary-contracts"
       }
 
     }
