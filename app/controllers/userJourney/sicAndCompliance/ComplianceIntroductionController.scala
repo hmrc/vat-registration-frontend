@@ -39,7 +39,7 @@ class ComplianceIntroductionController @Inject()(s4LService: S4LService, ds: Com
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     import cats.instances.future._
     OptionT(s4LService.fetchAndGet[SicStub]()).map(ss => ComplianceQuestions(ss.sicCodes))
-      .fold(controllers.test.routes.SicStubController.show()) { //TODO point to non-stub page for SIC code selection
+      .fold( controllers.test.routes.SicStubController.show()) { //TODO point to non-stub page for SIC code selection
         complianceQuestions =>
           Logger.info(s"User needs to answer a series of $complianceQuestions")
           complianceQuestions.firstQuestion
