@@ -16,7 +16,7 @@
 
 package models.view.sicAndCompliance.labour
 
-import models.api.{VatComplianceLabour, VatScheme}
+import models.api.{VatScheme, VatSicAndCompliance}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
@@ -32,13 +32,15 @@ object TemporaryContracts {
   implicit val format = Json.format[TemporaryContracts]
 
   implicit val modelTransformer = ApiModelTransformer[TemporaryContracts] { (vs: VatScheme) =>
-    vs.vatSicAndCompliance.flatMap(_.labourCompliance).map { x =>
-      TemporaryContracts(if (x.temporaryContracts.get) TEMP_CONTRACTS_YES else TEMP_CONTRACTS_NO)
-    }
+    for {
+      vsc <- vs.vatSicAndCompliance
+      lc <- vsc.labourCompliance
+      tc <- lc.temporaryContracts
+    } yield TemporaryContracts(if (tc) TEMP_CONTRACTS_YES else TEMP_CONTRACTS_NO)
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: TemporaryContracts, g: VatComplianceLabour) =>
-    g.copy(temporaryContracts = Some(c.yesNo == TEMP_CONTRACTS_YES))
+  implicit val viewModelTransformer = ViewModelTransformer { (c: TemporaryContracts, g: VatSicAndCompliance) =>
+    g.copy(labourCompliance = g.labourCompliance.map(_.copy(temporaryContracts = Some(c.yesNo == TEMP_CONTRACTS_YES))))
   }
 
 }
