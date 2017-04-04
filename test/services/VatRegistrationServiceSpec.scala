@@ -103,6 +103,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockS4LService.fetchAndGet[NotForProfit]()(Matchers.eq(S4LKey[NotForProfit]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validCulturalComplianceQ1)))
 
+      when(mockS4LService.fetchAndGet[CompanyProvideWorkers]()(Matchers.eq(S4LKey[CompanyProvideWorkers]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(validCompanyProvideWorkers)))
+
       when(mockRegConnector.upsertSicAndCompliance(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(validSicAndCompliance))
 
@@ -158,6 +161,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       when(mockS4LService.fetchAndGet[NotForProfit]()(Matchers.eq(S4LKey[NotForProfit]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validCulturalComplianceQ1)))
+
+      when(mockS4LService.fetchAndGet[CompanyProvideWorkers]()(Matchers.eq(S4LKey[CompanyProvideWorkers]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(validCompanyProvideWorkers)))
 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
       (Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatScheme]]()))

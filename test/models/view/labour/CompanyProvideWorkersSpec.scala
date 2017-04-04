@@ -18,8 +18,7 @@ package models.view.labour
 
 import fixtures.VatRegistrationFixture
 import models.ApiModelTransformer
-import models.api.{VatComplianceCultural, VatComplianceLabour}
-import models.view.sicAndCompliance.CulturalComplianceQ1
+import models.api.VatComplianceLabour
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import uk.gov.hmrc.play.test.UnitSpec
 
