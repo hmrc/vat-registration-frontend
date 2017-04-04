@@ -22,6 +22,7 @@ import models.api.{VatComplianceCultural, _}
 import models.view._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
+import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.StartDateView
 import play.api.http.Status._
@@ -78,7 +79,8 @@ trait VatRegistrationFixture {
 
   val validSicAndCompliance = VatSicAndCompliance(
     businessDescription = businessActivityDescription,
-    culturalCompliance = None
+    culturalCompliance = None,
+    labourCompliance   = None
   )
 
   val emptyVatScheme = VatScheme(validRegId)
@@ -105,9 +107,11 @@ trait VatRegistrationFixture {
 
   def vatSicAndCompliance(
                            activityDescription: String = "Some business activity",
-                           culturalComplianceSection: Option[VatComplianceCultural] = Some(VatComplianceCultural(notForProfit = false))
+                           culturalComplianceSection: Option[VatComplianceCultural] = Some(VatComplianceCultural(notForProfit = false)),
+                           labourComplianceSection: Option[VatComplianceLabour] = Some(VatComplianceLabour(false))
+
                          ): VatSicAndCompliance =
-    VatSicAndCompliance(businessDescription = activityDescription, culturalCompliance = culturalComplianceSection)
+    VatSicAndCompliance(businessDescription = activityDescription, culturalCompliance = culturalComplianceSection, labourCompliance = labourComplianceSection)
 
 
   def vatScheme(
@@ -141,6 +145,7 @@ trait VatRegistrationFixture {
   val validBusinessActivityDescription = BusinessActivityDescription(businessActivityDescription)
   val validVatCulturalCompliance = VatComplianceCultural(true)
   val validCulturalComplianceQ1 = NotForProfit(NotForProfit.NOT_PROFIT_NO)
+  val validCompanyProvideWorkers = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
 
   lazy val validSummaryView = Summary(
     Seq(

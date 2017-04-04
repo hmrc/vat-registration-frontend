@@ -276,6 +276,12 @@ pages.compliance.introduction.title                          = Compliance questi
 pages.compliance.introduction.heading                        = Tell us more about your company
 pages.compliance.introduction.para1                          = So we can understand what your company does, we''re going to ask you a few questions about your business activities.
 
+## Labour Compliance - Does Company Provide Workers
+pages.labourCompliance.companyProvideWorkers.title         = Does the company provide workers to other employers?
+pages.labourCompliance.companyProvideWorkers.heading       = Does the company provide workers to other employers?
+pages.labourCompliance.companyProvideWorkers.para          = For example, the company is a third-party supplier of construction workers or cleaners.
+validation.companyProvideWorkers.option.missing            = Tell us if your provide workers to other employers
+
 ## Cultural Compliance Questions
 ## Not For Profit
 pages.culturalCompliance.notForProfit.title                  = Not-for-profit organisation
