@@ -20,8 +20,6 @@ import javax.inject.Inject
 
 import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, VatRegistrationConnector}
-import enums.DownstreamOutcome
-import enums.DownstreamOutcome._
 import models._
 import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
@@ -38,13 +36,14 @@ import scala.concurrent.Future
 @ImplementedBy(classOf[VatRegistrationService])
 trait RegistrationService {
 
-  def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value]
+  def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit]
 
-  def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value]
+  def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit]
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme]
 
   def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Boolean]
+
 }
 
 class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: VatRegistrationConnector)
@@ -70,14 +69,14 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Boolean] =
     fetchRegistrationId.flatMap(vatRegConnector.deleteElement(elementPath))
 
-  def assertRegistrationFootprint()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] =
+  def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit] =
     for {
       vatScheme <- vatRegConnector.createNewRegistration()
       _ <- keystoreConnector.cache[String]("RegistrationId", vatScheme.id)
-    } yield Success
+    } yield ()
 
-  def submitVatScheme()(implicit hc: HeaderCarrier): Future[DownstreamOutcome.Value] =
-    submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance map { case res@_ => Success }
+  def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
+    submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance map { case _ => () }
 
   private[services] def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
 
@@ -111,7 +110,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
         s4l[NotForProfit]() |@|
         s4l[CompanyProvideWorkers]() |@|
         s4l[Workers]() |@|
-        s4l[TemporaryContracts] ()
+        s4l[TemporaryContracts]()
         ).map(S4LVatSicAndCompliance).map {
         s4l =>
           update(s4l.description, vs)
@@ -133,11 +132,12 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
     def mergeWithS4L(vs: VatScheme) =
       (s4l[TradingNameView]() |@|
         s4l[StartDateView]() |@|
-        s4l[VoluntaryRegistration]()).map(S4LTradingDetails).map { s4l =>
-        update(s4l.voluntaryRegistration, vs)
-          .andThen(update(s4l.tradingName, vs))
-          .andThen(update(s4l.startDate, vs))
-          .apply(vs.tradingDetails.getOrElse(VatTradingDetails.empty)) //TODO remove the "seeding" with default
+        s4l[VoluntaryRegistration]()).map(S4LTradingDetails).map {
+        s4l =>
+          update(s4l.voluntaryRegistration, vs)
+            .andThen(update(s4l.tradingName, vs))
+            .andThen(update(s4l.startDate, vs))
+            .apply(vs.tradingDetails.getOrElse(VatTradingDetails.empty)) //TODO remove the "seeding" with default
       }
 
     for {
