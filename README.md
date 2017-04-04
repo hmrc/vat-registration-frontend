@@ -10,7 +10,6 @@ This code is open source software licensed under the [Apache 2.0 License]("http:
 ```
 sbt clean coverage test it:test scalastyle coverageReport
 ```
-
 alternatively, create an alias for the above line, and get in the habit of running it before checking in:
 
 ```bash
