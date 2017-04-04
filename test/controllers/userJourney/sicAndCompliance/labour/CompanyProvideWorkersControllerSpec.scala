@@ -125,7 +125,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/company-bank-account"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/compliance/workers"
       }
 
     }

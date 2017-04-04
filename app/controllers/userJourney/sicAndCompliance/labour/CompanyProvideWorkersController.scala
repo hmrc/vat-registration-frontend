@@ -43,11 +43,17 @@ class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.sicAndCompliance.labour.company_provide_workers(formWithErrors)))
       }, {
         data: CompanyProvideWorkers => {
-          s4LService.saveForm[CompanyProvideWorkers](data) map { _ =>
-            Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
+          s4LService.saveForm[CompanyProvideWorkers](data) map {  _ =>
+            if(CompanyProvideWorkers.PROVIDE_WORKERS_YES == data.yesNo) {
+              Redirect(controllers.userJourney.sicAndCompliance.labour.routes.WorkersController.show())
+            }else{
+              Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
+            }
           }
         }
       })
   })
 
 }
+
+
