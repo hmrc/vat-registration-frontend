@@ -52,8 +52,9 @@ class StartDateFormFactory @Inject()(dateService: DateService, today: Now[LocalD
             "day" -> text,
             "month" -> text,
             "year" -> text
-          )(DateModel.apply)(DateModel.unapply)
-            .verifying(nonEmptyDateModel(validDateModel(inRange(minDate, maxDate)))))
+          )(DateModel.apply)(DateModel.unapply).verifying(
+            nonEmptyDateModel(validDateModel(inRange(minDate, maxDate))))
+        )
       )(StartDateView.bind)(StartDateView.unbind)
     )
   }
