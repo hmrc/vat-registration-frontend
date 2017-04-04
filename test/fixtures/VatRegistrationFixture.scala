@@ -22,7 +22,7 @@ import models.api.{VatComplianceCultural, _}
 import models.view._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.labour.CompanyProvideWorkers
+import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.StartDateView
 import play.api.http.Status._
@@ -108,7 +108,7 @@ trait VatRegistrationFixture {
   def vatSicAndCompliance(
                            activityDescription: String = "Some business activity",
                            culturalComplianceSection: Option[VatComplianceCultural] = Some(VatComplianceCultural(notForProfit = false)),
-                           labourComplianceSection: Option[VatComplianceLabour] = Some(VatComplianceLabour(false))
+                           labourComplianceSection: Option[VatComplianceLabour] = Some(VatComplianceLabour(true, Some(8), Some(true), Some(true)))
 
                          ): VatSicAndCompliance =
     VatSicAndCompliance(businessDescription = activityDescription, culturalCompliance = culturalComplianceSection, labourCompliance = labourComplianceSection)
@@ -144,8 +144,14 @@ trait VatRegistrationFixture {
 
   val validBusinessActivityDescription = BusinessActivityDescription(businessActivityDescription)
   val validVatCulturalCompliance = VatComplianceCultural(true)
-  val validCulturalComplianceQ1 = NotForProfit(NotForProfit.NOT_PROFIT_NO)
+
+  //Cultural Compliance Questions
+  val validNotForProfit = NotForProfit(NotForProfit.NOT_PROFIT_NO)
+
+  //Labour Compliance Questions
   val validCompanyProvideWorkers = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
+  val validWorkers = Workers(8)
+  val validTemporaryContracts = TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)
 
   lazy val validSummaryView = Summary(
     Seq(

@@ -18,26 +18,32 @@ package models.view.sicAndCompliance.labour
 
 import models.api.{VatScheme, VatSicAndCompliance}
 import models.{ApiModelTransformer, ViewModelTransformer}
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.Json
 
-case class Workers(numberOfWorkers: Int)
+case class TemporaryContracts(yesNo: String)
 
-object Workers {
+object TemporaryContracts {
 
-  implicit val format: OFormat[Workers] = Json.format[Workers]
+  val TEMP_CONTRACTS_YES = "TEMP_CONTRACTS_YES"
+  val TEMP_CONTRACTS_NO = "TEMP_CONTRACTS_NO"
 
-  implicit val modelTransformer = ApiModelTransformer[Workers] { (vs: VatScheme) =>
+  val valid = (item: String) => List(TEMP_CONTRACTS_YES, TEMP_CONTRACTS_NO).contains(item.toUpperCase)
+
+  implicit val format = Json.format[TemporaryContracts]
+
+  implicit val modelTransformer = ApiModelTransformer[TemporaryContracts] { (vs: VatScheme) =>
     for {
       vsc <- vs.vatSicAndCompliance
       lc <- vsc.labourCompliance
-      w <- lc.workers
-    } yield Workers(w)
+      tc <- lc.temporaryContracts
+    } yield TemporaryContracts(if (tc) TEMP_CONTRACTS_YES else TEMP_CONTRACTS_NO)
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: Workers, g: VatSicAndCompliance) => {
-    g.copy(labourCompliance = g.labourCompliance.map(_.copy(workers = Some(c.numberOfWorkers))))
-  }
+  implicit val viewModelTransformer = ViewModelTransformer { (c: TemporaryContracts, g: VatSicAndCompliance) =>
+    g.copy(labourCompliance = g.labourCompliance.map(_.copy(temporaryContracts = Some(c.yesNo == TEMP_CONTRACTS_YES))))
   }
 
 }
+
+
 

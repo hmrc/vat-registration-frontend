@@ -18,7 +18,7 @@ package models
 
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.labour.CompanyProvideWorkers
+import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration}
 
@@ -44,6 +44,7 @@ case class S4LVatSicAndCompliance
 (
   description: Option[BusinessActivityDescription],
   culturalCompliance: Option[NotForProfit],
-  labourComplianceCompanyProvideWorkers: Option[CompanyProvideWorkers]
-
+  labourComplianceCompanyProvideWorkers: Option[CompanyProvideWorkers],
+  labourComplianceWorkers: Option[Workers],
+  labourComplianceTemporaryContracts: Option[TemporaryContracts]
 )
