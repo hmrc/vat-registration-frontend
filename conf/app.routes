@@ -71,6 +71,9 @@ GET         /compliance/not-for-profit      controllers.userJourney.sicAndCompli
 POST        /compliance/not-for-profit      controllers.userJourney.sicAndCompliance.cultural.NotForProfitController.submit
 
 ## LABOUR COMPLIANCE QUESTIONS
+GET         /compliance/provide-workers     controllers.userJourney.sicAndCompliance.labour.CompanyProvideWorkersController.show
+POST        /compliance/provide-workers     controllers.userJourney.sicAndCompliance.labour.CompanyProvideWorkersController.submit
+
 GET         /compliance/workers             controllers.userJourney.sicAndCompliance.labour.WorkersController.show
 POST        /compliance/workers             controllers.userJourney.sicAndCompliance.labour.WorkersController.submit
 

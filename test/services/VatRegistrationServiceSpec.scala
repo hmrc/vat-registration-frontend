@@ -23,6 +23,7 @@ import helpers.VatRegSpec
 import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
+import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration}
 import models.{S4LKey, VatBankAccountPath}
@@ -102,6 +103,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockS4LService.fetchAndGet[NotForProfit]()(Matchers.eq(S4LKey[NotForProfit]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validCulturalComplianceQ1)))
 
+      when(mockS4LService.fetchAndGet[CompanyProvideWorkers]()(Matchers.eq(S4LKey[CompanyProvideWorkers]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(validCompanyProvideWorkers)))
+
       when(mockRegConnector.upsertSicAndCompliance(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(validSicAndCompliance))
 
@@ -158,6 +162,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockS4LService.fetchAndGet[NotForProfit]()(Matchers.eq(S4LKey[NotForProfit]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validCulturalComplianceQ1)))
 
+      when(mockS4LService.fetchAndGet[CompanyProvideWorkers]()(Matchers.eq(S4LKey[CompanyProvideWorkers]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(validCompanyProvideWorkers)))
+
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
       (Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatScheme]]()))
         .thenReturn(Future.successful(validVatScheme))
@@ -173,6 +180,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       mockFetchRegId(validRegId)
 
       when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.eq(S4LKey[BusinessActivityDescription]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockS4LService.fetchAndGet[CompanyProvideWorkers]()(Matchers.eq(S4LKey[CompanyProvideWorkers]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
