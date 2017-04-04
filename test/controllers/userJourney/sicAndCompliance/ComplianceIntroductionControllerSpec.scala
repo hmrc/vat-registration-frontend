@@ -100,7 +100,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec {
         result =>
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some( //TODO below should be routing to a different controller, once we have that controller
-            controllers.userJourney.sicAndCompliance.cultural.routes.NotForProfitController.show().url
+            controllers.userJourney.sicAndCompliance.labour.routes.CompanyProvideWorkersController.show().url
           )
       }
     }
