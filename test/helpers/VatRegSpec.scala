@@ -50,6 +50,8 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with Vat
 
     def returns(o: Any): Assertion = whenReady(fu)(_ mustBe o)
 
+    def failedWith(e: Exception): Assertion = whenReady(fu.failed)(_ mustBe e)
+
   }
 
 }
