@@ -33,14 +33,14 @@ class SkilledWorkersController @Inject()(ds: CommonPlayDependencies)
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     viewModel[SkilledWorkers].map { vm =>
-      Ok(views.html.pages.sicAndCompliance.labour.company_provide_workers(SkilledWorkersForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.sicAndCompliance.labour.company_provide_workers(SkilledWorkersForm.form)))
+      Ok(views.html.pages.sicAndCompliance.labour.skilled_workers(SkilledWorkersForm.form.fill(vm)))
+    }.getOrElse(Ok(views.html.pages.sicAndCompliance.labour.skilled_workers(SkilledWorkersForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     SkilledWorkersForm.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.sicAndCompliance.labour.company_provide_workers(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.sicAndCompliance.labour.skilled_workers(formWithErrors)))
       }, {
         data: SkilledWorkers => {
           s4LService.saveForm[SkilledWorkers](data) map {  _ =>
