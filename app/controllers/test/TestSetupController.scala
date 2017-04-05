@@ -25,7 +25,7 @@ import forms.vatDetails.test.TestSetupForm
 import models.S4LKey
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, TemporaryContracts, Workers}
+import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.test._
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TaxableTurnover, TradingNameView, VoluntaryRegistration}
@@ -60,6 +60,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       labourCompanyProvideWorkers <- s4LService.fetchAndGet[CompanyProvideWorkers]()
       labourWorkers <- s4LService.fetchAndGet[Workers]()
       labourTemporaryContracts <- s4LService.fetchAndGet[TemporaryContracts]()
+      labourSkilledWorkers <- s4LService.fetchAndGet[SkilledWorkers]()
 
       testSetup = TestSetup(
         VatChoiceTestSetup(
@@ -93,7 +94,8 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
           culturalNotForProfit.map(_.yesNo),
           labourCompanyProvideWorkers.map(_.yesNo),
           labourWorkers.map(_.numberOfWorkers.toString),
-          labourTemporaryContracts.map(_.yesNo))
+          labourTemporaryContracts.map(_.yesNo),
+          labourSkilledWorkers.map(_.yesNo))
       )
       form = TestSetupForm.form.fill(testSetup)
     } yield Ok(views.html.pages.test_setup(form))
@@ -149,6 +151,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveToS4Later(data.sicAndCompliance.labourCompanyProvideWorkers, data, { x => CompanyProvideWorkers(x.sicAndCompliance.labourCompanyProvideWorkers.get) })
             _ <- saveToS4Later(data.sicAndCompliance.labourWorkers, data, { x => Workers(x.sicAndCompliance.labourWorkers.get.toInt) })
             _ <- saveToS4Later(data.sicAndCompliance.labourTemporaryContracts, data, { x => TemporaryContracts(x.sicAndCompliance.labourTemporaryContracts.get) })
+            _ <- saveToS4Later(data.sicAndCompliance.labourSkilledWorkers, data, { x => TemporaryContracts(x.sicAndCompliance.labourSkilledWorkers.get) })
           } yield Ok("Test setup complete")
         }
       })
