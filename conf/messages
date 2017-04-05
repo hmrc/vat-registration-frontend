@@ -276,12 +276,6 @@ pages.compliance.introduction.title                          = Compliance questi
 pages.compliance.introduction.heading                        = Tell us more about your company
 pages.compliance.introduction.para1                          = So we can understand what your company does, we''re going to ask you a few questions about your business activities.
 
-## Labour Compliance - Does Company Provide Workers
-pages.labourCompliance.companyProvideWorkers.title         = Does the company provide workers to other employers?
-pages.labourCompliance.companyProvideWorkers.heading       = Does the company provide workers to other employers?
-pages.labourCompliance.companyProvideWorkers.para          = For example, the company is a third-party supplier of construction workers or cleaners.
-validation.companyProvideWorkers.option.missing            = Tell us if your company provide workers to other employers
-
 ## Cultural Compliance Questions
 ## Not For Profit
 pages.culturalCompliance.notForProfit.title                  = Not-for-profit organisation
@@ -289,6 +283,12 @@ pages.culturalCompliance.notForProfit.heading                = Is your company a
 validation.not.profit.option.missing                         = Tell us if your company is a not-for-profit organisation or public body
 
 ## Labour Compliance
+## Does Company Provide Workers
+pages.labourCompliance.companyProvideWorkers.title         = Does the company provide workers to other employers?
+pages.labourCompliance.companyProvideWorkers.heading       = Does the company provide workers to other employers?
+pages.labourCompliance.companyProvideWorkers.para          = For example, the company is a third-party supplier of construction workers or cleaners.
+validation.companyProvideWorkers.option.missing            = Tell us if your company provides workers to other employers
+
 ## Workers
 pages.labourCompliance.workers.title                  = How many workers does the company provide at any one time?
 pages.labourCompliance.workers.heading                = How many workers does the company provide at any one time?
@@ -302,9 +302,9 @@ pages.labourCompliance.temporaryContracts.title                  = Does the comp
 pages.labourCompliance.temporaryContracts.heading                = Does the company provide workers on temporary contracts?
 validation.labourCompliance.temporaryContracts.option.missing    = Tell us if your company provides workers on temporary contracts
 
-## Labour Compliance - Does Company Provide Skilled Workers
+## Does Company Provide Skilled Workers
 pages.labourCompliance.skilledWorkers.title         = Does the company provide skilled workers?
 pages.labourCompliance.skilledWorkers.heading       = Does the company provide skilled workers?
 pages.labourCompliance.skilledWorkers.para          = For example, workers who have special skills, training, knowledge or ability.
-validation.skilledWorkers.option.missing            = Tell us if your company provide Skilled workers
+validation.skilledWorkers.option.missing            = Tell us if your company provides skilled workers
 
