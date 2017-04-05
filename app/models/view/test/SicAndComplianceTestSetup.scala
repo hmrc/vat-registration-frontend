@@ -27,7 +27,8 @@ case class SicAndComplianceTestSetup(businessActivityDescription: Option[String]
                                      culturalNotForProfit: Option[String],
                                      labourCompanyProvideWorkers: Option[String],
                                      labourWorkers: Option[String],
-                                     labourTemporaryContracts: Option[String]
+                                     labourTemporaryContracts: Option[String],
+                                     labourSkilledWorkers: Option[String]
                                     )
 
 object SicAndComplianceTestSetup {

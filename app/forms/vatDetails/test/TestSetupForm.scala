@@ -40,7 +40,8 @@ object TestSetupForm {
     "culturalNotForProfit" -> optional(text),
     "labourCompanyProvideWorkers" -> optional(text),
     "labourWorkers" -> optional(text),
-    "labourTemporaryContracts" -> optional(text)
+    "labourTemporaryContracts" -> optional(text),
+    "labourSkilledWorkers" -> optional(text)
   )(SicAndComplianceTestSetup.apply)(SicAndComplianceTestSetup.unapply)
 
   val vatTradingDetailsTestSetupMapping = mapping(
