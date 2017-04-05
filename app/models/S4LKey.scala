@@ -18,7 +18,7 @@ package models
 
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.labour._
+import models.view.sicAndCompliance.labour.{SkilledWorkers, _}
 import models.view.test.SicStub
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TaxableTurnover, TradingNameView, VoluntaryRegistration}
@@ -55,5 +55,7 @@ object S4LKey {
   implicit val notForProfit: S4LKey[NotForProfit] = S4LKey("NotForProfit")
   implicit val workers: S4LKey[Workers] = S4LKey("Workers")
   implicit val temporaryContracts: S4LKey[TemporaryContracts] = S4LKey("TemporaryContracts")
+  implicit val skilledWorkers: S4LKey[SkilledWorkers] = S4LKey("SkilledWorkers")
+
 
 }
