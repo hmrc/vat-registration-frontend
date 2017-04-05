@@ -30,7 +30,7 @@ case class VatScheme(
 object VatScheme {
 
   implicit val format: OFormat[VatScheme] = (
-    (__ \ "ID").format[String] and
+    (__ \ "registrationId").format[String] and
       (__ \ "tradingDetails").formatNullable[VatTradingDetails] and
       (__ \ "financials").formatNullable[VatFinancials] and
       (__ \ "vatSicAndCompliance").formatNullable[VatSicAndCompliance]

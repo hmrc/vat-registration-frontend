@@ -297,8 +297,14 @@ validation.labourCompliance.numberOfWorkers.missing   = Tell us how many workers
 validation.labourCompliance.numberOfWorkers.high      = Number of workers must be less than 99999
 validation.labourCompliance.numberOfWorkers.low       = Number of workers must be at least 1
 
+## Temporary Contracts
+pages.labourCompliance.temporaryContracts.title                  = Does the company provide workers on temporary contracts?
+pages.labourCompliance.temporaryContracts.heading                = Does the company provide workers on temporary contracts?
+validation.labourCompliance.temporaryContracts.option.missing    = Tell us if your company provides workers on temporary contracts
+
 ## Labour Compliance - Does Company Provide Skilled Workers
 pages.labourCompliance.skilledWorkers.title         = Does the company provide skilled workers?
 pages.labourCompliance.skilledWorkers.heading       = Does the company provide skilled workers?
 pages.labourCompliance.skilledWorkers.para          = For example, workers who have special skills, training, knowledge or ability.
 validation.skilledWorkers.option.missing            = Tell us if your company provide Skilled workers
+

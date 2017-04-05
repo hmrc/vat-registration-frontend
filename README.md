@@ -48,7 +48,7 @@ sbt run -Dapplication.router=testOnlyDoNotUseInAppConf.Routes
 if you want to avoid having to include the service port number in the URL, add a rule to your nginx config.
 
 ```
-location /vat-registration {
+location /register-for-vat {
   proxy_pass                http://localhost:9895;
 }
 ```

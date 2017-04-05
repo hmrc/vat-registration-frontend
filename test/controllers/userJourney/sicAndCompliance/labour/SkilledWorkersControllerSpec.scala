@@ -46,7 +46,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
   s"GET ${sicAndCompliance.labour.routes.SkilledWorkersController.show()}" should {
 
-    "return HTML when there's a Company Provide Workers model in S4L" in {
+    "return HTML when there's a Company Provide Skilled Workers model in S4L" in {
       val skilledWorkers = SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO)
 
       when(mockS4LService.fetchAndGet[SkilledWorkers]()(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -60,7 +60,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Does the company provide workers to other employers?")
+          contentAsString(result) must include("Does the company provide skilled workers?")
       }
     }
 
@@ -77,7 +77,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Does the company provide workers to other employers?")
+          contentAsString(result) must include("Does the company provide skilled workers?")
       }
     }
   }
@@ -95,7 +95,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
         status(result) mustBe OK
         contentType(result) mustBe Some("text/html")
         charset(result) mustBe Some("utf-8")
-        contentAsString(result) must include("Does the company provide workers to other employers?")
+        contentAsString(result) must include("Does the company provide skilled workers?")
     }
   }
 
@@ -111,7 +111,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  s"POST ${sicAndCompliance.labour.routes.SkilledWorkersController.submit()} with company provide workers Yes selected" should {
+  s"POST ${sicAndCompliance.labour.routes.SkilledWorkersController.submit()} with company provide Skilled workers Yes selected" should {
 
     "return 303" in {
       val returnCacheMapSkilledWorkers = CacheMap("", Map("" -> Json.toJson(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))))
@@ -125,13 +125,13 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/compliance/workers"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/company-bank-account"
       }
 
     }
   }
 
-  s"POST ${sicAndCompliance.labour.routes.SkilledWorkersController.submit()} with company provide workers No selected" should {
+  s"POST ${sicAndCompliance.labour.routes.SkilledWorkersController.submit()} with company provide Skilled workers No selected" should {
 
     "return 303" in {
       val returnCacheMapSkilledWorkers = CacheMap("", Map("" -> Json.toJson(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO))))

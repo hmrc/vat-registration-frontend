@@ -71,12 +71,17 @@ GET         /compliance/not-for-profit      controllers.userJourney.sicAndCompli
 POST        /compliance/not-for-profit      controllers.userJourney.sicAndCompliance.cultural.NotForProfitController.submit
 
 ## LABOUR COMPLIANCE QUESTIONS
+GET         /compliance/provide-workers     controllers.userJourney.sicAndCompliance.labour.CompanyProvideWorkersController.show
+POST        /compliance/provide-workers     controllers.userJourney.sicAndCompliance.labour.CompanyProvideWorkersController.submit
+
 GET         /compliance/workers             controllers.userJourney.sicAndCompliance.labour.WorkersController.show
 POST        /compliance/workers             controllers.userJourney.sicAndCompliance.labour.WorkersController.submit
 
-## LABOUR COMPLIANCE CPMPANY PROVIDE WORKERS
-GET         /compliance/provide-workers     controllers.userJourney.sicAndCompliance.labour.CompanyProvideWorkersController.show
-POST        /compliance/provide-workers     controllers.userJourney.sicAndCompliance.labour.CompanyProvideWorkersController.submit
+GET         /compliance/temporary-contracts controllers.userJourney.sicAndCompliance.labour.TemporaryContractsController.show
+POST        /compliance/temporary-contracts controllers.userJourney.sicAndCompliance.labour.TemporaryContractsController.submit
+
+GET         /compliance/skilled-workers     controllers.userJourney.sicAndCompliance.labour.SkilledWorkersController.show
+POST        /compliance/skilled-workers     controllers.userJourney.sicAndCompliance.labour.SkilledWorkersController.submit
 
 ## FEEDBACK
 GET         /feedback                       controllers.feedback.FeedbackController.show
