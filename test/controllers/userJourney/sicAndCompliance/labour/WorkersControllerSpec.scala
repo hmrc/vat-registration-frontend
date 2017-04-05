@@ -55,7 +55,6 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
       AuthBuilder.submitWithAuthorisedUser(WorkersController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
-
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -107,7 +106,6 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
         result =>
           status(result) mustBe Status.BAD_REQUEST
       }
-
     }
   }
 
@@ -123,9 +121,8 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
       AuthBuilder.submitWithAuthorisedUser(WorkersController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/company-bank-account"
+        result =>
+          result redirectsTo controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show()
       }
 
     }
@@ -143,11 +140,9 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
       AuthBuilder.submitWithAuthorisedUser(WorkersController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "8"
       )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/compliance/temporary-contracts"
+        result =>
+          result redirectsTo sicAndCompliance.labour.routes.TemporaryContractsController.show()
       }
-
     }
   }
 
