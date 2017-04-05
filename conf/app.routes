@@ -80,6 +80,9 @@ POST        /compliance/workers             controllers.userJourney.sicAndCompli
 GET         /compliance/temporary-contracts controllers.userJourney.sicAndCompliance.labour.TemporaryContractsController.show
 POST        /compliance/temporary-contracts controllers.userJourney.sicAndCompliance.labour.TemporaryContractsController.submit
 
+GET         /compliance/skilled-workers     controllers.userJourney.sicAndCompliance.labour.SkilledWorkersController.show
+POST        /compliance/skilled-workers     controllers.userJourney.sicAndCompliance.labour.SkilledWorkersController.submit
+
 ## FEEDBACK
 GET         /feedback                       controllers.feedback.FeedbackController.show
 

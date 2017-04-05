@@ -22,7 +22,7 @@ import models.api.{VatComplianceCultural, _}
 import models.view._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, TemporaryContracts, Workers}
+import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.StartDateView
 import play.api.http.Status._
@@ -152,6 +152,7 @@ trait VatRegistrationFixture {
   val validCompanyProvideWorkers = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
   val validWorkers = Workers(8)
   val validTemporaryContracts = TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)
+  val validSkilledWorkers = SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO)
 
   lazy val validSummaryView = Summary(
     Seq(
