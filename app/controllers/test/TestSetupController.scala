@@ -25,6 +25,7 @@ import forms.vatDetails.test.TestSetupForm
 import models.S4LKey
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
+import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, TemporaryContracts, Workers}
 import models.view.test._
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TaxableTurnover, TradingNameView, VoluntaryRegistration}
@@ -55,7 +56,10 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       accountingPeriod <- s4LService.fetchAndGet[AccountingPeriod]()
       businessActivityDescription <- s4LService.fetchAndGet[BusinessActivityDescription]()
       sicStub <- s4LService.fetchAndGet[SicStub]()
-      culturalComplianceQ1 <- s4LService.fetchAndGet[NotForProfit]()
+      culturalNotForProfit <- s4LService.fetchAndGet[NotForProfit]()
+      labourCompanyProvideWorkers <- s4LService.fetchAndGet[CompanyProvideWorkers]()
+      labourWorkers <- s4LService.fetchAndGet[Workers]()
+      labourTemporaryContracts <- s4LService.fetchAndGet[TemporaryContracts]()
 
       testSetup = TestSetup(
         VatChoiceTestSetup(
@@ -86,7 +90,10 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
           sicStub.map(_.sicCode2.getOrElse("")),
           sicStub.map(_.sicCode3.getOrElse("")),
           sicStub.map(_.sicCode4.getOrElse("")),
-          culturalComplianceQ1.map(_.yesNo))
+          culturalNotForProfit.map(_.yesNo),
+          labourCompanyProvideWorkers.map(_.yesNo),
+          labourWorkers.map(_.numberOfWorkers.toString),
+          labourTemporaryContracts.map(_.yesNo))
       )
       form = TestSetupForm.form.fill(testSetup)
     } yield Ok(views.html.pages.test_setup(form))
@@ -138,7 +145,10 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
                 Some(x.sicAndCompliance.sicCode3.getOrElse("")),
                 Some(x.sicAndCompliance.sicCode4.getOrElse("")))
             })
-            _ <- saveToS4Later(data.sicAndCompliance.culturalComplianceQ1, data, { x => NotForProfit(x.sicAndCompliance.culturalComplianceQ1.get) })
+            _ <- saveToS4Later(data.sicAndCompliance.culturalNotForProfit, data, { x => NotForProfit(x.sicAndCompliance.culturalNotForProfit.get) })
+            _ <- saveToS4Later(data.sicAndCompliance.labourCompanyProvideWorkers, data, { x => CompanyProvideWorkers(x.sicAndCompliance.labourCompanyProvideWorkers.get) })
+            _ <- saveToS4Later(data.sicAndCompliance.labourWorkers, data, { x => Workers(x.sicAndCompliance.labourWorkers.get.toInt) })
+            _ <- saveToS4Later(data.sicAndCompliance.labourTemporaryContracts, data, { x => TemporaryContracts(x.sicAndCompliance.labourTemporaryContracts.get) })
           } yield Ok("Test setup complete")
         }
       })
