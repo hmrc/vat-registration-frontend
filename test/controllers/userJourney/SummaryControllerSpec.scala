@@ -16,21 +16,19 @@
 
 package controllers.userJourney
 
-import enums.DownstreamOutcome
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.view.Summary
 import org.mockito.Matchers
 import org.mockito.Mockito.when
-import play.api.UnexpectedException
 import play.api.http.Status
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -40,6 +38,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   object TestSummaryController extends SummaryController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+
     override def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] = Future.successful(Summary(sections = Seq()))
   }
 
@@ -49,7 +48,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   "Calling summary to show the summary page" should {
     "return HTML with a valid summary view" in {
-      when(mockVatRegistrationService.submitVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(DownstreamOutcome.Success))
+      when(mockVatRegistrationService.submitVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(()))
       when(mockS4LService.clear()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validHttpResponse))
 
       callAuthorised(TestSummaryController.show, mockAuthConnector) {
@@ -74,16 +73,12 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       TestSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency).sections.length mustEqual 2
     }
 
-//    "registrationToSummary throws an exception when a non-valid empty VatScheme object is mapped to a Summary object" in {
-//      assertThrows[UnexpectedException] {
-//        TestSummaryController.registrationToSummary(emptyVatScheme)
-//      }
-//    }
-
     // TODO: Need to resolve why raising a new InternalError gives a Boxed Error exception yet this works for PAYE
     "return an Internal Server Error response when no valid model is returned from the microservice" ignore {
-      when(mockVatRegistrationService.submitVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(DownstreamOutcome.Success))
-      when(mockS4LService.clear()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validHttpResponse))
+      when(mockVatRegistrationService.submitVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(()))
+      when(mockS4LService.clear()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(validHttpResponse))
 
       callAuthorised(TestSummaryController.show, mockAuthConnector) {
         (response: Future[Result]) =>
