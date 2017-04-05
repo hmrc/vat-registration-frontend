@@ -39,10 +39,17 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with Vat
   def callAuthorised(a: Action[AnyContent], ac: AuthConnector)(test: Future[Result] => Any): Unit =
     AuthBuilder.withAuthorisedUser(a, ac)(test)
 
-  implicit class FutureUnit(fu: Future[_]) {
+  implicit class FutureUnit(fu: Future[Unit]) {
+
     def completedSuccessfully: Assertion = whenReady(fu)(_ mustBe (()))
 
+  }
+
+
+  implicit class FutureReturns(fu: Future[_]) {
+
     def returns(o: Any): Assertion = whenReady(fu)(_ mustBe o)
+
   }
 
 }
