@@ -20,7 +20,7 @@ import javax.inject.Singleton
 
 import com.google.inject.ImplementedBy
 import config.WSHttp
-import models.{ElementPath, VatBankAccountPath}
+import models.ElementPath
 import models.api._
 import play.api.Logger
 import play.api.http.Status
@@ -91,7 +91,7 @@ trait RegistrationConnector {
   }
 
   def deleteElement(elementPath: ElementPath)(regId: String)
-                       (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
+                   (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
     http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete/${elementPath.name}") recover {
       case e: Exception => throw logResponse(e, "deleteElement", s"delete ${elementPath.name}")
     }

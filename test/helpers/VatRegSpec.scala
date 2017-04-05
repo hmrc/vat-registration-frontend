@@ -20,15 +20,16 @@ import builders.AuthBuilder
 import controllers.CommonPlayDependencies
 import fixtures.LoginFixture
 import mocks.VatMocks
-import org.scalatest.Inside
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
+import org.scalatest.{Assertion, Inside}
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
-class VatRegSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with VatMocks with LoginFixture with Inside {
+class VatRegSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with VatMocks with LoginFixture with Inside with ScalaFutures {
 
   // Placeholder for custom configuration
   // Use this if you want to configure the app
@@ -37,5 +38,20 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with Vat
 
   def callAuthorised(a: Action[AnyContent], ac: AuthConnector)(test: Future[Result] => Any): Unit =
     AuthBuilder.withAuthorisedUser(a, ac)(test)
+
+  implicit class FutureUnit(fu: Future[Unit]) {
+
+    def completedSuccessfully: Assertion = whenReady(fu)(_ mustBe (()))
+
+  }
+
+
+  implicit class FutureReturns(fu: Future[_]) {
+
+    def returns(o: Any): Assertion = whenReady(fu)(_ mustBe o)
+
+    def failedWith(e: Exception): Assertion = whenReady(fu.failed)(_ mustBe e)
+
+  }
 
 }
