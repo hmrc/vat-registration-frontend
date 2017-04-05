@@ -24,7 +24,7 @@ import models._
 import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, TemporaryContracts, Workers}
+import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration}
 import play.api.libs.json.Format
@@ -32,7 +32,6 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.Success
 
 @ImplementedBy(classOf[VatRegistrationService])
 trait RegistrationService {
@@ -111,7 +110,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
         s4l[NotForProfit]() |@|
         s4l[CompanyProvideWorkers]() |@|
         s4l[Workers]() |@|
-        s4l[TemporaryContracts]()
+        s4l[TemporaryContracts]() |@|
+        s4l[SkilledWorkers]()
         ).map(S4LVatSicAndCompliance).map {
         s4l =>
           update(s4l.description, vs)
@@ -119,6 +119,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
             .andThen(update(s4l.labourComplianceCompanyProvideWorkers, vs))
             .andThen(update(s4l.labourComplianceWorkers, vs))
             .andThen(update(s4l.labourComplianceTemporaryContracts, vs))
+            .andThen(update(s4l.labourComplianceSkilledWorkers, vs))
             .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance(""))) //TODO remove the "seeding" with default
       }
 
@@ -133,12 +134,11 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
     def mergeWithS4L(vs: VatScheme) =
       (s4l[TradingNameView]() |@|
         s4l[StartDateView]() |@|
-        s4l[VoluntaryRegistration]()).map(S4LTradingDetails).map {
-        s4l =>
-          update(s4l.voluntaryRegistration, vs)
-            .andThen(update(s4l.tradingName, vs))
-            .andThen(update(s4l.startDate, vs))
-            .apply(vs.tradingDetails.getOrElse(VatTradingDetails.empty)) //TODO remove the "seeding" with default
+        s4l[VoluntaryRegistration]()).map(S4LTradingDetails).map { s4l =>
+        update(s4l.voluntaryRegistration, vs)
+          .andThen(update(s4l.tradingName, vs))
+          .andThen(update(s4l.startDate, vs))
+          .apply(vs.tradingDetails.getOrElse(VatTradingDetails.empty)) //TODO remove the "seeding" with default
       }
 
     for {

@@ -22,7 +22,7 @@ import helpers.VatRegSpec
 import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, TemporaryContracts, Workers}
+import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration}
 import models.{S4LKey, VatBankAccountPath}
@@ -112,6 +112,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockS4LService.fetchAndGet[TemporaryContracts]()(Matchers.eq(S4LKey[TemporaryContracts]), any(), any()))
         .thenReturn(Future.successful(Some(validTemporaryContracts)))
 
+      when(mockS4LService.fetchAndGet[SkilledWorkers]()(Matchers.eq(S4LKey[SkilledWorkers]), any(), any()))
+        .thenReturn(Future.successful(Some(validSkilledWorkers)))
+
       when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any()))
         .thenReturn(Future.successful(validSicAndCompliance))
 
@@ -149,8 +152,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       (any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      when(mockRegConnector.upsertVatTradingDetails(regId = any(), vatTradingDetails = any())
-      (hc = any(), rds = any()))
+      when(mockRegConnector.upsertVatTradingDetails(regId = any(), vatTradingDetails = any())(hc = any(), rds = any()))
         .thenReturn(Future.successful(validVatTradingDetails))
 
       service.submitTradingDetails() returns validVatTradingDetails
@@ -199,6 +201,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
       (any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
         .thenReturn(Future.successful(validVatScheme))
+
+      when(mockS4LService.fetchAndGet[SkilledWorkers]()(Matchers.eq(S4LKey[SkilledWorkers]), any(), any()))
+        .thenReturn(Future.successful(Some(validSkilledWorkers)))
 
       when(mockRegConnector.upsertSicAndCompliance(regId = any(), sicAndCompliance = any())
       (hc = any(), rds = any()))
