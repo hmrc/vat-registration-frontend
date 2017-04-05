@@ -23,7 +23,7 @@ import helpers.VatRegSpec
 import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, TemporaryContracts, Workers}
+import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration}
 import models.{S4LKey, VatBankAccountPath}
@@ -111,6 +111,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       when(mockS4LService.fetchAndGet[TemporaryContracts]()(Matchers.eq(S4LKey[TemporaryContracts]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validTemporaryContracts)))
+
+      when(mockS4LService.fetchAndGet[SkilledWorkers]()(Matchers.eq(S4LKey[SkilledWorkers]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(validSkilledWorkers)))
 
       when(mockRegConnector.upsertSicAndCompliance(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(validSicAndCompliance))
@@ -200,6 +203,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
       (Matchers.any[HeaderCarrier](), Matchers.any[HttpReads[VatScheme]]()))
         .thenReturn(Future.successful(validVatScheme))
+
+      when(mockS4LService.fetchAndGet[SkilledWorkers]()(Matchers.eq(S4LKey[SkilledWorkers]), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(validSkilledWorkers)))
 
       when(mockRegConnector.upsertSicAndCompliance(regId = Matchers.any(), sicAndCompliance = Matchers.any())
       (hc = Matchers.any(), rds = Matchers.any()))
