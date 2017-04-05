@@ -24,7 +24,12 @@ case class SicAndComplianceTestSetup(businessActivityDescription: Option[String]
                                      sicCode2: Option[String],
                                      sicCode3: Option[String],
                                      sicCode4: Option[String],
-                                     culturalComplianceQ1: Option[String])
+                                     culturalNotForProfit: Option[String],
+                                     labourCompanyProvideWorkers: Option[String],
+                                     labourWorkers: Option[String],
+                                     labourTemporaryContracts: Option[String],
+                                     labourSkilledWorkers: Option[String]
+                                    )
 
 object SicAndComplianceTestSetup {
   implicit val format = Json.format[SicAndComplianceTestSetup]
