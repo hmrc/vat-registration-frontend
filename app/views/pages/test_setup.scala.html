@@ -40,7 +40,12 @@
                     <p>@govHelpers.input(testSetupForm("sicAndCompliance.sicCode2"), '_label -> "SIC code 2")</p>
                     <p>@govHelpers.input(testSetupForm("sicAndCompliance.sicCode3"), '_label -> "SIC code 3")</p>
                     <p>@govHelpers.input(testSetupForm("sicAndCompliance.sicCode4"), '_label -> "SIC code 4")</p>
-                    <p>@govHelpers.input(testSetupForm("sicAndCompliance.culturalComplianceQ1"), '_label -> "Cultural Compliance Q1 (NOT_PROFIT_YES or NOT_PROFIT_NO)")</p>
+                    <em>Cultural Compliance</em>
+                    <p>@govHelpers.input(testSetupForm("sicAndCompliance.culturalNotForProfit"), '_label -> "Not for Profit (NOT_PROFIT_YES or NOT_PROFIT_NO)")</p>
+                    <em>Labour Compliance</em>
+                    <p>@govHelpers.input(testSetupForm("sicAndCompliance.labourCompanyProvideWorkers"), '_label -> "Company Provide Workers (PROVIDE_WORKERS_YES or PROVIDE_WORKERS_NO)")</p>
+                    <p>@govHelpers.input(testSetupForm("sicAndCompliance.labourWorkers"), '_label -> "How Many Workers (1 <= integer <= 99999)")</p>
+                    <p>@govHelpers.input(testSetupForm("sicAndCompliance.labourTemporaryContracts"), '_label -> "Temporary Contracts (TEMP_CONTRACTS_YES or TEMP_CONTRACTS_NO)")</p>
                 </fieldset>
 
             </div>
