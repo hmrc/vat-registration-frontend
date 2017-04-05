@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.sicAndCompliance.labour.TemporaryContractsForm
-import models.view.sicAndCompliance.labour.TemporaryContracts
+import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, TemporaryContracts}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -43,9 +43,14 @@ class TemporaryContractsController @Inject()(ds: CommonPlayDependencies)
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.sicAndCompliance.labour.temporary_contracts(formWithErrors)))
       }, {
+
         data: TemporaryContracts => {
           s4LService.saveForm[TemporaryContracts](data) map { _ =>
-            Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
+            if(TemporaryContracts.TEMP_CONTRACTS_YES == data.yesNo) {
+              Redirect(controllers.userJourney.sicAndCompliance.labour.routes.SkilledWorkersController.show())
+            }else{
+              Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
+            }
           }
         }
       })
