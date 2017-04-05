@@ -19,37 +19,33 @@ package controllers.userJourney.sicAndCompliance.labour
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatDetails.sicAndCompliance.labour.WorkersForm
-import models.view.sicAndCompliance.labour.Workers
+import forms.vatDetails.sicAndCompliance.labour.TemporaryContractsForm
+import models.view.sicAndCompliance.labour.TemporaryContracts
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
 
-class WorkersController @Inject()(ds: CommonPlayDependencies)
-                                 (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+class TemporaryContractsController @Inject()(ds: CommonPlayDependencies)
+                                            (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
   import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[Workers].map { vm =>
-      Ok(views.html.pages.sicAndCompliance.labour.workers(WorkersForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.sicAndCompliance.labour.workers(WorkersForm.form)))
+    viewModel[TemporaryContracts].map { vm =>
+      Ok(views.html.pages.sicAndCompliance.labour.temporary_contracts(TemporaryContractsForm.form.fill(vm)))
+    }.getOrElse(Ok(views.html.pages.sicAndCompliance.labour.temporary_contracts(TemporaryContractsForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    WorkersForm.form.bindFromRequest().fold(
+    TemporaryContractsForm.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.sicAndCompliance.labour.workers(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.sicAndCompliance.labour.temporary_contracts(formWithErrors)))
       }, {
-        data: Workers => {
-          s4LService.saveForm[Workers](data) map { _ =>
-            if(data.numberOfWorkers >= 8) {
-              Redirect(controllers.userJourney.sicAndCompliance.labour.routes.TemporaryContractsController.show())
-            }else{
-              Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
-            }
+        data: TemporaryContracts => {
+          s4LService.saveForm[TemporaryContracts](data) map { _ =>
+            Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
           }
         }
       })
