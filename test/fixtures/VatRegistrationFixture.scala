@@ -80,7 +80,7 @@ trait VatRegistrationFixture {
   val validSicAndCompliance = VatSicAndCompliance(
     businessDescription = businessActivityDescription,
     culturalCompliance = None,
-    labourCompliance   = None
+    labourCompliance = None
   )
 
   val emptyVatScheme = VatScheme(validRegId)
@@ -90,14 +90,16 @@ trait VatRegistrationFixture {
                       startDateSelection: String = StartDateView.COMPANY_REGISTRATION_DATE,
                       startDate: Option[LocalDate] = None,
                       tradingNameSelection: Boolean = true,
-                      tradingName: Option[String] = Some("ACME Ltd.")
+                      tradingName: Option[String] = Some("ACME Ltd."),
+                      reason: Option[String] = None
                     ): VatTradingDetails = VatTradingDetails(
     vatChoice = VatChoice(
       necessity = necessity,
       vatStartDate = VatStartDate(
         selection = startDateSelection,
         startDate = startDate
-      )
+      ),
+      reason = reason
     ),
     tradingName = TradingName(
       selection = tradingNameSelection,

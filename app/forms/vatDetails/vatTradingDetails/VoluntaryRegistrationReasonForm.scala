@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package models.api
+package forms.vatDetails.vatTradingDetails
 
-import play.api.libs.json._
+import forms.validation.FormValidation.missingFieldMapping
+import models.view.vatTradingDetails.VoluntaryRegistrationReason
+import play.api.data.Form
+import play.api.data.Forms.mapping
 
-case class VatChoice(
-                      necessity: String, // "obligatory" or "voluntary"
-                      vatStartDate: VatStartDate,
-                      reason: Option[String] = None
-                    )
+object VoluntaryRegistrationReasonForm {
 
-object VatChoice {
+  val RADIO_REASON: String = "voluntaryRegistrationReasonRadio"
 
-  val NECESSITY_OBLIGATORY = "obligatory"
-  val NECESSITY_VOLUNTARY = "voluntary"
-
-  implicit val format: OFormat[VatChoice] = Json.format[VatChoice]
+  val form = Form(
+    mapping(
+      RADIO_REASON -> missingFieldMapping()("voluntary.registration.reason")
+        .verifying(VoluntaryRegistrationReason.valid)
+    )(VoluntaryRegistrationReason.apply)(VoluntaryRegistrationReason.unapply)
+  )
 
 }
