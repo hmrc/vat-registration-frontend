@@ -17,17 +17,17 @@
 package forms.vatDetails.vatTradingDetails.vatEuTrading
 
 import forms.validation.FormValidation.missingFieldMapping
-import models.view.sicAndCompliance.labour.TemporaryContracts
+import models.view.vatTradingDetails.vatEuTrading.EuGoods
 import play.api.data.Form
 import play.api.data.Forms._
 
 object EuGoodsForm {
-  val RADIO_YES_NO: String = "temporaryContractsRadio"
+  val RADIO_YES_NO: String = "euGoodsRadio"
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping()("labourCompliance.temporaryContracts").verifying(TemporaryContracts.valid)
-    )(TemporaryContracts.apply)(TemporaryContracts.unapply)
+      RADIO_YES_NO -> missingFieldMapping()("euGoods").verifying(EuGoods.valid)
+    )(EuGoods.apply)(EuGoods.unapply)
   )
 
 }

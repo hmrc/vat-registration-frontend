@@ -1,29 +1,29 @@
-@import models.view.sicAndCompliance.labour.TemporaryContracts
-@(temporaryContractsForm: Form[TemporaryContracts])(implicit request: Request[_], messages: Messages)
+@import models.view.vatTradingDetails.vatEuTrading.EuGoods
+@(euGoodsForm: Form[EuGoods])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
 
-@main_template(title = messages("pages.labourCompliance.temporaryContracts.title")) {
+@main_template(title = messages("pages.euGoods.title")) {
 
     <div class="column-one-third">
 
-        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.labourCompliance.temporaryContracts.heading")</h1>
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.euGoods.heading")</h1>
 
         @errorSummary(
             Messages("app.common.errorSummaryLabel"),
-            temporaryContractsForm
+            euGoodsForm
         )
 
-        @govHelpers.form(action = controllers.userJourney.sicAndCompliance.labour.routes.TemporaryContractsController.submit()) {
+        @govHelpers.form(action = controllers.userJourney.vatTradingDetails.vatEuTrading.routes.EuGoodsController.submit()) {
             <div class="form-group">
                 <fieldset class="inline">
-                    <span id="temporaryContractsRadio"/>
+                    <span id="euGoodsRadio"/>
 
                     @govHelpers.inputRadioGroup(
-                        field = temporaryContractsForm("temporaryContractsRadio"),
+                        field = euGoodsForm("euGoodsRadio"),
                         Seq(
-                            TemporaryContracts.TEMP_CONTRACTS_YES -> Messages("app.common.yes"),
-                            TemporaryContracts.TEMP_CONTRACTS_NO -> Messages("app.common.no")
+                            EuGoods.EU_GOODS_YES -> Messages("app.common.yes"),
+                            EuGoods.EU_GOODS_NO -> Messages("app.common.no")
                         ),
                         '_labelAfter -> true,
                         '_labelClass -> "block-label"
@@ -32,7 +32,7 @@
             </div>
 
             <div class="form-group">
-                <button class="btn button" type="submit" id="save-and-continue">Continue</button>
+                <button class="btn button" type="submit" id="save-and-continue">Save and continue</button>
             </div>
 
         }
