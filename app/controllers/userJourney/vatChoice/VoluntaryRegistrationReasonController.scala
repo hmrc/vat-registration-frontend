@@ -19,41 +19,39 @@ package controllers.userJourney.vatChoice
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatDetails.vatTradingDetails.VoluntaryRegistrationForm
-import models.view.vatTradingDetails.VoluntaryRegistration
+import forms.vatDetails.vatTradingDetails.VoluntaryRegistrationReasonForm
+import models.view.vatTradingDetails.VoluntaryRegistrationReason
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
-class VoluntaryRegistrationController @Inject()(ds: CommonPlayDependencies)
-                                               (implicit s4l: S4LService, vrs: VatRegistrationService)
+import scala.concurrent.Future
+
+class VoluntaryRegistrationReasonController @Inject()(ds: CommonPlayDependencies)
+                                                     (implicit s4l: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
   import cats.instances.future._
   import cats.syntax.applicative._
   import cats.syntax.flatMap._
 
-  val form = VoluntaryRegistrationForm.form
+  val form = VoluntaryRegistrationReasonForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[VoluntaryRegistration].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.voluntary_registration(f)))
+    viewModel[VoluntaryRegistrationReason].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.voluntary_registration_reason(f)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    VoluntaryRegistrationForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        BadRequest(views.html.pages.voluntary_registration(formWithErrors)).pure
-      }, {
-        data: VoluntaryRegistration => {
-          (VoluntaryRegistration.REGISTER_YES == data.yesNo).pure.ifM(
-            s4l.saveForm[VoluntaryRegistration](data)
-              .map(_ => controllers.userJourney.vatChoice.routes.VoluntaryRegistrationReasonController.show())
-            ,
-            s4l.clear().flatMap(_ => vrs.deleteVatScheme())
-              .map(_ => controllers.userJourney.routes.WelcomeController.show())
-          ).map(Redirect)
-        }
-      }
+    form.bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest(views.html.pages.voluntary_registration_reason(formWithErrors))),
+      (data: VoluntaryRegistrationReason) =>
+        (VoluntaryRegistrationReason.NEITHER == data.reason).pure.ifM(
+          s4l.clear().flatMap(_ => vrs.deleteVatScheme())
+            .map(_ => controllers.userJourney.routes.WelcomeController.show())
+          ,
+          s4l.saveForm[VoluntaryRegistrationReason](data)
+            .map(_ => controllers.userJourney.vatChoice.routes.StartDateController.show())
+        ).map(Redirect)
     )
   })
 

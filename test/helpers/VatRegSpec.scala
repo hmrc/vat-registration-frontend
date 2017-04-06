@@ -24,12 +24,16 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Assertion, Inside}
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc.{Action, AnyContent, Call, Result}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
-class VatRegSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with VatMocks with LoginFixture with Inside with ScalaFutures {
+class VatRegSpec extends PlaySpec with OneAppPerSuite
+  with MockitoSugar with VatMocks with LoginFixture with Inside
+  with ScalaFutures {
+
+  import play.api.test.Helpers._
 
   // Placeholder for custom configuration
   // Use this if you want to configure the app
@@ -46,11 +50,19 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with Vat
   }
 
 
-  implicit class FutureReturns(fu: Future[_]) {
+  implicit class FutureReturns(f: Future[_]) {
 
-    def returns(o: Any): Assertion = whenReady(fu)(_ mustBe o)
+    def returns(o: Any): Assertion = whenReady(f)(_ mustBe o)
 
-    def failedWith(e: Exception): Assertion = whenReady(fu.failed)(_ mustBe e)
+    def failedWith(e: Exception): Assertion = whenReady(f.failed)(_ mustBe e)
+
+  }
+
+  implicit class FutureResult(fr: Future[Result]) {
+
+    def redirectsTo(call: Call): Assertion = redirectLocation(fr) mustBe Some(call.url)
+
+    def redirectsTo(url: String): Assertion = redirectLocation(fr) mustBe Some(url)
 
   }
 

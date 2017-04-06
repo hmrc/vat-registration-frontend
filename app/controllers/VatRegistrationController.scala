@@ -25,7 +25,7 @@ import models.{ApiModelTransformer, S4LKey}
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Format
-import services.{S4LService, VatRegistrationService}
+import services.{RegistrationService, S4LService}
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -62,7 +62,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
 
   protected def viewModel[T: ApiModelTransformer : S4LKey : Format]
   ()
-  (implicit s4l: S4LService, vrs: VatRegistrationService, hc: HeaderCarrier): OptionT[Future, T] =
+  (implicit s4l: S4LService, vrs: RegistrationService, hc: HeaderCarrier): OptionT[Future, T] =
     OptionT(s4l.fetchAndGet[T]()).orElseF(vrs.getVatScheme() map ApiModelTransformer[T].toViewModel)
 
 }

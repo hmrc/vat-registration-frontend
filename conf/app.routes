@@ -1,99 +1,103 @@
 # microservice specific routes
 
-GET         /assets/*file                   controllers.Assets.at(path="/public", file)
+GET         /assets/*file                          controllers.Assets.at(path="/public", file)
 
 ## WELCOME PAGE
-GET         /                               controllers.userJourney.WelcomeController.show
-GET         /start                          controllers.userJourney.WelcomeController.start
+GET         /                                      controllers.userJourney.WelcomeController.show
+GET         /start                                 controllers.userJourney.WelcomeController.start
 
 ## VOLUNTARY START DATE PAGE
-GET         /start-date                     controllers.userJourney.vatChoice.StartDateController.show
-POST        /start-date                     controllers.userJourney.vatChoice.StartDateController.submit
+GET         /start-date                            controllers.userJourney.vatChoice.StartDateController.show
+POST        /start-date                            controllers.userJourney.vatChoice.StartDateController.submit
 
 ## MANDATORY START DATE PAGE
-GET         /start-date-confirmation        controllers.userJourney.vatChoice.MandatoryStartDateController.show
-POST        /start-date-confirmation        controllers.userJourney.vatChoice.MandatoryStartDateController.submit
+GET         /start-date-confirmation               controllers.userJourney.vatChoice.MandatoryStartDateController.show
+POST        /start-date-confirmation               controllers.userJourney.vatChoice.MandatoryStartDateController.submit
 
 ## TRADING NAME PAGE
-GET         /trading-name                   controllers.userJourney.vatTradingDetails.TradingNameController.show
-POST        /trading-name                   controllers.userJourney.vatTradingDetails.TradingNameController.submit
+GET         /trading-name                          controllers.userJourney.vatTradingDetails.TradingNameController.show
+POST        /trading-name                          controllers.userJourney.vatTradingDetails.TradingNameController.submit
 
 ## VOLUNTARY REGISTRATION PAGE
-GET         /voluntary-registration         controllers.userJourney.vatChoice.VoluntaryRegistrationController.show
-POST        /voluntary-registration         controllers.userJourney.vatChoice.VoluntaryRegistrationController.submit
+GET         /voluntary-registration                controllers.userJourney.vatChoice.VoluntaryRegistrationController.show
+POST        /voluntary-registration                controllers.userJourney.vatChoice.VoluntaryRegistrationController.submit
+
+## VOLUNTARY REGISTRATION REASON PAGE
+GET         /voluntary-registration-reason         controllers.userJourney.vatChoice.VoluntaryRegistrationReasonController.show
+POST        /voluntary-registration-reason         controllers.userJourney.vatChoice.VoluntaryRegistrationReasonController.submit
 
 ## ESTIMATE VAT TAXABLE TURNOVER PAGE
-GET         /estimate-vat-turnover          controllers.userJourney.vatFinancials.EstimateVatTurnoverController.show
-POST        /estimate-vat-turnover          controllers.userJourney.vatFinancials.EstimateVatTurnoverController.submit
+GET         /estimate-vat-turnover                 controllers.userJourney.vatFinancials.EstimateVatTurnoverController.show
+POST        /estimate-vat-turnover                 controllers.userJourney.vatFinancials.EstimateVatTurnoverController.submit
 
 ## ZERO RATED SALES PAGE
-GET         /zero-rated-sales               controllers.userJourney.vatFinancials.ZeroRatedSalesController.show
-POST        /zero-rated-sales               controllers.userJourney.vatFinancials.ZeroRatedSalesController.submit
+GET         /zero-rated-sales                      controllers.userJourney.vatFinancials.ZeroRatedSalesController.show
+POST        /zero-rated-sales                      controllers.userJourney.vatFinancials.ZeroRatedSalesController.submit
 
 ## ESTIMATE ZERO RATED SALES PAGE
-GET         /estimate-zero-rated-sales      controllers.userJourney.vatFinancials.EstimateZeroRatedSalesController.show
-POST        /estimate-zero-rated-sales      controllers.userJourney.vatFinancials.EstimateZeroRatedSalesController.submit
+GET         /estimate-zero-rated-sales             controllers.userJourney.vatFinancials.EstimateZeroRatedSalesController.show
+POST        /estimate-zero-rated-sales             controllers.userJourney.vatFinancials.EstimateZeroRatedSalesController.submit
 
 ## VAT CHARGE EXPECTANCY PAGE
-GET         /vat-charge-expectancy          controllers.userJourney.vatFinancials.VatChargeExpectancyController.show
-POST        /vat-charge-expectancy          controllers.userJourney.vatFinancials.VatChargeExpectancyController.submit
+GET         /vat-charge-expectancy                 controllers.userJourney.vatFinancials.VatChargeExpectancyController.show
+POST        /vat-charge-expectancy                 controllers.userJourney.vatFinancials.VatChargeExpectancyController.submit
 
 ## ACCOUNTING PERIOD PAGE
-GET         /accounting-period              controllers.userJourney.vatFinancials.AccountingPeriodController.show
-POST        /accounting-period              controllers.userJourney.vatFinancials.AccountingPeriodController.submit
+GET         /accounting-period                     controllers.userJourney.vatFinancials.AccountingPeriodController.show
+POST        /accounting-period                     controllers.userJourney.vatFinancials.AccountingPeriodController.submit
 
 ## TAXABLE TURNOVER PAGE
-GET         /taxable-turnover               controllers.userJourney.vatChoice.TaxableTurnoverController.show
-POST        /taxable-turnover               controllers.userJourney.vatChoice.TaxableTurnoverController.submit
+GET         /taxable-turnover                      controllers.userJourney.vatChoice.TaxableTurnoverController.show
+POST        /taxable-turnover                      controllers.userJourney.vatChoice.TaxableTurnoverController.submit
 
 ## VAT RETURN FREQUENCY
-GET         /vat-return-frequency           controllers.userJourney.vatFinancials.VatReturnFrequencyController.show
-POST        /vat-return-frequency           controllers.userJourney.vatFinancials.VatReturnFrequencyController.submit
+GET         /vat-return-frequency                  controllers.userJourney.vatFinancials.VatReturnFrequencyController.show
+POST        /vat-return-frequency                  controllers.userJourney.vatFinancials.VatReturnFrequencyController.submit
 
 ## COMPANY BANK ACCOUNT
-GET         /company-bank-account           controllers.userJourney.vatFinancials.CompanyBankAccountController.show
-POST        /company-bank-account           controllers.userJourney.vatFinancials.CompanyBankAccountController.submit
+GET         /company-bank-account                  controllers.userJourney.vatFinancials.CompanyBankAccountController.show
+POST        /company-bank-account                  controllers.userJourney.vatFinancials.CompanyBankAccountController.submit
 
 ## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
-GET         /bank-details                   controllers.userJourney.vatFinancials.CompanyBankAccountDetailsController.show
-POST        /bank-details                   controllers.userJourney.vatFinancials.CompanyBankAccountDetailsController.submit
+GET         /bank-details                          controllers.userJourney.vatFinancials.CompanyBankAccountDetailsController.show
+POST        /bank-details                          controllers.userJourney.vatFinancials.CompanyBankAccountDetailsController.submit
 
 ## BUSINESS ACTIVITY DESCRIPTION
-GET         /business-activity-description  controllers.userJourney.sicAndCompliance.BusinessActivityDescriptionController.show
-POST        /business-activity-description  controllers.userJourney.sicAndCompliance.BusinessActivityDescriptionController.submit
+GET         /business-activity-description         controllers.userJourney.sicAndCompliance.BusinessActivityDescriptionController.show
+POST        /business-activity-description         controllers.userJourney.sicAndCompliance.BusinessActivityDescriptionController.submit
 
 ## COMPLIANCE INTRODUCTION
-GET         /compliance/compliance-help     controllers.userJourney.sicAndCompliance.ComplianceIntroductionController.show
-POST        /compliance/compliance-help     controllers.userJourney.sicAndCompliance.ComplianceIntroductionController.submit
+GET         /compliance/compliance-help            controllers.userJourney.sicAndCompliance.ComplianceIntroductionController.show
+POST        /compliance/compliance-help            controllers.userJourney.sicAndCompliance.ComplianceIntroductionController.submit
 
 ## CULTURAL COMPLIANCE QUESTIONS
-GET         /compliance/not-for-profit      controllers.userJourney.sicAndCompliance.cultural.NotForProfitController.show
-POST        /compliance/not-for-profit      controllers.userJourney.sicAndCompliance.cultural.NotForProfitController.submit
+GET         /compliance/not-for-profit             controllers.userJourney.sicAndCompliance.cultural.NotForProfitController.show
+POST        /compliance/not-for-profit             controllers.userJourney.sicAndCompliance.cultural.NotForProfitController.submit
 
 ## LABOUR COMPLIANCE QUESTIONS
-GET         /compliance/provide-workers     controllers.userJourney.sicAndCompliance.labour.CompanyProvideWorkersController.show
-POST        /compliance/provide-workers     controllers.userJourney.sicAndCompliance.labour.CompanyProvideWorkersController.submit
+GET         /compliance/provide-workers            controllers.userJourney.sicAndCompliance.labour.CompanyProvideWorkersController.show
+POST        /compliance/provide-workers            controllers.userJourney.sicAndCompliance.labour.CompanyProvideWorkersController.submit
 
-GET         /compliance/workers             controllers.userJourney.sicAndCompliance.labour.WorkersController.show
-POST        /compliance/workers             controllers.userJourney.sicAndCompliance.labour.WorkersController.submit
+GET         /compliance/workers                    controllers.userJourney.sicAndCompliance.labour.WorkersController.show
+POST        /compliance/workers                    controllers.userJourney.sicAndCompliance.labour.WorkersController.submit
 
-GET         /compliance/temporary-contracts controllers.userJourney.sicAndCompliance.labour.TemporaryContractsController.show
-POST        /compliance/temporary-contracts controllers.userJourney.sicAndCompliance.labour.TemporaryContractsController.submit
+GET         /compliance/temporary-contracts        controllers.userJourney.sicAndCompliance.labour.TemporaryContractsController.show
+POST        /compliance/temporary-contracts        controllers.userJourney.sicAndCompliance.labour.TemporaryContractsController.submit
 
-GET         /compliance/skilled-workers     controllers.userJourney.sicAndCompliance.labour.SkilledWorkersController.show
-POST        /compliance/skilled-workers     controllers.userJourney.sicAndCompliance.labour.SkilledWorkersController.submit
+GET         /compliance/skilled-workers            controllers.userJourney.sicAndCompliance.labour.SkilledWorkersController.show
+POST        /compliance/skilled-workers            controllers.userJourney.sicAndCompliance.labour.SkilledWorkersController.submit
 
 ## FEEDBACK
-GET         /feedback                       controllers.feedback.FeedbackController.show
+GET         /feedback                              controllers.feedback.FeedbackController.show
 
 ## SUMMARY
-GET         /summary                        controllers.userJourney.SummaryController.show
+GET         /summary                               controllers.userJourney.SummaryController.show
 
 ## POST SIGN IN
-GET         /post-sign-in                   controllers.userJourney.SignInOutController.postSignIn
+GET         /post-sign-in                          controllers.userJourney.SignInOutController.postSignIn
 
 ## APPLICATION SUBMISSION CONFIRMATION
-GET         /submission-confirmation        controllers.userJourney.ApplicationSubmissionController.show
+GET         /submission-confirmation               controllers.userJourney.ApplicationSubmissionController.show
 
 
 
