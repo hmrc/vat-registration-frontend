@@ -16,19 +16,13 @@
 
 package models.api
 
+import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatTradingDetails(
-                              vatChoice: VatChoice,
-                              tradingName: TradingName,
-                              euTrading: VatEuTrading
-                            )
+case class VatEuTrading(selection: Boolean, eoriApplication: Option[Boolean])
 
-object VatTradingDetails {
+object VatEuTrading {
 
-  implicit val format: OFormat[VatTradingDetails] = Json.format[VatTradingDetails]
-
-  //TODO remove
-  val empty: VatTradingDetails = VatTradingDetails(VatChoice(VatChoice.NECESSITY_OBLIGATORY, VatStartDate("", None)), TradingName(selection = false, None), VatEuTrading(selection= false, eoriApplication =Some(false)))
+  implicit val format: OFormat[VatEuTrading] = Json.format[VatEuTrading]
 
 }
