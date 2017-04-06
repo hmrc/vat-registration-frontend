@@ -19,11 +19,7 @@ package controllers.userJourney.vatTradingDetails.vatEuTrading
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatDetails.sicAndCompliance.labour.TemporaryContractsForm
-import forms.vatDetails.vatTradingDetails.VoluntaryRegistrationReasonForm
 import forms.vatDetails.vatTradingDetails.vatEuTrading.EuGoodsForm
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, TemporaryContracts}
-import models.view.vatTradingDetails.VoluntaryRegistrationReason
 import models.view.vatTradingDetails.vatEuTrading.EuGoods
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
