@@ -18,6 +18,10 @@ POST        /start-date-confirmation        controllers.userJourney.vatChoice.Ma
 GET         /trading-name                   controllers.userJourney.vatTradingDetails.TradingNameController.show
 POST        /trading-name                   controllers.userJourney.vatTradingDetails.TradingNameController.submit
 
+## EU GOODS PAGE
+GET         /eu-goods                       controllers.userJourney.vatTradingDetails.vatEuTrading.EuGoodsController.show
+POST        /eu-goods                       controllers.userJourney.vatTradingDetails.vatEuTrading.EuGoodsController.submit
+
 ## VOLUNTARY REGISTRATION PAGE
 GET         /voluntary-registration         controllers.userJourney.vatChoice.VoluntaryRegistrationController.show
 POST        /voluntary-registration         controllers.userJourney.vatChoice.VoluntaryRegistrationController.submit
