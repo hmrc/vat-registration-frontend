@@ -38,7 +38,7 @@ object CompanyProvideWorkers {
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: CompanyProvideWorkers, g: VatSicAndCompliance) =>
-    g.copy(labourCompliance = Some(VatComplianceLabour(c.yesNo == PROVIDE_WORKERS_YES, None, None, None)))
+    g.copy(labourCompliance = Some(VatComplianceLabour(c.yesNo == PROVIDE_WORKERS_YES)))
   }
 
 }

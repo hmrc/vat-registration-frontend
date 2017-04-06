@@ -24,6 +24,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Assertion, Inside}
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import play.api.http.Status
 import play.api.mvc.{Action, AnyContent, Call, Result}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
@@ -60,9 +61,10 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
 
   implicit class FutureResult(fr: Future[Result]) {
 
-    def redirectsTo(call: Call): Assertion = redirectLocation(fr) mustBe Some(call.url)
-
-    def redirectsTo(url: String): Assertion = redirectLocation(fr) mustBe Some(url)
+    def redirectsTo(url: String): Assertion = {
+      status(fr) mustBe Status.SEE_OTHER
+      redirectLocation(fr) mustBe Some(url)
+    }
 
   }
 

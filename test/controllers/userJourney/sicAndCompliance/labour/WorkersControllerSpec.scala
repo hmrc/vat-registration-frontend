@@ -23,6 +23,7 @@ import helpers.VatRegSpec
 import models.S4LKey
 import models.view.sicAndCompliance.labour.Workers
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.libs.json.Json
@@ -49,7 +50,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return HTML when there's a Workers model in S4L" in {
       val workers = Workers(5)
 
-      when(mockS4LService.fetchAndGet[Workers]()(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[Workers]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(workers)))
 
       AuthBuilder.submitWithAuthorisedUser(WorkersController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -65,10 +66,10 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[Workers]()
-        (Matchers.eq(S4LKey[Workers]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[Workers]), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
+      when(mockVatRegistrationService.getVatScheme()(any()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(WorkersController.show, mockAuthConnector) {
@@ -83,10 +84,10 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     when(mockS4LService.fetchAndGet[Workers]()
-      (Matchers.eq(S4LKey[Workers]), Matchers.any(), Matchers.any()))
+      (Matchers.eq(S4LKey[Workers]), any(), any()))
       .thenReturn(Future.successful(None))
 
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(WorkersController.show, mockAuthConnector) {
@@ -115,14 +116,14 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
       val returnCacheMapWorkers = CacheMap("", Map("" -> Json.toJson(Workers(5))))
 
       when(mockS4LService.saveForm[Workers]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        (any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapWorkers))
 
       AuthBuilder.submitWithAuthorisedUser(WorkersController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
         result =>
-          result redirectsTo controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show()
+          result redirectsTo s"$contextRoot/company-bank-account"
       }
 
     }
@@ -134,14 +135,14 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
       val returnCacheMapWorkers = CacheMap("", Map("" -> Json.toJson(Workers(8))))
 
       when(mockS4LService.saveForm[Workers]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        (any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapWorkers))
 
       AuthBuilder.submitWithAuthorisedUser(WorkersController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "8"
       )) {
         result =>
-          result redirectsTo sicAndCompliance.labour.routes.TemporaryContractsController.show()
+          result redirectsTo s"$contextRoot/compliance/temporary-contracts"
       }
     }
   }
