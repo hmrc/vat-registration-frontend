@@ -16,9 +16,8 @@
 
 package models.view.vatTradingDetails.vatEuTrading
 
+import models.api._
 import models.{ApiModelTransformer, ViewModelTransformer}
-import models.api.{VatScheme, VatSicAndCompliance}
-import models.view.sicAndCompliance.labour.TemporaryContracts
 import play.api.libs.json.Json
 
 case class EuGoods(yesNo: String)
@@ -33,15 +32,13 @@ object EuGoods {
   implicit val format = Json.format[EuGoods]
 
   implicit val modelTransformer = ApiModelTransformer[EuGoods] { (vs: VatScheme) =>
-    for {
-      vsc <- vs.vatSicAndCompliance
-      lc <- vsc.labourCompliance
-      tc <- lc.temporaryContracts
-    } yield TemporaryContracts(if (tc) TEMP_CONTRACTS_YES else TEMP_CONTRACTS_NO)
+    vs.tradingDetails.map(_.euTrading).map { euTrading =>
+      EuGoods(if (euTrading.selection) EU_GOODS_YES else EU_GOODS_NO)
+    }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: EuGoods, g: VatSicAndCompliance) =>
-    g.copy(labourCompliance = g.labourCompliance.map(_.copy(temporaryContracts = Some(c.yesNo == TEMP_CONTRACTS_YES))))
+  implicit val viewModelTransformer = ViewModelTransformer { (c: EuGoods, g: VatTradingDetails) =>
+    g.copy(euTrading = VatEuTrading(c.yesNo == EU_GOODS_YES, None))
   }
 
 }

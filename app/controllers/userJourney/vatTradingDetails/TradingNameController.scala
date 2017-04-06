@@ -47,9 +47,9 @@ class TradingNameController @Inject()(ds: CommonPlayDependencies)
             if (TradingNameView.TRADING_NAME_NO == data.yesNo) {
               for {
                 _ <- s4LService.saveForm[TradingNameView](TradingNameView(TradingNameView.TRADING_NAME_NO, None))
-              } yield Redirect(controllers.userJourney.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+              } yield Redirect(controllers.userJourney.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
             } else {
-              Future.successful(Redirect(controllers.userJourney.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
+              Future.successful(Redirect(controllers.userJourney.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()))
             }
           }
         }
