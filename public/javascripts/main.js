@@ -69,6 +69,14 @@ $(document).ready($(function () {
     }
 }(window.VoluntaryRegistrationPage = window.VoluntaryRegistrationPage || {}, jQuery));
 
+// VoluntaryRegistrationReasonPage module
+(function (VoluntaryRegistrationReasonPage, $, undefined) {
+    VoluntaryRegistrationReasonPage.init = function() {
+        UI.hideShowOnRadioButton("voluntaryRegistrationReasonRadio",
+            { "#voluntaryRegistrationReasonRadio-neither": "#neither_panel" });
+    }
+}(window.VoluntaryRegistrationReasonPage = window.VoluntaryRegistrationReasonPage || {}, jQuery));
+
 // Company Bank Account Details module
 (function (CompanyBankAccountDetailsPage, $, undefined) {
     CompanyBankAccountDetailsPage.init = function() {

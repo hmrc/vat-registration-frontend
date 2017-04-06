@@ -19,7 +19,6 @@ package controllers.userJourney
 import builders.AuthBuilder
 import controllers.userJourney.vatFinancials.CompanyBankAccountDetailsController
 import fixtures.VatRegistrationFixture
-import forms.vatDetails.vatFinancials.SortCode
 import helpers.VatRegSpec
 import models.S4LKey
 import models.view.vatFinancials.CompanyBankAccountDetails
@@ -141,9 +140,8 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
 
       AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountDetailsController.submit(), mockAuthConnector,
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/estimate-vat-turnover"
+        result =>
+          result redirectsTo vatFinancials.routes.EstimateVatTurnoverController.show()
       }
     }
   }
@@ -161,8 +159,8 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
 
       AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountDetailsController.submit(), mockAuthConnector,
         fakeRequest.withFormUrlEncodedBody(invalidBankAccountFormData: _*)) {
-        response =>
-          status(response) mustBe Status.BAD_REQUEST
+        result =>
+          status(result) mustBe Status.BAD_REQUEST
       }
     }
   }
