@@ -20,7 +20,11 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatDetails.sicAndCompliance.labour.TemporaryContractsForm
-import models.view.sicAndCompliance.labour.TemporaryContracts
+import forms.vatDetails.vatTradingDetails.VoluntaryRegistrationReasonForm
+import forms.vatDetails.vatTradingDetails.vatEuTrading.EuGoodsForm
+import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, TemporaryContracts}
+import models.view.vatTradingDetails.VoluntaryRegistrationReason
+import models.view.vatTradingDetails.vatEuTrading.EuGoods
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -32,28 +36,25 @@ class EuGoodsController @Inject()(ds: CommonPlayDependencies)
 
   import cats.instances.future._
 
+  val form = EuGoodsForm.form
+
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[TemporaryContracts].map { vm =>
-      Ok(views.html.pages.sicAndCompliance.labour.temporary_contracts(TemporaryContractsForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.sicAndCompliance.labour.temporary_contracts(TemporaryContractsForm.form)))
+    viewModel[EuGoods].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.eu_goods(f)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    TemporaryContractsForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.sicAndCompliance.labour.temporary_contracts(formWithErrors)))
-      }, {
-
-        data: TemporaryContracts => {
-          s4LService.saveForm[TemporaryContracts](data) map { _ =>
-            if(TemporaryContracts.TEMP_CONTRACTS_YES == data.yesNo) {
-              Redirect(controllers.userJourney.sicAndCompliance.labour.routes.SkilledWorkersController.show())
-            }else{
-              Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
-            }
+    form.bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest(views.html.pages.eu_goods(formWithErrors))),
+      (data: EuGoods) =>
+        s4LService.saveForm[EuGoods](data) map {  _ =>
+          if(EuGoods.EU_GOODS_YES == data.yesNo) {
+            Redirect(controllers.userJourney.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+          } else {
+            Redirect(controllers.userJourney.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
           }
         }
-      })
+    )
   })
 
 }

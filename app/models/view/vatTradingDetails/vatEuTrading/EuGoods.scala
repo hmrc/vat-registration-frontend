@@ -23,16 +23,16 @@ import play.api.libs.json.Json
 
 case class EuGoods(yesNo: String)
 
-object TemporaryContracts {
+object EuGoods {
 
-  val TEMP_CONTRACTS_YES = "TEMP_CONTRACTS_YES"
-  val TEMP_CONTRACTS_NO = "TEMP_CONTRACTS_NO"
+  val EU_GOODS_YES = "EU_GOODS_YES"
+  val EU_GOODS_NO = "EU_GOODS_NO"
 
-  val valid = (item: String) => List(TEMP_CONTRACTS_YES, TEMP_CONTRACTS_NO).contains(item.toUpperCase)
+  val valid = (item: String) => List(EU_GOODS_YES, EU_GOODS_NO).contains(item.toUpperCase)
 
-  implicit val format = Json.format[TemporaryContracts]
+  implicit val format = Json.format[EuGoods]
 
-  implicit val modelTransformer = ApiModelTransformer[TemporaryContracts] { (vs: VatScheme) =>
+  implicit val modelTransformer = ApiModelTransformer[EuGoods] { (vs: VatScheme) =>
     for {
       vsc <- vs.vatSicAndCompliance
       lc <- vsc.labourCompliance
@@ -40,7 +40,7 @@ object TemporaryContracts {
     } yield TemporaryContracts(if (tc) TEMP_CONTRACTS_YES else TEMP_CONTRACTS_NO)
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: TemporaryContracts, g: VatSicAndCompliance) =>
+  implicit val viewModelTransformer = ViewModelTransformer { (c: EuGoods, g: VatSicAndCompliance) =>
     g.copy(labourCompliance = g.labourCompliance.map(_.copy(temporaryContracts = Some(c.yesNo == TEMP_CONTRACTS_YES))))
   }
 
