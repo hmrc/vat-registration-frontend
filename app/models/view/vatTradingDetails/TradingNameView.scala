@@ -16,7 +16,7 @@
 
 package models.view.vatTradingDetails
 
-import models.api.{TradingName, VatScheme, VatTradingDetails}
+import models.api.{TradingName, VatEuTrading, VatScheme, VatTradingDetails}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
@@ -37,7 +37,7 @@ object TradingNameView {
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
     vs.tradingDetails.map {
-      case VatTradingDetails(_, TradingName(_, Some(tn))) =>
+      case VatTradingDetails(_, TradingName(_, Some(tn)), VatEuTrading(_, _)) =>
         TradingNameView(TRADING_NAME_YES, Some(tn))
       case _ => TradingNameView(TRADING_NAME_NO)
     }
