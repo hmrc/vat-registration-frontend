@@ -137,9 +137,9 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
       AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationReasonController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> VoluntaryRegistrationReason.SELLS
       )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          response redirectsTo vatChoice.routes.StartDateController.show()
+        result =>
+          status(result) mustBe Status.SEE_OTHER
+          result redirectsTo s"$contextRoot/start-date"
       }
     }
   }
@@ -155,9 +155,8 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
       AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationReasonController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> VoluntaryRegistrationReason.SELLS
       )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          response redirectsTo vatChoice.routes.StartDateController.show()
+        result =>
+          result redirectsTo s"$contextRoot/start-date"
       }
     }
   }
@@ -176,9 +175,8 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
       AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationReasonController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> VoluntaryRegistrationReason.NEITHER
       )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          response redirectsTo contextRoot
+        result =>
+          result redirectsTo contextRoot
       }
     }
   }

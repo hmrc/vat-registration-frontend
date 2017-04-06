@@ -32,13 +32,11 @@ object EuGoods {
   implicit val format = Json.format[EuGoods]
 
   implicit val modelTransformer = ApiModelTransformer[EuGoods] { (vs: VatScheme) =>
-    vs.tradingDetails.map(_.euTrading).map { euTrading =>
-      EuGoods(if (euTrading.selection) EU_GOODS_YES else EU_GOODS_NO)
-    }
+    vs.tradingDetails.map(td => EuGoods(if (td.euTrading.selection) EU_GOODS_YES else EU_GOODS_NO))
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: EuGoods, g: VatTradingDetails) =>
-    g.copy(euTrading = VatEuTrading(c.yesNo == EU_GOODS_YES, None))
+    g.copy(euTrading = VatEuTrading(c.yesNo == EU_GOODS_YES))
   }
 
 }

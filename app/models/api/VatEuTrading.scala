@@ -18,7 +18,7 @@ package models.api
 
 import play.api.libs.json._
 
-case class VatEuTrading(selection: Boolean, eoriApplication: Option[Boolean])
+case class VatEuTrading(selection: Boolean, eoriApplication: Option[Boolean] = None)
 
 object VatEuTrading {
 

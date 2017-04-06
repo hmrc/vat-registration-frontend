@@ -124,8 +124,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
         "euGoodsRadio" -> EuGoods.EU_GOODS_YES
       )) {
         response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/business-activity-description"
+          response redirectsTo s"$contextRoot/business-activity-description"
       }
 
     }
@@ -144,8 +143,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
         "euGoodsRadio" -> EuGoods.EU_GOODS_NO
       )) {
         response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/business-activity-description"
+          response redirectsTo s"$contextRoot/business-activity-description"
       }
 
     }
