@@ -138,8 +138,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
         "voluntaryRegistrationRadio" -> VoluntaryRegistration.REGISTER_YES
       )) {
         response =>
-          status(response) mustBe Status.SEE_OTHER
-          response redirectsTo vatChoice.routes.VoluntaryRegistrationReasonController.show()
+          response redirectsTo s"$contextRoot/voluntary-registration-reason"
       }
     }
   }
@@ -159,7 +158,6 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
         "voluntaryRegistrationRadio" -> VoluntaryRegistration.REGISTER_NO
       )) {
         response =>
-          status(response) mustBe Status.SEE_OTHER
           response redirectsTo contextRoot
       }
     }

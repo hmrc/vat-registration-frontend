@@ -317,3 +317,8 @@ pages.labourCompliance.skilledWorkers.heading       = Does the company provide s
 pages.labourCompliance.skilledWorkers.para          = For example, workers who have special skills, training, knowledge or ability.
 validation.skilledWorkers.option.missing            = Tell us if your company provides skilled workers
 
+## EU Goods
+pages.euGoods.title                         = Importing and exporting goods
+pages.euGoods.heading                       = Do you import or export goods from or to countries outside the EU?
+validation.euGoods.option.missing           = Tell us if you import or export goods from or to countries outside the EU
+

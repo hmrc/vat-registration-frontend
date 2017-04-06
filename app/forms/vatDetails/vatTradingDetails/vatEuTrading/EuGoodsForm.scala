@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package models.api
+package forms.vatDetails.vatTradingDetails.vatEuTrading
 
-import play.api.libs.json._
+import forms.validation.FormValidation.missingFieldMapping
+import models.view.vatTradingDetails.vatEuTrading.EuGoods
+import play.api.data.Form
+import play.api.data.Forms._
 
-case class VatEuTrading(selection: Boolean, eoriApplication: Option[Boolean] = None)
+object EuGoodsForm {
+  val RADIO_YES_NO: String = "euGoodsRadio"
 
-object VatEuTrading {
-
-  implicit val format: OFormat[VatEuTrading] = Json.format[VatEuTrading]
+  val form = Form(
+    mapping(
+      RADIO_YES_NO -> missingFieldMapping()("euGoods").verifying(EuGoods.valid)
+    )(EuGoods.apply)(EuGoods.unapply)
+  )
 
 }
