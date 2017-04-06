@@ -113,7 +113,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
       "a valid summary section" in {
         val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails()))
         builder.section.id mustBe "vatDetails"
-        builder.section.rows.length mustEqual 4
+        builder.section.rows.length mustEqual 5
       }
     }
 

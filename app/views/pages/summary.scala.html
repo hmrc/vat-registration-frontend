@@ -12,8 +12,8 @@
         <section>
             <h2 class="heading-medium">@Messages(s"pages.summary.${section.id}.sectionHeading")</h2>
             <table class="check-your-answers form-group">
-            @for((row, pred) <- section.rows) {
-                @if(pred) {
+            @for((row, doDisplayRow) <- section.rows) {
+                @if(doDisplayRow) {
                     @summaryRow(row)
                 }
             }

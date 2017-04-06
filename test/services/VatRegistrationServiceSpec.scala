@@ -24,7 +24,7 @@ import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
-import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration}
+import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.{S4LKey, VatBankAccountPath}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -65,6 +65,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       when(mockS4LService.fetchAndGet[VoluntaryRegistration]()(Matchers.eq(S4LKey[VoluntaryRegistration]), any(), any()))
         .thenReturn(Future.successful(Some(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES))))
+
+      when(mockS4LService.fetchAndGet[VoluntaryRegistrationReason]()(Matchers.eq(S4LKey[VoluntaryRegistrationReason]), any(), any()))
+        .thenReturn(Future.successful(Some(VoluntaryRegistrationReason(VoluntaryRegistrationReason.SELLS))))
 
       when(mockRegConnector.upsertVatChoice(any(), any())
       (any[HeaderCarrier](), any[HttpReads[VatChoice]]()))
