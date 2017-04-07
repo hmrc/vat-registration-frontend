@@ -7,7 +7,7 @@
 
   <div class="column-one-third">
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.applyEori.heading")</h1>
+      <h1 class="form-title heading-large" id="pageHeading">@messages("pages.applyEori.heading")</h1>
 
       @errorSummary(
           Messages("app.common.errorSummaryLabel"),
@@ -18,13 +18,6 @@
       <p>@messages("pages.applyEori.para1")</p>
       <p>@Html(Messages("pages.applyEori.para2"))</p>
       <h3>@messages("pages.applyEori.heading.h3")</h3>
-
-      <div class="notice form-group">
-          <i class="icon icon-important">
-              <span class="visuallyhidden">Warning</span>
-          </i>
-          <strong class="bold-small">@messages("pages.applyEori.info")</strong>
-      </div>
 
       @govHelpers.form(action = controllers.userJourney.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.submit()) {
           <div class="form-group">
@@ -43,7 +36,7 @@
 
               <details role="group">
                   <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
-                  @Html(messages("pages.applyEori.include.title"))
+                  @Html(messages("pages.applyEori.summary"))
                   </span></summary>
                   <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
                       <p>@messages("pages.applyEori.summary.para1")</p>
