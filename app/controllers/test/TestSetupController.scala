@@ -77,7 +77,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
         VatTradingDetailsTestSetup(
           tradingName.map(_.yesNo),
           tradingName.flatMap(_.tradingName)),
-          euGoods.map(_.yesNo))
+          euGoods.map(_.yesNo)),
         VatFinancialsTestSetup(
           companyBankAccount.map(_.yesNo),
           companyBankAccountDetails.map(_.accountName),
