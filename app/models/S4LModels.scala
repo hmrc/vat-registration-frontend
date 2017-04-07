@@ -20,7 +20,7 @@ import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
-import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration}
+import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration, VoluntaryRegistrationReason}
 
 
 case class S4LVatFinancials
@@ -37,7 +37,8 @@ case class S4LTradingDetails
 (
   tradingName: Option[TradingNameView],
   startDate: Option[StartDateView],
-  voluntaryRegistration: Option[VoluntaryRegistration]
+  voluntaryRegistration: Option[VoluntaryRegistration],
+  voluntaryRegistrationReason: Option[VoluntaryRegistrationReason]
 )
 
 case class S4LVatSicAndCompliance
