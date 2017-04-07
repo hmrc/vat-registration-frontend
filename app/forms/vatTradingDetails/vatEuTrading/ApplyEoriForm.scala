@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms.vatDetails.vatTradingDetails.vatEuTrading
+package forms.vatTradingDetails.vatEuTrading
 
 import forms.validation.FormValidation.missingBooleanFieldMapping
 import models.view.vatTradingDetails.vatEuTrading.ApplyEori

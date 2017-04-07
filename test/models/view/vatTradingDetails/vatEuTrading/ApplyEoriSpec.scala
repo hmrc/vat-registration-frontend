@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package models.view
+package models.view.vatTradingDetails.vatEuTrading
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatEuTrading, VatTradingDetails}
-import models.view.vatTradingDetails.vatEuTrading.ApplyEori
 import models.{ApiModelTransformer, ViewModelTransformer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec

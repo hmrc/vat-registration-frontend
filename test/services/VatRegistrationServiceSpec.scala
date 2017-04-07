@@ -29,7 +29,6 @@ import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
-import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.{S4LKey, VatBankAccountPath}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
