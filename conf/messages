@@ -322,7 +322,7 @@ validation.skilledWorkers.option.missing            = Tell us if your company pr
 pages.applyEori.title                          = You need to apply for an Economic Operator Registration and Identification (EORI) number
 pages.applyEori.heading                        = You need to apply for an Economic Operator Registration and Identification (EORI) number
 pages.applyEori.para1                          = You need an EORI number to trade goods with countries outside the EU.
-pages.applyEori.para2                          = You can apply for an EORI number now as part of XXX''s VAT registration, or you can <a href="https://online.hmrc.gov.uk/shortforms/form/EORIVAT">apply at a later date</a>.
+pages.applyEori.para2                          = You can apply for an EORI number now as part of your company''s VAT registration, or you can <a href="https://online.hmrc.gov.uk/shortforms/form/EORIVAT">apply at a later date</a>.
 pages.applyEori.heading.h3                     = Do you want to apply for an EORI number now?
 pages.applyEori.number.yes                     = Yes, I want to apply for an EORI number now
 pages.applyEori.number.no                      = No, I''ll apply for an EORI number later
