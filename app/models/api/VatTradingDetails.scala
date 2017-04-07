@@ -21,18 +21,20 @@ import play.api.libs.json._
 
 case class VatTradingDetails(
                               vatChoice: VatChoice,
-                              tradingName: TradingName
+                              tradingName: TradingName,
+                              euTrading: VatEuTrading
                             ) {
 
   def registeringVoluntarily: Boolean = vatChoice.necessity == NECESSITY_VOLUNTARY
 
 }
 
+
 object VatTradingDetails {
 
   implicit val format: OFormat[VatTradingDetails] = Json.format[VatTradingDetails]
 
   //TODO remove
-  val empty: VatTradingDetails = VatTradingDetails(VatChoice(NECESSITY_OBLIGATORY, VatStartDate("", None)), TradingName(selection = false, None))
+  val empty: VatTradingDetails = VatTradingDetails(VatChoice(VatChoice.NECESSITY_OBLIGATORY, VatStartDate("", None)), TradingName(selection = false, None), VatEuTrading(selection= false, eoriApplication =Some(false)))
 
 }

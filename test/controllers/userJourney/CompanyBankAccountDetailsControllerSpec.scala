@@ -141,7 +141,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountDetailsController.submit(), mockAuthConnector,
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
         result =>
-          result redirectsTo vatFinancials.routes.EstimateVatTurnoverController.show()
+          result redirectsTo s"$contextRoot/estimate-vat-turnover"
       }
     }
   }

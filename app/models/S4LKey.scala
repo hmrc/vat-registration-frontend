@@ -22,6 +22,7 @@ import models.view.sicAndCompliance.labour.{SkilledWorkers, _}
 import models.view.test.SicStub
 import models.view.vatFinancials._
 import models.view.vatTradingDetails._
+import models.view.vatTradingDetails.vatEuTrading.EuGoods
 
 trait S4LKey[T] {
 
@@ -39,6 +40,7 @@ object S4LKey {
 
   implicit val startDateS4LKey: S4LKey[StartDateView] = S4LKey("StartDate")
   implicit val tradingNameS4LKey: S4LKey[TradingNameView] = S4LKey("TradingNameView")
+  implicit val euGoods: S4LKey[EuGoods] = S4LKey("EuGoods")
   implicit val voluntaryRegistrationS4LKey: S4LKey[VoluntaryRegistration] = S4LKey("VoluntaryRegistration")
   implicit val voluntaryRegistrationReasonS4LKey: S4LKey[VoluntaryRegistrationReason] = S4LKey("VoluntaryRegistrationReason")
   implicit val taxableTurnoverS4LKey: S4LKey[TaxableTurnover] = S4LKey("TaxableTurnover")
