@@ -60,7 +60,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Do you import or export goods from or to countries outside the EU?")
+          contentAsString(result) must include("You need to apply for an Economic Operator Registration and Identification (EORI) number")
       }
     }
 
@@ -77,7 +77,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Do you import or export goods from or to countries outside the EU?")
+          contentAsString(result) must include("You need to apply for an Economic Operator Registration and Identification (EORI) number")
       }
     }
   }
@@ -95,7 +95,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
         status(result) mustBe OK
         contentType(result) mustBe Some("text/html")
         charset(result) mustBe Some("utf-8")
-        contentAsString(result) must include("Do you import or export goods from or to countries outside the EU?")
+        contentAsString(result) must include("You need to apply for an Economic Operator Registration and Identification (EORI) number")
     }
   }
 

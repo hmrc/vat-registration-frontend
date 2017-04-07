@@ -37,7 +37,7 @@ class ApplyEoriSpec extends UnitSpec with VatRegistrationFixture with Inside {
     val differentVatTradingDetails = VatTradingDetails(
       validVatChoice,
       validTradingName,
-      VatEuTrading(true, Some(true))
+      VatEuTrading(false, Some(true))
     )
 
     "update VatFinancials with new AccountingPeriod" in {
