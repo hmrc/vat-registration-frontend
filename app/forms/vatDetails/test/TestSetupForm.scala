@@ -47,7 +47,8 @@ object TestSetupForm {
 
   val vatTradingDetailsTestSetupMapping = mapping(
     "tradingNameChoice" -> optional(text),
-    "tradingName" -> optional(text)
+    "tradingName" -> optional(text),
+    "euGoods" -> optional(text)
   )(VatTradingDetailsTestSetup.apply)(VatTradingDetailsTestSetup.unapply)
 
   val vatFinancialsTestSetupMapping = mapping(
@@ -71,9 +72,3 @@ object TestSetupForm {
   )(TestSetup.apply)(TestSetup.unapply))
 
 }
-
-
-
-
-
-

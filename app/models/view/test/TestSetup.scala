@@ -27,5 +27,3 @@ case class TestSetup(vatChoice: VatChoiceTestSetup,
 object TestSetup {
   implicit val format = Json.format[TestSetup]
 }
-
-
