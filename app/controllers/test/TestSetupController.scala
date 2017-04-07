@@ -28,6 +28,8 @@ import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.test._
 import models.view.vatFinancials._
+import models.view.vatTradingDetails.vatEuTrading.EuGoods
+import models.view.vatTradingDetails.{StartDateView, TaxableTurnover, TradingNameView, VoluntaryRegistration}
 import models.view.vatTradingDetails._
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
@@ -76,7 +78,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
         ),
         VatTradingDetailsTestSetup(
           tradingName.map(_.yesNo),
-          tradingName.flatMap(_.tradingName)),
+          tradingName.flatMap(_.tradingName),
           euGoods.map(_.yesNo)),
         VatFinancialsTestSetup(
           companyBankAccount.map(_.yesNo),
