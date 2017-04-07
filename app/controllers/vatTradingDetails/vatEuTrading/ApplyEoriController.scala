@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package controllers.userJourney.vatTradingDetails.vatEuTrading
+package controllers.vatTradingDetails.vatEuTrading
 
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatDetails.vatTradingDetails.vatEuTrading.ApplyEoriForm
+import forms.vatTradingDetails.vatEuTrading.ApplyEoriForm
 import models.view.vatTradingDetails.vatEuTrading.ApplyEori
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
@@ -37,14 +37,14 @@ class ApplyEoriController @Inject()(ds: CommonPlayDependencies)
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel[ApplyEori].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.eori_apply(f)))
+      .map(f => Ok(views.html.pages.vatTradingDetails.vatEuTrading.eori_apply(f)))
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      (formWithErrors) => Future.successful(BadRequest(views.html.pages.eori_apply(formWithErrors))),
+      (formWithErrors) => Future.successful(BadRequest(views.html.pages.vatTradingDetails.vatEuTrading.eori_apply(formWithErrors))),
       (data: ApplyEori) => s4l.saveForm[ApplyEori](data)
-        .map(_ => Redirect(controllers.userJourney.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
+        .map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
     )
   )
 

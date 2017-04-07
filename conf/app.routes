@@ -23,8 +23,8 @@ GET         /eu-goods                              controllers.vatTradingDetails
 POST        /eu-goods                              controllers.vatTradingDetails.vatEuTrading.EuGoodsController.submit
 
 ## EU GOODS APPLY EORI
-GET         /apply-eori                            controllers.userJourney.vatTradingDetails.vatEuTrading.ApplyEoriController.show
-POST        /apply-eori                            controllers.userJourney.vatTradingDetails.vatEuTrading.ApplyEoriController.submit
+GET         /apply-eori                            controllers.vatTradingDetails.vatEuTrading.ApplyEoriController.show
+POST        /apply-eori                            controllers.vatTradingDetails.vatEuTrading.ApplyEoriController.submit
 
 ## VOLUNTARY REGISTRATION PAGE
 GET         /voluntary-registration                controllers.vatTradingDetails.vatChoice.VoluntaryRegistrationController.show

@@ -27,7 +27,6 @@ import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
 import models.view.vatTradingDetails.vatChoice.StartDateView
-import models.view.vatTradingDetails.StartDateView
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.http.Status._
 import uk.gov.hmrc.play.http._

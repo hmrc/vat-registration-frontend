@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package controllers.userJourney
+package controllers.vatTradingDetails.vatEuTrading
 
 import builders.AuthBuilder
-import controllers.userJourney.vatTradingDetails.vatEuTrading.ApplyEoriController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.S4LKey
@@ -42,9 +41,9 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show())
+  val fakeRequest = FakeRequest(routes.ApplyEoriController.show())
 
-  s"GET ${vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show()}" should {
+  s"GET ${routes.ApplyEoriController.show()}" should {
 
     "return HTML when there's a Apply Eori model in S4L" in {
       val euGoods = ApplyEori(ApplyEori.APPLY_EORI_YES)
@@ -99,7 +98,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
-  s"POST ${vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show()} with Empty data" should {
+  s"POST ${routes.ApplyEoriController.show()} with Empty data" should {
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
@@ -111,7 +110,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
-  s"POST ${vatTradingDetails.vatEuTrading.routes.ApplyEoriController.submit()} with Apply Eori Yes selected" should {
+  s"POST ${routes.ApplyEoriController.submit()} with Apply Eori Yes selected" should {
 
     "return 303" in {
       val returnCacheMapApplyEori = CacheMap("", Map("" -> Json.toJson(ApplyEori(ApplyEori.APPLY_EORI_YES))))
@@ -130,7 +129,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
-  s"POST ${vatTradingDetails.vatEuTrading.routes.ApplyEoriController.submit()} with Apply Eori No selected" should {
+  s"POST ${routes.ApplyEoriController.submit()} with Apply Eori No selected" should {
 
     "return 303" in {
       val returnCacheMapApplyEori = CacheMap("", Map("" -> Json.toJson(ApplyEori(ApplyEori.APPLY_EORI_NO))))
