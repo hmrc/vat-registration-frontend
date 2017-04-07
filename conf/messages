@@ -318,8 +318,6 @@ pages.labourCompliance.skilledWorkers.heading       = Does the company provide s
 pages.labourCompliance.skilledWorkers.para          = For example, workers who have special skills, training, knowledge or ability.
 validation.skilledWorkers.option.missing            = Tell us if your company provides skilled workers
 
-<<<<<<< HEAD
-
 ## EORI Apply
 pages.applyEori.title                          = You need to apply for an Economic Operator Registration and Identification (EORI) number
 pages.applyEori.heading                        = You need to apply for an Economic Operator Registration and Identification (EORI) number
