@@ -27,6 +27,7 @@ import play.api.data.format.Formatter
 import play.api.data.validation._
 import play.api.data.{FieldMapping, FormError, Mapping}
 
+import scala.util.Try
 import scala.util.matching.Regex
 
 private[forms] object FormValidation {
@@ -128,7 +129,16 @@ private[forms] object FormValidation {
     def unbind(key: String, value: String) = Map(key -> value)
   }
 
+  private def booleanFormat()(implicit e: ErrorCode): Formatter[Boolean] = new Formatter[Boolean] {
+    def bind(key: String, data: Map[String, String]) = data.get(key).flatMap(input => Try(input.toBoolean).toOption)
+      .toRight(Seq(FormError(key, s"validation.$e.option.missing", Nil)))
+
+    def unbind(key: String, value: Boolean) = Map(key -> value.toString)
+  }
+
   def missingFieldMapping()(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat)
+
+  def missingBooleanFieldMapping()(implicit e: ErrorCode): Mapping[Boolean] = FieldMapping[Boolean]()(booleanFormat)
 
   object BankAccount {
 

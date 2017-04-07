@@ -25,6 +25,7 @@ import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
 import models.view.vatTradingDetails.StartDateView
+import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.http.Status._
 import uk.gov.hmrc.play.http._
 
@@ -162,6 +163,8 @@ trait VatRegistrationFixture {
   val validWorkers = Workers(8)
   val validTemporaryContracts = TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)
   val validSkilledWorkers = SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO)
+  val validEuGoods = EuGoods(EuGoods.EU_GOODS_YES)
+  val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
 
   lazy val validSummaryView = Summary(
     Seq(
