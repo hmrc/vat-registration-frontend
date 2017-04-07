@@ -26,6 +26,7 @@ import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
+import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -135,11 +136,15 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
       (s4l[TradingNameView]() |@|
         s4l[StartDateView]() |@|
         s4l[VoluntaryRegistration]() |@|
-        s4l[VoluntaryRegistrationReason]()).map(S4LTradingDetails).map { s4l =>
+        s4l[VoluntaryRegistrationReason]()  |@|
+        s4l[EuGoods]() |@|
+        s4l[ApplyEori]()).map(S4LTradingDetails).map { s4l =>
         update(s4l.voluntaryRegistration, vs)
           .andThen(update(s4l.tradingName, vs))
           .andThen(update(s4l.startDate, vs))
           .andThen(update(s4l.voluntaryRegistrationReason, vs))
+          .andThen(update(s4l.euGoods, vs))
+          .andThen(update(s4l.applyEori, vs))
           .apply(vs.tradingDetails.getOrElse(VatTradingDetails.empty)) //TODO remove the "seeding" with default
       }
 

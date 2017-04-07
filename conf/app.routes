@@ -19,8 +19,12 @@ GET         /trading-name                          controllers.userJourney.vatTr
 POST        /trading-name                          controllers.userJourney.vatTradingDetails.TradingNameController.submit
 
 ## EU GOODS PAGE
-GET         /eu-goods                       controllers.userJourney.vatTradingDetails.vatEuTrading.EuGoodsController.show
-POST        /eu-goods                       controllers.userJourney.vatTradingDetails.vatEuTrading.EuGoodsController.submit
+GET         /eu-goods                              controllers.userJourney.vatTradingDetails.vatEuTrading.EuGoodsController.show
+POST        /eu-goods                              controllers.userJourney.vatTradingDetails.vatEuTrading.EuGoodsController.submit
+
+## EU GOODS APPLY EORI
+GET         /apply-eori                            controllers.userJourney.vatTradingDetails.vatEuTrading.ApplyEoriController.show
+POST        /apply-eori                            controllers.userJourney.vatTradingDetails.vatEuTrading.ApplyEoriController.submit
 
 ## VOLUNTARY REGISTRATION PAGE
 GET         /voluntary-registration                controllers.userJourney.vatChoice.VoluntaryRegistrationController.show

@@ -24,6 +24,7 @@ import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
+import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.{S4LKey, VatBankAccountPath}
 import org.mockito.Matchers
@@ -118,6 +119,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockS4LService.fetchAndGet[SkilledWorkers]()(Matchers.eq(S4LKey[SkilledWorkers]), any(), any()))
         .thenReturn(Future.successful(Some(validSkilledWorkers)))
 
+      when(mockS4LService.fetchAndGet[EuGoods]()(Matchers.eq(S4LKey[EuGoods]), any(), any()))
+        .thenReturn(Future.successful(Some(validEuGoods)))
+
+      when(mockS4LService.fetchAndGet[ApplyEori]()(Matchers.eq(S4LKey[ApplyEori]), any(), any()))
+        .thenReturn(Future.successful(Some(validApplyEori)))
+
       when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any()))
         .thenReturn(Future.successful(validSicAndCompliance))
 
@@ -157,6 +164,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       when(mockRegConnector.upsertVatTradingDetails(regId = any(), vatTradingDetails = any())(hc = any(), rds = any()))
         .thenReturn(Future.successful(validVatTradingDetails))
+
+      when(mockS4LService.fetchAndGet[EuGoods]()(Matchers.eq(S4LKey[EuGoods]), any(), any()))
+        .thenReturn(Future.successful(Some(validEuGoods)))
+
+      when(mockS4LService.fetchAndGet[ApplyEori]()(Matchers.eq(S4LKey[ApplyEori]), any(), any()))
+        .thenReturn(Future.successful(Some(validApplyEori)))
 
       service.submitTradingDetails() returns validVatTradingDetails
     }

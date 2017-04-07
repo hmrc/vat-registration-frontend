@@ -20,6 +20,7 @@ import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
+import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration, VoluntaryRegistrationReason}
 
 
@@ -38,7 +39,10 @@ case class S4LTradingDetails
   tradingName: Option[TradingNameView],
   startDate: Option[StartDateView],
   voluntaryRegistration: Option[VoluntaryRegistration],
-  voluntaryRegistrationReason: Option[VoluntaryRegistrationReason]
+  voluntaryRegistrationReason: Option[VoluntaryRegistrationReason],
+  euGoods: Option[EuGoods],
+  applyEori: Option[ApplyEori]
+
 )
 
 case class S4LVatSicAndCompliance

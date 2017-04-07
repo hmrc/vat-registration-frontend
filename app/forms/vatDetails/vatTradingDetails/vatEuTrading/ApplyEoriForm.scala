@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package models.view.test
+package forms.vatDetails.vatTradingDetails.vatEuTrading
 
-import play.api.libs.json.Json
+import forms.validation.FormValidation.missingBooleanFieldMapping
+import models.view.vatTradingDetails.vatEuTrading.ApplyEori
+import play.api.data.Form
+import play.api.data.Forms._
 
+object ApplyEoriForm {
+  val RADIO_YES_NO: String = "applyEoriRadio"
 
-case class VatTradingDetailsTestSetup(tradingNameChoice: Option[String],
-                                      tradingName: Option[String],
-                                      euGoods: Option[String])
+  val form = Form(
+    mapping(
+      RADIO_YES_NO -> missingBooleanFieldMapping()("applyEori")
+    )(ApplyEori.apply)(ApplyEori.unapply)
+  )
 
-object VatTradingDetailsTestSetup {
-  implicit val format = Json.format[VatTradingDetailsTestSetup]
 }
