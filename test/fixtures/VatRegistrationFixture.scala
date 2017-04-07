@@ -51,7 +51,8 @@ trait VatRegistrationFixture {
 
   val tradingName: String = "ACME INC"
   val validTradingName = TradingName(selection = true, tradingName = Some(tradingName))
-  val validVatTradingDetails = VatTradingDetails(vatChoice = validVatChoice, tradingName = validTradingName)
+  val validEuTrading = VatEuTrading(selection = false, eoriApplication = None)
+  val validVatTradingDetails = VatTradingDetails(vatChoice = validVatChoice, tradingName = validTradingName, validEuTrading)
 
   private val turnoverEstimate = 50000L
   private val estimatedSales = 60000L
@@ -91,7 +92,9 @@ trait VatRegistrationFixture {
                       startDate: Option[LocalDate] = None,
                       tradingNameSelection: Boolean = true,
                       tradingName: Option[String] = Some("ACME Ltd."),
-                      reason: Option[String] = None
+                      reason: Option[String] = None,
+                      euGoodsSelection: Boolean = true,
+                      eoriApplication: Option[Boolean] = None
                     ): VatTradingDetails = VatTradingDetails(
     vatChoice = VatChoice(
       necessity = necessity,
@@ -104,6 +107,10 @@ trait VatRegistrationFixture {
     tradingName = TradingName(
       selection = tradingNameSelection,
       tradingName = tradingName
+    ),
+    euTrading = VatEuTrading(
+      euGoodsSelection,
+      eoriApplication
     )
   )
 
