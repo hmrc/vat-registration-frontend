@@ -47,6 +47,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       voluntaryRegistrationReason <- s4LService.fetchAndGet[VoluntaryRegistrationReason]()
       startDate <- s4LService.fetchAndGet[StartDateView]()
       tradingName <- s4LService.fetchAndGet[TradingNameView]()
+      euGoods <- s4LService.fetchAndGet[EuGoods]()
       companyBankAccount <- s4LService.fetchAndGet[CompanyBankAccount]()
       companyBankAccountDetails <- s4LService.fetchAndGet[CompanyBankAccountDetails]()
       estimateVatTurnover <- s4LService.fetchAndGet[EstimateVatTurnover]()
@@ -76,6 +77,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
         VatTradingDetailsTestSetup(
           tradingName.map(_.yesNo),
           tradingName.flatMap(_.tradingName)),
+          euGoods.map(_.yesNo))
         VatFinancialsTestSetup(
           companyBankAccount.map(_.yesNo),
           companyBankAccountDetails.map(_.accountName),
@@ -131,6 +133,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveToS4Later(data.vatChoice.voluntaryChoice, data, { x => VoluntaryRegistration(x.vatChoice.voluntaryChoice.get) })
             _ <- saveToS4Later(data.vatChoice.voluntaryRegistrationReason, data, { x => VoluntaryRegistrationReason(x.vatChoice.voluntaryRegistrationReason.get) })
             _ <- saveToS4Later(data.vatTradingDetails.tradingNameChoice, data, { x => TradingNameView(x.vatTradingDetails.tradingNameChoice.get, data.vatTradingDetails.tradingName) })
+            _ <- saveToS4Later(data.vatTradingDetails.euGoods, data, { x => EuGoods(x.vatTradingDetails.euGoods.get) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountChoice, data, { x => CompanyBankAccount(x.vatFinancials.companyBankAccountChoice.get) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountName, data, {
               x =>
