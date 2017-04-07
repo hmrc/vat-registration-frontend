@@ -22,7 +22,7 @@ import models.view.sicAndCompliance.labour.{SkilledWorkers, _}
 import models.view.test.SicStub
 import models.view.vatFinancials._
 import models.view.vatTradingDetails._
-import models.view.vatTradingDetails.vatEuTrading.EuGoods
+import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 
 trait S4LKey[T] {
 
@@ -38,6 +38,7 @@ object S4LKey {
     override val key = k
   }
 
+  implicit val applyeori: S4LKey[ApplyEori] = S4LKey("ApplyEori")
   implicit val startDateS4LKey: S4LKey[StartDateView] = S4LKey("StartDate")
   implicit val tradingNameS4LKey: S4LKey[TradingNameView] = S4LKey("TradingNameView")
   implicit val euGoods: S4LKey[EuGoods] = S4LKey("EuGoods")
@@ -59,6 +60,7 @@ object S4LKey {
   implicit val workers: S4LKey[Workers] = S4LKey("Workers")
   implicit val temporaryContracts: S4LKey[TemporaryContracts] = S4LKey("TemporaryContracts")
   implicit val skilledWorkers: S4LKey[SkilledWorkers] = S4LKey("SkilledWorkers")
+
 
 
 }
