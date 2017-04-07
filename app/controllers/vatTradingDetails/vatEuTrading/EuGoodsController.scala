@@ -45,9 +45,9 @@ class EuGoodsController @Inject()(ds: CommonPlayDependencies)
       (data: EuGoods) =>
         s4LService.saveForm[EuGoods](data) map {  _ =>
           if(EuGoods.EU_GOODS_YES == data.yesNo) {
-            Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+            Redirect(controllers.userJourney.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show())
           } else {
-            Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+            Redirect(controllers.userJourney.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show())
           }
         }
     )

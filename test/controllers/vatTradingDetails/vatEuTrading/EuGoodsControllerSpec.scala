@@ -124,7 +124,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
         "euGoodsRadio" -> EuGoods.EU_GOODS_YES
       )) {
         response =>
-          response redirectsTo s"$contextRoot/business-activity-description"
+          response redirectsTo s"$contextRoot/apply-eori"
       }
 
     }
@@ -143,7 +143,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
         "euGoodsRadio" -> EuGoods.EU_GOODS_NO
       )) {
         response =>
-          response redirectsTo s"$contextRoot/business-activity-description"
+          response redirectsTo s"$contextRoot/apply-eori"
       }
 
     }

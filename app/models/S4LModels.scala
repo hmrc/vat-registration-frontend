@@ -24,6 +24,8 @@ import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatRetur
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
+import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
+import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration, VoluntaryRegistrationReason}
 
 
 case class S4LVatFinancials
@@ -41,7 +43,10 @@ case class S4LTradingDetails
   tradingName: Option[TradingNameView],
   startDate: Option[StartDateView],
   voluntaryRegistration: Option[VoluntaryRegistration],
-  voluntaryRegistrationReason: Option[VoluntaryRegistrationReason]
+  voluntaryRegistrationReason: Option[VoluntaryRegistrationReason],
+  euGoods: Option[EuGoods],
+  applyEori: Option[ApplyEori]
+
 )
 
 case class S4LVatSicAndCompliance

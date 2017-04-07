@@ -26,6 +26,7 @@ import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBank
 import models.view.vatTradingDetails._
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.EuGoods
+import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 
 trait S4LKey[T] {
 
@@ -41,6 +42,7 @@ object S4LKey {
     override val key = k
   }
 
+  implicit val applyeori: S4LKey[ApplyEori] = S4LKey("ApplyEori")
   implicit val startDateS4LKey: S4LKey[StartDateView] = S4LKey("StartDate")
   implicit val tradingNameS4LKey: S4LKey[TradingNameView] = S4LKey("TradingNameView")
   implicit val euGoods: S4LKey[EuGoods] = S4LKey("EuGoods")
