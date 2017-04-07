@@ -27,19 +27,19 @@ sealed trait ComplianceQuestions {
 
 case object CulturalComplianceQuestions extends ComplianceQuestions {
 
-  override def firstQuestion: Call = controllers.userJourney.sicAndCompliance.cultural.routes.NotForProfitController.show()
+  override def firstQuestion: Call = controllers.sicAndCompliance.cultural.routes.NotForProfitController.show()
 
 }
 
 case object LabourComplianceQuestions extends ComplianceQuestions {
 
-  override def firstQuestion: Call = controllers.userJourney.sicAndCompliance.labour.routes.CompanyProvideWorkersController.show()
+  override def firstQuestion: Call = controllers.sicAndCompliance.labour.routes.CompanyProvideWorkersController.show()
 
 }
 
 case object NoComplianceQuestions extends ComplianceQuestions {
 
-  override def firstQuestion: Call = controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show()
+  override def firstQuestion: Call = controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()
 
 }
 

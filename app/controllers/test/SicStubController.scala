@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatDetails.test.SicStubForm
+import forms.test.SicStubForm
 import models.view.test.SicStub
 import models.{ComplianceQuestions, NoComplianceQuestions}
 import play.api.mvc.{Action, AnyContent}
@@ -46,21 +46,21 @@ class SicStubController @Inject()(s4LService: S4LService, vatRegistrationConnect
         sicCodes.map(_.sicCode4.getOrElse(""))
       )
       form = SicStubForm.form.fill(sicStub)
-    } yield Ok(views.html.pages.sic_stub(form))
+    } yield Ok(views.html.pages.test.sic_stub(form))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     SicStubForm.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.sic_stub(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.test.sic_stub(formWithErrors)))
       }, {
         data: SicStub => {
           s4LService.saveForm[SicStub](data) map { _ =>
             ComplianceQuestions(data.sicCodes) match {
               case NoComplianceQuestions =>
-                Redirect(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
+                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
               case _ =>
-                Redirect(controllers.userJourney.sicAndCompliance.routes.ComplianceIntroductionController.show())
+                Redirect(controllers.sicAndCompliance.routes.ComplianceIntroductionController.show())
             }
           }
         }

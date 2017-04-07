@@ -16,7 +16,7 @@
 
 package auth
 
-import controllers.userJourney.routes
+import controllers.routes
 import uk.gov.hmrc.play.config.{RunMode, ServicesConfig}
 
 object VatExternalUrls extends RunMode with ServicesConfig {
