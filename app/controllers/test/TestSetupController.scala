@@ -32,6 +32,9 @@ import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatRetur
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration}
+import models.view.vatTradingDetails.vatEuTrading.EuGoods
+import models.view.vatTradingDetails.{StartDateView, TaxableTurnover, TradingNameView, VoluntaryRegistration}
+import models.view.vatTradingDetails._
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService}
@@ -47,8 +50,10 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
     for {
       taxableTurnover <- s4LService.fetchAndGet[TaxableTurnover]()
       voluntaryRegistration <- s4LService.fetchAndGet[VoluntaryRegistration]()
+      voluntaryRegistrationReason <- s4LService.fetchAndGet[VoluntaryRegistrationReason]()
       startDate <- s4LService.fetchAndGet[StartDateView]()
       tradingName <- s4LService.fetchAndGet[TradingNameView]()
+      euGoods <- s4LService.fetchAndGet[EuGoods]()
       companyBankAccount <- s4LService.fetchAndGet[CompanyBankAccount]()
       companyBankAccountDetails <- s4LService.fetchAndGet[CompanyBankAccountDetails]()
       estimateVatTurnover <- s4LService.fetchAndGet[EstimateVatTurnover]()
@@ -69,6 +74,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
         VatChoiceTestSetup(
           taxableTurnover.map(_.yesNo),
           voluntaryRegistration.map(_.yesNo),
+          voluntaryRegistrationReason.map(_.reason),
           startDate.map(_.dateType),
           startDate.flatMap(_.date).map(_.getDayOfMonth.toString),
           startDate.flatMap(_.date).map(_.getMonthValue.toString),
@@ -76,7 +82,8 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
         ),
         VatTradingDetailsTestSetup(
           tradingName.map(_.yesNo),
-          tradingName.flatMap(_.tradingName)),
+          tradingName.flatMap(_.tradingName),
+          euGoods.map(_.yesNo)),
         VatFinancialsTestSetup(
           companyBankAccount.map(_.yesNo),
           companyBankAccountDetails.map(_.accountName),
@@ -130,7 +137,9 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveStartDate(data)
             _ <- saveToS4Later(data.vatChoice.taxableTurnoverChoice, data, { x => TaxableTurnover(x.vatChoice.taxableTurnoverChoice.get) })
             _ <- saveToS4Later(data.vatChoice.voluntaryChoice, data, { x => VoluntaryRegistration(x.vatChoice.voluntaryChoice.get) })
+            _ <- saveToS4Later(data.vatChoice.voluntaryRegistrationReason, data, { x => VoluntaryRegistrationReason(x.vatChoice.voluntaryRegistrationReason.get) })
             _ <- saveToS4Later(data.vatTradingDetails.tradingNameChoice, data, { x => TradingNameView(x.vatTradingDetails.tradingNameChoice.get, data.vatTradingDetails.tradingName) })
+            _ <- saveToS4Later(data.vatTradingDetails.euGoods, data, { x => EuGoods(x.vatTradingDetails.euGoods.get) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountChoice, data, { x => CompanyBankAccount(x.vatFinancials.companyBankAccountChoice.get) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountName, data, {
               x =>
