@@ -20,6 +20,7 @@ import play.api.libs.json.Json
 
 case class VatChoiceTestSetup(taxableTurnoverChoice: Option[String],
                               voluntaryChoice: Option[String],
+                              voluntaryRegistrationReason: Option[String],
                               startDateChoice: Option[String],
                               startDateDay: Option[String],
                               startDateMonth: Option[String],
