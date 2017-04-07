@@ -16,7 +16,7 @@
 
 package forms
 
-import forms.vatDetails.vatFinancials.EstimateVatTurnoverForm
+import forms.vatFinancials.EstimateVatTurnoverForm
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 class EstimateVatTurnoverFormSpec extends UnitSpec with WithFakeApplication {

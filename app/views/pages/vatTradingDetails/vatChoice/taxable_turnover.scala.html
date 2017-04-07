@@ -1,0 +1,52 @@
+@import models.view.vatTradingDetails.vatChoice.TaxableTurnover
+@(taxableTurnoverForm:  Form[TaxableTurnover])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.taxable.turnover.title")) {
+
+  <div class="column-one-third">
+
+      <h1 class="form-title heading-large" id="pageHeading">@messages("pages.taxable.turnover.heading")</h1>
+
+      @errorSummary(
+          Messages("app.common.errorSummaryLabel"),
+          taxableTurnoverForm
+      )
+
+      @govHelpers.form(action = controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.submit()) {
+      <div class="form-group">
+        <fieldset class="inline">
+            <span id="taxableTurnoverRadio"/>
+            @govHelpers.inputRadioGroup(
+                field = taxableTurnoverForm("taxableTurnoverRadio"),
+                Seq(
+                  TaxableTurnover.TAXABLE_YES -> Messages("app.common.yes"),
+                  TaxableTurnover.TAXABLE_NO -> Messages("app.common.no")
+                ),
+                '_labelAfter -> true,
+                '_labelClass -> "block-label"
+            )
+        </fieldset>
+       
+      </div>
+          <div class="form-group">
+              <details role="group">
+                  <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
+                  @messages("pages.taxable.turnover.what.is.turnover.title")
+                  </span></summary>
+                  <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
+                      <p> @Html(Messages("pages.taxable.turnover.what.is.turnover.para1"))</p>
+
+                  </div>
+              </details>
+          </div>
+      <div class="form-group">
+        <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+      </div>
+
+      }
+
+    </div>
+
+}

@@ -16,7 +16,7 @@
 
 package connectors
 
-import models.view.vatTradingDetails.StartDateView
+import models.view.vatTradingDetails.vatChoice.StartDateView
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar

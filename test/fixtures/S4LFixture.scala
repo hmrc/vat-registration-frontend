@@ -18,7 +18,7 @@ package fixtures
 
 import java.time.LocalDate
 
-import models.view.vatTradingDetails.StartDateView
+import models.view.vatTradingDetails.vatChoice.StartDateView
 
 trait S4LFixture {
 

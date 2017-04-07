@@ -18,7 +18,10 @@ package models
 
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.vatFinancials._
-import models.view.vatTradingDetails.{StartDateView, TaxableTurnover, TradingNameView, VoluntaryRegistration}
+import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
+import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
+import models.view.vatTradingDetails.TradingNameView
+import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class S4LKeySpec extends UnitSpec {

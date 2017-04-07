@@ -24,7 +24,9 @@ import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
-import models.view.vatTradingDetails.StartDateView
+import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
+import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
+import models.view.vatTradingDetails.vatChoice.StartDateView
 import play.api.http.Status._
 import uk.gov.hmrc.play.http._
 
@@ -176,17 +178,17 @@ trait VatRegistrationFixture {
       (SummaryRow(
         id = "vatDetails.taxableTurnover",
         answerMessageKey = "No",
-        changeLink = Some(controllers.userJourney.vatChoice.routes.TaxableTurnoverController.show())
+        changeLink = Some(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())
       ), true),
       (SummaryRow(
         id = "vatDetails.necessity",
         answerMessageKey = "Yes",
-        changeLink = Some(controllers.userJourney.vatChoice.routes.VoluntaryRegistrationController.show())
+        changeLink = Some(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show())
       ), true),
       (SummaryRow(
         id = "vatDetails.startDate",
         answerMessageKey = "1 February 2017",
-        changeLink = Some(controllers.userJourney.vatChoice.routes.StartDateController.show())
+        changeLink = Some(controllers.vatTradingDetails.vatChoice.routes.StartDateController.show())
       ), true)
     )
   )
@@ -197,22 +199,22 @@ trait VatRegistrationFixture {
       (SummaryRow(
         "companyDetails.tradingName",
         tradingName,
-        Some(controllers.userJourney.vatTradingDetails.routes.TradingNameController.show())
+        Some(controllers.vatTradingDetails.routes.TradingNameController.show())
       ), true),
       (SummaryRow(
         "companyDetails.estimatedSalesValue",
         "£10000000000",
-        Some(controllers.userJourney.vatFinancials.routes.EstimateVatTurnoverController.show())
+        Some(controllers.vatFinancials.routes.EstimateVatTurnoverController.show())
       ), true),
       (SummaryRow(
         "companyDetails.zeroRatedSales",
         "Yes",
-        Some(controllers.userJourney.vatFinancials.routes.ZeroRatedSalesController.show())
+        Some(controllers.vatFinancials.routes.ZeroRatedSalesController.show())
       ), true),
       (SummaryRow(
         "companyDetails.zeroRatedSalesValue",
         "£10000000000",
-        Some(controllers.userJourney.vatFinancials.routes.EstimateZeroRatedSalesController.show())
+        Some(controllers.vatFinancials.routes.EstimateZeroRatedSalesController.show())
       ), true)
     )
   )
