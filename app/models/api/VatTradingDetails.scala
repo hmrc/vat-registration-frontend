@@ -16,13 +16,19 @@
 
 package models.api
 
+import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import play.api.libs.json._
 
 case class VatTradingDetails(
                               vatChoice: VatChoice,
                               tradingName: TradingName,
                               euTrading: VatEuTrading
-                            )
+                            ) {
+
+  def registeringVoluntarily: Boolean = vatChoice.necessity == NECESSITY_VOLUNTARY
+
+}
+
 
 object VatTradingDetails {
 
