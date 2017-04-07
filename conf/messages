@@ -318,6 +318,21 @@ pages.labourCompliance.skilledWorkers.heading       = Does the company provide s
 pages.labourCompliance.skilledWorkers.para          = For example, workers who have special skills, training, knowledge or ability.
 validation.skilledWorkers.option.missing            = Tell us if your company provides skilled workers
 
+<<<<<<< HEAD
+
+## EORI Apply
+pages.applyEori.title                          = You need to apply for an Economic Operator Registration and Identification (EORI) number
+pages.applyEori.heading                        = You need to apply for an Economic Operator Registration and Identification (EORI) number
+pages.applyEori.para1                          = You need an EORI number to trade goods with countries outside the EU.
+pages.applyEori.para2                          = You can apply for an EORI number now as part of XXX''s VAT registration, or you can <a href="https://online.hmrc.gov.uk/shortforms/form/EORIVAT">apply at a later date</a>.
+pages.applyEori.heading.h3                     = Do you want to apply for an EORI number now?
+pages.applyEori.number.yes                     = Yes, I want to apply for an EORI number now
+pages.applyEori.number.no                      = No, I''ll apply for an EORI number later
+pages.applyEori.summary                        = After you''ve applied
+pages.applyEori.summary.para1                  = You''ll get your EORI number by email, usually within 3 working days.
+pages.applyEori.summary.para2                  = Give the number to your courier or freight forwarder. They''ll use it when making customs declarations on your behalf.
+validation.applyEori.option.missing            = Tell us if your company provide Skilled workers
+
 ## EU Goods
 pages.euGoods.title                         = Importing and exporting goods
 pages.euGoods.heading                       = Do you import or export goods from or to countries outside the EU?

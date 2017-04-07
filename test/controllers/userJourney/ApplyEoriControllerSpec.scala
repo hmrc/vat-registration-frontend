@@ -17,11 +17,11 @@
 package controllers.userJourney
 
 import builders.AuthBuilder
-import controllers.userJourney.vatTradingDetails.vatEuTrading.EuGoodsController
+import controllers.userJourney.vatTradingDetails.vatEuTrading.ApplyEoriController
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.S4LKey
-import models.view.vatTradingDetails.vatEuTrading.EuGoods
+import models.view.vatTradingDetails.vatEuTrading.ApplyEori
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -34,26 +34,26 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val mockVatRegistrationService = mock[VatRegistrationService]
 
-  object EuGoodsController extends EuGoodsController(ds)(mockS4LService, mockVatRegistrationService) {
+  object ApplyEoriController extends ApplyEoriController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
+  val fakeRequest = FakeRequest(vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show())
 
-  s"GET ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()}" should {
+  s"GET ${vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show()}" should {
 
-    "return HTML when there's a Eu Goods model in S4L" in {
-      val euGoods = EuGoods(EuGoods.EU_GOODS_YES)
+    "return HTML when there's a Apply Eori model in S4L" in {
+      val euGoods = ApplyEori(ApplyEori.APPLY_EORI_YES)
 
-      when(mockS4LService.fetchAndGet[EuGoods]()(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[ApplyEori]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(euGoods)))
 
-      AuthBuilder.submitWithAuthorisedUser(EuGoodsController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "euGoodsRadio" -> ""
+      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        "applyEoriRadio" -> ""
       )) {
 
         result =>
@@ -65,14 +65,14 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[EuGoods]()
-        (Matchers.eq(S4LKey[EuGoods]), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[ApplyEori]()
+        (Matchers.eq(S4LKey[ApplyEori]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(EuGoodsController.show, mockAuthConnector) {
+      callAuthorised(ApplyEoriController.show, mockAuthConnector) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -83,14 +83,14 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    when(mockS4LService.fetchAndGet[EuGoods]()
-      (Matchers.eq(S4LKey[EuGoods]), Matchers.any(), Matchers.any()))
+    when(mockS4LService.fetchAndGet[ApplyEori]()
+      (Matchers.eq(S4LKey[ApplyEori]), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(None))
 
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(EuGoodsController.show, mockAuthConnector) {
+    callAuthorised(ApplyEoriController.show, mockAuthConnector) {
       result =>
         status(result) mustBe OK
         contentType(result) mustBe Some("text/html")
@@ -99,10 +99,10 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
-  s"POST ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()} with Empty data" should {
+  s"POST ${vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(EuGoodsController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe Status.BAD_REQUEST
@@ -111,39 +111,39 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
-  s"POST ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.submit()} with Eu Goods Yes selected" should {
+  s"POST ${vatTradingDetails.vatEuTrading.routes.ApplyEoriController.submit()} with Apply Eori Yes selected" should {
 
     "return 303" in {
-      val returnCacheMapEuGoods = CacheMap("", Map("" -> Json.toJson(EuGoods(EuGoods.EU_GOODS_YES))))
+      val returnCacheMapApplyEori = CacheMap("", Map("" -> Json.toJson(ApplyEori(ApplyEori.APPLY_EORI_YES))))
 
-      when(mockS4LService.saveForm[EuGoods]
+      when(mockS4LService.saveForm[ApplyEori]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapEuGoods))
+        .thenReturn(Future.successful(returnCacheMapApplyEori))
 
-      AuthBuilder.submitWithAuthorisedUser(EuGoodsController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "euGoodsRadio" -> EuGoods.EU_GOODS_YES
+      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_YES)
       )) {
         response =>
-          response redirectsTo s"$contextRoot/apply-eori"
+          response redirectsTo s"$contextRoot/business-activity-description"
       }
 
     }
   }
 
-  s"POST ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.submit()} with Eu Goods No selected" should {
+  s"POST ${vatTradingDetails.vatEuTrading.routes.ApplyEoriController.submit()} with Apply Eori No selected" should {
 
     "return 303" in {
-      val returnCacheMapEuGoods = CacheMap("", Map("" -> Json.toJson(EuGoods(EuGoods.EU_GOODS_NO))))
+      val returnCacheMapApplyEori = CacheMap("", Map("" -> Json.toJson(ApplyEori(ApplyEori.APPLY_EORI_NO))))
 
-      when(mockS4LService.saveForm[EuGoods]
+      when(mockS4LService.saveForm[ApplyEori]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapEuGoods))
+        .thenReturn(Future.successful(returnCacheMapApplyEori))
 
-      AuthBuilder.submitWithAuthorisedUser(EuGoodsController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "euGoodsRadio" -> EuGoods.EU_GOODS_NO
+      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_NO)
       )) {
         response =>
-          response redirectsTo s"$contextRoot/apply-eori"
+          response redirectsTo s"$contextRoot/business-activity-description"
       }
 
     }
