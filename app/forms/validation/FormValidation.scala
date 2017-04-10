@@ -19,7 +19,7 @@ package forms.validation
 import java.time.LocalDate
 
 import cats.Show
-import forms.vatDetails.vatFinancials.SortCode
+import forms.vatFinancials.vatBankAccount.SortCode
 import models.DateModel
 import org.apache.commons.lang3.StringUtils
 import play.api.Logger
