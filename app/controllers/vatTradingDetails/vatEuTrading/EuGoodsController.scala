@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatTradingDetails.vatEuTrading.EuGoodsForm
-import models.view.vatTradingDetails.vatEuTrading.EuGoods
+import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -43,11 +43,13 @@ class EuGoodsController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(views.html.pages.vatTradingDetails.vatEuTrading.eu_goods(formWithErrors))),
       (data: EuGoods) =>
-        s4LService.saveForm[EuGoods](data) map {  _ =>
-          if(EuGoods.EU_GOODS_YES == data.yesNo) {
-            Redirect(controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show())
+        s4LService.saveForm[EuGoods](data) flatMap {  _ =>
+          if (EuGoods.EU_GOODS_NO == data.yesNo) {
+            for {
+              _ <- s4LService.saveForm[ApplyEori](ApplyEori(ApplyEori.APPLY_EORI_NO))
+            } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
           } else {
-            Redirect(controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show())
+            Future.successful(Redirect(controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show()))
           }
         }
     )
