@@ -331,7 +331,7 @@ pages.applyEori.number.no                      = No, I''ll apply for an EORI num
 pages.applyEori.summary                        = After you''ve applied
 pages.applyEori.summary.para1                  = You''ll get your EORI number by email, usually within 3 working days.
 pages.applyEori.summary.para2                  = Give the number to your courier or freight forwarder. They''ll use it when making customs declarations on your behalf.
-validation.applyEori.option.missing            = Tell us if you want to apply for EORI number
+validation.applyEori.option.missing            = Tell us if you want to apply for an Economic Operator Registration and Identification (EORI) number
 
 ## EU Goods
 pages.euGoods.title                         = Importing and exporting goods

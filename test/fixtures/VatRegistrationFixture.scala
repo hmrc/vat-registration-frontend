@@ -165,60 +165,8 @@ trait VatRegistrationFixture {
   val validWorkers = Workers(8)
   val validTemporaryContracts = TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)
   val validSkilledWorkers = SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO)
+
   val validEuGoods = EuGoods(EuGoods.EU_GOODS_YES)
   val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
 
-  lazy val validSummaryView = Summary(
-    Seq(
-      getVatDetailsSection,
-      getCompanyDetailsSection
-    )
-  )
-
-  private def getVatDetailsSection: SummarySection = SummarySection(
-    id = "vatDetails",
-    Seq(
-      (SummaryRow(
-        id = "vatDetails.taxableTurnover",
-        answerMessageKey = "No",
-        changeLink = Some(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())
-      ), true),
-      (SummaryRow(
-        id = "vatDetails.necessity",
-        answerMessageKey = "Yes",
-        changeLink = Some(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show())
-      ), true),
-      (SummaryRow(
-        id = "vatDetails.startDate",
-        answerMessageKey = "1 February 2017",
-        changeLink = Some(controllers.vatTradingDetails.vatChoice.routes.StartDateController.show())
-      ), true)
-    )
-  )
-
-  private def getCompanyDetailsSection: SummarySection = SummarySection(
-    id = "companyDetails",
-    Seq(
-      (SummaryRow(
-        "companyDetails.tradingName",
-        tradingName,
-        Some(controllers.vatTradingDetails.routes.TradingNameController.show())
-      ), true),
-      (SummaryRow(
-        "companyDetails.estimatedSalesValue",
-        "£10000000000",
-        Some(controllers.vatFinancials.routes.EstimateVatTurnoverController.show())
-      ), true),
-      (SummaryRow(
-        "companyDetails.zeroRatedSales",
-        "Yes",
-        Some(controllers.vatFinancials.routes.ZeroRatedSalesController.show())
-      ), true),
-      (SummaryRow(
-        "companyDetails.zeroRatedSalesValue",
-        "£10000000000",
-        Some(controllers.vatFinancials.routes.EstimateZeroRatedSalesController.show())
-      ), true)
-    )
-  )
 }
