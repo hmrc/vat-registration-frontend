@@ -101,7 +101,9 @@ case class SummaryCompanyDetailsSectionBuilder
 
   def applyEoriRow: SummaryRow = SummaryRow(
     "companyDetails.eori",
-    vatTradingDetails.flatMap(_.euTrading.eoriApplication).fold("app.common.not.applied")(_ => "app.common.applied"),
+    vatTradingDetails.flatMap(_.euTrading.eoriApplication).collect{
+      case true => "app.common.applied"
+    }.getOrElse("app.common.not.applied"),
     Some(controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show())
   )
 
