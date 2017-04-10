@@ -91,7 +91,7 @@ pages.voluntary.registration.reason.radio.sells               = The company alre
 pages.voluntary.registration.reason.radio.intendsToSell       = The company intends to sell taxable goods or services in the future
 pages.voluntary.registration.reason.radio.neither             = None of these apply
 pages.voluntary.registration.reason.panels.neither.para       = If none of these apply you won’t be able to register voluntarily for VAT.
-validation.voluntary.registration.reason.option.missing       = Tell us why you want to register voluntarily for VAT
+validation.voluntary.registration.reason.option.missing       = Tell us why you intend to register voluntarily for VAT
 
 ## Taxable Turnover Page
 pages.taxable.turnover.title                            = Taxable Turnover
