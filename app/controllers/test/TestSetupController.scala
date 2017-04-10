@@ -32,7 +32,7 @@ import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatRetur
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
-import models.view.vatTradingDetails.vatEuTrading.EuGoods
+import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService}
@@ -52,6 +52,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       startDate <- s4LService.fetchAndGet[StartDateView]()
       tradingName <- s4LService.fetchAndGet[TradingNameView]()
       euGoods <- s4LService.fetchAndGet[EuGoods]()
+      applyEori <- s4LService.fetchAndGet[ApplyEori]()
       companyBankAccount <- s4LService.fetchAndGet[CompanyBankAccount]()
       companyBankAccountDetails <- s4LService.fetchAndGet[CompanyBankAccountDetails]()
       estimateVatTurnover <- s4LService.fetchAndGet[EstimateVatTurnover]()
@@ -81,7 +82,8 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
         VatTradingDetailsTestSetup(
           tradingName.map(_.yesNo),
           tradingName.flatMap(_.tradingName),
-          euGoods.map(_.yesNo)),
+          euGoods.map(_.yesNo),
+          applyEori.map(_.yesNo.toString)),
         VatFinancialsTestSetup(
           companyBankAccount.map(_.yesNo),
           companyBankAccountDetails.map(_.accountName),
@@ -138,6 +140,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveToS4Later(data.vatChoice.voluntaryRegistrationReason, data, { x => VoluntaryRegistrationReason(x.vatChoice.voluntaryRegistrationReason.get) })
             _ <- saveToS4Later(data.vatTradingDetails.tradingNameChoice, data, { x => TradingNameView(x.vatTradingDetails.tradingNameChoice.get, data.vatTradingDetails.tradingName) })
             _ <- saveToS4Later(data.vatTradingDetails.euGoods, data, { x => EuGoods(x.vatTradingDetails.euGoods.get) })
+            _ <- saveToS4Later(data.vatTradingDetails.applyEori, data, { x => ApplyEori(x.vatTradingDetails.applyEori.get.toBoolean) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountChoice, data, { x => CompanyBankAccount(x.vatFinancials.companyBankAccountChoice.get) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountName, data, {
               x =>
