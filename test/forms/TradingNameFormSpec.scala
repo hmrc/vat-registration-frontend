@@ -16,7 +16,7 @@
 
 package forms
 
-import forms.vatDetails.vatTradingDetails.TradingNameForm
+import forms.vatTradingDetails.TradingNameForm
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 class TradingNameFormSpec extends UnitSpec with WithFakeApplication {

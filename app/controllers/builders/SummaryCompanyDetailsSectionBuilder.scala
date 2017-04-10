@@ -18,7 +18,7 @@ package controllers.builders
 
 import common.StringMasking._
 import models.api.{VatAccountingPeriod, VatFinancials, VatSicAndCompliance}
-import models.view.vatFinancials.VatReturnFrequency
+import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 
@@ -32,19 +32,19 @@ case class SummaryCompanyDetailsSectionBuilder
   def estimatedSalesValueRow: SummaryRow = SummaryRow(
     "companyDetails.estimatedSalesValue",
     s"£${vatFinancials.map(_.turnoverEstimate.toString).getOrElse("0")}",
-    Some(controllers.userJourney.vatFinancials.routes.EstimateVatTurnoverController.show())
+    Some(controllers.vatFinancials.routes.EstimateVatTurnoverController.show())
   )
 
   def zeroRatedSalesRow: SummaryRow = SummaryRow(
     "companyDetails.zeroRatedSales",
     vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).fold("app.common.no")(_ => "app.common.yes"),
-    Some(controllers.userJourney.vatFinancials.routes.ZeroRatedSalesController.show())
+    Some(controllers.vatFinancials.routes.ZeroRatedSalesController.show())
   )
 
   def estimatedZeroRatedSalesRow: SummaryRow = SummaryRow(
     "companyDetails.zeroRatedSalesValue",
     s"£${vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).fold("")(_.toString)}",
-    Some(controllers.userJourney.vatFinancials.routes.EstimateZeroRatedSalesController.show())
+    Some(controllers.vatFinancials.routes.EstimateZeroRatedSalesController.show())
   )
 
   def vatChargeExpectancyRow: SummaryRow = SummaryRow(
@@ -52,7 +52,7 @@ case class SummaryCompanyDetailsSectionBuilder
     vatFinancials.filter(_.reclaimVatOnMostReturns).fold("pages.summary.companyDetails.reclaimMoreVat.no") {
       _ => "pages.summary.companyDetails.reclaimMoreVat.yes"
     },
-    Some(controllers.userJourney.vatFinancials.routes.VatChargeExpectancyController.show())
+    Some(controllers.vatFinancials.routes.VatChargeExpectancyController.show())
   )
 
   def accountingPeriodRow: SummaryRow = SummaryRow(
@@ -62,31 +62,31 @@ case class SummaryCompanyDetailsSectionBuilder
       case VatAccountingPeriod(VatReturnFrequency.QUARTERLY, Some(period)) =>
         s"pages.summary.companyDetails.accountingPeriod.${period.substring(0, 3)}"
     }.getOrElse(""),
-    Some(controllers.userJourney.vatFinancials.routes.VatReturnFrequencyController.show())
+    Some(controllers.vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show())
   )
 
   def companyBankAccountRow: SummaryRow = SummaryRow(
     "companyDetails.companyBankAccount",
     vatFinancials.flatMap(_.bankAccount).fold("app.common.no")(_ => "app.common.yes"),
-    Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountController.show())
+    Some(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
   )
 
   def companyBankAccountNameRow: SummaryRow = SummaryRow(
     "companyDetails.companyBankAccount.name",
     vatFinancials.flatMap(_.bankAccount).fold("app.common.no")(_.accountName),
-    Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountDetailsController.show())
+    Some(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show())
   )
 
   def companyBankAccountNumberRow: SummaryRow = SummaryRow(
     "companyDetails.companyBankAccount.number",
     vatFinancials.flatMap(_.bankAccount).fold("app.common.no")(_.accountNumber.mask(4)),
-    Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountDetailsController.show())
+    Some(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show())
   )
 
   def companyBankAccountSortCodeRow: SummaryRow = SummaryRow(
     "companyDetails.companyBankAccount.sortCode",
     vatFinancials.flatMap(_.bankAccount).fold("app.common.no")(_.accountSortCode),
-    Some(controllers.userJourney.vatFinancials.routes.CompanyBankAccountDetailsController.show())
+    Some(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show())
   )
 
   def companyBusinessDescriptionRow: SummaryRow = SummaryRow(
@@ -94,7 +94,7 @@ case class SummaryCompanyDetailsSectionBuilder
     vatSicAndCompliance.collect {
       case VatSicAndCompliance(description, _, _) if StringUtils.isNotBlank(description) => description
     }.getOrElse("app.common.no"),
-    Some(controllers.userJourney.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+    Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
   )
 
 

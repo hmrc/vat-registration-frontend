@@ -21,16 +21,18 @@ import javax.inject.Inject
 
 import connectors.{KeystoreConnector, VatRegistrationConnector}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatDetails.test.TestSetupForm
+import forms.test.TestSetupForm
 import models.S4LKey
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.test._
 import models.view.vatFinancials._
+import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
+import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
+import models.view.vatTradingDetails.TradingNameView
+import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.EuGoods
-import models.view.vatTradingDetails.{StartDateView, TaxableTurnover, TradingNameView, VoluntaryRegistration}
-import models.view.vatTradingDetails._
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService}
@@ -104,7 +106,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
           labourSkilledWorkers.map(_.yesNo))
       )
       form = TestSetupForm.form.fill(testSetup)
-    } yield Ok(views.html.pages.test_setup(form))
+    } yield Ok(views.html.pages.test.test_setup(form))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
@@ -126,7 +128,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
 
     TestSetupForm.form.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.test_setup(formWithErrors)))
+        Future.successful(BadRequest(views.html.pages.test.test_setup(formWithErrors)))
       }, {
         data: TestSetup => {
           for {

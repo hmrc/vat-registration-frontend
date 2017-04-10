@@ -17,7 +17,7 @@
 package forms.validation
 
 import forms.validation.FormValidation.ErrorCode
-import forms.vatDetails.vatFinancials.SortCode
+import forms.vatFinancials.vatBankAccount.SortCode
 import models.DateModel
 import org.scalatest.{Inside, Inspectors}
 import play.api.data.validation.{Constraint, Invalid, Valid}

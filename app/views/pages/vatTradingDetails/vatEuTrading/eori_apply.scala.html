@@ -1,0 +1,56 @@
+@import models.view.vatTradingDetails.vatEuTrading.ApplyEori
+@(applyEoriForm:  Form[ApplyEori])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.applyEori.title")) {
+
+  <div class="column-one-third">
+
+      <h1 class="form-title heading-large" id="pageHeading">@messages("pages.applyEori.heading")</h1>
+
+      @errorSummary(
+          Messages("app.common.errorSummaryLabel"),
+          applyEoriForm,
+          Seq("applyEori")
+      )
+
+      <p>@messages("pages.applyEori.para1")</p>
+      <p>@Html(Messages("pages.applyEori.para2"))</p>
+      <h3>@messages("pages.applyEori.heading.h3")</h3>
+
+      @govHelpers.form(action = controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.submit()) {
+          <div class="form-group">
+              <fieldset>
+                  <span id="applyEoriRadio"/>
+                  @govHelpers.inputRadioGroup(
+                      field = applyEoriForm("applyEoriRadio"),
+                      Seq(
+                          String.valueOf(ApplyEori.APPLY_EORI_YES) -> Messages("pages.applyEori.number.yes"),
+                          String.valueOf(ApplyEori.APPLY_EORI_NO) -> Messages("pages.applyEori.number.no")
+                      ),
+                      '_labelAfter -> true,
+                      '_labelClass -> "block-label"
+                  )
+              </fieldset>
+
+              <details role="group">
+                  <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
+                  @Html(messages("pages.applyEori.summary"))
+                  </span></summary>
+                  <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
+                      <p>@messages("pages.applyEori.summary.para1")</p>
+                      <p>@messages("pages.applyEori.summary.para2")</p>
+                  </div>
+              </details>
+          </div>
+
+          <div class="form-group">
+              <button class="btn button" type="submit" id="save-and-continue">Save and continue</button>
+          </div>
+      }
+
+    </div>
+
+}
+

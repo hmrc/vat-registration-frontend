@@ -26,8 +26,11 @@ import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
+import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
+import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
+import models.view.vatTradingDetails.TradingNameView
+import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
-import models.view.vatTradingDetails.{StartDateView, TradingNameView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
 

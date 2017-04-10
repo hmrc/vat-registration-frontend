@@ -16,7 +16,7 @@
 
 package forms
 
-import forms.vatDetails.vatFinancials.CompanyBankAccountDetailsForm
+import forms.vatFinancials.vatBankAccount.CompanyBankAccountDetailsForm
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 class CompanyBankAccountDetailsFormSpec extends UnitSpec with WithFakeApplication {

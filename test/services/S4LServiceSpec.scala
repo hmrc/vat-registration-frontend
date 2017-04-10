@@ -18,7 +18,7 @@ package services
 
 import fixtures.{S4LFixture, VatRegistrationFixture}
 import models.S4LKey
-import models.view.vatTradingDetails.StartDateView
+import models.view.vatTradingDetails.vatChoice.StartDateView
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
