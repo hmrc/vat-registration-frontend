@@ -17,7 +17,8 @@
 package controllers.builders
 
 import common.StringMasking._
-import models.api.{VatAccountingPeriod, VatFinancials, VatSicAndCompliance}
+import models.api.VatChoice._
+import models.api._
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
@@ -25,7 +26,8 @@ import org.apache.commons.lang3.StringUtils
 case class SummaryCompanyDetailsSectionBuilder
 (
   vatFinancials: Option[VatFinancials] = None,
-  vatSicAndCompliance: Option[VatSicAndCompliance] = None
+  vatSicAndCompliance: Option[VatSicAndCompliance] = None,
+  vatTradingDetails: Option[VatTradingDetails] = None
 )
   extends SummarySectionBuilder {
 
@@ -97,6 +99,12 @@ case class SummaryCompanyDetailsSectionBuilder
     Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
   )
 
+  def applyEoriRow: SummaryRow = SummaryRow(
+    "companyDetails.eori",
+    vatTradingDetails.flatMap(_.euTrading.eoriApplication).fold("app.common.not.applied")(_ => "app.common.applied"),
+    Some(controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show())
+  )
+
 
   def section: SummarySection = SummarySection(
     id = "companyDetails",
@@ -110,7 +118,8 @@ case class SummaryCompanyDetailsSectionBuilder
       (zeroRatedSalesRow, true),
       (estimatedZeroRatedSalesRow, vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).isDefined),
       (vatChargeExpectancyRow, true),
-      (accountingPeriodRow, true)
+      (accountingPeriodRow, true),
+      (applyEoriRow, vatTradingDetails.exists(_.euTrading.selection))
     )
   )
 }
