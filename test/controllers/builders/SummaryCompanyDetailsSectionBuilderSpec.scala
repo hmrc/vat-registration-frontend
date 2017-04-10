@@ -385,7 +385,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec with VatRegistr
       "a 'Yes' value should be returned with an 'Applied' " in {
         val details =  tradingDetails( eoriApplication = Some(true))
         val builder = SummaryCompanyDetailsSectionBuilder(vatTradingDetails = Some(details))
-        builder.companyBusinessDescriptionRow mustBe
+        builder.applyEoriRow mustBe
           SummaryRow(
             "companyDetails.eori",
             "app.common.applied",
@@ -406,7 +406,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec with VatRegistr
         )
         val builder = SummaryCompanyDetailsSectionBuilder(vatFinancials = Some(financials))
         builder.section.id mustBe "companyDetails"
-        builder.section.rows.length mustEqual 10
+        builder.section.rows.length mustEqual 11
       }
     }
 
