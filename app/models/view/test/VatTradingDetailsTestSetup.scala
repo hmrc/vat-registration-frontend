@@ -21,7 +21,8 @@ import play.api.libs.json.Json
 
 case class VatTradingDetailsTestSetup(tradingNameChoice: Option[String],
                                       tradingName: Option[String],
-                                      euGoods: Option[String])
+                                      euGoods: Option[String],
+                                      applyEori: Option[String])
 
 object VatTradingDetailsTestSetup {
   implicit val format = Json.format[VatTradingDetailsTestSetup]
