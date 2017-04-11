@@ -1,0 +1,82 @@
+@import models.view.vatContact.BusinessContactDetails
+@(businessContactDetailsForm: Form[BusinessContactDetails])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+@fieldSetClasses = @{
+    if(businessContactDetailsForm.hasErrors && businessContactDetailsForm.errors.exists(_.args.nonEmpty)) "form-field--error" else ""
+}
+
+@main_template(title = messages("pages.vatContact.businessContactDetails.title")) {
+
+  <div class="column-one-third">
+
+      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.vatContact.businessContactDetails.heading")</h1>
+
+      @errorSummary(
+          Messages("app.common.errorSummaryLabel"),
+          businessContactDetailsForm,
+          Seq("businessContactDetails")
+      )
+
+      <p>@Html(Messages("pages.vatContact.businessContactDetails.para1"))</p>
+
+      <div class="notice form-group">
+          <i class="icon icon-important">
+              <span class="visuallyhidden">Warning</span>
+          </i>
+          <strong class="bold-small">@messages("pages.vatContact.businessContactDetails.info")</strong>
+      </div>
+
+      @govHelpers.form(action = controllers.vatContact.routes.BusinessContactDetailsController.submit()) {
+          <div class="form-group @fieldSetClasses">
+              <fieldset>
+
+                  @businessContactDetailsForm.errors.find(_.args.contains("businessContactDetails")).map { error =>
+                      @govHelpers.errorInline("businessContactDetails", Messages(error.message))
+                  }
+
+
+                  <label class="form-label">@messages("pages.vatContact.businessContactDetails.form.label")</label>
+                      @govHelpers.input(
+                          businessContactDetailsForm("businessContactDetails"),
+                          '_divClass -> "form-group",
+                          '_inputClass -> "form-control",
+                          '_label -> Messages("app.common.gbp.symbol"),
+                          '_labelClass -> "form-label"
+                      )
+
+
+              </fieldset>
+
+              <details role="group">
+                  <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
+                  @Html(messages("pages.vatContact.businessContactDetails.include.title"))
+                  </span></summary>
+                  <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
+                      <p>@Html(Messages("pages.vatContact.businessContactDetails.include.para1"))</p>
+                      <ul class="list list-bullet">
+                          <li>@Html(Messages("pages.vatContact.businessContactDetails.include.bullet1"))</li>
+                          <li>@Html(Messages("pages.vatContact.businessContactDetails.include.bullet2"))</li>
+                          <li>@Html(Messages("pages.vatContact.businessContactDetails.include.bullet3"))</li>
+                          <li>@Html(Messages("pages.vatContact.businessContactDetails.include.bullet4"))</li>
+                          <li>@Html(Messages("pages.vatContact.businessContactDetails.include.bullet5"))</li>
+                      </ul>
+                      <p>@Html(Messages("pages.vatContact.businessContactDetails.include.para2"))</p>
+                  </div>
+              </details>
+          </div>
+
+          <div class="form-group">
+              <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+          </div>
+      }
+
+    </div>
+
+}
+
+<script type="text/javascript">
+        $(document).ready($(function () {
+            BusinessContactDetailsPage.init()
+        }));
+</script>
