@@ -16,7 +16,7 @@
 
 package models.view.vatContact
 
-import models.api.{VatFinancials, VatScheme}
+import models.api.{VatContact, VatDigitalContact, VatScheme}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
@@ -31,19 +31,15 @@ object BusinessContactDetails {
 
   implicit val format: OFormat[BusinessContactDetails] = Json.format[BusinessContactDetails]
 
-
-  //TODO implement once backend model merged
   implicit val modelTransformer = ApiModelTransformer[BusinessContactDetails] { (vs: VatScheme) =>
+    vs.vatContact.map {
+      case VatContact(dc, ws) =>
+        BusinessContactDetails(email = dc.email, daytimePhone = dc.tel, mobile = dc.mobile, website = ws)
+      }
+    }
 
-    Some(BusinessContactDetails("some-email@emailprovider.com"))
-    //    vs.financials.map(_.turnoverEstimate).collect {
-    //      case turnoverEstimate => BusinessContactDetails(turnoverEstimate)
-    //    }
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: BusinessContactDetails, g: VatFinancials) => {
-    g //TODO implement once backend model merged
-  }
+  implicit val viewModelTransformer = ViewModelTransformer { (c: BusinessContactDetails, g: VatContact) =>
+    g.copy(digitalContact = VatDigitalContact(c.email, c.daytimePhone, c.mobile), website = c.website)
   }
 
 }
