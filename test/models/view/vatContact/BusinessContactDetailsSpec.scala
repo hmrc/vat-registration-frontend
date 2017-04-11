@@ -25,14 +25,16 @@ import uk.gov.hmrc.play.test.UnitSpec
 class BusinessContactDetailsSpec  extends UnitSpec with VatRegistrationFixture with Inside {
 
   "toApi" should {
-    val businessContactDetails =
+    val initialVatContact = VatContact(VatDigitalContact(email = "initial@com", tel = None, mobile = None), website = None)
+
+    val newBusinessContactDetails =
       BusinessContactDetails(email = "asd@xyz", daytimePhone = Some("123"), mobile = Some("123"), website = Some("qwe.com"))
 
     val updatedVatContact = VatContact(VatDigitalContact(email = "asd@xyz", tel = Some("123"), mobile = Some("123")), Some("qwe.com"))
 
     "update VatTradingDetails with new ApplyEori" in {
       ViewModelTransformer[BusinessContactDetails, VatContact]
-        .toApi(businessContactDetails, validVatContact) shouldBe updatedVatContact
+        .toApi(newBusinessContactDetails, initialVatContact) shouldBe updatedVatContact
     }
   }
 
@@ -48,9 +50,9 @@ class BusinessContactDetailsSpec  extends UnitSpec with VatRegistrationFixture w
       val vs = vatScheme(contact = Some(testVatContact))
 
       val expectedBusinessContactDetails = BusinessContactDetails(email = "test@com", daytimePhone = Some("123"), website = Some("test.com"))
+
       ApiModelTransformer[BusinessContactDetails].toViewModel(vs) shouldBe Some(expectedBusinessContactDetails)
     }
 
   }
-
 }
