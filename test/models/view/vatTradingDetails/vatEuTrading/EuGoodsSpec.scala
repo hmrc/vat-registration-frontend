@@ -27,19 +27,13 @@ class EuGoodsSpec extends UnitSpec with VatRegistrationFixture with Inside {
   "toApi" should {
     val euGoods = EuGoods(EuGoods.EU_GOODS_YES)
 
-    val vatTradingDetails = VatTradingDetails(
-      validVatChoice,
-      validTradingName,
-      validEuTrading
-    )
-
     val differentVatTradingDetails = VatTradingDetails(
       validVatChoice,
       validTradingName,
       VatEuTrading(true, None)
     )
 
-    "update VatFinancials with new AccountingPeriod" in {
+    "update VatTradingDetails with new EuGoods" in {
       ViewModelTransformer[EuGoods, VatTradingDetails]
         .toApi(euGoods, validVatTradingDetails) shouldBe differentVatTradingDetails
     }

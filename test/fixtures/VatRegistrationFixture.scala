@@ -57,6 +57,8 @@ trait VatRegistrationFixture {
   val validEuTrading = VatEuTrading(selection = false, eoriApplication = None)
   val validVatTradingDetails = VatTradingDetails(vatChoice = validVatChoice, tradingName = validTradingName, validEuTrading)
 
+  val validVatContact = VatContact(VatDigitalContact(email = "asd@com", tel = Some("123"), mobile = None), website = None)
+
   private val turnoverEstimate = 50000L
   private val estimatedSales = 60000L
 
@@ -129,11 +131,13 @@ trait VatRegistrationFixture {
   def vatScheme(
                  id: String = validRegId,
                  vatTradingDetails: Option[VatTradingDetails] = None,
-                 sicAndCompliance: Option[VatSicAndCompliance] = None
+                 sicAndCompliance: Option[VatSicAndCompliance] = None,
+                 contact: Option[VatContact] = None
                ): VatScheme = VatScheme(
     id = id,
     tradingDetails = vatTradingDetails,
-    vatSicAndCompliance = sicAndCompliance
+    vatSicAndCompliance = sicAndCompliance,
+    vatContact = contact
   )
 
   val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
@@ -151,7 +155,8 @@ trait VatRegistrationFixture {
   val validVatScheme = VatScheme(
     id = validRegId,
     tradingDetails = Some(validVatTradingDetails),
-    financials = Some(validVatFinancials)
+    financials = Some(validVatFinancials),
+    vatContact = Some(validVatContact)
   )
 
   val validBusinessActivityDescription = BusinessActivityDescription(businessActivityDescription)
