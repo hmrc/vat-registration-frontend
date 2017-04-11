@@ -370,6 +370,31 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec with VatRegistr
       }
     }
 
+    "with EU Goods render" should {
+
+      "a false value should be returned with a row displaying 'No'" in {
+        val details =  tradingDetails( euGoodsSelection = false)
+        val builder = SummaryCompanyDetailsSectionBuilder(vatTradingDetails = Some(details))
+        builder.euGoodsRow mustBe
+          SummaryRow(
+            "companyDetails.eori.euGoods",
+            "app.common.no",
+            Some(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
+          )
+      }
+
+      "a true value should be returned with a row displaying 'Yes'" in {
+        val details =  tradingDetails( euGoodsSelection = true)
+        val builder = SummaryCompanyDetailsSectionBuilder(vatTradingDetails = Some(details))
+        builder.euGoodsRow mustBe
+          SummaryRow(
+            "companyDetails.eori.euGoods",
+            "app.common.yes",
+            Some(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
+          )
+      }
+    }
+
     "with apply EORI render" should {
 
       "a 'No' value should be returned with an 'Not Applied' " in {
@@ -406,7 +431,7 @@ class SummaryCompanyDetailsSectionBuilderSpec extends VatRegSpec with VatRegistr
         )
         val builder = SummaryCompanyDetailsSectionBuilder(vatFinancials = Some(financials))
         builder.section.id mustBe "companyDetails"
-        builder.section.rows.length mustEqual 11
+        builder.section.rows.length mustEqual 12
       }
     }
 
