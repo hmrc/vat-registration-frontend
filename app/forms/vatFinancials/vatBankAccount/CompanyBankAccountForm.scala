@@ -16,7 +16,7 @@
 
 package forms.vatFinancials.vatBankAccount
 
-import forms.validation.FormValidation.missingFieldMapping
+import forms.FormValidation.missingFieldMapping
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccount
 import play.api.data.Form
 import play.api.data.Forms._

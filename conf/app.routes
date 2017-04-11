@@ -95,6 +95,12 @@ POST        /compliance/temporary-contracts        controllers.sicAndCompliance.
 GET         /compliance/skilled-workers            controllers.sicAndCompliance.labour.SkilledWorkersController.show
 POST        /compliance/skilled-workers            controllers.sicAndCompliance.labour.SkilledWorkersController.submit
 
+
+## BUSINESS CONTACT DETAILS PAGE
+GET         /business-contact                      controllers.vatContact.BusinessContactDetailsController.show
+POST        /business-contact                      controllers.vatContact.BusinessContactDetailsController.submit
+
+
 ## FEEDBACK
 GET         /feedback                              controllers.feedback.FeedbackController.show
 

@@ -16,7 +16,7 @@
 
 package forms.vatFinancials.vatAccountingPeriod
 
-import forms.validation.FormValidation._
+import forms.FormValidation._
 import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod
 import play.api.data.Form
 import play.api.data.Forms._

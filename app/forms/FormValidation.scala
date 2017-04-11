@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms.validation
+package forms
 
 import java.time.LocalDate
 
@@ -93,6 +93,7 @@ private[forms] object FormValidation {
   }
 
   def intToText(i: Int): String = i.toString
+
   def longToText(l: Long): String = l.toString
 
   def boundedLong()(implicit e: ErrorCode): Constraint[Long] = Constraint {

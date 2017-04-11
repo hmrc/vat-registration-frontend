@@ -16,7 +16,7 @@
 
 package forms.vatTradingDetails.vatChoice
 
-import forms.validation.FormValidation.missingFieldMapping
+import forms.FormValidation.missingFieldMapping
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import play.api.data.Form
 import play.api.data.Forms.mapping

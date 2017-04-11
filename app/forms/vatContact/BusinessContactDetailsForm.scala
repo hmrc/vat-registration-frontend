@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-package forms.vatFinancials
+package forms.vatContact
 
 import forms.FormValidation._
-import models.view.vatFinancials.EstimateZeroRatedSales
+import models.view.vatContact.BusinessContactDetails
 import play.api.data.Form
 import play.api.data.Forms._
 
-object EstimateZeroRatedSalesForm {
+object BusinessContactDetailsForm {
 
-  val ZERO_RATED_SALES_ESTIMATE: String = "zeroRatedTurnoverEstimate"
+  val EMAIL_PATTERN = """[A-Za-z0-9\-_.]{1,70}@[A-Za-z0-9\-_.]{1,70}""".r
+  val PHONE_NUMBER_PATTERN = """[\d]{1,20}""".r
 
-  implicit val errorCode: ErrorCode = "estimate.zero.rated.sales"
+  implicit val errorCode: ErrorCode = "vatContact.businessContactDetails"
 
   val form = Form(
     mapping(
-      ZERO_RATED_SALES_ESTIMATE -> text.verifying(mandatoryNumericText).
-        transform(taxEstimateTextToLong, longToText).verifying(boundedLong)
-    )(EstimateZeroRatedSales.apply)(EstimateZeroRatedSales.unapply)
+      "email" -> text.verifying(regexPattern(EMAIL_PATTERN)),
+      "daytimePhone" -> optional(text.verifying(regexPattern(PHONE_NUMBER_PATTERN, mandatory = false))),
+      "mobile" -> optional(text.verifying(regexPattern(PHONE_NUMBER_PATTERN, mandatory = false))),
+      "website" -> optional(text)
+    )(BusinessContactDetails.apply)(BusinessContactDetails.unapply)
   )
 
 }

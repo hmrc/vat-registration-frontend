@@ -16,7 +16,7 @@
 
 package forms.vatTradingDetails
 
-import forms.validation.FormValidation._
+import forms.FormValidation._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.TradingNameView.TRADING_NAME_YES
 import play.api.data.Form
