@@ -16,7 +16,7 @@
 
 package forms.sicAndCompliance.cultural
 
-import forms.validation.FormValidation.missingFieldMapping
+import forms.FormValidation.missingFieldMapping
 import models.view.sicAndCompliance.cultural.NotForProfit
 import play.api.data.Form
 import play.api.data.Forms._

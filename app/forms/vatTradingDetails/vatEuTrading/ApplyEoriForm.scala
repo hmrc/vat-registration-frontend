@@ -16,7 +16,7 @@
 
 package forms.vatTradingDetails.vatEuTrading
 
-import forms.validation.FormValidation.missingBooleanFieldMapping
+import forms.FormValidation.missingBooleanFieldMapping
 import models.view.vatTradingDetails.vatEuTrading.ApplyEori
 import play.api.data.Form
 import play.api.data.Forms._

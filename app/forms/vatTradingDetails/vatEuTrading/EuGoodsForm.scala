@@ -16,7 +16,7 @@
 
 package forms.vatTradingDetails.vatEuTrading
 
-import forms.validation.FormValidation.missingFieldMapping
+import forms.FormValidation.missingFieldMapping
 import models.view.vatTradingDetails.vatEuTrading.EuGoods
 import play.api.data.Form
 import play.api.data.Forms._

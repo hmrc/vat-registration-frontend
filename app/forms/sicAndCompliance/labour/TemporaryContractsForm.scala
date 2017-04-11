@@ -16,7 +16,7 @@
 
 package forms.sicAndCompliance.labour
 
-import forms.validation.FormValidation.missingFieldMapping
+import forms.FormValidation.missingFieldMapping
 import models.view.sicAndCompliance.labour.TemporaryContracts
 import play.api.data.Form
 import play.api.data.Forms._

@@ -16,7 +16,8 @@
 
 package forms.validation
 
-import forms.validation.FormValidation.ErrorCode
+import forms.FormValidation
+import forms.FormValidation.ErrorCode
 import forms.vatFinancials.vatBankAccount.SortCode
 import models.DateModel
 import org.scalatest.{Inside, Inspectors}

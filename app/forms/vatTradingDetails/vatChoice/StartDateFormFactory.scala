@@ -20,8 +20,8 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 import common.Now
-import forms.validation.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
-import forms.validation.FormValidation.inRange
+import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
+import forms.FormValidation.inRange
 import models.DateModel
 import models.view.vatTradingDetails.vatChoice.StartDateView
 import play.api.data.Form

@@ -16,7 +16,7 @@
 
 package forms.vatFinancials
 
-import forms.validation.FormValidation.missingFieldMapping
+import forms.FormValidation.missingFieldMapping
 import models.view.vatFinancials.VatChargeExpectancy
 import play.api.data.Form
 import play.api.data.Forms._

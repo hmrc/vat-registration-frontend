@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package forms.vatFinancials.vatAccountingPeriod
+package forms.vatContact
 
-import forms.FormValidation.missingFieldMapping
-import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
-import play.api.data.Form
-import play.api.data.Forms._
+import org.scalatest.{Inside, Inspectors, Matchers}
+import uk.gov.hmrc.play.test.UnitSpec
 
-object VatReturnFrequencyForm {
+class BusinessContactDetailsFormSpec extends UnitSpec with Inspectors with Matchers with Inside {
 
-  val RADIO_FREQUENCY : String = "vatReturnFrequencyRadio"
+  val testForm = BusinessContactDetailsForm.form
 
-  val form = Form(
-    mapping(
-      RADIO_FREQUENCY -> missingFieldMapping()("vat.return.frequency").verifying(VatReturnFrequency.valid)
-    )(VatReturnFrequency.apply)(VatReturnFrequency.unapply)
-  )
+  "Creating a form using an empty model" should {
+    "return an empty string" in {
+      testForm.data.isEmpty shouldBe true
+    }
+  }
 }

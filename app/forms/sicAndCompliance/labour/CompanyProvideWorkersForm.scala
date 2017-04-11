@@ -16,7 +16,7 @@
 
 package forms.sicAndCompliance.labour
 
-import forms.validation.FormValidation._
+import forms.FormValidation._
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import play.api.data.Form
 import play.api.data.Forms._
