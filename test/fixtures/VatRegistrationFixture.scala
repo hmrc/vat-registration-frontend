@@ -23,6 +23,7 @@ import models.view._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
+import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
@@ -173,5 +174,7 @@ trait VatRegistrationFixture {
 
   val validEuGoods = EuGoods(EuGoods.EU_GOODS_YES)
   val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
+
+  val validBusinessContactDetails = BusinessContactDetails(email = "test.com", daytimePhone = Some("123"), mobile = None, website = None)
 
 }

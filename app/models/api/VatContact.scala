@@ -24,4 +24,7 @@ object VatContact {
 
   implicit val format: OFormat[VatContact] = Json.format[VatContact]
 
+  // TODO remove once no longer required
+  val empty = VatContact(VatDigitalContact("", None, None), None)
+
 }
