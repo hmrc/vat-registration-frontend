@@ -56,7 +56,6 @@ private[forms] object FormValidation {
       }
   }
 
-
   private def unconstrained[T] = Constraint[T] { (t: T) => Valid }
 
   def inRange[T](minValue: T, maxValue: T)(implicit ordering: Ordering[T], e: ErrorCode): Constraint[T] =
@@ -124,8 +123,8 @@ private[forms] object FormValidation {
   }
 
   /* overrides Play's implicit stringFormatter and handles missing options (e.g. no radio button selected) */
-  private def stringFormat()(implicit e: ErrorCode): Formatter[String] = new Formatter[String] {
-    def bind(key: String, data: Map[String, String]) = data.get(key).toRight(Seq(FormError(key, s"validation.$e.option.missing", Nil)))
+  private def stringFormat(suffix: String)(implicit e: ErrorCode): Formatter[String] = new Formatter[String] {
+    def bind(key: String, data: Map[String, String]) = data.get(key).toRight(Seq(FormError(key, s"validation.$e.$suffix", Nil)))
 
     def unbind(key: String, value: String) = Map(key -> value)
   }
@@ -137,9 +136,14 @@ private[forms] object FormValidation {
     def unbind(key: String, value: Boolean) = Map(key -> value.toString)
   }
 
-  def missingFieldMapping()(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat)
+  def missingFieldMapping(field: String = "")(implicit e: ErrorCode): Mapping[String] =
+    FieldMapping[String]()(stringFormat(Seq(field, "option.missing").mkString(".")))
 
-  def missingBooleanFieldMapping()(implicit e: ErrorCode): Mapping[Boolean] = FieldMapping[Boolean]()(booleanFormat)
+  def textMapping(field: String = "")(implicit e: ErrorCode): Mapping[String] =
+    FieldMapping[String]()(stringFormat(Seq(field, "missing").mkString(".")))
+
+  def missingBooleanFieldMapping()(implicit e: ErrorCode): Mapping[Boolean] =
+    FieldMapping[Boolean]()(booleanFormat)
 
   object BankAccount {
 
