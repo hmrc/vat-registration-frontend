@@ -79,7 +79,6 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
       ))
       callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
         result =>
-          status(result) mustBe SEE_OTHER
           result redirectsTo s"$contextRoot/compliance/not-for-profit"
       }
     }
@@ -93,7 +92,6 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
       ))
       callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
         result =>
-          status(result) mustBe SEE_OTHER
           result redirectsTo s"$contextRoot/compliance/provide-workers"
       }
     }
@@ -107,7 +105,6 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
       ))
       callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
         result =>
-          status(result) mustBe SEE_OTHER
           result redirectsTo s"$contextRoot/compliance/advice-or-consultancy"
       }
     }
