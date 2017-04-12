@@ -31,11 +31,13 @@ object AdviceOrConsultancy {
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[AdviceOrConsultancy] { vs: VatScheme =>
+    //TODO: Implement once backend and frontend API models are in place for FinancialComplianceType
     None
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: AdviceOrConsultancy, g: VatSicAndCompliance) =>
-    g.copy()
+    //TODO: Implement once backend and frontend API models are in place for FinancialComplianceType
+    g
   }
 
 }
