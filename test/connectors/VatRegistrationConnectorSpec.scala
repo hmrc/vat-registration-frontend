@@ -180,4 +180,26 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       connector.upsertSicAndCompliance("tstID", compliance) failedWith internalServiceException
     }
   }
+
+  "Calling upsertVatContact" should {
+
+    val vatContact = VatContact(VatDigitalContact(email = "test.com", tel = None, mobile = None), None)
+
+    "return the correct VatResponse when the microservice completes and returns a VatContact model" in new Setup {
+      mockHttpPATCH[VatContact, VatContact]("tst-url", vatContact)
+      connector.upsertVatContact("tstID", vatContact) returns vatContact
+    }
+    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[VatContact, VatContact]("tst-url", forbidden)
+      connector.upsertVatContact("tstID", vatContact) failedWith forbidden
+    }
+    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
+      mockHttpFailedPATCH[VatContact, VatContact]("tst-url", notFound)
+      connector.upsertVatContact("tstID", vatContact) failedWith notFound
+    }
+    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[VatContact, VatContact]("tst-url", internalServiceException)
+      connector.upsertVatContact("tstID", vatContact) failedWith internalServiceException
+    }
+  }
 }
