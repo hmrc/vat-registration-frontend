@@ -118,7 +118,7 @@ private[forms] object FormValidation {
       input match {
         case Pattern(_*) => Valid
         case s if StringUtils.isNotBlank(s) => Invalid(s"validation.$e.invalid")
-        case _ => Invalid(s"validation.$e.empty")
+        case _ => Invalid(s"validation.$e.missing")
       }
   }
 

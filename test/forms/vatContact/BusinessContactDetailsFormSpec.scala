@@ -94,6 +94,20 @@ class BusinessContactDetailsFormSpec extends UnitSpec with Inspectors with Match
         form shouldHaveErrors Seq("email" -> "validation.businessContactDetails.email.missing")
       }
 
+
+      "blank email is provided" in {
+        val data = Map("email" -> "", "daytimePhone" -> "0123456789")
+        val form = testForm.bind(data)
+        form shouldHaveErrors Seq("email" -> "validation.businessContactDetails.email.missing")
+      }
+
+      "invalid email is provided" in {
+        val data = Map("email" -> "some invalid email", "daytimePhone" -> "0123456789")
+        val form = testForm.bind(data)
+        form shouldHaveErrors Seq("email" -> "validation.businessContactDetails.email.invalid")
+      }
+
+
     }
 
   }

@@ -40,11 +40,16 @@ object BusinessContactDetailsForm {
 
   val form = Form(
     mapping(
-      EMAIL -> textMapping(EMAIL).verifying(regexPattern(EMAIL_PATTERN)),
-      DAYTIME_PHONE -> mandatoryIf(blankStringCondition(MOBILE), textMapping(DAYTIME_PHONE)
-        .verifying(nonEmptyValidText(PHONE_NUMBER_PATTERN)(s"$e.daytimePhone"))),
-      MOBILE -> mandatoryIf(blankStringCondition(DAYTIME_PHONE), textMapping(MOBILE)
-        .verifying(nonEmptyValidText(PHONE_NUMBER_PATTERN)(s"$e.mobile"))),
+      EMAIL -> textMapping(EMAIL)
+        .verifying(regexPattern(EMAIL_PATTERN)(s"$e.email")),
+      DAYTIME_PHONE -> mandatoryIf(
+        blankStringCondition(MOBILE),
+        textMapping(DAYTIME_PHONE)
+          .verifying(nonEmptyValidText(PHONE_NUMBER_PATTERN)(s"$e.daytimePhone"))),
+      MOBILE -> mandatoryIf(
+        blankStringCondition(DAYTIME_PHONE),
+        textMapping(MOBILE)
+          .verifying(nonEmptyValidText(PHONE_NUMBER_PATTERN)(s"$e.mobile"))),
       WEBSITE -> optional(text)
     )(BusinessContactDetails.apply)(BusinessContactDetails.unapply)
   )
