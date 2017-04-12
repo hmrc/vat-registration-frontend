@@ -21,6 +21,8 @@ import javax.inject.Inject
 import controllers.builders.{SummaryCompanyDetailsSectionBuilder, SummaryVatDetailsSectionBuilder}
 import models.api._
 import models.view._
+import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.vatContact.BusinessContactDetails
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier

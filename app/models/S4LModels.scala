@@ -19,6 +19,7 @@ package models
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
+import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
@@ -56,5 +57,11 @@ case class S4LVatSicAndCompliance
   labourComplianceWorkers: Option[Workers],
   labourComplianceTemporaryContracts: Option[TemporaryContracts],
   labourComplianceSkilledWorkers: Option[SkilledWorkers]
+
+)
+
+case class S4LVatContact
+(
+  businessContactDetails: Option[BusinessContactDetails]
 
 )
