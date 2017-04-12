@@ -22,8 +22,8 @@
                     @govHelpers.inputRadioGroup(
                         field = adviceOrConsultancyForm("adviceOrConsultancyRadio"),
                         Seq(
-                            String.valueOf(AdviceOrConsultancy.ADVICE_CONSULTANCY_YES) -> Messages("app.common.yes"),
-                            String.valueOf(AdviceOrConsultancy.ADVICE_CONSULTANCY_NO) -> Messages("app.common.no")
+                            "true" -> Messages("app.common.yes"),
+                            "false" -> Messages("app.common.no")
                         ),
                         '_labelAfter -> true,
                         '_labelClass -> "block-label"
