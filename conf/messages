@@ -249,6 +249,7 @@ pages.summary.companyDetails.accountingPeriod.monthly           = Once a month
 pages.summary.companyDetails.accountingPeriod.jan               = January, April, July and October
 pages.summary.companyDetails.accountingPeriod.feb               = February, May, August and November
 pages.summary.companyDetails.accountingPeriod.mar               = March, June, September and December
+pages.summary.companyDetails.eori.euGoods                       = Trades goods or services with countries outside the EU
 pages.summary.companyDetails.eori                               = Economic Operator Registration and Identification number
 pages.summary.companyDetails.flatRateScheme                     = Flat rate scheme
 pages.summary.companyDetails.companyBankAccount                 = Bank account
