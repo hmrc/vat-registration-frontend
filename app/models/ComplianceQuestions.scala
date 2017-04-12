@@ -37,6 +37,12 @@ case object LabourComplianceQuestions extends ComplianceQuestions {
 
 }
 
+case object FinancialComplianceQuestions extends ComplianceQuestions {
+
+  override def firstQuestion: Call = controllers.sicAndCompliance.financial.routes.AdviceOrConsultancyController.show()
+
+}
+
 case object NoComplianceQuestions extends ComplianceQuestions {
 
   override def firstQuestion: Call = controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()
@@ -55,7 +61,13 @@ object ComplianceQuestions {
     LabourComplianceQuestions -> Vector(
       "01610", "41201", "42110", "42910", "42990",
       "43120", "43999", "78200", "80100", "81210",
-      "81221", "81222", "81223", "81291", "81299")
+      "81221", "81222", "81223", "81291", "81299"),
+    FinancialComplianceQuestions -> Vector(
+      "70221", "64921", "64922", "64929", "64991",
+      "64999", "66110", "66190", "66220", "66290",
+      "64191", "64192", "64205", "64301", "64302",
+      "64303", "64304", "64305", "64306", "64910",
+      "65300", "66120", "66300")
   )
 
   def apply(sicCodes: List[String])(implicit m: SicCodeMap): ComplianceQuestions = m.collectFirst {

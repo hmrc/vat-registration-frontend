@@ -17,6 +17,7 @@
 package controllers.sicAndCompliance
 
 import controllers.sicAndCompliance
+import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.view.test.SicStub
 import org.mockito.Matchers.any
@@ -26,7 +27,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class ComplianceIntroductionControllerSpec extends VatRegSpec {
+class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   object ComplianceIntroductionController extends ComplianceIntroductionController(mockS4LService, ds) {
     implicit val headerCarrier = HeaderCarrier()
@@ -54,10 +55,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec {
         .thenReturn(Future.successful(Some(SicStub(Some("12345678"), None, None, None))))
       callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
         result =>
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(
-            controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show().url
-          )
+          result redirectsTo s"$contextRoot/company-bank-account"
       }
     }
   }
@@ -68,8 +66,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec {
       when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(None))
       callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
         result =>
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.test.routes.SicStubController.show().url)
+          result redirectsTo "/sic-stub"
       }
     }
   }
@@ -83,9 +80,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec {
       callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
         result =>
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(
-            controllers.sicAndCompliance.cultural.routes.NotForProfitController.show().url
-          )
+          result redirectsTo s"$contextRoot/compliance/not-for-profit"
       }
     }
   }
@@ -99,9 +94,21 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec {
       callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
         result =>
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some( //TODO below should be routing to a different controller, once we have that controller
-            controllers.sicAndCompliance.labour.routes.CompanyProvideWorkersController.show().url
-          )
+          result redirectsTo s"$contextRoot/compliance/provide-workers"
+      }
+    }
+  }
+
+  s"POST ${sicAndCompliance.routes.ComplianceIntroductionController.submit()} with financial SIC code selection" should {
+
+    "redirect the user to the first question about financial compliance" in {
+      when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(
+        Some(SicStub(Some("70221123"), Some("64921123"), None, None))
+      ))
+      callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
+        result =>
+          status(result) mustBe SEE_OTHER
+          result redirectsTo s"$contextRoot/compliance/advice-or-consultancy"
       }
     }
   }
