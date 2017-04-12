@@ -1,0 +1,42 @@
+@import models.view.sicAndCompliance.financial.AdviceOrConsultancy
+@(adviceOrConsultancyForm: Form[AdviceOrConsultancy])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.financialCompliance.adviceOrConsultancy.title")) {
+
+    <div class="column-one-third">
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.financialCompliance.adviceOrConsultancy.heading")</h1>
+
+        @errorSummary(
+            Messages("app.common.errorSummaryLabel"),
+            adviceOrConsultancyForm
+        )
+
+        @govHelpers.form(action = controllers.sicAndCompliance.financial.routes.AdviceOrConsultancyController.submit()) {
+            <div class="form-group">
+                <fieldset class="inline">
+                    <span id="adviceOrConsultancyRadio"/>
+
+                    @govHelpers.inputRadioGroup(
+                        field = adviceOrConsultancyForm("adviceOrConsultancyRadio"),
+                        Seq(
+                            String.valueOf(AdviceOrConsultancy.ADVICE_CONSULTANCY_YES) -> Messages("app.common.yes"),
+                            String.valueOf(AdviceOrConsultancy.ADVICE_CONSULTANCY_NO) -> Messages("app.common.no")
+                        ),
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label"
+                    )
+                </fieldset>
+            </div>
+
+            <div class="form-group">
+                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.continue")</button>
+            </div>
+
+        }
+
+    </div>
+
+}
