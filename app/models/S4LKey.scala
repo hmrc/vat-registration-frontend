@@ -18,6 +18,7 @@ package models
 
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
+import models.view.sicAndCompliance.financial.AdviceOrConsultancy
 import models.view.sicAndCompliance.labour.{SkilledWorkers, _}
 import models.view.test.SicStub
 import models.view.vatFinancials._
@@ -25,7 +26,6 @@ import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatRetur
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.view.vatTradingDetails._
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
-import models.view.vatTradingDetails.vatEuTrading.EuGoods
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 
 trait S4LKey[T] {
@@ -62,6 +62,7 @@ object S4LKey {
   implicit val companyProvideWorkers: S4LKey[CompanyProvideWorkers] = S4LKey("CompanyProvideWorkers")
   implicit val notForProfit: S4LKey[NotForProfit] = S4LKey("NotForProfit")
   implicit val workers: S4LKey[Workers] = S4LKey("Workers")
+  implicit val adviceOrConsultancy: S4LKey[AdviceOrConsultancy] = S4LKey("AdviceOrConsultancy")
   implicit val temporaryContracts: S4LKey[TemporaryContracts] = S4LKey("TemporaryContracts")
   implicit val skilledWorkers: S4LKey[SkilledWorkers] = S4LKey("SkilledWorkers")
 
