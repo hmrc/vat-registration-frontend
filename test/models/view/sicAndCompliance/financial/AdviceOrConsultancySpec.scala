@@ -18,7 +18,6 @@ package models.view.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import models.ApiModelTransformer
-import models.api.VatComplianceLabour
 import uk.gov.hmrc.play.test.UnitSpec
 
 class AdviceOrConsultancySpec extends UnitSpec with VatRegistrationFixture {
@@ -27,22 +26,7 @@ class AdviceOrConsultancySpec extends UnitSpec with VatRegistrationFixture {
 
     "convert VatScheme without SicAndCompliance to empty view model" in {
       val vs = vatScheme(sicAndCompliance = None)
-      ApiModelTransformer[Ad].toViewModel(vs) shouldBe None
-    }
-
-    "convert VatScheme without LabourCompliance section to empty view model" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = None)))
-      ApiModelTransformer[CompanyProvideWorkers].toViewModel(vs) shouldBe None
-    }
-
-    "convert VatScheme with LabourCompliance section to view model -  Company Does not Provide Workers " in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = Some(VatComplianceLabour(labour = false)))))
-      ApiModelTransformer[CompanyProvideWorkers].toViewModel(vs) shouldBe Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO))
-    }
-
-    "convert VatScheme with LabourCompliance section to view model - Company Does Provide Workers" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = Some(VatComplianceLabour(labour = true)))))
-      ApiModelTransformer[CompanyProvideWorkers].toViewModel(vs) shouldBe Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES))
+      ApiModelTransformer[AdviceOrConsultancy].toViewModel(vs) shouldBe None
     }
 
   }
