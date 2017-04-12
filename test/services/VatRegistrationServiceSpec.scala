@@ -280,5 +280,13 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       service.submitTradingDetails() returns mergedVatTradingDetails
     }
 
+
+    "submitVatContact should process the submission even if VatScheme does not contain a VatContact object" in new Setup {
+      val mergedvalidVatContact = validVatContact
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
+        .thenReturn(Future.successful(emptyVatScheme))
+      service.submitVatContact() returns mergedvalidVatContact
+    }
+
   }
 }
