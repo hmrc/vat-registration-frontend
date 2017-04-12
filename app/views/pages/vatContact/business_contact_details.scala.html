@@ -2,9 +2,6 @@
 @(businessContactDetailsForm: Form[BusinessContactDetails])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
-@fieldSetClasses = @{
-    if(businessContactDetailsForm.hasErrors && businessContactDetailsForm.errors.exists(_.args.nonEmpty)) "form-field--error" else ""
-}
 
 @main_template(title = messages("pages.businessContactDetails.title")) {
 
@@ -13,28 +10,66 @@
       <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.businessContactDetails.heading")</h1>
 
       @errorSummary(
-          Messages("app.common.errorSummaryLabel"),
+          messages("app.common.errorSummaryLabel"),
           businessContactDetailsForm,
           Seq("businessContactDetails")
       )
 
-      <p>@Html(Messages("pages.businessContactDetails.para1"))</p>
-      <p>@Html(Messages("pages.businessContactDetails.para2"))</p>
-
-      <div class="notice form-group">
-          <i class="icon icon-important">
-              <span class="visuallyhidden">Warning</span>
-          </i>
-          <strong class="bold-small">@messages("pages.businessContactDetails.info")</strong>
-      </div>
+      <p>@Html(messages("pages.businessContactDetails.para1"))</p>
+      <p>@Html(messages("pages.businessContactDetails.para2"))</p>
 
       @govHelpers.form(action = controllers.vatContact.routes.BusinessContactDetailsController.submit()) {
-          <div class="form-group @fieldSetClasses">
+          <div class="form-group">
               <fieldset>
 
                   @businessContactDetailsForm.errors.find(_.args.contains("businessContactDetails")).map { error =>
                       @govHelpers.errorInline("businessContactDetails", messages(error.message))
                   }
+
+                  @govHelpers.input(
+                      businessContactDetailsForm("email"),
+                      '_divClass -> "form-group",
+                      '_inputClass -> "form-control",
+                      '_labelClass -> "cascading",
+                      '_maxlength -> 70,
+                      '_label -> messages("pages.businessContactDetails.emailAddress.label")
+                  )
+
+                  <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
+                      <p>@Html(messages("pages.businessContactDetails.para3"))</p>
+                  </div>
+                  <br />
+
+                  @govHelpers.input(
+                      businessContactDetailsForm("daytimePhone"),
+                      '_type -> "text",
+                      '_divClass -> "form-group",
+                      '_inputClass -> "form-control",
+                      '_labelClass -> "cascading",
+                      '_maxlength -> 20,
+                      '_label -> messages("pages.businessContactDetails.daytimePhone.label")
+                  )
+
+                  @govHelpers.input(
+                      businessContactDetailsForm("mobile"),
+                      '_type -> "text",
+                      '_divClass -> "form-group",
+                      '_inputClass -> "form-control",
+                      '_labelClass -> "cascading",
+                      '_maxlength -> 20,
+                      '_label -> messages("pages.businessContactDetails.mobile.label")
+                  )
+
+
+                  @govHelpers.input(
+                      businessContactDetailsForm("website"),
+                      '_type -> "text",
+                      '_divClass -> "form-group",
+                      '_inputClass -> "form-control",
+                      '_labelClass -> "cascading",
+                      '_maxlength -> 255,
+                      '_label -> messages("pages.businessContactDetails.website.label")
+                  )
 
               </fieldset>
 
