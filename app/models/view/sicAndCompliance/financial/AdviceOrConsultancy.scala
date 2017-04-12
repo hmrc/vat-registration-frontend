@@ -23,10 +23,7 @@ import play.api.libs.json.Json
 case class AdviceOrConsultancy(yesNo: Boolean)
 
 object AdviceOrConsultancy {
-
-  val ADVICE_CONSULTANCY_YES = true
-  val ADVICE_CONSULTANCY_NO = false
-
+  
   implicit val format = Json.format[AdviceOrConsultancy]
 
   // Returns a view model for a specific part of a given VatScheme API model

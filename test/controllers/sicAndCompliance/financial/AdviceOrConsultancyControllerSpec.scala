@@ -46,7 +46,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"GET ${routes.AdviceOrConsultancyController.show()}" should {
 
     "return HTML when there's a Advice Or Consultancy model in S4L" in {
-      val adviceOrConsultancy = AdviceOrConsultancy(AdviceOrConsultancy.ADVICE_CONSULTANCY_YES)
+      val adviceOrConsultancy = AdviceOrConsultancy(true)
 
       when(mockS4LService.fetchAndGet[AdviceOrConsultancy]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(adviceOrConsultancy)))
@@ -113,14 +113,14 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.AdviceOrConsultancyController.submit()} with Advice Or Consultancy Yes selected" should {
 
     "return 303" in {
-      val returnCacheMapAdviceOrConsultancy = CacheMap("", Map("" -> Json.toJson(AdviceOrConsultancy(AdviceOrConsultancy.ADVICE_CONSULTANCY_YES))))
+      val returnCacheMapAdviceOrConsultancy = CacheMap("", Map("" -> Json.toJson(AdviceOrConsultancy(true))))
 
       when(mockS4LService.saveForm[AdviceOrConsultancy]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAdviceOrConsultancy))
 
       AuthBuilder.submitWithAuthorisedUser(AdviceOrConsultancyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "adviceOrConsultancyRadio" -> String.valueOf(AdviceOrConsultancy.ADVICE_CONSULTANCY_YES)
+        "adviceOrConsultancyRadio" -> "true"
       )) {
         response =>
           response redirectsTo s"$contextRoot/company-bank-account"
@@ -132,14 +132,14 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.AdviceOrConsultancyController.submit()} with Advice Or Consultancy No selected" should {
 
     "return 303" in {
-      val returnCacheMapAdviceOrConsultancy = CacheMap("", Map("" -> Json.toJson(AdviceOrConsultancy(AdviceOrConsultancy.ADVICE_CONSULTANCY_NO))))
+      val returnCacheMapAdviceOrConsultancy = CacheMap("", Map("" -> Json.toJson(AdviceOrConsultancy(false))))
 
       when(mockS4LService.saveForm[AdviceOrConsultancy]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAdviceOrConsultancy))
 
       AuthBuilder.submitWithAuthorisedUser(AdviceOrConsultancyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "adviceOrConsultancyRadio" -> String.valueOf(AdviceOrConsultancy.ADVICE_CONSULTANCY_NO)
+        "adviceOrConsultancyRadio" -> "false"
       )) {
         response =>
           response redirectsTo s"$contextRoot/company-bank-account"
