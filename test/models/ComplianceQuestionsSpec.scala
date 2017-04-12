@@ -25,7 +25,8 @@ class ComplianceQuestionsSpec extends UnitSpec with Inspectors with Inside {
   private class TestSetup {
     implicit val testCodesMappings: SicCodeMap = Map(
       CulturalComplianceQuestions -> Vector("1", "2", "3", "4", "5"),
-      LabourComplianceQuestions -> Vector("10", "20", "30", "40", "50")
+      LabourComplianceQuestions -> Vector("10", "20", "30", "40", "50"),
+      FinancialComplianceQuestions -> Vector("60", "70", "80", "90", "100")
     )
   }
 
@@ -47,6 +48,9 @@ class ComplianceQuestionsSpec extends UnitSpec with Inspectors with Inside {
       ComplianceQuestions(List("10", "20")) shouldBe LabourComplianceQuestions
     }
 
+    "select FinancialComplianceQuestions for when all codes fall in the financial compliance group" in new TestSetup {
+      ComplianceQuestions(List("60", "70")) shouldBe FinancialComplianceQuestions
+    }
   }
 
 }
