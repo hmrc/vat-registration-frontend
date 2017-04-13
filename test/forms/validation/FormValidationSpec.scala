@@ -74,7 +74,7 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
     "return invalid when string is empty" in {
       val constraint = FormValidation.nonEmptyValidText(regex)("fieldName")
-      constraint("") shouldBe Invalid("validation.fieldName.empty")
+      constraint("") shouldBe Invalid("validation.fieldName.missing")
     }
   }
 

@@ -175,6 +175,6 @@ trait VatRegistrationFixture {
   val validEuGoods = EuGoods(EuGoods.EU_GOODS_YES)
   val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
 
-  val validBusinessContactDetails = BusinessContactDetails(email = "test.com", daytimePhone = Some("123"), mobile = None, website = None)
+  val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
 
 }

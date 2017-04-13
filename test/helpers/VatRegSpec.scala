@@ -25,7 +25,7 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Assertion, Inside}
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.http.Status
-import play.api.mvc.{Action, AnyContent, Call, Result}
+import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
@@ -64,6 +64,13 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
     def redirectsTo(url: String): Assertion = {
       status(fr) mustBe Status.SEE_OTHER
       redirectLocation(fr) mustBe Some(url)
+    }
+
+    def includesText(s: String): Assertion = {
+      status(fr) mustBe OK
+      contentType(fr) mustBe Some("text/html")
+      charset(fr) mustBe Some("utf-8")
+      contentAsString(fr) must include(s)
     }
 
   }

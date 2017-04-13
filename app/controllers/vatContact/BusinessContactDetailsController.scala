@@ -41,7 +41,9 @@ class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
       formWithErrors => BadRequest(views.html.pages.vatContact.business_contact_details(formWithErrors)).pure,
-      (data: BusinessContactDetails) => Ok("foo").pure
+      (data: BusinessContactDetails) => s4l.saveForm[BusinessContactDetails](data) map { _ =>
+        Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+      }
     )
   })
 
