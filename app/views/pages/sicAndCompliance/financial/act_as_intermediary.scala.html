@@ -1,0 +1,46 @@
+@import models.view.sicAndCompliance.financial.ActAsIntermediary
+@(actAsIntermediaryForm: Form[ActAsIntermediary])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.financialCompliance.actAsIntermediary.title")) {
+
+    <div class="column-one-third">
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.financialCompliance.actAsIntermediary.heading")</h1>
+
+        @errorSummary(
+            messages("app.common.errorSummaryLabel"),
+            actAsIntermediaryForm
+        )
+
+        <p>
+        @messages("pages.financialCompliance.actAsIntermediary.para")
+        </p>
+
+        @govHelpers.form(action = controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.submit()) {
+            <div class="form-group">
+                <fieldset class="inline">
+                    <span id="actAsIntermediaryRadio"/>
+
+                    @govHelpers.inputRadioGroup(
+                        field = actAsIntermediaryForm("actAsIntermediaryRadio"),
+                        Seq(
+                            "true" -> messages("app.common.yes"),
+                            "false" -> messages("app.common.no")
+                        ),
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label"
+                    )
+                </fieldset>
+            </div>
+
+            <div class="form-group">
+                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.continue")</button>
+            </div>
+
+        }
+
+    </div>
+
+}
