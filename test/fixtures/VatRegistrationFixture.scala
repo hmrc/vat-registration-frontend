@@ -19,7 +19,6 @@ package fixtures
 import java.time.LocalDate
 
 import models.api.{VatComplianceCultural, _}
-import models.view._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.AdviceOrConsultancy
@@ -29,7 +28,6 @@ import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatRetur
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
 import models.view.vatTradingDetails.vatChoice.StartDateView
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
-import org.aopalliance.aop.Advice
 import play.api.http.Status._
 import uk.gov.hmrc.play.http._
 
