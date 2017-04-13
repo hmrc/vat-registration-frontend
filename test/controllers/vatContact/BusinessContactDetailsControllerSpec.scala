@@ -106,7 +106,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
         TestBusinessContactDetailsController.submit(),
         mockAuthConnector,
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com", "mobile" -> "0123456789")
-      )(_ redirectsTo s"$contextRoot/business-activity-description")
+      )(_ redirectsTo s"$contextRoot/eu-goods")
 
     }
   }
