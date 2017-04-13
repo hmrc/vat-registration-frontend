@@ -42,7 +42,7 @@ class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       formWithErrors => BadRequest(views.html.pages.vatContact.business_contact_details(formWithErrors)).pure,
       (data: BusinessContactDetails) => s4l.saveForm[BusinessContactDetails](data) map { _ =>
-        Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+        Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
       }
     )
   })

@@ -28,6 +28,7 @@ import scala.concurrent.Future
 
 class TradingNameController @Inject()(ds: CommonPlayDependencies)
                                      (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService) extends VatRegistrationController(ds) {
+
   import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
@@ -42,15 +43,11 @@ class TradingNameController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.vatTradingDetails.trading_name(formWithErrors)))
       }, {
         data: TradingNameView => {
-          // Save to S4L
-          s4LService.saveForm[TradingNameView](data) flatMap { _ =>
-            if (TradingNameView.TRADING_NAME_NO == data.yesNo) {
-              for {
-                _ <- s4LService.saveForm[TradingNameView](TradingNameView(TradingNameView.TRADING_NAME_NO, None))
-              } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
-            } else {
-              Future.successful(Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()))
-            }
+          //TODO this can be done in the Form definition using the `ignoring` mapping
+          //blank out trading name (if present) when 'No' selected
+          val toSave = if (data.yesNo == TradingNameView.TRADING_NAME_NO) data.copy(tradingName = None) else data
+          s4LService.saveForm[TradingNameView](toSave) map { _ =>
+            Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())
           }
         }
       })
