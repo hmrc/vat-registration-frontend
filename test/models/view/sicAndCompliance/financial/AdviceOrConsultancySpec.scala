@@ -18,6 +18,7 @@ package models.view.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import models.ApiModelTransformer
+import models.api.VatComplianceFinancial
 import uk.gov.hmrc.play.test.UnitSpec
 
 class AdviceOrConsultancySpec extends UnitSpec with VatRegistrationFixture {
@@ -27,6 +28,21 @@ class AdviceOrConsultancySpec extends UnitSpec with VatRegistrationFixture {
     "convert VatScheme without SicAndCompliance to empty view model" in {
       val vs = vatScheme(sicAndCompliance = None)
       ApiModelTransformer[AdviceOrConsultancy].toViewModel(vs) shouldBe None
+    }
+
+    "convert VatScheme without FinancialCompliance section to empty view model" in {
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = None)))
+      ApiModelTransformer[AdviceOrConsultancy].toViewModel(vs) shouldBe None
+    }
+
+    "convert VatScheme with FinancialCompliance section to view model - Advice or Consultancy yes" in {
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(true, true)))))
+      ApiModelTransformer[AdviceOrConsultancy].toViewModel(vs) shouldBe Some(AdviceOrConsultancy(true))
+    }
+
+    "convert VatScheme with FinancialCompliance section to view model - Advice or Consultancy no" in {
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(false, false)))))
+      ApiModelTransformer[AdviceOrConsultancy].toViewModel(vs) shouldBe Some(AdviceOrConsultancy(false))
     }
 
   }
