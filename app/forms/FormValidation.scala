@@ -124,6 +124,7 @@ private[forms] object FormValidation {
 
   /* overrides Play's implicit stringFormatter and handles missing options (e.g. no radio button selected) */
   private def stringFormat(suffix: String)(implicit e: ErrorCode): Formatter[String] = new Formatter[String] {
+
     def bind(key: String, data: Map[String, String]) = data.get(key).toRight(Seq(FormError(key, s"validation.$e.$suffix", Nil)))
 
     def unbind(key: String, value: String) = Map(key -> value)
@@ -131,16 +132,13 @@ private[forms] object FormValidation {
 
   private def booleanFormat()(implicit e: ErrorCode): Formatter[Boolean] = new Formatter[Boolean] {
     def bind(key: String, data: Map[String, String]) = data.get(key).flatMap(input => Try(input.toBoolean).toOption)
-      .toRight(Seq(FormError(key, s"validation.$e.option.missing", Nil)))
+      .toRight(Seq(FormError(key, s"validation.$e.missing", Nil)))
 
     def unbind(key: String, value: Boolean) = Map(key -> value.toString)
   }
 
-  def missingFieldMapping(field: String = "")(implicit e: ErrorCode): Mapping[String] =
-    FieldMapping[String]()(stringFormat(Seq(field, "option.missing").mkString(".")))
+  def textMapping()(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat("missing"))
 
-  def textMapping(field: String = "")(implicit e: ErrorCode): Mapping[String] =
-    FieldMapping[String]()(stringFormat(Seq(field, "missing").mkString(".")))
 
   def missingBooleanFieldMapping()(implicit e: ErrorCode): Mapping[Boolean] =
     FieldMapping[Boolean]()(booleanFormat)

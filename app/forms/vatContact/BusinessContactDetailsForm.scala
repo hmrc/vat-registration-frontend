@@ -29,9 +29,9 @@ object BusinessContactDetailsForm {
   val EMAIL_PATTERN = """[A-Za-z0-9\-_.]{1,70}@[A-Za-z0-9\-_.]{1,70}""".r
   val PHONE_NUMBER_PATTERN = """[\d]{1,20}""".r
 
-  implicit val e: ErrorCode = "businessContactDetails"
-
   def blankStringCondition(field: String): Condition = !_.get(field).exists(StringUtils.isNotBlank)
+
+  private val FORM_NAME = "businessContactDetails"
 
   private val EMAIL = "email"
   private val DAYTIME_PHONE = "daytimePhone"
@@ -40,16 +40,16 @@ object BusinessContactDetailsForm {
 
   val form = Form(
     mapping(
-      EMAIL -> textMapping(EMAIL)
-        .verifying(regexPattern(EMAIL_PATTERN)(s"$e.email")),
+      EMAIL -> textMapping()(s"$FORM_NAME.$EMAIL")
+        .verifying(regexPattern(EMAIL_PATTERN)(s"$FORM_NAME.$EMAIL")),
       DAYTIME_PHONE -> mandatoryIf(
         blankStringCondition(MOBILE),
-        textMapping(DAYTIME_PHONE)
-          .verifying(nonEmptyValidText(PHONE_NUMBER_PATTERN)(s"$e.daytimePhone"))),
+        textMapping()(s"$FORM_NAME.$DAYTIME_PHONE")
+          .verifying(nonEmptyValidText(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$DAYTIME_PHONE"))),
       MOBILE -> mandatoryIf(
         blankStringCondition(DAYTIME_PHONE),
-        textMapping(MOBILE)
-          .verifying(nonEmptyValidText(PHONE_NUMBER_PATTERN)(s"$e.mobile"))),
+        textMapping()(s"$FORM_NAME.$MOBILE")
+          .verifying(nonEmptyValidText(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$MOBILE"))),
       WEBSITE -> optional(text)
     )(BusinessContactDetails.apply)(BusinessContactDetails.unapply)
   )

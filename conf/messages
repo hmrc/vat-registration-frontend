@@ -66,7 +66,7 @@ pages.tradingName.heading                           = Does the company trade und
 pages.tradingName.panels.tradingName                = Trading name
 validation.tradingName.invalid                      = Enter a valid trading name
 validation.tradingName.missing                      = Enter a trading name
-validation.tradingName.option.missing               = Tell us if the company trades under any other name
+validation.tradingNameRadio.missing                 = Tell us if the company trades under any other name
 
 ## Voluntary Registration Page
 pages.voluntary.registration.title                            = Voluntary Registration
@@ -84,7 +84,7 @@ pages.voluntary.registration.vatVoluntarily.para3             = You can cancel y
 pages.voluntary.registration.panels.no.para1                  = You must register for VAT if:
 pages.voluntary.registration.panels.no.bullet1                = at the end of any month, the value of your company''s taxable sales in the previous 12 months or less is over the £83,000 registration threshold
 pages.voluntary.registration.panels.no.bullet2                = you expect the value of your company''s taxable sales in the next 30-day period alone to go over the £83,000 registration threshold
-validation.voluntary.registration.option.missing              = Tell us if you want to register voluntarily for VAT
+validation.voluntary.registration.missing              = Tell us if you want to register voluntarily for VAT
 
 ## Voluntary Registration Reason Page
 pages.voluntary.registration.reason.title                     = Voluntary Registration Reason
@@ -93,14 +93,14 @@ pages.voluntary.registration.reason.radio.sells               = The company alre
 pages.voluntary.registration.reason.radio.intendsToSell       = The company intends to sell taxable goods or services in the future
 pages.voluntary.registration.reason.radio.neither             = None of these apply
 pages.voluntary.registration.reason.panels.neither.para       = If none of these apply you won’t be able to register voluntarily for VAT.
-validation.voluntary.registration.reason.option.missing       = Tell us why you intend to register voluntarily for VAT
+validation.voluntary.registration.reason.missing       = Tell us why you intend to register voluntarily for VAT
 
 ## Taxable Turnover Page
 pages.taxable.turnover.title                            = Taxable Turnover
 pages.taxable.turnover.heading                          = Do you expect the company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered with Companies House?
 pages.taxable.turnover.what.is.turnover.title           = What is ''VAT taxable turnover''?
 pages.taxable.turnover.what.is.turnover.para1           = VAT taxable turnover is the total value of everything you sell that isn''t <a href="https://www.gov.uk/vat-businesses/when-not-to-charge-vatexempt">exempt from VAT</a>.
-validation.taxable.turnover.option.missing              = Tell us if you expect the company''s turnover to be more than £83,000 in the 30 days after it''s registered
+validation.taxable.turnover.missing              = Tell us if you expect the company''s turnover to be more than £83,000 in the 30 days after it''s registered
 
 ## Mandatory Start Date Confirmation page
 pages.start.date.confirmation.title                          = Start Date Confirmation page
@@ -139,7 +139,7 @@ pages.zero.rated.sales.examples.bullet2                     = books and newspape
 pages.zero.rated.sales.examples.bullet3                     = children''s clothes and shoes
 pages.zero.rated.sales.examples.bullet4                     = motorcycle helmets
 pages.zero.rated.sales.examples.para2                       = Find out about <a href="https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services">VAT rates on different goods and services</a>.
-validation.zero.rated.sales.option.missing                  = Tell us if you expect to sell any zero-rated items in the next 12 months
+validation.zero.rated.sales.missing                  = Tell us if you expect to sell any zero-rated items in the next 12 months
 
 ## Estimate Zero-Rated Sales Page
 pages.estimate.zero.rated.sales.title                       = Estimate value of zero-rated sales
@@ -164,14 +164,14 @@ pages.vat.charge.expectancy.para1                           = If the VAT you pay
 pages.vat.charge.expectancy.para2                           = If the VAT you charge is more than the VAT you pay, you have to pay the difference to HMRC.
 pages.vat.charge.expectancy.radio.yes                       = Yes, I expect to reclaim more VAT than I charge
 pages.vat.charge.expectancy.radio.no                        = No, I expect to charge more VAT than I reclaim
-validation.vat.charge.expectancy.option.missing             = Tell us if you expect to reclaim more VAT than you charge
+validation.vat.charge.expectancy.missing             = Tell us if you expect to reclaim more VAT than you charge
 
 ## Vat Return Frequency
 pages.vat.return.frequency.title                           = Vat Return Frequency
 pages.vat.return.frequency.heading                         = How often do you want to submit VAT Returns?
 pages.vat.return.frequency.radio.monthly                   = Once a month
 pages.vat.return.frequency.radio.quarterly                 = Every 3 months
-validation.vat.return.frequency.option.missing             = Tell us how often you want to submit VAT Returns
+validation.vat.return.frequency.missing             = Tell us how often you want to submit VAT Returns
 
 ## Accounting Period Page
 pages.accounting.period.title                               = Account period
@@ -180,7 +180,7 @@ pages.accounting.period.para1                               = You usually submit
 pages.accounting.period.radio.january                       = January, April, July and October
 pages.accounting.period.radio.february                      = February, May, August and November
 pages.accounting.period.radio.march                         = March, June, September and December
-validation.accounting.period.option.missing                 = Tell us when you want your VAT Return periods to end
+validation.accounting.period.missing                 = Tell us when you want your VAT Return periods to end
 
 ## Summary Page
 pages.summary.title                                         = Summary
@@ -266,7 +266,7 @@ errorPages.restart.p1                   = You can try again by <a href="{0}" >re
 ## Company Bank Account
 pages.company.bank.account.title                = Company Bank Account
 pages.company.bank.account.heading              = Do you have a bank account set up in the name of your company?
-validation.company.bank.account.option.missing  = Tell us if you have a bank account set up in the name of the company
+validation.company.bank.account.missing  = Tell us if you have a bank account set up in the name of the company
 
 ## Bank Details page
 pages.bankDetails.title = Bank details
@@ -293,14 +293,14 @@ pages.compliance.introduction.para1                          = So we can underst
 ## Not For Profit
 pages.culturalCompliance.notForProfit.title                  = Not-for-profit organisation
 pages.culturalCompliance.notForProfit.heading                = Is your company a not-for-profit organisation or public body?
-validation.not.profit.option.missing                         = Tell us if your company is a not-for-profit organisation or public body
+validation.notForProfitRadio.missing                  = Tell us if your company is a not-for-profit organisation or public body
 
 ## Labour Compliance
 ## Does Company Provide Workers
 pages.labourCompliance.companyProvideWorkers.title         = Does the company provide workers to other employers?
 pages.labourCompliance.companyProvideWorkers.heading       = Does the company provide workers to other employers?
 pages.labourCompliance.companyProvideWorkers.para          = For example, the company is a third-party supplier of construction workers or cleaners.
-validation.companyProvideWorkers.option.missing            = Tell us if your company provides workers to other employers
+validation.companyProvideWorkers.missing            = Tell us if your company provides workers to other employers
 
 ## Workers
 pages.labourCompliance.workers.title                  = How many workers does the company provide at any one time?
@@ -313,13 +313,13 @@ validation.labourCompliance.numberOfWorkers.low       = Number of workers must b
 ## Temporary Contracts
 pages.labourCompliance.temporaryContracts.title                  = Does the company provide workers on temporary contracts?
 pages.labourCompliance.temporaryContracts.heading                = Does the company provide workers on temporary contracts?
-validation.labourCompliance.temporaryContracts.option.missing    = Tell us if your company provides workers on temporary contracts
+validation.labourCompliance.temporaryContracts.missing    = Tell us if your company provides workers on temporary contracts
 
 ## Does Company Provide Skilled Workers
 pages.labourCompliance.skilledWorkers.title         = Does the company provide skilled workers?
 pages.labourCompliance.skilledWorkers.heading       = Does the company provide skilled workers?
 pages.labourCompliance.skilledWorkers.para          = For example, workers who have special skills, training, knowledge or ability.
-validation.skilledWorkers.option.missing            = Tell us if your company provides skilled workers
+validation.skilledWorkers.missing            = Tell us if your company provides skilled workers
 
 ## EORI Apply
 pages.applyEori.title                          = You need to apply for an Economic Operator Registration and Identification (EORI) number
@@ -332,12 +332,12 @@ pages.applyEori.number.no                      = No, I''ll apply for an EORI num
 pages.applyEori.summary                        = After you''ve applied
 pages.applyEori.summary.para1                  = You''ll get your EORI number by email, usually within 3 working days.
 pages.applyEori.summary.para2                  = Give the number to your courier or freight forwarder. They''ll use it when making customs declarations on your behalf.
-validation.applyEori.option.missing            = Tell us if you want to apply for an Economic Operator Registration and Identification (EORI) number
+validation.applyEori.missing            = Tell us if you want to apply for an Economic Operator Registration and Identification (EORI) number
 
 ## EU Goods
 pages.euGoods.title                         = Importing and exporting goods
 pages.euGoods.heading                       = Do you import or export goods from or to countries outside the EU?
-validation.euGoods.option.missing           = Tell us if you import or export goods from or to countries outside the EU
+validation.euGoods.missing           = Tell us if you import or export goods from or to countries outside the EU
 
 ## Business Contact Details Page
 pages.businessContactDetails.title                           = Business contact details

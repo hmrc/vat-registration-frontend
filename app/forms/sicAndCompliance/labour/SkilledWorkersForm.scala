@@ -27,7 +27,7 @@ object SkilledWorkersForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping().verifying(SkilledWorkers.valid)
+      RADIO_YES_NO -> textMapping().verifying(SkilledWorkers.valid)
     )(SkilledWorkers.apply)(SkilledWorkers.unapply)
   )
 

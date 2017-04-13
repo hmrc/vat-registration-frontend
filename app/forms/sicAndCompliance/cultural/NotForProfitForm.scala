@@ -16,17 +16,18 @@
 
 package forms.sicAndCompliance.cultural
 
-import forms.FormValidation.missingFieldMapping
+import forms.FormValidation.textMapping
 import models.view.sicAndCompliance.cultural.NotForProfit
 import play.api.data.Form
 import play.api.data.Forms._
 
 object NotForProfitForm {
+
   val RADIO_YES_NO: String = "notForProfitRadio"
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping()("not.profit").verifying(NotForProfit.valid)
+      RADIO_YES_NO -> textMapping()(RADIO_YES_NO).verifying(NotForProfit.valid)
     )(NotForProfit.apply)(NotForProfit.unapply)
   )
 
