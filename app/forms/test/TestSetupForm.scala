@@ -52,6 +52,13 @@ object TestSetupForm {
     "applyEori" -> optional(text)
   )(VatTradingDetailsTestSetup.apply)(VatTradingDetailsTestSetup.unapply)
 
+  val vatContactTestSetupMapping = mapping(
+    "email" -> optional(text),
+    "daytimePhone" -> optional(text),
+    "mobile" -> optional(text),
+    "website" -> optional(text)
+  )(VatContactTestSetup.apply)(VatContactTestSetup.unapply)
+
   val vatFinancialsTestSetupMapping = mapping(
     "companyBankAccountChoice" -> optional(text),
     "companyBankAccountName" -> optional(text),
@@ -68,6 +75,7 @@ object TestSetupForm {
   val form = Form(mapping(
     "vatChoice" -> vatChoiceTestSetupMapping,
     "vatTradingDetails" -> vatTradingDetailsTestSetupMapping,
+    "vatContact" -> vatContactTestSetupMapping,
     "vatFinancials" -> vatFinancialsTestSetupMapping,
     "sicAndCompliance" -> sicAndComplianceTestSetupMapping
   )(TestSetup.apply)(TestSetup.unapply))
