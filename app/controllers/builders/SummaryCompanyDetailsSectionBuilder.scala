@@ -99,6 +99,14 @@ case class SummaryCompanyDetailsSectionBuilder
     Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
   )
 
+  def euGoodsRow: SummaryRow = SummaryRow(
+    "companyDetails.eori.euGoods",
+    vatTradingDetails.map(_.euTrading.selection).collect{
+      case true => "app.common.yes"
+    }.getOrElse("app.common.no"),
+    Some(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
+  )
+
   def applyEoriRow: SummaryRow = SummaryRow(
     "companyDetails.eori",
     vatTradingDetails.flatMap(_.euTrading.eoriApplication).collect{
@@ -121,6 +129,7 @@ case class SummaryCompanyDetailsSectionBuilder
       (estimatedZeroRatedSalesRow, vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).isDefined),
       (vatChargeExpectancyRow, true),
       (accountingPeriodRow, true),
+      (euGoodsRow, true),
       (applyEoriRow, vatTradingDetails.exists(_.euTrading.selection))
     )
   )
