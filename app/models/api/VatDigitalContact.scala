@@ -19,7 +19,7 @@ package models.api
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatDigitalContact(email: String, tel: Option[String], mobile: Option[String])
+case class VatDigitalContact(email: String, tel: Option[String] = None, mobile: Option[String] = None)
 
 object VatDigitalContact {
 
