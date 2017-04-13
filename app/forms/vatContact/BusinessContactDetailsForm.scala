@@ -18,22 +18,34 @@ package forms.vatContact
 
 import forms.FormValidation._
 import models.view.vatContact.BusinessContactDetails
+import org.apache.commons.lang3.StringUtils
 import play.api.data.Form
 import play.api.data.Forms._
+import uk.gov.voa.play.form.ConditionalMappings._
+import uk.gov.voa.play.form._
 
 object BusinessContactDetailsForm {
 
   val EMAIL_PATTERN = """[A-Za-z0-9\-_.]{1,70}@[A-Za-z0-9\-_.]{1,70}""".r
   val PHONE_NUMBER_PATTERN = """[\d]{1,20}""".r
 
-  implicit val errorCode: ErrorCode = "vatContact.businessContactDetails"
+  implicit val e: ErrorCode = "businessContactDetails"
+
+  def blankStringCondition(field: String): Condition = !_.get(field).exists(StringUtils.isNotBlank)
+
+  private val EMAIL = "email"
+  private val DAYTIME_PHONE = "daytimePhone"
+  private val MOBILE = "mobile"
+  private val WEBSITE = "website"
 
   val form = Form(
     mapping(
-      "email" -> text.verifying(regexPattern(EMAIL_PATTERN)),
-      "daytimePhone" -> optional(text.verifying(regexPattern(PHONE_NUMBER_PATTERN, mandatory = false))),
-      "mobile" -> optional(text.verifying(regexPattern(PHONE_NUMBER_PATTERN, mandatory = false))),
-      "website" -> optional(text)
+      EMAIL -> textMapping(EMAIL).verifying(regexPattern(EMAIL_PATTERN)),
+      DAYTIME_PHONE -> mandatoryIf(blankStringCondition(MOBILE), textMapping(DAYTIME_PHONE)
+        .verifying(nonEmptyValidText(PHONE_NUMBER_PATTERN)(s"$e.daytimePhone"))),
+      MOBILE -> mandatoryIf(blankStringCondition(DAYTIME_PHONE), textMapping(MOBILE)
+        .verifying(nonEmptyValidText(PHONE_NUMBER_PATTERN)(s"$e.mobile"))),
+      WEBSITE -> optional(text)
     )(BusinessContactDetails.apply)(BusinessContactDetails.unapply)
   )
 
