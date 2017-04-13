@@ -53,6 +53,22 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
       )
     }
 
+    "render Business Mobile Phone Number row" in {
+      sectionBuilder.businessMobilePhoneNumberRow mustBe SummaryRow(
+        id = "companyContactDetails.mobile",
+        answerMessageKey = "0123456789",
+        changeLink = Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
+      )
+    }
+
+    "render Business Website row" in {
+      sectionBuilder.businessWebsiteRow mustBe SummaryRow(
+        id = "companyContactDetails.website",
+        answerMessageKey = "http://website.com",
+        changeLink = Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
+      )
+    }
+
     "summary section shows and hides rows" in {
       val testCases = Seq(
         //pair of VatContact and expectedNumberOfRows to be produced in the summary
