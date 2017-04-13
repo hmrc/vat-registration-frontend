@@ -24,6 +24,7 @@ import models._
 import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
+import models.view.sicAndCompliance.financial.AdviceOrConsultancy
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
@@ -115,15 +116,17 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
         s4l[CompanyProvideWorkers]() |@|
         s4l[Workers]() |@|
         s4l[TemporaryContracts]() |@|
-        s4l[SkilledWorkers]()
+        s4l[SkilledWorkers]() |@|
+        s4l[AdviceOrConsultancy]()
         ).map(S4LVatSicAndCompliance).map {
         s4l =>
           update(s4l.description, vs)
-            .andThen(update(s4l.culturalCompliance, vs))
-            .andThen(update(s4l.labourComplianceCompanyProvideWorkers, vs))
-            .andThen(update(s4l.labourComplianceWorkers, vs))
-            .andThen(update(s4l.labourComplianceTemporaryContracts, vs))
-            .andThen(update(s4l.labourComplianceSkilledWorkers, vs))
+            .andThen(update(s4l.notForProfit, vs))
+            .andThen(update(s4l.companyProvideWorkers, vs))
+            .andThen(update(s4l.workers, vs))
+            .andThen(update(s4l.temporaryContracts, vs))
+            .andThen(update(s4l.skilledWorkers, vs))
+            .andThen(update(s4l.adviceOrConsultancy, vs))
             .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance(""))) //TODO remove the "seeding" with default
       }
 

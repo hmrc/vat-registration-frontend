@@ -16,7 +16,7 @@
 
 package models.view.sicAndCompliance.financial
 
-import models.api.{VatScheme, VatSicAndCompliance}
+import models.api._
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
@@ -28,13 +28,18 @@ object AdviceOrConsultancy {
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[AdviceOrConsultancy] { vs: VatScheme =>
-    //TODO: Implement once backend and frontend API models are in place for FinancialComplianceType
-    None
+    vs.vatSicAndCompliance.flatMap(_.financialCompliance).map { financialCompliance =>
+      AdviceOrConsultancy(financialCompliance.adviceOrConsultancyOnly)
+    }
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: AdviceOrConsultancy, g: VatSicAndCompliance) =>
-    //TODO: Implement once backend and frontend API models are in place for FinancialComplianceType
-    g
+    /*TODO: This works as the user will always see question 2, but ideally we don't want to be defaulting
+      the 2nd question to false here in case they somehow manage to avoid it, may need looking into*/
+
+    g.copy(financialCompliance = Some(VatComplianceFinancial(
+                                      adviceOrConsultancyOnly = c.yesNo,
+                                      g.financialCompliance.map(_.actAsIntermediary).getOrElse(false))))
   }
 
 }

@@ -22,6 +22,7 @@ import helpers.VatRegSpec
 import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
+import models.view.sicAndCompliance.financial.AdviceOrConsultancy
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
@@ -122,6 +123,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockS4LService.fetchAndGet[SkilledWorkers]()(Matchers.eq(S4LKey[SkilledWorkers]), any(), any()))
         .thenReturn(Future.successful(Some(validSkilledWorkers)))
 
+      when(mockS4LService.fetchAndGet[AdviceOrConsultancy]()(Matchers.eq(S4LKey[AdviceOrConsultancy]), any(), any()))
+        .thenReturn(Future.successful(Some(validAdviceOrConsultancy)))
+
       when(mockS4LService.fetchAndGet[EuGoods]()(Matchers.eq(S4LKey[EuGoods]), any(), any()))
         .thenReturn(Future.successful(Some(validEuGoods)))
 
@@ -196,6 +200,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       when(mockS4LService.fetchAndGet[TemporaryContracts]()(Matchers.eq(S4LKey[TemporaryContracts]), any(), any()))
         .thenReturn(Future.successful(Some(validTemporaryContracts)))
+
+      when(mockS4LService.fetchAndGet[AdviceOrConsultancy]()(Matchers.eq(S4LKey[AdviceOrConsultancy]), any(), any()))
+        .thenReturn(Future.successful(Some(validAdviceOrConsultancy)))
 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
       (any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
