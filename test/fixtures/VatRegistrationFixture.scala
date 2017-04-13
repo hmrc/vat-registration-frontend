@@ -19,9 +19,9 @@ package fixtures
 import java.time.LocalDate
 
 import models.api.{VatComplianceCultural, _}
-import models.view._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
+import models.view.sicAndCompliance.financial.AdviceOrConsultancy
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
@@ -84,7 +84,8 @@ trait VatRegistrationFixture {
   val validSicAndCompliance = VatSicAndCompliance(
     businessDescription = businessActivityDescription,
     culturalCompliance = None,
-    labourCompliance = None
+    labourCompliance = None,
+    financialCompliance = None
   )
 
   val emptyVatScheme = VatScheme(validRegId)
@@ -120,10 +121,13 @@ trait VatRegistrationFixture {
   def vatSicAndCompliance(
                            activityDescription: String = "Some business activity",
                            culturalComplianceSection: Option[VatComplianceCultural] = Some(VatComplianceCultural(notForProfit = false)),
-                           labourComplianceSection: Option[VatComplianceLabour] = Some(VatComplianceLabour(true, Some(8), Some(true), Some(true)))
-
+                           labourComplianceSection: Option[VatComplianceLabour] = Some(VatComplianceLabour(true, Some(8), Some(true), Some(true))),
+                           financialComplianceSection: Option[VatComplianceFinancial] = Some(VatComplianceFinancial(true, true))
                          ): VatSicAndCompliance =
-    VatSicAndCompliance(businessDescription = activityDescription, culturalCompliance = culturalComplianceSection, labourCompliance = labourComplianceSection)
+    VatSicAndCompliance(businessDescription = activityDescription,
+                        culturalCompliance = culturalComplianceSection,
+                        labourCompliance = labourComplianceSection,
+                        financialCompliance = financialComplianceSection)
 
 
   def vatScheme(
@@ -165,6 +169,9 @@ trait VatRegistrationFixture {
   val validWorkers = Workers(8)
   val validTemporaryContracts = TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)
   val validSkilledWorkers = SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO)
+
+  //Financial Compliance Questions
+  val validAdviceOrConsultancy = AdviceOrConsultancy(true)
 
   val validEuGoods = EuGoods(EuGoods.EU_GOODS_YES)
   val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)

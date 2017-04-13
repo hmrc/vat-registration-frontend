@@ -22,7 +22,8 @@ import play.api.libs.json._
 case class VatSicAndCompliance(
                                 businessDescription: String,
                                 culturalCompliance: Option[VatComplianceCultural] = None,
-                                labourCompliance: Option[VatComplianceLabour] = None
+                                labourCompliance: Option[VatComplianceLabour] = None,
+                                financialCompliance: Option[VatComplianceFinancial] = None
                               )
 
 object VatSicAndCompliance {
