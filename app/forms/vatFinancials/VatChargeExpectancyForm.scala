@@ -16,7 +16,7 @@
 
 package forms.vatFinancials
 
-import forms.FormValidation.missingFieldMapping
+import forms.FormValidation.textMapping
 import models.view.vatFinancials.VatChargeExpectancy
 import play.api.data.Form
 import play.api.data.Forms._
@@ -27,7 +27,7 @@ object VatChargeExpectancyForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping()("vat.charge.expectancy").verifying(VatChargeExpectancy.valid)
+      RADIO_YES_NO -> textMapping()("vat.charge.expectancy").verifying(VatChargeExpectancy.valid)
     )(VatChargeExpectancy.apply)(VatChargeExpectancy.unapply)
   )
 

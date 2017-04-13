@@ -26,7 +26,7 @@ object AccountingPeriodForm {
 
   val form = Form(
     mapping(
-      RADIO_ACCOUNTING_PERIOD -> missingFieldMapping()("accounting.period").verifying(AccountingPeriod.valid)
+      RADIO_ACCOUNTING_PERIOD -> textMapping()("accounting.period").verifying(AccountingPeriod.valid)
     )(AccountingPeriod.apply)(AccountingPeriod.unapply)
   )
 }

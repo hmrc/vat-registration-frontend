@@ -16,7 +16,7 @@
 
 package forms.sicAndCompliance.labour
 
-import forms.FormValidation.missingFieldMapping
+import forms.FormValidation.textMapping
 import models.view.sicAndCompliance.labour.TemporaryContracts
 import play.api.data.Form
 import play.api.data.Forms._
@@ -26,7 +26,7 @@ object TemporaryContractsForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping()("labourCompliance.temporaryContracts").verifying(TemporaryContracts.valid)
+      RADIO_YES_NO -> textMapping()("labourCompliance.temporaryContracts").verifying(TemporaryContracts.valid)
     )(TemporaryContracts.apply)(TemporaryContracts.unapply)
   )
 

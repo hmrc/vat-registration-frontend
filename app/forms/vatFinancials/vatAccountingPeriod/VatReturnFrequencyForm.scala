@@ -16,7 +16,7 @@
 
 package forms.vatFinancials.vatAccountingPeriod
 
-import forms.FormValidation.missingFieldMapping
+import forms.FormValidation.textMapping
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 import play.api.data.Form
 import play.api.data.Forms._
@@ -27,7 +27,7 @@ object VatReturnFrequencyForm {
 
   val form = Form(
     mapping(
-      RADIO_FREQUENCY -> missingFieldMapping()("vat.return.frequency").verifying(VatReturnFrequency.valid)
+      RADIO_FREQUENCY -> textMapping()("vat.return.frequency").verifying(VatReturnFrequency.valid)
     )(VatReturnFrequency.apply)(VatReturnFrequency.unapply)
   )
 }

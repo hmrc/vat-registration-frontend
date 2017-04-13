@@ -16,7 +16,7 @@
 
 package forms.vatTradingDetails.vatChoice
 
-import forms.FormValidation.missingFieldMapping
+import forms.FormValidation.textMapping
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 import play.api.data.Form
 import play.api.data.Forms.mapping
@@ -27,7 +27,7 @@ object VoluntaryRegistrationReasonForm {
 
   val form = Form(
     mapping(
-      RADIO_REASON -> missingFieldMapping()("voluntary.registration.reason")
+      RADIO_REASON -> textMapping()("voluntary.registration.reason")
         .verifying(VoluntaryRegistrationReason.valid)
     )(VoluntaryRegistrationReason.apply)(VoluntaryRegistrationReason.unapply)
   )
