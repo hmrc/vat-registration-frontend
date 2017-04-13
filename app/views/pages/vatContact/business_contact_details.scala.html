@@ -16,11 +16,12 @@
       )
 
       <p>@Html(messages("pages.businessContactDetails.para1"))</p>
-      <p>@Html(messages("pages.businessContactDetails.para2"))</p>
 
       @govHelpers.form(action = controllers.vatContact.routes.BusinessContactDetailsController.submit()) {
           <div class="form-group">
               <fieldset>
+
+                  <legend>@Html(messages("pages.businessContactDetails.para2"))</legend>
 
                   @businessContactDetailsForm.errors.find(_.args.contains("businessContactDetails")).map { error =>
                       @govHelpers.errorInline("businessContactDetails", messages(error.message))
@@ -83,3 +84,9 @@
     </div>
 
 }
+
+<script type="text/javascript">
+        $(document).ready($(function () {
+            BusinessContactDetailsPage.init()
+        }));
+</script>
