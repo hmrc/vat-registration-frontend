@@ -21,15 +21,15 @@ import models.view.vatContact.BusinessContactDetails
 import org.apache.commons.lang3.StringUtils
 import play.api.data.Form
 import play.api.data.Forms._
-import uk.gov.voa.play.form.ConditionalMappings._
-import uk.gov.voa.play.form._
+import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
+//import uk.gov.voa.play.form._
 
 object BusinessContactDetailsForm {
 
   val EMAIL_PATTERN = """[A-Za-z0-9\-_.]{1,70}@[A-Za-z0-9\-_.]{1,70}""".r
   val PHONE_NUMBER_PATTERN = """[\d]{1,20}""".r
 
-  def blankStringCondition(field: String): Condition = !_.get(field).exists(StringUtils.isNotBlank)
+  //def blankStringCondition(field: String): Condition = !_.get(field).exists(StringUtils.isNotBlank)
 
   private val FORM_NAME = "businessContactDetails"
 
@@ -37,21 +37,27 @@ object BusinessContactDetailsForm {
   private val DAYTIME_PHONE = "daytimePhone"
   private val MOBILE = "mobile"
   private val WEBSITE = "website"
+  private val MESSAGE_KEY = "validation.businessContactDetails.mobile.missing"
 
   val form = Form(
     mapping(
       EMAIL -> textMapping()(s"$FORM_NAME.$EMAIL")
         .verifying(regexPattern(EMAIL_PATTERN)(s"$FORM_NAME.$EMAIL")),
-      DAYTIME_PHONE -> mandatoryIf(
-        blankStringCondition(MOBILE),
-        textMapping()(s"$FORM_NAME.$DAYTIME_PHONE")
-          .verifying(nonEmptyValidText(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$DAYTIME_PHONE"))),
-      MOBILE -> mandatoryIf(
-        blankStringCondition(DAYTIME_PHONE),
-        textMapping()(s"$FORM_NAME.$MOBILE")
-          .verifying(nonEmptyValidText(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$MOBILE"))),
+      DAYTIME_PHONE -> optional(text)
+          .verifying(regexPatternOpt(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$DAYTIME_PHONE")),
+      MOBILE -> optional(text)
+          .verifying(regexPatternOpt(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$MOBILE")),
       WEBSITE -> optional(text)
-    )(BusinessContactDetails.apply)(BusinessContactDetails.unapply)
+    )(BusinessContactDetails.apply)(BusinessContactDetails.unapply).verifying(atLeastOnePhoneNumber)
   )
+
+  def atLeastOnePhoneNumber : Constraint[BusinessContactDetails] = Constraint("constraint.atLeastOnePhoneNumber")({
+    form =>
+      form match {
+        case BusinessContactDetails(_, None, None, _) =>
+          Invalid(Seq(ValidationError(MESSAGE_KEY)))
+        case _ => Valid
+      }
+  })
 
 }
