@@ -34,7 +34,15 @@ private[forms] object FormValidation {
 
   type ErrorCode = String
 
-  def regexPattern(pattern: Regex, mandatory: Boolean = true)(implicit e: ErrorCode): Constraint[String] = Constraint {
+  def regexPatternOpt(pattern: Regex, mandatory: Boolean = true)(implicit e: ErrorCode): Constraint[Option[String]] = Constraint {
+    input: Option[String] =>
+      input match {
+        case None => Valid
+        case Some(inp) => Constraints.pattern(pattern, error = s"validation.$e.invalid")(inp)
+      }
+  }
+
+    def regexPattern(pattern: Regex, mandatory: Boolean = true)(implicit e: ErrorCode): Constraint[String] = Constraint {
     input: String =>
       mandatoryText.apply(input) match {
         case Valid => Constraints.pattern(pattern, error = s"validation.$e.invalid")(input)
