@@ -22,7 +22,7 @@ import fixtures.LoginFixture
 import mocks.VatMocks
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
-import org.scalatest.{Assertion, Inside}
+import org.scalatest.{Assertion, Inside, Inspectors}
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.http.Status
 import play.api.mvc.{Action, AnyContent, Result}
@@ -31,7 +31,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import scala.concurrent.Future
 
 class VatRegSpec extends PlaySpec with OneAppPerSuite
-  with MockitoSugar with VatMocks with LoginFixture with Inside
+  with MockitoSugar with VatMocks with LoginFixture with Inside with Inspectors
   with ScalaFutures {
 
   import play.api.test.Helpers._

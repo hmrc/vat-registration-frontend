@@ -18,11 +18,9 @@ package controllers
 
 import javax.inject.Inject
 
-import controllers.builders.{SummaryCompanyDetailsSectionBuilder, SummaryVatDetailsSectionBuilder}
+import controllers.builders.{SummaryCompanyContactDetailsSectionBuilder, SummaryCompanyDetailsSectionBuilder, SummaryVatDetailsSectionBuilder}
 import models.api._
 import models.view._
-import models.view.sicAndCompliance.BusinessActivityDescription
-import models.view.vatContact.BusinessContactDetails
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -45,10 +43,11 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
     vrs.getVatScheme().map(registrationToSummary)
 
-  def registrationToSummary(vatScheme: VatScheme): Summary =
+  def registrationToSummary(vs: VatScheme): Summary =
     Summary(Seq(
-      SummaryVatDetailsSectionBuilder(vatScheme.tradingDetails).section,
-      SummaryCompanyDetailsSectionBuilder(vatScheme.financials, vatScheme.vatSicAndCompliance, vatScheme.tradingDetails).section
+      SummaryVatDetailsSectionBuilder(vs.tradingDetails).section,
+      SummaryCompanyDetailsSectionBuilder(vs.financials, vs.vatSicAndCompliance, vs.tradingDetails).section,
+      SummaryCompanyContactDetailsSectionBuilder(vs.vatContact).section
     ))
 
 }

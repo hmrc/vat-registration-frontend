@@ -66,7 +66,7 @@ pages.tradingName.heading                           = Does the company trade und
 pages.tradingName.panels.tradingName                = Trading name
 validation.tradingName.invalid                      = Enter a valid trading name
 validation.tradingName.missing                      = Enter a trading name
-validation.tradingNameRadio.missing                 = Tell us if the company trades under any other name
+validation.tradingNameRadio.missing                      = Tell us if the company trades under any other name
 
 ## Voluntary Registration Page
 pages.voluntary.registration.title                            = Voluntary Registration
@@ -257,6 +257,11 @@ pages.summary.companyDetails.companyBankAccount.name            = Account name
 pages.summary.companyDetails.companyBankAccount.number          = Account number
 pages.summary.companyDetails.companyBankAccount.sortCode        = Sort code
 pages.summary.companyDetails.businessActivity.description       = Business activity description
+pages.summary.companyContactDetails.sectionHeading              = Company contact details
+pages.summary.companyContactDetails.email                       = Business email address
+pages.summary.companyContactDetails.daytimePhone                = Business daytime phone number
+pages.summary.companyContactDetails.mobile                      = Business mobile number
+pages.summary.companyContactDetails.website                     = Business website address
 
 ## Error Pages
 errorPages.title                        = Something went wrong
