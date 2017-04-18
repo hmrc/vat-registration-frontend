@@ -19,8 +19,8 @@ package controllers.sicAndCompliance.financial
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.sicAndCompliance.financial.AdviceOrConsultancyForm
-import models.view.sicAndCompliance.financial.AdviceOrConsultancy
+import forms.sicAndCompliance.financial.ActAsIntermediaryForm
+import models.view.sicAndCompliance.financial.ActAsIntermediary
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -28,22 +28,22 @@ import services.{S4LService, VatRegistrationService}
 import scala.concurrent.Future
 
 
-class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
-                                             (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
+                                           (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
   import cats.instances.future._
 
-  val form: Form[AdviceOrConsultancy] = AdviceOrConsultancyForm.form
+  val form: Form[ActAsIntermediary] = ActAsIntermediaryForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[AdviceOrConsultancy].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(f)))
+    viewModel[ActAsIntermediary].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.sicAndCompliance.financial.act_as_intermediary(f)))
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(formWithErrors))),
-      (data: AdviceOrConsultancy) => s4LService.saveForm[AdviceOrConsultancy](data)
-        .map(_ => Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show()))
+      (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.act_as_intermediary(formWithErrors))),
+      (data: ActAsIntermediary) => s4LService.saveForm[ActAsIntermediary](data)
+        .map(_ => Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))
     )
   )
 

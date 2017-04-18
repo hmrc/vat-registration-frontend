@@ -21,7 +21,7 @@ import java.time.LocalDate
 import models.api.{VatComplianceCultural, _}
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.financial.AdviceOrConsultancy
+import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
@@ -172,6 +172,7 @@ trait VatRegistrationFixture {
 
   //Financial Compliance Questions
   val validAdviceOrConsultancy = AdviceOrConsultancy(true)
+  val validActAsIntermediary = ActAsIntermediary(true)
 
   val validEuGoods = EuGoods(EuGoods.EU_GOODS_YES)
   val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
