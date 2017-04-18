@@ -27,19 +27,13 @@ class ApplyEoriSpec extends UnitSpec with VatRegistrationFixture with Inside {
   "toApi" should {
     val applyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
 
-    val vatTradingDetails = VatTradingDetails(
-      validVatChoice,
-      validTradingName,
-      validEuTrading
-    )
-
     val differentVatTradingDetails = VatTradingDetails(
       validVatChoice,
       validTradingName,
       VatEuTrading(false, Some(true))
     )
 
-    "update VatFinancials with new AccountingPeriod" in {
+    "update VatTradingDetails with new ApplyEori" in {
       ViewModelTransformer[ApplyEori, VatTradingDetails]
         .toApi(applyEori, validVatTradingDetails) shouldBe differentVatTradingDetails
     }

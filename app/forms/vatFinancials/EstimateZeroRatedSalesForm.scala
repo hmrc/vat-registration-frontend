@@ -16,7 +16,7 @@
 
 package forms.vatFinancials
 
-import forms.validation.FormValidation._
+import forms.FormValidation._
 import models.view.vatFinancials.EstimateZeroRatedSales
 import play.api.data.Form
 import play.api.data.Forms._

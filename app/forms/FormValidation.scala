@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms.validation
+package forms
 
 import java.time.LocalDate
 
@@ -56,7 +56,6 @@ private[forms] object FormValidation {
       }
   }
 
-
   private def unconstrained[T] = Constraint[T] { (t: T) => Valid }
 
   def inRange[T](minValue: T, maxValue: T)(implicit ordering: Ordering[T], e: ErrorCode): Constraint[T] =
@@ -93,6 +92,7 @@ private[forms] object FormValidation {
   }
 
   def intToText(i: Int): String = i.toString
+
   def longToText(l: Long): String = l.toString
 
   def boundedLong()(implicit e: ErrorCode): Constraint[Long] = Constraint {
@@ -118,27 +118,30 @@ private[forms] object FormValidation {
       input match {
         case Pattern(_*) => Valid
         case s if StringUtils.isNotBlank(s) => Invalid(s"validation.$e.invalid")
-        case _ => Invalid(s"validation.$e.empty")
+        case _ => Invalid(s"validation.$e.missing")
       }
   }
 
   /* overrides Play's implicit stringFormatter and handles missing options (e.g. no radio button selected) */
-  private def stringFormat()(implicit e: ErrorCode): Formatter[String] = new Formatter[String] {
-    def bind(key: String, data: Map[String, String]) = data.get(key).toRight(Seq(FormError(key, s"validation.$e.option.missing", Nil)))
+  private def stringFormat(suffix: String)(implicit e: ErrorCode): Formatter[String] = new Formatter[String] {
+
+    def bind(key: String, data: Map[String, String]) = data.get(key).toRight(Seq(FormError(key, s"validation.$e.$suffix", Nil)))
 
     def unbind(key: String, value: String) = Map(key -> value)
   }
 
   private def booleanFormat()(implicit e: ErrorCode): Formatter[Boolean] = new Formatter[Boolean] {
     def bind(key: String, data: Map[String, String]) = data.get(key).flatMap(input => Try(input.toBoolean).toOption)
-      .toRight(Seq(FormError(key, s"validation.$e.option.missing", Nil)))
+      .toRight(Seq(FormError(key, s"validation.$e.missing", Nil)))
 
     def unbind(key: String, value: Boolean) = Map(key -> value.toString)
   }
 
-  def missingFieldMapping()(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat)
+  def textMapping()(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat("missing"))
 
-  def missingBooleanFieldMapping()(implicit e: ErrorCode): Mapping[Boolean] = FieldMapping[Boolean]()(booleanFormat)
+
+  def missingBooleanFieldMapping()(implicit e: ErrorCode): Mapping[Boolean] =
+    FieldMapping[Boolean]()(booleanFormat)
 
   object BankAccount {
 

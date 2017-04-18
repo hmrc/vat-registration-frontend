@@ -16,7 +16,8 @@
 
 package forms.validation
 
-import forms.validation.FormValidation.ErrorCode
+import forms.FormValidation
+import forms.FormValidation.ErrorCode
 import forms.vatFinancials.vatBankAccount.SortCode
 import models.DateModel
 import org.scalatest.{Inside, Inspectors}
@@ -73,7 +74,7 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
     "return invalid when string is empty" in {
       val constraint = FormValidation.nonEmptyValidText(regex)("fieldName")
-      constraint("") shouldBe Invalid("validation.fieldName.empty")
+      constraint("") shouldBe Invalid("validation.fieldName.missing")
     }
   }
 

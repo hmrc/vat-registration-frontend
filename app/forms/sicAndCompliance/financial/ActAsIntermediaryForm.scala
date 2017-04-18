@@ -16,8 +16,8 @@
 
 package forms.sicAndCompliance.financial
 
-import forms.validation.FormValidation.missingBooleanFieldMapping
-import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
+import forms.FormValidation.missingBooleanFieldMapping
+import models.view.sicAndCompliance.financial.ActAsIntermediary
 import play.api.data.Form
 import play.api.data.Forms._
 

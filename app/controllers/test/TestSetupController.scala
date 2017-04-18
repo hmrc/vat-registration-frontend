@@ -27,6 +27,7 @@ import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.test._
+import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
@@ -51,6 +52,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       voluntaryRegistrationReason <- s4LService.fetchAndGet[VoluntaryRegistrationReason]()
       startDate <- s4LService.fetchAndGet[StartDateView]()
       tradingName <- s4LService.fetchAndGet[TradingNameView]()
+      businessContactDetails <- s4LService.fetchAndGet[BusinessContactDetails]()
       euGoods <- s4LService.fetchAndGet[EuGoods]()
       applyEori <- s4LService.fetchAndGet[ApplyEori]()
       companyBankAccount <- s4LService.fetchAndGet[CompanyBankAccount]()
@@ -84,6 +86,12 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
           tradingName.flatMap(_.tradingName),
           euGoods.map(_.yesNo),
           applyEori.map(_.yesNo.toString)),
+        VatContactTestSetup(
+          businessContactDetails.map(_.email),
+          businessContactDetails.flatMap(_.daytimePhone),
+          businessContactDetails.flatMap(_.mobile),
+          businessContactDetails.flatMap(_.website)
+        ),
         VatFinancialsTestSetup(
           companyBankAccount.map(_.yesNo),
           companyBankAccountDetails.map(_.accountName),
@@ -141,12 +149,11 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveToS4Later(data.vatTradingDetails.tradingNameChoice, data, { x => TradingNameView(x.vatTradingDetails.tradingNameChoice.get, data.vatTradingDetails.tradingName) })
             _ <- saveToS4Later(data.vatTradingDetails.euGoods, data, { x => EuGoods(x.vatTradingDetails.euGoods.get) })
             _ <- saveToS4Later(data.vatTradingDetails.applyEori, data, { x => ApplyEori(x.vatTradingDetails.applyEori.get.toBoolean) })
+            _ <- saveToS4Later(data.vatContact.email, data, { x => BusinessContactDetails(x.vatContact.email.get, x.vatContact.daytimePhone, x.vatContact.mobile, x.vatContact.website ) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountChoice, data, { x => CompanyBankAccount(x.vatFinancials.companyBankAccountChoice.get) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountName, data, {
-              x =>
-                CompanyBankAccountDetails(x.vatFinancials.companyBankAccountName.get,
-                  x.vatFinancials.companyBankAccountNumber.get, x.vatFinancials.sortCode.get)
-            })
+                x => CompanyBankAccountDetails(x.vatFinancials.companyBankAccountName.get,
+                    x.vatFinancials.companyBankAccountNumber.get, x.vatFinancials.sortCode.get) })
             _ <- saveToS4Later(data.vatFinancials.estimateVatTurnover, data, { x => EstimateVatTurnover(x.vatFinancials.estimateVatTurnover.get.toLong) })
             _ <- saveToS4Later(data.vatFinancials.zeroRatedSalesChoice, data, { x => ZeroRatedSales(x.vatFinancials.zeroRatedSalesChoice.get) })
             _ <- saveToS4Later(data.vatFinancials.zeroRatedTurnoverEstimate, data, { x => EstimateZeroRatedSales(x.vatFinancials.zeroRatedTurnoverEstimate.get.toLong) })
