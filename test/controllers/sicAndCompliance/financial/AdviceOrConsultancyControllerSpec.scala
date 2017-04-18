@@ -54,12 +54,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
       AuthBuilder.submitWithAuthorisedUser(AdviceOrConsultancyController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> ""
       )) {
-
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Does the company provide &#x27;advice only&#x27; or consultancy services?")
+        _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
       }
     }
 
@@ -72,11 +67,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(AdviceOrConsultancyController.show, mockAuthConnector) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Does the company provide &#x27;advice only&#x27; or consultancy services?")
+        _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
       }
     }
   }
@@ -90,11 +81,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
       .thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(AdviceOrConsultancyController.show, mockAuthConnector) {
-      result =>
-        status(result) mustBe OK
-        contentType(result) mustBe Some("text/html")
-        charset(result) mustBe Some("utf-8")
-        contentAsString(result) must include("Does the company provide &#x27;advice only&#x27; or consultancy services?")
+      _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
     }
   }
 

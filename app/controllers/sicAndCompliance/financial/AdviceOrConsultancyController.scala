@@ -23,13 +23,13 @@ import forms.sicAndCompliance.financial.AdviceOrConsultancyForm
 import models.view.sicAndCompliance.financial.AdviceOrConsultancy
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, VatRegistrationService}
+import services.{RegistrationService, S4LService}
 
 import scala.concurrent.Future
 
 
 class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
-                                             (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+                                             (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
   import cats.instances.future._
 
   val form: Form[AdviceOrConsultancy] = AdviceOrConsultancyForm.form

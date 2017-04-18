@@ -16,7 +16,7 @@
 
 package forms.sicAndCompliance.financial
 
-import forms.validation.FormValidation.missingBooleanFieldMapping
+import forms.FormValidation.missingBooleanFieldMapping
 import models.view.sicAndCompliance.financial.ChargeFees
 import play.api.data.Form
 import play.api.data.Forms._
