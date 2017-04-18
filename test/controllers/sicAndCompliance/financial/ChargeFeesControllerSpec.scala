@@ -54,12 +54,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
       AuthBuilder.submitWithAuthorisedUser(ChargeFeesController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> ""
       )) {
-
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Does the company charge fees for introducing clients to financial service providers?")
+        _ includesText "Does the company charge fees for introducing clients to financial service providers?"
       }
     }
 
@@ -72,11 +67,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(ChargeFeesController.show, mockAuthConnector) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Does the company charge fees for introducing clients to financial service providers?")
+       _ includesText "Does the company charge fees for introducing clients to financial service providers?"
       }
     }
   }
@@ -90,11 +81,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
       .thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(ChargeFeesController.show, mockAuthConnector) {
-      result =>
-        status(result) mustBe OK
-        contentType(result) mustBe Some("text/html")
-        charset(result) mustBe Some("utf-8")
-        contentAsString(result) must include("Does the company charge fees for introducing clients to financial service providers?")
+     _ includesText "Does the company charge fees for introducing clients to financial service providers?"
     }
   }
 
