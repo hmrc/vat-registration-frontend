@@ -334,7 +334,7 @@ pages.financialCompliance.actAsIntermediary.para                = ''Intermediari
 validation.actAsIntermediary.option.missing                     = Tell us if the company acts as an intermediary
 
 ## Charge Fees
-pages.financialCompliance.chargeFees.title            = Does the company receive fees and/or commission for introducing customers to a leasing company?
+pages.financialCompliance.chargeFees.title            = Does the company charge fees for introducing clients to financial service providers?
 pages.financialCompliance.chargeFees.heading          = Does the company charge fees for introducing clients to financial service providers?
 validation.chargeFees.option.missing                  = Tell us if the company charges fees for introducing clients to financial service providers
 
