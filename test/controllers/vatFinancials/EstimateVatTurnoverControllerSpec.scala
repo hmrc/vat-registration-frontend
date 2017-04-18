@@ -44,20 +44,17 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
 
   val fakeRequest = FakeRequest(vatFinancials.routes.EstimateVatTurnoverController.show())
 
-  s"GET ${vatFinancials.routes.EstimateVatTurnoverController.show()}" should {
+  s"POST ${vatFinancials.routes.EstimateVatTurnoverController.show()}" should {
 
     "return HTML Estimate Vat Turnover page with no data in the form" in {
       when(mockS4LService.fetchAndGet[EstimateVatTurnover]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(EstimateVatTurnover(100L))))
 
-      AuthBuilder.submitWithAuthorisedUser(TestEstimateVatTurnoverController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "turnoverEstimate" -> ""
-      )) { result =>
-        status(result) mustBe OK
-        contentType(result) mustBe Some("text/html")
-        charset(result) mustBe Some("utf-8")
-        contentAsString(result) must include("Estimated VAT taxable turnover for the next 12 months")
-      }
+      AuthBuilder.submitWithAuthorisedUser(
+        TestEstimateVatTurnoverController.show(),
+        mockAuthConnector,
+        fakeRequest.withFormUrlEncodedBody("turnoverEstimate" -> "")
+      )(_ includesText "Estimated VAT taxable turnover for the next 12 months")
     }
 
 
@@ -70,11 +67,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestEstimateVatTurnoverController.show, mockAuthConnector) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Estimated VAT taxable turnover for the next 12 months")
+        _ includesText "Estimated VAT taxable turnover for the next 12 months"
       }
     }
 
@@ -87,11 +80,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestEstimateVatTurnoverController.show, mockAuthConnector) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Estimated VAT taxable turnover for the next 12 months")
+        _ includesText "Estimated VAT taxable turnover for the next 12 months"
       }
     }
   }
@@ -99,8 +88,11 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${vatFinancials.routes.EstimateVatTurnoverController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestEstimateVatTurnoverController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      ))(status(_) mustBe Status.BAD_REQUEST)
+      AuthBuilder.submitWithAuthorisedUser(
+        TestEstimateVatTurnoverController.submit(),
+        mockAuthConnector,
+        fakeRequest.withFormUrlEncodedBody()
+      )(status(_) mustBe Status.BAD_REQUEST)
     }
   }
 
@@ -113,14 +105,11 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapEstimateVatTurnover))
 
-      AuthBuilder.submitWithAuthorisedUser(TestEstimateVatTurnoverController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-        "turnoverEstimate" -> "50000"
-      )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/zero-rated-sales"
-      }
-
+      AuthBuilder.submitWithAuthorisedUser(
+        TestEstimateVatTurnoverController.submit(),
+        mockAuthConnector,
+        fakeRequest.withFormUrlEncodedBody("turnoverEstimate" -> "50000")
+      )(_ redirectsTo s"$contextRoot/zero-rated-sales")
     }
   }
 

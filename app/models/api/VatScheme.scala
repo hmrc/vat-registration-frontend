@@ -24,7 +24,8 @@ case class VatScheme(
                       id: String,
                       tradingDetails: Option[VatTradingDetails] = None,
                       financials: Option[VatFinancials] = None,
-                      vatSicAndCompliance: Option[VatSicAndCompliance] = None
+                      vatSicAndCompliance: Option[VatSicAndCompliance] = None,
+                      vatContact: Option[VatContact] = None
                     )
 
 object VatScheme {
@@ -33,7 +34,8 @@ object VatScheme {
     (__ \ "registrationId").format[String] and
       (__ \ "tradingDetails").formatNullable[VatTradingDetails] and
       (__ \ "financials").formatNullable[VatFinancials] and
-      (__ \ "vatSicAndCompliance").formatNullable[VatSicAndCompliance]
+      (__ \ "vatSicAndCompliance").formatNullable[VatSicAndCompliance] and
+      (__ \ "vatContact").formatNullable[VatContact]
     ) (VatScheme.apply, unlift(VatScheme.unapply))
 
 }

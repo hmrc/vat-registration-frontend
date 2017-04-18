@@ -26,6 +26,7 @@ import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
+import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
@@ -81,7 +82,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
     } yield ()
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
-    submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance map { case _ => () }
+    submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@| submitVatContact map { case _ => () }
 
   private[services] def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
 
@@ -99,7 +100,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
             .andThen(update(s4l.vatReturnFrequency, vs))
             .andThen(update(s4l.accountingPeriod, vs))
             .andThen(update(s4l.companyBankAccountDetails, vs))
-            .apply(vs.financials.getOrElse(VatFinancials.empty)) //TODO remove the "seeding" with default
+            .apply(vs.financials.getOrElse(VatFinancials.empty)) //TODO remove the "seeding" with empty
       }
 
     for {
@@ -129,7 +130,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
             .andThen(update(s4l.skilledWorkers, vs))
             .andThen(update(s4l.adviceOrConsultancy, vs))
             .andThen(update(s4l.actAsIntermediary, vs))
-            .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance(""))) //TODO remove the "seeding" with default
+            .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance(""))) //TODO remove the "seeding" with empty
       }
 
     for {
@@ -153,13 +154,28 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
           .andThen(update(s4l.voluntaryRegistrationReason, vs))
           .andThen(update(s4l.euGoods, vs))
           .andThen(update(s4l.applyEori, vs))
-          .apply(vs.tradingDetails.getOrElse(VatTradingDetails.empty)) //TODO remove the "seeding" with default
+          .apply(vs.tradingDetails.getOrElse(VatTradingDetails.empty)) //TODO remove the "seeding" with empty
       }
 
     for {
       vs <- getVatScheme()
       vatTradingDetails <- mergeWithS4L(vs)
       response <- vatRegConnector.upsertVatTradingDetails(vs.id, vatTradingDetails)
+    } yield response
+  }
+
+
+  private[services] def submitVatContact()(implicit hc: HeaderCarrier): Future[VatContact] = {
+    def mergeWithS4L(vs: VatScheme) =
+      s4l[BusinessContactDetails]().map(S4LVatContact).map { s4l =>
+        update(s4l.businessContactDetails, vs)
+          .apply(vs.vatContact.getOrElse(VatContact.empty)) //TODO remove the "seeding" with empty
+      }
+
+    for {
+      vs <- getVatScheme()
+      vatContact <- mergeWithS4L(vs)
+      response <- vatRegConnector.upsertVatContact(vs.id, vatContact)
     } yield response
   }
 

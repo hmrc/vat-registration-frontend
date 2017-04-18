@@ -16,7 +16,7 @@
 
 package forms.vatTradingDetails
 
-import forms.validation.FormValidation._
+import forms.FormValidation._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.TradingNameView.TRADING_NAME_YES
 import play.api.data.Form
@@ -34,7 +34,7 @@ object TradingNameForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping().verifying(TradingNameView.valid),
+      RADIO_YES_NO -> textMapping()(RADIO_YES_NO).verifying(TradingNameView.valid),
       INPUT_TRADING_NAME -> mandatoryIf(
         isEqual(RADIO_YES_NO, TRADING_NAME_YES),
         text.verifying(nonEmptyValidText(TRADING_NAME_REGEX)))

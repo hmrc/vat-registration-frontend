@@ -102,6 +102,12 @@ POST        /compliance/advice-or-consultancy      controllers.sicAndCompliance.
 GET         /compliance/act-as-intermediary        controllers.sicAndCompliance.financial.ActAsIntermediaryController.show
 POST        /compliance/act-as-intermediary        controllers.sicAndCompliance.financial.ActAsIntermediaryController.submit
 
+
+## BUSINESS CONTACT DETAILS PAGE
+GET         /business-contact                      controllers.vatContact.BusinessContactDetailsController.show
+POST        /business-contact                      controllers.vatContact.BusinessContactDetailsController.submit
+
+
 ## FEEDBACK
 GET         /feedback                              controllers.feedback.FeedbackController.show
 
