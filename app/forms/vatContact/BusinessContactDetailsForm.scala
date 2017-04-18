@@ -36,26 +36,24 @@ object BusinessContactDetailsForm {
   private val DAYTIME_PHONE = "daytimePhone"
   private val MOBILE = "mobile"
   private val WEBSITE = "website"
-  private val MESSAGE_KEY = "validation.businessContactDetails.daytimePhone.missing"
+
+  private def validationError(field: String) =
+    ValidationError(s"validation.businessContactDetails.$field.missing", field)
 
   val form = Form(
     mapping(
       EMAIL -> textMapping()(s"$FORM_NAME.$EMAIL")
         .verifying(regexPattern(EMAIL_PATTERN)(s"$FORM_NAME.$EMAIL")),
-      DAYTIME_PHONE -> optional(text)
-          .verifying(regexPatternOpt(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$DAYTIME_PHONE")),
-      MOBILE -> optional(text)
-          .verifying(regexPatternOpt(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$MOBILE")),
+      DAYTIME_PHONE -> optional(text.verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$DAYTIME_PHONE"))),
+      MOBILE -> optional(text.verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$MOBILE"))),
       WEBSITE -> optional(text)
     )(BusinessContactDetails.apply)(BusinessContactDetails.unapply).verifying(atLeastOnePhoneNumber)
   )
 
-  def atLeastOnePhoneNumber : Constraint[BusinessContactDetails] = Constraint("constraint.atLeastOnePhoneNumber")({
-    form =>
-      form match {
-        case BusinessContactDetails(_, None, None, _) =>
-          Invalid(Seq(ValidationError(MESSAGE_KEY, DAYTIME_PHONE)))
-        case _ => Valid
-      }
-  })
+  def atLeastOnePhoneNumber: Constraint[BusinessContactDetails] = Constraint {
+    case BusinessContactDetails(_, None, None, _) =>
+      Invalid(Seq(DAYTIME_PHONE, MOBILE).map(validationError))
+    case _ => Valid
+  }
+
 }
