@@ -17,7 +17,7 @@
 package forms.vatFinancials.vatBankAccount
 
 import cats.Show
-import forms.validation.FormValidation.BankAccount._
+import forms.FormValidation.BankAccount._
 import play.api.data.Form
 import play.api.data.Forms._
 

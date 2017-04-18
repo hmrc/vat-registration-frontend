@@ -24,6 +24,7 @@ import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
+import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
@@ -137,6 +138,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any()))
         .thenReturn(Future.successful(validSicAndCompliance))
+
+      when(mockS4LService.fetchAndGet[BusinessContactDetails]()(Matchers.eq(S4LKey[BusinessContactDetails]), any(), any()))
+        .thenReturn(Future.successful(Some(validBusinessContactDetails)))
+
+      when(mockRegConnector.upsertVatContact(any(), any())(any(), any()))
+        .thenReturn(Future.successful(validVatContact))
 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any()))
         .thenReturn(Future.successful(validVatScheme))
@@ -284,6 +291,14 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
         .thenReturn(Future.successful(emptyVatScheme))
       service.submitTradingDetails() returns mergedVatTradingDetails
+    }
+
+
+    "submitVatContact should process the submission even if VatScheme does not contain a VatContact object" in new Setup {
+      val mergedvalidVatContact = validVatContact
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
+        .thenReturn(Future.successful(emptyVatScheme))
+      service.submitVatContact() returns mergedvalidVatContact
     }
 
   }

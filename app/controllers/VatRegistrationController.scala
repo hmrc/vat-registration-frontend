@@ -20,9 +20,11 @@ import javax.inject.{Inject, Singleton}
 
 import auth.VatTaxRegime
 import cats.data.OptionT
+import cats.instances.future._
 import config.FrontendAuthConnector
 import models.{ApiModelTransformer, S4LKey}
 import play.api.Configuration
+import play.api.data.{Form, FormError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Format
 import services.{RegistrationService, S4LService}
@@ -31,6 +33,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController with I18nSupport with Actions {
@@ -56,15 +59,20 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
     */
   protected def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
 
-  import cats.instances.future._
-
-  import scala.concurrent.ExecutionContext.Implicits.global
-
   protected def viewModel[T: ApiModelTransformer : S4LKey : Format]
   ()
   (implicit s4l: S4LService, vrs: RegistrationService, hc: HeaderCarrier): OptionT[Future, T] =
     OptionT(s4l.fetchAndGet[T]()).orElseF(vrs.getVatScheme() map ApiModelTransformer[T].toViewModel)
 
+  // $COVERAGE-OFF$
+  //TODO toggle coverage back on soon
+  protected def copyGlobalErrorsToFields[T](globalErrors: String*): Form[T] => Form[T] =
+  fwe => fwe.copy(errors = fwe.errors ++ fwe.globalErrors.filter(_.args.headOption.exists(globalErrors.contains))
+    .foldLeft(Seq.empty[FormError]) {
+      (acc, err) => acc :+ FormError(err.args.head.asInstanceOf[String], err.message, err.args)
+    })
+
+  // $COVERAGE-ON$
 }
 
 @Singleton

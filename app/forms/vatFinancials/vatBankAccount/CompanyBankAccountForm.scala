@@ -16,7 +16,7 @@
 
 package forms.vatFinancials.vatBankAccount
 
-import forms.validation.FormValidation.missingFieldMapping
+import forms.FormValidation.textMapping
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccount
 import play.api.data.Form
 import play.api.data.Forms._
@@ -26,7 +26,7 @@ object CompanyBankAccountForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping()("company.bank.account").verifying(CompanyBankAccount.valid)
+      RADIO_YES_NO -> textMapping()("company.bank.account").verifying(CompanyBankAccount.valid)
     )(CompanyBankAccount.apply)(CompanyBankAccount.unapply)
   )
 

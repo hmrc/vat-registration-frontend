@@ -28,19 +28,19 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
 
   private val voluntaryRegistration = vatTradingDetails.exists(_.registeringVoluntarily)
 
-  def taxableTurnoverRow: SummaryRow = SummaryRow(
+  val taxableTurnoverRow: SummaryRow = SummaryRow(
     "vatDetails.taxableTurnover",
     s"app.common.${if (voluntaryRegistration) "no" else "yes"}",
     Some(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())
   )
 
-  def necessityRow: SummaryRow = SummaryRow(
+  val necessityRow: SummaryRow = SummaryRow(
     "vatDetails.necessity",
     s"app.common.${if (voluntaryRegistration) "yes" else "no"}",
     if (voluntaryRegistration) Some(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show()) else None
   )
 
-  def voluntaryReasonRow: SummaryRow = SummaryRow(
+  val voluntaryReasonRow: SummaryRow = SummaryRow(
     "vatDetails.voluntaryRegistrationReason",
     vatTradingDetails.flatMap(_.vatChoice.reason).collect{
       case VoluntaryRegistrationReason.SELLS => "pages.voluntary.registration.reason.radio.sells"
@@ -51,7 +51,7 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
 
   val presentationFormatter = DateTimeFormatter.ofPattern("d MMMM y")
 
-  def startDateRow: SummaryRow = SummaryRow(
+  val startDateRow: SummaryRow = SummaryRow(
     "vatDetails.startDate",
     vatTradingDetails.map(_.vatChoice).collect {
       case VatChoice(NECESSITY_VOLUNTARY, VatStartDate(_, Some(date)), _) => date.format(presentationFormatter)
@@ -59,13 +59,13 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
     if (voluntaryRegistration) Some(controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()) else None
   )
 
-  def tradingNameRow: SummaryRow = SummaryRow(
+  val tradingNameRow: SummaryRow = SummaryRow(
     "vatDetails.tradingName",
     vatTradingDetails.flatMap(_.tradingName.tradingName).getOrElse("app.common.no"),
     Some(controllers.vatTradingDetails.routes.TradingNameController.show())
   )
 
-  def section: SummarySection =
+  val section: SummarySection =
     SummarySection(id = "vatDetails",
       rows = Seq(
         (taxableTurnoverRow, true),
