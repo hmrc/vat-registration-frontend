@@ -40,10 +40,9 @@ class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies)
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
-      formWithErrors => BadRequest(views.html.pages.vatContact.business_contact_details(formWithErrors)).pure,
-      (data: BusinessContactDetails) => s4l.saveForm[BusinessContactDetails](data) map { _ =>
-        Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
-      }
+      copyGlobalErrorsToFields("daytimePhone", "mobile")
+        .andThen(form => BadRequest(views.html.pages.vatContact.business_contact_details(form)).pure),
+      s4l.saveForm(_).map(_ => Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()))
     )
   })
 
