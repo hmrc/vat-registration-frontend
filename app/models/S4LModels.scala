@@ -18,6 +18,7 @@ package models
 
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
+import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
@@ -46,18 +47,24 @@ case class S4LTradingDetails
   voluntaryRegistrationReason: Option[VoluntaryRegistrationReason],
   euGoods: Option[EuGoods],
   applyEori: Option[ApplyEori]
-
 )
 
 case class S4LVatSicAndCompliance
 (
   description: Option[BusinessActivityDescription],
-  culturalCompliance: Option[NotForProfit],
-  labourComplianceCompanyProvideWorkers: Option[CompanyProvideWorkers],
-  labourComplianceWorkers: Option[Workers],
-  labourComplianceTemporaryContracts: Option[TemporaryContracts],
-  labourComplianceSkilledWorkers: Option[SkilledWorkers]
 
+  //Cultural Compliance
+  notForProfit: Option[NotForProfit],
+
+  //Labour Compliance
+  companyProvideWorkers: Option[CompanyProvideWorkers],
+  workers: Option[Workers],
+  temporaryContracts: Option[TemporaryContracts],
+  skilledWorkers: Option[SkilledWorkers],
+
+  //Financial Compliance
+  adviceOrConsultancy: Option[AdviceOrConsultancy],
+  actAsIntermediary: Option[ActAsIntermediary]
 )
 
 case class S4LVatContact
