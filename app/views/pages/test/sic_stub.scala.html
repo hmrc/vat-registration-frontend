@@ -12,11 +12,11 @@
                 <h1 class="form-title heading-xlarge" id="pageHeading">Enter 1-4, 8 digit SIC codes:</h1>
             </header>
 
-
             <p>
+                <button class="btn button" type="button" onclick="fillCulturalCodes()">Cultural compliance</button><p>
+                <button class="btn button" type="button" onclick="fillLabourCodes()">Labour compliance</button><p>
+                <button class="btn button" type="button" onclick="fillFinancialCodes()">Financial compliance</button><p>
                 <button class="btn button" type="button" onclick="clearCodes()">Clear</button>
-                <button class="btn button" type="button" onclick="fillCulturalCodes()">Cultural compliance</button>
-                <button class="btn button" type="button" onclick="fillLabourCodes()">Labour compliance</button>
             </p>
 
             @form(action = controllers.test.routes.SicStubController.submit()) {
@@ -48,6 +48,7 @@
         var blanks = ["", "", "", ""];
         var culturalSicCodes = ["90040123", "91012123", "91030123", ""];
         var labourSicCodes = ["81221321", "81222321", "81223321", ""];
+        var financialSicCodes = ["70221123", "66110123", "66300123"];
 
         function fillInputs(arr) {
             $('input[type=text]').each(function (index) {
@@ -66,6 +67,10 @@
 
         function fillLabourCodes() {
             return fillInputs(labourSicCodes)
+        }
+
+        function fillFinancialCodes() {
+            return fillInputs(financialSicCodes)
         }
 
 </script>

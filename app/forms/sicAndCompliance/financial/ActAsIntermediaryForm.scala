@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package models.api
+package forms.sicAndCompliance.financial
 
-import play.api.libs.json._
+import forms.FormValidation.missingBooleanFieldMapping
+import models.view.sicAndCompliance.financial.ActAsIntermediary
+import play.api.data.Form
+import play.api.data.Forms._
 
+object ActAsIntermediaryForm {
+  val RADIO_YES_NO: String = "actAsIntermediaryRadio"
 
-case class VatSicAndCompliance(
-                                businessDescription: String,
-                                culturalCompliance: Option[VatComplianceCultural] = None,
-                                labourCompliance: Option[VatComplianceLabour] = None,
-                                financialCompliance: Option[VatComplianceFinancial] = None
-                              )
-
-object VatSicAndCompliance {
-
-  implicit val format: OFormat[VatSicAndCompliance] = Json.format[VatSicAndCompliance]
+  val form = Form(
+    mapping(
+      RADIO_YES_NO -> missingBooleanFieldMapping()("actAsIntermediary")
+    )(ActAsIntermediary.apply)(ActAsIntermediary.unapply)
+  )
 
 }

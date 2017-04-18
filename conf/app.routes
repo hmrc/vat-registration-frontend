@@ -95,6 +95,13 @@ POST        /compliance/temporary-contracts        controllers.sicAndCompliance.
 GET         /compliance/skilled-workers            controllers.sicAndCompliance.labour.SkilledWorkersController.show
 POST        /compliance/skilled-workers            controllers.sicAndCompliance.labour.SkilledWorkersController.submit
 
+## FINANCIAL COMPLIANCE QUESTIONS
+GET         /compliance/advice-or-consultancy      controllers.sicAndCompliance.financial.AdviceOrConsultancyController.show
+POST        /compliance/advice-or-consultancy      controllers.sicAndCompliance.financial.AdviceOrConsultancyController.submit
+
+GET         /compliance/act-as-intermediary        controllers.sicAndCompliance.financial.ActAsIntermediaryController.show
+POST        /compliance/act-as-intermediary        controllers.sicAndCompliance.financial.ActAsIntermediaryController.submit
+
 
 ## BUSINESS CONTACT DETAILS PAGE
 GET         /business-contact                      controllers.vatContact.BusinessContactDetailsController.show
