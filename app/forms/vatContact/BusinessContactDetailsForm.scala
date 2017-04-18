@@ -18,7 +18,6 @@ package forms.vatContact
 
 import forms.FormValidation._
 import models.view.vatContact.BusinessContactDetails
-import org.apache.commons.lang3.StringUtils
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
@@ -37,7 +36,7 @@ object BusinessContactDetailsForm {
   private val DAYTIME_PHONE = "daytimePhone"
   private val MOBILE = "mobile"
   private val WEBSITE = "website"
-  private val MESSAGE_KEY = "validation.businessContactDetails.mobile.missing"
+  private val MESSAGE_KEY = "validation.businessContactDetails.daytimePhone.missing"
 
   val form = Form(
     mapping(
@@ -55,9 +54,8 @@ object BusinessContactDetailsForm {
     form =>
       form match {
         case BusinessContactDetails(_, None, None, _) =>
-          Invalid(Seq(ValidationError(MESSAGE_KEY)))
+          Invalid(Seq(ValidationError(MESSAGE_KEY, DAYTIME_PHONE)))
         case _ => Valid
       }
   })
-
 }
