@@ -324,8 +324,13 @@ validation.skilledWorkers.option.missing            = Tell us if your company pr
 ## Financial Compliance Questions
 ## Advice Or Consultancy
 pages.financialCompliance.adviceOrConsultancy.title            = Does the company provide ''advice only'' or consultancy services?
-pages.financialCompliance.adviceOrConsultancy.heading      = Does the company provide ''advice only'' or consultancy services?
-validation.adviceOrConsultancy.option.missing       = Tell us if the company provides advice-only or consultancy services
+pages.financialCompliance.adviceOrConsultancy.heading          = Does the company provide ''advice only'' or consultancy services?
+validation.adviceOrConsultancy.option.missing                  = Tell us if the company provides advice-only or consultancy services
+
+## Charge Fees
+pages.financialCompliance.chargeFees.title            = Does the company receive fees and/or commission for introducing customers to a leasing company?
+pages.financialCompliance.chargeFees.heading          = Does the company charge fees for introducing clients to financial service providers?
+validation.chargeFees.option.missing                  = Tell us if the company charges fees for introducing clients to financial service providers
 
 ## EORI Apply
 pages.applyEori.title                          = You need to apply for an Economic Operator Registration and Identification (EORI) number

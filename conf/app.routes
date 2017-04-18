@@ -99,6 +99,9 @@ POST        /compliance/skilled-workers            controllers.sicAndCompliance.
 GET         /compliance/advice-or-consultancy      controllers.sicAndCompliance.financial.AdviceOrConsultancyController.show
 POST        /compliance/advice-or-consultancy      controllers.sicAndCompliance.financial.AdviceOrConsultancyController.submit
 
+GET         /compliance/charge-fees                controllers.sicAndCompliance.financial.ChargeFeesController.show
+POST        /compliance/charge-fees                controllers.sicAndCompliance.financial.ChargeFeesController.submit
+
 ## FEEDBACK
 GET         /feedback                              controllers.feedback.FeedbackController.show
 
