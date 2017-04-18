@@ -20,6 +20,7 @@ import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
+import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
@@ -64,4 +65,10 @@ case class S4LVatSicAndCompliance
   //Financial Compliance
   adviceOrConsultancy: Option[AdviceOrConsultancy],
   actAsIntermediary: Option[ActAsIntermediary]
+)
+
+case class S4LVatContact
+(
+  businessContactDetails: Option[BusinessContactDetails]
+
 )

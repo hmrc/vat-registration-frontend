@@ -18,7 +18,8 @@ package controllers.builders
 
 import models.view.SummarySection
 
-abstract class SummarySectionBuilder {
+trait SummarySectionBuilder {
 
-  protected def section: SummarySection
+  val section: SummarySection
+
 }

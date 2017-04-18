@@ -16,7 +16,7 @@
 
 package forms.sicAndCompliance.labour
 
-import forms.validation.FormValidation._
+import forms.FormValidation._
 import models.view.sicAndCompliance.labour.SkilledWorkers
 import play.api.data.Form
 import play.api.data.Forms._
@@ -27,7 +27,7 @@ object SkilledWorkersForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping().verifying(SkilledWorkers.valid)
+      RADIO_YES_NO -> textMapping().verifying(SkilledWorkers.valid)
     )(SkilledWorkers.apply)(SkilledWorkers.unapply)
   )
 

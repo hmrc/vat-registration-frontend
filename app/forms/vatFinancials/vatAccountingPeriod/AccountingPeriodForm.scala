@@ -16,7 +16,7 @@
 
 package forms.vatFinancials.vatAccountingPeriod
 
-import forms.validation.FormValidation._
+import forms.FormValidation._
 import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod
 import play.api.data.Form
 import play.api.data.Forms._
@@ -26,7 +26,7 @@ object AccountingPeriodForm {
 
   val form = Form(
     mapping(
-      RADIO_ACCOUNTING_PERIOD -> missingFieldMapping()("accounting.period").verifying(AccountingPeriod.valid)
+      RADIO_ACCOUNTING_PERIOD -> textMapping()("accounting.period").verifying(AccountingPeriod.valid)
     )(AccountingPeriod.apply)(AccountingPeriod.unapply)
   )
 }

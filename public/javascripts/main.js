@@ -110,6 +110,19 @@ $(document).ready($(function () {
     }
 }(window.WorkersPage = window.WorkersPage || {}, jQuery));
 
+
+
+// Business Contact Details Page
+(function (BusinessContactDetailsPage, $, undefined) {
+    BusinessContactDetailsPage.init = function() {
+        var phone1error = $('#daytimePhone-error-summary');
+        var phone2error = $('#mobile-error-summary');
+        if (phone1error.text() === phone2error.text()) phone2error.parent('li').hide();
+    }
+}(window.BusinessContactDetailsPage = window.BusinessContactDetailsPage || {}, jQuery));
+
+
+
 /*
  example of multiple hide/show areas
  UI.hideShowOnRadioButton("startDate",

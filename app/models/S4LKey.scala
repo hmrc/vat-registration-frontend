@@ -21,6 +21,7 @@ import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy, ChargeFees}
 import models.view.sicAndCompliance.labour.{SkilledWorkers, _}
 import models.view.test.SicStub
+import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
@@ -64,6 +65,7 @@ object S4LKey {
   implicit val workers: S4LKey[Workers] = S4LKey("Workers")
   implicit val temporaryContracts: S4LKey[TemporaryContracts] = S4LKey("TemporaryContracts")
   implicit val skilledWorkers: S4LKey[SkilledWorkers] = S4LKey("SkilledWorkers")
+  implicit val businessContactDetails: S4LKey[BusinessContactDetails] = S4LKey("BusinessContactDetails")
   implicit val adviceOrConsultancy: S4LKey[AdviceOrConsultancy] = S4LKey("AdviceOrConsultancy")
   implicit val actAsIntermediary: S4LKey[ActAsIntermediary] = S4LKey("ActAsIntermediary")
   implicit val chargeFees: S4LKey[ChargeFees] = S4LKey("ChargeFees")

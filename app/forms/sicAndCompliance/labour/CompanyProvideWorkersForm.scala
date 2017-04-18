@@ -16,18 +16,19 @@
 
 package forms.sicAndCompliance.labour
 
-import forms.validation.FormValidation._
+import forms.FormValidation._
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import play.api.data.Form
 import play.api.data.Forms._
 
 object CompanyProvideWorkersForm {
+
   val RADIO_YES_NO: String = "companyProvideWorkersRadio"
   implicit val errorCode: ErrorCode = "companyProvideWorkers"
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping().verifying(CompanyProvideWorkers.valid)
+      RADIO_YES_NO -> textMapping().verifying(CompanyProvideWorkers.valid)
     )(CompanyProvideWorkers.apply)(CompanyProvideWorkers.unapply)
   )
 

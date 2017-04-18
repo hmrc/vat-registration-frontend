@@ -16,7 +16,7 @@
 
 package forms.vatTradingDetails.vatEuTrading
 
-import forms.validation.FormValidation.missingFieldMapping
+import forms.FormValidation.textMapping
 import models.view.vatTradingDetails.vatEuTrading.EuGoods
 import play.api.data.Form
 import play.api.data.Forms._
@@ -26,7 +26,7 @@ object EuGoodsForm {
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> missingFieldMapping()("euGoods").verifying(EuGoods.valid)
+      RADIO_YES_NO -> textMapping()("euGoods").verifying(EuGoods.valid)
     )(EuGoods.apply)(EuGoods.unapply)
   )
 
