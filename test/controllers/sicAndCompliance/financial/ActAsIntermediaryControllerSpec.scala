@@ -142,7 +142,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
         "actAsIntermediaryRadio" -> "false"
       )) {
         response =>
-          response redirectsTo s"$contextRoot/company-bank-account"
+          response redirectsTo s"$contextRoot/charges-fees-for-introducing-clients-to-financial-service-providers"
       }
 
     }

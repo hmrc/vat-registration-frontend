@@ -102,8 +102,8 @@ POST        /compliance/advice-or-consultancy      controllers.sicAndCompliance.
 GET         /compliance/act-as-intermediary        controllers.sicAndCompliance.financial.ActAsIntermediaryController.show
 POST        /compliance/act-as-intermediary        controllers.sicAndCompliance.financial.ActAsIntermediaryController.submit
 
-GET         /compliance/charge-fees                controllers.sicAndCompliance.financial.ChargeFeesController.show
-POST        /compliance/charge-fees                controllers.sicAndCompliance.financial.ChargeFeesController.submit
+GET         /charges-fees-for-introducing-clients-to-financial-service-providers     controllers.sicAndCompliance.financial.ChargeFeesController.show
+POST        /charges-fees-for-introducing-clients-to-financial-service-providers     controllers.sicAndCompliance.financial.ChargeFeesController.submit
 
 ## FEEDBACK
 GET         /feedback                              controllers.feedback.FeedbackController.show
