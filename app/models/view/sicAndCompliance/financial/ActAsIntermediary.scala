@@ -38,7 +38,7 @@ object ActAsIntermediary {
       the 1st question to false here in case they somehow manage to avoid it, may need looking into*/
 
     g.copy(financialCompliance = Some(VatComplianceFinancial(
-                                      g.financialCompliance.map(_.adviceOrConsultancyOnly).getOrElse(false),
+                                      g.financialCompliance.exists(_.adviceOrConsultancyOnly),
                                       actAsIntermediary = c.yesNo)))
   }
 

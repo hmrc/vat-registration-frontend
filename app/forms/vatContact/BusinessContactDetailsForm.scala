@@ -21,14 +21,11 @@ import models.view.vatContact.BusinessContactDetails
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
-//import uk.gov.voa.play.form._
 
 object BusinessContactDetailsForm {
 
-  val EMAIL_PATTERN = """[A-Za-z0-9\-_.]{1,70}@[A-Za-z0-9\-_.]{1,70}""".r
+  val EMAIL_PATTERN = """^([A-Z|a-z|0-9|._-]+)@([A-Z|a-z|0-9|._-]+)$""".r
   val PHONE_NUMBER_PATTERN = """[\d]{1,20}""".r
-
-  //def blankStringCondition(field: String): Condition = !_.get(field).exists(StringUtils.isNotBlank)
 
   private val FORM_NAME = "businessContactDetails"
 
