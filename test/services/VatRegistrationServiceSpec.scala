@@ -139,6 +139,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockS4LService.fetchAndGet[AdditionalNonSecuritiesWork]()(Matchers.eq(S4LKey[AdditionalNonSecuritiesWork]), any(), any()))
         .thenReturn(Future.successful(Some(AdditionalNonSecuritiesWork(true))))
 
+      when(mockS4LService.fetchAndGet[DiscretionaryInvestmentManagementServices]()(Matchers.eq(S4LKey[DiscretionaryInvestmentManagementServices]), any(), any()))
+        .thenReturn(Future.successful(Some(DiscretionaryInvestmentManagementServices(true))))
+
       when(mockS4LService.fetchAndGet[EuGoods]()(Matchers.eq(S4LKey[EuGoods]), any(), any()))
         .thenReturn(Future.successful(Some(validEuGoods)))
 
@@ -231,6 +234,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       when(mockS4LService.fetchAndGet[AdditionalNonSecuritiesWork]()(Matchers.eq(S4LKey[AdditionalNonSecuritiesWork]), any(), any()))
         .thenReturn(Future.successful(Some(AdditionalNonSecuritiesWork(true))))
+
+      when(mockS4LService.fetchAndGet[DiscretionaryInvestmentManagementServices]()(Matchers.eq(S4LKey[DiscretionaryInvestmentManagementServices]), any(), any()))
+        .thenReturn(Future.successful(Some(DiscretionaryInvestmentManagementServices(true))))
 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
       (any[HeaderCarrier](), any[HttpReads[VatScheme]]()))

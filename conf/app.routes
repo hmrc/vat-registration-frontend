@@ -111,6 +111,10 @@ POST        /does-additional-work-when-introducing-client-to-financial-service-p
 GET         /involved-in-leasing-vehicles-or-equipment     controllers.sicAndCompliance.financial.LeaseVehiclesController.show
 POST        /involved-in-leasing-vehicles-or-equipment     controllers.sicAndCompliance.financial.LeaseVehiclesController.submit
 
+GET         /provides-discretionary-investment-management-services     controllers.sicAndCompliance.financial.DiscretionaryInvestmentManagementServicesController.show
+POST        /provides-discretionary-investment-management-services     controllers.sicAndCompliance.financial.DiscretionaryInvestmentManagementServicesController.submit
+
+
 ## BUSINESS CONTACT DETAILS PAGE
 GET         /business-contact                      controllers.vatContact.BusinessContactDetailsController.show
 POST        /business-contact                      controllers.vatContact.BusinessContactDetailsController.submit

@@ -67,11 +67,11 @@ case class S4LVatSicAndCompliance
   actAsIntermediary: Option[ActAsIntermediary],
   chargeFees: Option[ChargeFees],
   leaseVehicles: Option[LeaseVehicles],
-  additionalNonSecuritiesWork: Option[AdditionalNonSecuritiesWork]
+  additionalNonSecuritiesWork: Option[AdditionalNonSecuritiesWork],
+  discretionaryInvestmentManagementServices: Option[DiscretionaryInvestmentManagementServices]
 )
 
 case class S4LVatContact
 (
   businessContactDetails: Option[BusinessContactDetails]
-
 )
