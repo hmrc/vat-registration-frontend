@@ -39,7 +39,7 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
   // Placeholder for custom configuration
   // Use this if you want to configure the app
   // implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
-  var ds: CommonPlayDependencies = app.injector.instanceOf[CommonPlayDependencies]
+  val ds: CommonPlayDependencies = app.injector.instanceOf[CommonPlayDependencies]
 
   def callAuthorised(a: Action[AnyContent], ac: AuthConnector)(test: Future[Result] => Any): Unit =
     AuthBuilder.withAuthorisedUser(a, ac)(test)
