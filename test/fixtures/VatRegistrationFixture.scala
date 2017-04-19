@@ -125,7 +125,7 @@ trait VatRegistrationFixture {
                            activityDescription: String = "Some business activity",
                            culturalComplianceSection: Option[VatComplianceCultural] = Some(VatComplianceCultural(notForProfit = false)),
                            labourComplianceSection: Option[VatComplianceLabour] = Some(VatComplianceLabour(true, Some(8), Some(true), Some(true))),
-                           financialComplianceSection: Option[VatComplianceFinancial] = Some(VatComplianceFinancial(true, true))
+                           financialComplianceSection: Option[VatComplianceFinancial] = Some(VatComplianceFinancial(true, false, Some(true), Some(true)))
                          ): VatSicAndCompliance =
     VatSicAndCompliance(businessDescription = activityDescription,
                         culturalCompliance = culturalComplianceSection,
