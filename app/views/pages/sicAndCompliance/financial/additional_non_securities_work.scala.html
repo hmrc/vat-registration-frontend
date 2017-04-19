@@ -1,0 +1,46 @@
+@import models.view.sicAndCompliance.financial.AdditionalNonSecuritiesWork
+@(additionalNonSecuritiesWorkForm: Form[AdditionalNonSecuritiesWork])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.financialCompliance.additionalNonSecuritiesWork.title")) {
+
+    <div class="column-one-third">
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.financialCompliance.additionalNonSecuritiesWork.heading")</h1>
+
+        @errorSummary(
+            Messages("app.common.errorSummaryLabel"),
+            additionalNonSecuritiesWorkForm
+        )
+
+        <p>
+        @messages("pages.financialCompliance.additionalNonSecuritiesWork.para")
+        </p>
+
+        @govHelpers.form(action = controllers.sicAndCompliance.financial.routes.AdditionalNonSecuritiesWorkController.submit()) {
+            <div class="form-group">
+                <fieldset class="inline">
+                    <span id="additionalNonSecuritiesWorkRadio"/>
+
+                    @govHelpers.inputRadioGroup(
+                        field = additionalNonSecuritiesWorkForm("additionalNonSecuritiesWorkRadio"),
+                        Seq(
+                            "true" -> Messages("app.common.yes"),
+                            "false" -> Messages("app.common.no")
+                        ),
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label"
+                    )
+                </fieldset>
+            </div>
+
+            <div class="form-group">
+                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.continue")</button>
+            </div>
+
+        }
+
+    </div>
+
+}
