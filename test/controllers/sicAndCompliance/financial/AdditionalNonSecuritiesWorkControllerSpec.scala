@@ -127,7 +127,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
         "additionalNonSecuritiesWorkRadio" -> "false"
       )) {
         response =>
-          response redirectsTo s"$contextRoot/company-bank-account"
+          response redirectsTo s"$contextRoot/provides-discretionary-investment-management-services"
       }
 
     }
