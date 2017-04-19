@@ -348,6 +348,13 @@ pages.financialCompliance.additionalNonSecuritiesWork.title            = Does th
 pages.financialCompliance.additionalNonSecuritiesWork.para             = For example, helping to set the terms of a contract or making representations on behalf of a client.
 pages.financialCompliance.additionalNonSecuritiesWork.heading          = Does the company do additional work (excluding securities) when introducing a client to a financial service provider?
 validation.additionalNonSecuritiesWork.missing                  = Tell us if the company does additional work (excluding securities) when introducing a client to a financial service provider
+validation.chargeFees.missing                  = Tell us if the company charges fees for introducing clients to financial service providers
+
+## Lease Vehicles or Equipment
+pages.financialCompliance.leaseVehicles.title            = Is the company involved in leasing vehicles or equipment to customers?
+pages.financialCompliance.leaseVehicles.heading          = Is the company involved in leasing vehicles or equipment to customers?
+pages.financialCompliance.leaseVehicles.para             = This includes leasing vehicles or equipment to customers, or receiving a commission for introducing customers to a leasing company.
+validation.leaseVehicles.missing                         = Tell us if the company is involved in leasing vehicles or equipment to customers
 
 ## EORI Apply
 pages.applyEori.title                          = You need to apply for an Economic Operator Registration and Identification (EORI) number
