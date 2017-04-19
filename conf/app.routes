@@ -105,6 +105,10 @@ POST        /compliance/act-as-intermediary        controllers.sicAndCompliance.
 GET         /charges-fees-for-introducing-clients-to-financial-service-providers     controllers.sicAndCompliance.financial.ChargeFeesController.show
 POST        /charges-fees-for-introducing-clients-to-financial-service-providers     controllers.sicAndCompliance.financial.ChargeFeesController.submit
 
+GET         /provides-discretionary-investment-management-services     controllers.sicAndCompliance.financial.DiscretionaryInvestmentManagementServicesController.show
+POST        /provides-discretionary-investment-management-services     controllers.sicAndCompliance.financial.DiscretionaryInvestmentManagementServicesController.submit
+
+
 ## BUSINESS CONTACT DETAILS PAGE
 GET         /business-contact                      controllers.vatContact.BusinessContactDetailsController.show
 POST        /business-contact                      controllers.vatContact.BusinessContactDetailsController.submit
