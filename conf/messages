@@ -347,7 +347,7 @@ validation.chargeFees.missing                  = Tell us if the company charges 
 pages.financialCompliance.additionalNonSecuritiesWork.title            = Does the company do additional work (excluding securities) when introducing a client to a financial service provider?
 pages.financialCompliance.additionalNonSecuritiesWork.para             = For example, helping to set the terms of a contract or making representations on behalf of a client.
 pages.financialCompliance.additionalNonSecuritiesWork.heading          = Does the company do additional work (excluding securities) when introducing a client to a financial service provider?
-validation.additionalNonSecuritiesWork.option.missing                  = Tell us if the company does additional work (excluding securities) when introducing a client to a financial service provider
+validation.additionalNonSecuritiesWork.missing                  = Tell us if the company does additional work (excluding securities) when introducing a client to a financial service provider
 
 ## EORI Apply
 pages.applyEori.title                          = You need to apply for an Economic Operator Registration and Identification (EORI) number
