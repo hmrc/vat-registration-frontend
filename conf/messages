@@ -330,18 +330,25 @@ validation.skilledWorkers.missing            = Tell us if your company provides 
 ## Advice Or Consultancy
 pages.financialCompliance.adviceOrConsultancy.title             = Does the company provide ''advice only'' or consultancy services?
 pages.financialCompliance.adviceOrConsultancy.heading           = Does the company provide ''advice only'' or consultancy services?
-validation.adviceOrConsultancy.option.missing                   = Tell us if the company provides advice-only or consultancy services
+validation.adviceOrConsultancy.missing                          = Tell us if the company provides advice-only or consultancy services
 
 ## Act As Intermediary
 pages.financialCompliance.actAsIntermediary.title               = Does the company act as an intermediary?
 pages.financialCompliance.actAsIntermediary.heading             = Does the company act as an intermediary?
 pages.financialCompliance.actAsIntermediary.para                = ''Intermediaries'' introduce people seeking a financial service to financial service providers. They are also known as brokers or agents.
-validation.actAsIntermediary.option.missing                     = Tell us if the company acts as an intermediary
+validation.actAsIntermediary.missing                            = Tell us if the company acts as an intermediary
 
 ## Charge Fees
 pages.financialCompliance.chargeFees.title            = Does the company charge fees for introducing clients to financial service providers?
 pages.financialCompliance.chargeFees.heading          = Does the company charge fees for introducing clients to financial service providers?
-validation.chargeFees.option.missing                  = Tell us if the company charges fees for introducing clients to financial service providers
+validation.chargeFees.missing                         = Tell us if the company charges fees for introducing clients to financial service providers
+
+## Discretionary Investment Management Services
+pages.financialCompliance.discretionaryInvestmentManagementServices.title            = Does the company provide discretionary investment management services, or introduce clients to companies who do?
+pages.financialCompliance.discretionaryInvestmentManagementServices.heading          = Does the company provide discretionary investment management services, or introduce clients to companies who do?
+pages.financialCompliance.discretionaryInvestmentManagementServices.para             = ''Discretionary investment management'' is a service in which investment decisions are made by the company on behalf of the client.
+validation.discretionaryInvestmentManagementServices.missing                         = Tell us if the company provides discretionary investment management services, or introduces clients to companies who do
+
 
 ## EORI Apply
 pages.applyEori.title                          = You need to apply for an Economic Operator Registration and Identification (EORI) number
@@ -354,7 +361,7 @@ pages.applyEori.number.no                      = No, I''ll apply for an EORI num
 pages.applyEori.summary                        = After you''ve applied
 pages.applyEori.summary.para1                  = You''ll get your EORI number by email, usually within 3 working days.
 pages.applyEori.summary.para2                  = Give the number to your courier or freight forwarder. They''ll use it when making customs declarations on your behalf.
-validation.applyEori.missing            = Tell us if you want to apply for an Economic Operator Registration and Identification (EORI) number
+validation.applyEori.missing                   = Tell us if you want to apply for an Economic Operator Registration and Identification (EORI) number
 
 ## EU Goods
 pages.euGoods.title                         = Importing and exporting goods
