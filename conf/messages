@@ -330,13 +330,13 @@ validation.skilledWorkers.missing            = Tell us if your company provides 
 ## Advice Or Consultancy
 pages.financialCompliance.adviceOrConsultancy.title             = Does the company provide ''advice only'' or consultancy services?
 pages.financialCompliance.adviceOrConsultancy.heading           = Does the company provide ''advice only'' or consultancy services?
-validation.adviceOrConsultancy.missing                          = Tell us if the company provides advice-only or consultancy services
+validation.adviceOrConsultancy.missing                   = Tell us if the company provides advice-only or consultancy services
 
 ## Act As Intermediary
 pages.financialCompliance.actAsIntermediary.title               = Does the company act as an intermediary?
 pages.financialCompliance.actAsIntermediary.heading             = Does the company act as an intermediary?
 pages.financialCompliance.actAsIntermediary.para                = ''Intermediaries'' introduce people seeking a financial service to financial service providers. They are also known as brokers or agents.
-validation.actAsIntermediary.missing                            = Tell us if the company acts as an intermediary
+validation.actAsIntermediary.missing                     = Tell us if the company acts as an intermediary
 
 ## Charge Fees
 pages.financialCompliance.chargeFees.title            = Does the company charge fees for introducing clients to financial service providers?
@@ -348,6 +348,12 @@ pages.financialCompliance.discretionaryInvestmentManagementServices.title       
 pages.financialCompliance.discretionaryInvestmentManagementServices.heading          = Does the company provide discretionary investment management services, or introduce clients to companies who do?
 pages.financialCompliance.discretionaryInvestmentManagementServices.para             = ''Discretionary investment management'' is a service in which investment decisions are made by the company on behalf of the client.
 validation.discretionaryInvestmentManagementServices.missing                         = Tell us if the company provides discretionary investment management services, or introduces clients to companies who do
+
+## Additional Non Securities Work
+pages.financialCompliance.additionalNonSecuritiesWork.title            = Does the company do additional work (excluding securities) when introducing a client to a financial service provider?
+pages.financialCompliance.additionalNonSecuritiesWork.para             = For example, helping to set the terms of a contract or making representations on behalf of a client.
+pages.financialCompliance.additionalNonSecuritiesWork.heading          = Does the company do additional work (excluding securities) when introducing a client to a financial service provider?
+validation.additionalNonSecuritiesWork.missing                  = Tell us if the company does additional work (excluding securities) when introducing a client to a financial service provider
 
 
 ## EORI Apply
