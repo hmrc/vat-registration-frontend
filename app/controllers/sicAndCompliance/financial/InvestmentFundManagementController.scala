@@ -41,9 +41,19 @@ class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.investment_fund_management(formWithErrors))),
-      (data: InvestmentFundManagement) => s4LService.saveForm[InvestmentFundManagement](data)
-        .map(_ => Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))
+      formWithErrors => {
+        Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.investment_fund_management(formWithErrors)))
+      }, {
+        data: InvestmentFundManagement => {
+          s4LService.saveForm[InvestmentFundManagement](data) map { _ =>
+            if (data.yesNo) {
+              Redirect(controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show())
+            } else {
+              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+            }
+          }
+        }
+      }
     )
   )
 

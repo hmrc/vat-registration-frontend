@@ -123,7 +123,9 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
         s4l[ChargeFees]() |@|
         s4l[LeaseVehicles]() |@|
         s4l[AdditionalNonSecuritiesWork]() |@|
-        s4l[DiscretionaryInvestmentManagementServices])
+        s4l[DiscretionaryInvestmentManagementServices]() |@|
+        s4l[InvestmentFundManagement]() |@|
+        s4l[ManageAdditionalFunds]())
         .map(S4LVatSicAndCompliance).map { s4l =>
         update(s4l.description, vs)
           .andThen(update(s4l.notForProfit, vs))
@@ -137,6 +139,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
           .andThen(update(s4l.leaseVehicles, vs))
           .andThen(update(s4l.additionalNonSecuritiesWork, vs))
           .andThen(update(s4l.discretionaryInvestmentManagementServices, vs))
+          .andThen(update(s4l.investmentFundManagement, vs))
+          .andThen(update(s4l.manageAdditionalFunds, vs))
           .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance(""))) //TODO remove the "seeding" with empty
       }
 

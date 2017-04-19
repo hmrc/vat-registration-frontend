@@ -19,8 +19,8 @@ package controllers.sicAndCompliance.financial
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.sicAndCompliance.financial.LeaseVehiclesForm
-import models.view.sicAndCompliance.financial.LeaseVehicles
+import forms.sicAndCompliance.financial.ManageAdditionalFundsForm
+import models.view.sicAndCompliance.financial.ManageAdditionalFunds
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
@@ -28,33 +28,22 @@ import services.{RegistrationService, S4LService}
 import scala.concurrent.Future
 
 
-class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
-                                       (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
-
+class ManageAdditionalFundsController @Inject()(ds: CommonPlayDependencies)
+                                               (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
   import cats.instances.future._
 
-  val form: Form[LeaseVehicles] = LeaseVehiclesForm.form
+  val form: Form[ManageAdditionalFunds] = ManageAdditionalFundsForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[LeaseVehicles].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.lease_vehicles(f)))
+    viewModel[ManageAdditionalFunds].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.sicAndCompliance.financial.manage_additional_funds(f)))
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.lease_vehicles(formWithErrors)))
-      }, {
-        data: LeaseVehicles => {
-          s4LService.saveForm[LeaseVehicles](data) map { _ =>
-            if (!data.yesNo) {
-              Redirect(controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show())
-            } else {
-              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
-            }
-          }
-        }
-      }
+      (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.manage_additional_funds(formWithErrors))),
+      (data: ManageAdditionalFunds) => s4LService.saveForm[ManageAdditionalFunds](data)
+        .map(_ => Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))
     )
   )
 
