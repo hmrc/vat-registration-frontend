@@ -111,6 +111,10 @@ POST        /provides-investment-fund-management-services     controllers.sicAnd
 GET         /does-additional-work-when-introducing-client-to-financial-service-provider     controllers.sicAndCompliance.financial.AdditionalNonSecuritiesWorkController.show
 POST        /does-additional-work-when-introducing-client-to-financial-service-provider     controllers.sicAndCompliance.financial.AdditionalNonSecuritiesWorkController.submit
 
+GET         /provides-discretionary-investment-management-services     controllers.sicAndCompliance.financial.DiscretionaryInvestmentManagementServicesController.show
+POST        /provides-discretionary-investment-management-services     controllers.sicAndCompliance.financial.DiscretionaryInvestmentManagementServicesController.submit
+
+
 ## BUSINESS CONTACT DETAILS PAGE
 GET         /business-contact                      controllers.vatContact.BusinessContactDetailsController.show
 POST        /business-contact                      controllers.vatContact.BusinessContactDetailsController.submit

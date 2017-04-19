@@ -18,8 +18,12 @@ package models
 
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
+<<<<<<< HEAD
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy, ChargeFees, InvestmentFundManagement}
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdditionalNonSecuritiesWork, AdviceOrConsultancy, ChargeFees}
+=======
+import models.view.sicAndCompliance.financial._
+>>>>>>> ec4f9138edb650786c4e50bdc9d171d8f6934ccd
 import models.view.sicAndCompliance.labour.{SkilledWorkers, _}
 import models.view.test.SicStub
 import models.view.vatContact.BusinessContactDetails
@@ -72,5 +76,6 @@ object S4LKey {
   implicit val chargeFees: S4LKey[ChargeFees] = S4LKey("ChargeFees")
   implicit val investmentFundManagement: S4LKey[InvestmentFundManagement] = S4LKey("InvestmentFundManagement")
   implicit val additionalNonSecuritiesWork: S4LKey[AdditionalNonSecuritiesWork] = S4LKey("AdditionalNonSecuritiesWork")
+  implicit val discretionaryInvestmentManagementServices: S4LKey[DiscretionaryInvestmentManagementServices] = S4LKey("DiscretionaryInvestmentManagementServices")
 
 }
