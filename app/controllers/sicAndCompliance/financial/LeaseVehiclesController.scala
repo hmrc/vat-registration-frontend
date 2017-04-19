@@ -25,12 +25,13 @@ import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
 
+import scala.concurrent.Future
+
 
 class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
                                        (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
 
   import cats.instances.future._
-  import cats.syntax.applicative._
 
   val form: Form[LeaseVehicles] = LeaseVehiclesForm.form
 
@@ -41,8 +42,19 @@ class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      (formWithErrors) => BadRequest(views.html.pages.sicAndCompliance.financial.lease_vehicles(formWithErrors)).pure,
-      s4LService.saveForm(_).map(_ => Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))
+      formWithErrors => {
+        Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.lease_vehicles(formWithErrors)))
+      }, {
+        data: LeaseVehicles => {
+          s4LService.saveForm[LeaseVehicles](data) map { _ =>
+            if (!data.yesNo) {
+              Redirect(controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show())
+            } else {
+              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+            }
+          }
+        }
+      }
     )
   )
 
