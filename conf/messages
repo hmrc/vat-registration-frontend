@@ -298,14 +298,14 @@ pages.compliance.introduction.para1                          = So we can underst
 ## Not For Profit
 pages.culturalCompliance.notForProfit.title                  = Not-for-profit organisation
 pages.culturalCompliance.notForProfit.heading                = Is your company a not-for-profit organisation or public body?
-validation.notForProfitRadio.missing                  = Tell us if your company is a not-for-profit organisation or public body
+validation.notForProfitRadio.missing                         = Tell us if your company is a not-for-profit organisation or public body
 
 ## Labour Compliance
 ## Does Company Provide Workers
 pages.labourCompliance.companyProvideWorkers.title         = Does the company provide workers to other employers?
 pages.labourCompliance.companyProvideWorkers.heading       = Does the company provide workers to other employers?
 pages.labourCompliance.companyProvideWorkers.para          = For example, the company is a third-party supplier of construction workers or cleaners.
-validation.companyProvideWorkers.missing            = Tell us if your company provides workers to other employers
+validation.companyProvideWorkers.missing                   = Tell us if your company provides workers to other employers
 
 ## Workers
 pages.labourCompliance.workers.title                  = How many workers does the company provide at any one time?
@@ -318,36 +318,51 @@ validation.labourCompliance.numberOfWorkers.low       = Number of workers must b
 ## Temporary Contracts
 pages.labourCompliance.temporaryContracts.title                  = Does the company provide workers on temporary contracts?
 pages.labourCompliance.temporaryContracts.heading                = Does the company provide workers on temporary contracts?
-validation.labourCompliance.temporaryContracts.missing    = Tell us if your company provides workers on temporary contracts
+validation.labourCompliance.temporaryContracts.missing           = Tell us if your company provides workers on temporary contracts
 
 ## Does Company Provide Skilled Workers
 pages.labourCompliance.skilledWorkers.title         = Does the company provide skilled workers?
 pages.labourCompliance.skilledWorkers.heading       = Does the company provide skilled workers?
 pages.labourCompliance.skilledWorkers.para          = For example, workers who have special skills, training, knowledge or ability.
-validation.skilledWorkers.missing            = Tell us if your company provides skilled workers
+validation.skilledWorkers.missing                   = Tell us if your company provides skilled workers
 
 ## Financial Compliance Questions
 ## Advice Or Consultancy
 pages.financialCompliance.adviceOrConsultancy.title             = Does the company provide ''advice only'' or consultancy services?
 pages.financialCompliance.adviceOrConsultancy.heading           = Does the company provide ''advice only'' or consultancy services?
-validation.adviceOrConsultancy.missing                   = Tell us if the company provides advice-only or consultancy services
+validation.adviceOrConsultancy.missing                          = Tell us if the company provides advice-only or consultancy services
 
 ## Act As Intermediary
 pages.financialCompliance.actAsIntermediary.title               = Does the company act as an intermediary?
 pages.financialCompliance.actAsIntermediary.heading             = Does the company act as an intermediary?
 pages.financialCompliance.actAsIntermediary.para                = ''Intermediaries'' introduce people seeking a financial service to financial service providers. They are also known as brokers or agents.
-validation.actAsIntermediary.missing                     = Tell us if the company acts as an intermediary
+validation.actAsIntermediary.missing                            = Tell us if the company acts as an intermediary
 
 ## Charge Fees
 pages.financialCompliance.chargeFees.title            = Does the company charge fees for introducing clients to financial service providers?
 pages.financialCompliance.chargeFees.heading          = Does the company charge fees for introducing clients to financial service providers?
-validation.chargeFees.missing                  = Tell us if the company charges fees for introducing clients to financial service providers
+validation.chargeFees.missing                         = Tell us if the company charges fees for introducing clients to financial service providers
 
 ## Additional Non Securities Work
 pages.financialCompliance.additionalNonSecuritiesWork.title            = Does the company do additional work (excluding securities) when introducing a client to a financial service provider?
 pages.financialCompliance.additionalNonSecuritiesWork.para             = For example, helping to set the terms of a contract or making representations on behalf of a client.
 pages.financialCompliance.additionalNonSecuritiesWork.heading          = Does the company do additional work (excluding securities) when introducing a client to a financial service provider?
-validation.additionalNonSecuritiesWork.missing                  = Tell us if the company does additional work (excluding securities) when introducing a client to a financial service provider
+validation.additionalNonSecuritiesWork.missing                         = Tell us if the company does additional work (excluding securities) when introducing a client to a financial service provider
+
+## Manage Additional Funds
+pages.financialCompliance.manageAdditionalFunds.title            = Does the company manage any funds that are not included in this list?
+pages.financialCompliance.manageAdditionalFunds.heading          = Does the company manage any funds that are not included in this list?
+pages.financialCompliance.manageAdditionalFunds.bullet1          = Authorised open-ended investment companies
+pages.financialCompliance.manageAdditionalFunds.bullet2          = Authorised contractual schemes
+pages.financialCompliance.manageAdditionalFunds.bullet3          = Authorised unit trust schemes
+pages.financialCompliance.manageAdditionalFunds.bullet4          = Gibraltar collective investment schemes that aren''t umbrella schemes
+pages.financialCompliance.manageAdditionalFunds.bullet5          = Sub-funds of any other Gibraltar collective investment schemes
+pages.financialCompliance.manageAdditionalFunds.bullet6          = Individually recognised overseas schemes that aren''t umbrella schemes
+pages.financialCompliance.manageAdditionalFunds.bullet7          = Sub-funds of any other individually recognised overseas schemes
+pages.financialCompliance.manageAdditionalFunds.bullet8          = Recognised collective investment schemes constituted in another EEA state that aren''t umbrella schemes
+pages.financialCompliance.manageAdditionalFunds.bullet9          = Sub-funds of any other recognised collective investment schemes constituted in another EEA state
+pages.financialCompliance.manageAdditionalFunds.bullet10         = Closed-ended collective investment undertakings
+validation.manageAdditionalFunds.missing                         = Tell us if the company manages any funds that are not included in this list
 
 ## EORI Apply
 pages.applyEori.title                          = You need to apply for an Economic Operator Registration and Identification (EORI) number
@@ -360,12 +375,12 @@ pages.applyEori.number.no                      = No, I''ll apply for an EORI num
 pages.applyEori.summary                        = After you''ve applied
 pages.applyEori.summary.para1                  = You''ll get your EORI number by email, usually within 3 working days.
 pages.applyEori.summary.para2                  = Give the number to your courier or freight forwarder. They''ll use it when making customs declarations on your behalf.
-validation.applyEori.missing            = Tell us if you want to apply for an Economic Operator Registration and Identification (EORI) number
+validation.applyEori.missing                   = Tell us if you want to apply for an Economic Operator Registration and Identification (EORI) number
 
 ## EU Goods
 pages.euGoods.title                         = Importing and exporting goods
 pages.euGoods.heading                       = Do you import or export goods from or to countries outside the EU?
-validation.euGoods.missing           = Tell us if you import or export goods from or to countries outside the EU
+validation.euGoods.missing                  = Tell us if you import or export goods from or to countries outside the EU
 
 ## Business Contact Details Page
 pages.businessContactDetails.title                           = Business contact details
