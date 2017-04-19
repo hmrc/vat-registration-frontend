@@ -19,8 +19,8 @@ package controllers.sicAndCompliance.financial
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.sicAndCompliance.financial.ChargeFeesForm
-import models.view.sicAndCompliance.financial.ChargeFees
+import forms.sicAndCompliance.financial.{AdditionalNonSecuritiesWorkForm, ChargeFeesForm}
+import models.view.sicAndCompliance.financial.{AdditionalNonSecuritiesWork, ChargeFees}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
@@ -28,22 +28,22 @@ import services.{RegistrationService, S4LService}
 import scala.concurrent.Future
 
 
-class ChargeFeesController @Inject()(ds: CommonPlayDependencies)
-                                    (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
+class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies)
+                                                     (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
   import cats.instances.future._
 
-  val form: Form[ChargeFees] = ChargeFeesForm.form
+  val form: Form[AdditionalNonSecuritiesWork] = AdditionalNonSecuritiesWorkForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[ChargeFees].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.charge_fees(f)))
+    viewModel[AdditionalNonSecuritiesWork].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(f)))
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.charge_fees(formWithErrors))),
-      (data: ChargeFees) => s4LService.saveForm[ChargeFees](data)
-        .map(_ => Redirect(controllers.sicAndCompliance.financial.routes.AdditionalNonSecuritiesWorkController.show()))
+      (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(formWithErrors))),
+      (data: AdditionalNonSecuritiesWork) => s4LService.saveForm[AdditionalNonSecuritiesWork](data)
+        .map(_ => Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))
     )
   )
 
