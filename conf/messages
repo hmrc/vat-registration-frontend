@@ -338,6 +338,11 @@ pages.financialCompliance.actAsIntermediary.heading             = Does the compa
 pages.financialCompliance.actAsIntermediary.para                = ''Intermediaries'' introduce people seeking a financial service to financial service providers. They are also known as brokers or agents.
 validation.actAsIntermediary.option.missing                     = Tell us if the company acts as an intermediary
 
+## Charge Fees
+pages.financialCompliance.chargeFees.title            = Does the company charge fees for introducing clients to financial service providers?
+pages.financialCompliance.chargeFees.heading          = Does the company charge fees for introducing clients to financial service providers?
+validation.chargeFees.option.missing                  = Tell us if the company charges fees for introducing clients to financial service providers
+
 ## EORI Apply
 pages.applyEori.title                          = You need to apply for an Economic Operator Registration and Identification (EORI) number
 pages.applyEori.heading                        = You need to apply for an Economic Operator Registration and Identification (EORI) number

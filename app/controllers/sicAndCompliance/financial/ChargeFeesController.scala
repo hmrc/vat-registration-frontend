@@ -19,8 +19,8 @@ package controllers.sicAndCompliance.financial
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.sicAndCompliance.financial.AdviceOrConsultancyForm
-import models.view.sicAndCompliance.financial.AdviceOrConsultancy
+import forms.sicAndCompliance.financial.ChargeFeesForm
+import models.view.sicAndCompliance.financial.ChargeFees
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
@@ -28,22 +28,22 @@ import services.{RegistrationService, S4LService}
 import scala.concurrent.Future
 
 
-class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
-                                             (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
+class ChargeFeesController @Inject()(ds: CommonPlayDependencies)
+                                    (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
   import cats.instances.future._
 
-  val form: Form[AdviceOrConsultancy] = AdviceOrConsultancyForm.form
+  val form: Form[ChargeFees] = ChargeFeesForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[AdviceOrConsultancy].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(f)))
+    viewModel[ChargeFees].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.sicAndCompliance.financial.charge_fees(f)))
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(formWithErrors))),
-      (data: AdviceOrConsultancy) => s4LService.saveForm[AdviceOrConsultancy](data)
-        .map(_ => Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show()))
+      (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.charge_fees(formWithErrors))),
+      (data: ChargeFees) => s4LService.saveForm[ChargeFees](data)
+        .map(_ => Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))
     )
   )
 

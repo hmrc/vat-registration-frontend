@@ -54,12 +54,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
       AuthBuilder.submitWithAuthorisedUser(ActAsIntermediaryController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> ""
       )) {
-
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Does the company act as an intermediary?")
+       _ includesText "Does the company act as an intermediary?"
       }
     }
 
@@ -72,11 +67,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(ActAsIntermediaryController.show, mockAuthConnector) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Does the company act as an intermediary?")
+       _ includesText "Does the company act as an intermediary?"
       }
     }
   }
@@ -90,11 +81,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
       .thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(ActAsIntermediaryController.show, mockAuthConnector) {
-      result =>
-        status(result) mustBe OK
-        contentType(result) mustBe Some("text/html")
-        charset(result) mustBe Some("utf-8")
-        contentAsString(result) must include("Does the company act as an intermediary?")
+     _ includesText "Does the company act as an intermediary?"
     }
   }
 
@@ -142,7 +129,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
         "actAsIntermediaryRadio" -> "false"
       )) {
         response =>
-          response redirectsTo s"$contextRoot/company-bank-account"
+          response redirectsTo s"$contextRoot/charges-fees-for-introducing-clients-to-financial-service-providers"
       }
 
     }
