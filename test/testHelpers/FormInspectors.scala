@@ -17,15 +17,14 @@
 package testHelpers
 
 import org.scalatest.compatible.Assertion
-import org.scalatest.{Inspectors, Matchers, TestSuite}
+import org.scalatest.{Inspectors, Matchers}
 import play.api.data.{Form, FormError}
 
-trait FormInspectors extends Matchers with Inspectors {
-  self: TestSuite =>
+object FormInspectors extends Matchers with Inspectors {
 
   val toErrorSeq = (fe: FormError) => (fe.key, fe.message)
 
-  implicit class FormErrorOps(form: Form[_]) {
+  implicit class FormErrorOps[T](form: Form[T]) {
 
     def shouldHaveErrors(es: Seq[(String, String)]): Assertion = {
       form.errors shouldBe 'nonEmpty
@@ -33,12 +32,17 @@ trait FormInspectors extends Matchers with Inspectors {
       form.errors.map(toErrorSeq) shouldBe es
     }
 
-
     def shouldHaveGlobalErrors(es: String*): Assertion = {
       form.globalErrors shouldBe 'nonEmpty
       form.globalErrors.size shouldBe es.size
       form.globalErrors.map(toErrorSeq).map(_._2) should contain only (es: _*)
     }
+
+    def shouldContainValue(value: T): Assertion = {
+      form.errors shouldBe 'empty
+      form.value shouldBe Some(value)
+    }
+
   }
 
 }

@@ -110,7 +110,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
         "chargeFeesRadio" -> "true"
       )) {
         response =>
-          response redirectsTo s"$contextRoot/company-bank-account"
+          response redirectsTo s"$contextRoot/does-additional-work-when-introducing-client-to-financial-service-provider"
       }
 
     }
@@ -129,7 +129,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
         "chargeFeesRadio" -> "false"
       )) {
         response =>
-          response redirectsTo s"$contextRoot/company-bank-account"
+          response redirectsTo s"$contextRoot/does-additional-work-when-introducing-client-to-financial-service-provider"
       }
 
     }

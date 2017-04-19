@@ -18,7 +18,7 @@ package models
 
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
+import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdditionalNonSecuritiesWork, AdviceOrConsultancy, ChargeFees}
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
@@ -64,7 +64,9 @@ case class S4LVatSicAndCompliance
 
   //Financial Compliance
   adviceOrConsultancy: Option[AdviceOrConsultancy],
-  actAsIntermediary: Option[ActAsIntermediary]
+  actAsIntermediary: Option[ActAsIntermediary],
+  chargeFees: Option[ChargeFees],
+  additionalNonSecuritiesWork: Option[AdditionalNonSecuritiesWork]
 )
 
 case class S4LVatContact
