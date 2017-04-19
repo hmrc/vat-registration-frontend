@@ -19,8 +19,8 @@ package controllers.sicAndCompliance.financial
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.sicAndCompliance.financial.{AdditionalNonSecuritiesWorkForm, ChargeFeesForm}
-import models.view.sicAndCompliance.financial.{AdditionalNonSecuritiesWork, ChargeFees}
+import forms.sicAndCompliance.financial.AdditionalNonSecuritiesWorkForm
+import models.view.sicAndCompliance.financial.AdditionalNonSecuritiesWork
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
@@ -42,8 +42,15 @@ class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(formWithErrors))),
-      (data: AdditionalNonSecuritiesWork) => s4LService.saveForm[AdditionalNonSecuritiesWork](data)
-        .map(_ => Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))
+      (data: AdditionalNonSecuritiesWork) => {
+        s4LService.saveForm[AdditionalNonSecuritiesWork](data) map {  _ =>
+          if(!data.yesNo) {
+            Redirect(controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show())
+          }else{
+            Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+          }
+        }
+      }
     )
   )
 
