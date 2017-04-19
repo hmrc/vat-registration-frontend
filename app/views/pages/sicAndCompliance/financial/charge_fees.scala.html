@@ -1,0 +1,42 @@
+@import models.view.sicAndCompliance.financial.ChargeFees
+@(chargeFeesForm: Form[ChargeFees])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.financialCompliance.chargeFees.title")) {
+
+    <div class="column-one-third">
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.financialCompliance.chargeFees.heading")</h1>
+
+        @errorSummary(
+            Messages("app.common.errorSummaryLabel"),
+            chargeFeesForm
+        )
+
+        @govHelpers.form(action = controllers.sicAndCompliance.financial.routes.ChargeFeesController.submit()) {
+            <div class="form-group">
+                <fieldset class="inline">
+                    <span id="chargeFeesRadio"/>
+
+                    @govHelpers.inputRadioGroup(
+                        field = chargeFeesForm("chargeFeesRadio"),
+                        Seq(
+                            "true" -> Messages("app.common.yes"),
+                            "false" -> Messages("app.common.no")
+                        ),
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label"
+                    )
+                </fieldset>
+            </div>
+
+            <div class="form-group">
+                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.continue")</button>
+            </div>
+
+        }
+
+    </div>
+
+}

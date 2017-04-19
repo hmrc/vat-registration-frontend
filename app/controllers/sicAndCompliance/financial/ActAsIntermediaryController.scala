@@ -23,13 +23,13 @@ import forms.sicAndCompliance.financial.ActAsIntermediaryForm
 import models.view.sicAndCompliance.financial.ActAsIntermediary
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, VatRegistrationService}
+import services.{RegistrationService, S4LService}
 
 import scala.concurrent.Future
 
 
 class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
-                                           (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+                                           (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
   import cats.instances.future._
 
   val form: Form[ActAsIntermediary] = ActAsIntermediaryForm.form
@@ -40,11 +40,20 @@ class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.act_as_intermediary(formWithErrors))),
-      (data: ActAsIntermediary) => s4LService.saveForm[ActAsIntermediary](data)
-        .map(_ => Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))
-    )
+    ActAsIntermediaryForm.form.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.act_as_intermediary(formWithErrors)))
+      }, {
+        data: ActAsIntermediary => {
+          s4LService.saveForm[ActAsIntermediary](data) map {  _ =>
+            if(!data.yesNo) {
+              Redirect(controllers.sicAndCompliance.financial.routes.ChargeFeesController.show())
+            }else{
+              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+            }
+          }
+        }
+      })
   )
 
 }
