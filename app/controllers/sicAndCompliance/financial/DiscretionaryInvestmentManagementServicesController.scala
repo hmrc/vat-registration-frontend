@@ -47,7 +47,7 @@ class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPl
         data: DiscretionaryInvestmentManagementServices => {
           s4LService.saveForm[DiscretionaryInvestmentManagementServices](data) map { _ =>
             if (!data.yesNo) {
-              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+              Redirect(controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show())
             } else {
               Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
             }

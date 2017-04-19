@@ -68,7 +68,9 @@ case class S4LVatSicAndCompliance
   chargeFees: Option[ChargeFees],
   leaseVehicles: Option[LeaseVehicles],
   additionalNonSecuritiesWork: Option[AdditionalNonSecuritiesWork],
-  discretionaryInvestmentManagementServices: Option[DiscretionaryInvestmentManagementServices]
+  discretionaryInvestmentManagementServices: Option[DiscretionaryInvestmentManagementServices],
+  investmentFundManagement: Option[InvestmentFundManagement],
+  manageAdditionalFunds: Option[ManageAdditionalFunds]
 )
 
 case class S4LVatContact
