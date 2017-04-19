@@ -66,6 +66,7 @@ case class S4LVatSicAndCompliance
   adviceOrConsultancy: Option[AdviceOrConsultancy],
   actAsIntermediary: Option[ActAsIntermediary],
   chargeFees: Option[ChargeFees],
+  leaseVehicles: Option[LeaseVehicles],
   additionalNonSecuritiesWork: Option[AdditionalNonSecuritiesWork],
   discretionaryInvestmentManagementServices: Option[DiscretionaryInvestmentManagementServices]
 )

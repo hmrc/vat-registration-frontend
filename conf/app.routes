@@ -111,6 +111,9 @@ POST        /provides-investment-fund-management-services     controllers.sicAnd
 GET         /does-additional-work-when-introducing-client-to-financial-service-provider     controllers.sicAndCompliance.financial.AdditionalNonSecuritiesWorkController.show
 POST        /does-additional-work-when-introducing-client-to-financial-service-provider     controllers.sicAndCompliance.financial.AdditionalNonSecuritiesWorkController.submit
 
+GET         /involved-in-leasing-vehicles-or-equipment     controllers.sicAndCompliance.financial.LeaseVehiclesController.show
+POST        /involved-in-leasing-vehicles-or-equipment     controllers.sicAndCompliance.financial.LeaseVehiclesController.submit
+
 GET         /provides-discretionary-investment-management-services     controllers.sicAndCompliance.financial.DiscretionaryInvestmentManagementServicesController.show
 POST        /provides-discretionary-investment-management-services     controllers.sicAndCompliance.financial.DiscretionaryInvestmentManagementServicesController.submit
 
