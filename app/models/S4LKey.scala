@@ -73,5 +73,6 @@ object S4LKey {
   implicit val additionalNonSecuritiesWork: S4LKey[AdditionalNonSecuritiesWork] = S4LKey("AdditionalNonSecuritiesWork")
   implicit val leaseVehicles: S4LKey[LeaseVehicles] = S4LKey("LeaseVehicles")
   implicit val discretionaryInvestmentManagementServices: S4LKey[DiscretionaryInvestmentManagementServices] = S4LKey("DiscretionaryInvestmentManagementServices")
+  implicit val manageAdditionalFunds: S4LKey[ManageAdditionalFunds] = S4LKey("ManageAdditionalFunds")
 
 }

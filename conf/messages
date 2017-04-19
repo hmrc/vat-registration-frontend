@@ -298,14 +298,14 @@ pages.compliance.introduction.para1                          = So we can underst
 ## Not For Profit
 pages.culturalCompliance.notForProfit.title                  = Not-for-profit organisation
 pages.culturalCompliance.notForProfit.heading                = Is your company a not-for-profit organisation or public body?
-validation.notForProfitRadio.missing                  = Tell us if your company is a not-for-profit organisation or public body
+validation.notForProfitRadio.missing                         = Tell us if your company is a not-for-profit organisation or public body
 
 ## Labour Compliance
 ## Does Company Provide Workers
 pages.labourCompliance.companyProvideWorkers.title         = Does the company provide workers to other employers?
 pages.labourCompliance.companyProvideWorkers.heading       = Does the company provide workers to other employers?
 pages.labourCompliance.companyProvideWorkers.para          = For example, the company is a third-party supplier of construction workers or cleaners.
-validation.companyProvideWorkers.missing            = Tell us if your company provides workers to other employers
+validation.companyProvideWorkers.missing                   = Tell us if your company provides workers to other employers
 
 ## Workers
 pages.labourCompliance.workers.title                  = How many workers does the company provide at any one time?
@@ -318,7 +318,7 @@ validation.labourCompliance.numberOfWorkers.low       = Number of workers must b
 ## Temporary Contracts
 pages.labourCompliance.temporaryContracts.title                  = Does the company provide workers on temporary contracts?
 pages.labourCompliance.temporaryContracts.heading                = Does the company provide workers on temporary contracts?
-validation.labourCompliance.temporaryContracts.missing    = Tell us if your company provides workers on temporary contracts
+validation.labourCompliance.temporaryContracts.missing           = Tell us if your company provides workers on temporary contracts
 
 ## Does Company Provide Skilled Workers
 pages.labourCompliance.skilledWorkers.title         = Does the company provide skilled workers?
@@ -354,7 +354,6 @@ pages.financialCompliance.additionalNonSecuritiesWork.title            = Does th
 pages.financialCompliance.additionalNonSecuritiesWork.para             = For example, helping to set the terms of a contract or making representations on behalf of a client.
 pages.financialCompliance.additionalNonSecuritiesWork.heading          = Does the company do additional work (excluding securities) when introducing a client to a financial service provider?
 validation.additionalNonSecuritiesWork.missing                         = Tell us if the company does additional work (excluding securities) when introducing a client to a financial service provider
-validation.chargeFees.missing                                          = Tell us if the company charges fees for introducing clients to financial service providers
 
 ## Lease Vehicles or Equipment
 pages.financialCompliance.leaseVehicles.title            = Is the company involved in leasing vehicles or equipment to customers?
@@ -362,11 +361,25 @@ pages.financialCompliance.leaseVehicles.heading          = Is the company involv
 pages.financialCompliance.leaseVehicles.para             = This includes leasing vehicles or equipment to customers, or receiving a commission for introducing customers to a leasing company.
 validation.leaseVehicles.missing                         = Tell us if the company is involved in leasing vehicles or equipment to customers
 
-
 ## Investment Fund Management Services
 pages.financialCompliance.investmentFundManagement.title            = Does the company provide investment fund management services?
 pages.financialCompliance.investmentFundManagement.heading          = Does the company provide investment fund management services?
 validation.investmentFundManagement.missing                         = Tell us if the company provides investment fund management services
+
+## Manage Additional Funds
+pages.financialCompliance.manageAdditionalFunds.title            = Does the company manage any funds that are not included in this list?
+pages.financialCompliance.manageAdditionalFunds.heading          = Does the company manage any funds that are not included in this list?
+pages.financialCompliance.manageAdditionalFunds.bullet1          = Authorised open-ended investment companies
+pages.financialCompliance.manageAdditionalFunds.bullet2          = Authorised contractual schemes
+pages.financialCompliance.manageAdditionalFunds.bullet3          = Authorised unit trust schemes
+pages.financialCompliance.manageAdditionalFunds.bullet4          = Gibraltar collective investment schemes that aren''t umbrella schemes
+pages.financialCompliance.manageAdditionalFunds.bullet5          = Sub-funds of any other Gibraltar collective investment schemes
+pages.financialCompliance.manageAdditionalFunds.bullet6          = Individually recognised overseas schemes that aren''t umbrella schemes
+pages.financialCompliance.manageAdditionalFunds.bullet7          = Sub-funds of any other individually recognised overseas schemes
+pages.financialCompliance.manageAdditionalFunds.bullet8          = Recognised collective investment schemes constituted in another EEA state that aren''t umbrella schemes
+pages.financialCompliance.manageAdditionalFunds.bullet9          = Sub-funds of any other recognised collective investment schemes constituted in another EEA state
+pages.financialCompliance.manageAdditionalFunds.bullet10         = Closed-ended collective investment undertakings
+validation.manageAdditionalFunds.missing                         = Tell us if the company manages any funds that are not included in this list
 
 ## EORI Apply
 pages.applyEori.title                          = You need to apply for an Economic Operator Registration and Identification (EORI) number
