@@ -343,6 +343,11 @@ pages.financialCompliance.chargeFees.title            = Does the company charge 
 pages.financialCompliance.chargeFees.heading          = Does the company charge fees for introducing clients to financial service providers?
 validation.chargeFees.option.missing                  = Tell us if the company charges fees for introducing clients to financial service providers
 
+## Investment Fund Management Services
+pages.financialCompliance.investmentFundManagement.title            = Does the company provide investment fund management services?
+pages.financialCompliance.investmentFundManagement.heading          = Does the company provide investment fund management services?
+validation.investmentFundManagement.missing                  = Tell us if the company provides investment fund management services
+
 ## EORI Apply
 pages.applyEori.title                          = You need to apply for an Economic Operator Registration and Identification (EORI) number
 pages.applyEori.heading                        = You need to apply for an Economic Operator Registration and Identification (EORI) number
