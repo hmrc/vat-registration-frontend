@@ -24,7 +24,7 @@ import models._
 import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdditionalNonSecuritiesWork, AdviceOrConsultancy, ChargeFees}
+import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
@@ -93,13 +93,14 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
         s4l[VatReturnFrequency]() |@|
         s4l[AccountingPeriod]() |@|
         s4l[CompanyBankAccountDetails]())
-        .map(S4LVatFinancials).map { s4l => update(s4l.estimateVatTurnover, vs)
-        .andThen(update(s4l.zeroRatedTurnoverEstimate, vs))
-        .andThen(update(s4l.vatChargeExpectancy, vs))
-        .andThen(update(s4l.vatReturnFrequency, vs))
-        .andThen(update(s4l.accountingPeriod, vs))
-        .andThen(update(s4l.companyBankAccountDetails, vs))
-        .apply(vs.financials.getOrElse(VatFinancials.empty)) //TODO remove the "seeding" with empty
+        .map(S4LVatFinancials).map { s4l =>
+        update(s4l.estimateVatTurnover, vs)
+          .andThen(update(s4l.zeroRatedTurnoverEstimate, vs))
+          .andThen(update(s4l.vatChargeExpectancy, vs))
+          .andThen(update(s4l.vatReturnFrequency, vs))
+          .andThen(update(s4l.accountingPeriod, vs))
+          .andThen(update(s4l.companyBankAccountDetails, vs))
+          .apply(vs.financials.getOrElse(VatFinancials.empty)) //TODO remove the "seeding" with empty
       }
 
     for {
@@ -120,18 +121,23 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
         s4l[AdviceOrConsultancy]() |@|
         s4l[ActAsIntermediary]() |@|
         s4l[ChargeFees]() |@|
-        s4l[AdditionalNonSecuritiesWork]())
-        .map(S4LVatSicAndCompliance).map { s4l => update(s4l.description, vs)
-        .andThen(update(s4l.notForProfit, vs))
-        .andThen(update(s4l.companyProvideWorkers, vs))
-        .andThen(update(s4l.workers, vs))
-        .andThen(update(s4l.temporaryContracts, vs))
-        .andThen(update(s4l.skilledWorkers, vs))
-        .andThen(update(s4l.adviceOrConsultancy, vs))
-        .andThen(update(s4l.actAsIntermediary, vs))
-        .andThen(update(s4l.chargeFees, vs))
-        .andThen(update(s4l.additionalNonSecuritiesWork, vs))
-        .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance(""))) //TODO remove the "seeding" with empty
+        s4l[LeaseVehicles]() |@|
+        s4l[AdditionalNonSecuritiesWork]() |@|
+        s4l[DiscretionaryInvestmentManagementServices])
+        .map(S4LVatSicAndCompliance).map { s4l =>
+        update(s4l.description, vs)
+          .andThen(update(s4l.notForProfit, vs))
+          .andThen(update(s4l.companyProvideWorkers, vs))
+          .andThen(update(s4l.workers, vs))
+          .andThen(update(s4l.temporaryContracts, vs))
+          .andThen(update(s4l.skilledWorkers, vs))
+          .andThen(update(s4l.adviceOrConsultancy, vs))
+          .andThen(update(s4l.actAsIntermediary, vs))
+          .andThen(update(s4l.chargeFees, vs))
+          .andThen(update(s4l.leaseVehicles, vs))
+          .andThen(update(s4l.additionalNonSecuritiesWork, vs))
+          .andThen(update(s4l.discretionaryInvestmentManagementServices, vs))
+          .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance(""))) //TODO remove the "seeding" with empty
       }
 
     for {
@@ -149,13 +155,14 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
         s4l[VoluntaryRegistrationReason]() |@|
         s4l[EuGoods]() |@|
         s4l[ApplyEori]())
-        .map(S4LTradingDetails).map { s4l => update(s4l.voluntaryRegistration, vs)
-        .andThen(update(s4l.tradingName, vs))
-        .andThen(update(s4l.startDate, vs))
-        .andThen(update(s4l.voluntaryRegistrationReason, vs))
-        .andThen(update(s4l.euGoods, vs))
-        .andThen(update(s4l.applyEori, vs))
-        .apply(vs.tradingDetails.getOrElse(VatTradingDetails.empty)) //TODO remove the "seeding" with empty
+        .map(S4LTradingDetails).map { s4l =>
+        update(s4l.voluntaryRegistration, vs)
+          .andThen(update(s4l.tradingName, vs))
+          .andThen(update(s4l.startDate, vs))
+          .andThen(update(s4l.voluntaryRegistrationReason, vs))
+          .andThen(update(s4l.euGoods, vs))
+          .andThen(update(s4l.applyEori, vs))
+          .apply(vs.tradingDetails.getOrElse(VatTradingDetails.empty)) //TODO remove the "seeding" with empty
       }
 
     for {

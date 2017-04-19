@@ -22,7 +22,7 @@ import helpers.VatRegSpec
 import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdditionalNonSecuritiesWork, AdviceOrConsultancy, ChargeFees}
+import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
@@ -133,8 +133,14 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockS4LService.fetchAndGet[ChargeFees]()(Matchers.eq(S4LKey[ChargeFees]), any(), any()))
         .thenReturn(Future.successful(Some(ChargeFees(true))))
 
+      when(mockS4LService.fetchAndGet[LeaseVehicles]()(Matchers.eq(S4LKey[LeaseVehicles]), any(), any()))
+        .thenReturn(Future.successful(Some(LeaseVehicles(true))))
+
       when(mockS4LService.fetchAndGet[AdditionalNonSecuritiesWork]()(Matchers.eq(S4LKey[AdditionalNonSecuritiesWork]), any(), any()))
         .thenReturn(Future.successful(Some(AdditionalNonSecuritiesWork(true))))
+
+      when(mockS4LService.fetchAndGet[DiscretionaryInvestmentManagementServices]()(Matchers.eq(S4LKey[DiscretionaryInvestmentManagementServices]), any(), any()))
+        .thenReturn(Future.successful(Some(DiscretionaryInvestmentManagementServices(true))))
 
       when(mockS4LService.fetchAndGet[EuGoods]()(Matchers.eq(S4LKey[EuGoods]), any(), any()))
         .thenReturn(Future.successful(Some(validEuGoods)))
@@ -228,6 +234,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       when(mockS4LService.fetchAndGet[AdditionalNonSecuritiesWork]()(Matchers.eq(S4LKey[AdditionalNonSecuritiesWork]), any(), any()))
         .thenReturn(Future.successful(Some(AdditionalNonSecuritiesWork(true))))
+
+      when(mockS4LService.fetchAndGet[DiscretionaryInvestmentManagementServices]()(Matchers.eq(S4LKey[DiscretionaryInvestmentManagementServices]), any(), any()))
+        .thenReturn(Future.successful(Some(DiscretionaryInvestmentManagementServices(true))))
 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
       (any[HeaderCarrier](), any[HttpReads[VatScheme]]()))

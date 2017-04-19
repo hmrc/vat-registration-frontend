@@ -343,11 +343,28 @@ pages.financialCompliance.chargeFees.title            = Does the company charge 
 pages.financialCompliance.chargeFees.heading          = Does the company charge fees for introducing clients to financial service providers?
 validation.chargeFees.missing                         = Tell us if the company charges fees for introducing clients to financial service providers
 
+## Discretionary Investment Management Services
+pages.financialCompliance.discretionaryInvestmentManagementServices.title            = Does the company provide discretionary investment management services, or introduce clients to companies who do?
+pages.financialCompliance.discretionaryInvestmentManagementServices.heading          = Does the company provide discretionary investment management services, or introduce clients to companies who do?
+pages.financialCompliance.discretionaryInvestmentManagementServices.para             = ''Discretionary investment management'' is a service in which investment decisions are made by the company on behalf of the client.
+validation.discretionaryInvestmentManagementServices.missing                         = Tell us if the company provides discretionary investment management services, or introduces clients to companies who do
+
 ## Additional Non Securities Work
 pages.financialCompliance.additionalNonSecuritiesWork.title            = Does the company do additional work (excluding securities) when introducing a client to a financial service provider?
 pages.financialCompliance.additionalNonSecuritiesWork.para             = For example, helping to set the terms of a contract or making representations on behalf of a client.
 pages.financialCompliance.additionalNonSecuritiesWork.heading          = Does the company do additional work (excluding securities) when introducing a client to a financial service provider?
 validation.additionalNonSecuritiesWork.missing                         = Tell us if the company does additional work (excluding securities) when introducing a client to a financial service provider
+
+## Lease Vehicles or Equipment
+pages.financialCompliance.leaseVehicles.title            = Is the company involved in leasing vehicles or equipment to customers?
+pages.financialCompliance.leaseVehicles.heading          = Is the company involved in leasing vehicles or equipment to customers?
+pages.financialCompliance.leaseVehicles.para             = This includes leasing vehicles or equipment to customers, or receiving a commission for introducing customers to a leasing company.
+validation.leaseVehicles.missing                         = Tell us if the company is involved in leasing vehicles or equipment to customers
+
+## Investment Fund Management Services
+pages.financialCompliance.investmentFundManagement.title            = Does the company provide investment fund management services?
+pages.financialCompliance.investmentFundManagement.heading          = Does the company provide investment fund management services?
+validation.investmentFundManagement.missing                         = Tell us if the company provides investment fund management services
 
 ## Manage Additional Funds
 pages.financialCompliance.manageAdditionalFunds.title            = Does the company manage any funds that are not included in this list?
