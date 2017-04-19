@@ -330,18 +330,24 @@ validation.skilledWorkers.missing            = Tell us if your company provides 
 ## Advice Or Consultancy
 pages.financialCompliance.adviceOrConsultancy.title             = Does the company provide ''advice only'' or consultancy services?
 pages.financialCompliance.adviceOrConsultancy.heading           = Does the company provide ''advice only'' or consultancy services?
-validation.adviceOrConsultancy.option.missing                   = Tell us if the company provides advice-only or consultancy services
+validation.adviceOrConsultancy.missing                   = Tell us if the company provides advice-only or consultancy services
 
 ## Act As Intermediary
 pages.financialCompliance.actAsIntermediary.title               = Does the company act as an intermediary?
 pages.financialCompliance.actAsIntermediary.heading             = Does the company act as an intermediary?
 pages.financialCompliance.actAsIntermediary.para                = ''Intermediaries'' introduce people seeking a financial service to financial service providers. They are also known as brokers or agents.
-validation.actAsIntermediary.option.missing                     = Tell us if the company acts as an intermediary
+validation.actAsIntermediary.missing                     = Tell us if the company acts as an intermediary
 
 ## Charge Fees
 pages.financialCompliance.chargeFees.title            = Does the company charge fees for introducing clients to financial service providers?
 pages.financialCompliance.chargeFees.heading          = Does the company charge fees for introducing clients to financial service providers?
-validation.chargeFees.option.missing                  = Tell us if the company charges fees for introducing clients to financial service providers
+validation.chargeFees.missing                  = Tell us if the company charges fees for introducing clients to financial service providers
+
+## Additional Non Securities Work
+pages.financialCompliance.additionalNonSecuritiesWork.title            = Does the company do additional work (excluding securities) when introducing a client to a financial service provider?
+pages.financialCompliance.additionalNonSecuritiesWork.para             = For example, helping to set the terms of a contract or making representations on behalf of a client.
+pages.financialCompliance.additionalNonSecuritiesWork.heading          = Does the company do additional work (excluding securities) when introducing a client to a financial service provider?
+validation.additionalNonSecuritiesWork.missing                  = Tell us if the company does additional work (excluding securities) when introducing a client to a financial service provider
 
 ## EORI Apply
 pages.applyEori.title                          = You need to apply for an Economic Operator Registration and Identification (EORI) number
