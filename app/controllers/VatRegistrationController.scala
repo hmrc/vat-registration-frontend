@@ -57,22 +57,19 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
     *
     * @return an AuthenticatedBy action builder that is specific to VatTaxRegime and GGConfidence confidence level
     */
-  protected def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
+  protected[controllers] def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
 
-  protected def viewModel[T: ApiModelTransformer : S4LKey : Format]
+  protected[controllers] def viewModel[T: ApiModelTransformer : S4LKey : Format]
   ()
   (implicit s4l: S4LService, vrs: RegistrationService, hc: HeaderCarrier): OptionT[Future, T] =
     OptionT(s4l.fetchAndGet[T]()).orElseF(vrs.getVatScheme() map ApiModelTransformer[T].toViewModel)
 
-  // $COVERAGE-OFF$
-  //TODO toggle coverage back on soon
-  protected def copyGlobalErrorsToFields[T](globalErrors: String*): Form[T] => Form[T] =
-  fwe => fwe.copy(errors = fwe.errors ++ fwe.globalErrors.filter(_.args.headOption.exists(globalErrors.contains))
-    .foldLeft(Seq.empty[FormError]) {
-      (acc, err) => acc :+ FormError(err.args.head.asInstanceOf[String], err.message, err.args)
+  protected[controllers] def copyGlobalErrorsToFields[T](globalErrors: String*): Form[T] => Form[T] =
+    fwe => fwe.copy(errors = fwe.errors ++ fwe.globalErrors.collect {
+      case fe if fe.args.headOption.exists(globalErrors.contains) =>
+        FormError(fe.args.head.asInstanceOf[String], fe.message, fe.args)
     })
 
-  // $COVERAGE-ON$
 }
 
 @Singleton

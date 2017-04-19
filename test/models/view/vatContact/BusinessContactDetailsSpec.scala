@@ -22,7 +22,7 @@ import models.{ApiModelTransformer, ViewModelTransformer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
-class BusinessContactDetailsSpec  extends UnitSpec with VatRegistrationFixture with Inside {
+class BusinessContactDetailsSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
   "toApi" should {
     val initialVatContact = VatContact(VatDigitalContact(email = "initial@com", tel = None, mobile = None), website = None)
