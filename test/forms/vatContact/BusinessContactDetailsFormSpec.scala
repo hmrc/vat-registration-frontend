@@ -17,11 +17,11 @@
 package forms.vatContact
 
 import models.view.vatContact.BusinessContactDetails
-import org.scalatest.{Inside, Inspectors, Matchers}
-import testHelpers.FormInspectors
 import uk.gov.hmrc.play.test.UnitSpec
 
-class BusinessContactDetailsFormSpec extends UnitSpec with Inspectors with Matchers with Inside with FormInspectors {
+class BusinessContactDetailsFormSpec extends UnitSpec {
+
+  import testHelpers.FormInspectors._
 
   val testForm = BusinessContactDetailsForm.form
 
@@ -36,18 +36,19 @@ class BusinessContactDetailsFormSpec extends UnitSpec with Inspectors with Match
     "be valid" when {
 
       "email and mobile number is provided" in {
-        val data = Map("email" -> EMAIL, "mobile" -> MOBILE)
-        testForm.bind(data).errors shouldBe 'empty
+        val data = Map("email" -> Seq(EMAIL), "mobile" -> Seq(MOBILE))
+        testForm.bindFromRequest(data) shouldContainValue BusinessContactDetails(EMAIL, None, Some(MOBILE), None)
       }
 
       "email and phone number is provided" in {
-        val data = Map("email" -> EMAIL, "daytimePhone" -> DAYTIME_PHONE)
-        testForm.bind(data).errors shouldBe 'empty
+        val data = Map("email" -> Seq(EMAIL), "daytimePhone" -> Seq(DAYTIME_PHONE))
+        testForm.bindFromRequest(data) shouldContainValue BusinessContactDetails(EMAIL, Some(DAYTIME_PHONE), None, None)
       }
 
       "email and both phone numbers are provided" in {
-        val data = Map("email" -> EMAIL, "mobile" -> MOBILE, "daytimePhone" -> DAYTIME_PHONE)
-        testForm.bind(data).errors shouldBe 'empty
+        val data = Map("email" -> Seq(EMAIL), "mobile" -> Seq(MOBILE), "daytimePhone" -> Seq(DAYTIME_PHONE))
+        testForm.bindFromRequest(data) shouldContainValue BusinessContactDetails(
+          email = EMAIL, daytimePhone = Some(DAYTIME_PHONE), mobile = Some(MOBILE), website = None)
       }
 
       "all fields filled in" in {
@@ -60,8 +61,7 @@ class BusinessContactDetailsFormSpec extends UnitSpec with Inspectors with Match
 
         val form = testForm.bindFromRequest(data)
 
-        form.errors shouldBe 'empty
-        form.value shouldBe Some(BusinessContactDetails(EMAIL, Some(DAYTIME_PHONE), Some(MOBILE), Some(WEBSITE)))
+        form shouldContainValue BusinessContactDetails(EMAIL, Some(DAYTIME_PHONE), Some(MOBILE), Some(WEBSITE))
       }
 
       "any additional values are submitted" in {
@@ -72,8 +72,7 @@ class BusinessContactDetailsFormSpec extends UnitSpec with Inspectors with Match
 
         val form = testForm.bindFromRequest(data)
 
-        form.errors shouldBe 'empty
-        form.value shouldBe Some(BusinessContactDetails(EMAIL, Some(DAYTIME_PHONE), None, None))
+        form shouldContainValue BusinessContactDetails(EMAIL, Some(DAYTIME_PHONE), None, None)
       }
 
     }
@@ -81,44 +80,41 @@ class BusinessContactDetailsFormSpec extends UnitSpec with Inspectors with Match
     "be rejected with appropriate error messages" when {
 
       "no phone number is provided, just email" in {
-        val data = Map("email" -> EMAIL)
-        val form = testForm.bind(data)
-        form shouldHaveGlobalErrors(
+        val data = Map("email" -> Seq(EMAIL))
+        val form = testForm.bindFromRequest(data)
+        form.shouldHaveGlobalErrors(
           "validation.businessContactDetails.mobile.missing",
           "validation.businessContactDetails.daytimePhone.missing"
         )
       }
 
-
       "invalid mobile phone number is provided and email" in {
-        val data = Map("email" -> EMAIL, "mobile" -> "invalid phone number")
-        val form = testForm.bind(data)
+        val data = Map("email" -> Seq(EMAIL), "mobile" -> Seq("invalid phone number"))
+        val form = testForm.bindFromRequest(data)
         form shouldHaveErrors Seq("mobile" -> "validation.businessContactDetails.mobile.invalid")
       }
 
-
       "invalid daytime phone number is provided and email" in {
-        val data = Map("email" -> EMAIL, "daytimePhone" -> "invalid phone number")
-        val form = testForm.bind(data)
+        val data = Map("email" -> Seq(EMAIL), "daytimePhone" -> Seq("invalid phone number"))
+        val form = testForm.bindFromRequest(data)
         form shouldHaveErrors Seq("daytimePhone" -> "validation.businessContactDetails.daytimePhone.invalid")
       }
 
       "no email is provided" in {
-        val data = Map("daytimePhone" -> DAYTIME_PHONE)
-        val form = testForm.bind(data)
+        val data = Map("daytimePhone" -> Seq(DAYTIME_PHONE))
+        val form = testForm.bindFromRequest(data)
         form shouldHaveErrors Seq("email" -> "validation.businessContactDetails.email.missing")
       }
 
-
       "blank email is provided" in {
-        val data = Map("email" -> "", "daytimePhone" -> DAYTIME_PHONE)
-        val form = testForm.bind(data)
+        val data = Map("email" -> Seq(""), "daytimePhone" -> Seq(DAYTIME_PHONE))
+        val form = testForm.bindFromRequest(data)
         form shouldHaveErrors Seq("email" -> "validation.businessContactDetails.email.missing")
       }
 
       "invalid email is provided" in {
-        val data = Map("email" -> "some invalid email", "daytimePhone" -> DAYTIME_PHONE)
-        val form = testForm.bind(data)
+        val data = Map("email" -> Seq("some invalid email"), "daytimePhone" -> Seq(DAYTIME_PHONE))
+        val form = testForm.bindFromRequest(data)
         form shouldHaveErrors Seq("email" -> "validation.businessContactDetails.email.invalid")
       }
 
