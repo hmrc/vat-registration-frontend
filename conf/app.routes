@@ -108,6 +108,9 @@ POST        /charges-fees-for-introducing-clients-to-financial-service-providers
 GET         /does-additional-work-when-introducing-client-to-financial-service-provider     controllers.sicAndCompliance.financial.AdditionalNonSecuritiesWorkController.show
 POST        /does-additional-work-when-introducing-client-to-financial-service-provider     controllers.sicAndCompliance.financial.AdditionalNonSecuritiesWorkController.submit
 
+GET         /manages-funds-not-included-in-this-list     controllers.sicAndCompliance.financial.ManageAdditionalFundsController.show
+POST        /manages-funds-not-included-in-this-list     controllers.sicAndCompliance.financial.ManageAdditionalFundsController.submit
+
 ## BUSINESS CONTACT DETAILS PAGE
 GET         /business-contact                      controllers.vatContact.BusinessContactDetailsController.show
 POST        /business-contact                      controllers.vatContact.BusinessContactDetailsController.submit
