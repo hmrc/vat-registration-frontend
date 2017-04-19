@@ -41,9 +41,19 @@ class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPl
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(formWithErrors))),
-      (data: DiscretionaryInvestmentManagementServices) => s4LService.saveForm[DiscretionaryInvestmentManagementServices](data)
-        .map(_ => Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))
+      formWithErrors => {
+        Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(formWithErrors)))
+      }, {
+        data: DiscretionaryInvestmentManagementServices => {
+          s4LService.saveForm[DiscretionaryInvestmentManagementServices](data) map { _ =>
+            if (!data.yesNo) {
+              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+            } else {
+              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+            }
+          }
+        }
+      }
     )
   )
 
