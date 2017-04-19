@@ -21,24 +21,24 @@ import models.api.{VatComplianceFinancial, VatSicAndCompliance}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
-class ChargeFeesSpec extends UnitSpec with VatRegistrationFixture {
+class AdditionalNonSecuritiesWorkSpec extends UnitSpec with VatRegistrationFixture {
 
   "toApi" should {
-    val chargeFees = ChargeFees(false)
+    val additionalNonSecuritiesWork = AdditionalNonSecuritiesWork(false)
 
     val vatSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, chargeFees = Some(true)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, additionalNonSecuritiesWork = Some(true)))
     )
 
     val differentSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, chargeFees = Some(false)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, additionalNonSecuritiesWork = Some(false)))
     )
 
-    "update VatSicAndCompliance with new ChargeFees" in {
-      ViewModelTransformer[ChargeFees, VatSicAndCompliance]
-        .toApi(chargeFees, vatSicAndCompliance) shouldBe differentSicAndCompliance
+    "update VatSicAndCompliance with new AdditionalNonSecuritiesWork" in {
+      ViewModelTransformer[AdditionalNonSecuritiesWork, VatSicAndCompliance]
+        .toApi(additionalNonSecuritiesWork, vatSicAndCompliance) shouldBe differentSicAndCompliance
     }
   }
 
@@ -46,28 +46,28 @@ class ChargeFeesSpec extends UnitSpec with VatRegistrationFixture {
 
     "convert VatScheme without SicAndCompliance to empty view model" in {
       val vs = vatScheme(sicAndCompliance = None)
-      ApiModelTransformer[ChargeFees].toViewModel(vs) shouldBe None
+      ApiModelTransformer[AdditionalNonSecuritiesWork].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme without FinancialCompliance section to empty view model" in {
       val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = None)))
-      ApiModelTransformer[ChargeFees].toViewModel(vs) shouldBe None
+      ApiModelTransformer[AdditionalNonSecuritiesWork].toViewModel(vs) shouldBe None
     }
 
-    "convert VatScheme with FinancialCompliance section to view model - Charge Fees yes" in {
+    "convert VatScheme with FinancialCompliance section to view model - Additional Non Securities Work yes" in {
       val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(
                                                                                                         true,
                                                                                                         true,
-                                                                                                        chargeFees = Some(true))))))
-      ApiModelTransformer[ChargeFees].toViewModel(vs) shouldBe Some(ChargeFees(true))
+                                                                                                        additionalNonSecuritiesWork = Some(true))))))
+      ApiModelTransformer[AdditionalNonSecuritiesWork].toViewModel(vs) shouldBe Some(AdditionalNonSecuritiesWork(true))
     }
 
-    "convert VatScheme with FinancialCompliance section to view model - Charge Fees no" in {
+    "convert VatScheme with FinancialCompliance section to view model - Additional Non Securities Work no" in {
       val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(
                                                                                                         true,
                                                                                                         true,
-                                                                                                        chargeFees = Some(false))))))
-      ApiModelTransformer[ChargeFees].toViewModel(vs) shouldBe Some(ChargeFees(false))
+                                                                                                        additionalNonSecuritiesWork = Some(false))))))
+      ApiModelTransformer[AdditionalNonSecuritiesWork].toViewModel(vs) shouldBe Some(AdditionalNonSecuritiesWork(false))
     }
 
   }
