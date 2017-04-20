@@ -20,6 +20,7 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 
 import builders.AuthBuilder
+import cats.data.OptionT
 import common.Now
 import fixtures.VatRegistrationFixture
 import forms.vatTradingDetails.vatChoice.StartDateFormFactory
@@ -33,14 +34,14 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DateService, VatRegistrationService}
+import services.{DateService, IIService, VatRegistrationService}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
-  
+
   val today: LocalDate = LocalDate.of(2017, 3, 21)
 
   val mockVatRegistrationService = mock[VatRegistrationService]
@@ -48,9 +49,15 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
   val mockDateService = mock[DateService]
   when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
 
+  import cats.instances.future._
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  val mockIIService = mock[IIService]
+  when(mockIIService.getCTActiveDate()(any())).thenReturn(OptionT.pure[Future, LocalDate](LocalDate.of(2017, 4, 20)))
+
   val startDateFormFactory = new StartDateFormFactory(mockDateService, Now[LocalDate](today))
 
-  object TestStartDateController extends StartDateController(startDateFormFactory, ds)(mockS4LService, mockVatRegistrationService) {
+  object TestStartDateController extends StartDateController(startDateFormFactory, mockIIService, ds)(mockS4LService, mockVatRegistrationService) {
     implicit val fixedToday = Now[LocalDate](today)
     override val authConnector = mockAuthConnector
   }
