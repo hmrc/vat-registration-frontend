@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 import common.Now
 import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
-import forms.FormValidation.inRange
+import forms.FormValidation.{inRange, textMapping}
 import models.DateModel
 import models.view.vatTradingDetails.vatChoice.StartDateView
 import play.api.data.Form
@@ -45,7 +45,7 @@ class StartDateFormFactory @Inject()(dateService: DateService, today: Now[LocalD
 
     Form(
       mapping(
-        RADIO_INPUT_NAME -> nonEmptyText.verifying(StartDateView.validSelection),
+        RADIO_INPUT_NAME -> textMapping()("startDate.choice").verifying(StartDateView.validSelection),
         "startDate" -> mandatoryIf(
           isEqual(RADIO_INPUT_NAME, StartDateView.SPECIFIC_DATE),
           mapping(
