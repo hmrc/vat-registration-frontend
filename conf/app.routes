@@ -117,6 +117,8 @@ POST        /involved-in-leasing-vehicles-or-equipment     controllers.sicAndCom
 GET         /provides-discretionary-investment-management-services     controllers.sicAndCompliance.financial.DiscretionaryInvestmentManagementServicesController.show
 POST        /provides-discretionary-investment-management-services     controllers.sicAndCompliance.financial.DiscretionaryInvestmentManagementServicesController.submit
 
+GET         /manages-funds-not-included-in-this-list     controllers.sicAndCompliance.financial.ManageAdditionalFundsController.show
+POST        /manages-funds-not-included-in-this-list     controllers.sicAndCompliance.financial.ManageAdditionalFundsController.submit
 
 ## BUSINESS CONTACT DETAILS PAGE
 GET         /business-contact                      controllers.vatContact.BusinessContactDetailsController.show

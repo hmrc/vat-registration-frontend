@@ -97,10 +97,10 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
     }
   }
 
-  s"POST ${routes.DiscretionaryInvestmentManagementServicesController.submit()} with Provide Discretionary Investment Management Services No selected" should {
+  s"POST ${routes.DiscretionaryInvestmentManagementServicesController.submit()} with Provide Discretionary Investment Management Services Yes selected" should {
 
     "return 303" in {
-      val returnCacheMapDiscretionaryInvestmentManagementServices = CacheMap("", Map("" -> Json.toJson(DiscretionaryInvestmentManagementServices(false))))
+      val returnCacheMapDiscretionaryInvestmentManagementServices = CacheMap("", Map("" -> Json.toJson(DiscretionaryInvestmentManagementServices(true))))
 
       when(mockS4LService.saveForm[DiscretionaryInvestmentManagementServices]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -116,7 +116,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
     }
   }
 
-  s"POST ${routes.ChargeFeesController.submit()} with Provide Discretionary Investment Management Services Yes selected" should {
+  s"POST ${routes.ChargeFeesController.submit()} with Provide Discretionary Investment Management Services No selected" should {
 
     "return 303" in {
       val returnCacheMapDiscretionaryInvestmentManagementServices = CacheMap("", Map("" -> Json.toJson(DiscretionaryInvestmentManagementServices(false))))
@@ -129,7 +129,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
         "discretionaryInvestmentManagementServicesRadio" -> "false"
       )) {
         response =>
-          response redirectsTo s"$contextRoot/company-bank-account"
+          response redirectsTo s"$contextRoot/involved-in-leasing-vehicles-or-equipment"
       }
 
     }
