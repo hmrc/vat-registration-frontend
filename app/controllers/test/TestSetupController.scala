@@ -35,7 +35,6 @@ import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBank
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
-import play.api.data.Forms.{optional, text}
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService}
