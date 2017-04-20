@@ -42,7 +42,15 @@ object TestSetupForm {
     "labourCompanyProvideWorkers" -> optional(text),
     "labourWorkers" -> optional(text),
     "labourTemporaryContracts" -> optional(text),
-    "labourSkilledWorkers" -> optional(text)
+    "labourSkilledWorkers" -> optional(text),
+    "financialAdviceOrConsultancy" -> optional(text),
+    "financialActAsIntermediary" -> optional(text),
+    "financialChargeFees" -> optional(text),
+    "financialAdditionalNonSecuritiesWork" -> optional(text),
+    "financialDiscretionaryInvestment" -> optional(text),
+    "financialLeaseVehiclesOrEquipment" -> optional(text),
+    "financialInvestmentFundManagement" -> optional(text),
+    "financialManageAdditionalFunds" ->optional(text)
   )(SicAndComplianceTestSetup.apply)(SicAndComplianceTestSetup.unapply)
 
   val vatTradingDetailsTestSetupMapping = mapping(
