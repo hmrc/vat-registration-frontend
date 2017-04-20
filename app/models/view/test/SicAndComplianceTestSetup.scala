@@ -28,7 +28,15 @@ case class SicAndComplianceTestSetup(businessActivityDescription: Option[String]
                                      labourCompanyProvideWorkers: Option[String],
                                      labourWorkers: Option[String],
                                      labourTemporaryContracts: Option[String],
-                                     labourSkilledWorkers: Option[String]
+                                     labourSkilledWorkers: Option[String],
+                                     financialAdviceOrConsultancy: Option[String],
+                                     financialActAsIntermediary: Option[String],
+                                     financialChargeFees: Option[String],
+                                     financialAdditionalNonSecuritiesWork: Option[String],
+                                     financialDiscretionaryInvestment: Option[String],
+                                     financialLeaseVehiclesOrEquipment: Option[String],
+                                     financialInvestmentFundManagement: Option[String],
+                                     financialManageAdditionalFunds: Option[String]
                                     )
 
 object SicAndComplianceTestSetup {
