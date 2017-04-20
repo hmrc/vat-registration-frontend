@@ -63,7 +63,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   }
 
   "Calling submitVatScheme" should {
-    "return a downstream success when both trading details and vat-choice are upserted" in new Setup {
+    "return a success response when the VatScheme is upserted" in new Setup {
       mockFetchRegId(validRegId)
 
       when(mockS4LService.fetchAndGet[StartDateView]()(Matchers.eq(S4LKey[StartDateView]), any(), any()))
@@ -141,6 +141,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       when(mockS4LService.fetchAndGet[DiscretionaryInvestmentManagementServices]()(Matchers.eq(S4LKey[DiscretionaryInvestmentManagementServices]), any(), any()))
         .thenReturn(Future.successful(Some(DiscretionaryInvestmentManagementServices(true))))
+
+      when(mockS4LService.fetchAndGet[InvestmentFundManagement]()(Matchers.eq(S4LKey[InvestmentFundManagement]), any(), any()))
+        .thenReturn(Future.successful(Some(InvestmentFundManagement(true))))
+
+      when(mockS4LService.fetchAndGet[ManageAdditionalFunds]()(Matchers.eq(S4LKey[ManageAdditionalFunds]), any(), any()))
+        .thenReturn(Future.successful(Some(ManageAdditionalFunds(true))))
 
       when(mockS4LService.fetchAndGet[EuGoods]()(Matchers.eq(S4LKey[EuGoods]), any(), any()))
         .thenReturn(Future.successful(Some(validEuGoods)))
@@ -237,6 +243,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       when(mockS4LService.fetchAndGet[DiscretionaryInvestmentManagementServices]()(Matchers.eq(S4LKey[DiscretionaryInvestmentManagementServices]), any(), any()))
         .thenReturn(Future.successful(Some(DiscretionaryInvestmentManagementServices(true))))
+
+      when(mockS4LService.fetchAndGet[InvestmentFundManagement]()(Matchers.eq(S4LKey[InvestmentFundManagement]), any(), any()))
+        .thenReturn(Future.successful(Some(InvestmentFundManagement(true))))
+
+      when(mockS4LService.fetchAndGet[ManageAdditionalFunds]()(Matchers.eq(S4LKey[ManageAdditionalFunds]), any(), any()))
+        .thenReturn(Future.successful(Some(ManageAdditionalFunds(true))))
 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
       (any[HeaderCarrier](), any[HttpReads[VatScheme]]()))

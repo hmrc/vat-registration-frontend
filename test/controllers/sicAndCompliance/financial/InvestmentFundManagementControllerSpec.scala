@@ -110,7 +110,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
         "investmentFundManagementRadio" -> "true"
       )) {
         response =>
-          response redirectsTo s"$contextRoot/company-bank-account"
+          response redirectsTo s"$contextRoot/manages-funds-not-included-in-this-list"
       }
 
     }
