@@ -23,9 +23,10 @@
                     @govHelpers.inputRadioGroup(
                         startDateForm("startDateRadio"),
                         Seq(
-                            StartDateView.COMPANY_REGISTRATION_DATE -> Messages("pages.startDate.radio.whenRegistered"),
-                            StartDateView.SPECIFIC_DATE -> Messages("pages.startDate.radio.specificDate")
-                        ),
+                            Some(StartDateView.COMPANY_REGISTRATION_DATE -> Messages("pages.startDate.radio.whenRegistered")),
+                            startDateForm.value.flatMap(_.ctActiveDate).map(d => StartDateView.BUSINESS_START_DATE -> messages("pages.startDate.radio.whenTrading", d)),
+                            Some(StartDateView.SPECIFIC_DATE -> Messages("pages.startDate.radio.specificDate"))
+                        ).flatten,
                         '_labelAfter -> true,
                         '_labelClass -> "block-label",
                         '_legend -> ""

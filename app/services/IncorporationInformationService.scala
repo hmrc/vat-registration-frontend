@@ -16,24 +16,30 @@
 
 package services
 
-import cats.data.OptionT
-import common.exceptions.DownstreamExceptions._
-import connectors.KeystoreConnector
-import play.api.Logger
-import uk.gov.hmrc.play.http.HeaderCarrier
-import cats.instances.future._
-import scala.concurrent.ExecutionContext.Implicits.global
+import java.time.LocalDate
+import javax.inject.Inject
 
+import cats.data.OptionT
+import com.google.inject.ImplementedBy
+import uk.gov.hmrc.play.http.HeaderCarrier
+
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait CommonService {
+@ImplementedBy(classOf[IncorporationInformationService])
+trait IIService {
 
-  val keystoreConnector: KeystoreConnector = KeystoreConnector
+  def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionT[Future, LocalDate]
 
-  def fetchRegistrationId(implicit hc: HeaderCarrier): Future[String] =
-    OptionT(keystoreConnector.fetchAndGet[String]("RegistrationId")).getOrElse {
-      Logger.error("Could not find a registration ID in keystore")
-      throw new RegistrationIdNotFoundException
-    }
+}
+
+class IncorporationInformationService @Inject()() extends IIService {
+
+  import cats.instances.future._
+  import cats.syntax.applicative._
+
+
+  def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionT[Future, LocalDate] =
+    OptionT(Option(LocalDate.now()).pure)
 
 }

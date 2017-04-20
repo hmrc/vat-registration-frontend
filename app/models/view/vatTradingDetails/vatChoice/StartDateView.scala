@@ -24,7 +24,11 @@ import play.api.libs.json.Json
 
 import scala.util.Try
 
-case class StartDateView(dateType: String = "", date: Option[LocalDate] = None)
+case class StartDateView(dateType: String = "", date: Option[LocalDate] = None, ctActiveDate: Option[LocalDate] = None) {
+
+  def withCtActiveDateOption(d: LocalDate): StartDateView = this.copy(ctActiveDate = Some(d))
+
+}
 
 object StartDateView {
 
