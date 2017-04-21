@@ -102,6 +102,9 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
     "return 303" in {
       val returnCacheMapDiscretionaryInvestmentManagementServices = CacheMap("", Map("" -> Json.toJson(DiscretionaryInvestmentManagementServices(true))))
 
+      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
+
       when(mockS4LService.saveForm[DiscretionaryInvestmentManagementServices]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapDiscretionaryInvestmentManagementServices))
@@ -120,6 +123,9 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
 
     "return 303" in {
       val returnCacheMapDiscretionaryInvestmentManagementServices = CacheMap("", Map("" -> Json.toJson(DiscretionaryInvestmentManagementServices(false))))
+
+      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
 
       when(mockS4LService.saveForm[DiscretionaryInvestmentManagementServices]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))

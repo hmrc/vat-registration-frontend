@@ -102,6 +102,9 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
     "redirects to next screen in the flow" in {
       val leaseVehicles = CacheMap("", Map("" -> Json.toJson(LeaseVehicles(true))))
 
+      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
+
       when(mockS4LService.saveForm[LeaseVehicles]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(leaseVehicles))
@@ -120,6 +123,9 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
 
     "redirects to next screen in the flow" in {
       val leaseVehicles = CacheMap("", Map("" -> Json.toJson(LeaseVehicles(false))))
+
+      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
 
       when(mockS4LService.saveForm[LeaseVehicles]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))

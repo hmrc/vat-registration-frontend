@@ -31,7 +31,7 @@ import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
-import models.{S4LKey, VatBankAccountPath}
+import models.{S4LKey, VatBankAccountPath, ZeroRatedTurnoverEstimatePath}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -300,6 +300,24 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.deleteElement(any())(any())(any(), any()))
         .thenReturn(Future.successful(true))
       service.deleteElement(VatBankAccountPath) returns true
+    }
+  }
+
+  "Calling deleteElements with items" should {
+    "return a success response when successful" in new Setup {
+      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+      when(mockRegConnector.deleteElement(any())(any())(any(), any()))
+        .thenReturn(Future.successful(true))
+      service.deleteElements(List(VatBankAccountPath, ZeroRatedTurnoverEstimatePath)) returns true
+    }
+  }
+
+  "Calling deleteElements without items" should {
+    "return a success response when successful" in new Setup {
+      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+      when(mockRegConnector.deleteElement(any())(any())(any(), any()))
+        .thenReturn(Future.successful(true))
+      service.deleteElements(List()) returns true
     }
   }
 

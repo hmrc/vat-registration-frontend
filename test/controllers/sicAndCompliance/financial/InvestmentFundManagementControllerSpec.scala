@@ -102,6 +102,9 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
     "return 303" in {
       val returnCacheMapInvestmentFundManagement = CacheMap("", Map("" -> Json.toJson(InvestmentFundManagement(true))))
 
+      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
+
       when(mockS4LService.saveForm[InvestmentFundManagement]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapInvestmentFundManagement))
@@ -120,6 +123,9 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
     "return 303" in {
       val returnCacheMapInvestmentFundManagement = CacheMap("", Map("" -> Json.toJson(InvestmentFundManagement(false))))
+
+      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
 
       when(mockS4LService.saveForm[InvestmentFundManagement]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
