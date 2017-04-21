@@ -264,6 +264,18 @@ pages.summary.companyContactDetails.daytimePhone                = Business dayti
 pages.summary.companyContactDetails.mobile                      = Business mobile number
 pages.summary.companyContactDetails.website                     = Business website address
 
+## Summary Page Company Providing Financial
+pages.summary.companyProvidingFinancial.sectionHeading                                          = Providing financial services
+pages.summary.companyProvidingFinancial.provides.advice.or.consultancy                          = Provide ''advice only'' or consultancy services
+pages.summary.companyProvidingFinancial.acts.as.intermediary                                    = Act as an intermediary
+pages.summary.companyProvidingFinancial.charges.fees                                            = Charge fees for introducing clients to financial service providers
+pages.summary.companyProvidingFinancial.does.additional.work.when.introducing.client            = Additional work when introducing a client to a financial service provider
+pages.summary.companyProvidingFinancial.provides.discretionary.investment.management            = Provide discretionary investment management services
+pages.summary.companyProvidingFinancial.involved.in.leasing.vehicles.or.equipment               = Involved in leasing vehicles or equipment to customers
+pages.summary.companyProvidingFinancial.provides.investment.fund.management                     = Provide investment fund management services
+pages.summary.companyProvidingFinancial.manages.funds.not.included.in.this.list                 = Manage any funds that are not included in this list
+
+
 ## Error Pages
 errorPages.title                        = Something went wrong
 errorPages.restart.heading              = Sorry, we''re having technical issues.
