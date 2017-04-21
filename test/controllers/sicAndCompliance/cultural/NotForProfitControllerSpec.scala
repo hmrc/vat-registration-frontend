@@ -116,6 +116,9 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
     "return 303" in {
       val returnCacheMapNotForProfit = CacheMap("", Map("" -> Json.toJson(NotForProfit(NotForProfit.NOT_PROFIT_YES))))
 
+      when(mockVatRegistrationService.deleteElement(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
+
       when(mockS4LService.saveForm[NotForProfit]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapNotForProfit))
@@ -135,6 +138,9 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
 
     "return 303" in {
       val returnCacheMapNotForProfit = CacheMap("", Map("" -> Json.toJson(NotForProfit(NotForProfit.NOT_PROFIT_NO))))
+
+      when(mockVatRegistrationService.deleteElement(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
 
       when(mockS4LService.saveForm[NotForProfit]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
