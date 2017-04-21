@@ -26,60 +26,81 @@ case class SummaryCompanyProvidingFinancialSectionBuilder
 )
   extends SummarySectionBuilder {
 
-/*
-
-## Summary Page Company Providing Financial
-pages.summary.companyProvidingFinancial.sectionHeading                                          = Providing financial services
-pages.summary.companyProvidingFinancial.provides.advice.or.consultancy                          = Provide ''advice only'' or consultancy services
-pages.summary.companyProvidingFinancial.acts.as.intermediary                                    = Act as an intermediary
-pages.summary.companyProvidingFinancial.charges.fees                                            = Charge fees for introducing clients to financial service providers
-pages.summary.companyProvidingFinancial.does.additional.work.when.introducing.client            = Additional work when introducing a client to a financial service provider
-pages.summary.companyProvidingFinancial.provides.discretionary.investment.management            = Provide discretionary investment management services
-pages.summary.companyProvidingFinancial.involved.in.leasing.vehicles.or.equipment               = Involved in leasing vehicles or equipment to customers
-pages.summary.companyProvidingFinancial.provides.investment.fund.management                     = Provide investment fund management services
-pages.summary.companyProvidingFinancial.manages.funds.not.included.in.this.list
- */
   val provideAdviceRow: SummaryRow = SummaryRow(
     "companyProvidingFinancial.provides.advice.or.consultancy",
-    vatSicAndCompliance.flatMap( _.financialCompliance.map(_.adviceOrConsultancyOnly)).fold("app.common.no")(_ => "app.common.yes"),
-    Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
-  )
-
-  val companyBusinessDescriptionRow: SummaryRow = SummaryRow(
-    "companyDetails.businessActivity.description",
-    vatSicAndCompliance.collect {
-      case VatSicAndCompliance(description, _, _, _) if StringUtils.isNotBlank(description) => description
+    vatSicAndCompliance.flatMap( _.financialCompliance.map(_.adviceOrConsultancyOnly)).collect {
+      case true => "app.common.yes"
     }.getOrElse("app.common.no"),
-    Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+    Some(controllers.sicAndCompliance.financial.routes.AdviceOrConsultancyController.show())
   )
 
-  val businessDaytimePhoneNumberRow: SummaryRow = SummaryRow(
-    "companyContactDetails.daytimePhone",
-    vatContact.flatMap(_.digitalContact.tel).getOrElse(""),
-    Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
+  val actAsIntermediaryRow: SummaryRow = SummaryRow(
+    "companyProvidingFinancial.acts.as.intermediary",
+    vatSicAndCompliance.flatMap( _.financialCompliance.map(_.actAsIntermediary)).collect {
+    case true => "app.common.yes"
+    }.getOrElse("app.common.no"),
+    Some(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show())
   )
 
-  val businessMobilePhoneNumberRow: SummaryRow = SummaryRow(
-    "companyContactDetails.mobile",
-    vatContact.flatMap(_.digitalContact.mobile).getOrElse(""),
-    Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
+  val chargesFeesRow: SummaryRow = SummaryRow(
+    "companyProvidingFinancial.charges.fees",
+    vatSicAndCompliance.flatMap( _.financialCompliance.flatMap(_.chargeFees)).collect {
+      case true => "app.common.yes"
+    }.getOrElse("app.common.no"),
+    Some(controllers.sicAndCompliance.financial.routes.ChargeFeesController.show())
   )
 
-
-  val businessWebsiteRow: SummaryRow = SummaryRow(
-    "companyContactDetails.website",
-    vatContact.flatMap(_.website).getOrElse(""),
-    Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
+  val additionalWorkRow: SummaryRow = SummaryRow(
+    "companyProvidingFinancial.does.additional.work.when.introducing.client",
+    vatSicAndCompliance.flatMap( _.financialCompliance.flatMap(_.additionalNonSecuritiesWork)).collect {
+      case true => "app.common.yes"
+    }.getOrElse("app.common.no"),
+    Some(controllers.sicAndCompliance.financial.routes.AdditionalNonSecuritiesWorkController.show())
   )
 
+  val provideDiscretionaryInvestmentRow: SummaryRow = SummaryRow(
+    "companyProvidingFinancial.provides.discretionary.investment.management",
+    vatSicAndCompliance.flatMap( _.financialCompliance.flatMap(_.discretionaryInvestmentManagementServices)).collect {
+      case true => "app.common.yes"
+    }.getOrElse("app.common.no"),
+    Some(controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show())
+  )
+
+  val leasingVehicleRow: SummaryRow = SummaryRow(
+    "companyProvidingFinancial.involved.in.leasing.vehicles.or.equipment",
+    vatSicAndCompliance.flatMap( _.financialCompliance.flatMap(_.vehicleOrEquipmentLeasing)).collect {
+      case true => "app.common.yes"
+    }.getOrElse("app.common.no"),
+    Some(controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show())
+  )
+
+  val investmentFundManagementRow: SummaryRow = SummaryRow(
+    "companyProvidingFinancial.provides.investment.fund.management",
+    vatSicAndCompliance.flatMap( _.financialCompliance.flatMap(_.investmentFundManagementServices)).collect {
+      case true => "app.common.yes"
+    }.getOrElse("app.common.no"),
+    Some(controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show())
+  )
+
+  val manageAdditionalFundsRow: SummaryRow = SummaryRow(
+    "companyProvidingFinancial.manages.funds.not.included.in.this.list",
+    vatSicAndCompliance.flatMap( _.financialCompliance.flatMap(_.manageFundsAdditional)).collect {
+      case true => "app.common.yes"
+    }.getOrElse("app.common.no"),
+    Some(controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show())
+  )
 
   val section: SummarySection = SummarySection(
     id = "companyProvidingFinancial",
     Seq(
-      (businessEmailRow, true),
-      (businessDaytimePhoneNumberRow, vatContact.exists(_.digitalContact.tel.isDefined)),
-      (businessMobilePhoneNumberRow, vatContact.exists(_.digitalContact.mobile.isDefined)),
-      (businessWebsiteRow, vatContact.exists(_.website.isDefined))
+      (provideAdviceRow, true),
+      (actAsIntermediaryRow, true),
+      (chargesFeesRow, vatSicAndCompliance.exists(_.financialCompliance.flatMap(_.chargeFees).isDefined)),
+      (additionalWorkRow, vatSicAndCompliance.exists(_.financialCompliance.flatMap(_.additionalNonSecuritiesWork).isDefined)),
+      (provideDiscretionaryInvestmentRow, vatSicAndCompliance.exists(_.financialCompliance.flatMap(_.discretionaryInvestmentManagementServices).isDefined)),
+      (leasingVehicleRow, vatSicAndCompliance.exists(_.financialCompliance.flatMap(_.vehicleOrEquipmentLeasing).isDefined)),
+      (investmentFundManagementRow, vatSicAndCompliance.exists(_.financialCompliance.flatMap(_.investmentFundManagementServices).isDefined)),
+      (manageAdditionalFundsRow, vatSicAndCompliance.exists(_.financialCompliance.flatMap(_.manageFundsAdditional).isDefined))
     )
   )
 }
