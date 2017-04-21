@@ -18,7 +18,7 @@ package controllers
 
 import javax.inject.Inject
 
-import controllers.builders.{SummaryCompanyContactDetailsSectionBuilder, SummaryCompanyDetailsSectionBuilder, SummaryVatDetailsSectionBuilder}
+import controllers.builders.{SummaryCompanyContactDetailsSectionBuilder, SummaryCompanyDetailsSectionBuilder, SummaryCompanyProvidingFinancialSectionBuilder, SummaryVatDetailsSectionBuilder}
 import models.api._
 import models.view._
 import play.api.mvc._
@@ -47,7 +47,8 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
     Summary(Seq(
       SummaryVatDetailsSectionBuilder(vs.tradingDetails).section,
       SummaryCompanyDetailsSectionBuilder(vs.financials, vs.vatSicAndCompliance, vs.tradingDetails).section,
-      SummaryCompanyContactDetailsSectionBuilder(vs.vatContact).section
+      SummaryCompanyContactDetailsSectionBuilder(vs.vatContact).section,
+      SummaryCompanyProvidingFinancialSectionBuilder( vs.vatSicAndCompliance).section
     ))
 
 }
