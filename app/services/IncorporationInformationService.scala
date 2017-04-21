@@ -36,10 +36,10 @@ trait IIService {
 class IncorporationInformationService @Inject()() extends IIService {
 
   import cats.instances.future._
-  import cats.syntax.applicative._
-
 
   def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionT[Future, LocalDate] =
-    OptionT(Option(LocalDate.now()).pure)
+    OptionT.pure(LocalDate.of(2017, 8, 4)) // is filtered out, no option is shown
+  //    OptionT.pure(LocalDate.now()) // will be shown as radio button
+  //    OptionT.none // we couldn't get the CT active date, no radio button will be shown
 
 }
