@@ -9,16 +9,18 @@
 
 
     @for(section <- summaryModel.sections) {
-        <section>
-            <h2 class="heading-medium">@Messages(s"pages.summary.${section.id}.sectionHeading")</h2>
-            <table class="check-your-answers form-group">
-            @for((row, doDisplayRow) <- section.rows) {
-                @if(doDisplayRow) {
-                    @summaryRow(row)
+        @if(section.display.exists(identity)) {
+            <section>
+                <h2 class="heading-medium">@Messages(s"pages.summary.${section.id}.sectionHeading")</h2>
+                <table class="check-your-answers form-group">
+                @for((row, doDisplayRow) <- section.rows) {
+                    @if(doDisplayRow) {
+                        @summaryRow(row)
+                    }
                 }
-            }
-            </table>
-        </section>
+                </table>
+            </section>
+        }
     }
 
 
