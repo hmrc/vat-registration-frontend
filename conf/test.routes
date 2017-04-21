@@ -11,3 +11,6 @@ GET         /sic-stub                    controllers.test.SicStubController.show
 POST        /sic-stub                    controllers.test.SicStubController.submit()
 
 GET         /working-days                controllers.test.TestWorkingDaysValidationController.show()
+
+
+GET         /ct-registration             controllers.test.TestCTController.show()
