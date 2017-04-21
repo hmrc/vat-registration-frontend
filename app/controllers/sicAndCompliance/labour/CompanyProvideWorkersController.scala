@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.labour.CompanyProvideWorkersForm
+import models.FinancialCompliancePath
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -43,11 +44,14 @@ class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.sicAndCompliance.labour.company_provide_workers(formWithErrors)))
       }, {
         data: CompanyProvideWorkers => {
-          s4LService.saveForm[CompanyProvideWorkers](data) map {  _ =>
-            if(CompanyProvideWorkers.PROVIDE_WORKERS_YES == data.yesNo) {
-              Redirect(controllers.sicAndCompliance.labour.routes.WorkersController.show())
-            }else{
-              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+          // TODO delete any existing non-cultural compliance questions
+          vrs.deleteElement(FinancialCompliancePath).flatMap { _ =>
+            s4LService.saveForm[CompanyProvideWorkers](data) map { _ =>
+              if (CompanyProvideWorkers.PROVIDE_WORKERS_YES == data.yesNo) {
+                Redirect(controllers.sicAndCompliance.labour.routes.WorkersController.show())
+              } else {
+                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+              }
             }
           }
         }
