@@ -25,6 +25,7 @@ import forms.test.TestSetupForm
 import models.S4LKey
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
+import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.test._
 import models.view.vatContact.BusinessContactDetails
@@ -65,11 +66,22 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       accountingPeriod <- s4LService.fetchAndGet[AccountingPeriod]()
       businessActivityDescription <- s4LService.fetchAndGet[BusinessActivityDescription]()
       sicStub <- s4LService.fetchAndGet[SicStub]()
+
       culturalNotForProfit <- s4LService.fetchAndGet[NotForProfit]()
+
       labourCompanyProvideWorkers <- s4LService.fetchAndGet[CompanyProvideWorkers]()
       labourWorkers <- s4LService.fetchAndGet[Workers]()
       labourTemporaryContracts <- s4LService.fetchAndGet[TemporaryContracts]()
       labourSkilledWorkers <- s4LService.fetchAndGet[SkilledWorkers]()
+
+      adviceOrConsultancy <- s4LService.fetchAndGet[AdviceOrConsultancy]()
+      actAsIntermediary <- s4LService.fetchAndGet[ActAsIntermediary]()
+      chargeFees <- s4LService.fetchAndGet[ChargeFees]()
+      additionalNonSecuritiesWork <- s4LService.fetchAndGet[AdditionalNonSecuritiesWork]()
+      discretionaryInvestment <- s4LService.fetchAndGet[DiscretionaryInvestmentManagementServices]()
+      leaseVehiclesOrEquipment <- s4LService.fetchAndGet[LeaseVehicles]()
+      investmentFundManagement <- s4LService.fetchAndGet[InvestmentFundManagement]()
+      manageAdditionalFunds <- s4LService.fetchAndGet[ManageAdditionalFunds]()
 
       testSetup = TestSetup(
         VatChoiceTestSetup(
@@ -113,8 +125,16 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
           labourCompanyProvideWorkers.map(_.yesNo),
           labourWorkers.map(_.numberOfWorkers.toString),
           labourTemporaryContracts.map(_.yesNo),
-          labourSkilledWorkers.map(_.yesNo))
-      )
+          labourSkilledWorkers.map(_.yesNo),
+          adviceOrConsultancy.map(_.yesNo.toString),
+          actAsIntermediary.map(_.yesNo.toString),
+          chargeFees.map(_.yesNo.toString),
+          additionalNonSecuritiesWork.map(_.yesNo.toString),
+          discretionaryInvestment.map(_.yesNo.toString),
+          leaseVehiclesOrEquipment.map(_.yesNo.toString),
+          investmentFundManagement.map(_.yesNo.toString),
+          manageAdditionalFunds.map(_.yesNo.toString))
+    )
       form = TestSetupForm.form.fill(testSetup)
     } yield Ok(views.html.pages.test.test_setup(form))
   })
@@ -168,10 +188,21 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
                 Some(x.sicAndCompliance.sicCode4.getOrElse("")))
             })
             _ <- saveToS4Later(data.sicAndCompliance.culturalNotForProfit, data, { x => NotForProfit(x.sicAndCompliance.culturalNotForProfit.get) })
+
             _ <- saveToS4Later(data.sicAndCompliance.labourCompanyProvideWorkers, data, { x => CompanyProvideWorkers(x.sicAndCompliance.labourCompanyProvideWorkers.get) })
             _ <- saveToS4Later(data.sicAndCompliance.labourWorkers, data, { x => Workers(x.sicAndCompliance.labourWorkers.get.toInt) })
             _ <- saveToS4Later(data.sicAndCompliance.labourTemporaryContracts, data, { x => TemporaryContracts(x.sicAndCompliance.labourTemporaryContracts.get) })
-            _ <- saveToS4Later(data.sicAndCompliance.labourSkilledWorkers, data, { x => TemporaryContracts(x.sicAndCompliance.labourSkilledWorkers.get) })
+            _ <- saveToS4Later(data.sicAndCompliance.labourSkilledWorkers, data, { x => SkilledWorkers(x.sicAndCompliance.labourSkilledWorkers.get) })
+
+            _ <- saveToS4Later(data.sicAndCompliance.financialAdviceOrConsultancy, data, { x => AdviceOrConsultancy(x.sicAndCompliance.financialAdviceOrConsultancy.get.toBoolean) })
+            _ <- saveToS4Later(data.sicAndCompliance.financialActAsIntermediary, data, { x => ActAsIntermediary(x.sicAndCompliance.financialActAsIntermediary.get.toBoolean) })
+            _ <- saveToS4Later(data.sicAndCompliance.financialChargeFees, data, { x => ChargeFees(x.sicAndCompliance.financialChargeFees.get.toBoolean) })
+            _ <- saveToS4Later(data.sicAndCompliance.financialAdditionalNonSecuritiesWork, data, { x => AdditionalNonSecuritiesWork(x.sicAndCompliance.financialAdditionalNonSecuritiesWork.get.toBoolean) })
+            _ <- saveToS4Later(data.sicAndCompliance.financialDiscretionaryInvestment, data, { x => DiscretionaryInvestmentManagementServices(x.sicAndCompliance.financialDiscretionaryInvestment.get.toBoolean) })
+            _ <- saveToS4Later(data.sicAndCompliance.financialLeaseVehiclesOrEquipment, data, { x => LeaseVehicles(x.sicAndCompliance.financialLeaseVehiclesOrEquipment.get.toBoolean) })
+            _ <- saveToS4Later(data.sicAndCompliance.financialInvestmentFundManagement, data, { x => InvestmentFundManagement(x.sicAndCompliance.financialInvestmentFundManagement.get.toBoolean) })
+            _ <- saveToS4Later(data.sicAndCompliance.financialManageAdditionalFunds, data, { x => ManageAdditionalFunds(x.sicAndCompliance.financialManageAdditionalFunds.get.toBoolean) })
+
           } yield Ok("Test setup complete")
         }
       })
