@@ -1,3 +1,5 @@
+@import java.time.format.DateTimeFormatter
+
 @import models.view.vatTradingDetails.vatChoice.StartDateView
 @(startDateForm: Form[StartDateView])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
@@ -20,17 +22,23 @@
         @govHelpers.form(action = controllers.vatTradingDetails.vatChoice.routes.StartDateController.submit()) {
             <div class="form-group">
 
-                    @govHelpers.inputRadioGroup(
-                        startDateForm("startDateRadio"),
-                        Seq(
-                            Some(StartDateView.COMPANY_REGISTRATION_DATE -> Messages("pages.startDate.radio.whenRegistered")),
-                            startDateForm.value.flatMap(_.ctActiveDate).map(d => StartDateView.BUSINESS_START_DATE -> messages("pages.startDate.radio.whenTrading", d)),
-                            Some(StartDateView.SPECIFIC_DATE -> Messages("pages.startDate.radio.specificDate"))
-                        ).flatten,
-                        '_labelAfter -> true,
-                        '_labelClass -> "block-label",
-                        '_legend -> ""
-                    )
+                @defining(DateTimeFormatter
+                        .ofLocalizedDate(java.time.format.FormatStyle.LONG)
+                        .withLocale(java.util.Locale.UK)) { formatter =>
+
+                        @govHelpers.inputRadioGroup(
+                            startDateForm("startDateRadio"),
+                            Seq(
+                                Some(StartDateView.COMPANY_REGISTRATION_DATE -> Messages("pages.startDate.radio.whenRegistered")),
+                                startDateForm.value.flatMap(_.ctActiveDate).map(d =>
+                                    StartDateView.BUSINESS_START_DATE -> messages("pages.startDate.radio.whenTrading", d.format(formatter))),
+                                Some(StartDateView.SPECIFIC_DATE -> Messages("pages.startDate.radio.specificDate"))
+                            ).flatten,
+                            '_labelAfter -> true,
+                            '_labelClass -> "block-label",
+                            '_legend -> ""
+                        )
+                    }
 
                     <div class="panel panel-indent hidden" id="specific_date_panel">
                         <p>@messages("pages.startDate.panels.specificDate.para1")</p>
