@@ -42,12 +42,11 @@ class IncorporationInformationService @Inject()(ctConnector: CTConnector) extend
   val formatter = DateTimeFormatter.ofPattern("YYYY-mm-dd")
 
   def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionT[Future, LocalDate] =
-    OptionT.liftF(fetchRegistrationId.flatMap(ctConnector.getRegistration)).flatMap {
-      ctr => OptionT.fromOption(ctr.accountingDetails.flatMap(_.activeDate.map(LocalDate.parse(_, formatter))))
-    }
-
-  //    OptionT.pure(LocalDate.of(2017, 8, 4)) // is filtered out, no option is shown
-  //      OptionT.pure(LocalDate.now()) // will be shown as radio button
-  //    OptionT.none // we couldn't get the CT active date, no radio button will be shown
+    for {
+      regId <- OptionT.liftF(fetchRegistrationId)
+      ctReg <- ctConnector.getCompanyRegistrationDetails(regId)
+      accountingDetails <- OptionT.fromOption(ctReg.accountingDetails)
+      dateString <- OptionT.fromOption(accountingDetails.activeDate)
+    } yield LocalDate.parse(dateString, formatter)
 
 }
