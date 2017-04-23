@@ -18,6 +18,7 @@ package connectors
 
 import javax.inject.Singleton
 
+import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
 import models.external.CorporationTaxRegistration
@@ -44,13 +45,21 @@ trait CTConnector {
   val companyRegUrl: String
   val http: WSHttp
 
-  def getRegistration(regId: String)(implicit hc: HeaderCarrier, rds: HttpReads[CorporationTaxRegistration]): Future[CorporationTaxRegistration] =
-    http.GET[CorporationTaxRegistration](s"$companyRegUrl/corporation-tax-registration/$regId/corporation-tax-registration") recover {
-      case e: Exception => throw logResponse(e, "getRegistration", "getting company registration details")
-    }
+  def getCompanyRegistrationDetails
+  (regId: String)
+  (implicit hc: HeaderCarrier, rds: HttpReads[CorporationTaxRegistration]): OptionT[Future, CorporationTaxRegistration] =
+    OptionT(
+      http.GET[CorporationTaxRegistration](s"$companyRegUrl/corporation-tax-registration/$regId/corporation-tax-registration")
+        .map(Option.apply)
+        .recover {
+          case ex =>
+            logResponse(ex, "getRegistration", "getting company registration details")
+            Option.empty[CorporationTaxRegistration]
+        }
+    )
 
 
-  private[connectors] def logResponse(e: Throwable, f: String, m: String): Throwable = {
+  private[connectors] def logResponse(e: Throwable, f: String, m: String): Unit = {
     def log(s: String) = Logger.warn(s"[CTConnector] [$f] received $s when $m")
 
     e match {
@@ -63,7 +72,6 @@ trait CTConnector {
       case e: Upstream5xxResponse => log(s"Upstream 5xx: ${e.upstreamResponseCode}")
       case e: Exception => log(s"ERROR: ${e.getMessage}")
     }
-    e
   }
 }
 
