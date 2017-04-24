@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.financial.ActAsIntermediaryForm
+import models.{ElementPath, FinChargeFeesPath}
 import models.view.sicAndCompliance.financial.ActAsIntermediary
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
@@ -45,11 +46,12 @@ class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.act_as_intermediary(formWithErrors)))
       }, {
         data: ActAsIntermediary => {
-          s4LService.saveForm[ActAsIntermediary](data) map {  _ =>
+          s4LService.saveForm[ActAsIntermediary](data) flatMap {  _ =>
             if(!data.yesNo) {
-              Redirect(controllers.sicAndCompliance.financial.routes.ChargeFeesController.show())
+              Future.successful(Redirect(controllers.sicAndCompliance.financial.routes.ChargeFeesController.show()))
             }else{
-              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+              vrs.deleteElements(ElementPath.finCompElementPaths).map { _ =>
+                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()) }
             }
           }
         }

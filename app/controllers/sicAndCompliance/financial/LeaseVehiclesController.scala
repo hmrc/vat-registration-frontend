@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.financial.LeaseVehiclesForm
+import models.ElementPath
 import models.view.sicAndCompliance.financial.LeaseVehicles
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
@@ -46,11 +47,12 @@ class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.lease_vehicles(formWithErrors)))
       }, {
         data: LeaseVehicles => {
-          s4LService.saveForm[LeaseVehicles](data) map { _ =>
+          s4LService.saveForm[LeaseVehicles](data) flatMap { _ =>
             if (!data.yesNo) {
-              Redirect(controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show())
+              Future.successful(Redirect(controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show()))
             } else {
-              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+              vrs.deleteElements(ElementPath.finCompElementPaths.drop(4)).map { _ =>
+                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()) }
             }
           }
         }
@@ -59,5 +61,4 @@ class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
   )
 
 }
-
 
