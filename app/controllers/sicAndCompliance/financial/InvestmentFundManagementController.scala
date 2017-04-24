@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.financial.InvestmentFundManagementForm
+import models.ElementPath
 import models.view.sicAndCompliance.financial.InvestmentFundManagement
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
@@ -45,11 +46,12 @@ class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.investment_fund_management(formWithErrors)))
       }, {
         data: InvestmentFundManagement => {
-          s4LService.saveForm[InvestmentFundManagement](data) map { _ =>
+          s4LService.saveForm[InvestmentFundManagement](data) flatMap { _ =>
             if (data.yesNo) {
-              Redirect(controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show())
+              Future.successful(Redirect(controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show()))
             } else {
-              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+              vrs.deleteElements(ElementPath.finCompElementPaths.drop(5)).map { _ =>
+                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()) }
             }
           }
         }
@@ -58,5 +60,3 @@ class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
   )
 
 }
-
-

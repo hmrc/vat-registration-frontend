@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.financial.DiscretionaryInvestmentManagementServicesForm
+import models.ElementPath
 import models.view.sicAndCompliance.financial.DiscretionaryInvestmentManagementServices
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
@@ -45,11 +46,12 @@ class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPl
         Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(formWithErrors)))
       }, {
         data: DiscretionaryInvestmentManagementServices => {
-          s4LService.saveForm[DiscretionaryInvestmentManagementServices](data) map { _ =>
+          s4LService.saveForm[DiscretionaryInvestmentManagementServices](data) flatMap { _ =>
             if (!data.yesNo) {
-              Redirect(controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show())
+              Future.successful(Redirect(controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show()))
             } else {
-              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+              vrs.deleteElements(ElementPath.finCompElementPaths.drop(3)).map { _ =>
+                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()) }
             }
           }
         }
@@ -58,4 +60,3 @@ class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPl
   )
 
 }
-

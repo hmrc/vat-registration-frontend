@@ -50,6 +50,8 @@ trait RegistrationService {
 
   def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Boolean]
 
+  def deleteElements(elementPath: List[ElementPath])(implicit hc: HeaderCarrier): Future[Boolean]
+
 }
 
 class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: VatRegistrationConnector)
@@ -72,6 +74,10 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
 
   def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Boolean] =
     fetchRegistrationId.flatMap(vatRegConnector.deleteElement(elementPath))
+
+  def deleteElements(elementPaths: List[ElementPath])(implicit hc: HeaderCarrier): Future[Boolean] =
+    elementPaths.map( ep => fetchRegistrationId.flatMap(vatRegConnector.deleteElement(ep)))
+      .headOption.getOrElse(Future.successful(true))
 
   def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit] =
     for {
