@@ -39,7 +39,7 @@ class IncorporationInformationService @Inject()(ctConnector: CTConnector) extend
 
   import cats.instances.future._
 
-  val formatter = DateTimeFormatter.ofPattern("YYYY-mm-dd")
+  val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
   def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionT[Future, LocalDate] =
     for {

@@ -49,7 +49,7 @@ trait CTConnector {
   (regId: String)
   (implicit hc: HeaderCarrier, rds: HttpReads[CorporationTaxRegistration]): OptionT[Future, CorporationTaxRegistration] =
     OptionT(
-      http.GET[CorporationTaxRegistration](s"$companyRegUrl/corporation-tax-registration/$regId/corporation-tax-registration")
+      http.GET[CorporationTaxRegistration](s"$companyRegUrl/company-registration/corporation-tax-registration/$regId/corporation-tax-registration")
         .map(Option.apply)
         .recover {
           case ex =>
