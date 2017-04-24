@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.cultural.NotForProfitForm
+import models.{ElementPath, FinancialCompliancePath}
 import models.view.sicAndCompliance.cultural.NotForProfit
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -44,8 +45,11 @@ class NotForProfitController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.sicAndCompliance.cultural.not_for_profit(formWithErrors)))
       }, {
         data: NotForProfit => {
-          s4LService.saveForm[NotForProfit](data) map { _ =>
-            Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+          s4LService.saveForm[NotForProfit](data) flatMap { _ =>
+            // TODO delete any existing non-cultural compliance questions
+            vrs.deleteElement(FinancialCompliancePath).map { _ =>
+              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+            }
           }
         }
       })

@@ -116,6 +116,9 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
     "return 303" in {
       val returnCacheMapCompanyProvideWorkers = CacheMap("", Map("" -> Json.toJson(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES))))
 
+      when(mockVatRegistrationService.deleteElement(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
+
       when(mockS4LService.saveForm[CompanyProvideWorkers]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapCompanyProvideWorkers))
@@ -135,6 +138,9 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
 
     "return 303" in {
       val returnCacheMapCompanyProvideWorkers = CacheMap("", Map("" -> Json.toJson(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO))))
+
+      when(mockVatRegistrationService.deleteElement(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
 
       when(mockS4LService.saveForm[CompanyProvideWorkers]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))

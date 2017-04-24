@@ -102,6 +102,9 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
     "return 303" in {
       val returnCacheMapActAsIntermediary = CacheMap("", Map("" -> Json.toJson(ActAsIntermediary(true))))
 
+      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
+
       when(mockS4LService.saveForm[ActAsIntermediary]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapActAsIntermediary))
@@ -120,6 +123,9 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
 
     "return 303" in {
       val returnCacheMapActAsIntermediary = CacheMap("", Map("" -> Json.toJson(ActAsIntermediary(false))))
+
+      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
 
       when(mockS4LService.saveForm[ActAsIntermediary]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
