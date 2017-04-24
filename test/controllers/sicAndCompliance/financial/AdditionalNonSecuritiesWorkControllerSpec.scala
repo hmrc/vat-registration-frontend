@@ -100,6 +100,9 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
     "return 303" in {
       val returnCacheMapAdditionalNonSecuritiesWork = CacheMap("", Map("" -> Json.toJson(AdditionalNonSecuritiesWork(true))))
 
+      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(true))
+
       when(mockS4LService.saveForm[AdditionalNonSecuritiesWork]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAdditionalNonSecuritiesWork))
@@ -118,6 +121,9 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
 
     "return 303" in {
       val returnCacheMapAdditionalNonSecuritiesWork = CacheMap("", Map("" -> Json.toJson(AdditionalNonSecuritiesWork(false))))
+
+      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
 
       when(mockS4LService.saveForm[AdditionalNonSecuritiesWork]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))

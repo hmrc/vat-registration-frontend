@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.financial.AdditionalNonSecuritiesWorkForm
+import models.ElementPath
 import models.view.sicAndCompliance.financial.AdditionalNonSecuritiesWork
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
@@ -43,11 +44,12 @@ class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies
     form.bindFromRequest().fold(
       (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(formWithErrors))),
       (data: AdditionalNonSecuritiesWork) => {
-        s4LService.saveForm[AdditionalNonSecuritiesWork](data) map {  _ =>
+        s4LService.saveForm[AdditionalNonSecuritiesWork](data) flatMap {  _ =>
           if(!data.yesNo) {
-            Redirect(controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show())
+            Future.successful(Redirect(controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show()))
           }else{
-            Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+            vrs.deleteElements(ElementPath.finCompElementPaths.drop(2)).map { _ =>
+              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()) }
           }
         }
       }
@@ -55,5 +57,3 @@ class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies
   )
 
 }
-
-

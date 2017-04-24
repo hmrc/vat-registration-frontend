@@ -32,10 +32,25 @@ object ElementPath {
       case VatBankAccountPath.name => JsSuccess(VatBankAccountPath)
       case ZeroRatedTurnoverEstimatePath.name => JsSuccess(ZeroRatedTurnoverEstimatePath)
       case AccountingPeriodStartPath.name => JsSuccess(AccountingPeriodStartPath)
+      // $COVERAGE-OFF$
+      case FinancialCompliancePath.name => JsSuccess(FinancialCompliancePath)
+      case FinChargeFeesPath.name => JsSuccess(FinChargeFeesPath)
+      case FinAdditionalNonSecuritiesWorkPath.name => JsSuccess(FinAdditionalNonSecuritiesWorkPath)
+      case FinDiscretionaryInvestmentManagementServicesPath.name => JsSuccess(FinDiscretionaryInvestmentManagementServicesPath)
+      case FinVehicleOrEquipmentLeasingPath.name => JsSuccess(FinVehicleOrEquipmentLeasingPath)
+      case FinInvestmentFundManagementServicesPath.name => JsSuccess(FinInvestmentFundManagementServicesPath)
+      case FinManageFundsAdditionalPath.name => JsSuccess(FinManageFundsAdditionalPath)
+      // $COVERAGE-ON$
       case _ => JsError("unrecognised element name")
     }
   }
 
+  // $COVERAGE-OFF$
+  val finCompElementPaths: List[ElementPath] =
+    List(FinChargeFeesPath, FinAdditionalNonSecuritiesWorkPath,
+      FinDiscretionaryInvestmentManagementServicesPath, FinVehicleOrEquipmentLeasingPath,
+      FinInvestmentFundManagementServicesPath, FinManageFundsAdditionalPath)
+  // $COVERAGE-ON$
 }
 
 case object VatBankAccountPath extends ElementPath {
@@ -52,3 +67,41 @@ case object AccountingPeriodStartPath extends ElementPath {
   override val path = "financials.accountingPeriods.periodStart"
   override val name = "accounting-period-start"
 }
+
+// $COVERAGE-OFF$
+case object FinancialCompliancePath extends ElementPath {
+  override val path = "vatSicAndCompliance.financialCompliance"
+  override val name = "financial-compliance"
+}
+
+case object FinChargeFeesPath extends ElementPath {
+  override val path = "vatSicAndCompliance.financialCompliance.chargeFees"
+  override val name = "fc-charge-fees"
+}
+
+case object FinAdditionalNonSecuritiesWorkPath extends ElementPath {
+  override val path = "vatSicAndCompliance.financialCompliance.additionalNonSecuritiesWork"
+  override val name = "fc-additional-non-securities-work"
+}
+
+case object FinDiscretionaryInvestmentManagementServicesPath extends ElementPath {
+  override val path = "vatSicAndCompliance.financialCompliance.discretionaryInvestmentManagementServices"
+  override val name = "fc-discretionary-investment-management-services"
+}
+
+case object FinVehicleOrEquipmentLeasingPath extends ElementPath {
+  override val path = "vatSicAndCompliance.financialCompliance.vehicleOrEquipmentLeasing"
+  override val name = "fc-vehicle-or-equipment-leasing"
+}
+
+case object FinInvestmentFundManagementServicesPath extends ElementPath {
+  override val path = "vatSicAndCompliance.financialCompliance.investmentFundManagementServices"
+  override val name = "fc-investment-fund-management-services"
+}
+
+case object FinManageFundsAdditionalPath extends ElementPath {
+  override val path = "vatSicAndCompliance.financialCompliance.manageFundsAdditional"
+  override val name = "fc-manage-funds-additional"
+}
+
+// $COVERAGE-ON$
