@@ -21,58 +21,52 @@ import javax.inject.Singleton
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
-import models.external.CorporationTaxRegistration
-import play.api.Logger
-import play.api.http.Status
+import models.external.{AccountingDetails, CorporationTaxRegistration}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
-@Singleton
-class CompanyRegistrationConnector extends CTConnector with ServicesConfig {
-  //$COVERAGE-OFF$
-  val companyRegUrl = baseUrl("company-registration")
-  val http: WSHttp = WSHttp
-  //$COVERAGE-ON$
-}
 
 @ImplementedBy(classOf[CompanyRegistrationConnector])
-trait CTConnector {
+trait PPConnector {
 
   val companyRegUrl: String
   val http: WSHttp
 
   def getCompanyRegistrationDetails
   (regId: String)
-  (implicit hc: HeaderCarrier, rds: HttpReads[CorporationTaxRegistration]): OptionT[Future, CorporationTaxRegistration] =
-    OptionT(
-      http.GET[CorporationTaxRegistration](s"$companyRegUrl/company-registration/corporation-tax-registration/$regId/corporation-tax-registration")
-        .map(Option.apply)
-        .recover {
-          case ex =>
-            logResponse(ex, "getRegistration", "getting company registration details")
-            Option.empty[CorporationTaxRegistration]
-        }
-    )
+  (implicit hc: HeaderCarrier, rds: HttpReads[CorporationTaxRegistration]): OptionalResponse[CorporationTaxRegistration]
 
-
-  private[connectors] def logResponse(e: Throwable, f: String, m: String): Unit = {
-    def log(s: String) = Logger.warn(s"[CTConnector] [$f] received $s when $m")
-
-    e match {
-      case e: NotFoundException => log("NOT FOUND")
-      case e: BadRequestException => log("BAD REQUEST")
-      case e: Upstream4xxResponse => e.upstreamResponseCode match {
-        case Status.FORBIDDEN => log("FORBIDDEN")
-        case _ => log(s"Upstream 4xx: ${e.upstreamResponseCode} ${e.message}")
-      }
-      case e: Upstream5xxResponse => log(s"Upstream 5xx: ${e.upstreamResponseCode}")
-      case e: Exception => log(s"ERROR: ${e.getMessage}")
-    }
-  }
 }
 
 
+@Singleton
+class CompanyRegistrationConnector extends PPConnector with ServicesConfig {
+
+  //$COVERAGE-OFF$
+  val className = this.getClass.getSimpleName
+  val companyRegUrl = baseUrl("company-registration")
+  val http: WSHttp = WSHttp
+
+  import cats.instances.future._
+
+  override def getCompanyRegistrationDetails(regId: String)
+                                            (implicit hc: HeaderCarrier, rds: HttpReads[CorporationTaxRegistration])
+  : OptionalResponse[CorporationTaxRegistration] =
+    OptionT.pure(CorporationTaxRegistration(Some(AccountingDetails("", Some("2017-05-20")))))
+
+  //    OptionT(
+  //      http.GET[CorporationTaxRegistration](s"$companyRegUrl/company-registration/corporation-tax-registration/$regId/corporation-tax-registration")
+  //        .map(Option.apply)
+  //        .recover {
+  //          case ex =>
+  //            logResponse(ex, className, "getCompanyRegistrationDetails")
+  //            Option.empty[CorporationTaxRegistration]
+  //        }
+  //    )
+
+  //$COVERAGE-ON$
+
+}
