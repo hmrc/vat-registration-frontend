@@ -16,47 +16,50 @@
 
 package services
 
-import connectors.{KeystoreConnector, VatRegistrationConnector}
+import cats.data.OptionT
+import cats.instances.future.catsStdInstancesForFuture
+import cats.syntax.applicative.catsSyntaxApplicativeId
+import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
-import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
-import models.view.vatContact.BusinessContactDetails
-import models.view.vatFinancials._
-import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
-import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
+import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
-import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import models.{S4LKey, VatBankAccountPath, ZeroRatedTurnoverEstimatePath}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpReads}
+import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
 
 class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture {
 
   implicit val hc = HeaderCarrier()
-  val mockRegConnector = mock[VatRegistrationConnector]
 
   class Setup {
+
     val service = new VatRegistrationService(mockS4LService, mockRegConnector) {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
+
+    def save4laterRutrnsNothing[T: S4LKey]()(implicit s4LService: S4LService): Unit =
+      when(s4LService.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(Option.empty[T].pure)
+
+    def save4laterRutrns[T: S4LKey](t: T)(implicit s4lService: S4LService): Unit =
+      when(s4lService.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(OptionT.pure(t).value)
+
   }
 
   "Calling createNewRegistration" should {
     "return a success response when the Registration is successfully created" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.createNewRegistration()(any(), any()))
-        .thenReturn(Future.successful(validVatScheme))
+      when(mockRegConnector.createNewRegistration()(any(), any())).thenReturn(validVatScheme.pure)
 
       service.createRegistrationFootprint() completedSuccessfully
     }
@@ -66,105 +69,40 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "return a success response when the VatScheme is upserted" in new Setup {
       mockFetchRegId(validRegId)
 
-      when(mockS4LService.fetchAndGet[StartDateView]()(Matchers.eq(S4LKey[StartDateView]), any(), any()))
-        .thenReturn(Future.successful(Some(StartDateView(StartDateView.SPECIFIC_DATE, someTestDate))))
+      save4laterRutrns(StartDateView(StartDateView.SPECIFIC_DATE, someTestDate))
+      save4laterRutrns(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES))
+      save4laterRutrns(VoluntaryRegistrationReason(VoluntaryRegistrationReason.SELLS))
+      save4laterRutrns(TradingNameView(TradingNameView.TRADING_NAME_NO))
+      save4laterRutrns(validEstimateVatTurnover)
+      save4laterRutrns(validEstimateZeroRatedSales)
+      save4laterRutrns(validVatChargeExpectancy)
+      save4laterRutrns(validVatReturnFrequency)
+      save4laterRutrns(validAccountingPeriod)
+      save4laterRutrns(validBankAccountDetails)
+      save4laterRutrns(validBusinessActivityDescription)
+      save4laterRutrns(validNotForProfit)
+      save4laterRutrns(validCompanyProvideWorkers)
+      save4laterRutrns(validWorkers)
+      save4laterRutrns(validTemporaryContracts)
+      save4laterRutrns(validSkilledWorkers)
+      save4laterRutrns(validAdviceOrConsultancy)
+      save4laterRutrns(validActAsIntermediary)
+      save4laterRutrns(ChargeFees(true))
+      save4laterRutrns(LeaseVehicles(true))
+      save4laterRutrns(AdditionalNonSecuritiesWork(true))
+      save4laterRutrns(DiscretionaryInvestmentManagementServices(true))
+      save4laterRutrns(InvestmentFundManagement(true))
+      save4laterRutrns(ManageAdditionalFunds(true))
+      save4laterRutrns(validEuGoods)
+      save4laterRutrns(validApplyEori)
+      save4laterRutrns(validBusinessContactDetails)
 
-      when(mockS4LService.fetchAndGet[VoluntaryRegistration]()(Matchers.eq(S4LKey[VoluntaryRegistration]), any(), any()))
-        .thenReturn(Future.successful(Some(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES))))
-
-      when(mockS4LService.fetchAndGet[VoluntaryRegistrationReason]()(Matchers.eq(S4LKey[VoluntaryRegistrationReason]), any(), any()))
-        .thenReturn(Future.successful(Some(VoluntaryRegistrationReason(VoluntaryRegistrationReason.SELLS))))
-
-      when(mockRegConnector.upsertVatChoice(any(), any())
-      (any[HeaderCarrier](), any[HttpReads[VatChoice]]()))
-        .thenReturn(Future.successful(validVatChoice))
-
-      when(mockS4LService.fetchAndGet[TradingNameView]()(Matchers.eq(S4LKey[TradingNameView]), any(), any()))
-        .thenReturn(Future.successful(Some(TradingNameView(yesNo = TradingNameView.TRADING_NAME_NO))))
-
-      when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any()))
-        .thenReturn(Future.successful(validVatTradingDetails))
-
-      when(mockS4LService.fetchAndGet[EstimateVatTurnover]()(Matchers.eq(S4LKey[EstimateVatTurnover]), any(), any()))
-        .thenReturn(Future.successful(Some(validEstimateVatTurnover)))
-
-      when(mockS4LService.fetchAndGet[EstimateZeroRatedSales]()(Matchers.eq(S4LKey[EstimateZeroRatedSales]), any(), any()))
-        .thenReturn(Future.successful(Some(validEstimateZeroRatedSales)))
-
-      when(mockS4LService.fetchAndGet[VatChargeExpectancy]()(Matchers.eq(S4LKey[VatChargeExpectancy]), any(), any()))
-        .thenReturn(Future.successful(Some(validVatChargeExpectancy)))
-
-      when(mockS4LService.fetchAndGet[VatReturnFrequency]()(Matchers.eq(S4LKey[VatReturnFrequency]), any(), any()))
-        .thenReturn(Future.successful(Some(validVatReturnFrequency)))
-
-      when(mockS4LService.fetchAndGet[AccountingPeriod]()(Matchers.eq(S4LKey[AccountingPeriod]), any(), any()))
-        .thenReturn(Future.successful(Some(validAccountingPeriod)))
-
-      when(mockS4LService.fetchAndGet[CompanyBankAccountDetails]()(Matchers.eq(S4LKey[CompanyBankAccountDetails]), any(), any()))
-        .thenReturn(Future.successful(Some(validBankAccountDetails)))
-
-      when(mockRegConnector.upsertVatFinancials(any(), any())(any(), any()))
-        .thenReturn(Future.successful(validVatFinancials))
-
-      when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.eq(S4LKey[BusinessActivityDescription]), any(), any()))
-        .thenReturn(Future.successful(Some(validBusinessActivityDescription)))
-
-      when(mockS4LService.fetchAndGet[NotForProfit]()(Matchers.eq(S4LKey[NotForProfit]), any(), any()))
-        .thenReturn(Future.successful(Some(validNotForProfit)))
-
-      when(mockS4LService.fetchAndGet[CompanyProvideWorkers]()(Matchers.eq(S4LKey[CompanyProvideWorkers]), any(), any()))
-        .thenReturn(Future.successful(Some(validCompanyProvideWorkers)))
-
-      when(mockS4LService.fetchAndGet[Workers]()(Matchers.eq(S4LKey[Workers]), any(), any()))
-        .thenReturn(Future.successful(Some(validWorkers)))
-
-      when(mockS4LService.fetchAndGet[TemporaryContracts]()(Matchers.eq(S4LKey[TemporaryContracts]), any(), any()))
-        .thenReturn(Future.successful(Some(validTemporaryContracts)))
-
-      when(mockS4LService.fetchAndGet[SkilledWorkers]()(Matchers.eq(S4LKey[SkilledWorkers]), any(), any()))
-        .thenReturn(Future.successful(Some(validSkilledWorkers)))
-
-      when(mockS4LService.fetchAndGet[AdviceOrConsultancy]()(Matchers.eq(S4LKey[AdviceOrConsultancy]), any(), any()))
-        .thenReturn(Future.successful(Some(validAdviceOrConsultancy)))
-
-      when(mockS4LService.fetchAndGet[ActAsIntermediary]()(Matchers.eq(S4LKey[ActAsIntermediary]), any(), any()))
-        .thenReturn(Future.successful(Some(validActAsIntermediary)))
-
-      when(mockS4LService.fetchAndGet[ChargeFees]()(Matchers.eq(S4LKey[ChargeFees]), any(), any()))
-        .thenReturn(Future.successful(Some(ChargeFees(true))))
-
-      when(mockS4LService.fetchAndGet[LeaseVehicles]()(Matchers.eq(S4LKey[LeaseVehicles]), any(), any()))
-        .thenReturn(Future.successful(Some(LeaseVehicles(true))))
-
-      when(mockS4LService.fetchAndGet[AdditionalNonSecuritiesWork]()(Matchers.eq(S4LKey[AdditionalNonSecuritiesWork]), any(), any()))
-        .thenReturn(Future.successful(Some(AdditionalNonSecuritiesWork(true))))
-
-      when(mockS4LService.fetchAndGet[DiscretionaryInvestmentManagementServices]()(Matchers.eq(S4LKey[DiscretionaryInvestmentManagementServices]), any(), any()))
-        .thenReturn(Future.successful(Some(DiscretionaryInvestmentManagementServices(true))))
-
-      when(mockS4LService.fetchAndGet[InvestmentFundManagement]()(Matchers.eq(S4LKey[InvestmentFundManagement]), any(), any()))
-        .thenReturn(Future.successful(Some(InvestmentFundManagement(true))))
-
-      when(mockS4LService.fetchAndGet[ManageAdditionalFunds]()(Matchers.eq(S4LKey[ManageAdditionalFunds]), any(), any()))
-        .thenReturn(Future.successful(Some(ManageAdditionalFunds(true))))
-
-      when(mockS4LService.fetchAndGet[EuGoods]()(Matchers.eq(S4LKey[EuGoods]), any(), any()))
-        .thenReturn(Future.successful(Some(validEuGoods)))
-
-      when(mockS4LService.fetchAndGet[ApplyEori]()(Matchers.eq(S4LKey[ApplyEori]), any(), any()))
-        .thenReturn(Future.successful(Some(validApplyEori)))
-
-      when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any()))
-        .thenReturn(Future.successful(validSicAndCompliance))
-
-      when(mockS4LService.fetchAndGet[BusinessContactDetails]()(Matchers.eq(S4LKey[BusinessContactDetails]), any(), any()))
-        .thenReturn(Future.successful(Some(validBusinessContactDetails)))
-
-      when(mockRegConnector.upsertVatContact(any(), any())(any(), any()))
-        .thenReturn(Future.successful(validVatContact))
-
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any()))
-        .thenReturn(Future.successful(validVatScheme))
+      when(mockRegConnector.upsertVatChoice(any(), any())(any(), any())).thenReturn(validVatChoice.pure)
+      when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
+      when(mockRegConnector.upsertVatFinancials(any(), any())(any(), any())).thenReturn(validVatFinancials.pure)
+      when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any())).thenReturn(validSicAndCompliance.pure)
+      when(mockRegConnector.upsertVatContact(any(), any())(any(), any())).thenReturn(validVatContact.pure)
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
 
       service.submitVatScheme() completedSuccessfully
     }
@@ -173,56 +111,32 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   "Calling submitTradingDetails" should {
     "return a success response when VatTradingDetails is submitted" in new Setup {
       mockFetchRegId(validRegId)
-
-      when(mockS4LService.fetchAndGet[TradingNameView]()(Matchers.eq(S4LKey[TradingNameView]), any(), any()))
-        .thenReturn(Future.successful(Some(TradingNameView(yesNo = TradingNameView.TRADING_NAME_YES))))
-
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
-      (any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
-        .thenReturn(Future.successful(validVatScheme))
-
-      when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any()))
-        .thenReturn(Future.successful(validVatTradingDetails))
+      save4laterRutrns(TradingNameView(yesNo = TradingNameView.TRADING_NAME_YES))
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
 
       service.submitTradingDetails() returns validVatTradingDetails
     }
 
     "return a success response when start date choice is BUSINESS_START_DATE" in new Setup {
-      mockFetchRegId(validRegId)
-
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
-      (any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
-        .thenReturn(Future.successful(validVatScheme))
-
-      when(mockS4LService.fetchAndGet[StartDateView]()(Matchers.eq(S4LKey[StartDateView]), any(), any()))
-        .thenReturn(Future.successful(Some(StartDateView(StartDateView.BUSINESS_START_DATE, someTestDate))))
 
       val tradingDetailsWithCtActiveDateSelected = tradingDetails(startDateSelection = StartDateView.BUSINESS_START_DATE)
 
-      when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any()))
-        .thenReturn(Future.successful(tradingDetailsWithCtActiveDateSelected))
+      mockFetchRegId(validRegId)
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(tradingDetailsWithCtActiveDateSelected.pure)
+      save4laterRutrns(StartDateView(StartDateView.BUSINESS_START_DATE, someTestDate))
 
       service.submitTradingDetails() returns tradingDetailsWithCtActiveDateSelected
     }
 
     "return a success response when VatTradingDetails is submitted and no Trading Name is found in S4L" in new Setup {
       mockFetchRegId(validRegId)
-
-      when(mockS4LService.fetchAndGet[TradingNameView]()(Matchers.eq(S4LKey[TradingNameView]), any(), any()))
-        .thenReturn(Future.successful(None))
-
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
-      (any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
-        .thenReturn(Future.successful(validVatScheme))
-
-      when(mockRegConnector.upsertVatTradingDetails(regId = any(), vatTradingDetails = any())(hc = any(), rds = any()))
-        .thenReturn(Future.successful(validVatTradingDetails))
-
-      when(mockS4LService.fetchAndGet[EuGoods]()(Matchers.eq(S4LKey[EuGoods]), any(), any()))
-        .thenReturn(Future.successful(Some(validEuGoods)))
-
-      when(mockS4LService.fetchAndGet[ApplyEori]()(Matchers.eq(S4LKey[ApplyEori]), any(), any()))
-        .thenReturn(Future.successful(Some(validApplyEori)))
+      save4laterRutrnsNothing[TradingNameView]()
+      save4laterRutrns(validEuGoods)
+      save4laterRutrns(validApplyEori)
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
 
       service.submitTradingDetails() returns validVatTradingDetails
     }
@@ -232,48 +146,21 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "return a success response when SicAndCompliance is submitted" in new Setup {
       mockFetchRegId(validRegId)
 
-      when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.eq(S4LKey[BusinessActivityDescription]), any(), any()))
-        .thenReturn(Future.successful(Some(validBusinessActivityDescription)))
+      save4laterRutrns(validBusinessActivityDescription)
+      save4laterRutrns(validNotForProfit)
+      save4laterRutrns(validCompanyProvideWorkers)
+      save4laterRutrns(validWorkers)
+      save4laterRutrns(validTemporaryContracts)
+      save4laterRutrns(validAdviceOrConsultancy)
+      save4laterRutrns(validActAsIntermediary)
+      save4laterRutrns(ChargeFees(true))
+      save4laterRutrns(AdditionalNonSecuritiesWork(true))
+      save4laterRutrns(DiscretionaryInvestmentManagementServices(true))
+      save4laterRutrns(InvestmentFundManagement(true))
+      save4laterRutrns(ManageAdditionalFunds(true))
 
-      when(mockS4LService.fetchAndGet[NotForProfit]()(Matchers.eq(S4LKey[NotForProfit]), any(), any()))
-        .thenReturn(Future.successful(Some(validNotForProfit)))
-
-      when(mockS4LService.fetchAndGet[CompanyProvideWorkers]()(Matchers.eq(S4LKey[CompanyProvideWorkers]), any(), any()))
-        .thenReturn(Future.successful(Some(validCompanyProvideWorkers)))
-
-      when(mockS4LService.fetchAndGet[Workers]()(Matchers.eq(S4LKey[Workers]), any(), any()))
-        .thenReturn(Future.successful(Some(validWorkers)))
-
-      when(mockS4LService.fetchAndGet[TemporaryContracts]()(Matchers.eq(S4LKey[TemporaryContracts]), any(), any()))
-        .thenReturn(Future.successful(Some(validTemporaryContracts)))
-
-      when(mockS4LService.fetchAndGet[AdviceOrConsultancy]()(Matchers.eq(S4LKey[AdviceOrConsultancy]), any(), any()))
-        .thenReturn(Future.successful(Some(validAdviceOrConsultancy)))
-
-      when(mockS4LService.fetchAndGet[ActAsIntermediary]()(Matchers.eq(S4LKey[ActAsIntermediary]), any(), any()))
-        .thenReturn(Future.successful(Some(validActAsIntermediary)))
-
-      when(mockS4LService.fetchAndGet[ChargeFees]()(Matchers.eq(S4LKey[ChargeFees]), any(), any()))
-        .thenReturn(Future.successful(Some(ChargeFees(true))))
-
-      when(mockS4LService.fetchAndGet[AdditionalNonSecuritiesWork]()(Matchers.eq(S4LKey[AdditionalNonSecuritiesWork]), any(), any()))
-        .thenReturn(Future.successful(Some(AdditionalNonSecuritiesWork(true))))
-
-      when(mockS4LService.fetchAndGet[DiscretionaryInvestmentManagementServices]()(Matchers.eq(S4LKey[DiscretionaryInvestmentManagementServices]), any(), any()))
-        .thenReturn(Future.successful(Some(DiscretionaryInvestmentManagementServices(true))))
-
-      when(mockS4LService.fetchAndGet[InvestmentFundManagement]()(Matchers.eq(S4LKey[InvestmentFundManagement]), any(), any()))
-        .thenReturn(Future.successful(Some(InvestmentFundManagement(true))))
-
-      when(mockS4LService.fetchAndGet[ManageAdditionalFunds]()(Matchers.eq(S4LKey[ManageAdditionalFunds]), any(), any()))
-        .thenReturn(Future.successful(Some(ManageAdditionalFunds(true))))
-
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
-      (any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
-        .thenReturn(Future.successful(validVatScheme))
-
-      when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any()))
-        .thenReturn(Future.successful(validSicAndCompliance))
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any())).thenReturn(validSicAndCompliance.pure)
 
       service.submitSicAndCompliance() returns validSicAndCompliance
     }
@@ -281,22 +168,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "return a success response when SicAndCompliance is submitted and no Business Activity Description is found in S4L" in new Setup {
       mockFetchRegId(validRegId)
 
-      when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.eq(S4LKey[BusinessActivityDescription]), any(), any()))
-        .thenReturn(Future.successful(None))
+      save4laterRutrnsNothing[BusinessActivityDescription]()
+      save4laterRutrnsNothing[CompanyProvideWorkers]()
+      save4laterRutrns(validSkilledWorkers)
 
-      when(mockS4LService.fetchAndGet[CompanyProvideWorkers]()(Matchers.eq(S4LKey[CompanyProvideWorkers]), any(), any()))
-        .thenReturn(Future.successful(None))
-
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
-      (any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
-        .thenReturn(Future.successful(validVatScheme))
-
-      when(mockS4LService.fetchAndGet[SkilledWorkers]()(Matchers.eq(S4LKey[SkilledWorkers]), any(), any()))
-        .thenReturn(Future.successful(Some(validSkilledWorkers)))
-
-      when(mockRegConnector.upsertSicAndCompliance(regId = any(), sicAndCompliance = any())
-      (hc = any(), rds = any()))
-        .thenReturn(Future.successful(validSicAndCompliance))
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any())).thenReturn(validSicAndCompliance.pure)
 
       service.submitSicAndCompliance() returns validSicAndCompliance
     }
@@ -305,8 +182,8 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   "Calling deleteVatScheme" should {
     "return a success response when the delete VatScheme is successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteVatScheme(any())(any(), any()))
-        .thenReturn(Future.successful(true))
+      when(mockRegConnector.deleteVatScheme(any())(any(), any())).thenReturn(true.pure)
+
       service.deleteVatScheme() returns true
     }
   }
@@ -314,8 +191,8 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   "Calling deleteElement" should {
     "return a success response when successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteElement(any())(any())(any(), any()))
-        .thenReturn(Future.successful(true))
+      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(true.pure)
+
       service.deleteElement(VatBankAccountPath) returns true
     }
   }
@@ -323,8 +200,8 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   "Calling deleteElements with items" should {
     "return a success response when successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteElement(any())(any())(any(), any()))
-        .thenReturn(Future.successful(true))
+      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(true.pure)
+
       service.deleteElements(List(VatBankAccountPath, ZeroRatedTurnoverEstimatePath)) returns true
     }
   }
@@ -332,8 +209,8 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   "Calling deleteElements without items" should {
     "return a success response when successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteElement(any())(any())(any(), any()))
-        .thenReturn(Future.successful(true))
+      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(true.pure)
+
       service.deleteElements(List()) returns true
     }
   }
@@ -349,23 +226,23 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
         accountingPeriods = monthlyAccountingPeriod
       )
 
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
-        .thenReturn(Future.successful(emptyVatScheme))
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+
       service.submitVatFinancials() returns mergedVatFinancials
     }
 
     "submitTradingDetails should process the submission even if VatScheme does not contain a VatFinancials object" in new Setup {
       val mergedVatTradingDetails = validVatTradingDetails
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
-        .thenReturn(Future.successful(emptyVatScheme))
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+
       service.submitTradingDetails() returns mergedVatTradingDetails
     }
 
 
     "submitVatContact should process the submission even if VatScheme does not contain a VatContact object" in new Setup {
       val mergedvalidVatContact = validVatContact
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
-        .thenReturn(Future.successful(emptyVatScheme))
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+
       service.submitVatContact() returns mergedvalidVatContact
     }
 
