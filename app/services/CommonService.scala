@@ -28,7 +28,7 @@ import scala.concurrent.Future
 
 trait CommonService {
 
-  val keystoreConnector: KeystoreConnector
+  val keystoreConnector: KeystoreConnector = KeystoreConnector
 
   def fetchRegistrationId(implicit hc: HeaderCarrier): Future[String] =
     OptionT(keystoreConnector.fetchAndGet[String]("RegistrationId")).getOrElse {

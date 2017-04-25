@@ -187,6 +187,24 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       service.submitTradingDetails() returns validVatTradingDetails
     }
 
+    "return a success response when start date choice is BUSINESS_START_DATE" in new Setup {
+      mockFetchRegId(validRegId)
+
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))
+      (any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
+        .thenReturn(Future.successful(validVatScheme))
+
+      when(mockS4LService.fetchAndGet[StartDateView]()(Matchers.eq(S4LKey[StartDateView]), any(), any()))
+        .thenReturn(Future.successful(Some(StartDateView(StartDateView.BUSINESS_START_DATE, someTestDate))))
+
+      val tradingDetailsWithCtActiveDateSelected = tradingDetails(startDateSelection = StartDateView.BUSINESS_START_DATE)
+
+      when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any()))
+        .thenReturn(Future.successful(tradingDetailsWithCtActiveDateSelected))
+
+      service.submitTradingDetails() returns tradingDetailsWithCtActiveDateSelected
+    }
+
     "return a success response when VatTradingDetails is submitted and no Trading Name is found in S4L" in new Setup {
       mockFetchRegId(validRegId)
 
@@ -254,8 +272,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       (any[HeaderCarrier](), any[HttpReads[VatScheme]]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      when(mockRegConnector.upsertSicAndCompliance(any(), any())
-      (any(), any()))
+      when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any()))
         .thenReturn(Future.successful(validSicAndCompliance))
 
       service.submitSicAndCompliance() returns validSicAndCompliance

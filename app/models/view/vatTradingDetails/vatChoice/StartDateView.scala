@@ -24,7 +24,11 @@ import play.api.libs.json.Json
 
 import scala.util.Try
 
-case class StartDateView(dateType: String = "", date: Option[LocalDate] = None)
+case class StartDateView(dateType: String = "", date: Option[LocalDate] = None, ctActiveDate: Option[LocalDate] = None) {
+
+  def withCtActiveDateOption(d: LocalDate): StartDateView = this.copy(ctActiveDate = Some(d))
+
+}
 
 object StartDateView {
 
@@ -54,7 +58,12 @@ object StartDateView {
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: StartDateView, g: VatTradingDetails) =>
-    g.copy(vatChoice = g.vatChoice.copy(vatStartDate = g.vatChoice.vatStartDate.copy(selection = c.dateType, startDate = c.date)))
+    g.copy(
+      vatChoice = g.vatChoice.copy(
+        vatStartDate = g.vatChoice.vatStartDate.copy(
+          selection = c.dateType,
+          startDate = if (c.dateType == StartDateView.BUSINESS_START_DATE) c.ctActiveDate else c.date
+        )))
   }
 
 }
