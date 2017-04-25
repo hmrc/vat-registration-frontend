@@ -58,8 +58,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   extends RegistrationService
     with CommonService {
 
-  override val keystoreConnector: KeystoreConnector = KeystoreConnector
-
   import cats.instances.future._
   import cats.syntax.cartesian._
 

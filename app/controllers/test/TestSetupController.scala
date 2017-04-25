@@ -44,8 +44,6 @@ import scala.concurrent.Future
 class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConnector: VatRegistrationConnector,
                                     ds: CommonPlayDependencies) extends VatRegistrationController(ds) with CommonService {
 
-  override val keystoreConnector: KeystoreConnector = KeystoreConnector
-
   def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request => {
     for {
       taxableTurnover <- s4LService.fetchAndGet[TaxableTurnover]()
