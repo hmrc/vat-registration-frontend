@@ -43,10 +43,7 @@ class TradingNameController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.vatTradingDetails.trading_name(formWithErrors)))
       }, {
         data: TradingNameView => {
-          //TODO this can be done in the Form definition using the `ignoring` mapping
-          //blank out trading name (if present) when 'No' selected
-          val toSave = if (data.yesNo == TradingNameView.TRADING_NAME_NO) data.copy(tradingName = None) else data
-          s4LService.saveForm[TradingNameView](toSave) map { _ =>
+          s4LService.saveForm[TradingNameView](data) map { _ =>
             Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())
           }
         }
