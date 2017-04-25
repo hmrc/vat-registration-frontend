@@ -22,26 +22,25 @@ import javax.inject.Inject
 
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
-import connectors.CTConnector
+import connectors.{OptionalResponse, PPConnector}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 @ImplementedBy(classOf[IncorporationInformationService])
 trait IIService {
 
-  def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionT[Future, LocalDate]
+  def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionalResponse[LocalDate]
 
 }
 
-class IncorporationInformationService @Inject()(ctConnector: CTConnector) extends IIService with CommonService {
+class IncorporationInformationService @Inject()(ctConnector: PPConnector) extends IIService with CommonService {
 
   import cats.instances.future._
 
   val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-  def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionT[Future, LocalDate] =
+  def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionalResponse[LocalDate] =
     for {
       regId <- OptionT.liftF(fetchRegistrationId)
       ctReg <- ctConnector.getCompanyRegistrationDetails(regId)

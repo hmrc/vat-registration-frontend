@@ -159,6 +159,24 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
+  s"POST ${routes.StartDateController.submit()} with valid data BUSINESS_START_DATE" should {
+
+    "return 303" in {
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDateView())))
+
+      when(mockS4LService.saveForm[StartDateView](any[StartDateView]())(any(), any(), any()))
+        .thenReturn(Future.successful(returnCacheMap))
+
+      AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        "startDateRadio" -> StartDateView.BUSINESS_START_DATE
+      )) {
+        result =>
+          status(result) mustBe Status.SEE_OTHER
+          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/trading-name"
+      }
+    }
+  }
+
   s"POST ${routes.StartDateController.submit()} with StartDate having a specific date" should {
 
     "return 303" in {

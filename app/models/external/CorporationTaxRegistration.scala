@@ -24,11 +24,15 @@ case class AccountingDetails(status: String, activeDate: Option[String])
 
 object AccountingDetails {
 
-  implicit val formats =
+  // $COVERAGE-OFF$
+  //TODO currently this class is not used, so no code is exercising the JSON format
+
+  implicit val format =
     ((__ \ "accountingDateStatus").format[String] and
       (__ \ "startDateOfBusiness").formatNullable[String]
       ) (AccountingDetails.apply, unlift(AccountingDetails.unapply))
 
+  // $COVERAGE-ON$
 }
 
 
