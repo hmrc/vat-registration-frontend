@@ -25,13 +25,13 @@ import forms.vatTradingDetails.vatChoice.StartDateFormFactory
 import models.view.vatTradingDetails.vatChoice.StartDateView
 import play.api.data.Form
 import play.api.mvc._
-import services.{IIService, S4LService, VatRegistrationService}
+import services.{PrePopService, S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
 import views.html.pages.vatTradingDetails.vatChoice.start_date
 
 import scala.concurrent.Future
 
-class StartDateController @Inject()(startDateFormFactory: StartDateFormFactory, iis: IIService, ds: CommonPlayDependencies)
+class StartDateController @Inject()(startDateFormFactory: StartDateFormFactory, iis: PrePopService, ds: CommonPlayDependencies)
                                    (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
   import cats.instances.future._

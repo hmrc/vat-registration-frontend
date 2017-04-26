@@ -34,7 +34,7 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DateService, IIService, VatRegistrationService}
+import services.{DateService, PrePopService, VatRegistrationService}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -52,7 +52,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
   import cats.instances.future._
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  val mockIIService = mock[IIService]
+  val mockIIService = mock[PrePopService]
   when(mockIIService.getCTActiveDate()(any())).thenReturn(OptionT.pure[Future, LocalDate](LocalDate.of(2017, 4, 20)))
 
   val startDateFormFactory = new StartDateFormFactory(mockDateService, Now[LocalDate](today))

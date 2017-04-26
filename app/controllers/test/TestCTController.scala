@@ -22,9 +22,9 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
 import play.twirl.api.Html
-import services.IIService
+import services.PrePopService
 
-class TestCTController @Inject()(iis: IIService, ds: CommonPlayDependencies)
+class TestCTController @Inject()(iis: PrePopService, ds: CommonPlayDependencies)
   extends VatRegistrationController(ds) {
 
   import cats.instances.future._
