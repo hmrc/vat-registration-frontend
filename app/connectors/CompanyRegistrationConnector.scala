@@ -16,12 +16,17 @@
 
 package connectors
 
-import javax.inject.Singleton
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import javax.inject.{Inject, Singleton}
 
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
 import models.external.{AccountingDetails, CorporationTaxRegistration}
+import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
+import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason.INTENDS_TO_SELL
+import services.S4LService
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
@@ -29,7 +34,7 @@ import uk.gov.hmrc.play.http.ws.WSHttp
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
-@ImplementedBy(classOf[CompanyRegistrationConnector])
+@ImplementedBy(classOf[PrePopConnector])
 trait PPConnector {
 
   val companyRegUrl: String
@@ -43,19 +48,24 @@ trait PPConnector {
 
 
 @Singleton
-class CompanyRegistrationConnector extends PPConnector with ServicesConfig {
+class PrePopConnector @Inject()(s4l: S4LService) extends PPConnector with ServicesConfig {
+
+  import cats.instances.future._
 
   //$COVERAGE-OFF$
   val className = this.getClass.getSimpleName
   val companyRegUrl = baseUrl("company-registration")
   val http: WSHttp = WSHttp
 
-  import cats.instances.future._
+  val expectedFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
   override def getCompanyRegistrationDetails(regId: String)
                                             (implicit hc: HeaderCarrier, rds: HttpReads[CorporationTaxRegistration])
-  : OptionalResponse[CorporationTaxRegistration] =
-    OptionT.pure(CorporationTaxRegistration(Some(AccountingDetails("", Some("2017-05-20")))))
+  : OptionalResponse[CorporationTaxRegistration] = OptionT(s4l.fetchAndGet[VoluntaryRegistrationReason]()).collect {
+    case VoluntaryRegistrationReason(INTENDS_TO_SELL) => CorporationTaxRegistration(
+      Some(AccountingDetails("", Some(LocalDate.now.plusDays(7) format expectedFormat))))
+  }
+
 
   //    OptionT(
   //      http.GET[CorporationTaxRegistration](s"$companyRegUrl/company-registration/corporation-tax-registration/$regId/corporation-tax-registration")
