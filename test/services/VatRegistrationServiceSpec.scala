@@ -48,10 +48,10 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
 
-    def save4laterRutrnsNothing[T: S4LKey]()(implicit s4LService: S4LService): Unit =
-      when(s4LService.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(Option.empty[T].pure)
+    def save4laterReturnsNothing[T: S4LKey]()(implicit s4LService: S4LService): Unit =
+      when(s4LService.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(None.pure)
 
-    def save4laterRutrns[T: S4LKey](t: T)(implicit s4lService: S4LService): Unit =
+    def save4laterReturns[T: S4LKey](t: T)(implicit s4lService: S4LService): Unit =
       when(s4lService.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(OptionT.pure(t).value)
 
   }
@@ -69,33 +69,33 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "return a success response when the VatScheme is upserted" in new Setup {
       mockFetchRegId(validRegId)
 
-      save4laterRutrns(StartDateView(StartDateView.SPECIFIC_DATE, someTestDate))
-      save4laterRutrns(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES))
-      save4laterRutrns(VoluntaryRegistrationReason(VoluntaryRegistrationReason.SELLS))
-      save4laterRutrns(TradingNameView(TradingNameView.TRADING_NAME_NO))
-      save4laterRutrns(validEstimateVatTurnover)
-      save4laterRutrns(validEstimateZeroRatedSales)
-      save4laterRutrns(validVatChargeExpectancy)
-      save4laterRutrns(validVatReturnFrequency)
-      save4laterRutrns(validAccountingPeriod)
-      save4laterRutrns(validBankAccountDetails)
-      save4laterRutrns(validBusinessActivityDescription)
-      save4laterRutrns(validNotForProfit)
-      save4laterRutrns(validCompanyProvideWorkers)
-      save4laterRutrns(validWorkers)
-      save4laterRutrns(validTemporaryContracts)
-      save4laterRutrns(validSkilledWorkers)
-      save4laterRutrns(validAdviceOrConsultancy)
-      save4laterRutrns(validActAsIntermediary)
-      save4laterRutrns(ChargeFees(true))
-      save4laterRutrns(LeaseVehicles(true))
-      save4laterRutrns(AdditionalNonSecuritiesWork(true))
-      save4laterRutrns(DiscretionaryInvestmentManagementServices(true))
-      save4laterRutrns(InvestmentFundManagement(true))
-      save4laterRutrns(ManageAdditionalFunds(true))
-      save4laterRutrns(validEuGoods)
-      save4laterRutrns(validApplyEori)
-      save4laterRutrns(validBusinessContactDetails)
+      save4laterReturns(StartDateView(StartDateView.SPECIFIC_DATE, someTestDate))
+      save4laterReturns(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES))
+      save4laterReturns(VoluntaryRegistrationReason(VoluntaryRegistrationReason.SELLS))
+      save4laterReturns(TradingNameView(TradingNameView.TRADING_NAME_NO))
+      save4laterReturns(validEstimateVatTurnover)
+      save4laterReturns(validEstimateZeroRatedSales)
+      save4laterReturns(validVatChargeExpectancy)
+      save4laterReturns(validVatReturnFrequency)
+      save4laterReturns(validAccountingPeriod)
+      save4laterReturns(validBankAccountDetails)
+      save4laterReturns(validBusinessActivityDescription)
+      save4laterReturns(validNotForProfit)
+      save4laterReturns(validCompanyProvideWorkers)
+      save4laterReturns(validWorkers)
+      save4laterReturns(validTemporaryContracts)
+      save4laterReturns(validSkilledWorkers)
+      save4laterReturns(validAdviceOrConsultancy)
+      save4laterReturns(validActAsIntermediary)
+      save4laterReturns(ChargeFees(true))
+      save4laterReturns(LeaseVehicles(true))
+      save4laterReturns(AdditionalNonSecuritiesWork(true))
+      save4laterReturns(DiscretionaryInvestmentManagementServices(true))
+      save4laterReturns(InvestmentFundManagement(true))
+      save4laterReturns(ManageAdditionalFunds(true))
+      save4laterReturns(validEuGoods)
+      save4laterReturns(validApplyEori)
+      save4laterReturns(validBusinessContactDetails)
 
       when(mockRegConnector.upsertVatChoice(any(), any())(any(), any())).thenReturn(validVatChoice.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
@@ -111,7 +111,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   "Calling submitTradingDetails" should {
     "return a success response when VatTradingDetails is submitted" in new Setup {
       mockFetchRegId(validRegId)
-      save4laterRutrns(TradingNameView(yesNo = TradingNameView.TRADING_NAME_YES))
+      save4laterReturns(TradingNameView(yesNo = TradingNameView.TRADING_NAME_YES))
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
 
@@ -125,16 +125,16 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       mockFetchRegId(validRegId)
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(tradingDetailsWithCtActiveDateSelected.pure)
-      save4laterRutrns(StartDateView(StartDateView.BUSINESS_START_DATE, someTestDate))
+      save4laterReturns(StartDateView(StartDateView.BUSINESS_START_DATE, someTestDate))
 
       service.submitTradingDetails() returns tradingDetailsWithCtActiveDateSelected
     }
 
     "return a success response when VatTradingDetails is submitted and no Trading Name is found in S4L" in new Setup {
       mockFetchRegId(validRegId)
-      save4laterRutrnsNothing[TradingNameView]()
-      save4laterRutrns(validEuGoods)
-      save4laterRutrns(validApplyEori)
+      save4laterReturnsNothing[TradingNameView]()
+      save4laterReturns(validEuGoods)
+      save4laterReturns(validApplyEori)
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
 
@@ -146,18 +146,18 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "return a success response when SicAndCompliance is submitted" in new Setup {
       mockFetchRegId(validRegId)
 
-      save4laterRutrns(validBusinessActivityDescription)
-      save4laterRutrns(validNotForProfit)
-      save4laterRutrns(validCompanyProvideWorkers)
-      save4laterRutrns(validWorkers)
-      save4laterRutrns(validTemporaryContracts)
-      save4laterRutrns(validAdviceOrConsultancy)
-      save4laterRutrns(validActAsIntermediary)
-      save4laterRutrns(ChargeFees(true))
-      save4laterRutrns(AdditionalNonSecuritiesWork(true))
-      save4laterRutrns(DiscretionaryInvestmentManagementServices(true))
-      save4laterRutrns(InvestmentFundManagement(true))
-      save4laterRutrns(ManageAdditionalFunds(true))
+      save4laterReturns(validBusinessActivityDescription)
+      save4laterReturns(validNotForProfit)
+      save4laterReturns(validCompanyProvideWorkers)
+      save4laterReturns(validWorkers)
+      save4laterReturns(validTemporaryContracts)
+      save4laterReturns(validAdviceOrConsultancy)
+      save4laterReturns(validActAsIntermediary)
+      save4laterReturns(ChargeFees(true))
+      save4laterReturns(AdditionalNonSecuritiesWork(true))
+      save4laterReturns(DiscretionaryInvestmentManagementServices(true))
+      save4laterReturns(InvestmentFundManagement(true))
+      save4laterReturns(ManageAdditionalFunds(true))
 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
       when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any())).thenReturn(validSicAndCompliance.pure)
@@ -168,9 +168,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "return a success response when SicAndCompliance is submitted and no Business Activity Description is found in S4L" in new Setup {
       mockFetchRegId(validRegId)
 
-      save4laterRutrnsNothing[BusinessActivityDescription]()
-      save4laterRutrnsNothing[CompanyProvideWorkers]()
-      save4laterRutrns(validSkilledWorkers)
+      save4laterReturnsNothing[BusinessActivityDescription]()
+      save4laterReturnsNothing[CompanyProvideWorkers]()
+      save4laterReturns(validSkilledWorkers)
 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
       when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any())).thenReturn(validSicAndCompliance.pure)
