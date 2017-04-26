@@ -23,10 +23,11 @@ import javax.inject.{Inject, Singleton}
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
+import models.ApiModelTransformer
 import models.external.{AccountingDetails, CorporationTaxRegistration}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason.INTENDS_TO_SELL
-import services.S4LService
+import services.{S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
@@ -48,7 +49,7 @@ trait PPConnector {
 
 
 @Singleton
-class PrePopConnector @Inject()(s4l: S4LService) extends PPConnector with ServicesConfig {
+class PrePopConnector @Inject()(s4l: S4LService, vrs: VatRegistrationService) extends PPConnector with ServicesConfig {
 
   import cats.instances.future._
 
@@ -61,10 +62,11 @@ class PrePopConnector @Inject()(s4l: S4LService) extends PPConnector with Servic
 
   override def getCompanyRegistrationDetails(regId: String)
                                             (implicit hc: HeaderCarrier, rds: HttpReads[CorporationTaxRegistration])
-  : OptionalResponse[CorporationTaxRegistration] = OptionT(s4l.fetchAndGet[VoluntaryRegistrationReason]()).collect {
-    case VoluntaryRegistrationReason(INTENDS_TO_SELL) => CorporationTaxRegistration(
-      Some(AccountingDetails("", Some(LocalDate.now.plusDays(7) format expectedFormat))))
-  }
+  : OptionalResponse[CorporationTaxRegistration] =
+    OptionT(s4l.fetchAndGet[VoluntaryRegistrationReason]()).orElseF(vrs.getVatScheme() map ApiModelTransformer[VoluntaryRegistrationReason].toViewModel).collect {
+      case VoluntaryRegistrationReason(INTENDS_TO_SELL) => CorporationTaxRegistration(
+        Some(AccountingDetails("", Some(LocalDate.now.plusDays(7) format expectedFormat))))
+    }
 
 
   //    OptionT(
