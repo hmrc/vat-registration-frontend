@@ -27,14 +27,14 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@ImplementedBy(classOf[IncorporationInformationService])
-trait IIService {
+@ImplementedBy(classOf[PrePopulationService])
+trait PrePopService {
 
   def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionalResponse[LocalDate]
 
 }
 
-class IncorporationInformationService @Inject()(ctConnector: PPConnector) extends IIService with CommonService {
+class PrePopulationService @Inject()(ctConnector: PPConnector) extends PrePopService with CommonService {
 
   import cats.instances.future._
 

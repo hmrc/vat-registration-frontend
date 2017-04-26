@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.language.implicitConversions
 
-class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
+class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
 
   import cats.instances.future._
 
@@ -46,7 +46,7 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
 
     implicit val headerCarrier = HeaderCarrier()
     val mockPPConnector = Mockito.mock(classOf[PPConnector])
-    val service = new IncorporationInformationService(mockPPConnector) {
+    val service = new PrePopulationService(mockPPConnector) {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
       mockFetchRegId()
     }
