@@ -34,7 +34,7 @@ trait PrePopService {
 
 }
 
-class PrePopulationService @Inject()(ctConnector: PPConnector) extends PrePopService with CommonService {
+class PrePopulationService @Inject()(ppConnector: PPConnector) extends PrePopService with CommonService {
 
   import cats.instances.future._
 
@@ -43,7 +43,7 @@ class PrePopulationService @Inject()(ctConnector: PPConnector) extends PrePopSer
   def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionalResponse[LocalDate] =
     for {
       regId <- OptionT.liftF(fetchRegistrationId)
-      ctReg <- ctConnector.getCompanyRegistrationDetails(regId)
+      ctReg <- ppConnector.getCompanyRegistrationDetails(regId)
       accountingDetails <- OptionT.fromOption(ctReg.accountingDetails)
       dateString <- OptionT.fromOption(accountingDetails.activeDate)
     } yield LocalDate.parse(dateString, formatter)
