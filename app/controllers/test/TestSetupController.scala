@@ -142,7 +142,12 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
     def saveStartDate(data: TestSetup) = {
       s4LService.saveForm[StartDateView](data.vatChoice.startDateChoice match {
         case None => StartDateView()
-        case Some("SPECIFIC_DATE") => StartDateView("SPECIFIC_DATE", Some(LocalDate.of(
+        case Some("SPECIFIC_DATE") => StartDateView(dateType = "SPECIFIC_DATE", date = Some(LocalDate.of(
+          data.vatChoice.startDateYear.map(_.toInt).get,
+          data.vatChoice.startDateMonth.map(_.toInt).get,
+          data.vatChoice.startDateDay.map(_.toInt).get
+        )))
+        case Some("BUSINESS_START_DATE") => StartDateView(dateType = "BUSINESS_START_DATE", ctActiveDate = Some(LocalDate.of(
           data.vatChoice.startDateYear.map(_.toInt).get,
           data.vatChoice.startDateMonth.map(_.toInt).get,
           data.vatChoice.startDateDay.map(_.toInt).get
