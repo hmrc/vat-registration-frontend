@@ -38,7 +38,7 @@ class PrePopulationService @Inject()(ctConnector: PPConnector) extends PrePopSer
 
   import cats.instances.future._
 
-  val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+  private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
   def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionalResponse[LocalDate] =
     for {
