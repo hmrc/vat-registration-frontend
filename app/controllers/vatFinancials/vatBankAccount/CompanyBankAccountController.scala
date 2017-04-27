@@ -25,13 +25,15 @@ import models.view.vatFinancials.vatBankAccount.CompanyBankAccount
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
-
 
 class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
   import cats.instances.future._
+  import cats.syntax.applicative._
+  import cats.syntax.flatMap._
+
+  val form = CompanyBankAccountForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     viewModel[CompanyBankAccount].map { vm =>
@@ -40,20 +42,17 @@ class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    CompanyBankAccountForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(formWithErrors)))
-      }, {
-        data: CompanyBankAccount => {
-          s4l.saveForm[CompanyBankAccount](data) flatMap { _ =>
-            if (CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES == data.yesNo) {
-              Future.successful(Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show()))
-            } else {
-              vrs.deleteElement(VatBankAccountPath).map { _ =>
-                Redirect(controllers.vatFinancials.routes.EstimateVatTurnoverController.show()) }
-            }
+    form.bindFromRequest().fold(
+      formWithErrors => BadRequest(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(formWithErrors)).pure
+      ,
+      (data: CompanyBankAccount) => {
+        s4l.saveForm(data).map(_ => data.yesNo == CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES).ifM(
+          controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show().pure,
+          vrs.deleteElement(VatBankAccountPath).map { _ =>
+            controllers.vatFinancials.routes.EstimateVatTurnoverController.show()
           }
-        }
-      })
+        ).map(Redirect)
+      }
+    )
   })
 }
