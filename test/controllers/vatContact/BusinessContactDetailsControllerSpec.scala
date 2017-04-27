@@ -52,7 +52,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestBusinessContactDetailsController.show(), mockAuthConnector) {
+      callAuthorised(TestBusinessContactDetailsController.show()) {
         _ includesText "Company contact details"
       }
     }
@@ -63,7 +63,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
         (Matchers.eq(S4LKey[BusinessContactDetails]), any(), any()))
         .thenReturn(Future.successful(Some(validBusinessContactDetails)))
 
-      callAuthorised(TestBusinessContactDetailsController.show, mockAuthConnector) {
+      callAuthorised(TestBusinessContactDetailsController.show) {
         _ includesText "Company contact details"
       }
     }
@@ -76,7 +76,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(TestBusinessContactDetailsController.show, mockAuthConnector) {
+      callAuthorised(TestBusinessContactDetailsController.show) {
         _ includesText "Company contact details"
       }
     }

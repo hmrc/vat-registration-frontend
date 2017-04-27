@@ -43,7 +43,7 @@ class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistratio
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestApplicationSubmissionController.show, mockAuthConnector) {
+      callAuthorised(TestApplicationSubmissionController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -57,7 +57,7 @@ class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistratio
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(TestApplicationSubmissionController.show, mockAuthConnector) {
+      callAuthorised(TestApplicationSubmissionController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")

@@ -66,7 +66,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(AdviceOrConsultancyController.show, mockAuthConnector) {
+      callAuthorised(AdviceOrConsultancyController.show) {
         _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
       }
     }
@@ -80,7 +80,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(AdviceOrConsultancyController.show, mockAuthConnector) {
+    callAuthorised(AdviceOrConsultancyController.show) {
       _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
     }
   }
@@ -89,11 +89,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(AdviceOrConsultancyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
-      }
-
+      )) (_ isA Status.BAD_REQUEST)
     }
   }
 

@@ -66,7 +66,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(LeaseVehiclesController.show, mockAuthConnector) {
+      callAuthorised(LeaseVehiclesController.show) {
         _ includesText "Is the company involved in leasing vehicles or equipment to customers?"
       }
     }
@@ -80,7 +80,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(LeaseVehiclesController.show, mockAuthConnector) {
+    callAuthorised(LeaseVehiclesController.show) {
       _ includesText "Is the company involved in leasing vehicles or equipment to customers?"
     }
   }

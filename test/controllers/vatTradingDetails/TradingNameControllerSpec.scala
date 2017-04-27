@@ -55,7 +55,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestTradingNameController.show, mockAuthConnector) {
+      callAuthorised(TestTradingNameController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -72,7 +72,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestTradingNameController.show, mockAuthConnector) {
+      callAuthorised(TestTradingNameController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -89,7 +89,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(TestTradingNameController.show, mockAuthConnector) {
+      callAuthorised(TestTradingNameController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
