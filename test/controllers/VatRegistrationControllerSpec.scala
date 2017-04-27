@@ -63,7 +63,7 @@ class VatRegistrationControllerSpec extends VatRegSpec {
 
   "authorised access" should {
     "return success status" in {
-      callAuthorised(TestController.authorisedActionGenerator, mockAuthConnector)(status(_) mustBe NO_CONTENT)
+      callAuthorised(TestController.authorisedActionGenerator)(status(_) mustBe NO_CONTENT)
     }
   }
 

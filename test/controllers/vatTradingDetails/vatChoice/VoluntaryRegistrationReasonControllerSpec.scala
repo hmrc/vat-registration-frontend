@@ -87,7 +87,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestVoluntaryRegistrationReasonController.show, mockAuthConnector) {
+      callAuthorised(TestVoluntaryRegistrationReasonController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -104,7 +104,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(TestVoluntaryRegistrationReasonController.show, mockAuthConnector) {
+      callAuthorised(TestVoluntaryRegistrationReasonController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")

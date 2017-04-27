@@ -72,7 +72,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(NotForProfitController.show, mockAuthConnector) {
+      callAuthorised(NotForProfitController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -90,7 +90,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(NotForProfitController.show, mockAuthConnector) {
+    callAuthorised(NotForProfitController.show) {
       result =>
         status(result) mustBe OK
         contentType(result) mustBe Some("text/html")
@@ -102,10 +102,8 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
   s"POST ${sicAndCompliance.cultural.routes.NotForProfitController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
+      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody()) {
+        result => result isA Status.BAD_REQUEST
       }
 
     }
@@ -128,7 +126,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/company-bank-account"
+          redirectLocation(response).getOrElse("") mustBe s"$contextRoot/company-bank-account"
       }
 
     }
@@ -151,7 +149,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/company-bank-account"
+          redirectLocation(response).getOrElse("") mustBe s"$contextRoot/company-bank-account"
       }
 
     }

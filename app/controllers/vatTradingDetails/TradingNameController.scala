@@ -24,30 +24,27 @@ import models.view.vatTradingDetails.TradingNameView
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
-
 class TradingNameController @Inject()(ds: CommonPlayDependencies)
                                      (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService) extends VatRegistrationController(ds) {
 
   import cats.instances.future._
+  import cats.syntax.applicative._
+
+  val form = TradingNameForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[TradingNameView].map { vm =>
-      Ok(views.html.pages.vatTradingDetails.trading_name(TradingNameForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.vatTradingDetails.trading_name(TradingNameForm.form)))
+    viewModel[TradingNameView].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.vatTradingDetails.trading_name(f)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    TradingNameForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.vatTradingDetails.trading_name(formWithErrors)))
-      }, {
-        data: TradingNameView => {
-          s4LService.saveForm[TradingNameView](data) map { _ =>
-            Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())
-          }
-        }
-      })
+    form.bindFromRequest().fold(
+      badForm => BadRequest(views.html.pages.vatTradingDetails.trading_name(badForm)).pure
+      ,
+      (data: TradingNameView) => s4LService.saveForm[TradingNameView](data) map { _ =>
+        Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())
+      }
+    )
   })
 
 }

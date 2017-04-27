@@ -72,7 +72,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(EuGoodsController.show, mockAuthConnector) {
+      callAuthorised(EuGoodsController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -90,7 +90,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(EuGoodsController.show, mockAuthConnector) {
+    callAuthorised(EuGoodsController.show) {
       result =>
         status(result) mustBe OK
         contentType(result) mustBe Some("text/html")

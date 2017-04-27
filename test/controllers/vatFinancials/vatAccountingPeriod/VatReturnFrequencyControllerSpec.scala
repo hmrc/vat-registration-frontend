@@ -73,7 +73,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestVatReturnFrequencyController.show, mockAuthConnector) {
+      callAuthorised(TestVatReturnFrequencyController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -90,7 +90,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(TestVatReturnFrequencyController.show, mockAuthConnector) {
+      callAuthorised(TestVatReturnFrequencyController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
