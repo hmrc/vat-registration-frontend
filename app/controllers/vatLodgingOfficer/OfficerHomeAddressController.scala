@@ -51,8 +51,7 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
-      copyGlobalErrorsToFields("daytimePhone", "mobile")
-        .andThen(form => BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(form, prePopAddressMap)).pure),
+      form => BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(form, prePopAddressMap)).pure,
       s4l.saveForm(_).map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
     )
   })
