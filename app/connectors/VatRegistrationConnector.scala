@@ -94,7 +94,7 @@ trait RegistrationConnector {
 
   def upsertVatEligibility(regId: String, vatServiceEligibility: VatServiceEligibility)
                       (implicit hc: HeaderCarrier, rds: HttpReads[VatServiceEligibility]): Future[VatServiceEligibility] = {
-    http.PATCH[VatServiceEligibility, VatServiceEligibility](s"$vatRegUrl/vatreg/$regId/vat-eligibility", vatServiceEligibility) recover {
+    http.PATCH[VatServiceEligibility, VatServiceEligibility](s"$vatRegUrl/vatreg/$regId/service-eligibility", vatServiceEligibility) recover {
       case e: Exception => throw logResponse(e, className, "upsertVatEligibility")
     }
   }
