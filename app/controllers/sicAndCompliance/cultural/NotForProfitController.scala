@@ -20,18 +20,17 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.cultural.NotForProfitForm
-import models.{ElementPath, FinancialCompliancePath}
+import models.FinancialCompliancePath
 import models.view.sicAndCompliance.cultural.NotForProfit
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
-
-import scala.concurrent.Future
 
 
 class NotForProfitController @Inject()(ds: CommonPlayDependencies)
                                       (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
   import cats.instances.future._
+  import cats.syntax.applicative._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     viewModel[NotForProfit].map { vm =>
@@ -41,18 +40,16 @@ class NotForProfitController @Inject()(ds: CommonPlayDependencies)
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     NotForProfitForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.sicAndCompliance.cultural.not_for_profit(formWithErrors)))
-      }, {
-        data: NotForProfit => {
-          s4LService.saveForm[NotForProfit](data) flatMap { _ =>
-            // TODO delete any existing non-cultural compliance questions
-            vrs.deleteElement(FinancialCompliancePath).map { _ =>
-              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
-            }
+      formWithErrors => BadRequest(views.html.pages.sicAndCompliance.cultural.not_for_profit(formWithErrors)).pure
+      ,
+      (data: NotForProfit) =>
+        s4LService.saveForm[NotForProfit](data) flatMap { _ =>
+          // TODO delete any existing non-cultural compliance questions
+          vrs.deleteElement(FinancialCompliancePath).map { _ =>
+            Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
           }
         }
-      })
+    )
   })
 
 }
