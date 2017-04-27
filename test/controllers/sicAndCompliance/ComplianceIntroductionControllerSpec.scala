@@ -38,12 +38,9 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
   s"GET ${sicAndCompliance.routes.ComplianceIntroductionController.show()}" should {
 
     "display the introduction page to a set of compliance questions" in {
-      callAuthorised(ComplianceIntroductionController.show, mockAuthConnector) {
+      callAuthorised(ComplianceIntroductionController.show) {
         result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Tell us more")
+           result includesText "Tell us more"
       }
     }
   }
@@ -53,7 +50,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
     "redirect the user to the next page in the flow" in {
       when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(SicStub(Some("12345678"), None, None, None))))
-      callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
+      callAuthorised(ComplianceIntroductionController.submit) {
         result =>
           result redirectsTo s"$contextRoot/company-bank-account"
       }
@@ -64,7 +61,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
 
     "redirect the user to the SIC code selection page" in {
       when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(None))
-      callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
+      callAuthorised(ComplianceIntroductionController.submit) {
         result =>
           result redirectsTo "/sic-stub"
       }
@@ -77,7 +74,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
       when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(
         Some(SicStub(Some("90010123"), Some("90020123"), None, None))
       ))
-      callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
+      callAuthorised(ComplianceIntroductionController.submit) {
         result =>
           result redirectsTo s"$contextRoot/compliance/not-for-profit"
       }
@@ -90,7 +87,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
       when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(
         Some(SicStub(Some("42110123"), Some("42910123"), None, None))
       ))
-      callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
+      callAuthorised(ComplianceIntroductionController.submit) {
         result =>
           result redirectsTo s"$contextRoot/compliance/provide-workers"
       }
@@ -103,7 +100,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
       when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(
         Some(SicStub(Some("70221123"), Some("64921123"), None, None))
       ))
-      callAuthorised(ComplianceIntroductionController.submit, mockAuthConnector) {
+      callAuthorised(ComplianceIntroductionController.submit) {
         result =>
           result redirectsTo s"$contextRoot/compliance/advice-or-consultancy"
       }

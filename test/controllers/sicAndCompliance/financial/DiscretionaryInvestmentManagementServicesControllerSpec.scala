@@ -66,7 +66,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(DiscretionaryInvestmentManagementServicesController.show, mockAuthConnector) {
+      callAuthorised(DiscretionaryInvestmentManagementServicesController.show) {
        _ includesText "Does the company provide discretionary investment management services, or introduce clients to companies who do?"
       }
     }
@@ -80,7 +80,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(DiscretionaryInvestmentManagementServicesController.show, mockAuthConnector) {
+    callAuthorised(DiscretionaryInvestmentManagementServicesController.show) {
      _ includesText "Does the company provide discretionary investment management services, or introduce clients to companies who do?"
     }
   }

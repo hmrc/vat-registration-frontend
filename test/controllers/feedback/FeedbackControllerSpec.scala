@@ -31,13 +31,12 @@ class FeedbackControllerSpec extends VatRegSpec {
   "GET /feedback" should {
 
     "redirect to GG sign in when not authorized" in {
-      val result = new FeedbackController(ds).show()(fakeRequest)
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(authUrl)
+       new FeedbackController(ds).show()(fakeRequest) redirectsTo authUrl
+
     }
 
     "return HTML when user is authorized to access" in {
-      callAuthorised(TestController.show, mockAuthConnector) {
+      callAuthorised(TestController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")

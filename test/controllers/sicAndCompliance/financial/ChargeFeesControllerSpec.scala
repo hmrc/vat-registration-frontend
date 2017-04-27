@@ -66,7 +66,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(ChargeFeesController.show, mockAuthConnector) {
+      callAuthorised(ChargeFeesController.show) {
        _ includesText "Does the company charge fees for introducing clients to financial service providers?"
       }
     }
@@ -80,7 +80,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(ChargeFeesController.show, mockAuthConnector) {
+    callAuthorised(ChargeFeesController.show) {
      _ includesText "Does the company charge fees for introducing clients to financial service providers?"
     }
   }

@@ -71,7 +71,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestTaxableTurnoverController.show, mockAuthConnector) {
+      callAuthorised(TestTaxableTurnoverController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -89,7 +89,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(TestTaxableTurnoverController.show, mockAuthConnector) {
+      callAuthorised(TestTaxableTurnoverController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
