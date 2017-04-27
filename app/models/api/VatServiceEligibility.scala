@@ -55,5 +55,8 @@ object VatServiceEligibility {
       companyWillDoAnyOf = c.companyWillDoAnyOf)
   }
 
+  // TODO remove once no longer required
+  val empty = VatServiceEligibility(None, None, None, None, None)
+
 }
 
