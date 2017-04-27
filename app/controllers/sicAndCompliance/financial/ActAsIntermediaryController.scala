@@ -20,18 +20,18 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.financial.ActAsIntermediaryForm
-import models.{ElementPath, FinChargeFeesPath}
+import models.ElementPath
 import models.view.sicAndCompliance.financial.ActAsIntermediary
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
 
-import scala.concurrent.Future
-
 
 class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
                                            (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
+
   import cats.instances.future._
+  import cats.syntax.applicative._
 
   val form: Form[ActAsIntermediary] = ActAsIntermediaryForm.form
 
@@ -42,20 +42,18 @@ class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     ActAsIntermediaryForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.act_as_intermediary(formWithErrors)))
-      }, {
-        data: ActAsIntermediary => {
-          s4LService.saveForm[ActAsIntermediary](data) flatMap {  _ =>
-            if(!data.yesNo) {
-              Future.successful(Redirect(controllers.sicAndCompliance.financial.routes.ChargeFeesController.show()))
-            }else{
-              vrs.deleteElements(ElementPath.finCompElementPaths).map { _ =>
-                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()) }
-            }
+      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.act_as_intermediary(badForm)).pure
+      ,
+      (data: ActAsIntermediary) => s4LService.saveForm[ActAsIntermediary](data).flatMap { _ =>
+        if (!data.yesNo) {
+          Redirect(controllers.sicAndCompliance.financial.routes.ChargeFeesController.show()).pure
+        } else {
+          vrs.deleteElements(ElementPath.finCompElementPaths).map { _ =>
+            Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
           }
         }
-      })
+      }
+    )
   )
 
 }
