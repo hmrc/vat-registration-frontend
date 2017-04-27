@@ -42,7 +42,7 @@ class WelcomeControllerSpec extends VatRegSpec {
       when(mockVatRegistrationService.createRegistrationFootprint()(any()))
         .thenReturn(Future.successful(()))
 
-      callAuthorised(TestController.start, mockAuthConnector) {
+      callAuthorised(TestController.start) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -55,9 +55,7 @@ class WelcomeControllerSpec extends VatRegSpec {
   "GET /" should {
 
     "redirect the user to start page" in {
-      val result = TestController.show(fakeRequest)
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.WelcomeController.start().url)
+      TestController.show(fakeRequest) redirectsTo routes.WelcomeController.start().url
     }
   }
 

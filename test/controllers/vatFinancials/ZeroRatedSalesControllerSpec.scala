@@ -72,7 +72,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestZeroRatedSalesController.show, mockAuthConnector) {
+      callAuthorised(TestZeroRatedSalesController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -89,7 +89,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(TestZeroRatedSalesController.show, mockAuthConnector) {
+      callAuthorised(TestZeroRatedSalesController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")

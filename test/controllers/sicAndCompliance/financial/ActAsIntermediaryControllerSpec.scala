@@ -66,7 +66,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(ActAsIntermediaryController.show, mockAuthConnector) {
+      callAuthorised(ActAsIntermediaryController.show) {
        _ includesText "Does the company act as an intermediary?"
       }
     }
@@ -80,7 +80,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(ActAsIntermediaryController.show, mockAuthConnector) {
+    callAuthorised(ActAsIntermediaryController.show) {
      _ includesText "Does the company act as an intermediary?"
     }
   }
@@ -111,8 +111,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
 
       AuthBuilder.submitWithAuthorisedUser(ActAsIntermediaryController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> "true"
-      )) {
-        response =>
+      )) { response =>
           response redirectsTo s"$contextRoot/company-bank-account"
       }
 
@@ -133,8 +132,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
 
       AuthBuilder.submitWithAuthorisedUser(ActAsIntermediaryController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> "false"
-      )) {
-        response =>
+      )) { response =>
           response redirectsTo s"$contextRoot/charges-fees-for-introducing-clients-to-financial-service-providers"
       }
 

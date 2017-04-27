@@ -138,3 +138,5 @@ GET         /submission-confirmation               controllers.ApplicationSubmis
 
 
 
+GET         /you-can-register-for-vat-with-this-service        controllers.TwirlViewController.renderViewAuthorised(viewName="eligibility-success")
+GET         /you-cant-register-with-this-service               controllers.TwirlViewController.renderViewAuthorised(viewName="eligibility-failure")

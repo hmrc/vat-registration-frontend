@@ -70,7 +70,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestEstimateZeroRatedSalesController.show, mockAuthConnector) {
+      callAuthorised(TestEstimateZeroRatedSalesController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -87,7 +87,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(TestEstimateZeroRatedSalesController.show, mockAuthConnector) {
+      callAuthorised(TestEstimateZeroRatedSalesController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
