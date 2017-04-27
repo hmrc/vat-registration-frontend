@@ -428,3 +428,9 @@ validation.businessContactDetails.mobile.missing             = Enter at least on
 validation.businessContactDetails.mobile.invalid             = Enter a valid mobile phone number
 validation.businessContactDetails.daytimePhone.missing       = Enter at least one phone number
 validation.businessContactDetails.daytimePhone.invalid       = Enter a valid daytime phone number
+
+## Officer Home Address Page
+pages.officerHomeAddress.title                           = Director residential address
+pages.officerHomeAddress.heading                         = What is your home address?
+pages.officerHomeAddress.different.address               = A different address
+validation.officerHomeAddress.missing                    = Tell us your home address
