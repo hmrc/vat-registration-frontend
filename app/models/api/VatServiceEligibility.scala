@@ -16,7 +16,7 @@
 
 package models.api
 
-import models.ViewModelTransformer
+import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
 final case class VatServiceEligibility(
@@ -41,6 +41,10 @@ object VatServiceEligibility {
       case "applyingForAnyOf" => vatServiceEligibility.copy(applyingForAnyOf = Some(value))
       case "companyWillDoAnyOf" => vatServiceEligibility.copy(companyWillDoAnyOf = Some(value))
     }
+  }
+
+  implicit val modelTransformer = ApiModelTransformer[VatServiceEligibility] { vs: VatScheme =>
+    vs.vatServiceEligibility
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: VatServiceEligibility, g: VatServiceEligibility) =>

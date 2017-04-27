@@ -9,7 +9,7 @@ GET         /start                                 controllers.WelcomeController
 ## SERVICE CRITERIA QUESTIONS
 ## HAVE NINO PAGE
 GET         /do-you-have-national-insurance-number  controllers.vatEligibility.ServiceCriteriaQuestionsController.show
-GET         /do-you-have-national-insurance-number  controllers.vatEligibility.ServiceCriteriaQuestionsController.submit
+POST        /do-you-have-national-insurance-number  controllers.vatEligibility.ServiceCriteriaQuestionsController.submit
 
 ## VOLUNTARY START DATE PAGE
 GET         /start-date                            controllers.vatTradingDetails.vatChoice.StartDateController.show

@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatEligibility.HaveNinoForm
+import models.S4LKey
 import models.api.VatServiceEligibility
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
@@ -35,7 +36,7 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies)
   val form: Form[VatServiceEligibility] = HaveNinoForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[VatServiceEligibility].fold(form)(form.fill)
+    viewModel[VatServiceEligibility].fold(form)(form.fill(_))
       .map(f => Ok(views.html.pages.vatEligibility.have_nino(f)))
   )
 

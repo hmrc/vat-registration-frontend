@@ -26,7 +26,9 @@ object HaveNinoForm {
   val form: Form[VatServiceEligibility] = Form(
     mapping(
       "haveNinoRadio" -> missingBooleanFieldMapping()("eligibility.haveNino")
-    )((haveNinoRadio) => VatServiceEligibility.apply("haveNino", haveNinoRadio))((t: VatServiceEligibility) => t.haveNino)
+    )
+    ((haveNinoRadio) => VatServiceEligibility.apply("haveNino", haveNinoRadio))
+    ((t: VatServiceEligibility) => t.haveNino)
   )
 
 }
