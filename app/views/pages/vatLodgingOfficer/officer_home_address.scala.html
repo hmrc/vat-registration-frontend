@@ -1,5 +1,6 @@
 @import models.view.vatLodgingOfficer.OfficerHomeAddressView
-@(officerHomeAddressForm:  Form[OfficerHomeAddressView])(implicit request: Request[_], messages: Messages)
+@import models.api.ScrsAddressType
+@(officerHomeAddressForm:  Form[OfficerHomeAddressView], prePopAddressMap: Seq[(String, String)])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
 
@@ -23,10 +24,8 @@
               <span id="homeAddressRadio"/>
               @govHelpers.inputRadioGroup(
                   field = officerHomeAddressForm("homeAddressRadio"),
-                  Seq(
-                      "addressId1" -> "Some Address.....",
-                      "other" -> Messages("pages.officerHomeAddress.different.address")
-                  ),
+                  prePopAddressMap :+
+                          ("other" -> Messages("pages.officerHomeAddress.different.address")),
                   '_labelAfter -> true,
                   '_labelClass -> "block-label"
               )

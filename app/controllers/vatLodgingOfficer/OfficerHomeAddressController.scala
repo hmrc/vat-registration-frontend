@@ -33,15 +33,26 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
 
   val form = OfficerHomeAddressForm.form
 
+  // TODO get list of addresses (ScrsAddressType?) from PrePop service
+  // TODO and make available to the page
+  // "For addresses: the shared addresses will be accessible as a single resource
+  // for a given regId via a URL shaped like /business-registration/data-sharing/${regId}/addresses"
+  // https://confluence.tools.tax.service.gov.uk/display/SCRS/Data+Sharing+Feature
+  val prePopAddressMap: Seq[(String, String)] = List(
+    "addressId1" -> "5 Romford Road, Wellington, Telford, TF1 4ER",
+    "addressId2" -> "7 Romford Road, Wellington, Telford, TF1 4ER"
+  )
+
+
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     viewModel[OfficerHomeAddressView].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_home_address(f)))
+      .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_home_address(f, prePopAddressMap)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
       copyGlobalErrorsToFields("daytimePhone", "mobile")
-        .andThen(form => BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(form)).pure),
+        .andThen(form => BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(form, prePopAddressMap)).pure),
       s4l.saveForm(_).map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
     )
   })

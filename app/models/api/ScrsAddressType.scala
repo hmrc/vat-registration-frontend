@@ -20,10 +20,10 @@ import play.api.libs.json.{Json, OFormat}
 
 case class ScrsAddressType( line1: String,
                             line2: String,
-                            line3: Option[String],
-                            line4: Option[String],
-                            postcode: Option[String],
-                            country: Option[String] )
+                            line3: Option[String] = None,
+                            line4: Option[String] = None,
+                            postcode: Option[String] = None, // TODO can we use a mandatory union type i.e. PostcodeOrCountry
+                            country: Option[String] = None ) // TODO instead of two optional fields ?
 
 object ScrsAddressType {
   implicit val format: OFormat[ScrsAddressType] = Json.format[ScrsAddressType]
