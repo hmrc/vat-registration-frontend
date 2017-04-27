@@ -6,6 +6,11 @@ GET         /assets/*file                          controllers.Assets.at(path="/
 GET         /                                      controllers.WelcomeController.show
 GET         /start                                 controllers.WelcomeController.start
 
+## SERVICE CRITERIA QUESTIONS
+## HAVE NINO PAGE
+GET         /do-you-have-national-insurance-number  controllers.vatEligibility.ServiceCriteriaQuestionsController.show
+GET         /do-you-have-national-insurance-number  controllers.vatEligibility.ServiceCriteriaQuestionsController.submit
+
 ## VOLUNTARY START DATE PAGE
 GET         /start-date                            controllers.vatTradingDetails.vatChoice.StartDateController.show
 POST        /start-date                            controllers.vatTradingDetails.vatChoice.StartDateController.submit
