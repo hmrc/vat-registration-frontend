@@ -23,12 +23,14 @@ import play.api.data.Forms._
 
 object HaveNinoForm {
 
+  val RADIO_YES_NO: String = "haveNinoRadio"
+
   val form: Form[VatServiceEligibility] = Form(
     mapping(
-      "haveNinoRadio" -> missingBooleanFieldMapping()("eligibility.haveNino")
+      RADIO_YES_NO -> missingBooleanFieldMapping()("eligibility.haveNino")
     )
-    ((haveNinoRadio) => VatServiceEligibility.apply("haveNino", haveNinoRadio))
-    ((t: VatServiceEligibility) => t.haveNino)
+    ((RADIO_YES_NO) => VatServiceEligibility.apply("haveNino", RADIO_YES_NO))
+    ((vatEligibility: VatServiceEligibility) => vatEligibility.haveNino)
   )
 
 }

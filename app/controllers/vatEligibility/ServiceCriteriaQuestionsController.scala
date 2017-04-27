@@ -31,23 +31,30 @@ import scala.concurrent.Future
 
 class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies)
                                                   (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
+
   import cats.instances.future._
 
   val form: Form[VatServiceEligibility] = HaveNinoForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+  def show(question: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel[VatServiceEligibility].fold(form)(form.fill(_))
-      .map(f => Ok(views.html.pages.vatEligibility.have_nino(f)))
+      .map(f =>
+        question match {
+          case "haveNino" => Ok(views.html.pages.vatEligibility.have_nino(f))
+        }
+      )
   )
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+  def submit(question: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
     HaveNinoForm.form.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.vatEligibility.have_nino(formWithErrors)))
       }, {
         data: VatServiceEligibility => {
-          s4LService.saveForm[VatServiceEligibility](data) map {  _ =>
-            Redirect(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())
+          s4LService.saveForm[VatServiceEligibility](data) map { _ =>
+            question match {
+              case "haveNino" =>  Redirect(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())
+            }
           }
         }
       })
