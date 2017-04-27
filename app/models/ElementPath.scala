@@ -26,23 +26,25 @@ sealed trait ElementPath {
 object ElementPath {
 
   implicit object ElementPathFormatter extends Format[ElementPath] {
+
+    private val pathMap: Map[String, ElementPath] = Seq[ElementPath](
+      VatBankAccountPath,
+      ZeroRatedTurnoverEstimatePath,
+      AccountingPeriodStartPath,
+      FinancialCompliancePath,
+      FinChargeFeesPath,
+      FinAdditionalNonSecuritiesWorkPath,
+      FinDiscretionaryInvestmentManagementServicesPath,
+      FinVehicleOrEquipmentLeasingPath,
+      FinInvestmentFundManagementServicesPath,
+      FinManageFundsAdditionalPath
+    ).map(ep => (ep.name, ep)).toMap
+
     override def writes(e: ElementPath): JsValue = JsString(e.name)
 
-    override def reads(json: JsValue): JsResult[ElementPath] = json.as[String] match {
-      case VatBankAccountPath.name => JsSuccess(VatBankAccountPath)
-      case ZeroRatedTurnoverEstimatePath.name => JsSuccess(ZeroRatedTurnoverEstimatePath)
-      case AccountingPeriodStartPath.name => JsSuccess(AccountingPeriodStartPath)
-      // $COVERAGE-OFF$
-      case FinancialCompliancePath.name => JsSuccess(FinancialCompliancePath)
-      case FinChargeFeesPath.name => JsSuccess(FinChargeFeesPath)
-      case FinAdditionalNonSecuritiesWorkPath.name => JsSuccess(FinAdditionalNonSecuritiesWorkPath)
-      case FinDiscretionaryInvestmentManagementServicesPath.name => JsSuccess(FinDiscretionaryInvestmentManagementServicesPath)
-      case FinVehicleOrEquipmentLeasingPath.name => JsSuccess(FinVehicleOrEquipmentLeasingPath)
-      case FinInvestmentFundManagementServicesPath.name => JsSuccess(FinInvestmentFundManagementServicesPath)
-      case FinManageFundsAdditionalPath.name => JsSuccess(FinManageFundsAdditionalPath)
-      // $COVERAGE-ON$
-      case _ => JsError("unrecognised element name")
-    }
+    override def reads(json: JsValue): JsResult[ElementPath] =
+      pathMap.get(json.as[String]).fold[JsResult[ElementPath]](JsError("unrecognised element name"))(ep => JsSuccess(ep))
+
   }
 
   // $COVERAGE-OFF$
@@ -69,6 +71,7 @@ case object AccountingPeriodStartPath extends ElementPath {
 }
 
 // $COVERAGE-OFF$
+
 case object FinancialCompliancePath extends ElementPath {
   override val path = "vatSicAndCompliance.financialCompliance"
   override val name = "financial-compliance"
