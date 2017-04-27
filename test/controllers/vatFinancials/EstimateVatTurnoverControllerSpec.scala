@@ -66,7 +66,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestEstimateVatTurnoverController.show, mockAuthConnector) {
+      callAuthorised(TestEstimateVatTurnoverController.show) {
         _ includesText "Estimated VAT taxable turnover for the next 12 months"
       }
     }
@@ -79,7 +79,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(TestEstimateVatTurnoverController.show, mockAuthConnector) {
+      callAuthorised(TestEstimateVatTurnoverController.show) {
         _ includesText "Estimated VAT taxable turnover for the next 12 months"
       }
     }

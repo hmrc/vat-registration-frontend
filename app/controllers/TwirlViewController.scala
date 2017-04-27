@@ -16,23 +16,17 @@
 
 package controllers
 
-import helpers.VatRegSpec
+import javax.inject.Inject
 
-class SignInOutControllerSpec extends VatRegSpec {
+import play.api.mvc.{Action, AnyContent, Result}
 
-  object TestController extends SignInOutController(ds) {
-    override val authConnector = mockAuthConnector
-  }
+class TwirlViewController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
-  "Post-sign-in" should {
-
-    "redirect to start of the journey when authorized" in {
-      callAuthorised(TestController.postSignIn) {
-        _ redirectsTo routes.WelcomeController.start().url
-      }
-    }
-
-  }
-
+  def renderViewAuthorised(viewName: String): Action[AnyContent] = authorised(implicit user =>
+    implicit request => Some(viewName).collect {
+      case "eligibility-success" => views.html.pages.eligible()
+      case "eligibility-failure" => views.html.pages.eligibleNot()
+    }.fold[Result](NotFound)(Ok(_))
+  )
 
 }

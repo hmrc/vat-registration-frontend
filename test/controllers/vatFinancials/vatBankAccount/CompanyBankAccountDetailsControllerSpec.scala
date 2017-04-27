@@ -59,7 +59,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
         (Matchers.eq(S4LKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validCompanyBankAccountDetails)))
 
-      callAuthorised(CompanyBankAccountDetailsController.show(), mockAuthConnector) {
+      callAuthorised(CompanyBankAccountDetailsController.show()) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -73,7 +73,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
         (Matchers.eq(S4LKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(validCompanyBankAccountDetails.copy(sortCode = "foo--bar"))))
 
-      callAuthorised(CompanyBankAccountDetailsController.show(), mockAuthConnector) {
+      callAuthorised(CompanyBankAccountDetailsController.show()) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -90,7 +90,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(CompanyBankAccountDetailsController.show, mockAuthConnector) {
+      callAuthorised(CompanyBankAccountDetailsController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -108,7 +108,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(CompanyBankAccountDetailsController.show, mockAuthConnector) {
+      callAuthorised(CompanyBankAccountDetailsController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")

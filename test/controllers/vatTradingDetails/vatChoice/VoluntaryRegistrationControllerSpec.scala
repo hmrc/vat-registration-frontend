@@ -87,7 +87,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestVoluntaryRegistrationController.show, mockAuthConnector) {
+      callAuthorised(TestVoluntaryRegistrationController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -104,7 +104,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(TestVoluntaryRegistrationController.show, mockAuthConnector) {
+      callAuthorised(TestVoluntaryRegistrationController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")

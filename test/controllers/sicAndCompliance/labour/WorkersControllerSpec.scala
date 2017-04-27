@@ -72,7 +72,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.getVatScheme()(any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(WorkersController.show, mockAuthConnector) {
+      callAuthorised(WorkersController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -90,7 +90,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
     when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(WorkersController.show, mockAuthConnector) {
+    callAuthorised(WorkersController.show) {
       result =>
         status(result) mustBe OK
         contentType(result) mustBe Some("text/html")

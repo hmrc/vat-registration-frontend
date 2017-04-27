@@ -66,7 +66,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(ManageAdditionalFundsController.show, mockAuthConnector) {
+      callAuthorised(ManageAdditionalFundsController.show) {
        _ includesText "Does the company manage any funds that are not included in this list?"
       }
     }
@@ -80,7 +80,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(ManageAdditionalFundsController.show, mockAuthConnector) {
+    callAuthorised(ManageAdditionalFundsController.show) {
      _ includesText "Does the company manage any funds that are not included in this list?"
     }
   }
