@@ -50,7 +50,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
       when(mockS4LService.fetchAndGet[EstimateZeroRatedSales]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(EstimateZeroRatedSales(100L))))
 
-      AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.show(), fakeRequest.withFormUrlEncodedBody(
         "zeroRatedTurnoverEstimate" -> ""
       )) {
 
@@ -102,7 +102,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
   s"POST ${vatFinancials.routes.EstimateZeroRatedSalesController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe Status.BAD_REQUEST
@@ -119,7 +119,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapEstimateZeroRatedSales))
 
-      AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "zeroRatedTurnoverEstimate" -> "60000"
       )) {
         response =>

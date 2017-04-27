@@ -23,11 +23,10 @@ import helpers.VatRegSpec
 import models.S4LKey
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccount
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -49,64 +48,46 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
     "return HTML when there's a Company Bank Account model in S4L" in {
       val companyBankAccount = CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES)
 
-      when(mockS4LService.fetchAndGet[CompanyBankAccount]()(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[CompanyBankAccount]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(companyBankAccount)))
 
-      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountController.show(), fakeRequest.withFormUrlEncodedBody(
         "companyBankAccountRadio" -> ""
       )) {
-
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Do you have a bank account set up in the name of your company?")
+        _ includesText "Do you have a bank account set up in the name of your company?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[CompanyBankAccount]()
-        (Matchers.eq(S4LKey[CompanyBankAccount]), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[CompanyBankAccount]()(Matchers.eq(S4LKey[CompanyBankAccount]), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
+      when(mockVatRegistrationService.getVatScheme()(any()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(CompanyBankAccountController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Do you have a bank account set up in the name of your company?")
+        _ includesText "Do you have a bank account set up in the name of your company?"
       }
     }
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    when(mockS4LService.fetchAndGet[CompanyBankAccount]()
-      (Matchers.eq(S4LKey[CompanyBankAccount]), Matchers.any(), Matchers.any()))
+    when(mockS4LService.fetchAndGet[CompanyBankAccount]()(Matchers.eq(S4LKey[CompanyBankAccount]), any(), any()))
       .thenReturn(Future.successful(None))
 
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(CompanyBankAccountController.show) {
-      result =>
-        status(result) mustBe OK
-        contentType(result) mustBe Some("text/html")
-        charset(result) mustBe Some("utf-8")
-        contentAsString(result) must include("Do you have a bank account set up in the name of your company?")
+      _ includesText "Do you have a bank account set up in the name of your company?"
     }
   }
 
   s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
-      }
+      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountController.submit(), fakeRequest.withFormUrlEncodedBody(
+      ))(result => result isA 400)
 
     }
   }
@@ -116,17 +97,12 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
     "return 303" in {
       val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES))))
 
-      when(mockS4LService.saveForm[CompanyBankAccount]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[CompanyBankAccount](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapCompanyBankAccount))
 
-      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyBankAccountRadio" -> CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES
-      )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/bank-details"
-      }
+      ))(_ redirectsTo s"$contextRoot/bank-details")
 
     }
   }
@@ -136,20 +112,14 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
     "return 303" in {
       val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_NO))))
 
-      when(mockS4LService.saveForm[CompanyBankAccount]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[CompanyBankAccount](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapCompanyBankAccount))
 
-      when(mockVatRegistrationService.deleteElement(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(true))
+      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
 
-      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyBankAccountRadio" -> CompanyBankAccount.COMPANY_BANK_ACCOUNT_NO
-      )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/estimate-vat-turnover"
-      }
+      ))(_ redirectsTo s"$contextRoot/estimate-vat-turnover")
 
     }
   }

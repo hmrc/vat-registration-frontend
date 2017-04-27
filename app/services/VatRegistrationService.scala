@@ -19,7 +19,7 @@ package services
 import javax.inject.Inject
 
 import com.google.inject.ImplementedBy
-import connectors.{KeystoreConnector, VatRegistrationConnector}
+import connectors.VatRegistrationConnector
 import models._
 import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
@@ -48,9 +48,9 @@ trait RegistrationService {
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme]
 
-  def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Boolean]
+  def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Unit]
 
-  def deleteElements(elementPath: List[ElementPath])(implicit hc: HeaderCarrier): Future[Boolean]
+  def deleteElements(elementPath: List[ElementPath])(implicit hc: HeaderCarrier): Future[Unit]
 
 }
 
@@ -60,6 +60,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
 
   import cats.instances.future._
   import cats.syntax.cartesian._
+  import cats.instances.list._
+  import cats.syntax.foldable._
 
   private def s4l[T: Format : S4LKey]()(implicit headerCarrier: HeaderCarrier) = s4LService.fetchAndGet[T]()
 
@@ -69,15 +71,15 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
     fetchRegistrationId.flatMap(vatRegConnector.getRegistration)
 
-  def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Boolean] =
+  def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
     fetchRegistrationId.flatMap(vatRegConnector.deleteVatScheme)
 
-  def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Boolean] =
+  def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Unit] =
     fetchRegistrationId.flatMap(vatRegConnector.deleteElement(elementPath))
 
-  def deleteElements(elementPaths: List[ElementPath])(implicit hc: HeaderCarrier): Future[Boolean] =
-    elementPaths.map( ep => fetchRegistrationId.flatMap(vatRegConnector.deleteElement(ep)))
-      .headOption.getOrElse(Future.successful(true))
+  def deleteElements(elementPaths: List[ElementPath])(implicit hc: HeaderCarrier): Future[Unit] =
+    elementPaths.traverse_(deleteElement)
+
 
   def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit] =
     for {

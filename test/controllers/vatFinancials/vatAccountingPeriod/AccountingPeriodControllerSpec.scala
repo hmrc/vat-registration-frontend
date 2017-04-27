@@ -52,7 +52,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
       when(mockS4LService.fetchAndGet[AccountingPeriod]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(accountingPeriod)))
 
-      AuthBuilder.submitWithAuthorisedUser(TestAccountingPeriodController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestAccountingPeriodController.show(), fakeRequest.withFormUrlEncodedBody(
         "accountingPeriodRadio" -> ""
       )) {
 
@@ -102,7 +102,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(
-        TestAccountingPeriodController.submit(), mockAuthConnector,
+        TestAccountingPeriodController.submit(),
         fakeRequest.withFormUrlEncodedBody(
         ))(status(_) mustBe Status.BAD_REQUEST)
     }
@@ -117,7 +117,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
 
-      AuthBuilder.submitWithAuthorisedUser(TestAccountingPeriodController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestAccountingPeriodController.submit(), fakeRequest.withFormUrlEncodedBody(
         "accountingPeriodRadio" -> AccountingPeriod.JAN_APR_JUL_OCT
       )) {
         response =>
@@ -137,7 +137,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
 
-      AuthBuilder.submitWithAuthorisedUser(TestAccountingPeriodController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestAccountingPeriodController.submit(), fakeRequest.withFormUrlEncodedBody(
         "accountingPeriodRadio" -> AccountingPeriod.FEB_MAY_AUG_NOV
       )) {
         response =>
@@ -157,7 +157,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
 
-      AuthBuilder.submitWithAuthorisedUser(TestAccountingPeriodController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestAccountingPeriodController.submit(), fakeRequest.withFormUrlEncodedBody(
         "accountingPeriodRadio" -> AccountingPeriod.MAR_JUN_SEP_DEC
       )) {
         response =>

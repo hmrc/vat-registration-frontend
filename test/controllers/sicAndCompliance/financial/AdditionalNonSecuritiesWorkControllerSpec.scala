@@ -22,11 +22,11 @@ import helpers.VatRegSpec
 import models.S4LKey
 import models.view.sicAndCompliance.financial.AdditionalNonSecuritiesWork
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -46,10 +46,10 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
   s"GET ${routes.AdditionalNonSecuritiesWorkController.show()}" should {
 
     "return HTML when there's a Additional Non Securities Work model in S4L" in {
-      when(mockS4LService.fetchAndGet[AdditionalNonSecuritiesWork]()(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[AdditionalNonSecuritiesWork]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(AdditionalNonSecuritiesWork(true))))
 
-      AuthBuilder.submitWithAuthorisedUser(AdditionalNonSecuritiesWorkController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(AdditionalNonSecuritiesWorkController.show(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesRadio" -> ""
       )) {
         _ includesText "Does the company do additional work (excluding securities) when introducing a client to a financial service provider?"
@@ -58,36 +58,36 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[AdditionalNonSecuritiesWork]()
-        (Matchers.eq(S4LKey[AdditionalNonSecuritiesWork]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[AdditionalNonSecuritiesWork]), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
+      when(mockVatRegistrationService.getVatScheme()(any()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(AdditionalNonSecuritiesWorkController.show) {
-       _ includesText "Does the company do additional work (excluding securities) when introducing a client to a financial service provider?"
+        _ includesText "Does the company do additional work (excluding securities) when introducing a client to a financial service provider?"
       }
     }
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     when(mockS4LService.fetchAndGet[AdditionalNonSecuritiesWork]()
-      (Matchers.eq(S4LKey[AdditionalNonSecuritiesWork]), Matchers.any(), Matchers.any()))
+      (Matchers.eq(S4LKey[AdditionalNonSecuritiesWork]), any(), any()))
       .thenReturn(Future.successful(None))
 
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(AdditionalNonSecuritiesWorkController.show) {
-     _ includesText "Does the company do additional work (excluding securities) when introducing a client to a financial service provider?"
+      _ includesText "Does the company do additional work (excluding securities) when introducing a client to a financial service provider?"
     }
   }
 
   s"POST ${routes.AdditionalNonSecuritiesWorkController.show()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(AdditionalNonSecuritiesWorkController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      ))(_ isA Status.BAD_REQUEST)
+      AuthBuilder.submitWithAuthorisedUser(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
+      ))(result => result isA 400)
 
     }
   }
@@ -97,18 +97,14 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
     "return 303" in {
       val returnCacheMapAdditionalNonSecuritiesWork = CacheMap("", Map("" -> Json.toJson(AdditionalNonSecuritiesWork(true))))
 
-      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(true))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[AdditionalNonSecuritiesWork]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[AdditionalNonSecuritiesWork](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapAdditionalNonSecuritiesWork))
 
-      AuthBuilder.submitWithAuthorisedUser(AdditionalNonSecuritiesWorkController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "true"
-      )) { response =>
-          response redirectsTo s"$contextRoot/company-bank-account"
-      }
+      ))(_ redirectsTo s"$contextRoot/company-bank-account")
     }
   }
 
@@ -117,18 +113,14 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
     "return 303" in {
       val returnCacheMapAdditionalNonSecuritiesWork = CacheMap("", Map("" -> Json.toJson(AdditionalNonSecuritiesWork(false))))
 
-      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(true))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[AdditionalNonSecuritiesWork]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[AdditionalNonSecuritiesWork](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapAdditionalNonSecuritiesWork))
 
-      AuthBuilder.submitWithAuthorisedUser(AdditionalNonSecuritiesWorkController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "false"
-      )) { response =>
-          response redirectsTo s"$contextRoot/provides-discretionary-investment-management-services"
-      }
+      ))(_ redirectsTo s"$contextRoot/provides-discretionary-investment-management-services")
 
     }
   }
