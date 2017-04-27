@@ -31,7 +31,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec {
   s"GET ${routes.MandatoryStartDateController.show()}" should {
 
     "display the mandatory start date confirmation page to the user" in {
-      callAuthorised(MandatoryStartDateController.show, mockAuthConnector) {
+      callAuthorised(MandatoryStartDateController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -44,7 +44,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec {
   s"POST ${routes.MandatoryStartDateController.submit()}" should {
 
     "redirect the user to the trading name page after clicking continue on the mandatory start date confirmation page" in {
-      callAuthorised(MandatoryStartDateController.submit, mockAuthConnector) {
+      callAuthorised(MandatoryStartDateController.submit) {
         result =>
           status(result) mustBe SEE_OTHER
       }

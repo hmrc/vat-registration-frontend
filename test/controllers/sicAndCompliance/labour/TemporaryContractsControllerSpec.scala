@@ -72,7 +72,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TemporaryContractsController.show, mockAuthConnector) {
+      callAuthorised(TemporaryContractsController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -90,7 +90,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(TemporaryContractsController.show, mockAuthConnector) {
+    callAuthorised(TemporaryContractsController.show) {
       result =>
         status(result) mustBe OK
         contentType(result) mustBe Some("text/html")
