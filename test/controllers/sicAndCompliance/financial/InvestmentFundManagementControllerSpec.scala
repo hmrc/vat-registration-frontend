@@ -22,11 +22,10 @@ import helpers.VatRegSpec
 import models.S4LKey
 import models.view.sicAndCompliance.financial.InvestmentFundManagement
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -48,10 +47,10 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
     "return HTML when there's a Investment Fund Management model in S4L" in {
       val chargeFees = InvestmentFundManagement(true)
 
-      when(mockS4LService.fetchAndGet[InvestmentFundManagement]()(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[InvestmentFundManagement]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(chargeFees)))
 
-      AuthBuilder.submitWithAuthorisedUser(InvestmentFundManagementController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(InvestmentFundManagementController.show(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> ""
       )) {
         _ includesText "Does the company provide investment fund management services?"
@@ -60,40 +59,38 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[InvestmentFundManagement]()
-        (Matchers.eq(S4LKey[InvestmentFundManagement]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[InvestmentFundManagement]), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
+      when(mockVatRegistrationService.getVatScheme()(any()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(InvestmentFundManagementController.show) {
-       _ includesText "Does the company provide investment fund management services?"
+        _ includesText "Does the company provide investment fund management services?"
       }
     }
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     when(mockS4LService.fetchAndGet[InvestmentFundManagement]()
-      (Matchers.eq(S4LKey[InvestmentFundManagement]), Matchers.any(), Matchers.any()))
+      (Matchers.eq(S4LKey[InvestmentFundManagement]), any(), any()))
       .thenReturn(Future.successful(None))
 
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(InvestmentFundManagementController.show) {
-     _ includesText "Does the company provide investment fund management services?"
+      _ includesText "Does the company provide investment fund management services?"
     }
   }
 
   s"POST ${routes.InvestmentFundManagementController.show()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(InvestmentFundManagementController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
+      AuthBuilder.submitWithAuthorisedUser(InvestmentFundManagementController.submit(),
+        fakeRequest.withFormUrlEncodedBody("bogus" -> "nonsense")) { result =>
+        result isA 400
       }
-
     }
   }
 
@@ -102,19 +99,14 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
     "return 303" in {
       val returnCacheMapInvestmentFundManagement = CacheMap("", Map("" -> Json.toJson(InvestmentFundManagement(true))))
 
-      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(true))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[InvestmentFundManagement]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[InvestmentFundManagement](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapInvestmentFundManagement))
 
-      AuthBuilder.submitWithAuthorisedUser(InvestmentFundManagementController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "true"
-      )) {
-        response =>
-          response redirectsTo s"$contextRoot/manages-funds-not-included-in-this-list"
-      }
+      ))(_ redirectsTo s"$contextRoot/manages-funds-not-included-in-this-list")
 
     }
   }
@@ -124,20 +116,14 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
     "return 303" in {
       val returnCacheMapInvestmentFundManagement = CacheMap("", Map("" -> Json.toJson(InvestmentFundManagement(false))))
 
-      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(true))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[InvestmentFundManagement]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[InvestmentFundManagement](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapInvestmentFundManagement))
 
-      AuthBuilder.submitWithAuthorisedUser(InvestmentFundManagementController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "false"
-      )) {
-        response =>
-          response redirectsTo s"$contextRoot/company-bank-account"
-      }
-
+      ))(_ redirectsTo s"$contextRoot/company-bank-account")
     }
   }
 }

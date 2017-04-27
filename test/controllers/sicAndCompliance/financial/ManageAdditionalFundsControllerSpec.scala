@@ -51,7 +51,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
       when(mockS4LService.fetchAndGet[ManageAdditionalFunds]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(manageAdditionalFunds)))
 
-      AuthBuilder.submitWithAuthorisedUser(ManageAdditionalFundsController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(ManageAdditionalFundsController.show(), fakeRequest.withFormUrlEncodedBody(
         "manageAdditionalFundsRadio" -> ""
       )) {
         _ includesText "Does the company manage any funds that are not included in this list?"
@@ -88,7 +88,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
   s"POST ${routes.ManageAdditionalFundsController.show()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(ManageAdditionalFundsController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe Status.BAD_REQUEST
@@ -106,7 +106,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapManageAdditionalFunds))
 
-      AuthBuilder.submitWithAuthorisedUser(ManageAdditionalFundsController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "manageAdditionalFundsRadio" -> "true"
       )) {
         response =>
@@ -125,7 +125,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapManageAdditionalFunds))
 
-      AuthBuilder.submitWithAuthorisedUser(ManageAdditionalFundsController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "manageAdditionalFundsRadio" -> "false"
       )) {
         response =>

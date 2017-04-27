@@ -24,10 +24,8 @@ import models.view.vatContact.BusinessContactDetails
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -69,8 +67,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockS4LService.fetchAndGet[BusinessContactDetails]()
-        (Matchers.eq(S4LKey[BusinessContactDetails]), any(), any()))
+      when(mockS4LService.fetchAndGet[BusinessContactDetails]()(Matchers.eq(S4LKey[BusinessContactDetails]), any(), any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
@@ -85,11 +82,8 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
   s"POST ${controllers.vatContact.routes.BusinessContactDetailsController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(
-        TestBusinessContactDetailsController.submit(),
-        mockAuthConnector,
-        fakeRequest.withFormUrlEncodedBody()
-      )(status(_) mustBe Status.BAD_REQUEST)
+      AuthBuilder.submitWithAuthorisedUser(TestBusinessContactDetailsController.submit(), fakeRequest.withFormUrlEncodedBody()
+      )(result => result isA 400)
     }
   }
 
@@ -98,13 +92,11 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
     "return 303" in {
       val returnCacheMapBusinessContactDetails = CacheMap("", Map("" -> Json.toJson(validBusinessContactDetails)))
 
-      when(mockS4LService.saveForm[BusinessContactDetails]
-        (any())(any(), any(), any()))
+      when(mockS4LService.saveForm[BusinessContactDetails](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapBusinessContactDetails))
 
       AuthBuilder.submitWithAuthorisedUser(
         TestBusinessContactDetailsController.submit(),
-        mockAuthConnector,
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com", "mobile" -> "0123456789")
       )(_ redirectsTo s"$contextRoot/eu-goods")
 

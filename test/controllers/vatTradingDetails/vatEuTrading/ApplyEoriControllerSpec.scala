@@ -51,7 +51,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockS4LService.fetchAndGet[ApplyEori]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(euGoods)))
 
-      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.show(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> ""
       )) {
 
@@ -101,7 +101,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${routes.ApplyEoriController.show()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe Status.BAD_REQUEST
@@ -119,7 +119,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapApplyEori))
 
-      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_YES)
       )) {
         response =>
@@ -138,7 +138,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapApplyEori))
 
-      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_NO)
       )) {
         response =>
