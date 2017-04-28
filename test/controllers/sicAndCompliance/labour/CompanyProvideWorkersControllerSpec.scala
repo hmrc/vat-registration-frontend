@@ -23,11 +23,10 @@ import helpers.VatRegSpec
 import models.S4LKey
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -49,65 +48,47 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
     "return HTML when there's a Company Provide Workers model in S4L" in {
       val companyProvideWorkers = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
 
-      when(mockS4LService.fetchAndGet[CompanyProvideWorkers]()(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[CompanyProvideWorkers]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(companyProvideWorkers)))
 
-      AuthBuilder.submitWithAuthorisedUser(CompanyProvideWorkersController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(CompanyProvideWorkersController.show(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> ""
       )) {
-
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Does the company provide workers to other employers?")
+        _ includesText "Does the company provide workers to other employers?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[CompanyProvideWorkers]()
-        (Matchers.eq(S4LKey[CompanyProvideWorkers]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[CompanyProvideWorkers]), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
+      when(mockVatRegistrationService.getVatScheme()(any()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(CompanyProvideWorkersController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Does the company provide workers to other employers?")
+        _ includesText "Does the company provide workers to other employers?"
       }
     }
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    when(mockS4LService.fetchAndGet[CompanyProvideWorkers]()
-      (Matchers.eq(S4LKey[CompanyProvideWorkers]), Matchers.any(), Matchers.any()))
+    when(mockS4LService.fetchAndGet[CompanyProvideWorkers]()(Matchers.eq(S4LKey[CompanyProvideWorkers]), any(), any()))
       .thenReturn(Future.successful(None))
 
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(CompanyProvideWorkersController.show) {
-      result =>
-        status(result) mustBe OK
-        contentType(result) mustBe Some("text/html")
-        charset(result) mustBe Some("utf-8")
-        contentAsString(result) must include("Does the company provide workers to other employers?")
+      _ includesText "Does the company provide workers to other employers?"
     }
   }
 
   s"POST ${sicAndCompliance.labour.routes.CompanyProvideWorkersController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(CompanyProvideWorkersController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
-      }
-
+      AuthBuilder.submitWithAuthorisedUser(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
+      ))(result => result isA 400)
     }
   }
 
@@ -116,20 +97,14 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
     "return 303" in {
       val returnCacheMapCompanyProvideWorkers = CacheMap("", Map("" -> Json.toJson(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES))))
 
-      when(mockVatRegistrationService.deleteElement(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(true))
+      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[CompanyProvideWorkers]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[CompanyProvideWorkers](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapCompanyProvideWorkers))
 
-      AuthBuilder.submitWithAuthorisedUser(CompanyProvideWorkersController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_YES
-      )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/compliance/workers"
-      }
+      ))(_ redirectsTo s"$contextRoot/compliance/workers")
 
     }
   }
@@ -139,20 +114,14 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
     "return 303" in {
       val returnCacheMapCompanyProvideWorkers = CacheMap("", Map("" -> Json.toJson(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO))))
 
-      when(mockVatRegistrationService.deleteElement(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(true))
+      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[CompanyProvideWorkers]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[CompanyProvideWorkers](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapCompanyProvideWorkers))
 
-      AuthBuilder.submitWithAuthorisedUser(CompanyProvideWorkersController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_NO
-      )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/company-bank-account"
-      }
+      ))(_ redirectsTo s"$contextRoot/company-bank-account")
 
     }
   }

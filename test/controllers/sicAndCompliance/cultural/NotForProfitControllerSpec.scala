@@ -23,6 +23,7 @@ import helpers.VatRegSpec
 import models.S4LKey
 import models.view.sicAndCompliance.cultural.NotForProfit
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.libs.json.Json
@@ -49,10 +50,10 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
     "return HTML when there's a Not For Profit model in S4L" in {
       val notForProfit = NotForProfit(NotForProfit.NOT_PROFIT_NO)
 
-      when(mockS4LService.fetchAndGet[NotForProfit]()(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[NotForProfit]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(notForProfit)))
 
-      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.show(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> ""
       )) {
 
@@ -66,10 +67,10 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[NotForProfit]()
-        (Matchers.eq(S4LKey[NotForProfit]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[NotForProfit]), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
+      when(mockVatRegistrationService.getVatScheme()(any()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(NotForProfitController.show) {
@@ -84,10 +85,10 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     when(mockS4LService.fetchAndGet[NotForProfit]()
-      (Matchers.eq(S4LKey[NotForProfit]), Matchers.any(), Matchers.any()))
+      (Matchers.eq(S4LKey[NotForProfit]), any(), any()))
       .thenReturn(Future.successful(None))
 
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(NotForProfitController.show) {
@@ -102,10 +103,9 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
   s"POST ${sicAndCompliance.cultural.routes.NotForProfitController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody()) {
-        result => result isA Status.BAD_REQUEST
+      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody()) {
+        result => result isA 400
       }
-
     }
   }
 
@@ -114,20 +114,14 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
     "return 303" in {
       val returnCacheMapNotForProfit = CacheMap("", Map("" -> Json.toJson(NotForProfit(NotForProfit.NOT_PROFIT_YES))))
 
-      when(mockVatRegistrationService.deleteElement(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(true))
+      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[NotForProfit]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[NotForProfit](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapNotForProfit))
 
-      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> NotForProfit.NOT_PROFIT_YES
-      )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"$contextRoot/company-bank-account"
-      }
+      ))(_ redirectsTo s"$contextRoot/company-bank-account")
 
     }
   }
@@ -137,20 +131,14 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
     "return 303" in {
       val returnCacheMapNotForProfit = CacheMap("", Map("" -> Json.toJson(NotForProfit(NotForProfit.NOT_PROFIT_NO))))
 
-      when(mockVatRegistrationService.deleteElement(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(true))
+      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[NotForProfit]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[NotForProfit](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapNotForProfit))
 
-      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> NotForProfit.NOT_PROFIT_NO
-      )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"$contextRoot/company-bank-account"
-      }
+      ))(_ redirectsTo s"$contextRoot/company-bank-account")
 
     }
   }

@@ -51,7 +51,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockS4LService.fetchAndGet[AdviceOrConsultancy]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(adviceOrConsultancy)))
 
-      AuthBuilder.submitWithAuthorisedUser(AdviceOrConsultancyController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(AdviceOrConsultancyController.show(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> ""
       )) {
         _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
@@ -88,8 +88,8 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.AdviceOrConsultancyController.show()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(AdviceOrConsultancyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      )) (_ isA Status.BAD_REQUEST)
+      AuthBuilder.submitWithAuthorisedUser(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
+      )) (result => result isA 400)
     }
   }
 
@@ -102,7 +102,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAdviceOrConsultancy))
 
-      AuthBuilder.submitWithAuthorisedUser(AdviceOrConsultancyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "true"
       )) {
         response =>
@@ -121,7 +121,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAdviceOrConsultancy))
 
-      AuthBuilder.submitWithAuthorisedUser(AdviceOrConsultancyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "false"
       )) {
         response =>
