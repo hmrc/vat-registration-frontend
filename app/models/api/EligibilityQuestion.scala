@@ -16,19 +16,19 @@
 
 package models.api
 
-sealed abstract class EligibilityQuestion(val name: String) extends Product with Serializable
+sealed abstract class EligibilityQuestion(val name: String, val exitAnswer: Boolean) extends Product with Serializable
 
 object EligibilityQuestion {
 
-  case object HaveNinoQuestion extends EligibilityQuestion("haveNino")
+  case object HaveNinoQuestion extends EligibilityQuestion("haveNino", exitAnswer = false)
 
-  case object DoingBusinessAbroadQuestion extends EligibilityQuestion("doingBusinessAbroad")
+  case object DoingBusinessAbroadQuestion extends EligibilityQuestion("doingBusinessAbroad", exitAnswer = true)
 
-  case object DoAnyApplyToYouQuestion extends EligibilityQuestion("doAnyApplyToYou")
+  case object DoAnyApplyToYouQuestion extends EligibilityQuestion("doAnyApplyToYou", exitAnswer = false)
 
-  case object ApplyingForAnyOfQuestion extends EligibilityQuestion("applyingForAnyOf")
+  case object ApplyingForAnyOfQuestion extends EligibilityQuestion("applyingForAnyOf", exitAnswer = false)
 
-  case object CompanyWillDoAnyOfQuestion extends EligibilityQuestion("companyWillDoAnyOf")
+  case object CompanyWillDoAnyOfQuestion extends EligibilityQuestion("companyWillDoAnyOf", exitAnswer = false)
 
   private val questions = Seq(HaveNinoQuestion,
     DoingBusinessAbroadQuestion,
