@@ -16,7 +16,7 @@
 
 package models
 
-case class YesOrNo(question: String, answer: Option[Boolean])
+case class YesOrNoQuestion(question: String, answer: Option[Boolean])
 
 
 

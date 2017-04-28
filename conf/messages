@@ -72,6 +72,31 @@ pages.eligibility.haveNino.title             = Do you have a National Insurance 
 pages.eligibility.haveNino.heading           = Do you have a National Insurance number?
 validation.eligibility.haveNino.missing      = Tell us if you have a national insurance number
 
+## Doing Business Abroad
+pages.eligibility.doingBusinessAbroad.title             = Will you do any of the following once you''re registered for VAT?
+pages.eligibility.doingBusinessAbroad.heading           = Will you do any of the following once you''re registered for VAT?
+pages.eligibility.doingBusinessAbroad.bullet1           = import or export goods to or from other EU countries
+pages.eligibility.doingBusinessAbroad.bullet2           = <a href="https://www.gov.uk/online-and-distance-selling-for-businesses/distance-selling">distance sell</a> goods into the UK from another EU country
+pages.eligibility.doingBusinessAbroad.bullet3           = buy goods from other EU countries and bring them into the UK
+pages.eligibility.doingBusinessAbroad.bullet4           = sell goods outside the UK but not in the UK
+pages.eligibility.doingBusinessAbroad.bullet5           = do business from a head office based outside the UK
+pages.eligibility.doingBusinessAbroad.bullet6           = import or export goods to or from other EU countries
+pages.eligibility.doingBusinessAbroad.panel1.title      = What are goods?
+pages.eligibility.doingBusinessAbroad.panel1.p1         = Goods are things you can physically pick up and take away.
+pages.eligibility.doingBusinessAbroad.panel1.p2         = For example:
+pages.eligibility.doingBusinessAbroad.panel1.bullet1    = food and drinks
+pages.eligibility.doingBusinessAbroad.panel1.bullet2    = books and newspapers
+pages.eligibility.doingBusinessAbroad.panel1.bullet3    = clothes and shoes
+pages.eligibility.doingBusinessAbroad.panel1.bullet4    = machinery
+pages.eligibility.doingBusinessAbroad.panel2.title      = What is distance selling?
+pages.eligibility.doingBusinessAbroad.panel2.p1         = Distance selling is when a VAT-registered business in one EU country sells goods to a customer in another EU country and the customer isn''t registered for VAT. The most common example of distance sales is mail order sales.
+pages.eligibility.doingBusinessAbroad.panel3.title      = What if I start doing any of these things in the future?
+pages.eligibility.doingBusinessAbroad.panel3.p1         = If your plans change and you start bringing goods into the UK, you must <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/vat-enquiries">tell HMRC</a> and pay any VAT and duty that is due.
+pages.eligibility.doingBusinessAbroad.panel3.bullet1    = distance selling into the UK - <a href="https://www.gov.uk/government/publications/vat-application-for-registration-distance-selling-vat1a">form VAT1A</a>
+pages.eligibility.doingBusinessAbroad.panel3.bullet2    = buying goods from other EU countries and bringing them into the UK - <a href="https://www.gov.uk/government/publications/vat-application-for-registration-acquisitions-vat1b">form VAT1B</a>
+pages.eligibility.doingBusinessAbroad.panel3.bullet3    = selling assets you bought and claimed a VAT refund on from a country outside the UK - form VAT1C
+validation.eligibility.doingBusinessAbroad.missing      = Tell us if you will do any of the following once you''re registered for VAT
+
 ## Service Criteria Questions
 
 ## Start Date Page

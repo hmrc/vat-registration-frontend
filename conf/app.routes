@@ -11,6 +11,9 @@ GET         /start                                 controllers.WelcomeController
 GET         /do-you-have-national-insurance-number  controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "haveNino")
 POST        /do-you-have-national-insurance-number  controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "haveNino")
 
+GET         /will-you-do-any-of-the-following      controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "doingBusinessAbroad")
+POST        /will-you-do-any-of-the-following      controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "doingBusinessAbroad")
+
 ## VOLUNTARY START DATE PAGE
 GET         /start-date                            controllers.vatTradingDetails.vatChoice.StartDateController.show
 POST        /start-date                            controllers.vatTradingDetails.vatChoice.StartDateController.submit

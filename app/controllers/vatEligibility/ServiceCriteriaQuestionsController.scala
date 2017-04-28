@@ -19,9 +19,10 @@ package controllers.vatEligibility
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatEligibility.HaveNinoForm
-import models.YesOrNo
+import forms.vatEligibility.ServiceCriteriaFormFactory
+import models.YesOrNoQuestion
 import models.api.VatServiceEligibility
+import models.api.VatServiceEligibility._
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
@@ -29,40 +30,48 @@ import services.{RegistrationService, S4LService}
 import scala.concurrent.Future
 
 
-class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies)
+class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, formFactory: ServiceCriteriaFormFactory)
                                                   (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
 
   import cats.instances.future._
 
-  val form: Form[YesOrNo] = HaveNinoForm.form
 
-  def show(question: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
+  def show(question: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    val form: Form[YesOrNoQuestion] = formFactory.form(question)
+
     viewModel[VatServiceEligibility].fold(form)(eligibility =>
-      form.fill(YesOrNo(question, VatServiceEligibility.getValue(question, eligibility)))
+      form.fill(YesOrNoQuestion(question, VatServiceEligibility.getValue(question, eligibility)))
 
     ).map(f =>
       question match {
-        case "haveNino" => Ok(views.html.pages.vatEligibility.have_nino(f))
+        case HAVE_NINO => Ok(views.html.pages.vatEligibility.have_nino(f))
+        case DOING_BUSINESS_ABROAD => Ok(views.html.pages.vatEligibility.doing_business_abroad(f))
       }
     )
-  )
+  })
 
-  def submit(question: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    HaveNinoForm.form.bindFromRequest().fold(
+
+  def submit(question: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    val form: Form[YesOrNoQuestion] = formFactory.form(question)
+
+    form.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.vatEligibility.have_nino(formWithErrors)))
       }, {
-        data: YesOrNo => {
+        data: YesOrNoQuestion => {
           for {
             vatEligibility <- viewModel[VatServiceEligibility].getOrElse(VatServiceEligibility())
             updatedVatEligibility <- Future.successful(VatServiceEligibility.setValue(question, data.answer, vatEligibility))
             s4LUpdateVatEligibility <- s4LService.saveForm[VatServiceEligibility](updatedVatEligibility)
           } yield question match {
-            case "haveNino" => Redirect(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())
+            case HAVE_NINO => Redirect(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DOING_BUSINESS_ABROAD))
+            case DOING_BUSINESS_ABROAD => Redirect(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())
           }
         }
-      })
-  )
+      }
+    )
+  })
+
 
 }
 

@@ -17,20 +17,21 @@
 package forms.vatEligibility
 
 import forms.FormValidation.missingBooleanFieldMapping
-import models.YesOrNo
+import models.YesOrNoQuestion
 import play.api.data.Form
 import play.api.data.Forms._
 
-object HaveNinoForm {
+class ServiceCriteriaFormFactory {
 
-  val RADIO_YES_NO: String = "haveNinoRadio"
-
-  val form: Form[YesOrNo] = Form(
-    mapping(
-      RADIO_YES_NO -> missingBooleanFieldMapping()("eligibility.haveNino")
+  def form(question: String): Form[YesOrNoQuestion] = {
+    val RADIO_YES_NO: String = s"${question}Radio"
+    Form(
+      mapping(
+        RADIO_YES_NO -> missingBooleanFieldMapping()(s"eligibility.${question}")
+      )
+      ((RADIO_YES_NO) => YesOrNoQuestion(question, Some(RADIO_YES_NO)))
+      ((yesOrNo: YesOrNoQuestion) => yesOrNo.answer)
     )
-    ((RADIO_YES_NO) => YesOrNo("haveNino", Some(RADIO_YES_NO)))
-    ((yesOrNo: YesOrNo) => yesOrNo.answer)
-  )
+  }
 
 }
