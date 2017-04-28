@@ -19,6 +19,7 @@ package controllers.vatEligibility
 import javax.inject.Inject
 
 import cats.data.OptionT
+import connectors.KeystoreConnector
 import controllers.vatEligibility.{routes => eligibilityRoutes}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatEligibility.ServiceCriteriaFormFactory
@@ -27,7 +28,7 @@ import models.api.EligibilityQuestion._
 import models.api.VatServiceEligibility._
 import models.api.{EligibilityQuestion, VatServiceEligibility}
 import play.api.data.Form
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Call}
 import services.{RegistrationService, S4LService}
 
 
@@ -36,6 +37,14 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
 
   import cats.instances.future._
   import cats.syntax.applicative._
+
+
+  lazy val keystoreConnector = KeystoreConnector
+
+  private def nextQuestion(question: EligibilityQuestion): Call = question match {
+    case HaveNinoQuestion => eligibilityRoutes.ServiceCriteriaQuestionsController.show(DoingBusinessAbroadQuestion.name)
+    case DoingBusinessAbroadQuestion => controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()
+  }
 
   def show(q: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
     val question = EligibilityQuestion(q)
@@ -53,7 +62,7 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
 
   def submit(q: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
     val question = EligibilityQuestion(q)
-
+    import cats.syntax.flatMap._
     formFactory.form(question.name).bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatEligibility.have_nino(badForm)).pure,
       (data: YesOrNoQuestion) =>
@@ -61,10 +70,15 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
           vatEligibility <- viewModel[VatServiceEligibility].getOrElse(VatServiceEligibility())
           updatedVatEligibility <- vatEligibility.setAnswer(question, data.answer).pure
           _ <- s4LService.saveForm(updatedVatEligibility)
-        } yield Redirect(question match {
-          case HaveNinoQuestion => eligibilityRoutes.ServiceCriteriaQuestionsController.show(DoingBusinessAbroadQuestion.name)
-          case DoingBusinessAbroadQuestion => controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()
-        }))
+          exit = data.answer == question.exitAnswer
+          _ <- exit.pure.ifM(keystoreConnector.cache("ineligible-reason", question.name), ().pure)
+        } yield Redirect(if (exit) eligibilityRoutes.ServiceCriteriaQuestionsController.ineligible() else nextQuestion(question)))
   })
+
+
+  def ineligible(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    OptionT(keystoreConnector.fetchAndGet[String]("ineligible-reason")).getOrElse("").map {
+      failedQuestion => Ok(views.html.pages.vatEligibility.ineligible(s => if (s != failedQuestion) "hidden" else ""))
+    })
 
 }
