@@ -47,13 +47,13 @@ object VatServiceEligibility {
     }
   }
 
-  def setValue(field: String, value: Option[Boolean], eligibility: VatServiceEligibility): VatServiceEligibility = {
+  def setValue(field: String, value: Boolean, eligibility: VatServiceEligibility): VatServiceEligibility = {
     field match {
-      case HAVE_NINO => eligibility.copy(haveNino = value)
-      case DOING_BUSINESS_ABROAD => eligibility.copy(doingBusinessAbroad = value)
-      case DO_ANY_APPLY_TO_YOU => eligibility.copy(doAnyApplyToYou = value)
-      case APPLYING_FOR_ANY_OF => eligibility.copy(applyingForAnyOf = value)
-      case COMPANY_WILL_DO_ANY_OF => eligibility.copy(companyWillDoAnyOf = value)
+      case HAVE_NINO => eligibility.copy(haveNino = Some(value))
+      case DOING_BUSINESS_ABROAD => eligibility.copy(doingBusinessAbroad = Some(value))
+      case DO_ANY_APPLY_TO_YOU => eligibility.copy(doAnyApplyToYou = Some(value))
+      case APPLYING_FOR_ANY_OF => eligibility.copy(applyingForAnyOf = Some(value))
+      case COMPANY_WILL_DO_ANY_OF => eligibility.copy(companyWillDoAnyOf = Some(value))
     }
   }
 
