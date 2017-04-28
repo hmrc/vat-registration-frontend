@@ -120,14 +120,14 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
     "return 400 when no data posted" in {
       AuthBuilder.submitWithAuthorisedUser(
-        TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody()) {
+        TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody()) {
         status(_) mustBe Status.BAD_REQUEST
       }
     }
 
     "return 400 when partial data is posted" in {
       AuthBuilder.submitWithAuthorisedUser(
-        TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+        TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
           "startDateRadio" -> StartDateView.SPECIFIC_DATE,
           "startDate.day" -> "1",
           "startDate.month" -> "",
@@ -146,7 +146,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockS4LService.saveForm[StartDateView](any[StartDateView]())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.COMPANY_REGISTRATION_DATE,
         "startDate.day" -> "21",
         "startDate.month" -> "3",
@@ -167,7 +167,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockS4LService.saveForm[StartDateView](any[StartDateView]())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.BUSINESS_START_DATE
       )) {
         result =>
@@ -185,7 +185,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockS4LService.saveForm[StartDateView](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.SPECIFIC_DATE,
         "startDate.day" -> "24",
         "startDate.month" -> "3",

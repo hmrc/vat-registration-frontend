@@ -24,11 +24,10 @@ import helpers.VatRegSpec
 import models.S4LKey
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -50,52 +49,39 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
     "return HTML when there's a Vat Return Frequency model in S4L" in {
       val vatReturnFrequency = VatReturnFrequency(VatReturnFrequency.MONTHLY)
 
-      when(mockS4LService.fetchAndGet[VatReturnFrequency]()(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[VatReturnFrequency]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(vatReturnFrequency)))
 
-      AuthBuilder.submitWithAuthorisedUser(TestVatReturnFrequencyController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestVatReturnFrequencyController.show(), fakeRequest.withFormUrlEncodedBody(
         VatReturnFrequencyForm.RADIO_FREQUENCY -> ""
       )) {
-
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("How often do you want to submit VAT Returns?")
+        _ includesText "How often do you want to submit VAT Returns?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[VatReturnFrequency]()
-        (Matchers.eq(S4LKey[VatReturnFrequency]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[VatReturnFrequency]), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestVatReturnFrequencyController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("How often do you want to submit VAT Returns?")
+        _ includesText "How often do you want to submit VAT Returns?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       when(mockS4LService.fetchAndGet[VatReturnFrequency]()
-        (Matchers.eq(S4LKey[VatReturnFrequency]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[VatReturnFrequency]), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestVatReturnFrequencyController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("How often do you want to submit VAT Returns?")
+        _ includesText "How often do you want to submit VAT Returns?"
       }
     }
   }
@@ -104,12 +90,8 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestVatReturnFrequencyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
-      }
-
+      AuthBuilder.submitWithAuthorisedUser(TestVatReturnFrequencyController.submit(), fakeRequest.withFormUrlEncodedBody(
+      ))(result => result isA 400)
     }
   }
 
@@ -119,24 +101,18 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       val returnCacheMapVatReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.MONTHLY))))
       val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(""))))
 
-      when(mockS4LService.saveForm[VatReturnFrequency]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[VatReturnFrequency](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapVatReturnFrequency))
 
-      when(mockS4LService.saveForm[AccountingPeriod]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[AccountingPeriod](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
 
-      when(mockVatRegistrationService.deleteElement(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(true))
+      when(mockVatRegistrationService.deleteElement(any())(any()))
+        .thenReturn(Future.successful(()))
 
-      AuthBuilder.submitWithAuthorisedUser(TestVatReturnFrequencyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestVatReturnFrequencyController.submit(), fakeRequest.withFormUrlEncodedBody(
         VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY
-      )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/summary"
-      }
+      ))(_ redirectsTo s"$contextRoot/summary")
 
     }
   }
@@ -147,20 +123,15 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.QUARTERLY))))
       val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.FEB_MAY_AUG_NOV))))
 
-      when(mockS4LService.saveForm[VatReturnFrequency](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[VatReturnFrequency](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      when(mockS4LService.saveForm[AccountingPeriod]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[AccountingPeriod](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
 
-      AuthBuilder.submitWithAuthorisedUser(TestVatReturnFrequencyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestVatReturnFrequencyController.submit(), fakeRequest.withFormUrlEncodedBody(
         VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.QUARTERLY
-      )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/accounting-period"
-      }
+      ))(_ redirectsTo s"$contextRoot/accounting-period")
 
     }
   }
