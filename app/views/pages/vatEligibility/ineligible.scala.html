@@ -1,0 +1,31 @@
+@(classForSection: String => String)(implicit request: Request[_], messages: Messages)
+
+@main_template(title = messages("pages.serviceCriteriaFailure.title")) {
+
+<div class="grid-row">
+    <div class="column-one-third">
+
+        <header class="page-header">
+            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.serviceCriteriaFailure.heading")</h1>
+        </header>
+
+
+        <div id="nino-text" class="@classForSection("nino")">
+
+            <p>@messages("pages.serviceCriteriaFailure.nino.para1")</p>
+
+        </div>
+
+
+        <p>@messages("pages.serviceCriteriaFailure.para.linkToLegacyApp")</p>
+
+
+        <form action="https://online.hmrc.gov.uk/registration/newbusiness/introduction">
+            <button type="submit" class="button-get-started" role="button" id="continue" >
+                @messages("pages.serviceCriteriaFailure.button.linkToLegacyApp")
+            </button>
+        </form>
+    </div>
+
+</div>
+}
