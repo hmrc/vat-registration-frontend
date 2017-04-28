@@ -22,11 +22,11 @@ import helpers.VatRegSpec
 import models.S4LKey
 import models.view.sicAndCompliance.financial.ActAsIntermediary
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -48,52 +48,47 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
     "return HTML when there's an Act as Intermediary model in S4L" in {
       val actAsIntermediary = ActAsIntermediary(true)
 
-      when(mockS4LService.fetchAndGet[ActAsIntermediary]()(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[ActAsIntermediary]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(actAsIntermediary)))
 
-      AuthBuilder.submitWithAuthorisedUser(ActAsIntermediaryController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(ActAsIntermediaryController.show(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> ""
       )) {
-       _ includesText "Does the company act as an intermediary?"
+        _ includesText "Does the company act as an intermediary?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[ActAsIntermediary]()
-        (Matchers.eq(S4LKey[ActAsIntermediary]), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[ActAsIntermediary]()(Matchers.eq(S4LKey[ActAsIntermediary]), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
+      when(mockVatRegistrationService.getVatScheme()(any()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(ActAsIntermediaryController.show) {
-       _ includesText "Does the company act as an intermediary?"
+        _ includesText "Does the company act as an intermediary?"
       }
     }
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     when(mockS4LService.fetchAndGet[ActAsIntermediary]()
-      (Matchers.eq(S4LKey[ActAsIntermediary]), Matchers.any(), Matchers.any()))
+      (Matchers.eq(S4LKey[ActAsIntermediary]), any(), any()))
       .thenReturn(Future.successful(None))
 
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(ActAsIntermediaryController.show) {
-     _ includesText "Does the company act as an intermediary?"
+      _ includesText "Does the company act as an intermediary?"
     }
   }
 
   s"POST ${routes.ActAsIntermediaryController.show()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(ActAsIntermediaryController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
-      }
-
+      AuthBuilder.submitWithAuthorisedUser(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
+      ))(result => result isA 400)
     }
   }
 
@@ -102,19 +97,14 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
     "return 303" in {
       val returnCacheMapActAsIntermediary = CacheMap("", Map("" -> Json.toJson(ActAsIntermediary(true))))
 
-      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(true))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[ActAsIntermediary]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[ActAsIntermediary](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapActAsIntermediary))
 
-      AuthBuilder.submitWithAuthorisedUser(ActAsIntermediaryController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> "true"
-      )) { response =>
-          response redirectsTo s"$contextRoot/company-bank-account"
-      }
-
+      ))(_ redirectsTo s"$contextRoot/company-bank-account")
     }
   }
 
@@ -123,18 +113,14 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
     "return 303" in {
       val returnCacheMapActAsIntermediary = CacheMap("", Map("" -> Json.toJson(ActAsIntermediary(false))))
 
-      when(mockVatRegistrationService.deleteElements(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(true))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[ActAsIntermediary]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[ActAsIntermediary](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapActAsIntermediary))
 
-      AuthBuilder.submitWithAuthorisedUser(ActAsIntermediaryController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> "false"
-      )) { response =>
-          response redirectsTo s"$contextRoot/charges-fees-for-introducing-clients-to-financial-service-providers"
-      }
+      ))(_ redirectsTo s"$contextRoot/charges-fees-for-introducing-clients-to-financial-service-providers")
 
     }
   }

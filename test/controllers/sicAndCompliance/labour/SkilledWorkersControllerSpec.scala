@@ -52,7 +52,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
       when(mockS4LService.fetchAndGet[SkilledWorkers]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(skilledWorkers)))
 
-      AuthBuilder.submitWithAuthorisedUser(SkilledWorkersController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(SkilledWorkersController.show(), fakeRequest.withFormUrlEncodedBody(
         "skilledWorkersRadio" -> ""
       )) {
 
@@ -102,7 +102,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
   s"POST ${sicAndCompliance.labour.routes.SkilledWorkersController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(SkilledWorkersController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(SkilledWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe Status.BAD_REQUEST
@@ -120,7 +120,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapSkilledWorkers))
 
-      AuthBuilder.submitWithAuthorisedUser(SkilledWorkersController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(SkilledWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "skilledWorkersRadio" -> SkilledWorkers.SKILLED_WORKERS_YES
       )) {
         response =>
@@ -140,7 +140,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapSkilledWorkers))
 
-      AuthBuilder.submitWithAuthorisedUser(SkilledWorkersController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(SkilledWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "skilledWorkersRadio" -> SkilledWorkers.SKILLED_WORKERS_NO
       )) {
         response =>
