@@ -30,7 +30,8 @@ import scala.concurrent.Future
 
 
 class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPlayDependencies)
-                                    (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
+                                                                   (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
+
   import cats.instances.future._
 
   val form: Form[DiscretionaryInvestmentManagementServices] = DiscretionaryInvestmentManagementServicesForm.form
@@ -51,7 +52,8 @@ class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPl
               Future.successful(Redirect(controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show()))
             } else {
               vrs.deleteElements(ElementPath.finCompElementPaths.drop(3)).map { _ =>
-                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()) }
+                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+              }
             }
           }
         }

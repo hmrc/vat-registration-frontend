@@ -41,7 +41,7 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
   // implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
   val ds: CommonPlayDependencies = app.injector.instanceOf[CommonPlayDependencies]
 
-  def callAuthorised(a: Action[AnyContent], ac: AuthConnector)(test: Future[Result] => Any): Unit =
+  def callAuthorised(a: Action[AnyContent])(test: Future[Result] => Any)(implicit ac: AuthConnector): Unit =
     AuthBuilder.withAuthorisedUser(a, ac)(test)
 
   implicit class FutureUnit(fu: Future[Unit]) {
@@ -64,6 +64,10 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
     def redirectsTo(url: String): Assertion = {
       status(fr) mustBe Status.SEE_OTHER
       redirectLocation(fr) mustBe Some(url)
+    }
+
+    def isA(httpStatusCode: Int): Assertion = {
+      status(fr) mustBe httpStatusCode
     }
 
     def includesText(s: String): Assertion = {

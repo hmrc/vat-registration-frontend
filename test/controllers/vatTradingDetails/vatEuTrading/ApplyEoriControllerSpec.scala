@@ -71,7 +71,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(ApplyEoriController.show, mockAuthConnector) {
+      callAuthorised(ApplyEoriController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -89,7 +89,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(ApplyEoriController.show, mockAuthConnector) {
+    callAuthorised(ApplyEoriController.show) {
       result =>
         status(result) mustBe OK
         contentType(result) mustBe Some("text/html")

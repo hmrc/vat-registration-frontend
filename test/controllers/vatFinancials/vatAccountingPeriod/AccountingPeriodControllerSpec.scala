@@ -71,7 +71,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestAccountingPeriodController.show, mockAuthConnector) {
+      callAuthorised(TestAccountingPeriodController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -88,7 +88,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(TestAccountingPeriodController.show, mockAuthConnector) {
+      callAuthorised(TestAccountingPeriodController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
