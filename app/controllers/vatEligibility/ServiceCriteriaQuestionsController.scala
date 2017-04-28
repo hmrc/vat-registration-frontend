@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatEligibility.HaveNinoForm
-import models.S4LKey
+import models.YesOrNo
 import models.api.VatServiceEligibility
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
@@ -34,15 +34,17 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies)
 
   import cats.instances.future._
 
-  val form: Form[VatServiceEligibility] = HaveNinoForm.form
+  val form: Form[YesOrNo] = HaveNinoForm.form
 
   def show(question: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[VatServiceEligibility].fold(form)(form.fill(_))
-      .map(f =>
-        question match {
-          case "haveNino" => Ok(views.html.pages.vatEligibility.have_nino(f))
-        }
-      )
+    viewModel[VatServiceEligibility].fold(form)(eligibility =>
+      form.fill(YesOrNo(question, VatServiceEligibility.getValue(question, eligibility)))
+
+    ).map(f =>
+      question match {
+        case "haveNino" => Ok(views.html.pages.vatEligibility.have_nino(f))
+      }
+    )
   )
 
   def submit(question: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
@@ -50,11 +52,13 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies)
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.vatEligibility.have_nino(formWithErrors)))
       }, {
-        data: VatServiceEligibility => {
-          s4LService.saveForm[VatServiceEligibility](data) map { _ =>
-            question match {
-              case "haveNino" =>  Redirect(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())
-            }
+        data: YesOrNo => {
+          for {
+            vatEligibility <- viewModel[VatServiceEligibility].getOrElse(VatServiceEligibility())
+            updatedVatEligibility <- Future.successful(VatServiceEligibility.setValue(question, data.answer, vatEligibility))
+            s4LUpdateVatEligibility <- s4LService.saveForm[VatServiceEligibility](updatedVatEligibility)
+          } yield question match {
+            case "haveNino" => Redirect(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())
           }
         }
       })
