@@ -16,6 +16,7 @@
 
 package models.api
 
+import models.api.EligibilityQuestion._
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
@@ -25,37 +26,31 @@ final case class VatServiceEligibility(
                                         doAnyApplyToYou: Option[Boolean] = None,
                                         applyingForAnyOf: Option[Boolean] = None,
                                         companyWillDoAnyOf: Option[Boolean] = None
-                                      )
+                                      ) {
+
+  def getAnswer(question: EligibilityQuestion): Option[Boolean] = question match {
+    case HaveNinoQuestion => haveNino
+    case DoingBusinessAbroadQuestion => doingBusinessAbroad
+    case DoAnyApplyToYouQuestion => doAnyApplyToYou
+    case ApplyingForAnyOfQuestion => applyingForAnyOf
+    case CompanyWillDoAnyOfQuestion => companyWillDoAnyOf
+  }
+
+  def setAnswer(question: EligibilityQuestion, answer: Boolean): VatServiceEligibility = question match {
+    case HaveNinoQuestion => this.copy(haveNino = Some(answer))
+    case DoingBusinessAbroadQuestion => this.copy(doingBusinessAbroad = Some(answer))
+    case DoAnyApplyToYouQuestion => this.copy(doAnyApplyToYou = Some(answer))
+    case ApplyingForAnyOfQuestion => this.copy(applyingForAnyOf = Some(answer))
+    case CompanyWillDoAnyOfQuestion => this.copy(companyWillDoAnyOf = Some(answer))
+  }
+
+}
+
 
 object VatServiceEligibility {
 
-  val HAVE_NINO = "haveNino"
-  val DOING_BUSINESS_ABROAD = "doingBusinessAbroad"
-  val DO_ANY_APPLY_TO_YOU = "doAnyApplyToYou"
-  val APPLYING_FOR_ANY_OF = "applyingForAnyOf"
-  val COMPANY_WILL_DO_ANY_OF = "companyWillDoAnyOf"
 
   implicit val format: OFormat[VatServiceEligibility] = Json.format
-
-  def getValue(field: String, eligibility: VatServiceEligibility): Option[Boolean] = {
-    field match {
-      case HAVE_NINO => eligibility.haveNino
-      case DOING_BUSINESS_ABROAD => eligibility.doingBusinessAbroad
-      case DO_ANY_APPLY_TO_YOU => eligibility.doAnyApplyToYou
-      case APPLYING_FOR_ANY_OF => eligibility.applyingForAnyOf
-      case COMPANY_WILL_DO_ANY_OF => eligibility.companyWillDoAnyOf
-    }
-  }
-
-  def setValue(field: String, value: Boolean, eligibility: VatServiceEligibility): VatServiceEligibility = {
-    field match {
-      case HAVE_NINO => eligibility.copy(haveNino = Some(value))
-      case DOING_BUSINESS_ABROAD => eligibility.copy(doingBusinessAbroad = Some(value))
-      case DO_ANY_APPLY_TO_YOU => eligibility.copy(doAnyApplyToYou = Some(value))
-      case APPLYING_FOR_ANY_OF => eligibility.copy(applyingForAnyOf = Some(value))
-      case COMPANY_WILL_DO_ANY_OF => eligibility.copy(companyWillDoAnyOf = Some(value))
-    }
-  }
 
   implicit val modelTransformer = ApiModelTransformer[VatServiceEligibility] { vs: VatScheme =>
     vs.vatServiceEligibility
@@ -68,9 +63,6 @@ object VatServiceEligibility {
       applyingForAnyOf = c.applyingForAnyOf,
       companyWillDoAnyOf = c.companyWillDoAnyOf)
   }
-
-  // TODO remove once no longer required
-  val empty = VatServiceEligibility(None, None, None, None, None)
 
 }
 

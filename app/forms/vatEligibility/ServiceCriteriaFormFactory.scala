@@ -25,13 +25,9 @@ class ServiceCriteriaFormFactory {
 
   def form(question: String): Form[YesOrNoQuestion] = {
     val RADIO_YES_NO: String = s"${question}Radio"
-    Form(
-      mapping(
-        RADIO_YES_NO -> missingBooleanFieldMapping()(s"eligibility.$question")
-      )
-      (answer => YesOrNoQuestion(question, answer))
-      ((yesOrNo: YesOrNoQuestion) => Some(yesOrNo.answer))
-    )
+    Form(mapping(
+      RADIO_YES_NO -> missingBooleanFieldMapping()(s"eligibility.$question")
+    )(YesOrNoQuestion(question, _))(yn => Some(yn.answer)))
   }
 
 }

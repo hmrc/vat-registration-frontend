@@ -19,61 +19,52 @@ package controllers.vatEligibility
 import javax.inject.Inject
 
 import cats.data.OptionT
+import controllers.vatEligibility.{routes => eligibilityRoutes}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatEligibility.ServiceCriteriaFormFactory
 import models.YesOrNoQuestion
-import models.api.VatServiceEligibility
+import models.api.EligibilityQuestion._
 import models.api.VatServiceEligibility._
+import models.api.{EligibilityQuestion, VatServiceEligibility}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
-
-import scala.concurrent.Future
 
 
 class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, formFactory: ServiceCriteriaFormFactory)
                                                   (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
 
   import cats.instances.future._
+  import cats.syntax.applicative._
 
-
-  def show(question: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    val form: Form[YesOrNoQuestion] = formFactory.form(question)
+  def show(q: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    val question = EligibilityQuestion(q)
+    val form: Form[YesOrNoQuestion] = formFactory.form(question.name)
 
     viewModel[VatServiceEligibility]
-      .flatMap(e => OptionT.fromOption(VatServiceEligibility.getValue(question, e)))
-      .fold(form)(answer => form.fill(YesOrNoQuestion(question, answer))
-      ).map(f =>
-      question match {
-        case HAVE_NINO => Ok(views.html.pages.vatEligibility.have_nino(f))
-        case DOING_BUSINESS_ABROAD => Ok(views.html.pages.vatEligibility.doing_business_abroad(f))
-      }
-    )
+      .flatMap(e => OptionT.fromOption(e.getAnswer(question)))
+      .fold(form)(answer => form.fill(YesOrNoQuestion(question.name, answer)))
+      .map(f => Ok(question match {
+        case HaveNinoQuestion => views.html.pages.vatEligibility.have_nino(f)
+        case DoingBusinessAbroadQuestion => views.html.pages.vatEligibility.doing_business_abroad(f)
+      }))
   })
 
 
-  def submit(question: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    val form: Form[YesOrNoQuestion] = formFactory.form(question)
+  def submit(q: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    val question = EligibilityQuestion(q)
 
-    form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.vatEligibility.have_nino(formWithErrors)))
-      }, {
-        data: YesOrNoQuestion => {
-          for {
-            vatEligibility <- viewModel[VatServiceEligibility].getOrElse(VatServiceEligibility())
-            updatedVatEligibility <- Future.successful(VatServiceEligibility.setValue(question, data.answer, vatEligibility))
-            s4LUpdateVatEligibility <- s4LService.saveForm[VatServiceEligibility](updatedVatEligibility)
-          } yield question match {
-            case HAVE_NINO => Redirect(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DOING_BUSINESS_ABROAD))
-            case DOING_BUSINESS_ABROAD => Redirect(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())
-          }
-        }
-      }
-    )
+    formFactory.form(question.name).bindFromRequest().fold(
+      badForm => BadRequest(views.html.pages.vatEligibility.have_nino(badForm)).pure,
+      (data: YesOrNoQuestion) =>
+        for {
+          vatEligibility <- viewModel[VatServiceEligibility].getOrElse(VatServiceEligibility())
+          updatedVatEligibility <- vatEligibility.setAnswer(question, data.answer).pure
+          _ <- s4LService.saveForm(updatedVatEligibility)
+        } yield Redirect(question match {
+          case HaveNinoQuestion => eligibilityRoutes.ServiceCriteriaQuestionsController.show(DoingBusinessAbroadQuestion.name)
+          case DoingBusinessAbroadQuestion => controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()
+        }))
   })
-
 
 }
-
-
