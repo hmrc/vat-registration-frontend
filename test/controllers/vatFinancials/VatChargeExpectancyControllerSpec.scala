@@ -73,7 +73,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestVatChargeExpectancyController.show, mockAuthConnector) {
+      callAuthorised(TestVatChargeExpectancyController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -90,7 +90,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(TestVatChargeExpectancyController.show, mockAuthConnector) {
+      callAuthorised(TestVatChargeExpectancyController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")

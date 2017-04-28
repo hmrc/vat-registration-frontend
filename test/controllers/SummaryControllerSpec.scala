@@ -51,7 +51,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.submitVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(()))
       when(mockS4LService.clear()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validHttpResponse))
 
-      callAuthorised(TestSummaryController.show, mockAuthConnector) {
+      callAuthorised(TestSummaryController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -80,7 +80,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockS4LService.clear()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validHttpResponse))
 
-      callAuthorised(TestSummaryController.show, mockAuthConnector) {
+      callAuthorised(TestSummaryController.show) {
         (response: Future[Result]) =>
           status(response) mustBe Status.INTERNAL_SERVER_ERROR
       }

@@ -72,7 +72,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(CompanyProvideWorkersController.show, mockAuthConnector) {
+      callAuthorised(CompanyProvideWorkersController.show) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -90,7 +90,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(CompanyProvideWorkersController.show, mockAuthConnector) {
+    callAuthorised(CompanyProvideWorkersController.show) {
       result =>
         status(result) mustBe OK
         contentType(result) mustBe Some("text/html")

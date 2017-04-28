@@ -66,7 +66,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(InvestmentFundManagementController.show, mockAuthConnector) {
+      callAuthorised(InvestmentFundManagementController.show) {
        _ includesText "Does the company provide investment fund management services?"
       }
     }
@@ -80,7 +80,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(InvestmentFundManagementController.show, mockAuthConnector) {
+    callAuthorised(InvestmentFundManagementController.show) {
      _ includesText "Does the company provide investment fund management services?"
     }
   }

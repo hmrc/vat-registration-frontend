@@ -38,7 +38,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
   val mockVatRegistrationService = mock[VatRegistrationService]
   val DESCRIPTION = "Testing"
 
-  object TestBusinessActivityDescriptionController extends BusinessActivityDescriptionController(ds)(mockS4LService, mockVatRegistrationService) {
+  object TestController extends BusinessActivityDescriptionController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -50,14 +50,9 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
       when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(BusinessActivityDescription(DESCRIPTION))))
 
-      AuthBuilder.submitWithAuthorisedUser(TestBusinessActivityDescriptionController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "description" -> ""
-      )) { result =>
-        status(result) mustBe OK
-        contentType(result) mustBe Some("text/html")
-        charset(result) mustBe Some("utf-8")
-        contentAsString(result) must include("Describe what the company does")
-      }
+      ))(_ includesText "Describe what the company does")
     }
 
 
@@ -69,12 +64,8 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestBusinessActivityDescriptionController.show, mockAuthConnector) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Describe what the company does")
+      callAuthorised(TestController.show) {
+        _ includesText "Describe what the company does"
       }
     }
 
@@ -86,12 +77,8 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(TestBusinessActivityDescriptionController.show, mockAuthConnector) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Describe what the company does")
+      callAuthorised(TestController.show) {
+        _ includesText "Describe what the company does"
       }
     }
   }
@@ -99,7 +86,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
   s"POST ${routes.BusinessActivityDescriptionController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestBusinessActivityDescriptionController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
       ))(status(_) mustBe Status.BAD_REQUEST)
     }
   }
@@ -113,13 +100,9 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapBusinessActivityDescription))
 
-      AuthBuilder.submitWithAuthorisedUser(TestBusinessActivityDescriptionController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "description" -> DESCRIPTION
-      )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe "/sic-stub"
-      }
+      ))(_ redirectsTo "/sic-stub")
 
     }
   }

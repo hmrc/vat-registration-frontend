@@ -64,7 +64,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(AdditionalNonSecuritiesWorkController.show, mockAuthConnector) {
+      callAuthorised(AdditionalNonSecuritiesWorkController.show) {
        _ includesText "Does the company do additional work (excluding securities) when introducing a client to a financial service provider?"
       }
     }
@@ -78,7 +78,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(AdditionalNonSecuritiesWorkController.show, mockAuthConnector) {
+    callAuthorised(AdditionalNonSecuritiesWorkController.show) {
      _ includesText "Does the company do additional work (excluding securities) when introducing a client to a financial service provider?"
     }
   }
@@ -87,10 +87,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(AdditionalNonSecuritiesWorkController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
-      }
+      ))(_ isA Status.BAD_REQUEST)
 
     }
   }
@@ -109,11 +106,9 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
 
       AuthBuilder.submitWithAuthorisedUser(AdditionalNonSecuritiesWorkController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "true"
-      )) {
-        response =>
+      )) { response =>
           response redirectsTo s"$contextRoot/company-bank-account"
       }
-
     }
   }
 
@@ -131,8 +126,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
 
       AuthBuilder.submitWithAuthorisedUser(AdditionalNonSecuritiesWorkController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "false"
-      )) {
-        response =>
+      )) { response =>
           response redirectsTo s"$contextRoot/provides-discretionary-investment-management-services"
       }
 
