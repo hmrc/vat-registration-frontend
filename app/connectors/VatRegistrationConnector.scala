@@ -93,17 +93,17 @@ trait RegistrationConnector {
   }
 
   def deleteVatScheme(regId: String)
-                     (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
+                     (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Unit] = {
     http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-scheme") recover {
       case e: Exception => throw logResponse(e, className, "deleteVatScheme")
-    }
+    } map ( _ => ())
   }
 
   def deleteElement(elementPath: ElementPath)(regId: String)
-                   (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Boolean] = {
+                   (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Unit] = {
     http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete/${elementPath.name}") recover {
       case e: Exception => throw logResponse(e, className, "deleteElement")
-    }
+    } map ( _ => ())
   }
 
 }

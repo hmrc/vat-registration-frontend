@@ -182,36 +182,36 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   "Calling deleteVatScheme" should {
     "return a success response when the delete VatScheme is successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteVatScheme(any())(any(), any())).thenReturn(true.pure)
+      when(mockRegConnector.deleteVatScheme(any())(any(), any())).thenReturn(().pure)
 
-      service.deleteVatScheme() returns true
+      service.deleteVatScheme() completedSuccessfully
     }
   }
 
   "Calling deleteElement" should {
     "return a success response when successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(true.pure)
+      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
 
-      service.deleteElement(VatBankAccountPath) returns true
+      service.deleteElement(VatBankAccountPath) completedSuccessfully
     }
   }
 
   "Calling deleteElements with items" should {
     "return a success response when successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(true.pure)
+      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
 
-      service.deleteElements(List(VatBankAccountPath, ZeroRatedTurnoverEstimatePath)) returns true
+      service.deleteElements(List(VatBankAccountPath, ZeroRatedTurnoverEstimatePath)) completedSuccessfully
     }
   }
 
   "Calling deleteElements without items" should {
     "return a success response when successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(true.pure)
+      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
 
-      service.deleteElements(List()) returns true
+      service.deleteElements(List()) completedSuccessfully
     }
   }
 

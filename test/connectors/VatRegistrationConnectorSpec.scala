@@ -83,7 +83,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   "Calling deleteVatScheme" should {
     "return a successful outcome given an existing registration" in new Setup {
       mockHttpDELETE[Boolean]("tst-url", true)
-      connector.deleteVatScheme("regId") returns true
+      connector.deleteVatScheme("regId") completedSuccessfully
     }
     "return the notFound exception when trying to DELETE non-existent registration" in new Setup {
       mockHttpFailedDELETE[Boolean]("tst-url", notFound)
@@ -94,7 +94,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   "Calling deleteElement" should {
     "return a successful outcome given an existing registration" in new Setup {
       mockHttpDELETE[Boolean]("tst-url", true)
-      connector.deleteElement(VatBankAccountPath)("regId") returns true
+      connector.deleteElement(VatBankAccountPath)("regId") completedSuccessfully
     }
     "return the notFound exception when trying to DELETE non-existent registration" in new Setup {
       mockHttpFailedDELETE[Boolean]("tst-url", notFound)

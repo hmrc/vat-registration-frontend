@@ -53,7 +53,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockS4LService.fetchAndGet[VatChargeExpectancy]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(vatChargeExpectancy)))
 
-      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.show(), fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> ""
       )) {
 
@@ -104,7 +104,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${vatFinancials.routes.VatChargeExpectancyController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe Status.BAD_REQUEST
@@ -122,7 +122,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapVatChargeExpectancy))
 
-      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_YES
       )) {
         response =>
@@ -145,7 +145,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockS4LService.saveForm[VatReturnFrequency](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapReturnFrequency))
 
-      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_NO
       )) {
         response =>

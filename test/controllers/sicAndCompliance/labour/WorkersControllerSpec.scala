@@ -53,7 +53,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockS4LService.fetchAndGet[Workers]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(workers)))
 
-      AuthBuilder.submitWithAuthorisedUser(WorkersController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(WorkersController.show(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
         result =>
@@ -102,7 +102,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${sicAndCompliance.labour.routes.WorkersController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(WorkersController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe Status.BAD_REQUEST
@@ -119,7 +119,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
         (any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapWorkers))
 
-      AuthBuilder.submitWithAuthorisedUser(WorkersController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
         result =>
@@ -138,7 +138,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
         (any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapWorkers))
 
-      AuthBuilder.submitWithAuthorisedUser(WorkersController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "8"
       )) {
         result =>
