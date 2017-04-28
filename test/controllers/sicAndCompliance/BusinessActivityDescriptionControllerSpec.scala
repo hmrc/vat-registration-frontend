@@ -50,7 +50,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
       when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(BusinessActivityDescription(DESCRIPTION))))
 
-      AuthBuilder.submitWithAuthorisedUser(TestController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestController.show(), fakeRequest.withFormUrlEncodedBody(
         "description" -> ""
       ))(_ includesText "Describe what the company does")
     }
@@ -86,7 +86,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
   s"POST ${routes.BusinessActivityDescriptionController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(status(_) mustBe Status.BAD_REQUEST)
     }
   }
@@ -100,7 +100,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapBusinessActivityDescription))
 
-      AuthBuilder.submitWithAuthorisedUser(TestController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestController.submit(), fakeRequest.withFormUrlEncodedBody(
         "description" -> DESCRIPTION
       ))(_ redirectsTo "/sic-stub")
 

@@ -23,11 +23,10 @@ import helpers.VatRegSpec
 import models.S4LKey
 import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -49,52 +48,39 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
     "return HTML when there's a Zero Rated Sales model in S4L" in {
       val zeroRatedSales = ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_YES)
 
-      when(mockS4LService.fetchAndGet[ZeroRatedSales]()(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[ZeroRatedSales]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(zeroRatedSales)))
 
-      AuthBuilder.submitWithAuthorisedUser(TestZeroRatedSalesController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestZeroRatedSalesController.show(), fakeRequest.withFormUrlEncodedBody(
         "zeroRatedSalesRadio" -> ""
       )) {
-
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Do you expect to make any zero-rated sales?")
+        _ includesText "Do you expect to make any zero-rated sales?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[ZeroRatedSales]()
-        (Matchers.eq(S4LKey[ZeroRatedSales]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[ZeroRatedSales]), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestZeroRatedSalesController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Do you expect to make any zero-rated sales?")
+        _ includesText "Do you expect to make any zero-rated sales?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       when(mockS4LService.fetchAndGet[ZeroRatedSales]()
-        (Matchers.eq(S4LKey[ZeroRatedSales]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[ZeroRatedSales]), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestZeroRatedSalesController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Do you expect to make any zero-rated sales?")
+        _ includesText "Do you expect to make any zero-rated sales?"
       }
     }
   }
@@ -102,8 +88,8 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
   s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestZeroRatedSalesController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
-      ))(status(_) mustBe Status.BAD_REQUEST)
+      AuthBuilder.submitWithAuthorisedUser(TestZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
+      ))(result => result isA 400)
     }
   }
 
@@ -112,16 +98,13 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
     "return 303" in {
       val returnCacheMapZeroRatedSales = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_NO))))
 
-      when(mockS4LService.saveForm[ZeroRatedSales]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[ZeroRatedSales](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapZeroRatedSales))
 
-      AuthBuilder.submitWithAuthorisedUser(TestZeroRatedSalesController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "zeroRatedSalesRadio" -> ZeroRatedSales.ZERO_RATED_SALES_YES
       )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/estimate-zero-rated-sales"
+        _ redirectsTo s"$contextRoot/estimate-zero-rated-sales"
       }
 
     }
@@ -133,23 +116,17 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_NO))))
       val returnCacheMapEstimateZeroRatedSales = CacheMap("", Map("" -> Json.toJson(EstimateZeroRatedSales(0L))))
 
-      when(mockS4LService.saveForm[ZeroRatedSales](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[ZeroRatedSales](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      when(mockS4LService.saveForm[EstimateZeroRatedSales]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[EstimateZeroRatedSales](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapEstimateZeroRatedSales))
 
-      when(mockVatRegistrationService.deleteElement(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(true))
+      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
 
-      AuthBuilder.submitWithAuthorisedUser(TestZeroRatedSalesController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TestZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "zeroRatedSalesRadio" -> ZeroRatedSales.ZERO_RATED_SALES_NO
-      )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/vat-charge-expectancy"
-      }
+      ))(_ redirectsTo s"$contextRoot/vat-charge-expectancy")
 
     }
   }
