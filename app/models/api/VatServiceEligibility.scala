@@ -31,15 +31,23 @@ object VatServiceEligibility {
 
   implicit val format: OFormat[VatServiceEligibility] = Json.format
 
-  def apply(field: String, value: Boolean): VatServiceEligibility = {
-    val vatServiceEligibility = VatServiceEligibility()
-
+  def getValue(field: String, eligibility: VatServiceEligibility): Option[Boolean] = {
     field match {
-      case "haveNino" => vatServiceEligibility.copy(haveNino = Some(value))
-      case "doingBusinessAbroad" => vatServiceEligibility.copy(doingBusinessAbroad = Some(value))
-      case "doAnyApplyToYou" => vatServiceEligibility.copy(doAnyApplyToYou = Some(value))
-      case "applyingForAnyOf" => vatServiceEligibility.copy(applyingForAnyOf = Some(value))
-      case "companyWillDoAnyOf" => vatServiceEligibility.copy(companyWillDoAnyOf = Some(value))
+      case "haveNino" => eligibility.haveNino
+      case "doingBusinessAbroad" => eligibility.doingBusinessAbroad
+      case "doAnyApplyToYou" => eligibility.doAnyApplyToYou
+      case "applyingForAnyOf" => eligibility.applyingForAnyOf
+      case "companyWillDoAnyOf" => eligibility.companyWillDoAnyOf
+    }
+  }
+
+  def setValue(field: String, value: Option[Boolean], eligibility: VatServiceEligibility): VatServiceEligibility = {
+    field match {
+      case "haveNino" => eligibility.copy(haveNino = value)
+      case "doingBusinessAbroad" => eligibility.copy(doingBusinessAbroad = value)
+      case "doAnyApplyToYou" => eligibility.copy(doAnyApplyToYou = value)
+      case "applyingForAnyOf" => eligibility.copy(applyingForAnyOf = value)
+      case "companyWillDoAnyOf" => eligibility.copy(companyWillDoAnyOf = value)
     }
   }
 

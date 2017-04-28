@@ -14,23 +14,10 @@
  * limitations under the License.
  */
 
-package forms.vatEligibility
+package models
 
-import forms.FormValidation.missingBooleanFieldMapping
-import models.YesOrNo
-import play.api.data.Form
-import play.api.data.Forms._
+case class YesOrNo(question: String, answer: Option[Boolean])
 
-object HaveNinoForm {
 
-  val RADIO_YES_NO: String = "haveNinoRadio"
 
-  val form: Form[YesOrNo] = Form(
-    mapping(
-      RADIO_YES_NO -> missingBooleanFieldMapping()("eligibility.haveNino")
-    )
-    ((RADIO_YES_NO) => YesOrNo("haveNino", Some(RADIO_YES_NO)))
-    ((yesOrNo: YesOrNo) => yesOrNo.answer)
-  )
 
-}
