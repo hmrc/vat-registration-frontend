@@ -18,6 +18,7 @@ package controllers.vatEligibility
 
 import javax.inject.Inject
 
+import cats.data.OptionT
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatEligibility.ServiceCriteriaFormFactory
 import models.YesOrNoQuestion
@@ -39,10 +40,10 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
   def show(question: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
     val form: Form[YesOrNoQuestion] = formFactory.form(question)
 
-    viewModel[VatServiceEligibility].fold(form)(eligibility =>
-      form.fill(YesOrNoQuestion(question, VatServiceEligibility.getValue(question, eligibility)))
-
-    ).map(f =>
+    viewModel[VatServiceEligibility]
+      .flatMap(e => OptionT.fromOption(VatServiceEligibility.getValue(question, e)))
+      .fold(form)(answer => form.fill(YesOrNoQuestion(question, answer))
+      ).map(f =>
       question match {
         case HAVE_NINO => Ok(views.html.pages.vatEligibility.have_nino(f))
         case DOING_BUSINESS_ABROAD => Ok(views.html.pages.vatEligibility.doing_business_abroad(f))
