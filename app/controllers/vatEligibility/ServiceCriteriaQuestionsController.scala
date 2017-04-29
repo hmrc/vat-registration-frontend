@@ -25,7 +25,6 @@ import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatEligibility.ServiceCriteriaFormFactory
 import models.YesOrNoQuestion
 import models.api.EligibilityQuestion._
-import models.api.VatServiceEligibility._
 import models.api.{EligibilityQuestion, VatServiceEligibility}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, Call}
@@ -37,14 +36,17 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
 
   import cats.instances.future._
   import cats.syntax.applicative._
+  import cats.syntax.flatMap._
 
-
-  lazy val keystoreConnector = KeystoreConnector
+  lazy val keystore = KeystoreConnector
 
   private def nextQuestion(question: EligibilityQuestion): Call = question match {
     case HaveNinoQuestion => eligibilityRoutes.ServiceCriteriaQuestionsController.show(DoingBusinessAbroadQuestion.name)
     case DoingBusinessAbroadQuestion => controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()
   }
+
+  private val INELIGIBILITY_REASON: String = "ineligibility-reason"
+
 
   def show(q: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
     val question = EligibilityQuestion(q)
@@ -59,25 +61,23 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
       }))
   })
 
-
   def submit(q: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
     val question = EligibilityQuestion(q)
-    import cats.syntax.flatMap._
     formFactory.form(question.name).bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatEligibility.have_nino(badForm)).pure,
       (data: YesOrNoQuestion) =>
         for {
           vatEligibility <- viewModel[VatServiceEligibility].getOrElse(VatServiceEligibility())
-          updatedVatEligibility <- vatEligibility.setAnswer(question, data.answer).pure
-          _ <- s4LService.saveForm(updatedVatEligibility)
+          _ <- s4LService.saveForm(vatEligibility.setAnswer(question, data.answer))
           exit = data.answer == question.exitAnswer
-          _ <- exit.pure.ifM(keystoreConnector.cache("ineligible-reason", question.name), ().pure)
-        } yield Redirect(if (exit) eligibilityRoutes.ServiceCriteriaQuestionsController.ineligible() else nextQuestion(question)))
+          _ <- exit.pure.ifM(keystore.cache(INELIGIBILITY_REASON, question.name), ().pure)
+        } yield Redirect(
+          if (exit) eligibilityRoutes.ServiceCriteriaQuestionsController.ineligible() else nextQuestion(question))
+    )
   })
 
-
   def ineligible(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    OptionT(keystoreConnector.fetchAndGet[String]("ineligible-reason")).getOrElse("").map {
+    OptionT(keystore.fetchAndGet[String](INELIGIBILITY_REASON)).getOrElse("").map {
       failedQuestion => Ok(views.html.pages.vatEligibility.ineligible(s => if (s != failedQuestion) "hidden" else ""))
     })
 
