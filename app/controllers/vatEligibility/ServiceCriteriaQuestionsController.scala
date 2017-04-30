@@ -36,7 +36,8 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
 
   import cats.instances.future._
   import cats.syntax.applicative._
-  import cats.syntax.flatMap._
+
+  import scala.concurrent.ExecutionContext.Implicits.global
 
   lazy val keystore = KeystoreConnector
 
@@ -61,6 +62,8 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
       }))
   })
 
+  import common.ConditionalFlatMap._
+
   def submit(q: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
     val question = EligibilityQuestion(q)
     formFactory.form(question.name).bindFromRequest().fold(
@@ -70,9 +73,10 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
           vatEligibility <- viewModel[VatServiceEligibility].getOrElse(VatServiceEligibility())
           _ <- s4LService.saveForm(vatEligibility.setAnswer(question, data.answer))
           exit = data.answer == question.exitAnswer
-          _ <- exit.pure.ifM(keystore.cache(INELIGIBILITY_REASON, question.name), ().pure)
+          _ <- keystore.cache(INELIGIBILITY_REASON, question.name) onlyIf exit
         } yield Redirect(
-          if (exit) eligibilityRoutes.ServiceCriteriaQuestionsController.ineligible() else nextQuestion(question))
+          if (exit) eligibilityRoutes.ServiceCriteriaQuestionsController.ineligible() else nextQuestion(question)
+        )
     )
   })
 
