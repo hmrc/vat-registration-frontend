@@ -30,6 +30,8 @@ import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, Call}
 import services.{RegistrationService, S4LService}
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 
 class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, formFactory: ServiceCriteriaFormFactory)
                                                   (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
@@ -37,17 +39,15 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
   import cats.instances.future._
   import cats.syntax.applicative._
 
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   lazy val keystore = KeystoreConnector
+
+  private val INELIGIBILITY_REASON: String = "ineligibility-reason"
 
   private def nextQuestion(question: EligibilityQuestion): Call = question match {
     case HaveNinoQuestion => eligibilityRoutes.ServiceCriteriaQuestionsController.show(DoingBusinessAbroadQuestion.name)
     case DoingBusinessAbroadQuestion => controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()
   }
-
-  private val INELIGIBILITY_REASON: String = "ineligibility-reason"
-
 
   def show(q: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
     val question = EligibilityQuestion(q)
@@ -62,10 +62,9 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
       }))
   })
 
-  import common.ConditionalFlatMap._
-
   def submit(q: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
     val question = EligibilityQuestion(q)
+    import common.ConditionalFlatMap._
     formFactory.form(question.name).bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatEligibility.have_nino(badForm)).pure,
       (data: YesOrNoQuestion) =>
