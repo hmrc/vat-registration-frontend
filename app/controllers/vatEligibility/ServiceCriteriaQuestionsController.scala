@@ -39,15 +39,22 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
   import cats.instances.future._
   import cats.syntax.applicative._
 
+  // $COVERAGE-OFF$
+  lazy val keystore:KeystoreConnector = KeystoreConnector
+  // $COVERAGE-ON$
 
-  lazy val keystore = KeystoreConnector
+  val INELIGIBILITY_REASON_KEY: String = "ineligibility-reason"
 
-  private val INELIGIBILITY_REASON: String = "ineligibility-reason"
-
+  //TODO toggle back on once all screens in place
+  // $COVERAGE-OFF$
   private def nextQuestion(question: EligibilityQuestion): Call = question match {
     case HaveNinoQuestion => eligibilityRoutes.ServiceCriteriaQuestionsController.show(DoingBusinessAbroadQuestion.name)
-    case DoingBusinessAbroadQuestion => controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()
+    case DoingBusinessAbroadQuestion => controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoAnyApplyToYouQuestion.name)
+    case DoAnyApplyToYouQuestion => controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(ApplyingForAnyOfQuestion.name)
+    case ApplyingForAnyOfQuestion => controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(CompanyWillDoAnyOfQuestion.name)
+    case CompanyWillDoAnyOfQuestion => controllers.routes.TwirlViewController.renderViewAuthorised()
   }
+  // $COVERAGE-ON$
 
   def show(q: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
     val question = EligibilityQuestion(q)
@@ -72,7 +79,7 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
           vatEligibility <- viewModel[VatServiceEligibility].getOrElse(VatServiceEligibility())
           _ <- s4LService.saveForm(vatEligibility.setAnswer(question, data.answer))
           exit = data.answer == question.exitAnswer
-          _ <- keystore.cache(INELIGIBILITY_REASON, question.name) onlyIf exit
+          _ <- keystore.cache(INELIGIBILITY_REASON_KEY, question.name) onlyIf exit
         } yield Redirect(
           if (exit) eligibilityRoutes.ServiceCriteriaQuestionsController.ineligible() else nextQuestion(question)
         )
@@ -80,7 +87,7 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
   })
 
   def ineligible(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    OptionT(keystore.fetchAndGet[String](INELIGIBILITY_REASON)).getOrElse("").map {
+    OptionT(keystore.fetchAndGet[String](INELIGIBILITY_REASON_KEY)).getOrElse("").map {
       failedQuestion => Ok(views.html.pages.vatEligibility.ineligible(s => if (s != failedQuestion) "hidden" else ""))
     })
 
