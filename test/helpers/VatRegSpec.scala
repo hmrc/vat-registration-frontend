@@ -41,8 +41,8 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
   // implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
   val ds: CommonPlayDependencies = app.injector.instanceOf[CommonPlayDependencies]
 
-  def callAuthorised(a: Action[AnyContent])(test: Future[Result] => Any)(implicit ac: AuthConnector): Unit =
-    AuthBuilder.withAuthorisedUser(a, ac)(test)
+  def callAuthorised(a: Action[AnyContent])(test: Future[Result] => Any): Unit =
+    AuthBuilder.withAuthorisedUser(a)(test)
 
   implicit class FutureUnit(fu: Future[Unit]) {
 
