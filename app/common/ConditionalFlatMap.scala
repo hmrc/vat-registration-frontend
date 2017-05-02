@@ -17,19 +17,30 @@
 package common
 
 import cats.Applicative
-import cats.kernel.Monoid
 
 import scala.language.higherKinds
 
+/**
+  * This class is used to allow conditional executions in for-comprehensions
+  * e.g.
+  * <pre>
+  * for {
+  * foo <- something()
+  * _ <- somethingElse() onlyIf condition
+  * } yield (foo)
+  * </pre>
+  *
+  * Here somethingElse() only executes if condition is true
+  *
+  * Also, note that this can be removed once we upgrade cats library to 1.0
+  * new version of cats includes .whenA syntax for doing this kind of stuff
+  */
 object ConditionalFlatMap {
 
   implicit class CustomApplicativeOps[F[_] : Applicative, A](fa: => F[A]) {
 
     def onlyIf(condition: Boolean)(implicit F: Applicative[F]): F[Unit] =
       if (condition) F.map(fa)(_ => ()) else F.pure(())
-
-    def onlyIfM(condition: Boolean)(implicit F: Applicative[F], A: Monoid[A]): F[A] =
-      if (condition) fa else F.pure(A.empty)
 
   }
 
