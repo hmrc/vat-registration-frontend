@@ -52,7 +52,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockS4LService.fetchAndGet[TemporaryContracts]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(temporaryContracts)))
 
-      AuthBuilder.submitWithAuthorisedUser(TemporaryContractsController.show(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TemporaryContractsController.show(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> ""
       )) {
 
@@ -102,7 +102,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${sicAndCompliance.labour.routes.TemporaryContractsController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TemporaryContractsController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe Status.BAD_REQUEST
@@ -120,7 +120,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapTemporaryContracts))
 
-      AuthBuilder.submitWithAuthorisedUser(TemporaryContractsController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> TemporaryContracts.TEMP_CONTRACTS_YES
       )) {
         response =>
@@ -140,7 +140,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapTemporaryContracts))
 
-      AuthBuilder.submitWithAuthorisedUser(TemporaryContractsController.submit(), mockAuthConnector, fakeRequest.withFormUrlEncodedBody(
+      AuthBuilder.submitWithAuthorisedUser(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> TemporaryContracts.TEMP_CONTRACTS_NO
       )) {
         response =>
