@@ -162,10 +162,11 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
     "return HTML for relevant ineligibility page" in {
 
+      //below the "" empty css class indicates that the section is showing (not "hidden")
       val eligibilityQuestions = Seq[(EligibilityQuestion, String)](
-        HaveNinoQuestion -> "You must have a National Insurance number to register",
-        DoingBusinessAbroadQuestion -> "the company sells goods outside the UK but not in the UK"
-        // DoAnyApplyToYouQuestion -> "Do you have a National Insurance number?"
+        HaveNinoQuestion -> """id="nino-text" class=""""",
+        DoingBusinessAbroadQuestion -> """id="business-abroad-text" class=""""",
+        DoAnyApplyToYouQuestion -> """id="do-any-apply-to-you-text" class="""""
         // ApplyingForAnyOfQuestion -> "Do you have a National Insurance number?"
         // CompanyWillDoAnyOfQuestion -> "Do you have a National Insurance number?"
       )
