@@ -60,8 +60,8 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
       val eligibilityQuestions = Seq[(EligibilityQuestion, String)](
         HaveNinoQuestion -> "Do you have a National Insurance number?",
         DoingBusinessAbroadQuestion -> "Will you do any of the following once you&#x27;re registered for VAT?",
-        DoAnyApplyToYouQuestion -> "Do any of the following apply to you or the business?"
-        // ApplyingForAnyOfQuestion -> "Do you have a National Insurance number?"
+        DoAnyApplyToYouQuestion -> "Do any of the following apply to you or the business?",
+        ApplyingForAnyOfQuestion -> "Will you apply for any of the following?"
         // CompanyWillDoAnyOfQuestion -> "Do you have a National Insurance number?"
       )
 
@@ -83,7 +83,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
       HaveNinoQuestion -> urlForQuestion(DoingBusinessAbroadQuestion),
       DoingBusinessAbroadQuestion -> urlForQuestion(DoAnyApplyToYouQuestion),
       DoAnyApplyToYouQuestion -> urlForQuestion(ApplyingForAnyOfQuestion)
-      //      ApplyingForAnyOfQuestion -> urlForQuestion(CompanyWillDoAnyOfQuestion),
+//      ApplyingForAnyOfQuestion -> urlForQuestion(CompanyWillDoAnyOfQuestion)
       //      CompanyWillDoAnyOfQuestion -> controllers.routes.TwirlViewController.renderViewAuthorised().url
     )
 
@@ -166,8 +166,8 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
       val eligibilityQuestions = Seq[(EligibilityQuestion, String)](
         HaveNinoQuestion -> """id="nino-text" class=""""",
         DoingBusinessAbroadQuestion -> """id="business-abroad-text" class=""""",
-        DoAnyApplyToYouQuestion -> """id="do-any-apply-to-you-text" class="""""
-        // ApplyingForAnyOfQuestion -> "Do you have a National Insurance number?"
+        DoAnyApplyToYouQuestion -> """id="do-any-apply-to-you-text" class=""""",
+         ApplyingForAnyOfQuestion -> """id="applying-for-any-of-text" class="""""
         // CompanyWillDoAnyOfQuestion -> "Do you have a National Insurance number?"
       )
 
