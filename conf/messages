@@ -66,8 +66,8 @@ pages.serviceCriteriaSuccess.panels.vatResponsibilities.bullet.records = keep VA
 ## Service Criteria Failure
 pages.serviceCriteriaFailure.title                      = You can''t register with this service
 pages.serviceCriteriaFailure.heading                    = You can''t register for VAT with this service
-pages.serviceCriteriaFailure.para.linkToLegacyApp       = You need to <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register using HMRC''s existing service</a>.
-pages.serviceCriteriaFailure.para.linkToLegacyApp2      = You need to <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register using HMRC''s existing service</a> if:
+pages.serviceCriteriaFailure.linkToLegacyApp       = You need to <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register using HMRC''s existing service</a>.
+pages.serviceCriteriaFailure.linkToLegacyApp2      = You need to <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register using HMRC''s existing service</a> if:
 pages.serviceCriteriaFailure.button.linkToLegacyApp     = Register using HMRC''s existing service
 
 pages.serviceCriteriaFailure.nino.p1                    = You must have a National Insurance number to register for VAT with this service.
