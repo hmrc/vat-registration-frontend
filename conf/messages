@@ -66,8 +66,8 @@ pages.serviceCriteriaSuccess.panels.vatResponsibilities.bullet.records = keep VA
 ## Service Criteria Failure
 pages.serviceCriteriaFailure.title                      = You can''t register with this service
 pages.serviceCriteriaFailure.heading                    = You can''t register for VAT with this service
-pages.serviceCriteriaFailure.linkToLegacyApp       = You need to <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register using HMRC''s existing service</a>.
-pages.serviceCriteriaFailure.linkToLegacyApp2      = You need to <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register using HMRC''s existing service</a> if:
+pages.serviceCriteriaFailure.linkToLegacyApp            = You need to <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register using HMRC''s existing service</a>.
+pages.serviceCriteriaFailure.linkToLegacyApp2           = You need to <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register using HMRC''s existing service</a> if:
 pages.serviceCriteriaFailure.button.linkToLegacyApp     = Register using HMRC''s existing service
 
 pages.serviceCriteriaFailure.nino.p1                    = You must have a National Insurance number to register for VAT with this service.
@@ -78,6 +78,13 @@ pages.serviceCriteriaFailure.businessAbroad.p1          = If the company distanc
 pages.serviceCriteriaFailure.businessAbroad.p2          = If the company buys goods from other EU countries and brings them into the UK, you need to <a href="https://www.gov.uk/government/publications/vat-application-for-registration-acquisitions-vat1b">register using form VAT1B</a>.
 pages.serviceCriteriaFailure.businessAbroad.p3          = If the company is selling assets you bought and claimed a VAT refund on from a country outside the UK, you need to <a href="https://www.gov.uk/government/publications/vat-registration-notification-vat1c">register using form VAT1C</a>.
 
+pages.serviceCriteriaFailure.doAnyApplyToYou.bullet1    = you changed the legal status of the company when you registered it with Companies House
+pages.serviceCriteriaFailure.doAnyApplyToYou.bullet2    = you''ve taken over a VAT-registered business which is operating and making a profit
+pages.serviceCriteriaFailure.doAnyApplyToYou.bullet3    = you want to register a VAT group
+pages.serviceCriteriaFailure.doAnyApplyToYou.bullet4    = you''ve been involved with other businesses in the last 2 years
+pages.serviceCriteriaFailure.doAnyApplyToYou.p1         = If your VAT taxable turnover went over the £83,000 threshold temporarily but has since dropped below the threshold, you need to <a href="https://www.gov.uk/government/publications/vat-application-for-registration-vat1">register using form VAT1</a>.
+
+
 ## validation messages for all service eligibility questions
 
 validation.eligibility.haveNino.missing                  = Tell us if you have a national insurance number
@@ -86,10 +93,9 @@ validation.eligibility.doAnyApplyToYou.missing           = Tell us if any of the
 validation.eligibility.applyingForAnyOf.missing          = Tell us if you''ll apply for any of the following
 validation.eligibility.companyWillDoAnyOf.missing        = Tell us if you''ll do any of the following
 
-
 ## Have Nino
-pages.eligibility.haveNino.title             = Do you have a National Insurance number?
-pages.eligibility.haveNino.heading           = Do you have a National Insurance number?
+pages.eligibility.haveNino.title                         = Do you have a National Insurance number?
+pages.eligibility.haveNino.heading                       = Do you have a National Insurance number?
 
 ## Doing Business Abroad
 pages.eligibility.doingBusinessAbroad.title             = Will you do any of the following once you''re registered for VAT?
