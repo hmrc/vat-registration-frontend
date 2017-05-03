@@ -23,18 +23,25 @@ import javax.inject.Inject
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import connectors.{OptionalResponse, PPConnector}
+import models.api.ScrsAddress
+import models.external.{CoHoCompanyProfile, CoHoRegisteredOfficeAddress}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @ImplementedBy(classOf[PrePopulationService])
 trait PrePopService {
 
   def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionalResponse[LocalDate]
 
+  def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[(String, String)]]
+
 }
 
-class PrePopulationService @Inject()(ppConnector: PPConnector) extends PrePopService with CommonService {
+class PrePopulationService @Inject()(ppConnector: PPConnector,
+                                    iis: IncorporationInformationService)
+      extends PrePopService with CommonService {
 
   import cats.instances.future._
 
@@ -47,5 +54,16 @@ class PrePopulationService @Inject()(ppConnector: PPConnector) extends PrePopSer
       accountingDetails <- OptionT.fromOption(ctReg.accountingDetails)
       dateString <- OptionT.fromOption(accountingDetails.activeDate)
     } yield LocalDate.parse(dateString, formatter)
+
+  override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[(String, String)]] = {
+    for {
+      companyProfileOpt <- keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile")
+      companyProfile = companyProfileOpt.get
+      address <- iis.getRegisteredOfficeAddress(companyProfile.transactionId)
+      scrsAddress = CoHoRegisteredOfficeAddress.convertToAddress(address)
+    } yield List((scrsAddress.getId, scrsAddress.getFrontEndView))
+
+  }
+
 
 }

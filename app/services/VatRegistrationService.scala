@@ -19,9 +19,10 @@ package services
 import javax.inject.Inject
 
 import com.google.inject.ImplementedBy
-import connectors.VatRegistrationConnector
+import connectors.{CompanyRegistrationConnector, VatRegistrationConnector}
 import models._
 import models.api._
+import models.external.CoHoCompanyProfile
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
@@ -54,7 +55,10 @@ trait RegistrationService {
 
 }
 
-class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: VatRegistrationConnector)
+class VatRegistrationService @Inject()(s4LService: S4LService,
+                                       vatRegConnector: VatRegistrationConnector,
+                                       companyRegistrationConnector: CompanyRegistrationConnector)
+
   extends RegistrationService
     with CommonService {
 
@@ -85,6 +89,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
     for {
       vatScheme <- vatRegConnector.createNewRegistration()
       _ <- keystoreConnector.cache[String]("RegistrationId", vatScheme.id)
+      companyProfile <- companyRegistrationConnector.getCompanyRegistrationDetails(vatScheme.id)
+      _ <- keystoreConnector.cache[CoHoCompanyProfile]("CompanyProfile", companyProfile)
     } yield ()
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =

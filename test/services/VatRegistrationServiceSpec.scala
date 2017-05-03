@@ -44,7 +44,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
   class Setup {
 
-    val service = new VatRegistrationService(mockS4LService, mockRegConnector) {
+    val service = new VatRegistrationService(mockS4LService, mockRegConnector, mockCompanyRegConnector) {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
 
