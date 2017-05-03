@@ -163,8 +163,8 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
     "return HTML for relevant ineligibility page" in {
 
       val eligibilityQuestions = Seq[(EligibilityQuestion, String)](
-        HaveNinoQuestion -> "You must have a National Insurance number to register"
-        // DoingBusinessAbroadQuestion -> "You must have a National Insurance number to register"
+        HaveNinoQuestion -> "You must have a National Insurance number to register",
+         DoingBusinessAbroadQuestion -> "the company sells goods outside the UK but not in the UK"
         // DoAnyApplyToYouQuestion -> "Do you have a National Insurance number?"
         // ApplyingForAnyOfQuestion -> "Do you have a National Insurance number?"
         // CompanyWillDoAnyOfQuestion -> "Do you have a National Insurance number?"
