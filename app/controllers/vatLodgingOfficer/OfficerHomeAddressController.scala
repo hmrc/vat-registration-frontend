@@ -20,20 +20,29 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerHomeAddressForm
+import models.api.ScrsAddress
+import models.external.CoHoRegisteredOfficeAddress
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
+import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, VatRegistrationService}
+import services.{IncorporationInformationService, PrePopulationService, S4LService, VatRegistrationService}
+
+import scala.concurrent.{Await, Future}
 
 class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
-                                            (implicit s4l: S4LService, vrs: VatRegistrationService)
+                                            (implicit s4l: S4LService,
+                                             vrs: VatRegistrationService,
+                                              prePopService: PrePopulationService)
   extends VatRegistrationController(ds) {
 
   import cats.instances.future._
   import cats.syntax.applicative._
 
+  import connectors._
+
   val form = OfficerHomeAddressForm.form
 
-  // TODO get list of addresses (ScrsAddressType?) from PrePop service
+  // TODO get list of addresses (ScrsAddress?) from PrePop service
   // TODO and make available to the page
   // "For addresses: the shared addresses will be accessible as a single resource
   // for a given regId via a URL shaped like /business-registration/data-sharing/${regId}/addresses"
@@ -43,10 +52,18 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
     "addressId2" -> "7 Romford Road, Wellington, Telford, TF1 4ER"
   )
 
-
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[OfficerHomeAddressView].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_home_address(f, prePopAddressMap)))
+
+    for {
+      prePopAddressMap: Seq[(String, String)] <- prePopService.getOfficerAddressList()
+      futureForm: Future[Form[OfficerHomeAddressView]] = viewModel[OfficerHomeAddressView].fold(form)(form.fill)
+      f <- futureForm
+    } yield Ok(views.html.pages.vatLodgingOfficer.officer_home_address(f, prePopAddressMap))
+
+
+//    viewModel[OfficerHomeAddressView].fold(form)(form.fill)
+//      .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_home_address(f, prePopAddressMap)))
+
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {

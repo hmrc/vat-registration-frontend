@@ -16,7 +16,7 @@
 
 package mocks
 
-import connectors.VatRegistrationConnector
+import connectors.{CompanyRegistrationConnector, VatRegistrationConnector}
 import org.scalatest.mockito.MockitoSugar
 import services.S4LService
 import uk.gov.hmrc.http.cache.client.SessionCache
@@ -34,5 +34,7 @@ trait VatMocks
   implicit lazy val mockAudit = mock[Audit]
   implicit lazy val mockS4LService = mock[S4LService]
   implicit lazy val mockRegConnector = mock[VatRegistrationConnector]
+  implicit lazy val mockCompanyRegConnector = mock[CompanyRegistrationConnector]
+
 
 }

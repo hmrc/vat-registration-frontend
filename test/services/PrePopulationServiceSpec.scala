@@ -46,7 +46,8 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
 
     implicit val headerCarrier = HeaderCarrier()
     val mockPPConnector = Mockito.mock(classOf[PPConnector])
-    val service = new PrePopulationService(mockPPConnector) {
+    val mockIIService = Mockito.mock(classOf[IncorporationInformationService])
+    val service = new PrePopulationService(mockPPConnector, mockIIService) {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
       mockFetchRegId()
     }

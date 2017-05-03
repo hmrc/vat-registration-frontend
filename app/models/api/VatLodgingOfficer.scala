@@ -18,7 +18,7 @@ package models.api
 
 import play.api.libs.json.{Json, OFormat}
 
-case class VatLodgingOfficer(currentAddress: ScrsAddressType)
+case class VatLodgingOfficer(currentAddress: ScrsAddress)
 
 object VatLodgingOfficer {
   implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
