@@ -1,32 +1,46 @@
 @(classForSection: String => String)(implicit request: Request[_], messages: Messages)
 
-  @main_template(title = messages("pages.serviceCriteriaFailure.title")) {
+@main_template(title = messages("pages.serviceCriteriaFailure.title")) {
 
     <div class="grid-row">
-      <div class="column-one-third">
+        <div class="column-two-thirds">
 
-        <header class="page-header">
-          <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.serviceCriteriaFailure.heading")</h1>
-        </header>
+            <header class="page-header">
+                <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.serviceCriteriaFailure.heading")</h1>
+            </header>
 
 
-        <div id="nino-text" class="@classForSection("haveNino")">
+            <div id="nino-text" class="@classForSection("haveNino")">
 
-          <p>@messages("pages.serviceCriteriaFailure.nino.para1")</p>
+                <p>@messages("pages.serviceCriteriaFailure.nino.p1")</p>
 
+                <p>@Html(messages("pages.serviceCriteriaFailure.p1.linkToLegacyApp"))</p>
+
+            </div>
+
+            <div id="business-abroad-text" class="@classForSection("doingBusinessAbroad")">
+
+                <p>@Html(messages("pages.serviceCriteriaFailure.para.linkToLegacyApp2"))</p>
+
+                <ul class="list list-bullet">
+                    <li>@Html(messages("pages.serviceCriteriaFailure.businessAbroad.bullet1"))</li>
+                    <li>@Html(messages("pages.serviceCriteriaFailure.businessAbroad.bullet2"))</li>
+                </ul>
+
+                <p>@Html(messages("pages.serviceCriteriaFailure.businessAbroad.p1"))</p>
+                <p>@Html(messages("pages.serviceCriteriaFailure.businessAbroad.p2"))</p>
+                <p>@Html(messages("pages.serviceCriteriaFailure.businessAbroad.p3"))</p>
+
+            </div>
+
+            <p>&nbsp;</p>
+
+            <form action="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">
+                <button type="submit" class="btn button" role="button" id="continue" >
+                @messages("pages.serviceCriteriaFailure.button.linkToLegacyApp")
+                </button>
+            </form>
         </div>
 
-
-        <p>@Html(messages("pages.serviceCriteriaFailure.para.linkToLegacyApp"))</p>
-
-        <p>&nbsp;</p>
-
-        <form action="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">
-          <button type="submit" class="button-get-started" role="button" id="continue" >
-          @messages("pages.serviceCriteriaFailure.button.linkToLegacyApp")
-          </button>
-        </form>
-      </div>
-
     </div>
-  }
+}
