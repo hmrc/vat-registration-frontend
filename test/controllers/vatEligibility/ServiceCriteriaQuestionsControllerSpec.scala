@@ -59,8 +59,8 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
       val eligibilityQuestions = Seq[(EligibilityQuestion, String)](
         HaveNinoQuestion -> "Do you have a National Insurance number?",
-        DoingBusinessAbroadQuestion -> "Will you do any of the following once you&#x27;re registered for VAT?"
-        // DoAnyApplyToYouQuestion -> "Do you have a National Insurance number?"
+        DoingBusinessAbroadQuestion -> "Will you do any of the following once you&#x27;re registered for VAT?",
+        DoAnyApplyToYouQuestion -> "Do any of the following apply to you or the business?"
         // ApplyingForAnyOfQuestion -> "Do you have a National Insurance number?"
         // CompanyWillDoAnyOfQuestion -> "Do you have a National Insurance number?"
       )
@@ -81,8 +81,8 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
     val questions = Seq(
       HaveNinoQuestion -> urlForQuestion(DoingBusinessAbroadQuestion),
-      DoingBusinessAbroadQuestion -> urlForQuestion(DoAnyApplyToYouQuestion)
-      //      DoAnyApplyToYouQuestion -> urlForQuestion(ApplyingForAnyOfQuestion),
+      DoingBusinessAbroadQuestion -> urlForQuestion(DoAnyApplyToYouQuestion),
+      DoAnyApplyToYouQuestion -> urlForQuestion(ApplyingForAnyOfQuestion)
       //      ApplyingForAnyOfQuestion -> urlForQuestion(CompanyWillDoAnyOfQuestion),
       //      CompanyWillDoAnyOfQuestion -> controllers.routes.TwirlViewController.renderViewAuthorised().url
     )
@@ -164,7 +164,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
       val eligibilityQuestions = Seq[(EligibilityQuestion, String)](
         HaveNinoQuestion -> "You must have a National Insurance number to register",
-         DoingBusinessAbroadQuestion -> "the company sells goods outside the UK but not in the UK"
+        DoingBusinessAbroadQuestion -> "the company sells goods outside the UK but not in the UK"
         // DoAnyApplyToYouQuestion -> "Do you have a National Insurance number?"
         // ApplyingForAnyOfQuestion -> "Do you have a National Insurance number?"
         // CompanyWillDoAnyOfQuestion -> "Do you have a National Insurance number?"
