@@ -84,6 +84,11 @@ pages.serviceCriteriaFailure.doAnyApplyToYou.bullet3    = you want to register a
 pages.serviceCriteriaFailure.doAnyApplyToYou.bullet4    = you''ve been involved with other businesses in the last 2 years
 pages.serviceCriteriaFailure.doAnyApplyToYou.p1         = If your VAT taxable turnover went over the £83,000 threshold temporarily but has since dropped below the threshold, you need to <a href="https://www.gov.uk/government/publications/vat-application-for-registration-vat1">register using form VAT1</a>.
 
+pages.serviceCriteriaFailure.applyingForAnyOf.bullet1    = the company is applying for the Annual Accounting Scheme
+pages.serviceCriteriaFailure.applyingForAnyOf.bullet2    = the company is applying for an exemption from VAT registration
+pages.serviceCriteriaFailure.applyingForAnyOf.p1         = If the company is applying for the Agricultural Flat Rate Scheme, you need to <a href="https://www.gov.uk/government/publications/vat-agricultural-flat-rate-scheme-application-for-certification-vat98">register using form VAT98</a>.
+pages.serviceCriteriaFailure.applyingForAnyOf.p2         = If the company is applying for an exception from VAT registration, you need to <a href="https://www.gov.uk/government/publications/vat-application-for-registration-vat1">register using form VAT1</a>.
+
 
 ## validation messages for all service eligibility questions
 
@@ -139,6 +144,35 @@ pages.eligibility.doAnyApplyToYou.panel1.bullet1           = each company has it
 pages.eligibility.doAnyApplyToYou.panel1.bullet2           = they''re under common control - for example, one or more company is partly or fully owned by a parent company
 pages.eligibility.doAnyApplyToYou.panel1.p2                = A VAT group is treated in the same way as a single company registered for VAT on its own.
 
+## Will you apply for any of the following?
+pages.eligibility.applyingForAnyOf.title                    = Will you apply for any of the following?
+pages.eligibility.applyingForAnyOf.heading                  = Will you apply for any of the following?
+pages.eligibility.applyingForAnyOf.p1                       = Tell us if you plan to apply for:
+pages.eligibility.applyingForAnyOf.bullet1                  = the Agricultural Flat Rate Scheme
+pages.eligibility.applyingForAnyOf.bullet2                  = the Annual Accounting Scheme
+pages.eligibility.applyingForAnyOf.bullet3                  = a ''registration exception''
+pages.eligibility.applyingForAnyOf.bullet4                  = an exemption from VAT registration
+
+pages.eligibility.applyingForAnyOf.panel1.title             = What is the Agricultural Flat Rate Scheme?
+pages.eligibility.applyingForAnyOf.panel1.p1                = The Agricultural Flat Rate Scheme is an alternative to VAT registration. If you register as a flat rate farmer you:
+pages.eligibility.applyingForAnyOf.panel1.bullet1           = don''t charge VAT on your sales
+pages.eligibility.applyingForAnyOf.panel1.bullet2           = can''t reclaim VAT on your purchases
+pages.eligibility.applyingForAnyOf.panel1.p2                = But you can charge and keep a Flat Rate Addition (FRA) when you sell goods or services to VAT-registered customers.
+
+pages.eligibility.applyingForAnyOf.panel2.title             = What is the Annual Accounting Scheme?
+pages.eligibility.applyingForAnyOf.panel2.p1                = With the Annual Accounting Scheme you:
+pages.eligibility.applyingForAnyOf.panel2.bullet1           = make advance VAT payments towards your VAT bill - based on your last return (or estimated if you''re new to VAT)
+pages.eligibility.applyingForAnyOf.panel2.bullet2           = submit one VAT Return a year
+pages.eligibility.applyingForAnyOf.panel2.p2                = When you submit your VAT Return you either:
+pages.eligibility.applyingForAnyOf.panel2.bullet3           = make a final payment - the difference between your advance payments and actual VAT bill
+pages.eligibility.applyingForAnyOf.panel2.bullet4           = apply for a refund - if you''ve overpaid your VAT bill
+
+pages.eligibility.applyingForAnyOf.panel3.title             = What is a registration exception?
+pages.eligibility.applyingForAnyOf.panel3.p1                = You can apply for a registration exception if the company''s turnover went over the VAT registration threshold temporarily.
+pages.eligibility.applyingForAnyOf.panel3.p2                = You'll need to tell HMRC why you believe your turnover won''t go over the de-registration threshold of £81,000 in the next 12 months.
+
+pages.eligibility.applyingForAnyOf.panel4.title             = What is an exemption from VAT registration?
+pages.eligibility.applyingForAnyOf.panel4.p1                = You can apply for an exemption from VAT registration if you sell mainly or only zero-rated items. If you''re exempted from VAT registration you won''t be able to reclaim any VAT.
 
 
 ## Start Date Page
