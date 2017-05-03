@@ -2,8 +2,6 @@
 @(testSetupForm:  Form[TestSetup])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 
-
-
 <h1 class="form-title heading-xlarge" id="pageHeading">Test Setup</h1>
 
 @govHelpers.form(action = controllers.test.routes.TestSetupController.submit()) {
@@ -69,6 +67,13 @@
             <p>@govHelpers.input(testSetupForm("sicAndCompliance.financialInvestmentFundManagement"), '_label -> "Investment Fund Management (true or false)")</p>
             <p>@govHelpers.input(testSetupForm("sicAndCompliance.financialManageAdditionalFunds"), '_label -> "Manage Additional Funds (true or false)")</p>
 
+            <b>VAT SERVICE ELIGIBILITY</b>
+            <p>@govHelpers.input(testSetupForm("vatServiceEligibility.haveNino"), '_label -> "Have nino (true or false)") </p>
+            <p>@govHelpers.input(testSetupForm("vatServiceEligibility.doingBusinessAbroad"), '_label -> "Doing business abroad (true or false)")</p>
+            <p>@govHelpers.input(testSetupForm("vatServiceEligibility.doAnyApplyToYou"), '_label -> "Do any apply to you (true or false)")</p>
+            <p>@govHelpers.input(testSetupForm("vatServiceEligibility.applyingForAnyOf"), '_label -> "Applying for any of (true or false)")</p>
+            <p>@govHelpers.input(testSetupForm("vatServiceEligibility.companyWillDoAnyOf"), '_label -> "Company will do any of (true or false)")</p>
+
         </fieldset>
 
     </div>
@@ -77,5 +82,3 @@
         <button class="btn button" type="submit" id="submit">Submit</button>
     </div>
 }
-
-
