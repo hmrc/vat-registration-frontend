@@ -169,7 +169,7 @@ pages.eligibility.applyingForAnyOf.panel2.bullet4           = apply for a refund
 
 pages.eligibility.applyingForAnyOf.panel3.title             = What is a registration exception?
 pages.eligibility.applyingForAnyOf.panel3.p1                = You can apply for a registration exception if the company''s turnover went over the VAT registration threshold temporarily.
-pages.eligibility.applyingForAnyOf.panel3.p2                = You'll need to tell HMRC why you believe your turnover won''t go over the de-registration threshold of £81,000 in the next 12 months.
+pages.eligibility.applyingForAnyOf.panel3.p2                = You''ll need to tell HMRC why you believe your turnover won''t go over the de-registration threshold of £81,000 in the next 12 months.
 
 pages.eligibility.applyingForAnyOf.panel4.title             = What is an exemption from VAT registration?
 pages.eligibility.applyingForAnyOf.panel4.p1                = You can apply for an exemption from VAT registration if you sell mainly or only zero-rated items. If you''re exempted from VAT registration you won''t be able to reclaim any VAT.
