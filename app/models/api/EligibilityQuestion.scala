@@ -24,11 +24,11 @@ object EligibilityQuestion {
 
   case object DoingBusinessAbroadQuestion extends EligibilityQuestion("doingBusinessAbroad", exitAnswer = true)
 
-  case object DoAnyApplyToYouQuestion extends EligibilityQuestion("doAnyApplyToYou", exitAnswer = false)
+  case object DoAnyApplyToYouQuestion extends EligibilityQuestion("doAnyApplyToYou", exitAnswer = true)
 
-  case object ApplyingForAnyOfQuestion extends EligibilityQuestion("applyingForAnyOf", exitAnswer = false)
+  case object ApplyingForAnyOfQuestion extends EligibilityQuestion("applyingForAnyOf", exitAnswer = true)
 
-  case object CompanyWillDoAnyOfQuestion extends EligibilityQuestion("companyWillDoAnyOf", exitAnswer = false)
+  case object CompanyWillDoAnyOfQuestion extends EligibilityQuestion("companyWillDoAnyOf", exitAnswer = true)
 
   private val questions = Seq(HaveNinoQuestion,
     DoingBusinessAbroadQuestion,

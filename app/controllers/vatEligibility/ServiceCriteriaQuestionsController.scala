@@ -66,6 +66,7 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
       .map(f => Ok(question match {
         case HaveNinoQuestion => views.html.pages.vatEligibility.have_nino(f)
         case DoingBusinessAbroadQuestion => views.html.pages.vatEligibility.doing_business_abroad(f)
+        case DoAnyApplyToYouQuestion => views.html.pages.vatEligibility.do_any_apply_to_you(f)
       }))
   })
 
