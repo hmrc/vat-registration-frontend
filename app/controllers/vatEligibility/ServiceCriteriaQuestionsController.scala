@@ -27,7 +27,7 @@ import models.YesOrNoQuestion
 import models.api.EligibilityQuestion._
 import models.api.{EligibilityQuestion, VatServiceEligibility}
 import play.api.data.Form
-import play.api.mvc.{Action, AnyContent, Call}
+import play.api.mvc.{Action, AnyContent, Call, Request}
 import services.{RegistrationService, S4LService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -40,7 +40,7 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
   import cats.syntax.applicative._
 
   // $COVERAGE-OFF$
-  lazy val keystore:KeystoreConnector = KeystoreConnector
+  lazy val keystore: KeystoreConnector = KeystoreConnector
   // $COVERAGE-ON$
 
   val INELIGIBILITY_REASON_KEY: String = "ineligibility-reason"
@@ -54,28 +54,30 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
     case ApplyingForAnyOfQuestion => controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(CompanyWillDoAnyOfQuestion.name)
     case CompanyWillDoAnyOfQuestion => controllers.routes.TwirlViewController.renderViewAuthorised()
   }
+
   // $COVERAGE-ON$
+
+  private def viewForQuestion(q: EligibilityQuestion, form: Form[YesOrNoQuestion])(implicit r: Request[AnyContent]) = q match {
+    case HaveNinoQuestion => views.html.pages.vatEligibility.have_nino(form)
+    case DoingBusinessAbroadQuestion => views.html.pages.vatEligibility.doing_business_abroad(form)
+    case DoAnyApplyToYouQuestion => views.html.pages.vatEligibility.do_any_apply_to_you(form)
+    case ApplyingForAnyOfQuestion => views.html.pages.vatEligibility.applying_for_any_of(form)
+  }
 
   def show(q: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
     val question = EligibilityQuestion(q)
     val form: Form[YesOrNoQuestion] = formFactory.form(question.name)
-
     viewModel[VatServiceEligibility]
       .flatMap(e => OptionT.fromOption(e.getAnswer(question)))
       .fold(form)(answer => form.fill(YesOrNoQuestion(question.name, answer)))
-      .map(f => Ok(question match {
-        case HaveNinoQuestion => views.html.pages.vatEligibility.have_nino(f)
-        case DoingBusinessAbroadQuestion => views.html.pages.vatEligibility.doing_business_abroad(f)
-        case DoAnyApplyToYouQuestion => views.html.pages.vatEligibility.do_any_apply_to_you(f)
-        case ApplyingForAnyOfQuestion => views.html.pages.vatEligibility.applying_for_any_of(f)
-      }))
+      .map(f => Ok(viewForQuestion(question, f)))
   })
 
   def submit(q: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
     val question = EligibilityQuestion(q)
     import common.ConditionalFlatMap._
     formFactory.form(question.name).bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.vatEligibility.have_nino(badForm)).pure,
+      badForm => BadRequest(viewForQuestion(question, badForm)).pure,
       (data: YesOrNoQuestion) =>
         for {
           vatEligibility <- viewModel[VatServiceEligibility].getOrElse(VatServiceEligibility())
