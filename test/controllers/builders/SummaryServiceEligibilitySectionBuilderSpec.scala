@@ -19,7 +19,7 @@ package controllers.builders
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api.EligibilityQuestion._
-import models.api.{VatComplianceFinancial, VatServiceEligibility, VatSicAndCompliance}
+import models.api.VatServiceEligibility
 import models.view.SummaryRow
 
 class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
@@ -81,31 +81,6 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
             "serviceCriteria.businessAbroad",
             "app.common.yes",
             Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoingBusinessAbroadQuestion.name))
-          )
-      }
-    }
-
-    "with doAnyApplyToYouRow render" should {
-
-      " 'No' selected doAnyApplyToYouRow " in {
-        val builder = SummaryServiceEligibilitySectionBuilder()
-        builder.doAnyApplyToYouRow mustBe
-          SummaryRow(
-            "serviceCriteria.doAnyApplyToYou",
-            "app.common.no",
-            Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoAnyApplyToYouQuestion.name))
-          )
-      }
-
-
-      " 'YES' selected for doAnyApplyToYouRow" in {
-        val vatServiceEligibility = defaultVatServiceEligibility.copy(doAnyApplyToYou = Some(true))
-        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility))
-        builder.doAnyApplyToYouRow mustBe
-          SummaryRow(
-            "serviceCriteria.doAnyApplyToYou",
-            "app.common.yes",
-            Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoAnyApplyToYouQuestion.name))
           )
       }
     }
