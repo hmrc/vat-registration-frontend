@@ -66,7 +66,7 @@ pages.serviceCriteriaSuccess.panels.vatResponsibilities.bullet.records = keep VA
 ## Service Criteria Failure
 pages.serviceCriteriaFailure.title                      = You can''t register with this service
 pages.serviceCriteriaFailure.heading                    = You can''t register for VAT with this service
-pages.serviceCriteriaFailure.linkToLegacyApp            = You need to <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register using HMRC''s existing service</a>.
+pages.serviceCriteriaFailure.linkToLegacyApp            = You need to register using HMRC''s existing service.
 pages.serviceCriteriaFailure.linkToLegacyApp2           = You need to <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register using HMRC''s existing service</a> if:
 pages.serviceCriteriaFailure.button.linkToLegacyApp     = Register using HMRC''s existing service
 
@@ -89,60 +89,65 @@ pages.serviceCriteriaFailure.applyingForAnyOf.bullet2    = the company is applyi
 pages.serviceCriteriaFailure.applyingForAnyOf.p1         = If the company is applying for the Agricultural Flat Rate Scheme, you need to <a href="https://www.gov.uk/government/publications/vat-agricultural-flat-rate-scheme-application-for-certification-vat98">register using form VAT98</a>.
 pages.serviceCriteriaFailure.applyingForAnyOf.p2         = If the company is applying for an exception from VAT registration, you need to <a href="https://www.gov.uk/government/publications/vat-application-for-registration-vat1">register using form VAT1</a>.
 
+pages.serviceCriteriaFailure.companyWillDoAnyOf.p1         = You can''t register with this service if the company:
+pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet1    = hires out boats or aircraft to clients
+pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet2    = owns one or more racehorses
+pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet3    = buys, sells or rents out land or property
+
 
 ## validation messages for all service eligibility questions
 
-validation.eligibility.haveNino.missing                  = Tell us if you have a national insurance number
-validation.eligibility.doingBusinessAbroad.missing       = Tell us if you will do any of the following once you''re registered for VAT
-validation.eligibility.doAnyApplyToYou.missing           = Tell us if any of the following apply to you or your business
-validation.eligibility.applyingForAnyOf.missing          = Tell us if you''ll apply for any of the following
-validation.eligibility.companyWillDoAnyOf.missing        = Tell us if you''ll do any of the following
+validation.eligibility.haveNino.missing                     = Tell us if you have a national insurance number
+validation.eligibility.doingBusinessAbroad.missing          = Tell us if you will do any of the following once you''re registered for VAT
+validation.eligibility.doAnyApplyToYou.missing              = Tell us if any of the following apply to you or your business
+validation.eligibility.applyingForAnyOf.missing             = Tell us if you''ll apply for any of the following
+validation.eligibility.companyWillDoAnyOf.missing           = Tell us if you''ll do any of the following
 
 ## Have Nino
-pages.eligibility.haveNino.title                         = Do you have a National Insurance number?
-pages.eligibility.haveNino.heading                       = Do you have a National Insurance number?
+pages.eligibility.haveNino.title                            = Do you have a National Insurance number?
+pages.eligibility.haveNino.heading                          = Do you have a National Insurance number?
 
 ## Doing Business Abroad
-pages.eligibility.doingBusinessAbroad.title             = Will you do any of the following once you''re registered for VAT?
-pages.eligibility.doingBusinessAbroad.heading           = Will you do any of the following once you''re registered for VAT?
-pages.eligibility.doingBusinessAbroad.p1                = Once you''re registered for VAT, will you:
-pages.eligibility.doingBusinessAbroad.bullet1           = import or export goods to or from other EU countries
-pages.eligibility.doingBusinessAbroad.bullet2           = <a href="https://www.gov.uk/online-and-distance-selling-for-businesses/distance-selling">distance sell</a> goods into the UK from another EU country
-pages.eligibility.doingBusinessAbroad.bullet3           = buy goods from other EU countries and bring them into the UK
-pages.eligibility.doingBusinessAbroad.bullet4           = sell goods outside the UK but not in the UK
-pages.eligibility.doingBusinessAbroad.bullet5           = do business from a head office based outside the UK
-pages.eligibility.doingBusinessAbroad.bullet6           = import or export goods to or from other EU countries
-pages.eligibility.doingBusinessAbroad.panel1.title      = What are goods?
-pages.eligibility.doingBusinessAbroad.panel1.p1         = Goods are things you can physically pick up and take away.
-pages.eligibility.doingBusinessAbroad.panel1.p2         = For example:
-pages.eligibility.doingBusinessAbroad.panel1.bullet1    = food and drinks
-pages.eligibility.doingBusinessAbroad.panel1.bullet2    = books and newspapers
-pages.eligibility.doingBusinessAbroad.panel1.bullet3    = clothes and shoes
-pages.eligibility.doingBusinessAbroad.panel1.bullet4    = machinery
-pages.eligibility.doingBusinessAbroad.panel2.title      = What is distance selling?
-pages.eligibility.doingBusinessAbroad.panel2.p1         = Distance selling is when a VAT-registered business in one EU country sells goods to a customer in another EU country and the customer isn''t registered for VAT. The most common example of distance sales is mail order sales.
-pages.eligibility.doingBusinessAbroad.panel3.title      = What if I start doing any of these things in the future?
-pages.eligibility.doingBusinessAbroad.panel3.p1         = If your plans change and you start bringing goods into the UK, you must <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/vat-enquiries">tell HMRC</a> and pay any VAT and duty that is due.
-pages.eligibility.doingBusinessAbroad.panel3.p2         = You''ll need to complete the relevant form and send it to HMRC if you start:
-pages.eligibility.doingBusinessAbroad.panel3.bullet1    = distance selling into the UK - <a href="https://www.gov.uk/government/publications/vat-application-for-registration-distance-selling-vat1a">form VAT1A</a>
-pages.eligibility.doingBusinessAbroad.panel3.bullet2    = buying goods from other EU countries and bringing them into the UK - <a href="https://www.gov.uk/government/publications/vat-application-for-registration-acquisitions-vat1b">form VAT1B</a>
-pages.eligibility.doingBusinessAbroad.panel3.bullet3    = selling assets you bought and claimed a VAT refund on from a country outside the UK - <a href="https://www.gov.uk/government/publications/vat-registration-notification-vat1c">form VAT1C</a>
+pages.eligibility.doingBusinessAbroad.title                 = Will you do any of the following once you''re registered for VAT?
+pages.eligibility.doingBusinessAbroad.heading               = Will you do any of the following once you''re registered for VAT?
+pages.eligibility.doingBusinessAbroad.p1                    = Once you''re registered for VAT, will you:
+pages.eligibility.doingBusinessAbroad.bullet1               = import or export goods to or from other EU countries
+pages.eligibility.doingBusinessAbroad.bullet2               = <a href="https://www.gov.uk/online-and-distance-selling-for-businesses/distance-selling">distance sell</a> goods into the UK from another EU country
+pages.eligibility.doingBusinessAbroad.bullet3               = buy goods from other EU countries and bring them into the UK
+pages.eligibility.doingBusinessAbroad.bullet4               = sell goods outside the UK but not in the UK
+pages.eligibility.doingBusinessAbroad.bullet5               = do business from a head office based outside the UK
+pages.eligibility.doingBusinessAbroad.bullet6               = import or export goods to or from other EU countries
+pages.eligibility.doingBusinessAbroad.panel1.title          = What are goods?
+pages.eligibility.doingBusinessAbroad.panel1.p1             = Goods are things you can physically pick up and take away.
+pages.eligibility.doingBusinessAbroad.panel1.p2             = For example:
+pages.eligibility.doingBusinessAbroad.panel1.bullet1        = food and drinks
+pages.eligibility.doingBusinessAbroad.panel1.bullet2        = books and newspapers
+pages.eligibility.doingBusinessAbroad.panel1.bullet3        = clothes and shoes
+pages.eligibility.doingBusinessAbroad.panel1.bullet4        = machinery
+pages.eligibility.doingBusinessAbroad.panel2.title          = What is distance selling?
+pages.eligibility.doingBusinessAbroad.panel2.p1             = Distance selling is when a VAT-registered business in one EU country sells goods to a customer in another EU country and the customer isn''t registered for VAT. The most common example of distance sales is mail order sales.
+pages.eligibility.doingBusinessAbroad.panel3.title          = What if I start doing any of these things in the future?
+pages.eligibility.doingBusinessAbroad.panel3.p1             = If your plans change and you start bringing goods into the UK, you must <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/vat-enquiries">tell HMRC</a> and pay any VAT and duty that is due.
+pages.eligibility.doingBusinessAbroad.panel3.p2             = You''ll need to complete the relevant form and send it to HMRC if you start:
+pages.eligibility.doingBusinessAbroad.panel3.bullet1        = distance selling into the UK - <a href="https://www.gov.uk/government/publications/vat-application-for-registration-distance-selling-vat1a">form VAT1A</a>
+pages.eligibility.doingBusinessAbroad.panel3.bullet2        = buying goods from other EU countries and bringing them into the UK - <a href="https://www.gov.uk/government/publications/vat-application-for-registration-acquisitions-vat1b">form VAT1B</a>
+pages.eligibility.doingBusinessAbroad.panel3.bullet3        = selling assets you bought and claimed a VAT refund on from a country outside the UK - <a href="https://www.gov.uk/government/publications/vat-registration-notification-vat1c">form VAT1C</a>
 
 
 ## Do any of the following apply to you or the business?
-pages.eligibility.doAnyApplyToYou.title                    = Do any of the following apply to you or the business?
-pages.eligibility.doAnyApplyToYou.heading                  = Do any of the following apply to you or the business?
-pages.eligibility.doAnyApplyToYou.p1                       = Tell us if:
-pages.eligibility.doAnyApplyToYou.bullet1                  = your taxable sales went over the £83,000 threshold temporarily but have since dropped below the threshold
-pages.eligibility.doAnyApplyToYou.bullet2                  = you changed the legal status of your business when you registered it with Companies House (for example, from sole trader to limited company)
-pages.eligibility.doAnyApplyToYou.bullet3                  = you''ve taken over a VAT-registered business which is operating and making a profit
-pages.eligibility.doAnyApplyToYou.bullet4                  = you''ve been involved with other businesses as a sole trader, partner or director in the last 2 years
-pages.eligibility.doAnyApplyToYou.bullet5                  = you want to register 2 or more businesses as a VAT group
-pages.eligibility.doAnyApplyToYou.panel1.title             = What is a VAT group?
-pages.eligibility.doAnyApplyToYou.panel1.p1                = 2 or more companies can register as a VAT group if:
-pages.eligibility.doAnyApplyToYou.panel1.bullet1           = each company has its principal or registered office in the UK
-pages.eligibility.doAnyApplyToYou.panel1.bullet2           = they''re under common control - for example, one or more company is partly or fully owned by a parent company
-pages.eligibility.doAnyApplyToYou.panel1.p2                = A VAT group is treated in the same way as a single company registered for VAT on its own.
+pages.eligibility.doAnyApplyToYou.title                     = Do any of the following apply to you or the business?
+pages.eligibility.doAnyApplyToYou.heading                   = Do any of the following apply to you or the business?
+pages.eligibility.doAnyApplyToYou.p1                        = Tell us if:
+pages.eligibility.doAnyApplyToYou.bullet1                   = your taxable sales went over the £83,000 threshold temporarily but have since dropped below the threshold
+pages.eligibility.doAnyApplyToYou.bullet2                   = you changed the legal status of your business when you registered it with Companies House (for example, from sole trader to limited company)
+pages.eligibility.doAnyApplyToYou.bullet3                   = you''ve taken over a VAT-registered business which is operating and making a profit
+pages.eligibility.doAnyApplyToYou.bullet4                   = you''ve been involved with other businesses as a sole trader, partner or director in the last 2 years
+pages.eligibility.doAnyApplyToYou.bullet5                   = you want to register 2 or more businesses as a VAT group
+pages.eligibility.doAnyApplyToYou.panel1.title              = What is a VAT group?
+pages.eligibility.doAnyApplyToYou.panel1.p1                 = 2 or more companies can register as a VAT group if:
+pages.eligibility.doAnyApplyToYou.panel1.bullet1            = each company has its principal or registered office in the UK
+pages.eligibility.doAnyApplyToYou.panel1.bullet2            = they''re under common control - for example, one or more company is partly or fully owned by a parent company
+pages.eligibility.doAnyApplyToYou.panel1.p2                 = A VAT group is treated in the same way as a single company registered for VAT on its own.
 
 ## Will you apply for any of the following?
 pages.eligibility.applyingForAnyOf.title                    = Will you apply for any of the following?
@@ -173,6 +178,14 @@ pages.eligibility.applyingForAnyOf.panel3.p2                = You''ll need to te
 
 pages.eligibility.applyingForAnyOf.panel4.title             = What is an exemption from VAT registration?
 pages.eligibility.applyingForAnyOf.panel4.p1                = You can apply for an exemption from VAT registration if you sell mainly or only zero-rated items. If you''re exempted from VAT registration you won''t be able to reclaim any VAT.
+
+
+pages.eligibility.companyWillDoAnyOf.title                   = Will you do any of the following?
+pages.eligibility.companyWillDoAnyOf.heading                 = Will you do any of the following?
+pages.eligibility.companyWillDoAnyOf.p1                      = Tell us if you:
+pages.eligibility.companyWillDoAnyOf.bullet1                 = hire out boats or aircraft to clients
+pages.eligibility.companyWillDoAnyOf.bullet2                 = own one or more racehorses
+pages.eligibility.companyWillDoAnyOf.bullet3                 = buy, sell or rent out land or property
 
 
 ## Start Date Page
