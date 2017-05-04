@@ -28,6 +28,6 @@ object OfficerHomeAddressForm {
   val form = Form(
     mapping(
       ADDRESS_ID -> textMapping()("officerHomeAddress")
-    )(OfficerHomeAddressView.apply)(OfficerHomeAddressView.unapply)
+    )(OfficerHomeAddressView(_))( view => Option(view.addressId))
   )
 }

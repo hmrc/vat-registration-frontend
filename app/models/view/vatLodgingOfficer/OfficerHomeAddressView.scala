@@ -16,11 +16,11 @@
 
 package models.view.vatLodgingOfficer
 
-import models.api.{VatLodgingOfficer, VatScheme}
+import models.api.{ScrsAddress, VatLodgingOfficer, VatScheme}
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class OfficerHomeAddressView(addressId: String)
+case class OfficerHomeAddressView(addressId: String, address: Option[ScrsAddress] = None)
 
 object OfficerHomeAddressView {
   implicit val format = Json.format[OfficerHomeAddressView]
