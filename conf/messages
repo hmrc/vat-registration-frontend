@@ -66,7 +66,7 @@ pages.serviceCriteriaSuccess.panels.vatResponsibilities.bullet.records = keep VA
 ## Service Criteria Failure
 pages.serviceCriteriaFailure.title                      = You can''t register with this service
 pages.serviceCriteriaFailure.heading                    = You can''t register for VAT with this service
-pages.serviceCriteriaFailure.linkToLegacyApp            = You need to <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register using HMRC''s existing service</a>.
+pages.serviceCriteriaFailure.linkToLegacyApp            = You need to register using HMRC''s existing service.
 pages.serviceCriteriaFailure.linkToLegacyApp2           = You need to <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register using HMRC''s existing service</a> if:
 pages.serviceCriteriaFailure.button.linkToLegacyApp     = Register using HMRC''s existing service
 
@@ -88,6 +88,11 @@ pages.serviceCriteriaFailure.applyingForAnyOf.bullet1    = the company is applyi
 pages.serviceCriteriaFailure.applyingForAnyOf.bullet2    = the company is applying for an exemption from VAT registration
 pages.serviceCriteriaFailure.applyingForAnyOf.p1         = If the company is applying for the Agricultural Flat Rate Scheme, you need to <a href="https://www.gov.uk/government/publications/vat-agricultural-flat-rate-scheme-application-for-certification-vat98">register using form VAT98</a>.
 pages.serviceCriteriaFailure.applyingForAnyOf.p2         = If the company is applying for an exception from VAT registration, you need to <a href="https://www.gov.uk/government/publications/vat-application-for-registration-vat1">register using form VAT1</a>.
+
+pages.serviceCriteriaFailure.companyWillDoAnyOf.p1         = You can''t register with this service if the company:
+pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet1    = hires out boats or aircraft to clients
+pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet2    = owns one or more racehorses
+pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet3    = buys, sells or rents out land or property
 
 
 ## validation messages for all service eligibility questions
@@ -179,7 +184,7 @@ pages.eligibility.companyWillDoAnyOf.title                   = Will you do any o
 pages.eligibility.companyWillDoAnyOf.heading                 = Will you do any of the following?
 pages.eligibility.companyWillDoAnyOf.p1                      = Tell us if you:
 pages.eligibility.companyWillDoAnyOf.bullet1                 = hire out boats or aircraft to clients
-pages.eligibility.companyWillDoAnyOf.bullet2                 = own one of more racehorses
+pages.eligibility.companyWillDoAnyOf.bullet2                 = own one or more racehorses
 pages.eligibility.companyWillDoAnyOf.bullet3                 = buy, sell or rent out land or property
 
 
