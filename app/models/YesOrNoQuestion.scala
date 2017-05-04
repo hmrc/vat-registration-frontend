@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-package models.view.test
+package models
 
-import play.api.libs.json.Json
-
-
-case class TestSetup(vatChoice: VatChoiceTestSetup,
-                     vatTradingDetails: VatTradingDetailsTestSetup,
-                     vatContact: VatContactTestSetup,
-                     vatFinancials: VatFinancialsTestSetup,
-                     sicAndCompliance: SicAndComplianceTestSetup,
-                     vatServiceEligibility: VatServiceEligibilityTestSetup)
+case class YesOrNoQuestion(question: String, answer: Boolean)
 
 
-object TestSetup {
-  implicit val format = Json.format[TestSetup]
-}
+
+

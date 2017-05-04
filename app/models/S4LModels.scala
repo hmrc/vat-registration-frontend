@@ -16,6 +16,7 @@
 
 package models
 
+import models.api.VatServiceEligibility
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
@@ -76,4 +77,9 @@ case class S4LVatSicAndCompliance
 case class S4LVatContact
 (
   businessContactDetails: Option[BusinessContactDetails]
+)
+
+case class S4LVatEligibility
+(
+  vatEligibility: Option[VatServiceEligibility]
 )

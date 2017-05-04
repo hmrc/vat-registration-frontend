@@ -36,13 +36,6 @@ class TwirlViewControllerSpec extends VatRegSpec {
         }
       }
 
-
-      "eligibility-failure is requested" in {
-        callAuthorised(TestController.renderViewAuthorised("eligibility-failure")) {
-          _ includesText "You can&#x27;t register for VAT with this service"
-        }
-      }
-
     }
 
     "return 404" when {
