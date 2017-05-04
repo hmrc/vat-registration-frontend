@@ -215,13 +215,11 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveToS4Later(data.sicAndCompliance.financialInvestmentFundManagement, data, { x => InvestmentFundManagement(x.sicAndCompliance.financialInvestmentFundManagement.get.toBoolean) })
             _ <- saveToS4Later(data.sicAndCompliance.financialManageAdditionalFunds, data, { x => ManageAdditionalFunds(x.sicAndCompliance.financialManageAdditionalFunds.get.toBoolean) })
 
-            _ <- saveToS4Later(data.vatServiceEligibility.haveNino, data, { x =>
-              VatServiceEligibility(Some(x.vatServiceEligibility.haveNino.getOrElse("").toBoolean),
-                Some(x.vatServiceEligibility.doingBusinessAbroad.getOrElse("").toBoolean),
-                Some(x.vatServiceEligibility.doAnyApplyToYou.getOrElse("").toBoolean),
-                Some(x.vatServiceEligibility.applyingForAnyOf.getOrElse("").toBoolean),
-                Some(x.vatServiceEligibility.companyWillDoAnyOf.getOrElse("").toBoolean)
-              )
+            _ <- saveToS4Later(data.vatServiceEligibility.haveNino, data, { x => VatServiceEligibility(x.vatServiceEligibility.haveNino.map(_.toBoolean),
+                x.vatServiceEligibility.doingBusinessAbroad.map(_.toBoolean),
+                x.vatServiceEligibility.doAnyApplyToYou.map(_.toBoolean),
+                x.vatServiceEligibility.applyingForAnyOf.map(_.toBoolean),
+                x.vatServiceEligibility.companyWillDoAnyOf.map(_.toBoolean))
             })
           } yield Ok("Test setup complete")
         }
