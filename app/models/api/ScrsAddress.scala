@@ -26,11 +26,7 @@ case class ScrsAddress(line1: String,
                        country: Option[String] = None ) // TODO instead of two optional fields ?
 {
   // TODO - fix
-  def getId(): String = {
-    line1 ++
-      if (postcode.isDefined postcode.get) else country.get
-      .replaceAll(" ","")
-  }
+  def getId(): String = (line1 + {if (postcode.isDefined) postcode.get else country.get}).replaceAll(" ","")
 
 
   def asLabel(): String =
