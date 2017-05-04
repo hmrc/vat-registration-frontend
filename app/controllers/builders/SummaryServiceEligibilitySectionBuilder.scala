@@ -67,7 +67,7 @@ case class SummaryServiceEligibilitySectionBuilder
   )
 
    val section: SummarySection = SummarySection(
-    id = "vatServiceEligibility",
+    id = "serviceCriteria",
     Seq(
       (haveNinoRow, vatServiceEligibility.exists(_.haveNino.isDefined)),
       (doingBusinessAbroadRow, vatServiceEligibility.exists(_.doingBusinessAbroad.isDefined)),

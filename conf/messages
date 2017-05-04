@@ -578,11 +578,12 @@ validation.businessContactDetails.mobile.invalid             = Enter a valid mob
 validation.businessContactDetails.daytimePhone.missing       = Enter at least one phone number
 validation.businessContactDetails.daytimePhone.invalid       = Enter a valid daytime phone number
 
-
 ## Summary Service Criteria
+pages.summary.serviceCriteria.sectionHeading            = Service criteria questions
 pages.summary.serviceCriteria.companyWillDoAnyOf        = Company Will Do Any Of
 pages.summary.serviceCriteria.nino                      = Have NI number
 pages.summary.serviceCriteria.businessAbroad            = Doing Business Abroad
 pages.summary.serviceCriteria.doAnyApplyToYou           = Do Any Apply To You
 pages.summary.serviceCriteria.applyingForAnyOf          = Applying For Any Of
+
 
