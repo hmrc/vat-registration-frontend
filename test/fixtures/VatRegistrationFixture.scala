@@ -91,6 +91,8 @@ trait VatRegistrationFixture {
     financialCompliance = None
   )
 
+  val validServiceEligibility = VatServiceEligibility(Some(true), Some(false), Some(false), Some(false), Some(false))
+
   val emptyVatScheme = VatScheme(validRegId)
 
   def tradingDetails(

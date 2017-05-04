@@ -23,11 +23,10 @@ import helpers.VatRegSpec
 import models.S4LKey
 import models.view.vatFinancials.EstimateZeroRatedSales
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -47,52 +46,39 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
   s"GET ${vatFinancials.routes.EstimateZeroRatedSalesController.show()}" should {
 
     "return HTML Estimate Zero Rated Sales page with no data in the form" in {
-      when(mockS4LService.fetchAndGet[EstimateZeroRatedSales]()(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[EstimateZeroRatedSales]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(EstimateZeroRatedSales(100L))))
 
       AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.show(), fakeRequest.withFormUrlEncodedBody(
         "zeroRatedTurnoverEstimate" -> ""
       )) {
-
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Estimated zero-rated sales for the next 12 months")
+        _ includesText "Estimated zero-rated sales for the next 12 months"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[EstimateZeroRatedSales]()
-        (Matchers.eq(S4LKey[EstimateZeroRatedSales]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[EstimateZeroRatedSales]), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestEstimateZeroRatedSalesController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Estimated zero-rated sales for the next 12 months")
+        _ includesText "Estimated zero-rated sales for the next 12 months"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       when(mockS4LService.fetchAndGet[EstimateZeroRatedSales]()
-        (Matchers.eq(S4LKey[EstimateZeroRatedSales]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[EstimateZeroRatedSales]), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestEstimateZeroRatedSalesController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Estimated zero-rated sales for the next 12 months")
+        _ includesText "Estimated zero-rated sales for the next 12 months"
       }
     }
 
@@ -103,10 +89,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
 
     "return 400" in {
       AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
-      }
+      ))(result => result isA 400)
     }
   }
 
@@ -116,16 +99,12 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
       val returnCacheMapEstimateZeroRatedSales = CacheMap("", Map("" -> Json.toJson(EstimateZeroRatedSales(100L))))
 
       when(mockS4LService.saveForm[EstimateZeroRatedSales]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        (any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapEstimateZeroRatedSales))
 
       AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "zeroRatedTurnoverEstimate" -> "60000"
-      )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/vat-charge-expectancy"
-      }
+      ))(_ redirectsTo s"$contextRoot/vat-charge-expectancy")
 
     }
   }

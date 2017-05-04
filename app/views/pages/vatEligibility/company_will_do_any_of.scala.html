@@ -1,0 +1,54 @@
+@import models.YesOrNoQuestion
+@(companyWillDoAnyOfForm: Form[YesOrNoQuestion])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.eligibility.companyWillDoAnyOf.title")) {
+
+    <div class="column-two-thirds">
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.eligibility.companyWillDoAnyOf.heading")</h1>
+
+        @errorSummary(
+            messages("app.common.errorSummaryLabel"),
+            companyWillDoAnyOfForm
+        )
+
+        <p>@messages("pages.eligibility.companyWillDoAnyOf.p1")</p>
+
+        <div class="form-group">
+            <ul class="list list-bullet">
+                <li>@Html(messages("pages.eligibility.companyWillDoAnyOf.bullet1"))</li>
+                <li>@Html(messages("pages.eligibility.companyWillDoAnyOf.bullet2"))</li>
+                <li>@Html(messages("pages.eligibility.companyWillDoAnyOf.bullet3"))</li>
+            </ul>
+        </div>
+
+        @govHelpers.form(action = controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.submit("companyWillDoAnyOf")) {
+            <div class="form-group">
+                <fieldset class="inline">
+                    <span id="companyWillDoAnyOfRadio"/>
+
+                    @govHelpers.inputRadioGroup(
+                        field = companyWillDoAnyOfForm("companyWillDoAnyOfRadio"),
+                        Seq(
+                            "true" -> messages("app.common.yes"),
+                            "false" -> messages("app.common.no")
+                        ),
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label"
+                    )
+                </fieldset>
+            </div>
+
+
+
+            <div class="form-group">
+                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+            </div>
+
+        }
+
+    </div>
+
+}
