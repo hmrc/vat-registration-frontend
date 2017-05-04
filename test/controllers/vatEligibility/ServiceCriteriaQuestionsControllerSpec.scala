@@ -61,8 +61,8 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
         HaveNinoQuestion -> "Do you have a National Insurance number?",
         DoingBusinessAbroadQuestion -> "Will you do any of the following once you&#x27;re registered for VAT?",
         DoAnyApplyToYouQuestion -> "Do any of the following apply to you or the business?",
-        ApplyingForAnyOfQuestion -> "Will you apply for any of the following?"
-        // CompanyWillDoAnyOfQuestion -> "Do you have a National Insurance number?"
+        ApplyingForAnyOfQuestion -> "Will you apply for any of the following?",
+        CompanyWillDoAnyOfQuestion -> "Will you do any of the following?"
       )
 
       forAll(eligibilityQuestions) { case (question, expectedTitle) =>
@@ -82,9 +82,9 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
     val questions = Seq(
       HaveNinoQuestion -> urlForQuestion(DoingBusinessAbroadQuestion),
       DoingBusinessAbroadQuestion -> urlForQuestion(DoAnyApplyToYouQuestion),
-      DoAnyApplyToYouQuestion -> urlForQuestion(ApplyingForAnyOfQuestion)
-//      ApplyingForAnyOfQuestion -> urlForQuestion(CompanyWillDoAnyOfQuestion)
-      //      CompanyWillDoAnyOfQuestion -> controllers.routes.TwirlViewController.renderViewAuthorised().url
+      DoAnyApplyToYouQuestion -> urlForQuestion(ApplyingForAnyOfQuestion),
+      ApplyingForAnyOfQuestion -> urlForQuestion(CompanyWillDoAnyOfQuestion),
+      CompanyWillDoAnyOfQuestion -> controllers.routes.TwirlViewController.renderViewAuthorised().url
     )
 
     "redirect to next screen when user is eligible to register for VAT using this service" in {
@@ -167,13 +167,31 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
         HaveNinoQuestion -> """id="nino-text" class=""""",
         DoingBusinessAbroadQuestion -> """id="business-abroad-text" class=""""",
         DoAnyApplyToYouQuestion -> """id="do-any-apply-to-you-text" class=""""",
-         ApplyingForAnyOfQuestion -> """id="applying-for-any-of-text" class="""""
-        // CompanyWillDoAnyOfQuestion -> "Do you have a National Insurance number?"
+        ApplyingForAnyOfQuestion -> """id="applying-for-any-of-text" class=""""",
+        CompanyWillDoAnyOfQuestion -> """id="company-will-do-any-of-text" class="""""
       )
 
       forAll(eligibilityQuestions) { case (question, expectedTitle) =>
         setupIneligibilityReason(mockKeystoreConnector, question)
         callAuthorised(TestController.ineligible())(_ includesText expectedTitle)
+      }
+    }
+
+    "return HTML for ineligibility page even when no reason found in keystore" in {
+      val hiddenReasonSections = Seq(
+        """id="nino-text" class="hidden"""",
+        """id="business-abroad-text" class="hidden"""",
+        """id="do-any-apply-to-you-text" class="hidden"""",
+        """id="applying-for-any-of-text" class="hidden"""",
+        """id="company-will-do-any-of-text" class="hidden""""
+      )
+
+      when(mockKeystoreConnector.fetchAndGet[String](Matchers.eq(TestController.INELIGIBILITY_REASON_KEY))(any(), any()))
+        .thenReturn(Option.empty[String].pure)
+      when(mockVatRegService.getVatScheme()(any())).thenReturn(validVatScheme.copy(vatServiceEligibility = None).pure)
+
+      callAuthorised(TestController.ineligible()) {
+        result => forAll(hiddenReasonSections)(result includesText _)
       }
     }
 
