@@ -164,7 +164,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
       val builder = SummaryServiceEligibilitySectionBuilder(Some(defaultVatServiceEligibility))
       "a valid summary section" in {
         val builder = SummaryServiceEligibilitySectionBuilder(Some(defaultVatServiceEligibility))
-        builder.section.id mustBe "vatServiceEligibility"
+        builder.section.id mustBe "serviceCriteria"
         builder.section.rows.length mustEqual 5
       }
     }
