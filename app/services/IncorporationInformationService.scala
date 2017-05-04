@@ -20,7 +20,6 @@ import javax.inject.Inject
 
 import com.google.inject.ImplementedBy
 import connectors.IncorporationInformationConnector
-import models.api.ScrsAddress
 import models.external.CoHoRegisteredOfficeAddress
 import uk.gov.hmrc.play.http.HeaderCarrier
 

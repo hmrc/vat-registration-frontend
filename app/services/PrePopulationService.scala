@@ -35,7 +35,7 @@ trait PrePopService {
 
   def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionalResponse[LocalDate]
 
-  def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[(String, String)]]
+  def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]]
 
 }
 
@@ -55,15 +55,13 @@ class PrePopulationService @Inject()(ppConnector: PPConnector,
       dateString <- OptionT.fromOption(accountingDetails.activeDate)
     } yield LocalDate.parse(dateString, formatter)
 
-  override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[(String, String)]] = {
+
+  override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]] = {
     for {
       companyProfileOpt <- keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile")
       companyProfile = companyProfileOpt.get
       address <- iis.getRegisteredOfficeAddress(companyProfile.transactionId)
       scrsAddress = CoHoRegisteredOfficeAddress.convertToAddress(address)
-    } yield List((scrsAddress.getId, scrsAddress.getFrontEndView))
-
+    } yield List(scrsAddress)
   }
-
-
 }

@@ -36,5 +36,4 @@ trait VatMocks
   implicit lazy val mockRegConnector = mock[VatRegistrationConnector]
   implicit lazy val mockCompanyRegConnector = mock[CompanyRegistrationConnector]
 
-
 }

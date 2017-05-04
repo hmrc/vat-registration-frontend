@@ -16,8 +16,8 @@
 
 package models.view.vatLodgingOfficer
 
-import models.{ApiModelTransformer, ViewModelTransformer}
 import models.api.{VatLodgingOfficer, VatScheme}
+import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class OfficerHomeAddressView(addressId: String)

@@ -33,15 +33,18 @@ case class CoHoRegisteredOfficeAddress(
 }
 
 object CoHoRegisteredOfficeAddress {
+
+  private val roAddress = __ \ "registered_office_address"
+
   implicit val formatModel: Reads[CoHoRegisteredOfficeAddress] = (
-      (__ \ "registered_office_address" \ "premises").read[String] and
-      (__ \ "registered_office_address" \ "address_line_1").read[String] and
-      (__ \ "registered_office_address" \ "address_line_2").readNullable[String] and
-      (__ \ "registered_office_address" \ "locality").read[String] and
-      (__ \ "registered_office_address" \ "country").readNullable[String] and
-      (__ \ "registered_office_address" \ "po_box").readNullable[String] and
-      (__ \ "registered_office_address" \ "postal_code").readNullable[String] and
-      (__ \ "registered_office_address" \ "region").readNullable[String]
+      (roAddress \ "premises").read[String] and
+      (roAddress \ "address_line_1").read[String] and
+      (roAddress \ "address_line_2").readNullable[String] and
+      (roAddress \ "locality").read[String] and
+      (roAddress \ "country").readNullable[String] and
+      (roAddress \ "po_box").readNullable[String] and
+      (roAddress \ "postal_code").readNullable[String] and
+      (roAddress \ "region").readNullable[String]
     )(CoHoRegisteredOfficeAddress.apply _)
 
   import scala.language.implicitConversions
