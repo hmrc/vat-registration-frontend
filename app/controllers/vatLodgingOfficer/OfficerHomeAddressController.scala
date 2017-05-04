@@ -21,55 +21,42 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerHomeAddressForm
 import models.api.ScrsAddress
-import models.external.CoHoRegisteredOfficeAddress
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
-import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{IncorporationInformationService, PrePopulationService, S4LService, VatRegistrationService}
-
-import scala.concurrent.{Await, Future}
+import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}
 
 class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService,
                                              vrs: VatRegistrationService,
-                                              prePopService: PrePopulationService)
-  extends VatRegistrationController(ds) {
+                                             prePopService: PrePopulationService)
+  extends VatRegistrationController(ds)  with CommonService {
 
   import cats.instances.future._
-  import cats.syntax.applicative._
-
-  import connectors._
 
   val form = OfficerHomeAddressForm.form
-
-  // TODO get list of addresses (ScrsAddress?) from PrePop service
-  // TODO and make available to the page
-  // "For addresses: the shared addresses will be accessible as a single resource
-  // for a given regId via a URL shaped like /business-registration/data-sharing/${regId}/addresses"
-  // https://confluence.tools.tax.service.gov.uk/display/SCRS/Data+Sharing+Feature
-  val prePopAddressMap: Seq[(String, String)] = List(
-    "addressId1" -> "5 Romford Road, Wellington, Telford, TF1 4ER",
-    "addressId2" -> "7 Romford Road, Wellington, Telford, TF1 4ER"
-  )
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
     for {
-      prePopAddressMap: Seq[(String, String)] <- prePopService.getOfficerAddressList()
-      futureForm: Future[Form[OfficerHomeAddressView]] = viewModel[OfficerHomeAddressView].fold(form)(form.fill)
+      addressList: Seq[ScrsAddress] <- prePopService.getOfficerAddressList()
+      // store address map in keystore (keyed by seq index)
+      _ <- keystoreConnector.cache[Seq[ScrsAddress]]("OfficerAddressList", addressList)
+      futureForm = viewModel[OfficerHomeAddressView].fold(form)(form.fill)
       f <- futureForm
-    } yield Ok(views.html.pages.vatLodgingOfficer.officer_home_address(f, prePopAddressMap))
-
-
-//    viewModel[OfficerHomeAddressView].fold(form)(form.fill)
-//      .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_home_address(f, prePopAddressMap)))
+    } yield Ok(views.html.pages.vatLodgingOfficer.officer_home_address(f, addressList))
 
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
-      form => BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(form, prePopAddressMap)).pure,
-      s4l.saveForm(_).map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
+      formWithErrors => for {
+        addressList <- prePopService.getOfficerAddressList()
+      } yield BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(formWithErrors, addressList)),
+      form => {
+        // TODO what goes into S4L (ideally a ScrsAddress)
+        s4l.saveForm(form)
+          .map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
+      }
     )
   })
 
