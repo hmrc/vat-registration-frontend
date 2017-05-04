@@ -45,8 +45,6 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
 
   val INELIGIBILITY_REASON_KEY: String = "ineligibility-reason"
 
-  //TODO toggle back on once all screens in place
-  // $COVERAGE-OFF$
   private def nextQuestion(question: EligibilityQuestion): Call = question match {
     case HaveNinoQuestion => eligibilityRoutes.ServiceCriteriaQuestionsController.show(DoingBusinessAbroadQuestion.name)
     case DoingBusinessAbroadQuestion => controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoAnyApplyToYouQuestion.name)
@@ -55,13 +53,12 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
     case CompanyWillDoAnyOfQuestion => controllers.routes.TwirlViewController.renderViewAuthorised()
   }
 
-  // $COVERAGE-ON$
-
   private def viewForQuestion(q: EligibilityQuestion, form: Form[YesOrNoQuestion])(implicit r: Request[AnyContent]) = q match {
     case HaveNinoQuestion => views.html.pages.vatEligibility.have_nino(form)
     case DoingBusinessAbroadQuestion => views.html.pages.vatEligibility.doing_business_abroad(form)
     case DoAnyApplyToYouQuestion => views.html.pages.vatEligibility.do_any_apply_to_you(form)
     case ApplyingForAnyOfQuestion => views.html.pages.vatEligibility.applying_for_any_of(form)
+    case CompanyWillDoAnyOfQuestion => views.html.pages.vatEligibility.company_will_do_any_of(form)
   }
 
   def show(q: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
