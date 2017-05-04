@@ -18,10 +18,12 @@ package controllers.vatLodgingOfficer
 
 import javax.inject.Inject
 
+import cats.data.OptionT
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerHomeAddressForm
 import models.api.ScrsAddress
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
+import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}
 
@@ -38,6 +40,7 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
     for {
+      // TODO use OptionT ?
       addressList: Seq[ScrsAddress] <- prePopService.getOfficerAddressList()
       // store address map in keystore (keyed by seq index)
       _ <- keystoreConnector.cache[Seq[ScrsAddress]]("OfficerAddressList", addressList)
@@ -47,16 +50,19 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
 
   })
 
+  // TODO keystoreConnector.remove[Seq[ScrsAddress]]("OfficerAddressList")
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
-      formWithErrors => for {
+      (formWithErrors: Form[OfficerHomeAddressView]) => for {
         addressList <- prePopService.getOfficerAddressList()
       } yield BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(formWithErrors, addressList)),
-      form => {
-        // TODO what goes into S4L (ideally a ScrsAddress)
-        s4l.saveForm(form)
-          .map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
-      }
+      (form: OfficerHomeAddressView) => (for {
+        addressList <- OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]]("OfficerAddressList"))
+        address <- OptionT.fromOption(addressList.find(_.getId() == form.addressId))
+        _ <- OptionT.liftF(s4l.saveForm[OfficerHomeAddressView](OfficerHomeAddressView(form.addressId, Some(address))))
+      } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
+        .getOrElse(Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
+        // TODO route to address lookup is selected
     )
   })
 

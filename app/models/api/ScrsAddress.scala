@@ -25,16 +25,20 @@ case class ScrsAddress(line1: String,
                        postcode: Option[String] = None, // TODO can we use a mandatory union type i.e. PostcodeOrCountry
                        country: Option[String] = None ) // TODO instead of two optional fields ?
 {
-  // TODO - fix
   def getId(): String = (line1 + {if (postcode.isDefined) postcode.get else country.get}).replaceAll(" ","")
 
-
   def asLabel(): String =
-    Seq(line1, line2, line3).collect {
+    Seq(line1, line2, line3, line4, postcode, country).collect {
       case s:String => s
       case Some(l) => l
     } mkString (", ")
 
+  override def equals(obj: Any): Boolean = obj match {
+    case ScrsAddress(`line1`, _, _, _, `postcode`, `country`) => true
+    case _ => false
+  }
+
+  override def hashCode: Int = (line1, postcode, country).##
 }
 
 object ScrsAddress {
