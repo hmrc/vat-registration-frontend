@@ -19,6 +19,7 @@ package fixtures
 import java.time.LocalDate
 
 import models.api.{VatComplianceCultural, _}
+import models.external.CoHoCompanyProfile
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
@@ -93,6 +94,8 @@ trait VatRegistrationFixture {
 
   val validServiceEligibility = VatServiceEligibility(Some(true), Some(false), Some(false), Some(false), Some(false))
 
+  val validLodgingOfficer = VatLodgingOfficer(ScrsAddress("",""))
+
   val emptyVatScheme = VatScheme(validRegId)
 
   def tradingDetails(
@@ -165,6 +168,8 @@ trait VatRegistrationFixture {
     financials = Some(validVatFinancials),
     vatContact = Some(validVatContact)
   )
+
+  val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
 
   val validBusinessActivityDescription = BusinessActivityDescription(businessActivityDescription)
   val validVatCulturalCompliance = VatComplianceCultural(true)
