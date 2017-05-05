@@ -31,6 +31,7 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
+import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
@@ -94,7 +95,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     } yield ()
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
-    submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@| submitVatContact map { case _ => () }
+    submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@| submitVatContact |@| submitVatLodgingOfficer map { case _ => () }
 
   private[services] def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
 
@@ -200,6 +201,20 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       vs <- getVatScheme()
       vatContact <- mergeWithS4L(vs)
       response <- vatRegConnector.upsertVatContact(vs.id, vatContact)
+    } yield response
+  }
+
+  private[services] def submitVatLodgingOfficer()(implicit hc: HeaderCarrier): Future[VatLodgingOfficer] = {
+    def mergeWithS4L(vs: VatScheme) =
+      s4l[OfficerHomeAddressView]().map(S4LVatLodgingOfficer).map { s4l =>
+        update(s4l.officerHomeAddressView, vs)
+          .apply(vs.lodgingOfficer.getOrElse(VatLodgingOfficer.empty)) //TODO remove the "seeding" with empty
+      }
+
+    for {
+      vs <- getVatScheme()
+      vatLodgingOfficer <- mergeWithS4L(vs)
+      response <- vatRegConnector.upsertVatLodgingOfficer(vs.id, vatLodgingOfficer)
     } yield response
   }
 

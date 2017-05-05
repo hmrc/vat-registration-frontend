@@ -92,6 +92,13 @@ trait RegistrationConnector {
     }
   }
 
+  def upsertVatLodgingOfficer(regId: String, vatLodgingOfficer: VatLodgingOfficer)
+                      (implicit hc: HeaderCarrier, rds: HttpReads[VatLodgingOfficer]): Future[VatLodgingOfficer] = {
+    http.PATCH[VatLodgingOfficer, VatLodgingOfficer](s"$vatRegUrl/vatreg/$regId/lodging-officer", vatLodgingOfficer) recover {
+      case e: Exception => throw logResponse(e, className, "upsertVatLodgingOfficer")
+    }
+  }
+
   def deleteVatScheme(regId: String)
                      (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Unit] = {
     http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-scheme") recover {

@@ -55,13 +55,12 @@ class PrePopulationService @Inject()(ppConnector: PPConnector,
       dateString <- OptionT.fromOption(accountingDetails.activeDate)
     } yield LocalDate.parse(dateString, formatter)
 
-
   override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]] = {
-    for {
-      companyProfileOpt <- keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile")
-      companyProfile = companyProfileOpt.get
-      address <- iis.getRegisteredOfficeAddress(companyProfile.transactionId)
-      scrsAddress = CoHoRegisteredOfficeAddress.convertToAddress(address)
-    } yield List(scrsAddress)
+    (for {
+      companyProfile <- OptionT(keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile"))
+      address <- OptionT.liftF(iis.getRegisteredOfficeAddress(companyProfile.transactionId))
+      // TODO merge addresses from PrePop service
+      // TODO add current officer home address (from db)
+    } yield Seq[ScrsAddress](address)).getOrElse(Seq())
   }
 }

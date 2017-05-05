@@ -26,13 +26,16 @@ object OfficerHomeAddressView {
   implicit val format = Json.format[OfficerHomeAddressView]
 
   // return a view model from a VatScheme instance
-  // TODO
-  implicit val modelTransformer = ApiModelTransformer[OfficerHomeAddressView] { vs: VatScheme => None }
+  implicit val modelTransformer = ApiModelTransformer[OfficerHomeAddressView] { vs: VatScheme =>
+    vs.lodgingOfficer.map(_.currentAddress).collect {
+      case address => OfficerHomeAddressView(address.getId(), Some(address))
+    }
+  }
 
   // return a new or updated VatLodgingOfficer from the CurrentAddressView instance
-  // TODO
-  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerHomeAddressView, g: VatLodgingOfficer) =>
-    g
+  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerHomeAddressView, g: VatLodgingOfficer) => {
+      c.address.fold(g)(address => g.copy(currentAddress = address))
+    }
   }
 
 }
