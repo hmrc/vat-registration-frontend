@@ -96,12 +96,14 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturns(validEuGoods)
       save4laterReturns(validApplyEori)
       save4laterReturns(validBusinessContactDetails)
+      save4laterReturns(validServiceEligibility)
 
       when(mockRegConnector.upsertVatChoice(any(), any())(any(), any())).thenReturn(validVatChoice.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
       when(mockRegConnector.upsertVatFinancials(any(), any())(any(), any())).thenReturn(validVatFinancials.pure)
       when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any())).thenReturn(validSicAndCompliance.pure)
       when(mockRegConnector.upsertVatContact(any(), any())(any(), any())).thenReturn(validVatContact.pure)
+      when(mockRegConnector.upsertVatEligibility(any(), any())(any(), any())).thenReturn(validServiceEligibility.pure)
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
 
       service.submitVatScheme() completedSuccessfully
@@ -179,7 +181,20 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     }
   }
 
-  "Calling deleteVatScheme" should {
+  "Calling submitEligibility" should {
+    "return a success response when VatEligibility is submitted" in new Setup {
+      mockFetchRegId(validRegId)
+
+      save4laterReturns(validServiceEligibility)
+
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockRegConnector.upsertVatEligibility(any(), any())(any(), any())).thenReturn(validServiceEligibility.pure)
+
+      service.submitVatEligibility() returns validServiceEligibility
+    }
+  }
+
+    "Calling deleteVatScheme" should {
     "return a success response when the delete VatScheme is successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
       when(mockRegConnector.deleteVatScheme(any())(any(), any())).thenReturn(().pure)
@@ -245,6 +260,14 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       service.submitVatContact() returns mergedvalidVatContact
     }
+
+    "submitVatEligibility should process the submission even if VatScheme does not contain a VatEligibility object" in new Setup {
+      val mergedVatServiceEligibility = validServiceEligibility
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+
+      service.submitVatEligibility() returns mergedVatServiceEligibility
+    }
+
 
   }
 }

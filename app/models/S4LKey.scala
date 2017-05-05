@@ -16,6 +16,7 @@
 
 package models
 
+import models.api.VatServiceEligibility
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
@@ -75,6 +76,7 @@ object S4LKey {
   implicit val leaseVehicles: S4LKey[LeaseVehicles] = S4LKey("LeaseVehicles")
   implicit val discretionaryInvestmentManagementServices: S4LKey[DiscretionaryInvestmentManagementServices] = S4LKey("DiscretionaryInvestmentManagementServices")
   implicit val manageAdditionalFunds: S4LKey[ManageAdditionalFunds] = S4LKey("ManageAdditionalFunds")
+  implicit val vatServiceEligibility: S4LKey[VatServiceEligibility] = S4LKey("VatServiceEligibility")
 
   implicit val officerHomeAddress: S4LKey[OfficerHomeAddressView] = S4LKey("OfficerHomeAddressView")
 }

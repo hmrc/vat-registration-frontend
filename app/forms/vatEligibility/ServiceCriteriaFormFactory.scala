@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package models.view.test
+package forms.vatEligibility
 
-import play.api.libs.json.Json
+import forms.FormValidation.missingBooleanFieldMapping
+import models.YesOrNoQuestion
+import play.api.data.Form
+import play.api.data.Forms._
 
+class ServiceCriteriaFormFactory {
 
-case class TestSetup(vatChoice: VatChoiceTestSetup,
-                     vatTradingDetails: VatTradingDetailsTestSetup,
-                     vatContact: VatContactTestSetup,
-                     vatFinancials: VatFinancialsTestSetup,
-                     sicAndCompliance: SicAndComplianceTestSetup,
-                     vatServiceEligibility: VatServiceEligibilityTestSetup)
+  def form(question: String): Form[YesOrNoQuestion] = {
+    val RADIO_YES_NO: String = s"${question}Radio"
+    Form(mapping(
+      RADIO_YES_NO -> missingBooleanFieldMapping()(s"eligibility.$question")
+    )(YesOrNoQuestion(question, _))(yn => Some(yn.answer)))
+  }
 
-
-object TestSetup {
-  implicit val format = Json.format[TestSetup]
 }

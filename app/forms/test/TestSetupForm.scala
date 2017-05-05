@@ -80,12 +80,21 @@ object TestSetupForm {
     "accountingPeriod" -> optional(text)
   )(VatFinancialsTestSetup.apply)(VatFinancialsTestSetup.unapply)
 
+  val vatServiceEligibilityTestSetupMapping = mapping(
+    "haveNino" -> optional(text),
+    "doingBusinessAbroad" -> optional(text),
+    "doAnyApplyToYou" -> optional(text),
+    "applyingForAnyOf" -> optional(text),
+    "companyWillDoAnyOf" -> optional(text)
+  )(VatServiceEligibilityTestSetup.apply)(VatServiceEligibilityTestSetup.unapply)
+
   val form = Form(mapping(
     "vatChoice" -> vatChoiceTestSetupMapping,
     "vatTradingDetails" -> vatTradingDetailsTestSetupMapping,
     "vatContact" -> vatContactTestSetupMapping,
     "vatFinancials" -> vatFinancialsTestSetupMapping,
-    "sicAndCompliance" -> sicAndComplianceTestSetupMapping
+    "sicAndCompliance" -> sicAndComplianceTestSetupMapping,
+    "vatServiceEligibility" -> vatServiceEligibilityTestSetupMapping
   )(TestSetup.apply)(TestSetup.unapply))
 
 }
