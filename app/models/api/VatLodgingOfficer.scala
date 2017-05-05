@@ -22,4 +22,7 @@ case class VatLodgingOfficer(currentAddress: ScrsAddress)
 
 object VatLodgingOfficer {
   implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
+
+  // TODO remove once no longer required
+  val empty = VatLodgingOfficer(ScrsAddress("",""))
 }
