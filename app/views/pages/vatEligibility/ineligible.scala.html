@@ -1,4 +1,5 @@
 @(classForSection: String => String)(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.helpers.form
 
 @main_template(title = messages("pages.serviceCriteriaFailure.title")) {
 
@@ -78,11 +79,15 @@
 
             <p>&nbsp;</p>
 
-            <form action="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">
-                <button type="submit" class="btn button" role="button" id="continue" >
-                @messages("pages.serviceCriteriaFailure.button.linkToLegacyApp")
-                </button>
-            </form>
+
+            @form(action = Call("GET", "https://online.hmrc.gov.uk/registration/newbusiness/business-allowed")) {
+                <div class="form-group">
+                    <button type="submit" class="btn button" role="button" id="continue">
+                    @messages("pages.serviceCriteriaFailure.button.linkToLegacyApp")
+                    </button>
+                </div>
+            }
+
         </div>
 
     </div>
