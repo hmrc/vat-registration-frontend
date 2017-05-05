@@ -66,11 +66,11 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "registrationToSummary maps a valid VatScheme object to a Summary object" in {
-      TestSummaryController.registrationToSummary(validVatScheme).sections.length mustEqual 5
+      TestSummaryController.registrationToSummary(validVatScheme).sections.length mustEqual 9
     }
 
     "registrationToSummary maps a valid empty VatScheme object to a Summary object" in {
-      TestSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency).sections.length mustEqual 5
+      TestSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency).sections.length mustEqual 9
     }
 
     // TODO: Need to resolve why raising a new InternalError gives a Boxed Error exception yet this works for PAYE
