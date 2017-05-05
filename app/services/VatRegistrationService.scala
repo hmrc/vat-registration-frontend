@@ -95,8 +95,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     } yield ()
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
-    submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@| submitVatContact |@| submitVatLodgingOfficer map { case _ => () }
-    submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@| submitVatContact |@| submitVatEligibility() map { case _ => () }
+    submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@|
+      submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer map { case _ => () }
 
   private[services] def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
 
