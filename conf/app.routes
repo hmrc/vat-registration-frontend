@@ -6,6 +6,18 @@ GET         /assets/*file                          controllers.Assets.at(path="/
 GET         /                                      controllers.WelcomeController.show
 GET         /start                                 controllers.WelcomeController.start
 
+## SERVICE CRITERIA QUESTIONS
+GET         /do-you-have-national-insurance-number              controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "haveNino")
+POST        /do-you-have-national-insurance-number              controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "haveNino")
+GET         /will-you-do-any-of-the-following                   controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "doingBusinessAbroad")
+POST        /will-you-do-any-of-the-following                   controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "doingBusinessAbroad")
+GET         /do-the-following-apply-to-you-or-the-business      controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "doAnyApplyToYou")
+POST        /do-the-following-apply-to-you-or-the-business      controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "doAnyApplyToYou")
+GET         /will-you-apply-for-following                       controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "applyingForAnyOf")
+POST        /will-you-apply-for-following                       controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "applyingForAnyOf")
+GET         /will-you-do-the-following                          controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "companyWillDoAnyOf")
+POST        /will-you-do-the-following                          controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "companyWillDoAnyOf")
+
 ## VOLUNTARY START DATE PAGE
 GET         /start-date                            controllers.vatTradingDetails.vatChoice.StartDateController.show
 POST        /start-date                            controllers.vatTradingDetails.vatChoice.StartDateController.submit
@@ -144,4 +156,4 @@ GET         /submission-confirmation               controllers.ApplicationSubmis
 
 
 GET         /you-can-register-for-vat-with-this-service        controllers.TwirlViewController.renderViewAuthorised(viewName="eligibility-success")
-GET         /you-cant-register-with-this-service               controllers.TwirlViewController.renderViewAuthorised(viewName="eligibility-failure")
+GET         /you-cant-register-with-this-service               controllers.vatEligibility.ServiceCriteriaQuestionsController.ineligible()

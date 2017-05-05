@@ -23,6 +23,7 @@ import connectors.{KeystoreConnector, VatRegistrationConnector}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.test.TestSetupForm
 import models.S4LKey
+import models.api.VatServiceEligibility
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
@@ -81,6 +82,8 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       investmentFundManagement <- s4LService.fetchAndGet[InvestmentFundManagement]()
       manageAdditionalFunds <- s4LService.fetchAndGet[ManageAdditionalFunds]()
 
+      eligibility <- s4LService.fetchAndGet[VatServiceEligibility]()
+
       testSetup = TestSetup(
         VatChoiceTestSetup(
           taxableTurnover.map(_.yesNo),
@@ -131,8 +134,14 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
           discretionaryInvestment.map(_.yesNo.toString),
           leaseVehiclesOrEquipment.map(_.yesNo.toString),
           investmentFundManagement.map(_.yesNo.toString),
-          manageAdditionalFunds.map(_.yesNo.toString))
-    )
+          manageAdditionalFunds.map(_.yesNo.toString)),
+        VatServiceEligibilityTestSetup(
+          eligibility.map(_.haveNino.getOrElse("").toString),
+          eligibility.map(_.doingBusinessAbroad.getOrElse("").toString),
+          eligibility.map(_.doAnyApplyToYou.getOrElse("").toString),
+          eligibility.map(_.applyingForAnyOf.getOrElse("").toString),
+          eligibility.map(_.companyWillDoAnyOf.getOrElse("").toString))
+      )
       form = TestSetupForm.form.fill(testSetup)
     } yield Ok(views.html.pages.test.test_setup(form))
   })
@@ -175,8 +184,8 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveToS4Later(data.vatContact.email, data, { x => BusinessContactDetails(x.vatContact.email.get, x.vatContact.daytimePhone, x.vatContact.mobile, x.vatContact.website ) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountChoice, data, { x => CompanyBankAccount(x.vatFinancials.companyBankAccountChoice.get) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountName, data, {
-                x => CompanyBankAccountDetails(x.vatFinancials.companyBankAccountName.get,
-                    x.vatFinancials.companyBankAccountNumber.get, x.vatFinancials.sortCode.get) })
+              x => CompanyBankAccountDetails(x.vatFinancials.companyBankAccountName.get,
+                x.vatFinancials.companyBankAccountNumber.get, x.vatFinancials.sortCode.get) })
             _ <- saveToS4Later(data.vatFinancials.estimateVatTurnover, data, { x => EstimateVatTurnover(x.vatFinancials.estimateVatTurnover.get.toLong) })
             _ <- saveToS4Later(data.vatFinancials.zeroRatedSalesChoice, data, { x => ZeroRatedSales(x.vatFinancials.zeroRatedSalesChoice.get) })
             _ <- saveToS4Later(data.vatFinancials.zeroRatedTurnoverEstimate, data, { x => EstimateZeroRatedSales(x.vatFinancials.zeroRatedTurnoverEstimate.get.toLong) })
@@ -206,6 +215,12 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveToS4Later(data.sicAndCompliance.financialInvestmentFundManagement, data, { x => InvestmentFundManagement(x.sicAndCompliance.financialInvestmentFundManagement.get.toBoolean) })
             _ <- saveToS4Later(data.sicAndCompliance.financialManageAdditionalFunds, data, { x => ManageAdditionalFunds(x.sicAndCompliance.financialManageAdditionalFunds.get.toBoolean) })
 
+            _ <- saveToS4Later(data.vatServiceEligibility.haveNino, data, { x => VatServiceEligibility(x.vatServiceEligibility.haveNino.map(_.toBoolean),
+                x.vatServiceEligibility.doingBusinessAbroad.map(_.toBoolean),
+                x.vatServiceEligibility.doAnyApplyToYou.map(_.toBoolean),
+                x.vatServiceEligibility.applyingForAnyOf.map(_.toBoolean),
+                x.vatServiceEligibility.companyWillDoAnyOf.map(_.toBoolean))
+            })
           } yield Ok("Test setup complete")
         }
       })

@@ -1,0 +1,42 @@
+@import models.YesOrNoQuestion
+@(haveNinoForm: Form[YesOrNoQuestion])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.eligibility.haveNino.title")) {
+
+    <div class="column-one-third">
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.eligibility.haveNino.heading")</h1>
+
+        @errorSummary(
+            messages("app.common.errorSummaryLabel"),
+            haveNinoForm
+        )
+
+        @govHelpers.form(action = controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.submit("haveNino")) {
+            <div class="form-group">
+                <fieldset class="inline">
+                    <span id="haveNinoRadio"/>
+
+                    @govHelpers.inputRadioGroup(
+                        field = haveNinoForm("haveNinoRadio"),
+                        Seq(
+                            "true" -> messages("app.common.yes"),
+                            "false" -> messages("app.common.no")
+                        ),
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label"
+                    )
+                </fieldset>
+            </div>
+
+            <div class="form-group">
+                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+            </div>
+
+        }
+
+    </div>
+
+}

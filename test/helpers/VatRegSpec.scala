@@ -26,7 +26,6 @@ import org.scalatest.{Assertion, Inside, Inspectors}
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.http.Status
 import play.api.mvc.{Action, AnyContent, Result}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 

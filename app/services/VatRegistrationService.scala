@@ -96,6 +96,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
     submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@| submitVatContact |@| submitVatLodgingOfficer map { case _ => () }
+    submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@| submitVatContact |@| submitVatEligibility() map { case _ => () }
 
   private[services] def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
 
@@ -201,6 +202,20 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       vs <- getVatScheme()
       vatContact <- mergeWithS4L(vs)
       response <- vatRegConnector.upsertVatContact(vs.id, vatContact)
+    } yield response
+  }
+
+  private[services] def submitVatEligibility()(implicit hc: HeaderCarrier): Future[VatServiceEligibility] = {
+    def mergeWithS4L(vs: VatScheme) =
+      s4l[VatServiceEligibility]().map(S4LVatEligibility).map { s4l =>
+        update(s4l.vatEligibility, vs)
+          .apply(vs.vatServiceEligibility.getOrElse(VatServiceEligibility())) //TODO remove the "seeding" with empty
+      }
+
+    for {
+      vs <- getVatScheme()
+      vatServiceEligibility <- mergeWithS4L(vs)
+      response <- vatRegConnector.upsertVatEligibility(vs.id, vatServiceEligibility)
     } yield response
   }
 
