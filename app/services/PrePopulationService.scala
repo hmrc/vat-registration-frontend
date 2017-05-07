@@ -23,8 +23,10 @@ import javax.inject.Inject
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import connectors.{OptionalResponse, PPConnector}
+import models.ApiModelTransformer
 import models.api.ScrsAddress
-import models.external.{CoHoCompanyProfile, CoHoRegisteredOfficeAddress}
+import models.external.CoHoCompanyProfile
+import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -40,8 +42,8 @@ trait PrePopService {
 }
 
 class PrePopulationService @Inject()(ppConnector: PPConnector,
-                                    iis: IncorporationInformationService)
-      extends PrePopService with CommonService {
+                                    iis: IncorporationInformationService)(implicit vrs: VatRegistrationService)
+                        extends PrePopService with CommonService {
 
   import cats.instances.future._
 
@@ -56,11 +58,21 @@ class PrePopulationService @Inject()(ppConnector: PPConnector,
     } yield LocalDate.parse(dateString, formatter)
 
   override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]] = {
-    (for {
+    // register office address
+    val roAddressF = (for {
       companyProfile <- OptionT(keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile"))
       address <- OptionT.liftF(iis.getRegisteredOfficeAddress(companyProfile.transactionId))
-      // TODO merge addresses from PrePop service
-      // TODO add current officer home address (from db)
     } yield Seq[ScrsAddress](address)).getOrElse(Seq())
+
+    // current address
+    val currentAddressF: Future[Option[OfficerHomeAddressView]] = vrs.getVatScheme() map ApiModelTransformer[OfficerHomeAddressView].toViewModel
+    for {
+      roAddress <- roAddressF
+      cuAddress <- currentAddressF
+    } yield cuAddress.foldLeft(roAddress)((z,a) => z :+ a.address.get).distinct
+
+    // TODO merge addresses from PrePop service
+
+    // TODO order the list and standardise case ?
   }
 }

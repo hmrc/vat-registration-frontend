@@ -22,7 +22,7 @@ import java.time.format.DateTimeFormatter.ofPattern
 import cats.data.OptionT
 import connectors.{KeystoreConnector, PPConnector}
 import helpers.VatRegSpec
-import models.api.ScrsAddress
+import models.api.{ScrsAddress, VatLodgingOfficer, VatScheme}
 import models.external.{AccountingDetails, CoHoCompanyProfile, CoHoRegisteredOfficeAddress, CorporationTaxRegistration}
 import org.mockito.Matchers._
 import org.mockito.Mockito
@@ -47,8 +47,9 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
 
     implicit val headerCarrier = HeaderCarrier()
     val mockPPConnector = Mockito.mock(classOf[PPConnector])
+    val mockVatRegService = Mockito.mock(classOf[VatRegistrationService])
     val mockIIService = Mockito.mock(classOf[IncorporationInformationService])
-    val service = new PrePopulationService(mockPPConnector, mockIIService) {
+    val service = new PrePopulationService(mockPPConnector, mockIIService)(mockVatRegService) {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
       mockFetchRegId()
     }
@@ -83,15 +84,29 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
           Some("region"))
 
       val scsrAddress = ScrsAddress("premises address_line_1", "address_line_2 po_box", Some("locality"), Some("region"), Some("postal_code"), Some("country"))
+      val emptyVatScheme = VatScheme("123")
 
       mockKeystoreFetchAndGet[CoHoCompanyProfile]("CompanyProfile", Some(CoHoCompanyProfile("status", "transactionId")))
       when(mockIIService.getRegisteredOfficeAddress("transactionId")).thenReturn(Future.successful(coHoRegisteredOfficeAddress))
+      when(mockVatRegService.getVatScheme()).thenReturn(Future.successful(emptyVatScheme))
 
       service.getOfficerAddressList() returns Seq(scsrAddress)
     }
 
-    "be empty if a companyProfile is not present" in new Setup {
+    "be non-empty if a companyProfile is not present and there is a current address" in new Setup {
+      val address = ScrsAddress(line1="street", line2="area", postcode=Some("xyz"))
+      val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(address)))
       mockKeystoreFetchAndGet[CoHoCompanyProfile]("CompanyProfile", None)
+      when(mockVatRegService.getVatScheme()).thenReturn(Future.successful(vatSchemeWithAddress))
+
+      service.getOfficerAddressList() returns Seq(address)
+    }
+
+    "be empty if a companyProfile is not present and there is no current address" in new Setup {
+      val emptyVatScheme = VatScheme("123")
+      mockKeystoreFetchAndGet[CoHoCompanyProfile]("CompanyProfile", None)
+      when(mockVatRegService.getVatScheme()).thenReturn(Future.successful(emptyVatScheme))
+
       service.getOfficerAddressList() returns Seq()
     }
   }
