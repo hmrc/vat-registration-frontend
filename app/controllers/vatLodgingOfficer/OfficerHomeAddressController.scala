@@ -31,22 +31,19 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService,
                                              vrs: VatRegistrationService,
                                              prePopService: PrePopulationService)
-  extends VatRegistrationController(ds)  with CommonService {
+  extends VatRegistrationController(ds) with CommonService {
 
   import cats.instances.future._
 
   val form = OfficerHomeAddressForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
     for {
-      // TODO use OptionT ?
-      addressList: Seq[ScrsAddress] <- prePopService.getOfficerAddressList()
-      // store address map in keystore (keyed by seq index)
-      _ <- keystoreConnector.cache[Seq[ScrsAddress]]("OfficerAddressList", addressList)
-      futureForm = viewModel[OfficerHomeAddressView].fold(form)(form.fill)
-      f <- futureForm
-    } yield Ok(views.html.pages.vatLodgingOfficer.officer_home_address(f, addressList))
+      addresses <- prePopService.getOfficerAddressList()
+      _ <- keystoreConnector.cache[Seq[ScrsAddress]]("OfficerAddressList", addresses)
+      res <- viewModel[OfficerHomeAddressView].fold(form)(form.fill)
+        .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_home_address(f, addresses)))
+    } yield res
 
   })
 
@@ -62,7 +59,7 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
         _ <- OptionT.liftF(s4l.saveForm[OfficerHomeAddressView](OfficerHomeAddressView(form.addressId, Some(address))))
       } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
         .getOrElse(Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
-        // TODO route to address lookup is selected
+        // TODO route to address lookup if selected
     )
   })
 

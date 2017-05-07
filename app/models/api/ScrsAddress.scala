@@ -33,6 +33,7 @@ case class ScrsAddress(line1: String,
       case Some(l) => l
     } mkString (", ")
 
+  // TODO consider making case-insensitive
   override def equals(obj: Any): Boolean = obj match {
     case ScrsAddress(`line1`, _, _, _, `postcode`, `country`) => true
     case _ => false
