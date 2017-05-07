@@ -53,7 +53,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
   import scala.concurrent.ExecutionContext.Implicits.global
 
   val mockIIService = mock[PrePopService]
-  when(mockIIService.getCTActiveDate()(any())).thenReturn(OptionT.pure[Future, LocalDate](LocalDate.of(2017, 4, 20)))
+  when(mockIIService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
   val startDateFormFactory = new StartDateFormFactory(mockDateService, Now[LocalDate](today))
 
