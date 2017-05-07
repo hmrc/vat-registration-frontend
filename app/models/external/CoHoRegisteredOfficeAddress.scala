@@ -29,8 +29,7 @@ case class CoHoRegisteredOfficeAddress(
                         poBox: Option[String],
                         postalCode: Option[String],
                         region: Option[String]
-                      ) {
-}
+                      )
 
 object CoHoRegisteredOfficeAddress {
 

@@ -24,5 +24,5 @@ object VatLodgingOfficer {
   implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
 
   // TODO remove once no longer required
-  val empty = VatLodgingOfficer(ScrsAddress("",""))
+  val empty = VatLodgingOfficer(ScrsAddress(line1 = "todo",line2 = "todo", postcode=Some("todo")))
 }
