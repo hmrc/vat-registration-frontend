@@ -22,7 +22,8 @@ import java.time.format.DateTimeFormatter.ofPattern
 import cats.data.OptionT
 import connectors.{KeystoreConnector, PPConnector}
 import helpers.VatRegSpec
-import models.external.{AccountingDetails, CorporationTaxRegistration}
+import models.api.ScrsAddress
+import models.external.{AccountingDetails, CoHoCompanyProfile, CoHoRegisteredOfficeAddress, CorporationTaxRegistration}
 import org.mockito.Matchers._
 import org.mockito.Mockito
 import org.mockito.Mockito._
@@ -69,5 +70,30 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
 
   }
 
+  "getOfficerAddressList" must {
+    "be non-empty if a companyProfile is present" in new Setup {
+      val coHoRegisteredOfficeAddress =
+        CoHoRegisteredOfficeAddress("premises",
+          "address_line_1",
+          Some("address_line_2"),
+          "locality",
+          Some("country"),
+          Some("po_box"),
+          Some("postal_code"),
+          Some("region"))
+
+      val scsrAddress = ScrsAddress("premises address_line_1", "address_line_2 po_box", Some("locality"), Some("region"), Some("postal_code"), Some("country"))
+
+      mockKeystoreFetchAndGet[CoHoCompanyProfile]("CompanyProfile", Some(CoHoCompanyProfile("status", "transactionId")))
+      when(mockIIService.getRegisteredOfficeAddress("transactionId")).thenReturn(Future.successful(coHoRegisteredOfficeAddress))
+
+      service.getOfficerAddressList() returns Seq(scsrAddress)
+    }
+
+    "be empty if a companyProfile is not present" in new Setup {
+      mockKeystoreFetchAndGet[CoHoCompanyProfile]("CompanyProfile", None)
+      service.getOfficerAddressList() returns Seq()
+    }
+  }
 
 }

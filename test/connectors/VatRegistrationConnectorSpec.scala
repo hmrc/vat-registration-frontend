@@ -225,4 +225,26 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
+  "Calling upsertLodgingOfficer" should {
+
+    val vatLodgingOfficer = validLodgingOfficer
+
+    "return the correct VatResponse when the microservice completes and returns a VatLodgingOfficer model" in new Setup {
+      mockHttpPATCH[VatLodgingOfficer, VatLodgingOfficer]("tst-url", vatLodgingOfficer)
+      connector.upsertVatLodgingOfficer("tstID", vatLodgingOfficer) returns vatLodgingOfficer
+    }
+    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[VatLodgingOfficer, VatLodgingOfficer]("tst-url", forbidden)
+      connector.upsertVatLodgingOfficer("tstID", vatLodgingOfficer) failedWith forbidden
+    }
+    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
+      mockHttpFailedPATCH[VatLodgingOfficer, VatLodgingOfficer]("tst-url", notFound)
+      connector.upsertVatLodgingOfficer("tstID", vatLodgingOfficer) failedWith notFound
+    }
+    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[VatLodgingOfficer, VatLodgingOfficer]("tst-url", internalServiceException)
+      connector.upsertVatLodgingOfficer("tstID", vatLodgingOfficer) failedWith internalServiceException
+    }
+  }
+
 }

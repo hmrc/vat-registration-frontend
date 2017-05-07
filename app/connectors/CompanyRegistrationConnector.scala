@@ -21,42 +21,35 @@ import javax.inject.Singleton
 import com.google.inject.ImplementedBy
 import config.WSHttp
 import models.external.CoHoCompanyProfile
-import play.api.Logger
-import play.api.libs.json._
 import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.ws.WSHttp
-import uk.gov.hmrc.play.http.{BadRequestException, HeaderCarrier}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
 class CompanyRegistrationConnector extends CompanyRegistrationConnect with ServicesConfig {
-  lazy val companyRegistrationUrl: String = baseUrl("company-registration")
-  lazy val companyRegistrationUri: String = getConfString("company-registration.uri","")
-  val http = WSHttp
+  //$COVERAGE-OFF$
+  val companyRegistrationUrl: String = baseUrl("company-registration")
+  val companyRegistrationUri: String = getConfString("company-registration.uri","")
+  val http:WSHttp = WSHttp
+  //$COVERAGE-ON$
 }
 
 @ImplementedBy(classOf[CompanyRegistrationConnector])
 trait CompanyRegistrationConnect {
+  self =>
 
   val companyRegistrationUrl : String
   val companyRegistrationUri : String
   val http : WSHttp
 
+  val className = self.getClass.getSimpleName
+
   def getCompanyRegistrationDetails(regId: String)(implicit hc : HeaderCarrier) : Future[CoHoCompanyProfile] = {
-    http.GET[JsObject](s"$companyRegistrationUrl$companyRegistrationUri/$regId") map {
-      response =>
-        val status = (response \ "status").as[String]
-        val txId = (response \ "confirmationReferences" \ "transaction-id").as[String]
-        CoHoCompanyProfile(status, txId)
-    } recover {
-      case badRequestErr: BadRequestException =>
-        Logger.error("[CompanyRegistrationConnect] [getCompanyRegistrationDetails] - Received a BadRequest status code when expecting a Company Registration document")
-        throw badRequestErr
-      case ex: Exception =>
-        Logger.error(s"[CompanyRegistrationConnect] [getCompanyRegistrationDetails] - Received an error response when expecting a Company Registration document - error: ${ex.getMessage}")
-        throw ex
+    http.GET[CoHoCompanyProfile](s"$companyRegistrationUrl$companyRegistrationUri/$regId") recover {
+      case e: Exception => throw logResponse(e, className, "getCompanyRegistrationDetails")
     }
   }
 }

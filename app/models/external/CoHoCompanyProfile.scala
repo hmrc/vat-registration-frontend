@@ -16,10 +16,21 @@
 
 package models.external
 
-import play.api.libs.json.Json
+import play.api.libs.json._
+import play.api.libs.json.Reads._
+import play.api.libs.functional.syntax._
 
 case class CoHoCompanyProfile(status: String, transactionId: String)
 
 object CoHoCompanyProfile {
-  implicit val formats = Json.format[CoHoCompanyProfile]
+  implicit val reader: Reads[CoHoCompanyProfile] = (
+    (__ \ "status").read[String] and
+      (__ \ "confirmationReferences" \ "transaction-id").read[String]
+    )(CoHoCompanyProfile.apply _)
+
+  implicit val writer: Writes[CoHoCompanyProfile] = (
+    (__ \ "status").write[String] and
+      (__ \ "confirmationReferences" \ "transaction-id").write[String]
+    )(unlift(CoHoCompanyProfile.unapply))
+
 }

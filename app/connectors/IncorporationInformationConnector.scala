@@ -21,7 +21,6 @@ import javax.inject.Singleton
 import com.google.inject.ImplementedBy
 import config.WSHttp
 import models.external.CoHoRegisteredOfficeAddress
-import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
@@ -31,28 +30,27 @@ import scala.concurrent.Future
 
 @Singleton
 class IncorporationInformationConnector extends IncorporationInformationConnect with ServicesConfig {
-  lazy val incorpInfoUrl = baseUrl("incorporation-information")
-  lazy val incorpInfoUri = getConfString("incorporation-information.uri","")
-  val http : WSHttp = WSHttp
+  //$COVERAGE-OFF$
+  // TODO FIXME
+  val incorpInfoUrl = "http://localhost:9976/"  //baseUrl("incorporation-information")
+  val incorpInfoUri = "incorporation-information" //getConfString("incorporation-information.uri","")
+  val http: WSHttp = WSHttp
+  //$COVERAGE-ON$
 }
 
 @ImplementedBy(classOf[IncorporationInformationConnector])
 trait IncorporationInformationConnect {
+  self =>
 
   val incorpInfoUrl: String
   val incorpInfoUri: String
   val http: WSHttp
 
+  val className = self.getClass.getSimpleName
+
   def getRegisteredOfficeAddress(transactionId: String)(implicit hc : HeaderCarrier): Future[CoHoRegisteredOfficeAddress] = {
-    http.GET[CoHoRegisteredOfficeAddress](s"$incorpInfoUrl$incorpInfoUri/$transactionId/company-profile") map { roAddress =>
-      roAddress
-    } recover {
-      case badRequestErr: BadRequestException =>
-        Logger.error("[CohoAPIConnector] [getRegisteredOfficeAddress] - Received a BadRequest status code when expecting a Registered office address")
-        throw badRequestErr
-      case ex: Exception =>
-        Logger.error(s"[CohoAPIConnector] [getRegisteredOfficeAddress] - Received an error response when expecting a Registered office address - error: ${ex.getMessage}")
-        throw ex
+    http.GET[CoHoRegisteredOfficeAddress](s"$incorpInfoUrl$incorpInfoUri/$transactionId/company-profile") recover {
+      case e: Exception => throw logResponse(e, className, "getRegisteredOfficeAddress")
     }
   }
 

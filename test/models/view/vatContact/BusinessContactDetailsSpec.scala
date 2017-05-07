@@ -32,7 +32,7 @@ class BusinessContactDetailsSpec extends UnitSpec with VatRegistrationFixture wi
 
     val updatedVatContact = VatContact(VatDigitalContact(email = "asd@xyz", tel = Some("123"), mobile = Some("123")), Some("qwe.com"))
 
-    "update VatTradingDetails with new ApplyEori" in {
+    "update VatContact with new BusinessContactDetails" in {
       ViewModelTransformer[BusinessContactDetails, VatContact]
         .toApi(newBusinessContactDetails, initialVatContact) shouldBe updatedVatContact
     }
