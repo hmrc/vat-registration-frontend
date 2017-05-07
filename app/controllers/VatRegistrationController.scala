@@ -22,7 +22,6 @@ import auth.VatTaxRegime
 import cats.data.OptionT
 import cats.instances.future._
 import config.FrontendAuthConnector
-import connectors.KeystoreConnector
 import models.{ApiModelTransformer, S4LKey}
 import play.api.Configuration
 import play.api.data.{Form, FormError}
