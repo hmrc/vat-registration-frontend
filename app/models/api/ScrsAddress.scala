@@ -27,11 +27,14 @@ case class ScrsAddress(line1: String,
 {
   def getId(): String = (line1 + {if (postcode.isDefined) postcode.get else country.get}).replaceAll(" ","")
 
+  // normalise
   def asLabel(): String =
-    Seq(line1, line2, line3, line4, postcode, country).collect {
-      case s:String => s
-      case Some(l) => l
-    } mkString (", ")
+    Seq(line1, line2, line3, line4).collect {
+      case s:String => s.toLowerCase.capitalize
+      case Some(l:String) => l.toLowerCase.capitalize
+    } ++
+      Seq(postcode).collect {case Some(s) => s.toUpperCase()} ++
+      Seq(country).collect {case Some(s) => s} mkString (", ")
 
   // TODO consider making case-insensitive
   override def equals(obj: Any): Boolean = obj match {
