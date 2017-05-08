@@ -30,8 +30,8 @@ case class ScrsAddress(line1: String,
   // normalise
   def asLabel(): String =
     Seq(line1, line2, line3, line4).collect {
-      case s:String => s.toLowerCase.capitalize
-      case Some(l:String) => l.toLowerCase.capitalize
+      case s:String => s.split(" ").map(_.toLowerCase.capitalize).mkString(" ")
+      case Some(l:String) => l.split(" ").map(_.toLowerCase.capitalize).mkString(" ")
     } ++
       Seq(postcode).collect {case Some(s) => s.toUpperCase()} ++
       Seq(country).collect {case Some(s) => s} mkString (", ")
