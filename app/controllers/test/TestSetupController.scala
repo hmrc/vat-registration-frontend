@@ -19,11 +19,11 @@ package controllers.test
 import java.time.LocalDate
 import javax.inject.Inject
 
-import connectors.{KeystoreConnector, VatRegistrationConnector}
+import connectors.VatRegistrationConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.test.TestSetupForm
 import models.S4LKey
-import models.api.VatServiceEligibility
+import models.api.{ScrsAddress, VatServiceEligibility}
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
@@ -33,6 +33,7 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
+import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
@@ -81,6 +82,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       leaseVehiclesOrEquipment <- s4LService.fetchAndGet[LeaseVehicles]()
       investmentFundManagement <- s4LService.fetchAndGet[InvestmentFundManagement]()
       manageAdditionalFunds <- s4LService.fetchAndGet[ManageAdditionalFunds]()
+      officerHomeAddress <- s4LService.fetchAndGet[OfficerHomeAddressView]()
 
       eligibility <- s4LService.fetchAndGet[VatServiceEligibility]()
 
@@ -140,7 +142,15 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
           eligibility.map(_.doingBusinessAbroad.getOrElse("").toString),
           eligibility.map(_.doAnyApplyToYou.getOrElse("").toString),
           eligibility.map(_.applyingForAnyOf.getOrElse("").toString),
-          eligibility.map(_.companyWillDoAnyOf.getOrElse("").toString))
+          eligibility.map(_.companyWillDoAnyOf.getOrElse("").toString)),
+        officerHomeAddress = OfficerHomeAddressTestSetup(
+          officerHomeAddress.flatMap(_.address).map(_.line1),
+          officerHomeAddress.flatMap(_.address).map(_.line2),
+          officerHomeAddress.flatMap(_.address).flatMap(_.line3),
+          officerHomeAddress.flatMap(_.address).flatMap(_.line4),
+          officerHomeAddress.flatMap(_.address).flatMap(_.postcode),
+          officerHomeAddress.flatMap(_.address).flatMap(_.country)
+        )
       )
       form = TestSetupForm.form.fill(testSetup)
     } yield Ok(views.html.pages.test.test_setup(form))
@@ -181,11 +191,13 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveToS4Later(data.vatTradingDetails.tradingNameChoice, data, { x => TradingNameView(x.vatTradingDetails.tradingNameChoice.get, data.vatTradingDetails.tradingName) })
             _ <- saveToS4Later(data.vatTradingDetails.euGoods, data, { x => EuGoods(x.vatTradingDetails.euGoods.get) })
             _ <- saveToS4Later(data.vatTradingDetails.applyEori, data, { x => ApplyEori(x.vatTradingDetails.applyEori.get.toBoolean) })
-            _ <- saveToS4Later(data.vatContact.email, data, { x => BusinessContactDetails(x.vatContact.email.get, x.vatContact.daytimePhone, x.vatContact.mobile, x.vatContact.website ) })
+            _ <- saveToS4Later(data.vatContact.email, data, { x => BusinessContactDetails(x.vatContact.email.get, x.vatContact.daytimePhone, x.vatContact.mobile, x.vatContact.website) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountChoice, data, { x => CompanyBankAccount(x.vatFinancials.companyBankAccountChoice.get) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountName, data, {
-              x => CompanyBankAccountDetails(x.vatFinancials.companyBankAccountName.get,
-                x.vatFinancials.companyBankAccountNumber.get, x.vatFinancials.sortCode.get) })
+              x =>
+                CompanyBankAccountDetails(x.vatFinancials.companyBankAccountName.get,
+                  x.vatFinancials.companyBankAccountNumber.get, x.vatFinancials.sortCode.get)
+            })
             _ <- saveToS4Later(data.vatFinancials.estimateVatTurnover, data, { x => EstimateVatTurnover(x.vatFinancials.estimateVatTurnover.get.toLong) })
             _ <- saveToS4Later(data.vatFinancials.zeroRatedSalesChoice, data, { x => ZeroRatedSales(x.vatFinancials.zeroRatedSalesChoice.get) })
             _ <- saveToS4Later(data.vatFinancials.zeroRatedTurnoverEstimate, data, { x => EstimateZeroRatedSales(x.vatFinancials.zeroRatedTurnoverEstimate.get.toLong) })
@@ -215,12 +227,21 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveToS4Later(data.sicAndCompliance.financialInvestmentFundManagement, data, { x => InvestmentFundManagement(x.sicAndCompliance.financialInvestmentFundManagement.get.toBoolean) })
             _ <- saveToS4Later(data.sicAndCompliance.financialManageAdditionalFunds, data, { x => ManageAdditionalFunds(x.sicAndCompliance.financialManageAdditionalFunds.get.toBoolean) })
 
-            _ <- saveToS4Later(data.vatServiceEligibility.haveNino, data, { x => VatServiceEligibility(x.vatServiceEligibility.haveNino.map(_.toBoolean),
+            _ <- saveToS4Later(data.vatServiceEligibility.haveNino, data, { x =>
+              VatServiceEligibility(x.vatServiceEligibility.haveNino.map(_.toBoolean),
                 x.vatServiceEligibility.doingBusinessAbroad.map(_.toBoolean),
                 x.vatServiceEligibility.doAnyApplyToYou.map(_.toBoolean),
                 x.vatServiceEligibility.applyingForAnyOf.map(_.toBoolean),
                 x.vatServiceEligibility.companyWillDoAnyOf.map(_.toBoolean))
             })
+
+            address = ScrsAddress(data.officerHomeAddress.line1.getOrElse(""),
+              data.officerHomeAddress.line2.getOrElse(""),
+              data.officerHomeAddress.line3,
+              data.officerHomeAddress.line4,
+              data.officerHomeAddress.postcode,
+              data.officerHomeAddress.country)
+            _ <- saveToS4Later(data.officerHomeAddress.line1, data, { x => OfficerHomeAddressView(address.getId(), Some(address)) })
           } yield Ok("Test setup complete")
         }
       })
