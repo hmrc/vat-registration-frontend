@@ -23,18 +23,19 @@ case class ScrsAddress(line1: String,
                        line3: Option[String] = None,
                        line4: Option[String] = None,
                        postcode: Option[String] = None, // TODO can we use a mandatory union type i.e. PostcodeOrCountry
-                       country: Option[String] = None ) // TODO instead of two optional fields ?
+                       country: Option[String] = None) // TODO instead of two optional fields ?
 {
-  def getId(): String = (line1 + {if (postcode.isDefined) postcode.get else country.get}).replaceAll(" ","")
+  def getId(): String = (line1 + {
+    if (postcode.isDefined) postcode.get else country.get
+  }).replaceAll(" ", "")
 
   // normalise
   def asLabel(): String =
-    Seq(line1, line2, line3, line4).collect {
-      case s:String => s.split(" ").map(_.toLowerCase.capitalize).mkString(" ")
-      case Some(l:String) => l.split(" ").map(_.toLowerCase.capitalize).mkString(" ")
+    Seq(Some(line1), Some(line2), line3, line4).collect {
+      case Some(l: String) => l.split(" ").map(_.toLowerCase.capitalize) mkString " "
     } ++
-      Seq(postcode).collect {case Some(s) => s.toUpperCase()} ++
-      Seq(country).collect {case Some(s) => s} mkString (", ")
+      Seq(postcode).collect { case Some(s) => s.toUpperCase() } ++
+      Seq(country).collect { case Some(s) => s } mkString ", "
 
   // TODO consider making case-insensitive
   override def equals(obj: Any): Boolean = obj match {

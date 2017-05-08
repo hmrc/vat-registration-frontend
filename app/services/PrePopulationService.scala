@@ -20,12 +20,12 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
+import cats.Traverse
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import connectors.{OptionalResponse, PPConnector}
 import models.ApiModelTransformer
 import models.api.ScrsAddress
-import models.external.CoHoCompanyProfile
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -42,8 +42,8 @@ trait PrePopService {
 }
 
 class PrePopulationService @Inject()(ppConnector: PPConnector,
-                                    iis: IncorporationInformationService)(implicit vrs: VatRegistrationService)
-                        extends PrePopService with CommonService {
+                                     iis: IncorporationInformationService)(implicit vrs: VatRegistrationService)
+  extends PrePopService with CommonService {
 
   import cats.instances.future._
 
@@ -58,21 +58,19 @@ class PrePopulationService @Inject()(ppConnector: PPConnector,
     } yield LocalDate.parse(dateString, formatter)
 
   override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]] = {
-    // register office address
-    val roAddressF = (for {
-      companyProfile <- OptionT(keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile"))
-      address <- OptionT.liftF(iis.getRegisteredOfficeAddress(companyProfile.transactionId))
-    } yield Seq[ScrsAddress](address)).getOrElse(Seq())
+    import cats.instances.list._
 
-    // current address
-    val currentAddressF: Future[Option[OfficerHomeAddressView]] = vrs.getVatScheme() map ApiModelTransformer[OfficerHomeAddressView].toViewModel
-    for {
-      roAddress <- roAddressF
-      cuAddress <- currentAddressF
-    } yield cuAddress.foldLeft(roAddress)((z,a) => z :+ a.address.get).distinct
+    val addressFromBE: OptionalResponse[ScrsAddress] =
+      OptionT(vrs.getVatScheme() map ApiModelTransformer[OfficerHomeAddressView].toViewModel).subflatMap(_.address)
+    val addressFromII: OptionalResponse[ScrsAddress] = iis.getOfficerAddressList()
+
+    // S4L
+
+
+    Traverse[List].sequence(List(addressFromBE, addressFromII).map(_.value)).map(_.flatten.distinct)
 
     // TODO merge addresses from PrePop service
 
-    // TODO order the list and standardise case ?
+    // TODO order the addresses
   }
 }

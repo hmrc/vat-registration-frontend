@@ -18,22 +18,29 @@ package services
 
 import javax.inject.Inject
 
+import cats.data.OptionT
 import com.google.inject.ImplementedBy
-import connectors.IncorporationInformationConnector
-import models.external.CoHoRegisteredOfficeAddress
+import connectors.{IncorporationInformationConnector, OptionalResponse}
+import models.api.ScrsAddress
+import models.external.CoHoCompanyProfile
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @ImplementedBy(classOf[IncorporationInformationService])
 trait IncorpInfoService {
-  def getRegisteredOfficeAddress(transactionId: String)(implicit hc : HeaderCarrier): Future[CoHoRegisteredOfficeAddress]
+  def getOfficerAddressList()(implicit hc: HeaderCarrier): OptionalResponse[ScrsAddress]
 }
 
 class IncorporationInformationService @Inject()(iiConnector: IncorporationInformationConnector)
-            extends IncorpInfoService with CommonService {
+  extends IncorpInfoService with CommonService {
 
-  override def getRegisteredOfficeAddress(transactionId: String)(implicit hc: HeaderCarrier): Future[CoHoRegisteredOfficeAddress] = {
-    iiConnector.getRegisteredOfficeAddress(transactionId)
+  import cats.instances.future._
+
+  override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): OptionalResponse[ScrsAddress] = {
+    for {
+      companyProfile <- OptionT(keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile"))
+      address <- iiConnector.getRegisteredOfficeAddress(companyProfile.transactionId)
+    } yield address: ScrsAddress // implicit conversion
   }
 }
