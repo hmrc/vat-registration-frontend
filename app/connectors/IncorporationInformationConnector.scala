@@ -18,6 +18,7 @@ package connectors
 
 import javax.inject.Singleton
 
+import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
 import models.external.CoHoRegisteredOfficeAddress
@@ -26,14 +27,13 @@ import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 @Singleton
 class IncorporationInformationConnector extends IncorporationInformationConnect with ServicesConfig {
   //$COVERAGE-OFF$
   // TODO FIXME
-  val incorpInfoUrl = "http://localhost:9976/"  //baseUrl("incorporation-information")
-  val incorpInfoUri = "incorporation-information" //getConfString("incorporation-information.uri","")
+  val incorpInfoUrl = baseUrl("incorporation-information")
+  val incorpInfoUri = getConfString("incorporation-information.uri", "")
   val http: WSHttp = WSHttp
   //$COVERAGE-ON$
 }
@@ -48,10 +48,14 @@ trait IncorporationInformationConnect {
 
   val className = self.getClass.getSimpleName
 
-  def getRegisteredOfficeAddress(transactionId: String)(implicit hc : HeaderCarrier): Future[CoHoRegisteredOfficeAddress] = {
-    http.GET[CoHoRegisteredOfficeAddress](s"$incorpInfoUrl$incorpInfoUri/$transactionId/company-profile") recover {
-      case e: Exception => throw logResponse(e, className, "getRegisteredOfficeAddress")
-    }
+  // assumes that a registered address exists in the company profile in II
+  def getRegisteredOfficeAddress(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[CoHoRegisteredOfficeAddress] = {
+    import cats.instances.future._
+    OptionT.liftF(
+      http.GET[CoHoRegisteredOfficeAddress](s"$incorpInfoUrl$incorpInfoUri/$transactionId/company-profile") recoverWith {
+        case e: Exception => throw logResponse(e, className, "getRegisteredOfficeAddress")
+      }
+    ).orElse(OptionT.none)
   }
 
 }
