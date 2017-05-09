@@ -9,7 +9,7 @@
     <td id="@{
         row.id
     }Answer">
-    @messages(row.answerMessageKey)
+    @Html(messages(row.answerMessageKey))
     </td>
     <td class="change-answer">
     @row.changeLink.map { linkLocation =>

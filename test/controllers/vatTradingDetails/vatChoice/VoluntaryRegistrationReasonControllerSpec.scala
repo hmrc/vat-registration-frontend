@@ -50,7 +50,7 @@ import scala.concurrent.Future
 
 class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegistrationFixture {
   implicit val hc = HeaderCarrier()
-  val mockVatRegistrationService = mock[VatRegistrationService]
+
 
   object TestVoluntaryRegistrationReasonController extends VoluntaryRegistrationReasonController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector

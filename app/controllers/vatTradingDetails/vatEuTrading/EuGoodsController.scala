@@ -47,7 +47,7 @@ class EuGoodsController @Inject()(ds: CommonPlayDependencies)
           if (EuGoods.EU_GOODS_NO == data.yesNo) {
             for {
               _ <- s4LService.saveForm[ApplyEori](ApplyEori(ApplyEori.APPLY_EORI_NO))
-            } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+            } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())
           } else {
             Future.successful(Redirect(controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show()))
           }

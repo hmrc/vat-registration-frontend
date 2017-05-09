@@ -409,6 +409,10 @@ pages.summary.taxableSales.estimatedSalesValue                = Estimated taxabl
 pages.summary.taxableSales.zeroRatedSales                     = Will make zero-rated sales
 pages.summary.taxableSales.zeroRatedSalesValue                = Estimated zero-rated sales
 
+## Summary Page Director Addresses
+pages.summary.directorAddresses.sectionHeading                = Director Addresses
+pages.summary.directorAddresses.homeAddress                   = Home address
+
 ## Summary Page Doing Business Abroad
 pages.summary.doingBusinessAbroad.sectionHeading              = Doing business abroad
 pages.summary.doingBusinessAbroad.eori.euGoods                = Trades goods or services with countries outside the EU
@@ -597,4 +601,11 @@ pages.summary.serviceCriteria.businessAbroad            = Doing Business Abroad
 pages.summary.serviceCriteria.doAnyApplyToYou           = Do Any Apply To You
 pages.summary.serviceCriteria.applyingForAnyOf          = Applying For Any Of
 
+
+
+## Officer Home Address Page
+pages.officerHomeAddress.title                           = Officer home address
+pages.officerHomeAddress.heading                         = What is your home address?
+pages.officerHomeAddress.different.address               = A different address
+validation.officerHomeAddress.missing                    = Tell us your home address
 

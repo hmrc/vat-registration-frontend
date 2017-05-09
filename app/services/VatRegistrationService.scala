@@ -19,9 +19,10 @@ package services
 import javax.inject.Inject
 
 import com.google.inject.ImplementedBy
-import connectors.VatRegistrationConnector
+import connectors.{CompanyRegistrationConnector, VatRegistrationConnector}
 import models._
 import models.api._
+import models.external.CoHoCompanyProfile
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
@@ -30,6 +31,7 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
+import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
@@ -54,7 +56,10 @@ trait RegistrationService {
 
 }
 
-class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: VatRegistrationConnector)
+class VatRegistrationService @Inject()(s4LService: S4LService,
+                                       vatRegConnector: VatRegistrationConnector,
+                                       companyRegistrationConnector: CompanyRegistrationConnector)
+
   extends RegistrationService
     with CommonService {
 
@@ -85,10 +90,13 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
     for {
       vatScheme <- vatRegConnector.createNewRegistration()
       _ <- keystoreConnector.cache[String]("RegistrationId", vatScheme.id)
+      companyProfile <- companyRegistrationConnector.getCompanyRegistrationDetails(vatScheme.id)
+      _ <- keystoreConnector.cache[CoHoCompanyProfile]("CompanyProfile", companyProfile)
     } yield ()
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
-    submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@| submitVatContact |@| submitVatEligibility() map { case _ => () }
+    submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@|
+      submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer map { case _ => () }
 
   private[services] def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
 
@@ -208,6 +216,20 @@ class VatRegistrationService @Inject()(s4LService: S4LService, vatRegConnector: 
       vs <- getVatScheme()
       vatServiceEligibility <- mergeWithS4L(vs)
       response <- vatRegConnector.upsertVatEligibility(vs.id, vatServiceEligibility)
+    } yield response
+  }
+
+  private[services] def submitVatLodgingOfficer()(implicit hc: HeaderCarrier): Future[VatLodgingOfficer] = {
+    def mergeWithS4L(vs: VatScheme) =
+      s4l[OfficerHomeAddressView]().map(S4LVatLodgingOfficer).map { s4l =>
+        update(s4l.officerHomeAddressView, vs)
+          .apply(vs.lodgingOfficer.getOrElse(VatLodgingOfficer.empty)) //TODO remove the "seeding" with empty
+      }
+
+    for {
+      vs <- getVatScheme()
+      vatLodgingOfficer <- mergeWithS4L(vs)
+      response <- vatRegConnector.upsertVatLodgingOfficer(vs.id, vatLodgingOfficer)
     } yield response
   }
 
