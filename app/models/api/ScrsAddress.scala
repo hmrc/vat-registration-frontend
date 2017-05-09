@@ -16,26 +16,23 @@
 
 package models.api
 
+import cats.Show
+import models.api.ScrsAddress.inlineShow.inline
+import org.apache.commons.lang3.text.WordUtils
 import play.api.libs.json.{Json, OFormat}
 
-case class ScrsAddress(line1: String,
-                       line2: String,
-                       line3: Option[String] = None,
-                       line4: Option[String] = None,
-                       postcode: Option[String] = None, // TODO can we use a mandatory union type i.e. PostcodeOrCountry
-                       country: Option[String] = None) // TODO instead of two optional fields ?
-{
-  def getId(): String = (line1 + {
-    if (postcode.isDefined) postcode.get else country.get
-  }).replaceAll(" ", "")
+case class ScrsAddress(
+                        line1: String,
+                        line2: String,
+                        line3: Option[String] = None,
+                        line4: Option[String] = None,
+                        postcode: Option[String] = None,
+                        country: Option[String] = None
+                      ) {
 
-  // normalise
-  def asLabel(): String =
-    Seq(Some(line1), Some(line2), line3, line4).collect {
-      case Some(l: String) => l.split(" ").map(_.toLowerCase.capitalize) mkString " "
-    } ++
-      Seq(postcode).collect { case Some(s) => s.toUpperCase() } ++
-      Seq(country).collect { case Some(s) => s } mkString ", "
+  val id: String = Seq(Some(line1), if (postcode.isDefined) postcode else country).flatten.mkString.replaceAll(" ", "")
+
+  val asLabel: String = inline show this
 
   // TODO consider making case-insensitive
   override def equals(obj: Any): Boolean = obj match {
@@ -47,6 +44,41 @@ case class ScrsAddress(line1: String,
 }
 
 object ScrsAddress {
+
+  private sealed trait AddressLineOrPostcode
+
+  private final case class AddressLine(line: String) extends AddressLineOrPostcode
+
+  private final case class Postcode(postcode: String) extends AddressLineOrPostcode
+
   implicit val format: OFormat[ScrsAddress] = Json.format[ScrsAddress]
+
+  private def normalisedSeq(address: ScrsAddress): Seq[String] = {
+    import cats.instances.option._
+    import cats.syntax.applicative._
+    Seq[Option[AddressLineOrPostcode]](
+      address.line1.pure.map(AddressLine),
+      address.line2.pure.map(AddressLine),
+      address.line3.map(AddressLine),
+      address.line4.map(AddressLine),
+      address.postcode.map(Postcode),
+      address.country.map(AddressLine)
+    ).collect {
+      case Some(AddressLine(line)) => WordUtils.capitalizeFully(line)
+      case Some(Postcode(postcode)) => postcode.toUpperCase()
+    }
+  }
+
+  object htmlShow {
+    implicit val html = Show.show { a: ScrsAddress =>
+      normalisedSeq(a).mkString("<br />")
+    }
+  }
+
+  object inlineShow {
+    implicit val inline = Show.show { a: ScrsAddress =>
+      normalisedSeq(a).mkString(", ")
+    }
+  }
 
 }
