@@ -35,7 +35,6 @@ import scala.concurrent.Future
 
 class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val mockVatRegistrationService = mock[VatRegistrationService]
   val DESCRIPTION = "Testing"
 
   object TestController extends BusinessActivityDescriptionController(ds)(mockS4LService, mockVatRegistrationService) {

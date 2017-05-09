@@ -20,12 +20,14 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ofPattern
 
 import cats.data.OptionT
-import connectors.{KeystoreConnector, PPConnector}
+import connectors.KeystoreConnector
 import helpers.VatRegSpec
+import models.S4LKey
 import models.api.{ScrsAddress, VatLodgingOfficer, VatScheme}
-import models.external.{AccountingDetails, CoHoCompanyProfile, CoHoRegisteredOfficeAddress, CorporationTaxRegistration}
+import models.external.{AccountingDetails, CoHoCompanyProfile, CorporationTaxRegistration}
+import models.view.vatLodgingOfficer.OfficerHomeAddressView
+import org.mockito.Matchers
 import org.mockito.Matchers._
-import org.mockito.Mockito
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -37,6 +39,7 @@ import scala.language.implicitConversions
 class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
 
   import cats.instances.future._
+  import cats.syntax.applicative._
 
   private class Setup {
 
@@ -46,14 +49,17 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
     val none: OptionT[Future, CorporationTaxRegistration] = OptionT.none
 
     implicit val headerCarrier = HeaderCarrier()
-    val mockPPConnector = Mockito.mock(classOf[PPConnector])
-    val mockVatRegService = Mockito.mock(classOf[VatRegistrationService])
-    val mockIIService = Mockito.mock(classOf[IncorporationInformationService])
-    val service = new PrePopulationService(mockPPConnector, mockIIService)(mockVatRegService) {
+
+    val service = new PrePopulationService(mockPPConnector, mockIIService, mockS4LService) {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
       mockFetchRegId()
     }
 
+    def save4laterReturns[T: S4LKey](t: T)(implicit s4lService: S4LService): Unit =
+      when(s4lService.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(OptionT.pure(t).value)
+
+    def save4laterReturnsNothing[T: S4LKey]()(implicit s4LService: S4LService): Unit =
+      when(s4LService.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(None.pure)
   }
 
   "CT Active Date" must {
@@ -72,40 +78,36 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
   }
 
   "getOfficerAddressList" must {
-    "be non-empty if a companyProfile is present" in new Setup {
-      val coHoRegisteredOfficeAddress =
-        CoHoRegisteredOfficeAddress("premises",
-          "address_line_1",
-          Some("address_line_2"),
-          "locality",
-          Some("country"),
-          Some("po_box"),
-          Some("postal_code"),
-          Some("region"))
 
+    "be non-empty when companyProfile, addressDB and addresS4L are present" in new Setup {
       val scsrAddress = ScrsAddress("premises address_line_1", "address_line_2 po_box", Some("locality"), Some("region"), Some("postal_code"), Some("country"))
       val emptyVatScheme = VatScheme("123")
+      val officerHomeAddressView = OfficerHomeAddressView(scsrAddress.id, Some(scsrAddress))
 
-      mockKeystoreFetchAndGet[CoHoCompanyProfile]("CompanyProfile", Some(CoHoCompanyProfile("status", "transactionId")))
-      when(mockIIService.getRegisteredOfficeAddress("transactionId")).thenReturn(Future.successful(coHoRegisteredOfficeAddress))
-      when(mockVatRegService.getVatScheme()).thenReturn(Future.successful(emptyVatScheme))
+      when(mockIIService.getOfficerAddressList()).thenReturn(OptionT.pure(scsrAddress))
+      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
+      save4laterReturns[OfficerHomeAddressView](officerHomeAddressView)
 
       service.getOfficerAddressList() returns Seq(scsrAddress)
     }
 
-    "be non-empty if a companyProfile is not present and there is a current address" in new Setup {
+    "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
       val address = ScrsAddress(line1="street", line2="area", postcode=Some("xyz"))
       val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(address)))
-      mockKeystoreFetchAndGet[CoHoCompanyProfile]("CompanyProfile", None)
-      when(mockVatRegService.getVatScheme()).thenReturn(Future.successful(vatSchemeWithAddress))
+
+      when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
+      when(mockIIService.getOfficerAddressList()).thenReturn(OptionT.pure(address))
+      save4laterReturnsNothing[OfficerHomeAddressView]()
 
       service.getOfficerAddressList() returns Seq(address)
     }
 
-    "be empty if a companyProfile is not present and there is no current address" in new Setup {
+    "be empty if a companyProfile is not present and addressDB and addresS4L are not present" in new Setup {
       val emptyVatScheme = VatScheme("123")
-      mockKeystoreFetchAndGet[CoHoCompanyProfile]("CompanyProfile", None)
-      when(mockVatRegService.getVatScheme()).thenReturn(Future.successful(emptyVatScheme))
+
+      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
+      when(mockIIService.getOfficerAddressList()).thenReturn(OptionT.none[Future, ScrsAddress])
+      save4laterReturnsNothing[OfficerHomeAddressView]()
 
       service.getOfficerAddressList() returns Seq()
     }

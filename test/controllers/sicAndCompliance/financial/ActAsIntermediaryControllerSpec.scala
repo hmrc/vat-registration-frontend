@@ -35,8 +35,6 @@ import scala.concurrent.Future
 
 class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val mockVatRegistrationService = mock[VatRegistrationService]
-
   object ActAsIntermediaryController extends ActAsIntermediaryController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }

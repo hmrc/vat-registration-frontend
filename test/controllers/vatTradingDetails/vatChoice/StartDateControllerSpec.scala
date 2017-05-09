@@ -44,7 +44,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val today: LocalDate = LocalDate.of(2017, 3, 21)
 
-  val mockVatRegistrationService = mock[VatRegistrationService]
+
 
   val mockDateService = mock[DateService]
   when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
@@ -52,12 +52,11 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
   import cats.instances.future._
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  val mockIIService = mock[PrePopService]
-  when(mockIIService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+  when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
   val startDateFormFactory = new StartDateFormFactory(mockDateService, Now[LocalDate](today))
 
-  object TestStartDateController extends StartDateController(startDateFormFactory, mockIIService, ds)(mockS4LService, mockVatRegistrationService) {
+  object TestStartDateController extends StartDateController(startDateFormFactory, mockPPService, ds)(mockS4LService, mockVatRegistrationService) {
     implicit val fixedToday = Now[LocalDate](today)
     override val authConnector = mockAuthConnector
   }

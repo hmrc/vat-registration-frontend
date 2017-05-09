@@ -18,19 +18,14 @@ package controllers.vatLodgingOfficer
 
 import builders.AuthBuilder
 import connectors.KeystoreConnector
-import controllers.sicAndCompliance.routes
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{ScrsAddress, VatLodgingOfficer, VatScheme}
-import models.view.vatContact.BusinessContactDetails
+import models.api.{ScrsAddress, VatLodgingOfficer}
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers.status
-import services.{PrePopulationService, VatRegistrationService}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -38,10 +33,7 @@ import scala.concurrent.Future
 
 class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val mockVatRegistrationService = mock[VatRegistrationService]
-  val mockPrePopulationService = mock[PrePopulationService]
-
-  object TestOfficerHomeAddressController extends OfficerHomeAddressController(ds)(mockS4LService, mockVatRegistrationService, mockPrePopulationService) {
+  object TestOfficerHomeAddressController extends OfficerHomeAddressController(ds)(mockS4LService, mockVatRegistrationService, mockPPService) {
     override val authConnector = mockAuthConnector
     override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
   }
@@ -52,7 +44,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
 
   s"GET ${routes.OfficerHomeAddressController.show()}" should {
 
-    when(mockPrePopulationService.getOfficerAddressList()(any[HeaderCarrier]()))
+    when(mockPPService.getOfficerAddressList()(any[HeaderCarrier]()))
       .thenReturn(Future.successful(Seq(address)))
     mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", CacheMap("", Map.empty))
 
@@ -95,18 +87,18 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.OfficerHomeAddressController.submit()} with selected address" should {
 
     "return 303" in {
-      val savedAddressView = OfficerHomeAddressView(address.getId(), Some(address))
+      val savedAddressView = OfficerHomeAddressView(address.id, Some(address))
       val returnOfficerHomeAddressView = CacheMap("", Map("" -> Json.toJson(savedAddressView)))
 
       when(mockS4LService.saveForm[OfficerHomeAddressView](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnOfficerHomeAddressView))
-      when(mockPrePopulationService.getOfficerAddressList()(any[HeaderCarrier]()))
+      when(mockPPService.getOfficerAddressList()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(Seq(address)))
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", Some(Seq(address)))
 
       AuthBuilder.submitWithAuthorisedUser(
         TestOfficerHomeAddressController.submit(),
-        fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.getId())
+        fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.id)
       )(_ redirectsTo s"$contextRoot/business-activity-description")
 
     }
@@ -115,12 +107,12 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.OfficerHomeAddressController.submit()} with 'other address' selected" should {
 
     "return 303" in {
-      val savedAddressView = OfficerHomeAddressView(address.getId(), Some(address))
+      val savedAddressView = OfficerHomeAddressView(address.id, Some(address))
       val returnOfficerHomeAddressView = CacheMap("", Map("" -> Json.toJson(savedAddressView)))
 
       when(mockS4LService.saveForm[OfficerHomeAddressView](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnOfficerHomeAddressView))
-      when(mockPrePopulationService.getOfficerAddressList()(any[HeaderCarrier]()))
+      when(mockPPService.getOfficerAddressList()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(Seq(address)))
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", Some(Seq(address)))
 

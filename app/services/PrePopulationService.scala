@@ -42,7 +42,7 @@ trait PrePopService {
 }
 
 class PrePopulationService @Inject()(ppConnector: PPConnector,
-                                     iis: IncorporationInformationService)(implicit vrs: VatRegistrationService)
+                                     iis: IncorporationInformationService, s4l: S4LService)(implicit vrs: VatRegistrationService)
   extends PrePopService with CommonService {
 
   import cats.instances.future._
@@ -59,15 +59,13 @@ class PrePopulationService @Inject()(ppConnector: PPConnector,
 
   override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]] = {
     import cats.instances.list._
-
+    import cats.syntax.traverse._
+    val addressFromII: OptionalResponse[ScrsAddress] = iis.getOfficerAddressList()
     val addressFromBE: OptionalResponse[ScrsAddress] =
       OptionT(vrs.getVatScheme() map ApiModelTransformer[OfficerHomeAddressView].toViewModel).subflatMap(_.address)
-    val addressFromII: OptionalResponse[ScrsAddress] = iis.getOfficerAddressList()
+    val addressFromS4L: OptionalResponse[ScrsAddress] = OptionT(s4l.fetchAndGet[OfficerHomeAddressView]()).subflatMap(_.address)
 
-    // S4L
-
-
-    Traverse[List].sequence(List(addressFromBE, addressFromII).map(_.value)).map(_.flatten.distinct)
+    List(addressFromII, addressFromBE, addressFromS4L).traverse(_.value).map(_.flatten.distinct)
 
     // TODO merge addresses from PrePop service
 
