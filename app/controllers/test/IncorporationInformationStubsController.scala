@@ -23,15 +23,17 @@ import connectors.test.TestRegistrationConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
-import services.CommonService
-
-class IncorporationInformationStubsController @Inject()(vatRegConnector: TestRegistrationConnector, ds: CommonPlayDependencies)
+import services.{CommonService, RegistrationService}
+//$COVERAGE-OFF$
+class IncorporationInformationStubsController @Inject()(vatRegistrationService: RegistrationService, vatRegConnector: TestRegistrationConnector, ds: CommonPlayDependencies)
   extends VatRegistrationController(ds) with CommonService{
 
   def postTestData(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
 
     for {
+      _ <- vatRegistrationService.createRegistrationFootprint()
       id <- fetchRegistrationId
+      _ <- vatRegConnector.wipeTestData
       jsonData <-  Future.successful(defaultTestData(id))
       _ <- vatRegConnector.postTestData(jsonData)
     } yield  Ok("Data inserted")
@@ -132,3 +134,4 @@ class IncorporationInformationStubsController @Inject()(vatRegConnector: TestReg
 
 
 }
+//$COVERAGE-ON$
