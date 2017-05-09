@@ -16,6 +16,7 @@
 
 package services
 
+import cats.data.OptionT
 import connectors.IncorporationInformationConnector
 import helpers.VatRegSpec
 import models.external.CoHoRegisteredOfficeAddress
@@ -24,9 +25,11 @@ import org.mockito.Mockito._
 import org.scalatest.Inspectors
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
+
+  import cats.instances.future._
 
   private class Setup {
     implicit val headerCarrier = HeaderCarrier()
@@ -34,25 +37,26 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
     val service = new IncorporationInformationService(mockIIConnector)
   }
 
-    "getOfficerAddressList" must {
-      "call IncorporationInformationConnector to get a CoHoRegisteredOfficeAddress" in new Setup {
+  "getOfficerAddressList" must {
+    "call IncorporationInformationConnector to get a CoHoRegisteredOfficeAddress" in new Setup {
 
-        val coHoRegisteredOfficeAddress =
-          CoHoRegisteredOfficeAddress("premises",
-            "address_line_1",
-            Some("address_line_2"),
-            "locality",
-            Some("country"),
-            Some("po_box"),
-            Some("postal_code"),
-            Some("region"))
+      val coHoRegisteredOfficeAddress =
+        CoHoRegisteredOfficeAddress(
+          premises = "premises",
+          addressLine1 = "address_line_1",
+          addressLine2 = Some("address_line_2"),
+          locality = "locality",
+          country = Some("country"),
+          poBox = Some("po_box"),
+          postalCode = Some("postal_code"),
+          region = Some("region"))
 
-        when(mockIIConnector.getRegisteredOfficeAddress("transactionId")).thenReturn(Future.successful(coHoRegisteredOfficeAddress))
 
-        service.getRegisteredOfficeAddress("transactionId") returns (coHoRegisteredOfficeAddress)
-      }
+      when(mockIIConnector.getRegisteredOfficeAddress("transactionId")).thenReturn(OptionT.pure(coHoRegisteredOfficeAddress))
+
+      service.getOfficerAddressList().value returns Some(coHoRegisteredOfficeAddress)
     }
-
+  }
 
 
 }

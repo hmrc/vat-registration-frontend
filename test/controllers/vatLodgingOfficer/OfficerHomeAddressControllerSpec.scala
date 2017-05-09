@@ -30,7 +30,7 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.status
-import services.{PrePopulationService, VatRegistrationService}
+import services.{PrePopulationService, S4LService, VatRegistrationService}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -52,7 +52,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
 
   s"GET ${routes.OfficerHomeAddressController.show()}" should {
 
-    when(mockPrePopulationService.getOfficerAddressList()(any[HeaderCarrier]()))
+    when(mockPrePopulationService.getOfficerAddressList()(any[HeaderCarrier](), any[S4LService]()))
       .thenReturn(Future.successful(Seq(address)))
     mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", CacheMap("", Map.empty))
 
@@ -100,7 +100,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
 
       when(mockS4LService.saveForm[OfficerHomeAddressView](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnOfficerHomeAddressView))
-      when(mockPrePopulationService.getOfficerAddressList()(any[HeaderCarrier]()))
+      when(mockPrePopulationService.getOfficerAddressList()(any[HeaderCarrier](), any[S4LService]()))
         .thenReturn(Future.successful(Seq(address)))
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", Some(Seq(address)))
 
@@ -120,7 +120,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
 
       when(mockS4LService.saveForm[OfficerHomeAddressView](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnOfficerHomeAddressView))
-      when(mockPrePopulationService.getOfficerAddressList()(any[HeaderCarrier]()))
+      when(mockPrePopulationService.getOfficerAddressList()(any[HeaderCarrier](), any[S4LService]()))
         .thenReturn(Future.successful(Seq(address)))
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", Some(Seq(address)))
 

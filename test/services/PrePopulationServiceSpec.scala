@@ -24,6 +24,7 @@ import connectors.{KeystoreConnector, PPConnector}
 import helpers.VatRegSpec
 import models.api.{ScrsAddress, VatLodgingOfficer, VatScheme}
 import models.external.{AccountingDetails, CoHoCompanyProfile, CoHoRegisteredOfficeAddress, CorporationTaxRegistration}
+import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import org.mockito.Matchers._
 import org.mockito.Mockito
 import org.mockito.Mockito._
@@ -73,22 +74,18 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
 
   "getOfficerAddressList" must {
     "be non-empty if a companyProfile is present" in new Setup {
-      val coHoRegisteredOfficeAddress =
-        CoHoRegisteredOfficeAddress("premises",
-          "address_line_1",
-          Some("address_line_2"),
-          "locality",
-          Some("country"),
-          Some("po_box"),
-          Some("postal_code"),
-          Some("region"))
-
       val scsrAddress = ScrsAddress("premises address_line_1", "address_line_2 po_box", Some("locality"), Some("region"), Some("postal_code"), Some("country"))
       val emptyVatScheme = VatScheme("123")
+      val officerHomeAddressView = OfficerHomeAddressView(scsrAddress.getId(), Some(scsrAddress))
 
       mockKeystoreFetchAndGet[CoHoCompanyProfile]("CompanyProfile", Some(CoHoCompanyProfile("status", "transactionId")))
-      when(mockIIService.getRegisteredOfficeAddress("transactionId")).thenReturn(Future.successful(coHoRegisteredOfficeAddress))
+      when(mockIIService.getOfficerAddressList()).thenReturn(OptionT.pure(scsrAddress))
       when(mockVatRegService.getVatScheme()).thenReturn(Future.successful(emptyVatScheme))
+      when(mockS4LService.fetchAndGet[OfficerHomeAddressView]()).thenReturn(OptionT.pure(officerHomeAddressView))
+      /*
+    val addressFromS4L: OptionalResponse[ScrsAddress] = OptionT(s4l.fetchAndGet[OfficerHomeAddressView]()).subflatMap(_.address)
+
+       */
 
       service.getOfficerAddressList() returns Seq(scsrAddress)
     }
