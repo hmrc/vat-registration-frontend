@@ -42,7 +42,6 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
       addresses <- prePopService.getOfficerAddressList()
       _ <- keystoreConnector.cache[Seq[ScrsAddress]]("OfficerAddressList", addresses)
       res <- viewModel[OfficerHomeAddressView].fold(form)(form.fill)
-        //.map(f => Ok(views.html.pages.vatLodgingOfficer.officer_home_address(f, addresses)))
     } yield Ok(views.html.pages.vatLodgingOfficer.officer_home_address(res, addresses))
 
   })
@@ -51,7 +50,7 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
       (formWithErrors: Form[OfficerHomeAddressView]) => for {
-        addressList <- prePopService.getOfficerAddressList()
+        addressList <- prePopService.getOfficerAddressList() // TODO get from keystore
       } yield BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(formWithErrors, addressList)),
       (form: OfficerHomeAddressView) => (for {
         addressList <- OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]]("OfficerAddressList"))
