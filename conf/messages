@@ -409,6 +409,10 @@ pages.summary.taxableSales.estimatedSalesValue                = Estimated taxabl
 pages.summary.taxableSales.zeroRatedSales                     = Will make zero-rated sales
 pages.summary.taxableSales.zeroRatedSalesValue                = Estimated zero-rated sales
 
+## Summary Page Director Addresses
+pages.summary.directorAddresses.sectionHeading                = Director Addresses
+pages.summary.directorAddresses.homeAddress                   = Home address
+
 ## Summary Page Doing Business Abroad
 pages.summary.doingBusinessAbroad.sectionHeading              = Doing business abroad
 pages.summary.doingBusinessAbroad.eori.euGoods                = Trades goods or services with countries outside the EU
