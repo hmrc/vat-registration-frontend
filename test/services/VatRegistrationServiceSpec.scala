@@ -23,6 +23,7 @@ import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api._
+import models.external.{CoHoCompanyProfile, CorporationTaxRegistration}
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
@@ -37,6 +38,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.language.postfixOps
 
 class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture {
@@ -63,7 +65,19 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.createNewRegistration()(any(), any())).thenReturn(validVatScheme.pure)
 
       mockKeystoreCache[String]("CompanyProfile", CacheMap("", Map.empty))
-      when(mockCompanyRegConnector.getCompanyRegistrationDetails(any())(any())).thenReturn(validCoHoProfile.pure)
+      when(mockCompanyRegConnector.getCompanyRegistrationDetails(any())(any())).thenReturn(OptionT.some(validCoHoProfile))
+
+      service.createRegistrationFootprint() completedSuccessfully
+    }
+  }
+
+  "Calling createNewRegistration" should {
+    "return a success response when the Registration is successfully created without finding a company paofile" in new Setup {
+      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+      when(mockRegConnector.createNewRegistration()(any(), any())).thenReturn(validVatScheme.pure)
+      val none: OptionT[Future, CoHoCompanyProfile] = OptionT.none
+      mockKeystoreCache[String]("CompanyProfile", CacheMap("", Map.empty))
+      when(mockCompanyRegConnector.getCompanyRegistrationDetails(any())(any())).thenReturn(none)
 
       service.createRegistrationFootprint() completedSuccessfully
     }

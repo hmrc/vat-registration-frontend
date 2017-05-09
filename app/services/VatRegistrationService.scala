@@ -18,6 +18,7 @@ package services
 
 import javax.inject.Inject
 
+import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import connectors.{CompanyRegistrationConnector, VatRegistrationConnector}
 import models._
@@ -87,12 +88,12 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
 
 
   def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit] =
-    for {
-      vatScheme <- vatRegConnector.createNewRegistration()
-      _ <- keystoreConnector.cache[String]("RegistrationId", vatScheme.id)
+    (for {
+      vatScheme <- OptionT.liftF(vatRegConnector.createNewRegistration())
+      _ <- OptionT.liftF(keystoreConnector.cache[String]("RegistrationId", vatScheme.id))
       companyProfile <- companyRegistrationConnector.getCompanyRegistrationDetails(vatScheme.id)
-      _ <- keystoreConnector.cache[CoHoCompanyProfile]("CompanyProfile", companyProfile)
-    } yield ()
+      _ <- OptionT.liftF(keystoreConnector.cache[CoHoCompanyProfile]("CompanyProfile", companyProfile))
+    } yield ()).getOrElse(())
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
     submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@|
