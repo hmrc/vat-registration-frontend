@@ -28,7 +28,7 @@ object OfficerHomeAddressView {
   // return a view model from a VatScheme instance
   implicit val modelTransformer = ApiModelTransformer[OfficerHomeAddressView] { vs: VatScheme =>
     vs.lodgingOfficer.map(_.currentAddress).collect {
-      case address => OfficerHomeAddressView(address.getId(), Some(address))
+      case address => OfficerHomeAddressView(address.id, Some(address))
     }
   }
 

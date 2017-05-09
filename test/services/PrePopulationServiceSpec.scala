@@ -82,7 +82,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
     "be non-empty when companyProfile, addressDB and addresS4L are present" in new Setup {
       val scsrAddress = ScrsAddress("premises address_line_1", "address_line_2 po_box", Some("locality"), Some("region"), Some("postal_code"), Some("country"))
       val emptyVatScheme = VatScheme("123")
-      val officerHomeAddressView = OfficerHomeAddressView(scsrAddress.getId(), Some(scsrAddress))
+      val officerHomeAddressView = OfficerHomeAddressView(scsrAddress.id, Some(scsrAddress))
 
       when(mockIIService.getOfficerAddressList()).thenReturn(OptionT.pure(scsrAddress))
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)

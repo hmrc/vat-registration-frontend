@@ -29,7 +29,7 @@ class OfficerHomeAddressViewSpec  extends UnitSpec with VatRegistrationFixture w
     val initialLodgingOfficer = VatLodgingOfficer(ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode")))
 
     val newAddress = ScrsAddress(line1 = "new", line2 = "address", postcode = Some("postcode"))
-    val officerHomeAddressView = OfficerHomeAddressView(newAddress.getId(), Some(newAddress))
+    val officerHomeAddressView = OfficerHomeAddressView(newAddress.id, Some(newAddress))
 
     val updatedVatLodgingOfficer = VatLodgingOfficer(newAddress)
 
@@ -51,7 +51,7 @@ class OfficerHomeAddressViewSpec  extends UnitSpec with VatRegistrationFixture w
       val vatLodgingOfficer = VatLodgingOfficer(address)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
-      val expectedOfficerHomeAddressView = OfficerHomeAddressView(address.getId(), Some(address))
+      val expectedOfficerHomeAddressView = OfficerHomeAddressView(address.id, Some(address))
 
       ApiModelTransformer[OfficerHomeAddressView].toViewModel(vs) shouldBe Some(expectedOfficerHomeAddressView)
     }

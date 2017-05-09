@@ -54,7 +54,7 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
       } yield BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(formWithErrors, addressList)),
       (form: OfficerHomeAddressView) => (for {
         addressList <- OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]]("OfficerAddressList"))
-        address <- OptionT.fromOption(addressList.find(_.getId() == form.addressId))
+        address <- OptionT.fromOption(addressList.find(_.id == form.addressId))
         _ <- OptionT.liftF(s4l.saveForm[OfficerHomeAddressView](OfficerHomeAddressView(form.addressId, Some(address))))
       } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
         .getOrElse(Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
