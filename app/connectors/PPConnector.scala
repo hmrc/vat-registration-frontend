@@ -55,7 +55,7 @@ class PrePopConnector @Inject()(s4l: S4LService, vrs: VatRegistrationService) ex
 
   //$COVERAGE-OFF$
 //  val className = this.getClass.getSimpleName
-//  val companyRegUrl = baseUrl("pre-pop") // TODO
+//  val companyRegUrl = baseUrl("pre-pop")
   val http: WSHttp = WSHttp
 
   val expectedFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")

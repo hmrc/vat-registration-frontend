@@ -24,7 +24,7 @@ import connectors.KeystoreConnector
 import helpers.VatRegSpec
 import models.S4LKey
 import models.api.{ScrsAddress, VatLodgingOfficer, VatScheme}
-import models.external.{AccountingDetails, CoHoCompanyProfile, CorporationTaxRegistration}
+import models.external.{AccountingDetails, CorporationTaxRegistration}
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import org.mockito.Matchers
 import org.mockito.Matchers._
@@ -67,12 +67,12 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
     "be a LocalDate" in new Setup {
       val expectedDate = LocalDate.of(2017, 4, 24)
       when(mockPPConnector.getCompanyRegistrationDetails(any())(any(), any())).thenReturn(expectedDate)
-      service.getCTActiveDate.value returns Some(expectedDate)
+      service.getCTActiveDate returnsSome expectedDate
     }
 
     "be None" in new Setup {
       when(mockPPConnector.getCompanyRegistrationDetails(any())(any(), any())).thenReturn(none)
-      service.getCTActiveDate().isEmpty returns true
+      service.getCTActiveDate().returnsNone
     }
 
   }
@@ -84,7 +84,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
       val emptyVatScheme = VatScheme("123")
       val officerHomeAddressView = OfficerHomeAddressView(scsrAddress.id, Some(scsrAddress))
 
-      when(mockIIService.getOfficerAddressList()).thenReturn(OptionT.pure(scsrAddress))
+      when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(scsrAddress))
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
       save4laterReturns[OfficerHomeAddressView](officerHomeAddressView)
 
@@ -92,11 +92,11 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
     }
 
     "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
-      val address = ScrsAddress(line1="street", line2="area", postcode=Some("xyz"))
+      val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
       val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(address)))
 
       when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
-      when(mockIIService.getOfficerAddressList()).thenReturn(OptionT.pure(address))
+      when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(address))
       save4laterReturnsNothing[OfficerHomeAddressView]()
 
       service.getOfficerAddressList() returns Seq(address)
@@ -106,7 +106,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
       val emptyVatScheme = VatScheme("123")
 
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
-      when(mockIIService.getOfficerAddressList()).thenReturn(OptionT.none[Future, ScrsAddress])
+      when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.none[Future, ScrsAddress])
       save4laterReturnsNothing[OfficerHomeAddressView]()
 
       service.getOfficerAddressList() returns Seq()

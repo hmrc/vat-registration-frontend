@@ -58,7 +58,7 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
       mockKeystoreFetchAndGet[CoHoCompanyProfile]("CompanyProfile", Some(CoHoCompanyProfile("status", "transactionId")))
       when(mockIIConnector.getRegisteredOfficeAddress("transactionId")).thenReturn(OptionT.pure(coHoRegisteredOfficeAddress))
 
-      service.getOfficerAddressList().value returns Some(scrsAddress)
+      service.getRegisteredOfficeAddress() returnsSome scrsAddress
     }
   }
 }

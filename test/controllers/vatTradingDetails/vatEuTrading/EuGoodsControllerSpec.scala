@@ -143,7 +143,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
         "euGoodsRadio" -> EuGoods.EU_GOODS_NO
       )) {
         response =>
-          response redirectsTo s"$contextRoot/officer-home-address"
+          response redirectsTo s"$contextRoot/your-home-address"
       }
 
     }
