@@ -22,6 +22,7 @@ import fixtures.LoginFixture
 import mocks.VatMocks
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
+import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{Assertion, Inside, Inspectors}
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.http.Status
@@ -34,6 +35,8 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
   with ScalaFutures {
 
   import play.api.test.Helpers._
+
+  override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Seconds), interval = Span(50, Millis))
 
   // Placeholder for custom configuration
   // Use this if you want to configure the app

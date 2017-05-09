@@ -59,13 +59,13 @@ class PrePopulationService @Inject()(ppConnector: PPConnector,
 
   override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]] = {
     import cats.instances.list._
-
+    import cats.syntax.traverse._
     val addressFromII: OptionalResponse[ScrsAddress] = iis.getOfficerAddressList()
     val addressFromBE: OptionalResponse[ScrsAddress] =
       OptionT(vrs.getVatScheme() map ApiModelTransformer[OfficerHomeAddressView].toViewModel).subflatMap(_.address)
     val addressFromS4L: OptionalResponse[ScrsAddress] = OptionT(s4l.fetchAndGet[OfficerHomeAddressView]()).subflatMap(_.address)
 
-    Traverse[List].sequence(List(addressFromII, addressFromBE, addressFromS4L).map(_.value)).map(_.flatten.distinct)
+    List(addressFromII, addressFromBE, addressFromS4L).traverse(_.value).map(_.flatten.distinct)
 
     // TODO merge addresses from PrePop service
 
