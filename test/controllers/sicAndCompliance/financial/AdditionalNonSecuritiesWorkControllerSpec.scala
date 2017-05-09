@@ -35,8 +35,6 @@ import scala.concurrent.Future
 
 class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val mockVatRegistrationService = mock[VatRegistrationService]
-
   object AdditionalNonSecuritiesWorkController extends AdditionalNonSecuritiesWorkController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }

@@ -27,11 +27,11 @@ import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Singleton
 class IncorporationInformationConnector extends IncorporationInformationConnect with ServicesConfig {
   //$COVERAGE-OFF$
-  // TODO FIXME
   val incorpInfoUrl = baseUrl("incorporation-information")
   val incorpInfoUri = getConfString("incorporation-information.uri", "")
   val http: WSHttp = WSHttp
@@ -48,14 +48,13 @@ trait IncorporationInformationConnect {
 
   val className = self.getClass.getSimpleName
 
-  // assumes that a registered address exists in the company profile in II
+  // get the registered office address from II or return None
   def getRegisteredOfficeAddress(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[CoHoRegisteredOfficeAddress] = {
-    import cats.instances.future._
-    OptionT.liftF(
-      http.GET[CoHoRegisteredOfficeAddress](s"$incorpInfoUrl$incorpInfoUri/$transactionId/company-profile") recoverWith {
-        case e: Exception => throw logResponse(e, className, "getRegisteredOfficeAddress")
+    OptionT {
+      http.GET[CoHoRegisteredOfficeAddress](s"$incorpInfoUrl$incorpInfoUri/$transactionId/company-profile").map(Some(_)) recover {
+        case e: Exception => logResponse(e, className, "getRegisteredOfficeAddress")
+          Option.empty[CoHoRegisteredOfficeAddress]
       }
-    ).orElse(OptionT.none)
+    }
   }
-
 }

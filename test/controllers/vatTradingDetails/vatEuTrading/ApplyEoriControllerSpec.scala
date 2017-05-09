@@ -35,7 +35,7 @@ import scala.concurrent.Future
 
 class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val mockVatRegistrationService = mock[VatRegistrationService]
+
 
   object ApplyEoriController extends ApplyEoriController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector

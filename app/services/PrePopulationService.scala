@@ -37,12 +37,12 @@ trait PrePopService {
 
   def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionalResponse[LocalDate]
 
-  def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier, s4l: S4LService): Future[Seq[ScrsAddress]]
+  def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]]
 
 }
 
 class PrePopulationService @Inject()(ppConnector: PPConnector,
-                                     iis: IncorporationInformationService)(implicit vrs: VatRegistrationService)
+                                     iis: IncorporationInformationService, s4l: S4LService)(implicit vrs: VatRegistrationService)
   extends PrePopService with CommonService {
 
   import cats.instances.future._
@@ -57,7 +57,7 @@ class PrePopulationService @Inject()(ppConnector: PPConnector,
       dateString <- OptionT.fromOption(accountingDetails.activeDate)
     } yield LocalDate.parse(dateString, formatter)
 
-  override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier, s4l: S4LService): Future[Seq[ScrsAddress]] = {
+  override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]] = {
     import cats.instances.list._
 
     val addressFromBE: OptionalResponse[ScrsAddress] =
