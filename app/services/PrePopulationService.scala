@@ -37,7 +37,7 @@ trait PrePopService {
 
   def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionalResponse[LocalDate]
 
-  def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]]
+  def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier, s4l: S4LService): Future[Seq[ScrsAddress]]
 
 }
 
@@ -57,17 +57,15 @@ class PrePopulationService @Inject()(ppConnector: PPConnector,
       dateString <- OptionT.fromOption(accountingDetails.activeDate)
     } yield LocalDate.parse(dateString, formatter)
 
-  override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]] = {
+  override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier, s4l: S4LService): Future[Seq[ScrsAddress]] = {
     import cats.instances.list._
 
     val addressFromBE: OptionalResponse[ScrsAddress] =
       OptionT(vrs.getVatScheme() map ApiModelTransformer[OfficerHomeAddressView].toViewModel).subflatMap(_.address)
     val addressFromII: OptionalResponse[ScrsAddress] = iis.getOfficerAddressList()
+    val addressFromS4L: OptionalResponse[ScrsAddress] = OptionT(s4l.fetchAndGet[OfficerHomeAddressView]()).subflatMap(_.address)
 
-    // S4L
-
-
-    Traverse[List].sequence(List(addressFromBE, addressFromII).map(_.value)).map(_.flatten.distinct)
+    Traverse[List].sequence(List(addressFromII, addressFromBE, addressFromS4L).map(_.value)).map(_.flatten.distinct)
 
     // TODO merge addresses from PrePop service
 

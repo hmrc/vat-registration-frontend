@@ -42,12 +42,12 @@ class IncorporationInformationConnectorSpec extends VatRegSpec with VatRegistrat
   "Calling getRegisteredOfficeAddress" should {
     "return a CoHoRegisteredOfficeAddress successfully" in new Setup {
       mockHttpGET[CoHoRegisteredOfficeAddress]("tst-url", testAddress)
-      connector.getRegisteredOfficeAddress("id") returns testAddress
+      connector.getRegisteredOfficeAddress("id").value returns Some(testAddress)
     }
 
     "return the correct response when an Internal Server Error occurs" in new Setup {
       mockHttpFailedGET[CoHoRegisteredOfficeAddress]("test-url", internalServiceException)
-      connector.getRegisteredOfficeAddress("id") failedWith internalServiceException
+      connector.getRegisteredOfficeAddress("id").value failedWith internalServiceException
     }
   }
 
