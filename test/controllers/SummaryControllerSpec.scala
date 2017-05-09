@@ -21,10 +21,6 @@ import helpers.VatRegSpec
 import models.view.Summary
 import org.mockito.Matchers
 import org.mockito.Mockito.when
-import play.api.http.Status
-import play.api.mvc.Result
-import play.api.test.Helpers._
-import services.VatRegistrationService
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -49,13 +45,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.submitVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(()))
       when(mockS4LService.clear()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validHttpResponse))
 
-      callAuthorised(TestSummaryController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Check your answers")
-      }
+      callAuthorised(TestSummaryController.show)(_ includesText "Check your answers")
     }
 
     "getRegistrationSummary maps a valid VatScheme object to a Summary object" in {
@@ -64,26 +54,13 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "registrationToSummary maps a valid VatScheme object to a Summary object" in {
-      TestSummaryController.registrationToSummary(validVatScheme).sections.length mustEqual 9
+      TestSummaryController.registrationToSummary(validVatScheme).sections.length mustEqual 10
     }
 
     "registrationToSummary maps a valid empty VatScheme object to a Summary object" in {
-      TestSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency).sections.length mustEqual 9
+      TestSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency).sections.length mustEqual 10
     }
 
-    // TODO: Need to resolve why raising a new InternalError gives a Boxed Error exception yet this works for PAYE
-    "return an Internal Server Error response when no valid model is returned from the microservice" ignore {
-      when(mockVatRegistrationService.submitVatScheme()(Matchers.any[HeaderCarrier]()))
-        .thenReturn(Future.successful(()))
-      when(mockS4LService.clear()(Matchers.any[HeaderCarrier]()))
-        .thenReturn(Future.successful(validHttpResponse))
-
-      callAuthorised(TestSummaryController.show) {
-        (response: Future[Result]) =>
-          status(response) mustBe Status.INTERNAL_SERVER_ERROR
-      }
-    }
   }
-
 
 }

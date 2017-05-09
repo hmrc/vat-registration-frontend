@@ -241,7 +241,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
               data.officerHomeAddress.line4,
               data.officerHomeAddress.postcode,
               data.officerHomeAddress.country)
-            _ <- saveToS4Later(data.officerHomeAddress.line1, data, { x => OfficerHomeAddressView(address.getId, Some(address)) })
+            _ <- saveToS4Later(data.officerHomeAddress.line1, data, { x => OfficerHomeAddressView(address.id, Some(address)) })
           } yield Ok("Test setup complete")
         }
       })

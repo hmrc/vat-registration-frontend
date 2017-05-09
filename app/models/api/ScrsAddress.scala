@@ -21,16 +21,16 @@ import models.api.ScrsAddress.inlineShow.inline
 import org.apache.commons.lang3.text.WordUtils
 import play.api.libs.json.{Json, OFormat}
 
-case class ScrsAddress(line1: String,
-                       line2: String,
-                       line3: Option[String] = None,
-                       line4: Option[String] = None,
-                       postcode: Option[String] = None, // TODO can we use a mandatory union type i.e. PostcodeOrCountry
-                       country: Option[String] = None) // TODO instead of two optional fields ?
-{
-  val getId: String = (line1 + {
-    if (postcode.isDefined) postcode.get else country.get
-  }).replaceAll(" ", "")
+case class ScrsAddress(
+                        line1: String,
+                        line2: String,
+                        line3: Option[String] = None,
+                        line4: Option[String] = None,
+                        postcode: Option[String] = None,
+                        country: Option[String] = None
+                      ) {
+
+  val id: String = Seq(Some(line1), if (postcode.isDefined) postcode else country).flatten.mkString.replaceAll(" ", "")
 
   val asLabel: String = inline show this
 
