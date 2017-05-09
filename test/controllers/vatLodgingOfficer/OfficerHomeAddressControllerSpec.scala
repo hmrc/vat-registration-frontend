@@ -87,7 +87,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.OfficerHomeAddressController.submit()} with selected address" should {
 
     "return 303" in {
-      val savedAddressView = OfficerHomeAddressView(address.getId(), Some(address))
+      val savedAddressView = OfficerHomeAddressView(address.getId, Some(address))
       val returnOfficerHomeAddressView = CacheMap("", Map("" -> Json.toJson(savedAddressView)))
 
       when(mockS4LService.saveForm[OfficerHomeAddressView](any())(any(), any(), any()))
@@ -98,7 +98,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
 
       AuthBuilder.submitWithAuthorisedUser(
         TestOfficerHomeAddressController.submit(),
-        fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.getId())
+        fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.getId)
       )(_ redirectsTo s"$contextRoot/business-activity-description")
 
     }
@@ -107,7 +107,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.OfficerHomeAddressController.submit()} with 'other address' selected" should {
 
     "return 303" in {
-      val savedAddressView = OfficerHomeAddressView(address.getId(), Some(address))
+      val savedAddressView = OfficerHomeAddressView(address.getId, Some(address))
       val returnOfficerHomeAddressView = CacheMap("", Map("" -> Json.toJson(savedAddressView)))
 
       when(mockS4LService.saveForm[OfficerHomeAddressView](any())(any(), any(), any()))

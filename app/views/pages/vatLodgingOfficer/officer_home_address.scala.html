@@ -24,7 +24,7 @@
               <span id="homeAddressRadio"/>
               @govHelpers.inputRadioGroup(
                   field = officerHomeAddressForm("homeAddressRadio"),
-                  addresses.map( a => (a.getId(), a.asLabel())) :+
+                  addresses.map( a => (a.getId, a.asLabel)) :+
                           ("other" -> Messages("pages.officerHomeAddress.different.address")),
                   '_labelAfter -> true,
                   '_labelClass -> "block-label"
