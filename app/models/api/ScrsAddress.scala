@@ -17,7 +17,9 @@
 package models.api
 
 import cats.Show
+import models.ApiModelTransformer
 import models.api.ScrsAddress.inlineShow.inline
+import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import org.apache.commons.lang3.text.WordUtils
 import play.api.libs.json.{Json, OFormat}
 
@@ -80,5 +82,10 @@ object ScrsAddress {
       normalisedSeq(a).mkString(", ")
     }
   }
+
+  implicit def modelTransformer(implicit transformer: ApiModelTransformer[OfficerHomeAddressView]): ApiModelTransformer[ScrsAddress] =
+    ApiModelTransformer { vatScheme: VatScheme =>
+      transformer.toViewModel(vatScheme).flatMap(_.address)
+    }
 
 }

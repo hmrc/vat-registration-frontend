@@ -137,8 +137,8 @@ GET         /business-contact                      controllers.vatContact.Busine
 POST        /business-contact                      controllers.vatContact.BusinessContactDetailsController.submit
 
 ## OFFICER ADDRESS PAGE
-GET         /officer-home-address                      controllers.vatLodgingOfficer.OfficerHomeAddressController.show
-POST        /officer-home-address                      controllers.vatLodgingOfficer.OfficerHomeAddressController.submit
+GET         /your-home-address                      controllers.vatLodgingOfficer.OfficerHomeAddressController.show
+POST        /your-home-address                      controllers.vatLodgingOfficer.OfficerHomeAddressController.submit
 
 
 ## FEEDBACK

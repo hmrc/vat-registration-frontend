@@ -37,11 +37,11 @@ class CompanyRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFi
   "Calling getCompanyRegistrationDetails" should {
     "return a CoHoCompanyProfile successfully" in new Setup {
       mockHttpGET[CoHoCompanyProfile]("tst-url", validCoHoProfile)
-      connector.getCompanyRegistrationDetails("id") returns validCoHoProfile
+      connector.getCompanyRegistrationDetails("id") returnsSome validCoHoProfile
     }
     "return the correct response when an Internal Server Error occurs" in new Setup {
       mockHttpFailedGET[CoHoCompanyProfile]("test-url", internalServiceException)
-      connector.getCompanyRegistrationDetails("id") failedWith internalServiceException
+      connector.getCompanyRegistrationDetails("id").returnsNone
     }
   }
 

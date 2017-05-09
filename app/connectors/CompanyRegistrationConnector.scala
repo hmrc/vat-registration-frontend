@@ -18,6 +18,7 @@ package connectors
 
 import javax.inject.Singleton
 
+import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
 import models.external.CoHoCompanyProfile
@@ -47,9 +48,13 @@ trait CompanyRegistrationConnect {
 
   val className = self.getClass.getSimpleName
 
-  def getCompanyRegistrationDetails(regId: String)(implicit hc : HeaderCarrier) : Future[CoHoCompanyProfile] = {
-    http.GET[CoHoCompanyProfile](s"$companyRegistrationUrl$companyRegistrationUri/$regId") recover {
-      case e: Exception => throw logResponse(e, className, "getCompanyRegistrationDetails")
+  def getCompanyRegistrationDetails(regId: String)(implicit hc : HeaderCarrier) : OptionalResponse[CoHoCompanyProfile] = {
+    OptionT {
+      http.GET[CoHoCompanyProfile](s"$companyRegistrationUrl$companyRegistrationUri/$regId").map(Some(_)) recover {
+        case e: Exception => logResponse(e, className, "getCompanyRegistrationDetails")
+          Option.empty[CoHoCompanyProfile]
+      }
     }
   }
 }
+
