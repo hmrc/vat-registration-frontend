@@ -34,7 +34,7 @@ import scala.concurrent.Future
 
 class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val mockVatRegistrationService = mock[VatRegistrationService]
+
 
   object LeaseVehiclesController extends LeaseVehiclesController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector

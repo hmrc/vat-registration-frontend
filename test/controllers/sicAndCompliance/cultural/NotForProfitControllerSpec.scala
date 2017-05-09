@@ -37,8 +37,6 @@ import scala.concurrent.Future
 
 class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val mockVatRegistrationService = mock[VatRegistrationService]
-
   object NotForProfitController extends NotForProfitController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
