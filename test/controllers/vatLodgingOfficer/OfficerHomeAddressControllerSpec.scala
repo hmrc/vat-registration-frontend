@@ -79,6 +79,8 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.OfficerHomeAddressController.submit()} with Empty data" should {
 
     "return 400" in {
+      mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", None)
+
       AuthBuilder.submitWithAuthorisedUser(TestOfficerHomeAddressController.submit(), fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
     }

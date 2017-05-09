@@ -29,7 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @ImplementedBy(classOf[IncorporationInformationService])
 trait IncorpInfoService {
-  def getOfficerAddressList()(implicit hc: HeaderCarrier): OptionalResponse[ScrsAddress]
+  def getRegisteredOfficeAddress()(implicit hc: HeaderCarrier): OptionalResponse[ScrsAddress]
 }
 
 class IncorporationInformationService @Inject()(iiConnector: IncorporationInformationConnector)
@@ -37,7 +37,7 @@ class IncorporationInformationService @Inject()(iiConnector: IncorporationInform
 
   import cats.instances.future._
 
-  override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): OptionalResponse[ScrsAddress] = {
+  override def getRegisteredOfficeAddress()(implicit headerCarrier: HeaderCarrier): OptionalResponse[ScrsAddress] = {
     for {
       companyProfile <- OptionT(keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile"))
       address <- iiConnector.getRegisteredOfficeAddress(companyProfile.transactionId)

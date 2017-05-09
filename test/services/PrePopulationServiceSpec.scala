@@ -84,7 +84,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
       val emptyVatScheme = VatScheme("123")
       val officerHomeAddressView = OfficerHomeAddressView(scsrAddress.id, Some(scsrAddress))
 
-      when(mockIIService.getOfficerAddressList()).thenReturn(OptionT.pure(scsrAddress))
+      when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(scsrAddress))
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
       save4laterReturns[OfficerHomeAddressView](officerHomeAddressView)
 
@@ -96,7 +96,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
       val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(address)))
 
       when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
-      when(mockIIService.getOfficerAddressList()).thenReturn(OptionT.pure(address))
+      when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(address))
       save4laterReturnsNothing[OfficerHomeAddressView]()
 
       service.getOfficerAddressList() returns Seq(address)
@@ -106,7 +106,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
       val emptyVatScheme = VatScheme("123")
 
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
-      when(mockIIService.getOfficerAddressList()).thenReturn(OptionT.none[Future, ScrsAddress])
+      when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.none[Future, ScrsAddress])
       save4laterReturnsNothing[OfficerHomeAddressView]()
 
       service.getOfficerAddressList() returns Seq()

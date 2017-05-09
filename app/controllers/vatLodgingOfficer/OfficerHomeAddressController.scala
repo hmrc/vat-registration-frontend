@@ -46,11 +46,11 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
 
   })
 
-  // TODO keystoreConnector.remove[Seq[ScrsAddress]]("OfficerAddressList")
+  // TODO route to address lookup if selected
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
       (formWithErrors: Form[OfficerHomeAddressView]) => for {
-        addressList <- prePopService.getOfficerAddressList() // TODO get from keystore
+        addressList <- OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]]("OfficerAddressList")).getOrElse(Seq())
       } yield BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(formWithErrors, addressList)),
       (form: OfficerHomeAddressView) => (for {
         addressList <- OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]]("OfficerAddressList"))
@@ -58,7 +58,6 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
         _ <- OptionT.liftF(s4l.saveForm[OfficerHomeAddressView](OfficerHomeAddressView(form.addressId, Some(address))))
       } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
         .getOrElse(Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
-        // TODO route to address lookup if selected
     )
   })
 
