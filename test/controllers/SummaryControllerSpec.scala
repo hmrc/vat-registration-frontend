@@ -32,8 +32,6 @@ import scala.concurrent.Future
 
 class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val mockVatRegistrationService = mock[VatRegistrationService]
-
   implicit val materializer = app.materializer
 
   object TestSummaryController extends SummaryController(ds)(mockS4LService, mockVatRegistrationService) {

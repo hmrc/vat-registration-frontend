@@ -47,7 +47,7 @@ class IncorporationInformationConnectorSpec extends VatRegSpec with VatRegistrat
 
     "return the correct response when an Internal Server Error occurs" in new Setup {
       mockHttpFailedGET[CoHoRegisteredOfficeAddress]("test-url", internalServiceException)
-      connector.getRegisteredOfficeAddress("id").value failedWith internalServiceException
+      connector.getRegisteredOfficeAddress("id").value returns None
     }
   }
 

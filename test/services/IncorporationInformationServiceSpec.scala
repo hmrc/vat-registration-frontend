@@ -17,10 +17,10 @@
 package services
 
 import cats.data.OptionT
-import connectors.IncorporationInformationConnector
+import connectors.KeystoreConnector
 import helpers.VatRegSpec
-import models.external.CoHoRegisteredOfficeAddress
-import org.mockito.Mockito
+import models.api.ScrsAddress
+import models.external.{CoHoCompanyProfile, CoHoRegisteredOfficeAddress}
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -33,8 +33,10 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
 
   private class Setup {
     implicit val headerCarrier = HeaderCarrier()
-    val mockIIConnector = Mockito.mock(classOf[IncorporationInformationConnector])
-    val service = new IncorporationInformationService(mockIIConnector)
+
+    val service = new IncorporationInformationService(mockIIConnector) {
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+    }
   }
 
   "getOfficerAddressList" must {
@@ -51,12 +53,12 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
           postalCode = Some("postal_code"),
           region = Some("region"))
 
+      val scrsAddress = ScrsAddress("premises address_line_1","address_line_2 po_box",Some("locality"),Some("region"),Some("postal_code"),Some("country"))
 
+      mockKeystoreFetchAndGet[CoHoCompanyProfile]("CompanyProfile", Some(CoHoCompanyProfile("status", "transactionId")))
       when(mockIIConnector.getRegisteredOfficeAddress("transactionId")).thenReturn(OptionT.pure(coHoRegisteredOfficeAddress))
 
-      service.getOfficerAddressList().value returns Some(coHoRegisteredOfficeAddress)
+      service.getOfficerAddressList().value returns Some(scrsAddress)
     }
   }
-
-
 }
