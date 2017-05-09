@@ -52,7 +52,6 @@ location /register-for-vat {
   proxy_pass                http://localhost:9895;
 }
 ```
-
 Link to app running locally: 
 
 http://localhost/register-for-vat/
