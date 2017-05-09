@@ -20,8 +20,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
-import cats.Traverse
 import cats.data.OptionT
+import cats.data.OptionT.fromOption
 import com.google.inject.ImplementedBy
 import connectors.{OptionalResponse, PPConnector}
 import models.ApiModelTransformer
@@ -41,8 +41,8 @@ trait PrePopService {
 
 }
 
-class PrePopulationService @Inject()(ppConnector: PPConnector,
-                                     iis: IncorporationInformationService, s4l: S4LService)(implicit vrs: VatRegistrationService)
+class PrePopulationService @Inject()(ppConnector: PPConnector, iis: IncorporationInformationService, s4l: S4LService)
+                                    (implicit vrs: VatRegistrationService)
   extends PrePopService with CommonService {
 
   import cats.instances.future._
@@ -53,22 +53,20 @@ class PrePopulationService @Inject()(ppConnector: PPConnector,
     for {
       regId <- OptionT.liftF(fetchRegistrationId)
       ctReg <- ppConnector.getCompanyRegistrationDetails(regId)
-      accountingDetails <- OptionT.fromOption(ctReg.accountingDetails)
-      dateString <- OptionT.fromOption(accountingDetails.activeDate)
+      accountingDetails <- fromOption(ctReg.accountingDetails)
+      dateString <- fromOption(accountingDetails.activeDate)
     } yield LocalDate.parse(dateString, formatter)
 
   override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]] = {
     import cats.instances.list._
     import cats.syntax.traverse._
-    val addressFromII: OptionalResponse[ScrsAddress] = iis.getRegisteredOfficeAddress()
-    val addressFromBE: OptionalResponse[ScrsAddress] =
-      OptionT(vrs.getVatScheme() map ApiModelTransformer[OfficerHomeAddressView].toViewModel).subflatMap(_.address)
-    val addressFromS4L: OptionalResponse[ScrsAddress] = OptionT(s4l.fetchAndGet[OfficerHomeAddressView]()).subflatMap(_.address)
+    val addressFromII = iis.getRegisteredOfficeAddress()
+    val addressFromBE = OptionT(vrs.getVatScheme() map ApiModelTransformer[ScrsAddress].toViewModel)
+    val addressFromS4L = OptionT(s4l.fetchAndGet[OfficerHomeAddressView]()).subflatMap(_.address)
 
     List(addressFromII, addressFromBE, addressFromS4L).traverse(_.value).map(_.flatten.distinct)
 
     // TODO merge addresses from PrePop service
-
     // TODO order the addresses
   }
 }

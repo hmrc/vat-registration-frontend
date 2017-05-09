@@ -23,7 +23,7 @@ import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api._
-import models.external.{CoHoCompanyProfile, CorporationTaxRegistration}
+import models.external.CoHoCompanyProfile
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
@@ -72,7 +72,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   }
 
   "Calling createNewRegistration" should {
-    "return a success response when the Registration is successfully created without finding a company paofile" in new Setup {
+    "return a success response when the Registration is successfully created without finding a company profile" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
       when(mockRegConnector.createNewRegistration()(any(), any())).thenReturn(validVatScheme.pure)
       val none: OptionT[Future, CoHoCompanyProfile] = OptionT.none
@@ -214,7 +214,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     }
   }
 
-    "Calling deleteVatScheme" should {
+  "Calling deleteVatScheme" should {
     "return a success response when the delete VatScheme is successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
       when(mockRegConnector.deleteVatScheme(any())(any(), any())).thenReturn(().pure)
