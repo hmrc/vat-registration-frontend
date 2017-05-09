@@ -18,7 +18,7 @@ package connectors.test
 
 import com.google.inject.ImplementedBy
 import config.WSHttp
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
@@ -31,6 +31,7 @@ trait TestRegistrationConnector {
   def setupCurrentProfile()(implicit hc: HeaderCarrier): Future[Result]
   def dropCollection()(implicit hc: HeaderCarrier): Future[Result]
   def postTestData(jsonData: JsValue)(implicit hc : HeaderCarrier) : Future[HttpResponse]
+  def wipeTestData()(implicit hc : HeaderCarrier) : Future[HttpResponse]
 }
 
 class TestVatRegistrationConnector extends TestRegistrationConnector with ServicesConfig {
@@ -53,6 +54,11 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
   def postTestData(jsonData: JsValue)(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
       http.POST[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data", jsonData)
   }
+
+  def wipeTestData()(implicit hc : HeaderCarrier) :Future[HttpResponse] = {
+    http.PUT[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data", Json.parse("{}"))
+  }
+
   //$COVERAGE-ON$
 
 }
