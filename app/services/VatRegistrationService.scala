@@ -18,7 +18,6 @@ package services
 
 import javax.inject.Inject
 
-import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import connectors.{CompanyRegistrationConnector, VatRegistrationConnector}
 import models._
@@ -65,8 +64,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     with CommonService {
 
   import cats.instances.future._
+  import cats.syntax.applicative._
   import cats.syntax.cartesian._
-  import cats.instances.list._
   import cats.syntax.foldable._
 
   private def s4l[T: Format : S4LKey]()(implicit headerCarrier: HeaderCarrier) = s4LService.fetchAndGet[T]()
@@ -83,17 +82,19 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Unit] =
     fetchRegistrationId.flatMap(vatRegConnector.deleteElement(elementPath))
 
-  def deleteElements(elementPaths: List[ElementPath])(implicit hc: HeaderCarrier): Future[Unit] =
+  def deleteElements(elementPaths: List[ElementPath])(implicit hc: HeaderCarrier): Future[Unit] = {
+    import cats.instances.list._
     elementPaths.traverse_(deleteElement)
+  }
 
 
   def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit] =
-    (for {
-      vatScheme <- OptionT.liftF(vatRegConnector.createNewRegistration())
-      _ <- OptionT.liftF(keystoreConnector.cache[String]("RegistrationId", vatScheme.id))
-      companyProfile <- companyRegistrationConnector.getCompanyRegistrationDetails(vatScheme.id)
-      _ <- OptionT.liftF(keystoreConnector.cache[CoHoCompanyProfile]("CompanyProfile", companyProfile))
-    } yield ()).getOrElse(())
+    for {
+      vatScheme <- vatRegConnector.createNewRegistration()
+      _ <- keystoreConnector.cache[String]("RegistrationId", vatScheme.id)
+      optCompProfile <- companyRegistrationConnector.getCompanyRegistrationDetails(vatScheme.id).value
+      _ <- optCompProfile.map(keystoreConnector.cache[CoHoCompanyProfile]("CompanyProfile", _)).pure
+    } yield ()
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
     submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@|

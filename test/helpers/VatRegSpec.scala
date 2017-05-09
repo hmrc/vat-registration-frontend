@@ -17,6 +17,7 @@
 package helpers
 
 import builders.AuthBuilder
+import cats.data.OptionT
 import controllers.CommonPlayDependencies
 import fixtures.LoginFixture
 import mocks.VatMocks
@@ -60,6 +61,17 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
     def failedWith(e: Exception): Assertion = whenReady(f.failed)(_ mustBe e)
 
   }
+
+  implicit class OptionTReturns[T](ot: OptionT[Future, T]) {
+
+    def returnsSome(t: T): Assertion = whenReady(ot.value)(_ mustBe Some(t))
+
+    def returnsNone: Assertion = whenReady(ot.value)(_ mustBe Option.empty[T])
+
+    def failedWith(e: Exception): Assertion = whenReady(ot.value.failed)(_ mustBe e)
+
+  }
+
 
   implicit class FutureResult(fr: Future[Result]) {
 
