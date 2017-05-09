@@ -38,7 +38,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @ImplementedBy(classOf[PrePopConnector])
 trait PPConnector {
 
-  val companyRegUrl: String
+//  val companyRegUrl: String
   val http: WSHttp
 
   def getCompanyRegistrationDetails
@@ -54,8 +54,8 @@ class PrePopConnector @Inject()(s4l: S4LService, vrs: VatRegistrationService) ex
   import cats.instances.future._
 
   //$COVERAGE-OFF$
-  val className = this.getClass.getSimpleName
-  val companyRegUrl = baseUrl("company-registration")
+//  val className = this.getClass.getSimpleName
+//  val companyRegUrl = baseUrl("pre-pop") // TODO
   val http: WSHttp = WSHttp
 
   val expectedFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")

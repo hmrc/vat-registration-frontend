@@ -35,7 +35,7 @@ import scala.concurrent.Future
 
 class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val mockVatRegistrationService = mock[VatRegistrationService]
+
 
   object ApplyEoriController extends ApplyEoriController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -123,7 +123,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_YES)
       )) {
         response =>
-          response redirectsTo s"$contextRoot/business-activity-description"
+          response redirectsTo s"$contextRoot/officer-home-address"
       }
 
     }
@@ -142,7 +142,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_NO)
       )) {
         response =>
-          response redirectsTo s"$contextRoot/business-activity-description"
+          response redirectsTo s"$contextRoot/officer-home-address"
       }
 
     }

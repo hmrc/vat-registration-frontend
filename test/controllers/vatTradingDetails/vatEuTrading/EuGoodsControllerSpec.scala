@@ -36,7 +36,7 @@ import scala.concurrent.Future
 
 class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val mockVatRegistrationService = mock[VatRegistrationService]
+
 
   object EuGoodsController extends EuGoodsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -143,7 +143,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
         "euGoodsRadio" -> EuGoods.EU_GOODS_NO
       )) {
         response =>
-          response redirectsTo s"$contextRoot/business-activity-description"
+          response redirectsTo s"$contextRoot/officer-home-address"
       }
 
     }

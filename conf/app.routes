@@ -136,6 +136,11 @@ POST        /manages-funds-not-included-in-this-list     controllers.sicAndCompl
 GET         /business-contact                      controllers.vatContact.BusinessContactDetailsController.show
 POST        /business-contact                      controllers.vatContact.BusinessContactDetailsController.submit
 
+## OFFICER ADDRESS PAGE
+GET         /officer-home-address                      controllers.vatLodgingOfficer.OfficerHomeAddressController.show
+POST        /officer-home-address                      controllers.vatLodgingOfficer.OfficerHomeAddressController.submit
+
+
 ## FEEDBACK
 GET         /feedback                              controllers.feedback.FeedbackController.show
 

@@ -19,12 +19,15 @@ package models.view.test
 import play.api.libs.json.Json
 
 
-case class TestSetup(vatChoice: VatChoiceTestSetup,
-                     vatTradingDetails: VatTradingDetailsTestSetup,
-                     vatContact: VatContactTestSetup,
-                     vatFinancials: VatFinancialsTestSetup,
-                     sicAndCompliance: SicAndComplianceTestSetup,
-                     vatServiceEligibility: VatServiceEligibilityTestSetup)
+case class TestSetup(
+                      vatChoice: VatChoiceTestSetup,
+                      vatTradingDetails: VatTradingDetailsTestSetup,
+                      vatContact: VatContactTestSetup,
+                      vatFinancials: VatFinancialsTestSetup,
+                      sicAndCompliance: SicAndComplianceTestSetup,
+                      vatServiceEligibility: VatServiceEligibilityTestSetup,
+                      officerHomeAddress: OfficerHomeAddressTestSetup
+                    )
 
 
 object TestSetup {

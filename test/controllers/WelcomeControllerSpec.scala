@@ -28,8 +28,6 @@ import scala.concurrent.Future
 
 class WelcomeControllerSpec extends VatRegSpec {
 
-  val mockVatRegistrationService = mock[VatRegistrationService]
-
   object TestController extends WelcomeController(mockVatRegistrationService, ds) {
     override val authConnector = mockAuthConnector
   }

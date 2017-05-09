@@ -44,7 +44,7 @@ class ApplyEoriController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       (formWithErrors) => Future.successful(BadRequest(views.html.pages.vatTradingDetails.vatEuTrading.eori_apply(formWithErrors))),
       (data: ApplyEori) => s4l.saveForm[ApplyEori](data)
-        .map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
+        .map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show()))
     )
   )
 

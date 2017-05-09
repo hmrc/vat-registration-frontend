@@ -26,6 +26,7 @@ import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
+import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.{S4LKey, VatBankAccountPath, ZeroRatedTurnoverEstimatePath}
@@ -44,7 +45,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
   class Setup {
 
-    val service = new VatRegistrationService(mockS4LService, mockRegConnector) {
+    val service = new VatRegistrationService(mockS4LService, mockRegConnector, mockCompanyRegConnector) {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
 
@@ -60,6 +61,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "return a success response when the Registration is successfully created" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
       when(mockRegConnector.createNewRegistration()(any(), any())).thenReturn(validVatScheme.pure)
+
+      mockKeystoreCache[String]("CompanyProfile", CacheMap("", Map.empty))
+      when(mockCompanyRegConnector.getCompanyRegistrationDetails(any())(any())).thenReturn(validCoHoProfile.pure)
 
       service.createRegistrationFootprint() completedSuccessfully
     }
@@ -97,6 +101,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturns(validApplyEori)
       save4laterReturns(validBusinessContactDetails)
       save4laterReturns(validServiceEligibility)
+      save4laterReturns(OfficerHomeAddressView("", None))
 
       when(mockRegConnector.upsertVatChoice(any(), any())(any(), any())).thenReturn(validVatChoice.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
@@ -104,6 +109,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any())).thenReturn(validSicAndCompliance.pure)
       when(mockRegConnector.upsertVatContact(any(), any())(any(), any())).thenReturn(validVatContact.pure)
       when(mockRegConnector.upsertVatEligibility(any(), any())(any(), any())).thenReturn(validServiceEligibility.pure)
+      when(mockRegConnector.upsertVatLodgingOfficer(any(), any())(any(), any())).thenReturn(validLodgingOfficer.pure)
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
 
       service.submitVatScheme() completedSuccessfully

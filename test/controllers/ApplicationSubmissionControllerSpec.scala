@@ -28,8 +28,6 @@ import scala.concurrent.Future
 
 class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val mockVatRegistrationService = mock[VatRegistrationService]
-
   object TestApplicationSubmissionController extends ApplicationSubmissionController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
