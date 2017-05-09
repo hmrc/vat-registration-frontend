@@ -33,7 +33,7 @@ class IncorporationInformationStubsController @Inject()(vatRegistrationService: 
     for {
       _ <- vatRegistrationService.createRegistrationFootprint()
       id <- fetchRegistrationId
-      _ <- vatRegConnector.wipeTestData
+      //_ <- vatRegConnector.wipeTestData
       jsonData <-  Future.successful(defaultTestData(id))
       _ <- vatRegConnector.postTestData(jsonData)
     } yield  Ok("Data inserted")
