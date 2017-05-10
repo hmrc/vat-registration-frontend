@@ -31,8 +31,7 @@ Note there is also VAT_REG_ALL profile that will run all dependencies plus the v
 Alternatively, create an alias for starting the services required for the VAT Registration Frontend
 
 ```bash
-alias scrs='sm --start AUTH AUTH_LOGIN_STUB AUTHENTICATOR CA_FRONTEND GG GG_STUBS USER_DETAILS KEYSTORE SAVE4LATER DATASTREAM ASSETS_FRONTEND -f'
-```
+alias scrs='sm --start AUTH AUTH_LOGIN_STUB AUTHENTICATOR CA_FRONTEND GG GG_STUBS USER_DETAILS KEYSTORE SAVE4LATER DATASTREAM ASSETS_FRONTEND -f'```
 
 To run the service, just `cd` to cloned directory and execute:
 
