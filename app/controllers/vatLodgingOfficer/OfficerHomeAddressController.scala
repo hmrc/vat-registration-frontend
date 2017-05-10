@@ -23,9 +23,9 @@ import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerHomeAddressForm
 import models.api.ScrsAddress
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
-import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService,
@@ -35,30 +35,30 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
 
   import cats.instances.future._
 
-  val form = OfficerHomeAddressForm.form
+  private val form = OfficerHomeAddressForm.form
+  private val addressListKey = "OfficerAddressList"
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  private def fetchAddressList()(implicit headerCarrier: HeaderCarrier) =
+    OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]](addressListKey))
+
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
       addresses <- prePopService.getOfficerAddressList()
-      _ <- keystoreConnector.cache[Seq[ScrsAddress]]("OfficerAddressList", addresses)
+      _ <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
       res <- viewModel[OfficerHomeAddressView].fold(form)(form.fill)
     } yield Ok(views.html.pages.vatLodgingOfficer.officer_home_address(res, addresses))
-
-  })
+  )
 
   // TODO route to address lookup if selected
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      (formWithErrors: Form[OfficerHomeAddressView]) => for {
-        addressList <- OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]]("OfficerAddressList")).getOrElse(Seq())
-      } yield BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(formWithErrors, addressList)),
-      (form: OfficerHomeAddressView) => (for {
-        addressList <- OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]]("OfficerAddressList"))
-        address <- OptionT.fromOption(addressList.find(_.id == form.addressId))
-        _ <- OptionT.liftF(s4l.saveForm[OfficerHomeAddressView](OfficerHomeAddressView(form.addressId, Some(address))))
-      } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
-        .getOrElse(Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
-    )
-  })
+      badForm => fetchAddressList().getOrElse(Seq()).map(
+        addressList => BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(badForm, addressList))),
+      (form: OfficerHomeAddressView) => for {
+        addressList <- fetchAddressList().getOrElse(Seq())
+        address = addressList.find(_.id == form.addressId)
+        _ <- s4l.saveForm(OfficerHomeAddressView(form.addressId, address))
+      } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+    ))
 
 }
