@@ -15,9 +15,10 @@
  */
 
 package connectors.test
-
+import connectors._
 import com.google.inject.ImplementedBy
 import config.WSHttp
+import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -52,7 +53,10 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
   }
 
   def postTestData(jsonData: JsValue)(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
-      http.POST[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data", jsonData)
+      Logger.debug(s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data")
+      http.POST[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data", jsonData) recover {
+        case e: Exception => throw logResponse(e,"TestVatRegistrationConnector", "postTestData")
+      }
   }
 
   def wipeTestData()(implicit hc : HeaderCarrier) :Future[HttpResponse] = {
