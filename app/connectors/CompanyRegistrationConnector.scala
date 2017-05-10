@@ -22,6 +22,7 @@ import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
 import models.external.CoHoCompanyProfile
+import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.ws.WSHttp
@@ -50,6 +51,7 @@ trait CompanyRegistrationConnect {
 
   def getCompanyRegistrationDetails(regId: String)(implicit hc : HeaderCarrier) : OptionalResponse[CoHoCompanyProfile] = {
     OptionT {
+      Logger.debug(s"$companyRegistrationUrl$companyRegistrationUri/$regId")
       http.GET[CoHoCompanyProfile](s"$companyRegistrationUrl$companyRegistrationUri/$regId").map(Some(_)) recover {
         case e: Exception => logResponse(e, className, "getCompanyRegistrationDetails")
           Option.empty[CoHoCompanyProfile]

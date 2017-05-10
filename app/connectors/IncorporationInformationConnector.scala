@@ -22,6 +22,7 @@ import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
 import models.external.CoHoRegisteredOfficeAddress
+import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
@@ -51,6 +52,7 @@ trait IncorporationInformationConnect {
   // get the registered office address from II or return None
   def getRegisteredOfficeAddress(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[CoHoRegisteredOfficeAddress] = {
     OptionT {
+      Logger.debug(s"$incorpInfoUrl$incorpInfoUri/$transactionId/company-profile")
       http.GET[CoHoRegisteredOfficeAddress](s"$incorpInfoUrl$incorpInfoUri/$transactionId/company-profile").map(Some(_)) recover {
         case e: Exception => logResponse(e, className, "getRegisteredOfficeAddress")
           Option.empty[CoHoRegisteredOfficeAddress]
