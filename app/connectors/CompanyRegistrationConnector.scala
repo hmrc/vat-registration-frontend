@@ -27,14 +27,13 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.ws.WSHttp
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 @Singleton
 class CompanyRegistrationConnector extends CompanyRegistrationConnect with ServicesConfig {
   //$COVERAGE-OFF$
   val companyRegistrationUrl: String = baseUrl("company-registration")
-  val companyRegistrationUri: String = getConfString("company-registration.uri","")
-  val http:WSHttp = WSHttp
+  val companyRegistrationUri: String = getConfString("company-registration.uri", "")
+  val http: WSHttp = WSHttp
   //$COVERAGE-ON$
 }
 
@@ -42,13 +41,13 @@ class CompanyRegistrationConnector extends CompanyRegistrationConnect with Servi
 trait CompanyRegistrationConnect {
   self =>
 
-  val companyRegistrationUrl : String
-  val companyRegistrationUri : String
-  val http : WSHttp
+  val companyRegistrationUrl: String
+  val companyRegistrationUri: String
+  val http: WSHttp
 
   val className = self.getClass.getSimpleName
 
-  def getCompanyRegistrationDetails(regId: String)(implicit hc : HeaderCarrier) : OptionalResponse[CoHoCompanyProfile] = {
+  def getCompanyRegistrationDetails(regId: String)(implicit hc: HeaderCarrier): OptionalResponse[CoHoCompanyProfile] = {
     OptionT {
       http.GET[CoHoCompanyProfile](s"$companyRegistrationUrl$companyRegistrationUri/$regId").map(Some(_)) recover {
         case e: Exception => logResponse(e, className, "getCompanyRegistrationDetails")

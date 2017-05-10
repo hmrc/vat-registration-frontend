@@ -86,6 +86,26 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
     }
   }
 
+  s"POST ${routes.OfficerHomeAddressController.submit()} with selected address but no address list in keystore" should {
+
+    "return 303" in {
+      val savedAddressView = OfficerHomeAddressView(address.id, Some(address))
+      val returnOfficerHomeAddressView = CacheMap("", Map("" -> Json.toJson(savedAddressView)))
+
+      when(mockS4LService.saveForm[OfficerHomeAddressView](any())(any(), any(), any()))
+        .thenReturn(Future.successful(returnOfficerHomeAddressView))
+      when(mockPPService.getOfficerAddressList()(any[HeaderCarrier]()))
+        .thenReturn(Future.successful(Seq(address)))
+      mockKeystoreFetchAndGet("OfficerAddressList", Option.empty[Seq[ScrsAddress]])
+
+      AuthBuilder.submitWithAuthorisedUser(
+        TestOfficerHomeAddressController.submit(),
+        fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.id)
+      )(_ redirectsTo s"$contextRoot/business-activity-description")
+
+    }
+  }
+
   s"POST ${routes.OfficerHomeAddressController.submit()} with selected address" should {
 
     "return 303" in {
@@ -125,7 +145,6 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
 
     }
   }
-
 
 
 }
