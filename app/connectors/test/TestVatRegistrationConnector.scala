@@ -55,7 +55,7 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
   def postTestData(jsonData: JsValue)(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
       Logger.debug(s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data")
       http.POST[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data", jsonData) recover {
-        case e: Exception => throw logResponse(e,"TestVatRegistrationConnector", "postTestData")
+        case e: Exception => throw logResponse(e,"TestVatRegistrationConnector", s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data")
       }
   }
 
