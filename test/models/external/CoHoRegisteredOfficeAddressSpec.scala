@@ -53,7 +53,7 @@ class CoHoRegisteredOfficeAddressSpec extends UnitSpec {
       "address_line_1",
       None,
       "locality",
-      None, None, None, None)
+      None, None, Some("postal_code"), None)
 
   val scsrAddress = ScrsAddress("premises address_line_1", "address_line_2 po_box", Some("locality"),Some("region"),Some("postal_code"),Some("country"))
 
@@ -68,7 +68,7 @@ class CoHoRegisteredOfficeAddressSpec extends UnitSpec {
       CoHoRegisteredOfficeAddress.convertToAddress(coHoRegisteredOfficeAddress) shouldBe scsrAddress
     }
     "convert a partial CoHoRegisteredOfficeAddress to a ScsrAddress" in {
-      val partial = ScrsAddress("premises address_line_1","locality")
+      val partial = ScrsAddress(line1 = "premises address_line_1",line2 = "locality", postcode = Some("postal_code"))
       CoHoRegisteredOfficeAddress.convertToAddress(coHoRegisteredOfficeAddress2) shouldBe partial
     }
   }
