@@ -26,6 +26,15 @@
 
               <fieldset id="dob">
                   <legend></legend>
+                  <label><span class="hidden">DOBe input</span>
+                      @officerDOBForm.error("dob").map { error =>
+                          <span class="error-notification" role="tooltip">
+                              @messages(error.message, error.args: _*)
+                          </span>
+                      }
+                      @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
+                      <input type="hidden" name="dob" value="" id="dob" class="hidden" />
+                  </label>
 
                   @govHelpers.input(
                       officerDOBForm("dob.day"),
