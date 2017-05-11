@@ -23,7 +23,7 @@ import cats.data.OptionT
 import connectors.KeystoreConnector
 import helpers.VatRegSpec
 import models.S4LKey
-import models.api.{ScrsAddress, VatLodgingOfficer, VatScheme}
+import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer, VatScheme}
 import models.external.{AccountingDetails, CorporationTaxRegistration}
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import org.mockito.Matchers
@@ -93,7 +93,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
 
     "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
       val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
-      val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(address)))
+      val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty)))
 
       when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
       when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(address))

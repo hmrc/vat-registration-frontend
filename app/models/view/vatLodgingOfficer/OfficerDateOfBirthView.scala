@@ -25,22 +25,22 @@ import play.api.libs.json.Json
 case class OfficerDateOfBirthView(dob: LocalDate)
 
 object OfficerDateOfBirthView {
-  def bind(dateModel: DateModel): OfficerDateOfBirthView = OfficerDateOfBirthView(dateModel.toLocalDate.get) // TODO ???
+  def bind(dateModel: DateModel): OfficerDateOfBirthView = OfficerDateOfBirthView(dateModel.toLocalDate.get) // form ensures valid date
 
-  def unbind(dobView: OfficerDateOfBirthView): Option[DateModel] = Some(DateModel.fromLocalDate(dobView.dob)) // TODO ???
+  def unbind(dobView: OfficerDateOfBirthView): Option[DateModel] = Some(DateModel.fromLocalDate(dobView.dob)) // form ensures valid date
 
   implicit val format = Json.format[OfficerDateOfBirthView]
 
   // return a view model from a VatScheme instance
   implicit val modelTransformer = ApiModelTransformer[OfficerDateOfBirthView] { vs: VatScheme =>
     vs.lodgingOfficer.map(_.dob).collect {
-      case Some(DateOfBirth(d,m,y)) => OfficerDateOfBirthView(LocalDate.of(y, m, d))
+      case DateOfBirth(d,m,y) => OfficerDateOfBirthView(LocalDate.of(y, m, d))
     }
   }
 
   // return a new or updated VatLodgingOfficer from the CurrentAddressView instance
   implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerDateOfBirthView, g: VatLodgingOfficer) => {
-      g.copy(dob = Some(DateOfBirth(c.dob.getDayOfMonth, c.dob.getMonthValue, c.dob.getYear)))
+      g.copy(dob = DateOfBirth(c.dob.getDayOfMonth, c.dob.getMonthValue, c.dob.getYear))
     }
   }
 

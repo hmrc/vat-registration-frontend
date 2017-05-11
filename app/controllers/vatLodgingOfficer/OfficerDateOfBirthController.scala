@@ -43,8 +43,12 @@ class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
-      f => BadRequest(views.html.pages.vatLodgingOfficer.officer_dob(f)).pure,
-      _ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()).pure
+      formWithErrors => BadRequest(views.html.pages.vatLodgingOfficer.officer_dob(formWithErrors)).pure,
+      data => {
+        s4l.saveForm[OfficerDateOfBirthView](data) map { _ =>
+          Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+        }
+      }
     )
   })
 
