@@ -45,7 +45,7 @@ case class ScrsAddress(
     case _ => false
   }
 
-  override def hashCode: Int = (line1, postcode, country).##
+  override def hashCode: Int = asLabel.##
 }
 
 object ScrsAddress {
