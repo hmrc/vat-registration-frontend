@@ -15,11 +15,11 @@
  */
 
 package connectors.test
+import connectors._
 import com.google.inject.ImplementedBy
 import config.WSHttp
-import connectors._
 import play.api.Logger
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
@@ -59,8 +59,8 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
       }
   }
 
-    def wipeTestData()(implicit hc : HeaderCarrier) :Future[HttpResponse] = {
-    http.GET[HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/test-only/wipe-submissions")
+  def wipeTestData()(implicit hc : HeaderCarrier) :Future[HttpResponse] = {
+    http.PUT[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data", Json.parse("{}"))
   }
 
   //$COVERAGE-ON$
