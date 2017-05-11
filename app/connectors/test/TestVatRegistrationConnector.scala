@@ -60,7 +60,7 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
   }
 
   def wipeTestData()(implicit hc : HeaderCarrier) :Future[HttpResponse] = {
-    http.PUT[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data", Json.parse("{}"))
+    http.PUT[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/test-only/wipe-submissions", Json.parse("{}"))
   }
 
   //$COVERAGE-ON$
