@@ -611,12 +611,11 @@ validation.officerHomeAddress.missing                    = Tell us your home add
 
 pages.officerDOB.title                                   = What is your date of birth?
 pages.officerDOB.heading                                 = What is your date of birth?
-pages.officerDOB.heading                                 = What is your date of birth?
 pages.officerDOB.day.label                               = Day
 pages.officerDOB.month.label                             = Month
 pages.officerDOB.year.label                              = Year
 pages.officerDOB.hint                                    = For example, 31 3 1980
-validation.officerDOB.invalid                            = Enter a valid start date
-validation.officerDOB.missing                            = Enter a start date
+validation.officerDOB.invalid                            = Enter a valid date of birth
+validation.officerDOB.missing                            = Enter your date of birth
 validation.officerDOB.range.above                        = Date of birth must be at least 18 years ago
-validation.officerDOB.range.below                        = Date must not be over 200 years ago
+validation.officerDOB.range.below                        = Date of birth must not be over 200 years ago
