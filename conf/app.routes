@@ -140,6 +140,10 @@ POST        /business-contact                      controllers.vatContact.Busine
 GET         /your-home-address                      controllers.vatLodgingOfficer.OfficerHomeAddressController.show
 POST        /your-home-address                      controllers.vatLodgingOfficer.OfficerHomeAddressController.submit
 
+## OFFICER DOB PAGE
+GET         /your-date-of-birth                      controllers.vatLodgingOfficer.OfficerDateOfBirthController.show
+POST        /your-date-of-birth                      controllers.vatLodgingOfficer.OfficerDateOfBirthController.submit
+
 
 ## FEEDBACK
 GET         /feedback                              controllers.feedback.FeedbackController.show
