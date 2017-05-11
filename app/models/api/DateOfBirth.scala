@@ -22,5 +22,8 @@ case class DateOfBirth(day: Int, month: Int, year: Int)
 
 object DateOfBirth {
   implicit val format: OFormat[DateOfBirth] = Json.format[DateOfBirth]
+
+  // TODO remove once no longer required
+  val empty = DateOfBirth(1,1,1980)
 }
 
