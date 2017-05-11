@@ -18,11 +18,9 @@ package models.api
 
 import play.api.libs.json.{Json, OFormat}
 
-case class VatLodgingOfficer(currentAddress: ScrsAddress, dob: Option[DateOfBirth] = None) // TODO FIXME temp as Option
+case class DateOfBirth(day: Int, month: Int, year: Int)
 
-object VatLodgingOfficer {
-  implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
-
-  // TODO remove once no longer required
-  val empty = VatLodgingOfficer(ScrsAddress(line1 = "todo",line2 = "todo", postcode=Some("todo")), Some(DateOfBirth(1,1,1980)))
+object DateOfBirth {
+  implicit val format: OFormat[DateOfBirth] = Json.format[DateOfBirth]
 }
+

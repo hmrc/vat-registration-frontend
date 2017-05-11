@@ -71,6 +71,10 @@ private[forms] object FormValidation {
   val taxEstimateTextToLong = textToLong(0, 1000000000000000L) _
   val numberOfWorkersToInt = textToInt(1, 99999) _
 
+  val dayOfMonthToInt = textToInt(1, 31) _
+  val monthOfYearToInt = textToInt(1, 12) _
+  val yearToInt = textToInt(1000, 9999) _
+
   private def textToInt(min: Int, max: Int)(s: String): Int = {
     // assumes input string will be numeric
     val bigInt = BigInt(s)
