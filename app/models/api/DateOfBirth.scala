@@ -16,12 +16,16 @@
 
 package models.api
 
+import java.time.LocalDate
+
 import play.api.libs.json.{Json, OFormat}
 
 case class DateOfBirth(day: Int, month: Int, year: Int)
 
 object DateOfBirth {
   implicit val format: OFormat[DateOfBirth] = Json.format[DateOfBirth]
+
+  implicit def toLocalDate(dob: DateOfBirth): LocalDate = LocalDate.of(dob.year, dob.month, dob.day)
 
   // TODO remove once no longer required
   val empty = DateOfBirth(1,1,1980)

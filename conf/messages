@@ -367,13 +367,13 @@ pages.summary.directorContactDetails.emailAddress      = Director email address
 pages.summary.directorContactDetails.daytimePhone      = Day time phone number
 pages.summary.directorContactDetails.mobilePhone       = Mobile number
 
-## Summary Page Director's details
-pages.summary.directorDetails.sectionHeading           = Director''s details
+## Summary Page Director details
+pages.summary.directorDetails.sectionHeading           = Director details
 pages.summary.directorDetails.whoIsRegistering         = Who is registering the company for VAT
 pages.summary.directorDetails.homeAddress              = Home address
 pages.summary.directorDetails.moreThanThreeYears       = Lived at current address for more than 3 years
 pages.summary.directorDetails.previousAddress          = Previous address
-pages.summary.directorDetails.dateOfBirth              = Date of birth
+pages.summary.directorDetails.dob                      = Date of birth
 pages.summary.directorDetails.nino                     = National Insurance number
 
 ##Business Activity Description
@@ -410,7 +410,7 @@ pages.summary.taxableSales.zeroRatedSales                     = Will make zero-r
 pages.summary.taxableSales.zeroRatedSalesValue                = Estimated zero-rated sales
 
 ## Summary Page Director Addresses
-pages.summary.directorAddresses.sectionHeading                = Director Addresses
+pages.summary.directorAddresses.sectionHeading                = Director addresses
 pages.summary.directorAddresses.homeAddress                   = Home address
 
 ## Summary Page Doing Business Abroad
