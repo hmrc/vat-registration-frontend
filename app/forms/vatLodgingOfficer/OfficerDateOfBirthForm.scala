@@ -33,8 +33,8 @@ object OfficerDateOfBirthForm {
     override def compare(x: LocalDate, y: LocalDate): Int = x.compareTo(y)
   }
 
-  val minDate: LocalDate = LocalDate.now() minusYears 200
-  val maxDate: LocalDate = LocalDate.now() minusYears 18
+  val minDate: LocalDate = LocalDate.of(1900, 1, 1)
+  val maxDate: LocalDate = LocalDate.now()
 
   val form = Form(
     mapping (
