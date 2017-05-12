@@ -87,7 +87,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
     }
   }
 
-  s"POST ${controllers.vatContact.routes.BusinessContactDetailsController.submit()} with a valid turnover estimate entered" should {
+  s"POST ${controllers.vatContact.routes.BusinessContactDetailsController.submit()} with a valid business contact entered" should {
 
     "return 303" in {
       val returnCacheMapBusinessContactDetails = CacheMap("", Map("" -> Json.toJson(validBusinessContactDetails)))
