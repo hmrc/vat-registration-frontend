@@ -618,8 +618,8 @@ pages.officerDOB.year.label                              = Year
 pages.officerDOB.hint                                    = For example, 31 3 1980
 validation.officerDOB.missing                            = Enter your date of birth
 validation.officerDOB.invalid                            = Enter a valid date of birth
-validation.officerDOB.range.above                        = Date of birth must be at least 18 years ago
-validation.officerDOB.range.below                        = Date of birth must not be over 200 years ago
+validation.officerDOB.range.above                        = Date of birth must not be in the future
+validation.officerDOB.range.below                        = Date of birth must be after 1 Jan 1900
 
 ## Officer Nino
 pages.officerNino.title                                   = Officer National Insurance number
