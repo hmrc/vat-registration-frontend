@@ -50,7 +50,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
 
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty)))
+      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "")))
 
       when(mockS4LService.fetchAndGet[OfficerHomeAddressView]()(any(), any(), any()))
         .thenReturn(Future.successful(None))

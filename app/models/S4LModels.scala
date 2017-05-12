@@ -25,7 +25,7 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
-import models.view.vatLodgingOfficer.{OfficerDateOfBirthView, OfficerHomeAddressView}
+import models.view.vatLodgingOfficer.{OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
@@ -88,6 +88,7 @@ case class S4LVatEligibility
 case class S4LVatLodgingOfficer
 (
   officerHomeAddressView: Option[OfficerHomeAddressView],
-  officerDateOfBirthView: Option[OfficerDateOfBirthView]
+  officerDateOfBirthView: Option[OfficerDateOfBirthView],
+  officerNinoView: Option[OfficerNinoView]
 )
 
