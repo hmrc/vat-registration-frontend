@@ -18,16 +18,12 @@ package controllers.vatLodgingOfficer
 
 import javax.inject.Inject
 
-import cats.data.OptionT
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerNinoForm
-import models.ApiModelTransformer
 import models.view.vatLodgingOfficer.OfficerNinoView
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService, VatRegistrationService}
-
-import scala.concurrent.{Await, Future}
 
 class OfficerNinoController @Inject()(ds: CommonPlayDependencies)
                                      (implicit s4l: S4LService,
@@ -37,7 +33,6 @@ class OfficerNinoController @Inject()(ds: CommonPlayDependencies)
   import cats.instances.future._
   import cats.syntax.applicative._
   import cats.syntax.flatMap._
-  import scala.concurrent.duration._
 
   val form = OfficerNinoForm.form
 
