@@ -16,6 +16,8 @@
 
 package services
 
+import java.time.LocalDate
+
 import cats.data.OptionT
 import cats.instances.future.catsStdInstancesForFuture
 import cats.syntax.applicative.catsSyntaxApplicativeId
@@ -27,7 +29,7 @@ import models.external.CoHoCompanyProfile
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
-import models.view.vatLodgingOfficer.OfficerHomeAddressView
+import models.view.vatLodgingOfficer.{OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.{S4LKey, VatBankAccountPath, ZeroRatedTurnoverEstimatePath}
@@ -116,6 +118,8 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturns(validBusinessContactDetails)
       save4laterReturns(validServiceEligibility)
       save4laterReturns(OfficerHomeAddressView("", None))
+      save4laterReturns(OfficerDateOfBirthView(LocalDate.now))
+      save4laterReturns(OfficerNinoView(""))
 
       when(mockRegConnector.upsertVatChoice(any(), any())(any(), any())).thenReturn(validVatChoice.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)

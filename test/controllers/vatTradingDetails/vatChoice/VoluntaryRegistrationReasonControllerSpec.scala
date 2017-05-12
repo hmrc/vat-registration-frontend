@@ -116,7 +116,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
 
       AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationReasonController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> VoluntaryRegistrationReason.SELLS
-      ))(_ redirectsTo s"$contextRoot/start-date")
+      ))(_ redirectsTo s"$contextRoot/your-date-of-birth")
     }
   }
 
@@ -130,7 +130,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
 
       AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationReasonController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> VoluntaryRegistrationReason.SELLS
-      ))(_ redirectsTo s"$contextRoot/start-date")
+      ))(_ redirectsTo s"$contextRoot/your-date-of-birth")
     }
   }
 
