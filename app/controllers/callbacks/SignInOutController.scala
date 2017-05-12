@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.callbacks
 
 import javax.inject.Inject
 
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
 
 class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {

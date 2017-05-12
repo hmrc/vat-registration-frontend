@@ -17,11 +17,13 @@
 package services
 
 import fixtures.{S4LFixture, VatRegistrationFixture}
+import helpers.VatRegSpec
 import models.S4LKey
 import models.view.vatTradingDetails.vatChoice.StartDateView
-import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixture {
 
@@ -40,26 +42,28 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
 
     "save a form with the correct key" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
-      mockS4LSaveForm[StartDateView](CacheMap("s-date", Map.empty))
-      await(service.saveForm[StartDateView](tstStartDateModel)).id shouldBe "s-date"
+      private val cacheMap = CacheMap("s-date", Map.empty)
+      mockS4LSaveForm[StartDateView](cacheMap)
+      service.saveForm[StartDateView](tstStartDateModel) returns cacheMap
     }
 
     "fetch a form with the correct key" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
       mockS4LFetchAndGet[StartDateView](S4LKey[StartDateView].key, Some(tstStartDateModel))
-      await(service.fetchAndGet[StartDateView]()) shouldBe Some(tstStartDateModel)
+      service.fetchAndGet[StartDateView]() returns Some(tstStartDateModel)
     }
 
     "clear down S4L data" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
       mockS4LClear()
-      await(service.clear()).status shouldBe 200
+      service.clear().map(_.status) returns 200
     }
 
     "fetch all data" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
-      mockS4LFetchAll(Some(CacheMap("allData", Map.empty)))
-      await(service.fetchAll()) shouldBe Some(CacheMap("allData", Map.empty))
+      private val cacheMap = CacheMap("allData", Map.empty)
+      mockS4LFetchAll(Some(cacheMap))
+      service.fetchAll() returns Some(cacheMap)
     }
 
   }

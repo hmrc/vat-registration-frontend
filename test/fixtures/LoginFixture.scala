@@ -20,6 +20,6 @@ import java.net.URLEncoder
 
 trait LoginFixture {
   val signInUri: String = """http://localhost:9025/gg/sign-in"""
-  val continueUrlHtmlEncoded: String = URLEncoder.encode(s"http://localhost:9895/register-for-vat/post-sign-in", "UTF-8")
-  lazy val authUrl = s"$signInUri?accountType=organisation&continue=$continueUrlHtmlEncoded&origin=vat-registration-frontend"
+  val encodedContinueUrl: String = URLEncoder.encode(s"http://localhost:9895/register-for-vat/post-sign-in", "UTF-8")
+  lazy val authUrl = s"$signInUri?accountType=organisation&continue=$encodedContinueUrl&origin=vat-registration-frontend"
 }

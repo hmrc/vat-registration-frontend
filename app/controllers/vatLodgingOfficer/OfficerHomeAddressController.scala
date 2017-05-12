@@ -19,10 +19,12 @@ package controllers.vatLodgingOfficer
 import javax.inject.Inject
 
 import cats.data.OptionT
+import connectors.AddressLookupConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerHomeAddressForm
 import models.api.ScrsAddress
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
+import play.api.Logger
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -30,10 +32,13 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService,
                                              vrs: VatRegistrationService,
-                                             prePopService: PrePopulationService)
+                                             prePopService: PrePopulationService,
+                                             val alfConnector: AddressLookupConnect)
   extends VatRegistrationController(ds) with CommonService {
 
   import cats.instances.future._
+  import cats.syntax.applicative._
+  import cats.syntax.flatMap._
 
   private val form = OfficerHomeAddressForm.form
   private val addressListKey = "OfficerAddressList"
@@ -49,16 +54,35 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
     } yield Ok(views.html.pages.vatLodgingOfficer.officer_home_address(res, addresses))
   )
 
-  // TODO route to address lookup if selected
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      badForm => fetchAddressList().getOrElse(Seq()).map(
-        addressList => BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(badForm, addressList))),
-      (form: OfficerHomeAddressView) => for {
-        addressList <- fetchAddressList().getOrElse(Seq())
-        address = addressList.find(_.id == form.addressId)
-        _ <- s4l.saveForm(OfficerHomeAddressView(form.addressId, address))
+  def submit: Action[AnyContent] = authorised.async { implicit user =>
+    implicit request =>
+      form.bindFromRequest().fold(
+        badForm => fetchAddressList().getOrElse(Seq()).map(
+          addressList => BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(badForm, addressList))),
+        (form: OfficerHomeAddressView) =>
+          (form.addressId == "other").pure.ifM(
+            alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm())
+            ,
+            for {
+              addressList <- fetchAddressList().getOrElse(Seq())
+              address = addressList.find(_.id == form.addressId)
+              _ <- s4l.saveForm(OfficerHomeAddressView(form.addressId, address))
+            } yield controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()
+          ).map(Redirect))
+  }
+
+
+  def acceptFromTxm(id: String): Action[AnyContent] = authorised.async { implicit user =>
+    implicit request =>
+      Logger.debug(s"Received redirect from TxM. about to process new address ID: $id")
+      for {
+        address <- alfConnector.getAddress(id)
+        homeAddressView = {
+          Logger.debug(s"address received: $address")
+          OfficerHomeAddressView(address.id, Some(address))
+        }
+        _ <- s4l.saveForm(homeAddressView)
       } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
-    ))
+  }
 
 }
