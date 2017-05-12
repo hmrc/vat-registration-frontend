@@ -21,7 +21,7 @@ import javax.inject.{Inject, Singleton}
 
 import play.api.libs.json.Json
 import play.api.{Environment, Logger}
-import uk.gov.hmrc.play.config.inject.ServicesConfig
+import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
@@ -41,9 +41,9 @@ trait BankHolidaysConnector {
 }
 
 @Singleton
-class WSBankHolidaysConnector @Inject()(wsHttp: WSHttp, configuration: ServicesConfig) extends BankHolidaysConnector {
+class WSBankHolidaysConnector @Inject()(wsHttp: WSHttp) extends BankHolidaysConnector with ServicesConfig {
 
-  lazy val url = configuration.getConfString("bank-holidays.url", "")
+  lazy val url = getConfString("bank-holidays.url", "")
 
   def bankHolidays(division: String = "england-and-wales")(implicit headerCarrier: HeaderCarrier): Future[BankHolidaySet] =
     filterByDivision(wsHttp.GET[Map[String, BankHolidaySet]](url), division)

@@ -19,7 +19,7 @@ package services
 import common.exceptions.DownstreamExceptions
 import connectors.KeystoreConnector
 import fixtures.KeystoreFixture
-import testHelpers.VatRegSpec
+import helpers.VatRegSpec
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 class CommonServiceSpec extends VatRegSpec with KeystoreFixture {
@@ -34,8 +34,8 @@ class CommonServiceSpec extends VatRegSpec with KeystoreFixture {
 
   "Calling fetchRegistrationId" should {
     "throw a RegistrationNotFoundException when the Registration ID is not found in keystore" in new Setup {
-      mockKeystoreFetchAndGet[String]("", None)
-      a[DownstreamExceptions.RegistrationIdNotFoundException] shouldBe thrownBy(await(service.fetchRegistrationId))
+      mockKeystoreFetchAndGet[String]("RegistrationId", None)
+      service.fetchRegistrationId failedWith classOf[DownstreamExceptions.RegistrationIdNotFoundException]
     }
   }
 

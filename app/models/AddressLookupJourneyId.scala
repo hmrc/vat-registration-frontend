@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package testHelpers
+package models
 
-import mocks.VatMocks
-import org.scalatest.mockito.MockitoSugar
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+final case class AddressLookupJourneyId(id: String)
 
-trait VatRegSpec extends UnitSpec with WithFakeApplication with MockitoSugar with VatMocks
+object AddressLookupJourneyId {
+  implicit val defaultJourneyId = AddressLookupJourneyId("vatreg1")
+}
