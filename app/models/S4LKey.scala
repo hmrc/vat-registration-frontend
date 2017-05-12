@@ -26,7 +26,7 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
-import models.view.vatLodgingOfficer.{OfficerDateOfBirthView, OfficerHomeAddressView}
+import models.view.vatLodgingOfficer.{OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails._
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
@@ -80,4 +80,5 @@ object S4LKey {
 
   implicit val officerHomeAddress: S4LKey[OfficerHomeAddressView] = S4LKey("OfficerHomeAddressView")
   implicit val officerDateOfBirth: S4LKey[OfficerDateOfBirthView] = S4LKey("OfficerDateOfBirthView")
+  implicit val officerNino: S4LKey[OfficerNinoView] = S4LKey("OfficerNinoView")
 }

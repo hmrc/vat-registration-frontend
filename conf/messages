@@ -609,13 +609,24 @@ pages.officerHomeAddress.heading                         = What is your home add
 pages.officerHomeAddress.different.address               = A different address
 validation.officerHomeAddress.missing                    = Tell us your home address
 
-pages.officerDOB.title                                   = What is your date of birth?
+## Officer Date of Birth
+pages.officerDOB.title                                   = Officer date of birth
 pages.officerDOB.heading                                 = What is your date of birth?
 pages.officerDOB.day.label                               = Day
 pages.officerDOB.month.label                             = Month
 pages.officerDOB.year.label                              = Year
 pages.officerDOB.hint                                    = For example, 31 3 1980
-validation.officerDOB.invalid                            = Enter a valid date of birth
 validation.officerDOB.missing                            = Enter your date of birth
+validation.officerDOB.invalid                            = Enter a valid date of birth
 validation.officerDOB.range.above                        = Date of birth must be at least 18 years ago
 validation.officerDOB.range.below                        = Date of birth must not be over 200 years ago
+
+## Officer Nino
+pages.officerNino.title                                   = Officer National Insurance number
+pages.officerNino.heading                                 = What is your National Insurance number?
+pages.officerNino.hint                                    = For example, QQ 12 34 56 C
+pages.officerNino.advice.title                            = Where to find your National Insurance number
+pages.officerNino.advice.para1                            = You can find your National Insurance number on your National Insurance card, benefit letter, payslip or P60.
+validation.officerNino.missing                            = Enter your National Insurance number
+validation.officerNino.invalid                            = Enter a valid National Insurance number
+

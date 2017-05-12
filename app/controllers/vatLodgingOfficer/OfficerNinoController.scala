@@ -19,34 +19,34 @@ package controllers.vatLodgingOfficer
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatLodgingOfficer.OfficerDateOfBirthForm
-import models.view.vatLodgingOfficer.OfficerDateOfBirthView
-import play.api.mvc._
+import forms.vatLodgingOfficer.OfficerNinoForm
+import models.view.vatLodgingOfficer.OfficerNinoView
+import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService, VatRegistrationService}
 
-class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
-                                            (implicit s4l: S4LService,
-                                             vrs: VatRegistrationService)
+class OfficerNinoController @Inject()(ds: CommonPlayDependencies)
+                                     (implicit s4l: S4LService,
+                                      vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with CommonService {
 
   import cats.instances.future._
   import cats.syntax.applicative._
 
-  val form = OfficerDateOfBirthForm.form
+  val form = OfficerNinoForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     for {
-      res <- viewModel[OfficerDateOfBirthView].fold(form)(form.fill)
-    } yield Ok(views.html.pages.vatLodgingOfficer.officer_dob(res))
+      res <- viewModel[OfficerNinoView].fold(form)(form.fill)
+    } yield Ok(views.html.pages.vatLodgingOfficer.officer_nino(res))
 
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
-      formWithErrors => BadRequest(views.html.pages.vatLodgingOfficer.officer_dob(formWithErrors)).pure,
+      formWithErrors => BadRequest(views.html.pages.vatLodgingOfficer.officer_nino(formWithErrors)).pure,
       data => {
-        s4l.saveForm[OfficerDateOfBirthView](data) map { _ =>
-          Redirect(controllers.vatLodgingOfficer.routes.OfficerNinoController.show())
+        s4l.saveForm[OfficerNinoView](data) map { _ =>
+          Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
         }
       }
     )
