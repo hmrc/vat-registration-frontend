@@ -18,14 +18,11 @@ package connectors
 
 import helpers.VatRegSpec
 import org.joda.time.LocalDate
-import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
 class WSBankHolidaysConnectorSpec extends VatRegSpec {
 
   lazy val testConnector = new WSBankHolidaysConnector(mockWSHttp)
-
-  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   "bankHolidays" must {
 

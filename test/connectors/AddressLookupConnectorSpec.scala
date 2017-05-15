@@ -25,7 +25,7 @@ import play.api.http.Status.{OK, PERMANENT_REDIRECT}
 import play.api.libs.json.JsObject
 import play.api.mvc.Call
 import uk.gov.hmrc.play.http.ws.WSHttp
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, InternalServerException}
+import uk.gov.hmrc.play.http.{HttpResponse, InternalServerException}
 
 class AddressLookupConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -40,8 +40,6 @@ class AddressLookupConnectorSpec extends VatRegSpec with VatRegistrationFixture 
     val dummyUrl = "test-url"
     val redirectUrl = "redirect-url"
     val testAddress = ScrsAddress(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
-
-    implicit val headerCarrier = HeaderCarrier()
 
   }
 

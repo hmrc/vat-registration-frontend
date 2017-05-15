@@ -42,15 +42,12 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistrationFixture {
-  implicit val hc = HeaderCarrier()
-
 
   object TestVoluntaryRegistrationController extends VoluntaryRegistrationController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -66,7 +63,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       when(mockS4LService.fetchAndGet[VoluntaryRegistration]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(voluntaryRegistration)))
 
-      AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationController.show(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestVoluntaryRegistrationController.show(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationRadio" -> ""
       )) {
         _ includesText "Do you want to register voluntarily for VAT?"
@@ -101,7 +98,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
   s"POST ${routes.VoluntaryRegistrationController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestVoluntaryRegistrationController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
   }
@@ -114,7 +111,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       when(mockS4LService.saveForm[VoluntaryRegistration](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestVoluntaryRegistrationController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationRadio" -> VoluntaryRegistration.REGISTER_YES
       ))(_ redirectsTo s"$contextRoot/voluntary-registration-reason")
     }
@@ -131,7 +128,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       when(mockVatRegistrationService.deleteVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(()))
 
-      AuthBuilder.submitWithAuthorisedUser(TestVoluntaryRegistrationController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestVoluntaryRegistrationController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationRadio" -> VoluntaryRegistration.REGISTER_NO
       ))(_ redirectsTo contextRoot)
 

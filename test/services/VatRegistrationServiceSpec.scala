@@ -21,7 +21,7 @@ import cats.instances.future.catsStdInstancesForFuture
 import cats.syntax.applicative.catsSyntaxApplicativeId
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.api._
 import models.external.CoHoCompanyProfile
 import models.view.sicAndCompliance.BusinessActivityDescription
@@ -30,7 +30,7 @@ import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
-import models.{S4LKey, VatBankAccountPath, ZeroRatedTurnoverEstimatePath}
+import models.{VatBankAccountPath, ZeroRatedTurnoverEstimatePath}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -41,21 +41,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.language.postfixOps
 
-class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture {
-
-  implicit val hc = HeaderCarrier()
+class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   class Setup {
 
     val service = new VatRegistrationService(mockS4LService, mockRegConnector, mockCompanyRegConnector) {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
-
-    def save4laterReturnsNothing[T: S4LKey]()(implicit s4LService: S4LService): Unit =
-      when(s4LService.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(None.pure)
-
-    def save4laterReturns[T: S4LKey](t: T)(implicit s4lService: S4LService): Unit =
-      when(s4lService.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(OptionT.pure(t).value)
 
   }
 

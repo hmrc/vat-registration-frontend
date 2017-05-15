@@ -88,7 +88,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
     "return 400" in {
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", None)
 
-      AuthBuilder.submitWithAuthorisedUser(TestOfficerHomeAddressController.submit(), fakeRequest.withFormUrlEncodedBody()
+      submitAuthorised(TestOfficerHomeAddressController.submit(), fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
     }
   }
@@ -104,7 +104,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
       mockKeystoreFetchAndGet("OfficerAddressList", Option.empty[Seq[ScrsAddress]])
 
-      AuthBuilder.submitWithAuthorisedUser(
+      submitAuthorised(
         TestOfficerHomeAddressController.submit(),
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.id)
       )(_ redirectsTo s"$contextRoot/business-activity-description")
@@ -122,7 +122,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", Some(Seq(address)))
 
-      AuthBuilder.submitWithAuthorisedUser(
+      submitAuthorised(
         TestOfficerHomeAddressController.submit(),
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.id)
       )(_ redirectsTo s"$contextRoot/business-activity-description")
@@ -138,7 +138,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
 
       when(mockAddressLookupConnector.getOnRampUrl(any[Call])(any(), any())).thenReturn(Call("GET", "TxM").pure)
 
-      AuthBuilder.submitWithAuthorisedUser(
+      submitAuthorised(
         TestOfficerHomeAddressController.submit(),
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> "other")
       )(_ redirectsTo "TxM")

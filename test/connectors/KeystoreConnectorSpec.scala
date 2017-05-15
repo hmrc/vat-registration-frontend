@@ -22,7 +22,7 @@ import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
 
@@ -32,18 +32,16 @@ class KeystoreConnectorSpec extends VatRegSpec {
     override val sessionCache = mockSessionCache
   }
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-
   case class TestModel(test: String)
 
   object TestModel {
     implicit val formats = Json.format[TestModel]
   }
 
+  val testModel = TestModel("test")
+
   "Saving into KeyStore" should {
     "save the model" in {
-      val testModel = TestModel("test")
-
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(testModel)))
 
       when(mockSessionCache.cache[TestModel](any(), any())(any(), any()))
@@ -55,7 +53,6 @@ class KeystoreConnectorSpec extends VatRegSpec {
 
   "Fetching and getting from KeyStore" should {
     "return a list" in {
-      val testModel = TestModel("test")
       val list = List(testModel)
 
       when(mockSessionCache.fetchAndGetEntry[List[TestModel]](any())(any(), any()))
@@ -67,8 +64,6 @@ class KeystoreConnectorSpec extends VatRegSpec {
 
   "Fetching from KeyStore" should {
     "return a CacheMap" in {
-      val testModel = TestModel("test")
-
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(testModel)))
 
       when(mockSessionCache.fetch()(any())).thenReturn(Future.successful(Some(returnCacheMap)))

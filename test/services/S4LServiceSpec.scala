@@ -21,8 +21,6 @@ import helpers.VatRegSpec
 import models.S4LKey
 import models.view.vatTradingDetails.vatChoice.StartDateView
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixture {
@@ -33,8 +31,6 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
       override val keystoreConnector = mockKeystoreConnector
     }
   }
-
-  implicit val hc = new HeaderCarrier()
 
   val tstStartDateModel = StartDateView("", None)
 

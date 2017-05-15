@@ -51,7 +51,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
       when(mockS4LService.fetchAndGet[CompanyProvideWorkers]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(companyProvideWorkers)))
 
-      AuthBuilder.submitWithAuthorisedUser(CompanyProvideWorkersController.show(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(CompanyProvideWorkersController.show(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> ""
       )) {
         _ includesText "Does the company provide workers to other employers?"
@@ -87,7 +87,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
   s"POST ${sicAndCompliance.labour.routes.CompanyProvideWorkersController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
   }
@@ -102,7 +102,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
       when(mockS4LService.saveForm[CompanyProvideWorkers](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapCompanyProvideWorkers))
 
-      AuthBuilder.submitWithAuthorisedUser(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_YES
       ))(_ redirectsTo s"$contextRoot/compliance/workers")
 
@@ -119,7 +119,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
       when(mockS4LService.saveForm[CompanyProvideWorkers](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapCompanyProvideWorkers))
 
-      AuthBuilder.submitWithAuthorisedUser(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_NO
       ))(_ redirectsTo s"$contextRoot/company-bank-account")
 

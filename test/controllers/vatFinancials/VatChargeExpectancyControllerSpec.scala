@@ -52,7 +52,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockS4LService.fetchAndGet[VatChargeExpectancy]()(any(), any(), any()))
         .thenReturn(Some(vatChargeExpectancy).pure)
 
-      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.show(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestVatChargeExpectancyController.show(), fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> ""
       )) {
         _ includesText "Do you expect to reclaim more VAT than you charge?"
@@ -86,7 +86,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${vatFinancials.routes.VatChargeExpectancyController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
 
@@ -98,7 +98,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       val returnCacheMapVatChargeExpectancy = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES))))
       when(mockS4LService.saveForm[VatChargeExpectancy](any())(any(), any(), any())).thenReturn(returnCacheMapVatChargeExpectancy.pure)
 
-      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_YES
       )) {
         _ redirectsTo s"$contextRoot/vat-return-frequency"
@@ -116,7 +116,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockS4LService.saveForm[VatChargeExpectancy](any())(any(), any(), any())).thenReturn(returnCacheMap.pure)
       when(mockS4LService.saveForm[VatReturnFrequency](any())(any(), any(), any())).thenReturn(returnCacheMapReturnFrequency.pure)
 
-      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_NO
       )) {
         _ redirectsTo s"$contextRoot/accounting-period"
