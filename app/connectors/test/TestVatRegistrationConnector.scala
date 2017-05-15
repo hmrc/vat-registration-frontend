@@ -41,8 +41,8 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
   val vatRegUrl = baseUrl("vat-registration")
   val http = WSHttp
 
-  val incorporationFrontendStubsUrl: String = baseUrl("incorporation-frontend-stub")
-  val incorporationFrontendStubsUri: String = getConfString("incorporation-frontend-stub.uri","")
+  lazy val incorporationFrontendStubsUrl: String = baseUrl("incorporation-frontend-stub")
+  lazy val incorporationFrontendStubsUri: String = getConfString("incorporation-frontend-stub.uri","")
 
   def setupCurrentProfile()(implicit hc: HeaderCarrier): Future[Result] = {
     http.POSTEmpty(s"$vatRegUrl/vatreg/test-only/current-profile-setup").map { _ => Results.Ok }
@@ -53,14 +53,16 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
   }
 
   def postTestData(jsonData: JsValue)(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
-      Logger.debug(s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data")
+      Logger.debug(s"###111###$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data")
       http.POST[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data", jsonData) recover {
         case e: Exception => throw logResponse(e,"TestVatRegistrationConnector", s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data")
       }
   }
 
   def wipeTestData()(implicit hc : HeaderCarrier) :Future[HttpResponse] = {
-    http.PUT[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data", Json.parse("{}"))
+    http.PUT[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data", Json.parse("{}")) recover {
+      case e: Exception => throw logResponse(e,"TestVatRegistrationConnector", s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data")
+    }
   }
 
   //$COVERAGE-ON$
