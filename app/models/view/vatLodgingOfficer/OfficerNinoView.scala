@@ -28,9 +28,7 @@ object OfficerNinoView {
 
   // return a view model from a VatScheme instance
   implicit val modelTransformer = ApiModelTransformer[OfficerNinoView] { vs: VatScheme =>
-    vs.lodgingOfficer.map(_.nino).collect {
-      case n: String => OfficerNinoView(n)
-    }
+    vs.lodgingOfficer.map(_.nino).map(OfficerNinoView(_))
   }
 
   // return a new or updated VatLodgingOfficer from the CurrentAddressView instance
