@@ -26,6 +26,8 @@ User service manager to run all services required by VAT Registration Frontend:
 sm --start VAT_REG_DEP -f
 ```
 
+Before you interact with the application's frontend _for the first time_ you will need to prime business registration backend with some dummy registration data. You can do so by visiting this URL: http://localhost:9895/register-for-vat/test-only/current-profile-setup
+
 Note there is also VAT_REG_ALL profile that will run all dependencies plus the vat registration frontend itself.
 
 Alternatively, create an alias for starting the services required for the VAT Registration Frontend
