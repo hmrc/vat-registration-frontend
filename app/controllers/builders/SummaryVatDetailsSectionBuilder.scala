@@ -49,8 +49,6 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
     Some(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationReasonController.show())
   )
 
-  val presentationFormatter = DateTimeFormatter.ofPattern("d MMMM y")
-
   val startDateRow: SummaryRow = SummaryRow(
     "vatDetails.startDate",
     vatTradingDetails.map(_.vatChoice).collect {

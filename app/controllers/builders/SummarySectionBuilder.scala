@@ -16,10 +16,13 @@
 
 package controllers.builders
 
+import java.time.format.DateTimeFormatter
+
 import models.view.SummarySection
 
 trait SummarySectionBuilder {
 
   val section: SummarySection
+  val presentationFormatter = DateTimeFormatter.ofPattern("d MMMM y")
 
 }

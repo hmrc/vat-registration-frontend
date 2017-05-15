@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package models.api
+package forms.vatLodgingOfficer
 
-import play.api.libs.json.{Json, OFormat}
+import forms.FormValidation._
+import models.view.vatLodgingOfficer.OfficerNinoView
+import play.api.data.Form
+import play.api.data.Forms.{mapping, text}
 
-case class VatLodgingOfficer(currentAddress: ScrsAddress, dob: DateOfBirth, nino: String)
+object OfficerNinoForm {
 
-object VatLodgingOfficer {
-  implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
+  implicit val errorCode: ErrorCode = "officerNino"
 
-  // TODO remove once no longer required
-  val empty = VatLodgingOfficer(
-    ScrsAddress(line1 = "todo",line2 = "todo", postcode=Some("todo")),
-    DateOfBirth(1,1,1980),
-    "NB686868C")
+  val NINO_REGEX = """^[[A-Z]&&[^DFIQUV]][[A-Z]&&[^DFIQUVO]] ?\d{2} ?\d{2} ?\d{2} ?[A-D]{1}$""".r
+
+  val form = Form(
+    mapping (
+      "nino" -> text.verifying(nonEmptyValidText(NINO_REGEX))
+    ) (OfficerNinoView.apply)(OfficerNinoView.unapply)
+  )
 }

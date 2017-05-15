@@ -37,13 +37,16 @@ case class ScrsAddress(
 
   val asLabel: String = inline show this
 
-  // TODO consider making case-insensitive
   override def equals(obj: Any): Boolean = obj match {
-    case ScrsAddress(`line1`, _, _, _, `postcode`, `country`) => true
+    case ScrsAddress(objLine1, _, _, _, Some(objPostcode), _)
+      if objPostcode != "" => line1.equalsIgnoreCase(objLine1) && postcode.getOrElse("").equalsIgnoreCase(objPostcode)
+    case ScrsAddress(objLine1, _, _, _, None, Some(objCountry))
+      if objCountry != "" => line1.equalsIgnoreCase(objLine1) && country.getOrElse("").equalsIgnoreCase(objCountry)
+
     case _ => false
   }
 
-  override def hashCode: Int = (line1, postcode, country).##
+  override def hashCode: Int = 1 // TODO temporary fix to ensure List.distinct works
 }
 
 object ScrsAddress {
@@ -75,6 +78,7 @@ object ScrsAddress {
   private def normalisedSeq(address: ScrsAddress): Seq[String] = {
     import cats.instances.option._
     import cats.syntax.applicative._
+
     Seq[Option[AddressLineOrPostcode]](
       address.line1.pure.map(AddressLine),
       address.line2.pure.map(AddressLine),

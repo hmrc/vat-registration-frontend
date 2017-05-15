@@ -33,7 +33,7 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
-import models.view.vatLodgingOfficer.OfficerHomeAddressView
+import models.view.vatLodgingOfficer.{OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
@@ -82,7 +82,10 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       leaseVehiclesOrEquipment <- s4LService.fetchAndGet[LeaseVehicles]()
       investmentFundManagement <- s4LService.fetchAndGet[InvestmentFundManagement]()
       manageAdditionalFunds <- s4LService.fetchAndGet[ManageAdditionalFunds]()
+
       officerHomeAddress <- s4LService.fetchAndGet[OfficerHomeAddressView]()
+      officerDateOfBirth <- s4LService.fetchAndGet[OfficerDateOfBirthView]()
+      officerNino <- s4LService.fetchAndGet[OfficerNinoView]()
 
       eligibility <- s4LService.fetchAndGet[VatServiceEligibility]()
 
@@ -149,7 +152,12 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
           officerHomeAddress.flatMap(_.address).flatMap(_.line3),
           officerHomeAddress.flatMap(_.address).flatMap(_.line4),
           officerHomeAddress.flatMap(_.address).flatMap(_.postcode),
-          officerHomeAddress.flatMap(_.address).flatMap(_.country)
+          officerHomeAddress.flatMap(_.address).flatMap(_.country)),
+        vatLodgingOfficer = VatLodgingOfficerTestSetup(
+          officerDateOfBirth.map(_.dob.getDayOfMonth.toString),
+          officerDateOfBirth.map(_.dob.getMonthValue.toString),
+          officerDateOfBirth.map(_.dob.getYear.toString),
+          officerNino.map(_.nino)
         )
       )
       form = TestSetupForm.form.fill(testSetup)
@@ -242,6 +250,16 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
               data.officerHomeAddress.postcode,
               data.officerHomeAddress.country)
             _ <- saveToS4Later(data.officerHomeAddress.line1, data, { x => OfficerHomeAddressView(address.id, Some(address)) })
+
+            _ <- saveToS4Later(data.vatLodgingOfficer.dobDay, data, {
+                      x => OfficerDateOfBirthView(LocalDate.of(
+                        x.vatLodgingOfficer.dobYear.getOrElse("1900").toInt,
+                        x.vatLodgingOfficer.dobMonth.getOrElse("1").toInt,
+                        x.vatLodgingOfficer.dobDay.getOrElse("1").toInt
+                      ))})
+
+            _ <- saveToS4Later(data.vatLodgingOfficer.nino, data, { x => OfficerNinoView(x.vatLodgingOfficer.nino.getOrElse(""))})
+
           } yield Ok("Test setup complete")
         }
       })

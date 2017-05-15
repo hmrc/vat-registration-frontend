@@ -50,7 +50,7 @@ class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies)
               for {
                 _ <- s4LService.saveForm[VoluntaryRegistration](VoluntaryRegistration(REGISTER_NO))
                 _ <- s4LService.saveForm[StartDateView](StartDateView(COMPANY_REGISTRATION_DATE))
-              } yield Redirect(controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show())
+              } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
             } else {
               Future.successful(Redirect(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show()))
             }
