@@ -31,7 +31,7 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLod
   val nino: SummaryRow = SummaryRow(
     "directorDetails.nino",
     vatLodgingOfficer.map(_.nino).getOrElse(""),
-    Some(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
+    Some(controllers.vatLodgingOfficer.routes.OfficerNinoController.show())
   )
 
   val section: SummarySection = SummarySection(
