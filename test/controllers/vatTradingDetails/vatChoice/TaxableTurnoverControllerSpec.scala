@@ -50,7 +50,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
       when(mockS4LService.fetchAndGet[TaxableTurnover]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(taxableTurnover)))
 
-      AuthBuilder.submitWithAuthorisedUser(TestTaxableTurnoverController.show(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestTaxableTurnoverController.show(), fakeRequest.withFormUrlEncodedBody(
         "taxableTurnoverRadio" -> ""
       )) {
         _ includesText "VAT taxable turnover to be more than £83,000"
@@ -89,7 +89,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
   s"POST ${routes.TaxableTurnoverController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestTaxableTurnoverController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestTaxableTurnoverController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
   }
@@ -110,7 +110,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
       when(mockS4LService.saveForm[StartDateView](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapStartDate))
 
-      AuthBuilder.submitWithAuthorisedUser(TestTaxableTurnoverController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestTaxableTurnoverController.submit(), fakeRequest.withFormUrlEncodedBody(
         "taxableTurnoverRadio" -> TaxableTurnover.TAXABLE_YES
       ))(_ redirectsTo s"$contextRoot/start-date-confirmation")
 
@@ -125,7 +125,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
       when(mockS4LService.saveForm[TaxableTurnover](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      AuthBuilder.submitWithAuthorisedUser(TestTaxableTurnoverController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestTaxableTurnoverController.submit(), fakeRequest.withFormUrlEncodedBody(
         "taxableTurnoverRadio" -> TaxableTurnover.TAXABLE_NO
       ))(_ redirectsTo s"$contextRoot/voluntary-registration")
 

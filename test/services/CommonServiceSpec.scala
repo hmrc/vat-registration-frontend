@@ -20,7 +20,6 @@ import common.exceptions.DownstreamExceptions
 import connectors.KeystoreConnector
 import fixtures.KeystoreFixture
 import helpers.VatRegSpec
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 class CommonServiceSpec extends VatRegSpec with KeystoreFixture {
 
@@ -29,8 +28,6 @@ class CommonServiceSpec extends VatRegSpec with KeystoreFixture {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
-
-  implicit val hc = HeaderCarrier()
 
   "Calling fetchRegistrationId" should {
     "throw a RegistrationNotFoundException when the Registration ID is not found in keystore" in new Setup {

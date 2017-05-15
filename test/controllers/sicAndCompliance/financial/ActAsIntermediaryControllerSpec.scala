@@ -49,7 +49,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
       when(mockS4LService.fetchAndGet[ActAsIntermediary]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(actAsIntermediary)))
 
-      AuthBuilder.submitWithAuthorisedUser(ActAsIntermediaryController.show(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(ActAsIntermediaryController.show(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> ""
       )) {
         _ includesText "Does the company act as an intermediary?"
@@ -85,7 +85,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
   s"POST ${routes.ActAsIntermediaryController.show()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
   }
@@ -100,7 +100,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
       when(mockS4LService.saveForm[ActAsIntermediary](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapActAsIntermediary))
 
-      AuthBuilder.submitWithAuthorisedUser(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/company-bank-account")
     }
@@ -116,7 +116,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
       when(mockS4LService.saveForm[ActAsIntermediary](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapActAsIntermediary))
 
-      AuthBuilder.submitWithAuthorisedUser(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/charges-fees-for-introducing-clients-to-financial-service-providers")
 

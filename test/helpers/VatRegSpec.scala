@@ -27,7 +27,10 @@ import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{Assertion, Inside, Inspectors}
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.http.Status
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc._
+import play.api.test.FakeRequest
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -37,6 +40,8 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
 
   import play.api.test.Helpers._
 
+  implicit val hc = HeaderCarrier()
+
   override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Seconds), interval = Span(50, Millis))
 
   // Placeholder for custom configuration
@@ -44,7 +49,12 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
   // implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
   val ds: CommonPlayDependencies = app.injector.instanceOf[CommonPlayDependencies]
 
-  def callAuthorised(a: Action[AnyContent])(test: Future[Result] => Any): Unit =
+  def submitAuthorised(a: => Action[AnyContent], r: => FakeRequest[AnyContentAsFormUrlEncoded])
+                      (test: Future[Result] => Assertion)
+                      (implicit mockAuthConnector: AuthConnector): Unit =
+    AuthBuilder.submitWithAuthorisedUser(a, r)(test)
+
+  def callAuthorised(a: Action[AnyContent])(test: Future[Result] => Assertion): Unit =
     AuthBuilder.withAuthorisedUser(a)(test)
 
   implicit class FutureUnit(fu: Future[Unit]) {

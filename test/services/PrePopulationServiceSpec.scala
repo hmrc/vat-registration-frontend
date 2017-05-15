@@ -30,7 +30,6 @@ import org.mockito.Matchers
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -45,10 +44,6 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
 
     implicit def toOptionT(d: LocalDate): OptionT[Future, CorporationTaxRegistration] =
       OptionT.pure(CorporationTaxRegistration(Some(AccountingDetails("", Some(d.format(ofPattern("yyyy-MM-dd")))))))
-
-    val none: OptionT[Future, CorporationTaxRegistration] = OptionT.none
-
-    implicit val headerCarrier = HeaderCarrier()
 
     val service = new PrePopulationService(mockPPConnector, mockIIService, mockS4LService) {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
@@ -71,7 +66,8 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
     }
 
     "be None" in new Setup {
-      when(mockPPConnector.getCompanyRegistrationDetails(any())(any(), any())).thenReturn(none)
+      when(mockPPConnector.getCompanyRegistrationDetails(any())(any(), any()))
+        .thenReturn(OptionT.none[Future, CorporationTaxRegistration])
       service.getCTActiveDate().returnsNone
     }
 

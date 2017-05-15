@@ -49,7 +49,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
       when(mockS4LService.fetchAndGet[EstimateZeroRatedSales]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(EstimateZeroRatedSales(100L))))
 
-      AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.show(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestEstimateZeroRatedSalesController.show(), fakeRequest.withFormUrlEncodedBody(
         "zeroRatedTurnoverEstimate" -> ""
       )) {
         _ includesText "Estimated zero-rated sales for the next 12 months"
@@ -88,7 +88,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
   s"POST ${vatFinancials.routes.EstimateZeroRatedSalesController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestEstimateZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
   }
@@ -102,7 +102,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
         (any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapEstimateZeroRatedSales))
 
-      AuthBuilder.submitWithAuthorisedUser(TestEstimateZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestEstimateZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "zeroRatedTurnoverEstimate" -> "60000"
       ))(_ redirectsTo s"$contextRoot/vat-charge-expectancy")
 
