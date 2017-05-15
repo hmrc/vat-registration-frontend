@@ -1,0 +1,83 @@
+@import models.view.vatLodgingOfficer.OfficerDateOfBirthView
+@(officerDOBForm: Form[OfficerDateOfBirthView])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.officerDOB.title")) {
+
+  <div class="column-one-third">
+
+      <header class="page-header">
+          <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.officerDOB.heading")</h1>
+      </header>
+
+      @errorSummary(
+          Messages("app.common.errorSummaryLabel"),
+          officerDOBForm
+      )
+
+      @govHelpers.form(action = controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.submit()) {
+      <div class="form-group">
+
+          <span class="form-hint">@messages("pages.officerDOB.hint")</span>
+
+          @defining(officerDOBForm("dob").errors.nonEmpty) { errorPresent =>
+              <div class="form-date @if(errorPresent) { form-field--error }">
+
+              <fieldset id="dob">
+                  <legend></legend>
+                  <label><span class="hidden">DOBe input</span>
+                      @officerDOBForm.error("dob").map { error =>
+                          <span class="error-notification" role="tooltip">
+                              @messages(error.message, error.args: _*)
+                          </span>
+                      }
+                      @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
+                      <input type="hidden" name="dob" value="" id="dob" class="hidden" />
+                  </label>
+
+                  @govHelpers.input(
+                      officerDOBForm("dob.day"),
+                      '_divClass -> "form-group",
+                      '_inputClass -> "form-control",
+                      '_maxlength -> 2,
+                      '_label -> Messages("pages.officerDOB.day.label"),
+                      '_labelClass -> "form-label"
+                  )
+
+                  @govHelpers.input(
+                      officerDOBForm("dob.month"),
+                      '_divClass -> "form-group",
+                      '_inputClass -> "form-control",
+                      '_maxlength -> 2,
+                      '_label -> Messages("pages.officerDOB.month.label"),
+                      '_labelClass -> "form-label"
+                  )
+
+                  @govHelpers.input(
+                      officerDOBForm("dob.year"),
+                      '_divClass -> "form-group form-group-year",
+                      '_inputClass -> "form-control",
+                      '_maxlength -> 4,
+                      '_label -> Messages("pages.officerDOB.year.label"),
+                      '_labelClass -> "form-label"
+                  )
+              </fieldset>
+          </div>
+      }
+      </div>
+          <div class="form-group">
+        <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+      </div>
+
+      }
+
+    </div>
+
+}
+
+<script type="text/javascript">
+        $(document).ready($(function () {
+            OfficerDOBPage.init()
+        }));
+</script>

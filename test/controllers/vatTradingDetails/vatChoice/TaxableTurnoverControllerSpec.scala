@@ -112,7 +112,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
       AuthBuilder.submitWithAuthorisedUser(TestTaxableTurnoverController.submit(), fakeRequest.withFormUrlEncodedBody(
         "taxableTurnoverRadio" -> TaxableTurnover.TAXABLE_YES
-      ))(_ redirectsTo s"$contextRoot/start-date-confirmation")
+      ))(_ redirectsTo s"$contextRoot/your-date-of-birth")
 
     }
   }
