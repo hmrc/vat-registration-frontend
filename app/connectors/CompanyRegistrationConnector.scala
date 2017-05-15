@@ -52,11 +52,13 @@ trait CompanyRegistrationConnect {
   def getCompanyRegistrationDetails(regId: String)(implicit hc : HeaderCarrier) : OptionalResponse[CoHoCompanyProfile] = {
     OptionT {
       Logger.debug(s"$companyRegistrationUrl$companyRegistrationUri/$regId")
-      http.GET[CoHoCompanyProfile](s"$companyRegistrationUrl$companyRegistrationUri/$regId").map(Some(_)) recover {
+      http.GET[CoHoCompanyProfile](s"$companyRegistrationUrl$companyRegistrationUri/$regId/corporation-tax-registration").map(Some(_)) recover {
         case e: Exception => logResponse(e, className, "getCompanyRegistrationDetails")
           Option.empty[CoHoCompanyProfile]
       }
     }
   }
 }
+
+
 
