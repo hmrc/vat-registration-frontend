@@ -23,7 +23,8 @@ import helpers.VatRegSpec
 import models.api.{ScrsAddress, VatLodgingOfficer}
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{times, verify, when}
+import org.mockito.{Matchers, Mockito}
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -51,11 +52,12 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
   val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())
 
   val address = ScrsAddress(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
+  val dummyCacheMap = CacheMap("", Map.empty)
 
   s"GET ${routes.OfficerHomeAddressController.show()}" should {
 
     when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
-    mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", CacheMap("", Map.empty))
+    mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", dummyCacheMap)
 
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
@@ -140,6 +142,22 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
         TestOfficerHomeAddressController.submit(),
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> "other")
       )(_ redirectsTo "TxM")
+    }
+  }
+
+
+  s"GET ${routes.OfficerHomeAddressController.acceptFromTxm()}" should {
+    "save an address and redirect to next page" in {
+      Mockito.reset(mockS4LService)
+      when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
+      when(mockS4LService.saveForm(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+
+      callAuthorised(TestOfficerHomeAddressController.acceptFromTxm("addressId")) {
+        _ redirectsTo s"$contextRoot/business-activity-description"
+      }
+
+      val expectedAddressView = OfficerHomeAddressView(address.id, Some(address))
+      verify(mockS4LService, times(1)).saveForm(Matchers.eq(expectedAddressView))(any(), any(), any())
     }
   }
 

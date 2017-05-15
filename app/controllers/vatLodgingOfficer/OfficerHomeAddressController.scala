@@ -74,15 +74,10 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
 
   def acceptFromTxm(id: String): Action[AnyContent] = authorised.async { implicit user =>
     implicit request =>
-      Logger.debug(s"Received redirect from TxM. about to process new address ID: $id")
-      for {
-        address <- alfConnector.getAddress(id)
-        homeAddressView = {
-          Logger.debug(s"address received: $address")
-          OfficerHomeAddressView(address.id, Some(address))
-        }
-        _ <- s4l.saveForm(homeAddressView)
-      } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+      alfConnector.getAddress(id).flatMap { address =>
+        Logger.debug(s"address received: $address")
+        s4l.saveForm(OfficerHomeAddressView(address.id, Some(address)))
+      }.map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
   }
 
 }

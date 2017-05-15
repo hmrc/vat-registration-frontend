@@ -37,9 +37,10 @@ import scala.util.control.NoStackTrace
 
 @Singleton
 class AddressLookupConnector @Inject()() extends AddressLookupConnect with ServicesConfig {
-  val addressLookupFrontendUrl = baseUrl("address-lookup-frontend")
-  lazy val vatregFrontendUrl = getConfString("vat-registration-frontend.www.url", "")
+
   val http: WSHttp = WSHttp
+  val addressLookupFrontendUrl = baseUrl("address-lookup-frontend")
+  val vatregFrontendUrl = getConfString("vat-registration-frontend.www.url", "")
 
   implicit val reads = ScrsAddress.adressLookupReads
 
