@@ -47,17 +47,14 @@ class OfficerNinoController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       formWithErrors => BadRequest(views.html.pages.vatLodgingOfficer.officer_nino(formWithErrors)).pure,
       data => {
-        viewModel[VoluntaryRegistration]
-          .map(_ == VoluntaryRegistration.yes).getOrElse(true).ifM(
-          s4l.saveForm[OfficerNinoView](data) map { _ =>
-            controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()
-          },
-          s4l.saveForm[OfficerNinoView](data) map { _ =>
-            controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show()
-          }
-        ).map(Redirect)
+        s4l.saveForm[OfficerNinoView](data) flatMap {
+          _ => viewModel[VoluntaryRegistration]
+            .map(_ == VoluntaryRegistration.yes).getOrElse(true).ifM(
+            controllers.vatTradingDetails.vatChoice.routes.StartDateController.show().pure,
+            controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show().pure
+          ).map(Redirect)
+        }
       }
     )
   })
-
 }
