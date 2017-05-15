@@ -367,13 +367,13 @@ pages.summary.directorContactDetails.emailAddress      = Director email address
 pages.summary.directorContactDetails.daytimePhone      = Day time phone number
 pages.summary.directorContactDetails.mobilePhone       = Mobile number
 
-## Summary Page Director's details
-pages.summary.directorDetails.sectionHeading           = Director''s details
+## Summary Page Director details
+pages.summary.directorDetails.sectionHeading           = Director details
 pages.summary.directorDetails.whoIsRegistering         = Who is registering the company for VAT
 pages.summary.directorDetails.homeAddress              = Home address
 pages.summary.directorDetails.moreThanThreeYears       = Lived at current address for more than 3 years
 pages.summary.directorDetails.previousAddress          = Previous address
-pages.summary.directorDetails.dateOfBirth              = Date of birth
+pages.summary.directorDetails.dob                      = Date of birth
 pages.summary.directorDetails.nino                     = National Insurance number
 
 ##Business Activity Description
@@ -410,7 +410,7 @@ pages.summary.taxableSales.zeroRatedSales                     = Will make zero-r
 pages.summary.taxableSales.zeroRatedSalesValue                = Estimated zero-rated sales
 
 ## Summary Page Director Addresses
-pages.summary.directorAddresses.sectionHeading                = Director Addresses
+pages.summary.directorAddresses.sectionHeading                = Director addresses
 pages.summary.directorAddresses.homeAddress                   = Home address
 
 ## Summary Page Doing Business Abroad
@@ -608,4 +608,25 @@ pages.officerHomeAddress.title                           = Officer home address
 pages.officerHomeAddress.heading                         = What is your home address?
 pages.officerHomeAddress.different.address               = A different address
 validation.officerHomeAddress.missing                    = Tell us your home address
+
+## Officer Date of Birth
+pages.officerDOB.title                                   = Officer date of birth
+pages.officerDOB.heading                                 = What is your date of birth?
+pages.officerDOB.day.label                               = Day
+pages.officerDOB.month.label                             = Month
+pages.officerDOB.year.label                              = Year
+pages.officerDOB.hint                                    = For example, 31 3 1980
+validation.officerDOB.missing                            = Enter your date of birth
+validation.officerDOB.invalid                            = Enter a valid date of birth
+validation.officerDOB.range.above                        = Date of birth must not be in the future
+validation.officerDOB.range.below                        = Date of birth must be after 1 Jan 1900
+
+## Officer Nino
+pages.officerNino.title                                   = Officer National Insurance number
+pages.officerNino.heading                                 = What is your National Insurance number?
+pages.officerNino.hint                                    = For example, QQ 12 34 56 C
+pages.officerNino.advice.title                            = Where to find your National Insurance number
+pages.officerNino.advice.para1                            = You can find your National Insurance number on your National Insurance card, benefit letter, payslip or P60.
+validation.officerNino.missing                            = Enter your National Insurance number
+validation.officerNino.invalid                            = Enter a valid National Insurance number
 

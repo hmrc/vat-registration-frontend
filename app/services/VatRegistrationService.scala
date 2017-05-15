@@ -31,7 +31,7 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
-import models.view.vatLodgingOfficer.OfficerHomeAddressView
+import models.view.vatLodgingOfficer.{OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
@@ -223,8 +223,13 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
 
   private[services] def submitVatLodgingOfficer()(implicit hc: HeaderCarrier): Future[VatLodgingOfficer] = {
     def mergeWithS4L(vs: VatScheme) =
-      s4l[OfficerHomeAddressView]().map(S4LVatLodgingOfficer).map { s4l =>
+      (s4l[OfficerHomeAddressView]() |@|
+        s4l[OfficerDateOfBirthView]() |@|
+        s4l[OfficerNinoView]())
+        .map(S4LVatLodgingOfficer).map { s4l =>
         update(s4l.officerHomeAddressView, vs)
+          .andThen(update(s4l.officerDateOfBirthView, vs))
+          .andThen(update(s4l.officerNinoView, vs))
           .apply(vs.lodgingOfficer.getOrElse(VatLodgingOfficer.empty)) //TODO remove the "seeding" with empty
       }
 

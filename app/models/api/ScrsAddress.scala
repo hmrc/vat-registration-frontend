@@ -45,7 +45,7 @@ case class ScrsAddress(
     case _ => false
   }
 
-  override def hashCode: Int = asLabel.##
+  override def hashCode: Int = 1 // TODO temporary fix to ensure List.distinct works
 }
 
 object ScrsAddress {

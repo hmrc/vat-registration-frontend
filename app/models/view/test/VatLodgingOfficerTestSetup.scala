@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package models.api
+package models.view.test
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.Json
 
-case class VatLodgingOfficer(currentAddress: ScrsAddress, dob: DateOfBirth, nino: String)
+case class VatLodgingOfficerTestSetup(
+                                  dobDay: Option[String] = None,
+                                  dobMonth: Option[String] = None,
+                                  dobYear: Option[String] = None,
+                                  nino: Option[String] = None
+                                )
 
-object VatLodgingOfficer {
-  implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
-
-  // TODO remove once no longer required
-  val empty = VatLodgingOfficer(
-    ScrsAddress(line1 = "todo",line2 = "todo", postcode=Some("todo")),
-    DateOfBirth(1,1,1980),
-    "NB686868C")
+object VatLodgingOfficerTestSetup {
+  implicit val format = Json.format[VatLodgingOfficerTestSetup]
 }
+
