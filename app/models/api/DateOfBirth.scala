@@ -16,16 +16,18 @@
 
 package models.api
 
+import java.time.LocalDate
+
 import play.api.libs.json.{Json, OFormat}
 
-case class VatLodgingOfficer(currentAddress: ScrsAddress, dob: DateOfBirth, nino: String)
+case class DateOfBirth(day: Int, month: Int, year: Int)
 
-object VatLodgingOfficer {
-  implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
+object DateOfBirth {
+  implicit val format: OFormat[DateOfBirth] = Json.format[DateOfBirth]
+
+  implicit def toLocalDate(dob: DateOfBirth): LocalDate = LocalDate.of(dob.year, dob.month, dob.day)
 
   // TODO remove once no longer required
-  val empty = VatLodgingOfficer(
-    ScrsAddress(line1 = "todo",line2 = "todo", postcode=Some("todo")),
-    DateOfBirth(1,1,1980),
-    "NB686868C")
+  val empty = DateOfBirth(1,1,1980)
 }
+

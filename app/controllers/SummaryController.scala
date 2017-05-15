@@ -46,6 +46,7 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
   def registrationToSummary(vs: VatScheme): Summary =
     Summary(Seq(
       SummaryVatDetailsSectionBuilder(vs.tradingDetails).section,
+      SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer).section,
       SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer).section,
       SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
       SummaryCompanyContactDetailsSectionBuilder(vs.vatContact).section,

@@ -122,6 +122,14 @@ $(document).ready($(function () {
 }(window.BusinessContactDetailsPage = window.BusinessContactDetailsPage || {}, jQuery));
 
 
+// Officer DOB page
+(function (OfficerDOBPage, $, undefined) {
+    OfficerDOBPage.init = function() {
+        var numericInputs = ["dob\\.day", "dob\\.month", "dob\\.year"];
+        UI.preventNonNumericInput(numericInputs);
+    }
+}(window.OfficerDOBPage = window.OfficerDOBPage || {}, jQuery));
+
 
 /*
  example of multiple hide/show areas

@@ -20,7 +20,7 @@ import builders.AuthBuilder
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{ScrsAddress, VatLodgingOfficer}
+import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer}
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
@@ -61,7 +61,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
 
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer(address)))
+      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "")))
 
       when(mockS4LService.fetchAndGet[OfficerHomeAddressView]()(any(), any(), any())).thenReturn(None.pure)
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)

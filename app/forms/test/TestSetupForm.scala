@@ -98,6 +98,13 @@ object TestSetupForm {
     "country" -> optional(text)
   )(OfficerHomeAddressTestSetup.apply)(OfficerHomeAddressTestSetup.unapply)
 
+  val vatLodgingOfficerTestSetup = mapping(
+    "dobDay" -> optional(text),
+    "dobMonth" -> optional(text),
+    "dobYear" -> optional(text),
+    "nino" -> optional(text)
+  )(VatLodgingOfficerTestSetup.apply)(VatLodgingOfficerTestSetup.unapply)
+
   val form = Form(mapping(
     "vatChoice" -> vatChoiceTestSetupMapping,
     "vatTradingDetails" -> vatTradingDetailsTestSetupMapping,
@@ -105,7 +112,8 @@ object TestSetupForm {
     "vatFinancials" -> vatFinancialsTestSetupMapping,
     "sicAndCompliance" -> sicAndComplianceTestSetupMapping,
     "vatServiceEligibility" -> vatServiceEligibilityTestSetupMapping,
-    "officerHomeAddress" -> officeHomeAddressMapping
+    "officerHomeAddress" -> officeHomeAddressMapping,
+    "vatLodgingOfficer" -> vatLodgingOfficerTestSetup
   )(TestSetup.apply)(TestSetup.unapply))
 
 }

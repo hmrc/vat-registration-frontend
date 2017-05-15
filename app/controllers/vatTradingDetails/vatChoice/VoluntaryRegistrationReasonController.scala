@@ -50,7 +50,7 @@ class VoluntaryRegistrationReasonController @Inject()(ds: CommonPlayDependencies
             .map(_ => controllers.routes.WelcomeController.show())
           ,
           s4l.saveForm[VoluntaryRegistrationReason](data)
-            .map(_ => controllers.vatTradingDetails.vatChoice.routes.StartDateController.show())
+            .map(_ => controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
         ).map(Redirect)
     )
   })
