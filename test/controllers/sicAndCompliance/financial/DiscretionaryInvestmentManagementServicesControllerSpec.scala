@@ -50,7 +50,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
       when(mockS4LService.fetchAndGet[DiscretionaryInvestmentManagementServices]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(discretionaryInvestmentManagementServices)))
 
-      AuthBuilder.submitWithAuthorisedUser(DiscretionaryInvestmentManagementServicesController.show(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(DiscretionaryInvestmentManagementServicesController.show(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> ""
       )) {
         _ includesText "Does the company provide discretionary investment management services, or introduce clients to companies who do?"
@@ -87,7 +87,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
   s"POST ${routes.DiscretionaryInvestmentManagementServicesController.show()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
 
     }
@@ -104,7 +104,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
       when(mockS4LService.saveForm[DiscretionaryInvestmentManagementServices](any())(any(), any(), any()))
         .thenReturn(Future.successful(toReturn))
 
-      AuthBuilder.submitWithAuthorisedUser(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/company-bank-account")
     }
@@ -119,7 +119,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
       when(mockS4LService.saveForm[DiscretionaryInvestmentManagementServices](any())(any(), any(), any()))
         .thenReturn(Future.successful(toReturn))
 
-      AuthBuilder.submitWithAuthorisedUser(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/involved-in-leasing-vehicles-or-equipment")
 

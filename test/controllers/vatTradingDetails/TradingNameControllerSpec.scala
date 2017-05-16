@@ -102,7 +102,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${vatTradingDetails.routes.TradingNameController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe Status.BAD_REQUEST
@@ -119,7 +119,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockS4LService.saveForm[TradingNameView](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      AuthBuilder.submitWithAuthorisedUser(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "tradingNameRadio" -> TradingNameView.TRADING_NAME_NO
       )) {
         result =>
@@ -138,7 +138,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockS4LService.saveForm[TradingNameView](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      AuthBuilder.submitWithAuthorisedUser(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "tradingNameRadio" -> TradingNameView.TRADING_NAME_YES,
         "tradingName" -> "some name"
       )) {

@@ -27,15 +27,12 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFixture {
-
-
 
   object CompanyBankAccountController extends CompanyBankAccountController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -51,7 +48,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockS4LService.fetchAndGet[CompanyBankAccount]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(companyBankAccount)))
 
-      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountController.show(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(CompanyBankAccountController.show(), fakeRequest.withFormUrlEncodedBody(
         "companyBankAccountRadio" -> ""
       )) {
         _ includesText "Do you have a bank account set up in the name of your company?"
@@ -86,9 +83,8 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(CompanyBankAccountController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
-
     }
   }
 
@@ -100,7 +96,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockS4LService.saveForm[CompanyBankAccount](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapCompanyBankAccount))
 
-      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(CompanyBankAccountController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyBankAccountRadio" -> CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES
       ))(_ redirectsTo s"$contextRoot/bank-details")
 
@@ -117,7 +113,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
 
       when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
 
-      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(CompanyBankAccountController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyBankAccountRadio" -> CompanyBankAccount.COMPANY_BANK_ACCOUNT_NO
       ))(_ redirectsTo s"$contextRoot/estimate-vat-turnover")
 

@@ -82,7 +82,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
   s"POST ${controllers.vatContact.routes.BusinessContactDetailsController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestBusinessContactDetailsController.submit(), fakeRequest.withFormUrlEncodedBody()
+      submitAuthorised(TestBusinessContactDetailsController.submit(), fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
     }
   }
@@ -95,7 +95,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
       when(mockS4LService.saveForm[BusinessContactDetails](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapBusinessContactDetails))
 
-      AuthBuilder.submitWithAuthorisedUser(
+      submitAuthorised(
         TestBusinessContactDetailsController.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com", "mobile" -> "0123456789")
       )(_ redirectsTo s"$contextRoot/eu-goods")

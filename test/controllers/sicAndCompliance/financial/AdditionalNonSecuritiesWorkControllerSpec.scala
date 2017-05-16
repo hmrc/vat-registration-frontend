@@ -16,26 +16,23 @@
 
 package controllers.sicAndCompliance.financial
 
-import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.sicAndCompliance.financial.AdditionalNonSecuritiesWork
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object AdditionalNonSecuritiesWorkController extends AdditionalNonSecuritiesWorkController(ds)(mockS4LService, mockVatRegistrationService) {
+  object AdditionalNonSecuritiesWorkController
+    extends AdditionalNonSecuritiesWorkController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -44,47 +41,41 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
   s"GET ${routes.AdditionalNonSecuritiesWorkController.show()}" should {
 
     "return HTML when there's a Additional Non Securities Work model in S4L" in {
-      when(mockS4LService.fetchAndGet[AdditionalNonSecuritiesWork]()(any(), any(), any()))
-        .thenReturn(Future.successful(Some(AdditionalNonSecuritiesWork(true))))
+      save4laterReturns(AdditionalNonSecuritiesWork(true))
 
-      AuthBuilder.submitWithAuthorisedUser(AdditionalNonSecuritiesWorkController.show(), fakeRequest.withFormUrlEncodedBody(
-        "additionalNonSecuritiesRadio" -> ""
-      )) {
-        _ includesText "Does the company do additional work (excluding securities) when introducing a client to a financial service provider?"
+      submitAuthorised(AdditionalNonSecuritiesWorkController.show(), fakeRequest.withFormUrlEncodedBody(
+        "additionalNonSecuritiesRadio" -> "")) {
+        _ includesText "Does the company do additional work (excluding securities) " +
+          "when introducing a client to a financial service provider?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[AdditionalNonSecuritiesWork]()
-        (Matchers.eq(S4LKey[AdditionalNonSecuritiesWork]), any(), any()))
-        .thenReturn(Future.successful(None))
-
-      when(mockVatRegistrationService.getVatScheme()(any()))
-        .thenReturn(Future.successful(validVatScheme))
+      save4laterReturnsNothing[AdditionalNonSecuritiesWork]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(AdditionalNonSecuritiesWorkController.show) {
-        _ includesText "Does the company do additional work (excluding securities) when introducing a client to a financial service provider?"
+        _ includesText "Does the company do additional work (excluding securities)" +
+          " when introducing a client to a financial service provider?"
       }
     }
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    when(mockS4LService.fetchAndGet[AdditionalNonSecuritiesWork]()
-      (Matchers.eq(S4LKey[AdditionalNonSecuritiesWork]), any(), any()))
-      .thenReturn(Future.successful(None))
-
+    save4laterReturnsNothing[AdditionalNonSecuritiesWork]()
     when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(AdditionalNonSecuritiesWorkController.show) {
-      _ includesText "Does the company do additional work (excluding securities) when introducing a client to a financial service provider?"
+      _ includesText "Does the company do additional work (excluding securities) " +
+        "when introducing a client to a financial service provider?"
     }
   }
 
   s"POST ${routes.AdditionalNonSecuritiesWorkController.show()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
 
     }
@@ -96,11 +87,10 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
       val returnCacheMapAdditionalNonSecuritiesWork = CacheMap("", Map("" -> Json.toJson(AdditionalNonSecuritiesWork(true))))
 
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-
       when(mockS4LService.saveForm[AdditionalNonSecuritiesWork](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapAdditionalNonSecuritiesWork))
 
-      AuthBuilder.submitWithAuthorisedUser(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/company-bank-account")
     }
@@ -112,11 +102,10 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
       val returnCacheMapAdditionalNonSecuritiesWork = CacheMap("", Map("" -> Json.toJson(AdditionalNonSecuritiesWork(false))))
 
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-
       when(mockS4LService.saveForm[AdditionalNonSecuritiesWork](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapAdditionalNonSecuritiesWork))
 
-      AuthBuilder.submitWithAuthorisedUser(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/provides-discretionary-investment-management-services")
 

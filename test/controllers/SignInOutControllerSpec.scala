@@ -16,6 +16,7 @@
 
 package controllers
 
+import controllers.callbacks.SignInOutController
 import helpers.VatRegSpec
 
 class SignInOutControllerSpec extends VatRegSpec {
