@@ -16,25 +16,22 @@
 
 package controllers.sicAndCompliance.financial
 
-import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.sicAndCompliance.financial.LeaseVehicles
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-
+  import cats.instances.future._
+  import cats.syntax.applicative._
 
   object LeaseVehiclesController extends LeaseVehiclesController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -45,25 +42,16 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
   s"GET ${routes.LeaseVehiclesController.show()}" should {
 
     "return HTML when there's a Lease Vehicles or Equipment - model in S4L" in {
-      val leaseVehicles = LeaseVehicles(true)
+      save4laterReturns(LeaseVehicles(true))
 
-      when(mockS4LService.fetchAndGet[LeaseVehicles]()(any(), any(), any()))
-        .thenReturn(Future.successful(Some(leaseVehicles)))
-
-      AuthBuilder.submitWithAuthorisedUser(LeaseVehiclesController.show(), fakeRequest.withFormUrlEncodedBody(
-        "leaseVehiclesRadio" -> ""
-      )) {
+      callAuthorised(LeaseVehiclesController.show()) {
         _ includesText "Is the company involved in leasing vehicles or equipment to customers?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[LeaseVehicles]()
-        (Matchers.eq(S4LKey[LeaseVehicles]), any(), any()))
-        .thenReturn(Future.successful(None))
-
-      when(mockVatRegistrationService.getVatScheme()(any()))
-        .thenReturn(Future.successful(validVatScheme))
+      save4laterReturnsNothing[LeaseVehicles]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(LeaseVehiclesController.show) {
         _ includesText "Is the company involved in leasing vehicles or equipment to customers?"
@@ -72,12 +60,8 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    when(mockS4LService.fetchAndGet[LeaseVehicles]()
-      (Matchers.eq(S4LKey[LeaseVehicles]), any(), any()))
-      .thenReturn(Future.successful(None))
-
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-      .thenReturn(Future.successful(emptyVatScheme))
+    save4laterReturnsNothing[LeaseVehicles]()
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(emptyVatScheme.pure)
 
     callAuthorised(LeaseVehiclesController.show) {
       _ includesText "Is the company involved in leasing vehicles or equipment to customers?"
@@ -87,42 +71,38 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
   s"POST ${routes.LeaseVehiclesController.show()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody(
-      ))(result => result isA 400)
+      submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody()) { result =>
+        result isA 400
+      }
     }
+
   }
 
   s"POST ${routes.LeaseVehiclesController.submit()} with Lease Vehicles or Equipment - Yes selected" should {
 
     "redirects to next screen in the flow" in {
       val leaseVehicles = CacheMap("", Map("" -> Json.toJson(LeaseVehicles(true))))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
+      when(mockS4LService.saveForm[LeaseVehicles](any())(any(), any(), any())).thenReturn(leaseVehicles.pure)
 
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-
-      when(mockS4LService.saveForm[LeaseVehicles](any())(any(), any(), any()))
-        .thenReturn(Future.successful(leaseVehicles))
-
-      AuthBuilder.submitWithAuthorisedUser(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "leaseVehiclesRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/company-bank-account")
-
     }
+
   }
 
   s"POST ${routes.LeaseVehiclesController.submit()} with Lease Vehicles or Equipment - No selected" should {
 
     "redirects to next screen in the flow" in {
       val leaseVehicles = CacheMap("", Map("" -> Json.toJson(LeaseVehicles(false))))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
+      when(mockS4LService.saveForm[LeaseVehicles](any())(any(), any(), any())).thenReturn(leaseVehicles.pure)
 
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-
-      when(mockS4LService.saveForm[LeaseVehicles](any())(any(), any(), any()))
-        .thenReturn(Future.successful(leaseVehicles))
-
-      AuthBuilder.submitWithAuthorisedUser(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "leaseVehiclesRadio" -> "false"
-      ))(_ redirectsTo s"$contextRoot/provides-investment-fund-management-services")
-
+      submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody("leaseVehiclesRadio" -> "false")) {
+        _ redirectsTo s"$contextRoot/provides-investment-fund-management-services"
+      }
     }
+
   }
 }

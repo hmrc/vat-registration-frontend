@@ -16,12 +16,13 @@
 
 package models.api
 
-import cats.Show
-import models.ApiModelTransformer
+import cats.Show.show
 import models.api.ScrsAddress.inlineShow.inline
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
+import models.{ApiModelTransformer => MT}
 import org.apache.commons.lang3.text.WordUtils
-import play.api.libs.json.{Json, OFormat}
+import play.api.data.validation.ValidationError
+import play.api.libs.json._
 
 case class ScrsAddress(
                         line1: String,
@@ -58,6 +59,22 @@ object ScrsAddress {
 
   implicit val format: OFormat[ScrsAddress] = Json.format[ScrsAddress]
 
+  object adressLookupReads extends Reads[ScrsAddress] {
+    def reads(json: JsValue): JsResult[ScrsAddress] = {
+      val address = (json \ "address").as[JsObject]
+      val postcode = (address \ "postcode").asOpt[String]
+      val lineMap = (address \ "lines").as[List[String]].zipWithIndex.map(_.swap).toMap
+      val countryCode = (address \ "country" \ "code").asOpt[String]
+      if (postcode.isEmpty && countryCode.isEmpty) {
+        JsError(ValidationError("neither postcode nor country were defined"))
+      } else if (lineMap.size < 2) {
+        JsError(ValidationError(s"only ${lineMap.size} lines provided from address-lookup-frontend"))
+      } else {
+        JsSuccess(ScrsAddress(lineMap(0), lineMap(1), lineMap.get(2), lineMap.get(3), postcode, postcode.fold(countryCode)(_ => None)))
+      }
+    }
+  }
+
   private def normalisedSeq(address: ScrsAddress): Seq[String] = {
     import cats.instances.option._
     import cats.syntax.applicative._
@@ -76,20 +93,14 @@ object ScrsAddress {
   }
 
   object htmlShow {
-    implicit val html = Show.show { a: ScrsAddress =>
-      normalisedSeq(a).mkString("<br />")
-    }
+    implicit val html = show((a: ScrsAddress) => normalisedSeq(a).mkString("<br />"))
   }
 
   object inlineShow {
-    implicit val inline = Show.show { a: ScrsAddress =>
-      normalisedSeq(a).mkString(", ")
-    }
+    implicit val inline = show((a: ScrsAddress) => normalisedSeq(a).mkString(", "))
   }
 
-  implicit def modelTransformer(implicit transformer: ApiModelTransformer[OfficerHomeAddressView]): ApiModelTransformer[ScrsAddress] =
-    ApiModelTransformer { vatScheme: VatScheme =>
-      transformer.toViewModel(vatScheme).flatMap(_.address)
-    }
+  implicit def modelTransformer(implicit t: MT[OfficerHomeAddressView]): MT[ScrsAddress] =
+    MT((vatScheme: VatScheme) => t.toViewModel(vatScheme).flatMap(_.address))
 
 }

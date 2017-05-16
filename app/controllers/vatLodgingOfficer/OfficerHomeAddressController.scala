@@ -19,46 +19,65 @@ package controllers.vatLodgingOfficer
 import javax.inject.Inject
 
 import cats.data.OptionT
+import connectors.AddressLookupConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerHomeAddressForm
 import models.api.ScrsAddress
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
-import play.api.data.Form
+import play.api.Logger
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService,
                                              vrs: VatRegistrationService,
-                                             prePopService: PrePopulationService)
+                                             prePopService: PrePopulationService,
+                                             val alfConnector: AddressLookupConnect)
   extends VatRegistrationController(ds) with CommonService {
 
   import cats.instances.future._
+  import cats.syntax.applicative._
+  import cats.syntax.flatMap._
 
-  val form = OfficerHomeAddressForm.form
+  private val form = OfficerHomeAddressForm.form
+  private val addressListKey = "OfficerAddressList"
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  private def fetchAddressList()(implicit headerCarrier: HeaderCarrier) =
+    OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]](addressListKey))
+
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
       addresses <- prePopService.getOfficerAddressList()
-      _ <- keystoreConnector.cache[Seq[ScrsAddress]]("OfficerAddressList", addresses)
+      _ <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
       res <- viewModel[OfficerHomeAddressView].fold(form)(form.fill)
     } yield Ok(views.html.pages.vatLodgingOfficer.officer_home_address(res, addresses))
+  )
 
-  })
+  def submit: Action[AnyContent] = authorised.async { implicit user =>
+    implicit request =>
+      form.bindFromRequest().fold(
+        badForm => fetchAddressList().getOrElse(Seq()).map(
+          addressList => BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(badForm, addressList))),
+        (form: OfficerHomeAddressView) =>
+          (form.addressId == "other").pure.ifM(
+            alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm())
+            ,
+            for {
+              addressList <- fetchAddressList().getOrElse(Seq())
+              address = addressList.find(_.id == form.addressId)
+              _ <- s4l.saveForm(OfficerHomeAddressView(form.addressId, address))
+            } yield controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()
+          ).map(Redirect))
+  }
 
-  // TODO route to address lookup if selected
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    form.bindFromRequest().fold(
-      (formWithErrors: Form[OfficerHomeAddressView]) => for {
-        addressList <- OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]]("OfficerAddressList")).getOrElse(Seq())
-      } yield BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(formWithErrors, addressList)),
-      (form: OfficerHomeAddressView) => (for {
-        addressList <- OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]]("OfficerAddressList"))
-        address <- OptionT.fromOption(addressList.find(_.id == form.addressId))
-        _ <- OptionT.liftF(s4l.saveForm[OfficerHomeAddressView](OfficerHomeAddressView(form.addressId, Some(address))))
-      } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
-        .getOrElse(Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
-    )
-  })
+
+  def acceptFromTxm(id: String): Action[AnyContent] = authorised.async { implicit user =>
+    implicit request =>
+      alfConnector.getAddress(id).flatMap { address =>
+        Logger.debug(s"address received: $address")
+        s4l.saveForm(OfficerHomeAddressView(address.id, Some(address)))
+      }.map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
+  }
 
 }

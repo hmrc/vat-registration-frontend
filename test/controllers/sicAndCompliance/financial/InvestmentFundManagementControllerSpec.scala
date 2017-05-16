@@ -50,7 +50,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
       when(mockS4LService.fetchAndGet[InvestmentFundManagement]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(chargeFees)))
 
-      AuthBuilder.submitWithAuthorisedUser(InvestmentFundManagementController.show(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(InvestmentFundManagementController.show(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> ""
       )) {
         _ includesText "Does the company provide investment fund management services?"
@@ -87,7 +87,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
   s"POST ${routes.InvestmentFundManagementController.show()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(InvestmentFundManagementController.submit(),
+      submitAuthorised(InvestmentFundManagementController.submit(),
         fakeRequest.withFormUrlEncodedBody("bogus" -> "nonsense")) { result =>
         result isA 400
       }
@@ -104,7 +104,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
       when(mockS4LService.saveForm[InvestmentFundManagement](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapInvestmentFundManagement))
 
-      AuthBuilder.submitWithAuthorisedUser(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/manages-funds-not-included-in-this-list")
 
@@ -121,7 +121,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
       when(mockS4LService.saveForm[InvestmentFundManagement](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapInvestmentFundManagement))
 
-      AuthBuilder.submitWithAuthorisedUser(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/company-bank-account")
     }

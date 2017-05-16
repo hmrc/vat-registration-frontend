@@ -19,7 +19,6 @@ package connectors
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.external.CoHoCompanyProfile
-import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.ws.WSHttp
 
 class CompanyRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
@@ -31,8 +30,6 @@ class CompanyRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFi
       override val http: WSHttp = mockWSHttp
     }
   }
-
-  implicit val hc = HeaderCarrier()
 
   "Calling getCompanyRegistrationDetails" should {
     "return a CoHoCompanyProfile successfully" in new Setup {

@@ -16,17 +16,13 @@
 
 package connectors
 
+import helpers.VatRegSpec
 import org.joda.time.LocalDate
-import testHelpers.VatRegSpec
-import uk.gov.hmrc.play.config.inject.ServicesConfig
-import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
 class WSBankHolidaysConnectorSpec extends VatRegSpec {
 
-  val testConnector = new WSBankHolidaysConnector(mockWSHttp, fakeApplication.injector.instanceOf[ServicesConfig])
-
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  lazy val testConnector = new WSBankHolidaysConnector(mockWSHttp)
 
   "bankHolidays" must {
 
@@ -40,7 +36,7 @@ class WSBankHolidaysConnectorSpec extends VatRegSpec {
       )
       mockHttpGET[Map[String, BankHolidaySet]]("any-url", testHolidaySet)
 
-      await(testConnector.bankHolidays("division1")) shouldBe BankHolidaySet("division1", List(
+      testConnector.bankHolidays("division1") returns BankHolidaySet("division1", List(
         BankHoliday("one", new LocalDate(2017, 3, 22))))
     }
 

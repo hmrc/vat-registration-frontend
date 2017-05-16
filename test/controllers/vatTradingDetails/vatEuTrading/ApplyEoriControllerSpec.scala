@@ -16,26 +16,21 @@
 
 package controllers.vatTradingDetails.vatEuTrading
 
-import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatTradingDetails.vatEuTrading.ApplyEori
-import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-
+  import cats.instances.future._
+  import cats.syntax.applicative._
 
   object ApplyEoriController extends ApplyEoriController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -46,84 +41,51 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"GET ${routes.ApplyEoriController.show()}" should {
 
     "return HTML when there's a Apply Eori model in S4L" in {
-      val euGoods = ApplyEori(ApplyEori.APPLY_EORI_YES)
-
-      when(mockS4LService.fetchAndGet[ApplyEori]()(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(euGoods)))
-
-      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.show(), fakeRequest.withFormUrlEncodedBody(
-        "applyEoriRadio" -> ""
-      )) {
-
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("You need to apply for an Economic Operator Registration and Identification (EORI) number")
+      save4laterReturns(ApplyEori(ApplyEori.APPLY_EORI_YES))
+      submitAuthorised(ApplyEoriController.show(), fakeRequest.withFormUrlEncodedBody("applyEoriRadio" -> "")) {
+        _ includesText "You need to apply for an Economic Operator Registration and Identification (EORI) number"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[ApplyEori]()
-        (Matchers.eq(S4LKey[ApplyEori]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
-        .thenReturn(Future.successful(validVatScheme))
+      save4laterReturnsNothing[ApplyEori]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(ApplyEoriController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("You need to apply for an Economic Operator Registration and Identification (EORI) number")
+        _ includesText "You need to apply for an Economic Operator Registration and Identification (EORI) number"
       }
     }
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    when(mockS4LService.fetchAndGet[ApplyEori]()
-      (Matchers.eq(S4LKey[ApplyEori]), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(None))
-
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-      .thenReturn(Future.successful(emptyVatScheme))
+    save4laterReturnsNothing[ApplyEori]()
+    when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
     callAuthorised(ApplyEoriController.show) {
-      result =>
-        status(result) mustBe OK
-        contentType(result) mustBe Some("text/html")
-        charset(result) mustBe Some("utf-8")
-        contentAsString(result) must include("You need to apply for an Economic Operator Registration and Identification (EORI) number")
+      _ includesText "You need to apply for an Economic Operator Registration and Identification (EORI) number"
     }
   }
 
   s"POST ${routes.ApplyEoriController.show()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
+      submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody()) { result =>
+        result isA 400
       }
-
     }
+
   }
 
   s"POST ${routes.ApplyEoriController.submit()} with Apply Eori Yes selected" should {
 
     "return 303" in {
       val returnCacheMapApplyEori = CacheMap("", Map("" -> Json.toJson(ApplyEori(ApplyEori.APPLY_EORI_YES))))
+      when(mockS4LService.saveForm[ApplyEori](any())(any(), any(), any())).thenReturn(returnCacheMapApplyEori.pure)
 
-      when(mockS4LService.saveForm[ApplyEori]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapApplyEori))
-
-      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_YES)
       )) {
-        response =>
-          response redirectsTo s"$contextRoot/your-home-address"
+        _ redirectsTo s"$contextRoot/your-home-address"
       }
 
     }
@@ -133,18 +95,14 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
     "return 303" in {
       val returnCacheMapApplyEori = CacheMap("", Map("" -> Json.toJson(ApplyEori(ApplyEori.APPLY_EORI_NO))))
+      when(mockS4LService.saveForm[ApplyEori](any())(any(), any(), any())).thenReturn(returnCacheMapApplyEori.pure)
 
-      when(mockS4LService.saveForm[ApplyEori]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapApplyEori))
-
-      AuthBuilder.submitWithAuthorisedUser(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_NO)
       )) {
-        response =>
-          response redirectsTo s"$contextRoot/your-home-address"
+        _ redirectsTo s"$contextRoot/your-home-address"
       }
-
     }
+
   }
 }

@@ -16,18 +16,15 @@
 
 package controllers.sicAndCompliance
 
-import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.S4LKey
 import models.view.sicAndCompliance.BusinessActivityDescription
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -46,10 +43,10 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
   s"GET ${routes.BusinessActivityDescriptionController.show()}" should {
 
     "return HTML Business Activity Description page with no data in the form" in {
-      when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(BusinessActivityDescription(DESCRIPTION))))
 
-      AuthBuilder.submitWithAuthorisedUser(TestController.show(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestController.show(), fakeRequest.withFormUrlEncodedBody(
         "description" -> ""
       ))(_ includesText "Describe what the company does")
     }
@@ -57,10 +54,10 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[BusinessActivityDescription]()
-        (Matchers.eq(S4LKey[BusinessActivityDescription]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[BusinessActivityDescription]), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestController.show) {
@@ -70,10 +67,10 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       when(mockS4LService.fetchAndGet[BusinessActivityDescription]()
-        (Matchers.eq(S4LKey[BusinessActivityDescription]), Matchers.any(), Matchers.any()))
+        (Matchers.eq(S4LKey[BusinessActivityDescription]), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestController.show) {
@@ -85,8 +82,8 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
   s"POST ${routes.BusinessActivityDescriptionController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestController.submit(), fakeRequest.withFormUrlEncodedBody(
-      ))(status(_) mustBe Status.BAD_REQUEST)
+      submitAuthorised(TestController.submit(), fakeRequest.withFormUrlEncodedBody(
+      ))(result => result isA 400)
     }
   }
 
@@ -95,13 +92,12 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
     "return 303" in {
       val returnCacheMapBusinessActivityDescription = CacheMap("", Map("" -> Json.toJson(BusinessActivityDescription(DESCRIPTION))))
 
-      when(mockS4LService.saveForm[BusinessActivityDescription]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.saveForm[BusinessActivityDescription](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapBusinessActivityDescription))
 
-      AuthBuilder.submitWithAuthorisedUser(TestController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "description" -> DESCRIPTION
-      ))(_ redirectsTo "/sic-stub")
+      submitAuthorised(TestController.submit(), fakeRequest.withFormUrlEncodedBody("description" -> DESCRIPTION)) {
+        _ redirectsTo "/sic-stub"
+      }
 
     }
   }

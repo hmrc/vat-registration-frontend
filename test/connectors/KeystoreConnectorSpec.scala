@@ -16,13 +16,13 @@
 
 package connectors
 
-import org.mockito.Matchers
+import helpers.VatRegSpec
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
 
@@ -32,61 +32,51 @@ class KeystoreConnectorSpec extends VatRegSpec {
     override val sessionCache = mockSessionCache
   }
 
-  implicit val hc : HeaderCarrier = HeaderCarrier()
-
   case class TestModel(test: String)
+
   object TestModel {
     implicit val formats = Json.format[TestModel]
   }
 
+  val testModel = TestModel("test")
+
   "Saving into KeyStore" should {
     "save the model" in {
-      val testModel = TestModel("test")
-
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(testModel)))
 
-      when(mockSessionCache.cache[TestModel](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockSessionCache.cache[TestModel](any(), any())(any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      val result = connector.cache[TestModel](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
-      await(result) shouldBe returnCacheMap
+      connector.cache("", testModel) returns returnCacheMap
     }
   }
 
   "Fetching and getting from KeyStore" should {
     "return a list" in {
-      val testModel = TestModel("test")
       val list = List(testModel)
 
-      when(mockSessionCache.fetchAndGetEntry[List[TestModel]](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockSessionCache.fetchAndGetEntry[List[TestModel]](any())(any(), any()))
         .thenReturn(Future.successful(Some(list)))
 
-      val result = connector.fetchAndGet[List[TestModel]](Matchers.any())(Matchers.any(), Matchers.any())
-      await(result) shouldBe Some(list)
+      connector.fetchAndGet[List[TestModel]]("") returns Some(list)
     }
   }
 
   "Fetching from KeyStore" should {
     "return a CacheMap" in {
-      val testModel = TestModel("test")
-
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(testModel)))
 
-      when(mockSessionCache.fetch()(Matchers.any()))
-        .thenReturn(Future.successful(Some(returnCacheMap)))
+      when(mockSessionCache.fetch()(any())).thenReturn(Future.successful(Some(returnCacheMap)))
 
-      val result = connector.fetch()(Matchers.any())
-      await(result) shouldBe Some(returnCacheMap)
+      await(connector.fetch()) mustBe Some(returnCacheMap)
     }
   }
 
   "Removing from KeyStore" should {
     "return a HTTP Response" in {
-      when(mockSessionCache.remove()(Matchers.any()))
-        .thenReturn(Future.successful(HttpResponse(OK)))
+      when(mockSessionCache.remove()(any())).thenReturn(Future.successful(HttpResponse(OK)))
 
-      val result = connector.remove()(Matchers.any())
-      await(result).status shouldBe HttpResponse(OK).status
+      await(connector.remove()).status mustBe HttpResponse(OK).status
     }
   }
 }

@@ -16,7 +16,7 @@
 
 package mocks
 
-import connectors.{CompanyRegistrationConnector, IncorporationInformationConnector, PPConnector, VatRegistrationConnector}
+import connectors._
 import org.mockito.Mockito
 import org.scalatest.mockito.MockitoSugar
 import services._
@@ -41,4 +41,5 @@ trait VatMocks
   implicit lazy val mockIIService = Mockito.mock(classOf[IncorporationInformationService])
   implicit lazy val mockIIConnector = Mockito.mock(classOf[IncorporationInformationConnector])
   implicit lazy val mockVatRegistrationService = Mockito.mock(classOf[VatRegistrationService])
+  implicit lazy val mockAddressLookupConnector = Mockito.mock(classOf[AddressLookupConnect])
 }

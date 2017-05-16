@@ -48,7 +48,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockS4LService.fetchAndGet[EstimateVatTurnover]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(EstimateVatTurnover(100L))))
 
-      AuthBuilder.submitWithAuthorisedUser(
+      submitAuthorised(
         TestEstimateVatTurnoverController.show(),
         fakeRequest.withFormUrlEncodedBody("turnoverEstimate" -> "")
       )(_ includesText "Estimated VAT taxable turnover for the next 12 months")
@@ -83,7 +83,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${vatFinancials.routes.EstimateVatTurnoverController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(
+      submitAuthorised(
         TestEstimateVatTurnoverController.submit(),
         fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
@@ -98,7 +98,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockS4LService.saveForm[EstimateVatTurnover](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapEstimateVatTurnover))
 
-      AuthBuilder.submitWithAuthorisedUser(
+      submitAuthorised(
         TestEstimateVatTurnoverController.submit(),
         fakeRequest.withFormUrlEncodedBody("turnoverEstimate" -> "50000")
       )(_ redirectsTo s"$contextRoot/zero-rated-sales")
