@@ -33,7 +33,7 @@ class AddressLookupConnectorSpec extends VatRegSpec with VatRegistrationFixture 
 
     val connector = new AddressLookupConnector {
       override val addressLookupFrontendUrl: String = "tst-url"
-      override val vatregFrontendUrl: String = "tst-url"
+      override val addressLookupContinueUrl: String = "test-url"
       override val http: WSHttp = mockWSHttp
     }
 
