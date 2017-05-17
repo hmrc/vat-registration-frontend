@@ -18,22 +18,23 @@ package controllers.vatLodgingOfficer
 
 import java.time.LocalDate
 
-import builders.AuthBuilder
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.api.{ScrsAddress, VatLodgingOfficer}
-import models.view.vatLodgingOfficer.{OfficerDateOfBirthView, OfficerNinoView}
+import helpers.{S4LMockSugar, VatRegSpec}
+import models.api.VatLodgingOfficer
+import models.view.vatLodgingOfficer.OfficerDateOfBirthView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+
+  import cats.instances.future._
+  import cats.syntax.applicative._
 
   object TestOfficerDateOfBirthController extends OfficerDateOfBirthController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -46,11 +47,8 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer.empty))
-
-      when(mockS4LService.fetchAndGet[OfficerDateOfBirthView]()(any(), any(), any()))
-        .thenReturn(Future.successful(None))
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-        .thenReturn(Future.successful(vatScheme))
+      save4laterReturnsNothing[OfficerDateOfBirthView]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
 
       callAuthorised(TestOfficerDateOfBirthController.show()) {
         _ includesText "What is your date of birth"
@@ -58,12 +56,8 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer = None)
-
-      when(mockS4LService.fetchAndGet[OfficerDateOfBirthView]()(any(), any(), any()))
-        .thenReturn(Future.successful(None))
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-        .thenReturn(Future.successful(vatScheme))
+      save4laterReturnsNothing[OfficerDateOfBirthView]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.copy(lodgingOfficer = None).pure)
 
       callAuthorised(TestOfficerDateOfBirthController.show()) {
         _ includesText "What is your date of birth"
@@ -74,21 +68,20 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.OfficerDateOfBirthController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestOfficerDateOfBirthController.submit(), fakeRequest.withFormUrlEncodedBody()
-      )(result => result isA 400)
+      submitAuthorised(TestOfficerDateOfBirthController.submit(), fakeRequest.withFormUrlEncodedBody()) { result =>
+        result isA 400
+      }
     }
+
   }
 
   s"POST ${routes.OfficerDateOfBirthController.submit()} with valid DateOfBirth entered" should {
 
     "return 303" in {
-      val returnOfficerDateOfBirthView = CacheMap("", Map("" -> Json.toJson(OfficerDateOfBirthView(LocalDate.of(1980,1,1)))))
-
       when(mockS4LService.saveForm[OfficerDateOfBirthView](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnOfficerDateOfBirthView))
+        .thenReturn(CacheMap("", Map("" -> Json.toJson(OfficerDateOfBirthView(LocalDate.of(1980, 1, 1))))).pure)
 
-      AuthBuilder.submitWithAuthorisedUser(
-        TestOfficerDateOfBirthController.submit(),
+      submitAuthorised(TestOfficerDateOfBirthController.submit(),
         fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980")
       )(_ redirectsTo s"$contextRoot/your-national-insurance-number")
 

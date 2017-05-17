@@ -16,11 +16,10 @@
 
 package controllers.vatLodgingOfficer
 
-import builders.AuthBuilder
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.api.{VatLodgingOfficer, VatScheme}
+import helpers.{S4LMockSugar, VatRegSpec}
+import models.api.VatLodgingOfficer
 import models.view.vatLodgingOfficer.OfficerNinoView
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import org.mockito.Matchers.any
@@ -28,11 +27,13 @@ import org.mockito.Mockito.when
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class OfficerNinoControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class OfficerNinoControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+
+  import cats.instances.future._
+  import cats.syntax.applicative._
 
   object TestOfficerNinoController extends OfficerNinoController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -45,11 +46,8 @@ class OfficerNinoControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer.empty))
-
-      when(mockS4LService.fetchAndGet[OfficerNinoView]()(any(), any(), any()))
-        .thenReturn(Future.successful(None))
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-        .thenReturn(Future.successful(vatScheme))
+      save4laterReturnsNothing[OfficerNinoView]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
 
       callAuthorised(TestOfficerNinoController.show()) {
         _ includesText "What is your National Insurance number"
@@ -57,12 +55,8 @@ class OfficerNinoControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer = None)
-
-      when(mockS4LService.fetchAndGet[OfficerNinoView]()(any(), any(), any()))
-        .thenReturn(Future.successful(None))
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-        .thenReturn(Future.successful(vatScheme))
+      save4laterReturnsNothing[OfficerNinoView]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.copy(lodgingOfficer = None).pure)
 
       callAuthorised(TestOfficerNinoController.show()) {
         _ includesText "What is your National Insurance number"
@@ -73,27 +67,22 @@ class OfficerNinoControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${routes.OfficerNinoController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestOfficerNinoController.submit(), fakeRequest.withFormUrlEncodedBody()
-      )(result => result isA 400)
+      submitAuthorised(TestOfficerNinoController.submit(), fakeRequest.withFormUrlEncodedBody()) { result =>
+        result isA 400
+      }
     }
+
   }
 
   s"POST ${routes.OfficerNinoController.submit()} with valid Nino entered and default Voluntary Reg = YES" should {
 
     "return 303 (to /start-date)" in {
       val returnOfficerNinoView = CacheMap("", Map("" -> Json.toJson(OfficerNinoView("NB686868C"))))
+      save4laterReturns(VoluntaryRegistration.yes)
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+      when(mockS4LService.saveForm[OfficerNinoView](any())(any(), any(), any())).thenReturn(returnOfficerNinoView.pure)
 
-      when(mockVatRegistrationService.getVatScheme()(any()))
-        .thenReturn(Future.successful(emptyVatScheme))
-
-      when(mockS4LService.saveForm[OfficerNinoView](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnOfficerNinoView))
-
-      when(mockS4LService.fetchAndGet[VoluntaryRegistration]()(any(), any(), any()))
-        .thenReturn(Future.successful(Some(VoluntaryRegistration.yes)))
-
-      AuthBuilder.submitWithAuthorisedUser(
-        TestOfficerNinoController.submit(),
+      submitAuthorised(TestOfficerNinoController.submit(),
         fakeRequest.withFormUrlEncodedBody("nino" -> "NB686868C")
       )(_ redirectsTo s"$contextRoot/start-date")
 
@@ -104,18 +93,12 @@ class OfficerNinoControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
     "return 303 (to /start-date-confirmation)" in {
       val returnOfficerNinoView = CacheMap("", Map("" -> Json.toJson(OfficerNinoView("NB686868C"))))
-
-      when(mockVatRegistrationService.getVatScheme()(any()))
-        .thenReturn(Future.successful(emptyVatScheme))
-
       when(mockS4LService.saveForm[OfficerNinoView](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnOfficerNinoView))
+        .thenReturn(returnOfficerNinoView.pure)
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+      save4laterReturns(VoluntaryRegistration.no)
 
-      when(mockS4LService.fetchAndGet[VoluntaryRegistration]()(any(), any(), any()))
-        .thenReturn(Future.successful(Some(VoluntaryRegistration.no)))
-
-      AuthBuilder.submitWithAuthorisedUser(
-        TestOfficerNinoController.submit(),
+      submitAuthorised(TestOfficerNinoController.submit(),
         fakeRequest.withFormUrlEncodedBody("nino" -> "NB686868C")
       )(_ redirectsTo s"$contextRoot/start-date-confirmation")
 
@@ -127,19 +110,13 @@ class OfficerNinoControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return 303 (to /start-date-confirmation)" in {
       val returnOfficerNinoView = CacheMap("", Map("" -> Json.toJson(OfficerNinoView("NB686868C"))))
 
-      when(mockVatRegistrationService.getVatScheme()(any()))
-        .thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+      when(mockS4LService.saveForm[OfficerNinoView](any())(any(), any(), any())).thenReturn(returnOfficerNinoView.pure)
+      save4laterReturnsNothing[VoluntaryRegistration]()
 
-      when(mockS4LService.saveForm[OfficerNinoView](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnOfficerNinoView))
-
-      when(mockS4LService.fetchAndGet[VoluntaryRegistration]()(any(), any(), any()))
-        .thenReturn(Future.successful(None))
-
-      AuthBuilder.submitWithAuthorisedUser(
-        TestOfficerNinoController.submit(),
-        fakeRequest.withFormUrlEncodedBody("nino" -> "NB686868C")
-      )(_ redirectsTo s"$contextRoot/start-date")
+      submitAuthorised(TestOfficerNinoController.submit(), fakeRequest.withFormUrlEncodedBody("nino" -> "NB686868C")) {
+        _ redirectsTo s"$contextRoot/start-date"
+      }
 
     }
   }
