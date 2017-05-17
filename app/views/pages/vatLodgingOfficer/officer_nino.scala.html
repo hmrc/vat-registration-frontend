@@ -12,7 +12,7 @@
       </header>
 
       @errorSummary(
-          Messages("app.common.errorSummaryLabel"),
+          messages("app.common.errorSummaryLabel"),
           officerNinoForm
       )
 
@@ -29,6 +29,8 @@
                   '_divClass -> "form-group",
                   '_inputClass -> "form-control",
                   '_maxlength -> 13,
+                  '_label -> messages("pages.officerNino.heading"),
+                  '_labelTextClass -> "hidden",
                   '_labelClass -> "form-label"
               )
 
