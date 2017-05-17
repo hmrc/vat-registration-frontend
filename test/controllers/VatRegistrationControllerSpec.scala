@@ -22,7 +22,7 @@ import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{redirectLocation, status, _}
+import play.api.test.Helpers.{status, _}
 
 case class TestClass(text: String, number: Int)
 
@@ -53,9 +53,7 @@ class VatRegistrationControllerSpec extends VatRegSpec {
 
   "unauthorised access" should {
     "redirect user to GG sign in page" in {
-      val result = TestController.authorisedActionGenerator(FakeRequest())
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(authUrl)
+      TestController.authorisedActionGenerator(FakeRequest()) redirectsTo authUrl
     }
 
   }
@@ -68,7 +66,6 @@ class VatRegistrationControllerSpec extends VatRegSpec {
   }
 
   "copyGlobalErrorsToFields" should {
-
 
     "leave form object intact if no form errors are present" in {
       lazy val formUpdate = TestController.copyGlobalErrorsToFields[TestClass]("text")
@@ -100,9 +97,8 @@ class VatRegistrationControllerSpec extends VatRegSpec {
         "number" -> Seq("123")
       )
       val form = testForm.bindFromRequest(data)
-      formUpdate(form) shouldHaveErrors Seq("" -> "message.code" , "text" -> "message.code")
+      formUpdate(form) shouldHaveErrors Seq("" -> "message.code", "text" -> "message.code")
     }
-
 
   }
 
