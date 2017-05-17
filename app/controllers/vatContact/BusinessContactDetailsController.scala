@@ -42,7 +42,7 @@ class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       copyGlobalErrorsToFields("daytimePhone", "mobile")
         .andThen(form => BadRequest(views.html.pages.vatContact.business_contact_details(form)).pure),
-      s4l.saveForm(_).map(_ => Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()))
+      s4l.saveForm(_).map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
     )
   })
 

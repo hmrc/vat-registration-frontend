@@ -107,7 +107,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
       submitAuthorised(
         TestOfficerHomeAddressController.submit(),
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.id)
-      )(_ redirectsTo s"$contextRoot/business-activity-description")
+      )(_ redirectsTo s"$contextRoot/business-contact")
 
     }
   }
@@ -125,7 +125,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
       submitAuthorised(
         TestOfficerHomeAddressController.submit(),
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.id)
-      )(_ redirectsTo s"$contextRoot/business-activity-description")
+      )(_ redirectsTo s"$contextRoot/business-contact")
 
     }
   }
@@ -153,7 +153,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockS4LService.saveForm(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
 
       callAuthorised(TestOfficerHomeAddressController.acceptFromTxm("addressId")) {
-        _ redirectsTo s"$contextRoot/business-activity-description"
+        _ redirectsTo s"$contextRoot/business-contact"
       }
 
       val expectedAddressView = OfficerHomeAddressView(address.id, Some(address))
