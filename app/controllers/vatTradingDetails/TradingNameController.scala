@@ -42,7 +42,7 @@ class TradingNameController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.vatTradingDetails.trading_name(badForm)).pure
       ,
       (data: TradingNameView) => s4LService.saveForm[TradingNameView](data) map { _ =>
-        Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())
+        Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
       }
     )
   })
