@@ -18,7 +18,6 @@ package controllers.feedback
 
 import helpers.VatRegSpec
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
 
 class FeedbackControllerSpec extends VatRegSpec {
 
@@ -30,18 +29,8 @@ class FeedbackControllerSpec extends VatRegSpec {
 
   "GET /feedback" should {
 
-    "redirect to GG sign in when not authorized" in {
-       new FeedbackController(ds).show()(fakeRequest) redirectsTo authUrl
-
-    }
-
     "return HTML when user is authorized to access" in {
-      callAuthorised(TestController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-      }
+      callAuthorised(TestController.show)(_ isA 200)
     }
   }
 

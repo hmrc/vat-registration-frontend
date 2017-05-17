@@ -18,6 +18,7 @@ package connectors
 
 import javax.inject.{Inject, Singleton}
 
+import auth.VatExternalUrls.getConfString
 import com.google.inject.ImplementedBy
 import config.WSHttp
 import models.AddressLookupJourneyId
@@ -40,7 +41,7 @@ class AddressLookupConnector @Inject()() extends AddressLookupConnect with Servi
 
   val http: WSHttp = WSHttp
   val addressLookupFrontendUrl = baseUrl("address-lookup-frontend")
-  val vatregFrontendUrl = getConfString("vat-registration-frontend.www.url", "")
+  val addressLookupContinueUrl = getConfString("address-lookup-frontend.new-address-callback.url", "")
 
   implicit val reads = ScrsAddress.adressLookupReads
 
@@ -49,7 +50,7 @@ class AddressLookupConnector @Inject()() extends AddressLookupConnect with Servi
 
   def getOnRampUrl(call: Call)(implicit hc: HeaderCarrier, journeyId: AddressLookupJourneyId): Future[Call] = {
     val postUrl = s"$addressLookupFrontendUrl/api/init/${journeyId.id}"
-    val continueJson = Json.obj("continueUrl" -> s"$vatregFrontendUrl${call.url}")
+    val continueJson = Json.obj("continueUrl" -> s"$addressLookupContinueUrl${call.url}")
 
     http.POST[JsObject, HttpResponse](postUrl, continueJson) map { resp =>
       Logger.debug(s"Response from ALF: $resp")
@@ -68,7 +69,7 @@ class ALFLocationHeaderNotSetException extends NoStackTrace
 trait AddressLookupConnect {
 
   val addressLookupFrontendUrl: String
-  val vatregFrontendUrl: String
+  val addressLookupContinueUrl: String
   val http: WSHttp
 
   def getAddress(id: String)(implicit hc: HeaderCarrier): Future[ScrsAddress]
