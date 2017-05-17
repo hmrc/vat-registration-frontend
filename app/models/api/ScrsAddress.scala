@@ -65,12 +65,13 @@ object ScrsAddress {
       val postcode = (address \ "postcode").asOpt[String]
       val lineMap = (address \ "lines").as[List[String]].zipWithIndex.map(_.swap).toMap
       val countryCode = (address \ "country" \ "code").asOpt[String]
+      val countryName = (address \ "country" \ "name").asOpt[String]
       if (postcode.isEmpty && countryCode.isEmpty) {
         JsError(ValidationError("neither postcode nor country were defined"))
       } else if (lineMap.size < 2) {
         JsError(ValidationError(s"only ${lineMap.size} lines provided from address-lookup-frontend"))
       } else {
-        JsSuccess(ScrsAddress(lineMap(0), lineMap(1), lineMap.get(2), lineMap.get(3), postcode, postcode.fold(countryCode)(_ => None)))
+        JsSuccess(ScrsAddress(lineMap(0), lineMap(1), lineMap.get(2), lineMap.get(3), postcode, countryName.fold(countryCode)(_ => countryName)))
       }
     }
   }
