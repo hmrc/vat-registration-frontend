@@ -82,6 +82,23 @@ class ScrsAddressSpec extends UnitSpec with Inspectors {
       implicit val alReads = ScrsAddress.adressLookupReads
       validJson.validate[ScrsAddress] shouldBe JsSuccess(ScrsAddress("line 1", "line 2", country = Some("UK")))
     }
+
+    "read from valid minimal Json - no postcode - country name present" in {
+      val validJson = Json.parse(
+        """{
+          | "address": {
+          |   "lines": ["line 1", "line 2"],
+          |   "country": {
+          |     "name": "United Kingdom",
+          |     "code": "UK"
+          |   }
+          | }
+          |}""".stripMargin)
+
+      implicit val alReads = ScrsAddress.adressLookupReads
+      validJson.validate[ScrsAddress] shouldBe JsSuccess(ScrsAddress("line 1", "line 2", country = Some("United Kingdom")))
+    }
+
   }
 
 }
