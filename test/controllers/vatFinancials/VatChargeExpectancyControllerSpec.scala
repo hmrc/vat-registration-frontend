@@ -24,24 +24,23 @@ import models.S4LKey
 import models.view.vatFinancials.VatChargeExpectancy
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationFixture {
-
 
 
   object TestVatChargeExpectancyController extends VatChargeExpectancyController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
+
+  import cats.instances.future._
+  import cats.syntax.applicative._
 
   val fakeRequest = FakeRequest(vatFinancials.routes.VatChargeExpectancyController.show())
 
@@ -50,87 +49,62 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
     "return HTML when there's a Vat Charge Expectancy model in S4L" in {
       val vatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
 
-      when(mockS4LService.fetchAndGet[VatChargeExpectancy]()(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(vatChargeExpectancy)))
+      when(mockS4LService.fetchAndGet[VatChargeExpectancy]()(any(), any(), any()))
+        .thenReturn(Some(vatChargeExpectancy).pure)
 
-      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.show(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestVatChargeExpectancyController.show(), fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> ""
       )) {
-
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Do you expect to reclaim more VAT than you charge?")
+        _ includesText "Do you expect to reclaim more VAT than you charge?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockS4LService.fetchAndGet[VatChargeExpectancy]()
-        (Matchers.eq(S4LKey[VatChargeExpectancy]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+        (Matchers.eq(S4LKey[VatChargeExpectancy]), any(), any())).thenReturn(None.pure)
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-        .thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(TestVatChargeExpectancyController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Do you expect to reclaim more VAT than you charge?")
+        _ includesText "Do you expect to reclaim more VAT than you charge?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       when(mockS4LService.fetchAndGet[VatChargeExpectancy]()
-        (Matchers.eq(S4LKey[VatChargeExpectancy]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+        (Matchers.eq(S4LKey[VatChargeExpectancy]), any(), any())).thenReturn(None.pure)
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-        .thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(TestVatChargeExpectancyController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Do you expect to reclaim more VAT than you charge?")
+        _ includesText "Do you expect to reclaim more VAT than you charge?"
       }
     }
-  }
 
+  }
 
   s"POST ${vatFinancials.routes.VatChargeExpectancyController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
-      }
-
+      submitAuthorised(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
+      ))(result => result isA 400)
     }
+
   }
 
   s"POST ${vatFinancials.routes.VatChargeExpectancyController.submit()} with Vat Charge Expectancy selected Yes" should {
 
     "return 303" in {
       val returnCacheMapVatChargeExpectancy = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES))))
+      when(mockS4LService.saveForm[VatChargeExpectancy](any())(any(), any(), any())).thenReturn(returnCacheMapVatChargeExpectancy.pure)
 
-      when(mockS4LService.saveForm[VatChargeExpectancy]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapVatChargeExpectancy))
-
-      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_YES
       )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/vat-return-frequency"
+        _ redirectsTo s"$contextRoot/vat-return-frequency"
       }
-
     }
+
   }
 
   s"POST ${vatFinancials.routes.VatChargeExpectancyController.submit()} with Vat Charge Expectancy selected No" should {
@@ -139,21 +113,16 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_NO))))
       val returnCacheMapReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.MONTHLY))))
 
-      when(mockS4LService.saveForm[VatChargeExpectancy](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMap))
+      when(mockS4LService.saveForm[VatChargeExpectancy](any())(any(), any(), any())).thenReturn(returnCacheMap.pure)
+      when(mockS4LService.saveForm[VatReturnFrequency](any())(any(), any(), any())).thenReturn(returnCacheMapReturnFrequency.pure)
 
-      when(mockS4LService.saveForm[VatReturnFrequency](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapReturnFrequency))
-
-      AuthBuilder.submitWithAuthorisedUser(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_NO
       )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/accounting-period"
+        _ redirectsTo s"$contextRoot/accounting-period"
       }
-
     }
+
   }
 
 }

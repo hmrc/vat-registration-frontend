@@ -19,7 +19,6 @@ package connectors
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.external.CoHoRegisteredOfficeAddress
-import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.ws.WSHttp
 
 class IncorporationInformationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
@@ -36,8 +35,6 @@ class IncorporationInformationConnectorSpec extends VatRegSpec with VatRegistrat
       "locality", None, None, None, None
     )
   }
-
-  implicit val hc = HeaderCarrier()
 
   "Calling getRegisteredOfficeAddress" should {
     "return a CoHoRegisteredOfficeAddress successfully" in new Setup {

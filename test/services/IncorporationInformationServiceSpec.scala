@@ -23,7 +23,6 @@ import models.api.ScrsAddress
 import models.external.{CoHoCompanyProfile, CoHoRegisteredOfficeAddress}
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -32,8 +31,6 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
   import cats.instances.future._
 
   private class Setup {
-    implicit val headerCarrier = HeaderCarrier()
-
     val service = new IncorporationInformationService(mockIIConnector) {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }

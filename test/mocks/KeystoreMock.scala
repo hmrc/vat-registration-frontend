@@ -18,13 +18,15 @@ package mocks
 
 import connectors._
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.HttpResponse
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait KeystoreMock {
@@ -32,29 +34,22 @@ trait KeystoreMock {
 
   lazy val mockKeystoreConnector = mock[KeystoreConnector]
 
-  def mockKeystoreFetchAndGet[T](key: String, model: Option[T]): OngoingStubbing[Future[Option[T]]] = {
-    when(mockKeystoreConnector.fetchAndGet[T](Matchers.contains(key))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(model))
-  }
+  import cats.instances.future._
+  import cats.syntax.applicative._
 
-  def mockKeystoreCache[T](key: String, cacheMap: CacheMap): OngoingStubbing[Future[CacheMap]] = {
-    when(mockKeystoreConnector.cache(Matchers.contains(key), Matchers.any[T]())(Matchers.any[HeaderCarrier](), Matchers.any[Format[T]]()))
-      .thenReturn(Future.successful(cacheMap))
-  }
+  def mockKeystoreFetchAndGet[T](key: String, model: Option[T]): OngoingStubbing[Future[Option[T]]] =
+    when(mockKeystoreConnector.fetchAndGet[T](Matchers.contains(key))(any(), any())).thenReturn(model.pure)
 
-  def mockKeystoreCacheError[T](key: String, err: Exception): OngoingStubbing[Future[CacheMap]] = {
-    when(mockKeystoreConnector.cache(Matchers.contains(key), Matchers.any[T]())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.failed(err))
-  }
+  def mockKeystoreCache[T](key: String, cacheMap: CacheMap): OngoingStubbing[Future[CacheMap]] =
+    when(mockKeystoreConnector.cache(Matchers.contains(key), any[T]())(any(), any[Format[T]]())).thenReturn(cacheMap.pure)
 
-  def mockKeystoreClear(): OngoingStubbing[Future[HttpResponse]] = {
-    when(mockKeystoreConnector.remove()(Matchers.any()))
-      .thenReturn(Future.successful(HttpResponse(200)))
-  }
+  def mockKeystoreCacheError[T](key: String, err: Exception): OngoingStubbing[Future[CacheMap]] =
+    when(mockKeystoreConnector.cache(Matchers.contains(key), any[T]())(any(), any())).thenReturn(Future.failed(err))
 
-  def mockFetchRegId(regID: String = "12345"): OngoingStubbing[Future[Option[String]]] = {
-    when(mockKeystoreConnector.fetchAndGet[String](Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Some(regID)))
-  }
+  def mockKeystoreClear(): OngoingStubbing[Future[HttpResponse]] =
+    when(mockKeystoreConnector.remove()(any())).thenReturn(HttpResponse(200).pure)
+
+  def mockFetchRegId(regID: String = "12345"): OngoingStubbing[Future[Option[String]]] =
+    when(mockKeystoreConnector.fetchAndGet[String](any())(any(), any())).thenReturn(Some(regID).pure)
 
 }

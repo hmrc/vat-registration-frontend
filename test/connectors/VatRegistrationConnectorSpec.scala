@@ -32,8 +32,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  implicit val hc = HeaderCarrier()
-
   "Calling createNewRegistration" should {
     "return a successful outcome when the microservice successfully creates a new Vat Registration" in new Setup {
       mockHttpPOSTEmpty[VatScheme]("tst-url", emptyVatScheme)

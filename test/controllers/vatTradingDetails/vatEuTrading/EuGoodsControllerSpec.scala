@@ -52,7 +52,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockS4LService.fetchAndGet[EuGoods]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(euGoods)))
 
-      AuthBuilder.submitWithAuthorisedUser(EuGoodsController.show(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(EuGoodsController.show(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> ""
       )) {
 
@@ -102,7 +102,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe Status.BAD_REQUEST
@@ -120,7 +120,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapEuGoods))
 
-      AuthBuilder.submitWithAuthorisedUser(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> EuGoods.EU_GOODS_YES
       )) {
         response =>
@@ -139,7 +139,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapEuGoods))
 
-      AuthBuilder.submitWithAuthorisedUser(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> EuGoods.EU_GOODS_NO
       )) {
         response =>

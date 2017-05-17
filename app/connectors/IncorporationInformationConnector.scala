@@ -28,7 +28,6 @@ import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 @Singleton
 class IncorporationInformationConnector extends IncorporationInformationConnect with ServicesConfig {

@@ -51,7 +51,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockS4LService.fetchAndGet[ChargeFees]()(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(chargeFees)))
 
-      AuthBuilder.submitWithAuthorisedUser(ChargeFeesController.show(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(ChargeFeesController.show(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> ""
       )) {
         _ includesText "Does the company charge fees for introducing clients to financial service providers?"
@@ -88,7 +88,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${routes.ChargeFeesController.show()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe Status.BAD_REQUEST
@@ -106,7 +106,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapChargeFees))
 
-      AuthBuilder.submitWithAuthorisedUser(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> "true"
       )) {
         response =>
@@ -125,7 +125,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapChargeFees))
 
-      AuthBuilder.submitWithAuthorisedUser(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> "false"
       )) {
         response =>
