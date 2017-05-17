@@ -96,7 +96,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
         when(mockS4LService.saveForm[VatServiceEligibility](any())(any(), any(), any()))
           .thenReturn(dummyCacheMap.pure)
 
-        AuthBuilder.submitWithAuthorisedUser(TestController.submit(currentQuestion.name),
+        submitAuthorised(TestController.submit(currentQuestion.name),
           FakeRequest().withFormUrlEncodedBody(
             "question" -> currentQuestion.name,
             s"${currentQuestion.name}Radio" -> (!currentQuestion.exitAnswer).toString)
@@ -115,7 +115,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
         when(mockS4LService.saveForm[VatServiceEligibility](any())(any(), any(), any()))
           .thenReturn(dummyCacheMap.pure)
 
-        AuthBuilder.submitWithAuthorisedUser(TestController.submit(currentQuestion.name),
+        submitAuthorised(TestController.submit(currentQuestion.name),
           FakeRequest().withFormUrlEncodedBody(
             "question" -> currentQuestion.name,
             s"${currentQuestion.name}Radio" -> (!currentQuestion.exitAnswer).toString)
@@ -135,7 +135,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
         when(mockKeystoreConnector.cache[String](any(), any())(any(), any()))
           .thenReturn(dummyCacheMap.pure)
 
-        AuthBuilder.submitWithAuthorisedUser(TestController.submit(currentQuestion.name),
+        submitAuthorised(TestController.submit(currentQuestion.name),
           FakeRequest().withFormUrlEncodedBody(
             "question" -> currentQuestion.name,
             s"${currentQuestion.name}Radio" -> currentQuestion.exitAnswer.toString)
@@ -150,7 +150,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
     "400 for malformed requests" in {
       forAll(questions) { case (q, _) =>
-        AuthBuilder.submitWithAuthorisedUser(TestController.submit(q.name),
+        submitAuthorised(TestController.submit(q.name),
           FakeRequest().withFormUrlEncodedBody(s"${q.name}Radio" -> "foo")
         )(result => result isA 400)
       }

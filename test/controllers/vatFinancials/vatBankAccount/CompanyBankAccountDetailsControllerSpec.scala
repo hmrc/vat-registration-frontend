@@ -122,7 +122,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
   s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountDetailsController.submit(),
+      submitAuthorised(CompanyBankAccountDetailsController.submit(),
         fakeRequest.withFormUrlEncodedBody(
         ))(status(_) mustBe Status.BAD_REQUEST)
     }
@@ -138,7 +138,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
         (Matchers.any())(Matchers.eq(S4LKey[CompanyBankAccountDetails]), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapCompanyBankAccount))
 
-      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountDetailsController.submit(),
+      submitAuthorised(CompanyBankAccountDetailsController.submit(),
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
         result =>
           result redirectsTo s"$contextRoot/estimate-vat-turnover"
@@ -157,7 +157,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
 
       val invalidBankAccountFormData = validBankAccountFormData.drop(1)
 
-      AuthBuilder.submitWithAuthorisedUser(CompanyBankAccountDetailsController.submit(),
+      submitAuthorised(CompanyBankAccountDetailsController.submit(),
         fakeRequest.withFormUrlEncodedBody(invalidBankAccountFormData: _*)) {
         result =>
           status(result) mustBe Status.BAD_REQUEST

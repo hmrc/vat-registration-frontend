@@ -22,16 +22,12 @@ import helpers.VatRegSpec
 import models.view.test.SicStub
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   object ComplianceIntroductionController extends ComplianceIntroductionController(mockS4LService, ds) {
-    implicit val headerCarrier = HeaderCarrier()
-
     override val authConnector = mockAuthConnector
   }
 
@@ -39,8 +35,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
 
     "display the introduction page to a set of compliance questions" in {
       callAuthorised(ComplianceIntroductionController.show) {
-        result =>
-           result includesText "Tell us more"
+        _ includesText "Tell us more"
       }
     }
   }

@@ -21,22 +21,19 @@ import java.time.format.DateTimeFormatter.ofPattern
 
 import cats.data.OptionT
 import connectors.KeystoreConnector
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer, VatScheme}
 import models.external.{AccountingDetails, CorporationTaxRegistration}
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
-import org.mockito.Matchers
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.language.implicitConversions
 
-class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
+class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSugar {
 
   import cats.instances.future._
   import cats.syntax.applicative._
@@ -46,20 +43,11 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
     implicit def toOptionT(d: LocalDate): OptionT[Future, CorporationTaxRegistration] =
       OptionT.pure(CorporationTaxRegistration(Some(AccountingDetails("", Some(d.format(ofPattern("yyyy-MM-dd")))))))
 
-    val none: OptionT[Future, CorporationTaxRegistration] = OptionT.none
-
-    implicit val headerCarrier = HeaderCarrier()
-
     val service = new PrePopulationService(mockPPConnector, mockIIService, mockS4LService) {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
       mockFetchRegId()
     }
 
-    def save4laterReturns[T: S4LKey](t: T)(implicit s4lService: S4LService): Unit =
-      when(s4lService.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(OptionT.pure(t).value)
-
-    def save4laterReturnsNothing[T: S4LKey]()(implicit s4LService: S4LService): Unit =
-      when(s4LService.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(None.pure)
   }
 
   "CT Active Date" must {
@@ -71,7 +59,8 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors {
     }
 
     "be None" in new Setup {
-      when(mockPPConnector.getCompanyRegistrationDetails(any())(any(), any())).thenReturn(none)
+      when(mockPPConnector.getCompanyRegistrationDetails(any())(any(), any()))
+        .thenReturn(OptionT.none[Future, CorporationTaxRegistration])
       service.getCTActiveDate().returnsNone
     }
 

@@ -51,7 +51,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockS4LService.fetchAndGet[NotForProfit]()(any(), any(), any()))
         .thenReturn(Future.successful(Some(notForProfit)))
 
-      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.show(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(NotForProfitController.show(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> ""
       )) {
 
@@ -101,7 +101,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
   s"POST ${sicAndCompliance.cultural.routes.NotForProfitController.submit()} with Empty data" should {
 
     "return 400" in {
-      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody()) {
+      submitAuthorised(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody()) {
         result => result isA 400
       }
     }
@@ -117,7 +117,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockS4LService.saveForm[NotForProfit](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapNotForProfit))
 
-      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> NotForProfit.NOT_PROFIT_YES
       ))(_ redirectsTo s"$contextRoot/company-bank-account")
 
@@ -134,7 +134,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockS4LService.saveForm[NotForProfit](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapNotForProfit))
 
-      AuthBuilder.submitWithAuthorisedUser(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> NotForProfit.NOT_PROFIT_NO
       ))(_ redirectsTo s"$contextRoot/company-bank-account")
 
