@@ -21,7 +21,7 @@ import javax.inject.Inject
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import connectors.{IncorporationInformationConnector, OptionalResponse}
-import models.api.ScrsAddress
+import models.api.{Director, ScrsAddress}
 import models.external.CoHoCompanyProfile
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -42,5 +42,12 @@ class IncorporationInformationService @Inject()(iiConnector: IncorporationInform
       companyProfile <- OptionT(keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile"))
       address <- iiConnector.getRegisteredOfficeAddress(companyProfile.transactionId)
     } yield address: ScrsAddress // implicit conversion
+  }
+
+  override def getOfficerList()(implicit headerCarrier: HeaderCarrier): OptionalResponse[Director] = {
+    for {
+      companyProfile <- OptionT(keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile"))
+      officerList <- iiConnector.getOfficerList(companyProfile.transactionId)
+    } yield officerList: List[Director] // implicit conversion
   }
 }
