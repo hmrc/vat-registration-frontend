@@ -21,13 +21,14 @@ import javax.inject.Singleton
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
-import models.external.CoHoRegisteredOfficeAddress
+import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
 import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.play.http.{NotFoundException, _}
 import uk.gov.hmrc.play.http.ws.WSHttp
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Singleton
 class IncorporationInformationConnector extends IncorporationInformationConnect with ServicesConfig {
@@ -56,6 +57,21 @@ trait IncorporationInformationConnect {
         case e: Exception => logResponse(e, className, "getRegisteredOfficeAddress")
           Option.empty[CoHoRegisteredOfficeAddress]
       }
+    }
+  }
+
+  def getOfficerList(transactionId: String)(implicit hc : HeaderCarrier): Future[OfficerList] = {
+    http.GET[OfficerList](s"$incorpInfoUrl$incorpInfoUri/$transactionId/officer-list") map { list =>
+      list
+    } recover {
+      case notFoundException: NotFoundException =>
+        OfficerList(items = Nil)
+      case badRequestErr: BadRequestException =>
+        logResponse(badRequestErr, className, "getOfficerList")
+        throw badRequestErr
+      case ex: Exception =>
+        logResponse(ex, className, "getOfficerList")
+        throw ex
     }
   }
 }
