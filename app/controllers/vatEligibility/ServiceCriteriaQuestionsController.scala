@@ -34,7 +34,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 
 class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, formFactory: ServiceCriteriaFormFactory)
-                                                  (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
+                                                  (implicit s4LService: S4LService, vrs: RegistrationService)
+  extends VatRegistrationController(ds) {
 
   import cats.instances.future._
   import cats.syntax.applicative._
@@ -47,9 +48,9 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
 
   private def nextQuestion(question: EligibilityQuestion): Call = question match {
     case HaveNinoQuestion => eligibilityRoutes.ServiceCriteriaQuestionsController.show(DoingBusinessAbroadQuestion.name)
-    case DoingBusinessAbroadQuestion => controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoAnyApplyToYouQuestion.name)
-    case DoAnyApplyToYouQuestion => controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(ApplyingForAnyOfQuestion.name)
-    case ApplyingForAnyOfQuestion => controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(CompanyWillDoAnyOfQuestion.name)
+    case DoingBusinessAbroadQuestion => eligibilityRoutes.ServiceCriteriaQuestionsController.show(DoAnyApplyToYouQuestion.name)
+    case DoAnyApplyToYouQuestion => eligibilityRoutes.ServiceCriteriaQuestionsController.show(ApplyingForAnyOfQuestion.name)
+    case ApplyingForAnyOfQuestion => eligibilityRoutes.ServiceCriteriaQuestionsController.show(CompanyWillDoAnyOfQuestion.name)
     case CompanyWillDoAnyOfQuestion => controllers.routes.TwirlViewController.renderViewAuthorised()
   }
 
@@ -89,7 +90,7 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
 
   def ineligible(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
     OptionT(keystore.fetchAndGet[String](INELIGIBILITY_REASON_KEY)).getOrElse("").map {
-      failedQuestion => Ok(views.html.pages.vatEligibility.ineligible(s => if (s != failedQuestion) "hidden" else ""))
+      failedQuestion => Ok(views.html.pages.vatEligibility.ineligible(failedQuestion))
     })
 
 }
