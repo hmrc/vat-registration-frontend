@@ -17,23 +17,25 @@
 package models.view.vatLodgingOfficer
 
 import models.api.{VatLodgingOfficer, VatScheme}
+import models.external.Officer
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class OfficerNameView(nino: String)
+case class CompleteCapacityView(id: String, officer: Option[Officer] = None)
 
-object OfficerNameView {
+object CompleteCapacityView {
 
-  implicit val format = Json.format[OfficerNameView]
+  implicit val format = Json.format[CompleteCapacityView]
 
   // return a view model from a VatScheme instance
-  implicit val modelTransformer = ApiModelTransformer[OfficerNameView] { vs: VatScheme =>
-    vs.lodgingOfficer.map(_.nino).map(OfficerNameView(_))
+  implicit val modelTransformer = ApiModelTransformer[CompleteCapacityView] { vs: VatScheme =>
+    vs.lodgingOfficer.map(lodgingOfficer => CompleteCapacityView(lodgingOfficer.name.id, Some(Officer(lodgingOfficer.name, lodgingOfficer.role, None, None))))
   }
 
   // return a new or updated VatLodgingOfficer from the CurrentAddressView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerNameView, g: VatLodgingOfficer) => {
-      g.copy(nino = c.nino)
+  implicit val viewModelTransformer = ViewModelTransformer { (c: CompleteCapacityView, g: VatLodgingOfficer) => {
+      g.copy(name = c.officer.get.name)
+      g.copy(role = c.officer.get.role)
     }
   }
 }

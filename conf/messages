@@ -378,6 +378,8 @@ pages.summary.directorDetails.moreThanThreeYears       = Lived at current addres
 pages.summary.directorDetails.previousAddress          = Previous address
 pages.summary.directorDetails.dob                      = Date of birth
 pages.summary.directorDetails.nino                     = National Insurance number
+pages.summary.directorDetails.completionCapacity       = Person registering the company for VAT
+
 
 ##Business Activity Description
 pages.business.activity.description.title                     = Business Activity Description
@@ -637,4 +639,4 @@ validation.officerNino.invalid                            = Enter a valid Nation
 pages.completionCapacity.title                           = Completion Capacity
 pages.completionCapacity.heading                         = Who is registering the company for VAT?
 pages.completionCapacity.someone.else                    = Someone else
-validation.completionCapacity.missing                    = Tell us your relationship to the business
+validation.completionCapacity.missing                    = Tell us who is registering the company for VAT

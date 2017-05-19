@@ -26,7 +26,7 @@ import com.google.inject.ImplementedBy
 import connectors.{OptionalResponse, PPConnector}
 import models.ApiModelTransformer
 import models.api.ScrsAddress
-import models.external.OfficerList
+import models.external.Officer
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -40,7 +40,7 @@ trait PrePopService {
 
   def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]]
 
- // def getOfficerList(transactionId: String)(implicit hc : HeaderCarrier): Future[OfficerList]
+  def getOfficerList()(implicit headerCarrier : HeaderCarrier): Future[Seq[Officer]]
 
 }
 
@@ -73,18 +73,9 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
     // TODO order the addresses
   }
 
-//  override getOfficerList(transactionId: String)(implicit hc : HeaderCarrier): Future[OfficerList] ={
-//    import cats.instances.list._
-//    import cats.syntax.traverse._
-//    val addressFromII = iis.getRegisteredOfficeAddress()
-//    val addressFromBE = OptionT(vrs.getVatScheme() map ApiModelTransformer[ScrsAddress].toViewModel)
-//    val addressFromS4L = OptionT(s4l.fetchAndGet[OfficerHomeAddressView]()).subflatMap(_.address)
-//
-//    List(addressFromII, addressFromBE, addressFromS4L).traverse(_.value).map(_.flatten.distinct)
-//
-//    // TODO merge addresses from PrePop service
-//    // TODO order the addresses
-//  }
+  override def getOfficerList()(implicit headerCarrier : HeaderCarrier): Future[Seq[Officer]] = {
+      iis.getOfficerList().getOrElse(Seq.empty[Officer])
+  }
 
 
 }

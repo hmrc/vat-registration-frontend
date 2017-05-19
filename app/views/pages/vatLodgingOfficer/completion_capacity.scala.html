@@ -1,6 +1,6 @@
-@import models.view.vatLodgingOfficer.OfficerHomeAddressView
-@import models.api.ScrsAddress
-@(completionCapacityForm: Form[OfficerHomeAddressView], addresses: Seq[ScrsAddress])(implicit request: Request[_], messages: Messages)
+@import models.view.vatLodgingOfficer.CompleteCapacityView
+@import models.external.Officer
+@(completionCapacityForm: Form[CompleteCapacityView], officerList: Seq[Officer])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
 
@@ -21,10 +21,9 @@
       <div class="form-group">
 
           <fieldset>
-              <span id="completionCapacityRadio"/>
               @govHelpers.inputRadioGroup(
                   field = completionCapacityForm("completionCapacityRadio"),
-                  addresses.map( a => (a.id, a.asLabel)) :+
+                  officerList.map( officer => (officer.name.id, officer.name.asLabel)) :+
                           ("other" -> Messages("pages.completionCapacity.someone.else")),
                   '_labelAfter -> true,
                   '_labelClass -> "block-label"

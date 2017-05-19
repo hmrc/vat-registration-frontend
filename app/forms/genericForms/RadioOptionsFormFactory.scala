@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package models.api
+package forms.genericForms
 
-import play.api.libs.json.{Json, OFormat}
+import forms.FormValidation.textMapping
+import models.RadioOptions
+import play.api.data.Form
+import play.api.data.Forms._
 
-case class VatLodgingOfficer(currentAddress: ScrsAddress, dob: DateOfBirth, nino: String, role: String, name: Name)
+class RadioOptionsFormFactory {
 
-object VatLodgingOfficer {
-  implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
-
-  // TODO remove once no longer required
-  val empty = VatLodgingOfficer(
-    ScrsAddress(line1 = "todo",line2 = "todo", postcode=Some("todo")),
-    DateOfBirth(1,1,1980),
-    "NB686868C",
-    "",
-    Name.empty)
+  def form(option: String): Form[RadioOptions] = {
+    val OPTION: String = s"${option}Radio"
+    Form(mapping(
+      OPTION -> textMapping()(s".$option")
+    )(RadioOptions(OPTION, _))(radioOptions => Some(radioOptions.value)))
+  }
 }

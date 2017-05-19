@@ -16,6 +16,10 @@
 
 package models.api
 
+import cats.Show
+import cats.Show.show
+import models.api.Name.inlineShow.inline
+import org.apache.commons.lang3.text.WordUtils
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import utils.Formatters
@@ -25,7 +29,20 @@ case class Name(
                  otherForenames: Option[String],
                  surname: String,
                  title: Option[String]
-                 )
+                 ){
+
+  import cats.instances.option._
+  import cats.syntax.applicative._
+  val id: String = List( forename,
+    surname.pure,
+    otherForenames,
+    title
+  ).flatten.mkString.replaceAll(" ", "")
+
+  val asLabel: String = inline show this
+
+
+}
 
 object Name {
   implicit val format = (
@@ -41,17 +58,32 @@ object Name {
       (__ \ "surname").read[String](Formatters.normalizeReads) and
       (__ \ "title").readNullable[String](Formatters.normalizeReads)
   )(Name.apply _)
-}
 
-case class Director(name: Name, nino: Option[String])
+  val empty = Name(None, None, "", None)
 
-object Director {
-  implicit val format = (
-    (__ \ "director").format[Name] and
-      (__ \ "nino").formatNullable[String]
-    )(Director.apply, unlift(Director.unapply))
 
-  val seqReads: Reads[Seq[Director]] = new Reads[Seq[Director]] {
-    override def reads(json: JsValue): JsResult[Seq[Director]] = Json.fromJson[Seq[Director]](json)
+  private def normalisedSeq(name: Name): Seq[String] = {
+    import cats.instances.option._
+    import cats.syntax.applicative._
+
+    Seq[Option[String]](
+      name.title,
+      name.forename,
+      name.otherForenames,
+      name.surname.pure
+    ).collect {
+      case Some(name) => WordUtils.capitalizeFully(name)
+    }
+
   }
+
+  object htmlShow {
+    implicit val html: Show[Name] = show((name: Name) => normalisedSeq(name).mkString("<br/>"))
+  }
+
+  object inlineShow {
+    implicit val inline = show((name: Name) => normalisedSeq(name).mkString(", "))
+  }
+
+
 }
