@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-package models.api
+package models
 
-import play.api.libs.json.{Json, OFormat}
+case class RadioOptions(option: String, value: String)
 
-case class VatLodgingOfficer(currentAddress: ScrsAddress, dob: DateOfBirth, nino: String, role: String, name: Name)
 
-object VatLodgingOfficer {
-  implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
 
-  // TODO remove once no longer required
-  val empty = VatLodgingOfficer(
-    ScrsAddress(line1 = "todo",line2 = "todo", postcode=Some("todo")),
-    DateOfBirth(1,1,1980),
-    "NB686868C",
-    "",
-    Name.empty)
-}
+

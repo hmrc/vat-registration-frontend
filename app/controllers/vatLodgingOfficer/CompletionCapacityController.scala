@@ -21,10 +21,9 @@ import javax.inject.Inject
 import cats.data.OptionT
 import connectors.AddressLookupConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatLodgingOfficer.OfficerHomeAddressForm
-import models.api.ScrsAddress
-import models.view.vatLodgingOfficer.OfficerHomeAddressView
-import play.api.Logger
+import forms.vatLodgingOfficer.CompleteCapacityForm
+import models.external.Officer
+import models.view.vatLodgingOfficer.CompleteCapacityView
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -40,44 +39,36 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
   import cats.syntax.applicative._
   import cats.syntax.flatMap._
 
-  private val form = OfficerHomeAddressForm.form
-  private val addressListKey = "OfficerAddressList"
+  private val form = CompleteCapacityForm.form
+  private val officerListKey = "OfficerList"
 
-  private def fetchAddressList()(implicit headerCarrier: HeaderCarrier) =
-    OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]](addressListKey))
+  private def fetchOfficerList()(implicit headerCarrier: HeaderCarrier) =
+     OptionT(keystoreConnector.fetchAndGet[Seq[Officer]](officerListKey))
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
-      addresses <- prePopService.getOfficerAddressList()
-      _ <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
-      res <- viewModel[OfficerHomeAddressView].fold(form)(form.fill)
-    } yield Ok(views.html.pages.vatLodgingOfficer.officer_home_address(res, addresses))
+      officerList <- prePopService.getOfficerList()
+      _ <- keystoreConnector.cache[Seq[Officer]](officerListKey, officerList)
+      res <- viewModel[CompleteCapacityView].fold(form)(form.fill)
+    } yield Ok(views.html.pages.vatLodgingOfficer.completion_capacity(res, officerList))
   )
 
   def submit: Action[AnyContent] = authorised.async { implicit user =>
     implicit request =>
       form.bindFromRequest().fold(
-        badForm => fetchAddressList().getOrElse(Seq()).map(
-          addressList => BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(badForm, addressList))),
-        (form: OfficerHomeAddressView) =>
-          (form.addressId == "other").pure.ifM(
-            alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm())
+        badForm => fetchOfficerList().getOrElse(Seq()).map(
+          officerList => BadRequest(views.html.pages.vatLodgingOfficer.completion_capacity(badForm, officerList))),
+        (form: CompleteCapacityView) =>
+          (form.id == "other").pure.ifM(
+            Ok(views.html.pages.vatEligibility.ineligible("completionCapacity")).pure
             ,
             for {
-              addressList <- fetchAddressList().getOrElse(Seq())
-              address = addressList.find(_.id == form.addressId)
-              _ <- s4l.saveForm(OfficerHomeAddressView(form.addressId, address))
-            } yield controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()
-          ).map(Redirect))
-  }
-
-
-  def acceptFromTxm(id: String): Action[AnyContent] = authorised.async { implicit user =>
-    implicit request =>
-      alfConnector.getAddress(id).flatMap { address =>
-        Logger.debug(s"address received: $address")
-        s4l.saveForm(OfficerHomeAddressView(address.id, Some(address)))
-      }.map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
+              officerSeq <- fetchOfficerList().getOrElse(Seq())
+              officer = officerSeq.find(_.name.id == form.id)
+              _ <- s4l.saveForm(CompleteCapacityView(form.id, officer))
+            } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+          )
+      )
   }
 
 }

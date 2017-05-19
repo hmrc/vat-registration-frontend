@@ -21,7 +21,7 @@ import javax.inject.Singleton
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
-import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
+import models.external.{CoHoRegisteredOfficeAddress, Officer, OfficerList}
 import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{NotFoundException, _}
@@ -60,18 +60,18 @@ trait IncorporationInformationConnect {
     }
   }
 
-  def getOfficerList(transactionId: String)(implicit hc : HeaderCarrier): Future[OfficerList] = {
-    http.GET[OfficerList](s"$incorpInfoUrl$incorpInfoUri/$transactionId/officer-list") map { list =>
-      list
-    } recover {
-      case notFoundException: NotFoundException =>
-        OfficerList(items = Nil)
-      case badRequestErr: BadRequestException =>
-        logResponse(badRequestErr, className, "getOfficerList")
-        throw badRequestErr
-      case ex: Exception =>
-        logResponse(ex, className, "getOfficerList")
-        throw ex
+  def getOfficerList(transactionId: String)(implicit hc : HeaderCarrier): OptionalResponse[OfficerList] = {
+    OptionT {
+      http.GET[OfficerList](s"$incorpInfoUrl$incorpInfoUri/$transactionId/officer-list") map(Some(_)) recover {
+        case notFoundException: NotFoundException =>
+          Some(OfficerList(items = Nil))
+        case badRequestErr: BadRequestException =>
+          logResponse(badRequestErr, className, "getOfficerList")
+          throw badRequestErr
+        case ex: Exception =>
+          logResponse(ex, className, "getOfficerList")
+          throw ex
+      }
     }
   }
 }

@@ -149,6 +149,10 @@ POST        /your-date-of-birth                      controllers.vatLodgingOffic
 GET         /your-national-insurance-number          controllers.vatLodgingOfficer.OfficerNinoController.show
 POST        /your-national-insurance-number          controllers.vatLodgingOfficer.OfficerNinoController.submit
 
+## OFFICER NINO PAGE
+GET         /relationship-to-company                controllers.vatLodgingOfficer.CompletionCapacityController.show
+POST        /relationship-to-company                controllers.vatLodgingOfficer.CompletionCapacityController.submit
+
 
 ## FEEDBACK
 GET         /feedback                              controllers.feedback.FeedbackController.show
