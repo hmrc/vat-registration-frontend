@@ -16,11 +16,10 @@
 
 package controllers.vatLodgingOfficer
 
-import builders.AuthBuilder
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{DateOfBirth, Name, ScrsAddress, VatLodgingOfficer}
+import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer}
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
