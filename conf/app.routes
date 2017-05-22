@@ -150,8 +150,8 @@ GET         /your-national-insurance-number          controllers.vatLodgingOffic
 POST        /your-national-insurance-number          controllers.vatLodgingOfficer.OfficerNinoController.submit
 
 ## OFFICER NINO PAGE
-GET         /relationship-to-company                controllers.vatLodgingOfficer.CompletionCapacityController.show
-POST        /relationship-to-company                controllers.vatLodgingOfficer.CompletionCapacityController.submit
+GET         /who-is-registering-the-company-for-vat    controllers.vatLodgingOfficer.CompletionCapacityController.show
+POST        /who-is-registering-the-company-for-vat    controllers.vatLodgingOfficer.CompletionCapacityController.submit
 
 
 ## FEEDBACK
