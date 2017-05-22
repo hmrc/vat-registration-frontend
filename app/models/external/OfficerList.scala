@@ -62,6 +62,8 @@ object Officer {
       (__ \ "resigned_on").writeNullable[DateTime] and
       (__ \ "appointment_link").writeNullable[String]
     ) (unlift(Officer.unapply))
+
+  val empty = Officer(Name.empty, "", None, None)
 }
 
 case class OfficerList(items: Seq[Officer])

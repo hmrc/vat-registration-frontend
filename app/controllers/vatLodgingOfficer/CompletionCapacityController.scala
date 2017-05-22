@@ -68,7 +68,7 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
               _ <- s4l.saveForm(CompleteCapacityView(form.id, officer))
             } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
           )
-      )git
+      )
   }
 
 }
