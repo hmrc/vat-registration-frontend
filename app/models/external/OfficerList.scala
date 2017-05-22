@@ -31,20 +31,9 @@ import play.api.libs.json._
 case class Officer(
                     name: Name,
                     role: String,
-                    resignedOn: Option[DateTime],
-                    appointmentLink: Option[String] // custom read to pick up (if required - TBC)
-                  ){
-  import cats.instances.option._
-  import cats.syntax.applicative._
-  val id: String = List( name.forename,
-                        name.surname.pure,
-                        name.otherForenames,
-                        name.title,
-                        role.pure,
-                        resignedOn
-                      ).flatten.mkString.replaceAll(" ", "")
-
-}
+                    resignedOn: Option[DateTime] = None,
+                    appointmentLink: Option[String] = None // custom read to pick up (if required - TBC)
+                  )
 
 object Officer {
 

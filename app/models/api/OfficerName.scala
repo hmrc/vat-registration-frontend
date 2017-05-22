@@ -28,7 +28,7 @@ case class Name(
                  forename: Option[String],
                  otherForenames: Option[String],
                  surname: String,
-                 title: Option[String]
+                 title: Option[String] = None
                  ){
 
   import cats.instances.option._

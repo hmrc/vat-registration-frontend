@@ -23,7 +23,8 @@ import connectors.VatRegistrationConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.test.TestSetupForm
 import models.S4LKey
-import models.api.{ScrsAddress, VatServiceEligibility}
+import models.api.{Name, ScrsAddress, VatServiceEligibility}
+import models.external.Officer
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
@@ -33,7 +34,7 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
-import models.view.vatLodgingOfficer.{OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
+import models.view.vatLodgingOfficer.{CompleteCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
@@ -86,6 +87,8 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       officerHomeAddress <- s4LService.fetchAndGet[OfficerHomeAddressView]()
       officerDateOfBirth <- s4LService.fetchAndGet[OfficerDateOfBirthView]()
       officerNino <- s4LService.fetchAndGet[OfficerNinoView]()
+
+      completionCapacity <- s4LService.fetchAndGet[CompleteCapacityView]()
 
       eligibility <- s4LService.fetchAndGet[VatServiceEligibility]()
 
@@ -157,7 +160,11 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
           officerDateOfBirth.map(_.dob.getDayOfMonth.toString),
           officerDateOfBirth.map(_.dob.getMonthValue.toString),
           officerDateOfBirth.map(_.dob.getYear.toString),
-          officerNino.map(_.nino)
+          officerNino.map(_.nino),
+          completionCapacity.map(_.officer.getOrElse(Officer.empty).role),
+          completionCapacity.map(_.officer.getOrElse(Officer.empty).name.forename.get),
+          completionCapacity.map(_.officer.getOrElse(Officer.empty).name.otherForenames.get),
+          completionCapacity.map(_.officer.getOrElse(Officer.empty).name.surname)
         )
       )
       form = TestSetupForm.form.fill(testSetup)
@@ -259,6 +266,12 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
                       ))})
 
             _ <- saveToS4Later(data.vatLodgingOfficer.nino, data, { x => OfficerNinoView(x.vatLodgingOfficer.nino.getOrElse(""))})
+
+            officer = Officer(name = Name(data.vatLodgingOfficer.firstname,
+                                    data.vatLodgingOfficer.othernames,
+                                    data.vatLodgingOfficer.surname.getOrElse("")),
+                              role = data.vatLodgingOfficer.role.getOrElse(""))
+              _ <- saveToS4Later(data.vatLodgingOfficer.role, data, { x => CompleteCapacityView(officer.name.id, Some(officer))})
 
           } yield Ok("Test setup complete")
         }
