@@ -66,7 +66,7 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
               officerSeq <- fetchOfficerList().getOrElse(Seq())
               officer = officerSeq.find(_.name.id == form.id)
               _ <- s4l.saveForm(CompleteCapacityView(form.id, officer))
-            } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+            } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
           )
       )
   }

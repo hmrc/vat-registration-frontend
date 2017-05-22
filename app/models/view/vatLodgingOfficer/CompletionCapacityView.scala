@@ -32,10 +32,8 @@ object CompleteCapacityView {
     vs.lodgingOfficer.map(lodgingOfficer => CompleteCapacityView(lodgingOfficer.name.id, Some(Officer(lodgingOfficer.name, lodgingOfficer.role, None, None))))
   }
 
-  // return a new or updated VatLodgingOfficer from the CompleteCapacityView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: CompleteCapacityView, g: VatLodgingOfficer) => {
-      g.copy(name = c.officer.get.name)
-      g.copy(role = c.officer.get.role)
-    }
+  // return a new or updated VatLodgingOfficer from the CurrentAddressView instance
+  implicit val viewModelTransformer = ViewModelTransformer { (c: CompleteCapacityView, g: VatLodgingOfficer) =>
+      g.copy(name = c.officer.getOrElse(Officer.empty).name, role = c.officer.getOrElse(Officer.empty).role)
   }
 }
