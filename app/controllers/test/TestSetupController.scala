@@ -34,7 +34,7 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
-import models.view.vatLodgingOfficer.{CompleteCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
+import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
@@ -88,7 +88,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       officerDateOfBirth <- s4LService.fetchAndGet[OfficerDateOfBirthView]()
       officerNino <- s4LService.fetchAndGet[OfficerNinoView]()
 
-      completionCapacity <- s4LService.fetchAndGet[CompleteCapacityView]()
+      completionCapacity <- s4LService.fetchAndGet[CompletionCapacityView]()
 
       eligibility <- s4LService.fetchAndGet[VatServiceEligibility]()
 
@@ -271,7 +271,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
                                     data.vatLodgingOfficer.othernames,
                                     data.vatLodgingOfficer.surname.getOrElse("")),
                               role = data.vatLodgingOfficer.role.getOrElse(""))
-              _ <- saveToS4Later(data.vatLodgingOfficer.role, data, { x => CompleteCapacityView(officer.name.id, Some(officer))})
+              _ <- saveToS4Later(data.vatLodgingOfficer.role, data, { x => CompletionCapacityView(officer.name.id, Some(officer))})
 
           } yield Ok("Test setup complete")
         }
