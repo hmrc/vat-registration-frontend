@@ -29,7 +29,7 @@ import models.external.CoHoCompanyProfile
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
-import models.view.vatLodgingOfficer.{OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
+import models.view.vatLodgingOfficer.{CompleteCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.{VatBankAccountPath, ZeroRatedTurnoverEstimatePath}
@@ -112,6 +112,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturns(OfficerHomeAddressView("", None))
       save4laterReturns(OfficerDateOfBirthView(LocalDate.now))
       save4laterReturns(OfficerNinoView(""))
+      save4laterReturns(CompleteCapacityView("",None))
 
       when(mockRegConnector.upsertVatChoice(any(), any())(any(), any())).thenReturn(validVatChoice.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
