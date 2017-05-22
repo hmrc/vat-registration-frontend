@@ -80,7 +80,7 @@ class S4LConnectorSpec extends UnitSpec with MockitoSugar {
         .thenReturn(Future.successful(Some(cacheMap)))
 
       val result = S4LConnectorTest.fetchAll("testUserId")
-      await(result).get shouldBe cacheMap
+      await(result) shouldBe Some(cacheMap)
     }
   }
 }

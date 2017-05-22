@@ -18,7 +18,7 @@ package connectors
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.external.CoHoRegisteredOfficeAddress
+import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
 import uk.gov.hmrc.play.http.ws.WSHttp
 
 class IncorporationInformationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
@@ -45,6 +45,32 @@ class IncorporationInformationConnectorSpec extends VatRegSpec with VatRegistrat
     "return the correct response when an Internal Server Error occurs" in new Setup {
       mockHttpFailedGET[CoHoRegisteredOfficeAddress]("test-url", internalServiceException)
       connector.getRegisteredOfficeAddress("id").returnsNone
+    }
+  }
+
+
+  "Calling getOfficerList" should {
+
+    "return an non-empty OfficerList" in new Setup {
+      val nonEmptyList = OfficerList(Seq(officer))
+      mockHttpGET[OfficerList]("tst-url", nonEmptyList)
+      connector.getOfficerList("id") returnsSome nonEmptyList
+    }
+
+    "return an empty OfficerList" in new Setup {
+      val emptyList = OfficerList(Seq.empty)
+      mockHttpGET[OfficerList]("tst-url", emptyList)
+      connector.getOfficerList("id") returnsSome emptyList
+    }
+
+    "return empty OfficerList when remote service responds with 404" in new Setup {
+      mockHttpFailedGET[OfficerList]("test-url", notFound)
+      connector.getOfficerList("id") returnsSome OfficerList(Seq.empty)
+    }
+
+    "fail with exception when an Internal Server Error occurs calling remote service" in new Setup {
+      mockHttpFailedGET[OfficerList]("test-url", internalServiceException)
+      connector.getOfficerList("id") failedWith internalServiceException
     }
   }
 
