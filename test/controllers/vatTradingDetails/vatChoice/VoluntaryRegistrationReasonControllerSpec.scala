@@ -32,7 +32,6 @@
 
 package controllers.vatTradingDetails.vatChoice
 
-import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.S4LKey
@@ -113,7 +112,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> VoluntaryRegistrationReason.SELLS
-      ))(_ redirectsTo s"$contextRoot/your-date-of-birth")
+      ))(_ redirectsTo s"$contextRoot/relationship-to-company")
     }
   }
 
@@ -127,7 +126,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> VoluntaryRegistrationReason.SELLS
-      ))(_ redirectsTo s"$contextRoot/your-date-of-birth")
+      ))(_ redirectsTo s"$contextRoot/relationship-to-company")
     }
   }
 

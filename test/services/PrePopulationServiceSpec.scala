@@ -118,7 +118,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSu
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
       save4laterReturns[CompleteCapacityView](completeCapacityView)
 
-      service.getOfficerList() returns Seq(seqOfficers)
+      service.getOfficerList() returns seqOfficers
     }
 
   }
