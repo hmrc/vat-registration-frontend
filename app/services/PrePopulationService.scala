@@ -27,7 +27,7 @@ import connectors.{OptionalResponse, PPConnector}
 import models.ApiModelTransformer
 import models.api.ScrsAddress
 import models.external.Officer
-import models.view.vatLodgingOfficer.OfficerHomeAddressView
+import models.view.vatLodgingOfficer.{CompleteCapacityView, OfficerHomeAddressView}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -73,9 +73,18 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
     // TODO order the addresses
   }
 
-  override def getOfficerList()(implicit headerCarrier : HeaderCarrier): Future[Seq[Officer]] = {
-      iis.getOfficerList().getOrElse(Seq.empty[Officer])
-  }
+  override def getOfficerList()(implicit headerCarrier: HeaderCarrier): Future[Seq[Officer]] = {
 
+    val officerListFromII = iis.getOfficerList().getOrElse(Seq.empty[Officer])
+
+    val officerFromS4L = OptionT(s4l.fetchAndGet[CompleteCapacityView]()).subflatMap(_.officer)
+    val s4lList: Future[Seq[Officer]] = officerFromS4L.fold(Seq.empty[Officer])(Seq(_))
+
+    for {
+      listFromII <- officerListFromII
+      officerS4l <- s4lList
+    } yield listFromII ++ officerS4l
+
+  }
 
 }
