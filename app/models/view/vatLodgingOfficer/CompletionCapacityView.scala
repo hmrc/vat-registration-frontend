@@ -21,19 +21,21 @@ import models.external.Officer
 import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class CompleteCapacityView(id: String, officer: Option[Officer] = None)
+case class CompletionCapacityView(id: String, officer: Option[Officer] = None)
 
-object CompleteCapacityView {
+object CompletionCapacityView {
 
-  implicit val format = Json.format[CompleteCapacityView]
+  def apply(o: Officer): CompletionCapacityView = new CompletionCapacityView(o.name.id, Some(o))
+
+  implicit val format = Json.format[CompletionCapacityView]
 
   // return a view model from a VatScheme instance
-  implicit val modelTransformer = ApiModelTransformer[CompleteCapacityView] { vs: VatScheme =>
-    vs.lodgingOfficer.map(lodgingOfficer => CompleteCapacityView(lodgingOfficer.name.id, Some(Officer(lodgingOfficer.name, lodgingOfficer.role, None, None))))
+  implicit val modelTransformer = ApiModelTransformer[CompletionCapacityView] { vs: VatScheme =>
+    vs.lodgingOfficer.map(o => CompletionCapacityView(o.name.id, Some(Officer(o.name, o.role, None, None))))
   }
 
   // return a new or updated VatLodgingOfficer from the CurrentAddressView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: CompleteCapacityView, g: VatLodgingOfficer) =>
-      g.copy(name = c.officer.getOrElse(Officer.empty).name, role = c.officer.getOrElse(Officer.empty).role)
+  implicit val viewModelTransformer = ViewModelTransformer { (c: CompletionCapacityView, g: VatLodgingOfficer) =>
+    g.copy(name = c.officer.getOrElse(Officer.empty).name, role = c.officer.getOrElse(Officer.empty).role)
   }
 }

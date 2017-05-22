@@ -21,19 +21,18 @@ import java.text.Normalizer
 import play.api.libs.json._
 
 object Formatters {
+
   def ninoFormatter(nino: String): String = nino.grouped(2).mkString(" ")
 
+  val stringNormalizer: String => String = Normalizer.normalize(_, Normalizer.Form.NFKD).replaceAll("\\p{M}", "")
+
   lazy val normalizeReads = new Reads[String] {
-    override def reads(json: JsValue): JsResult[String] = Json.fromJson[String](json).flatMap {
-      s =>
-        val normalized = Normalizer.normalize(s, Normalizer.Form.NFKD)
-        JsSuccess(normalized.replaceAll("\\p{M}", ""))
-    }
+    override def reads(json: JsValue): JsResult[String] = Json.fromJson[String](json).map(stringNormalizer)
   }
 
   lazy val normalizeListReads = new Reads[List[String]] {
-    override def reads(json: JsValue): JsResult[List[String]] = Json.fromJson[List[String]](json).flatMap {
-      l => JsSuccess(l.map(Normalizer.normalize(_, Normalizer.Form.NFKD).replaceAll("\\p{M}", "")))
+    override def reads(json: JsValue): JsResult[List[String]] = Json.fromJson[List[String]](json).map {
+      _ map stringNormalizer
     }
   }
 }
