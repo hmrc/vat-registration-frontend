@@ -64,7 +64,7 @@ pages.serviceCriteriaSuccess.panels.vatResponsibilities.bullet.submit  = submit 
 pages.serviceCriteriaSuccess.panels.vatResponsibilities.bullet.records = keep VAT records and a VAT account
 
 ## Service Criteria Failure
-pages.serviceCriteriaFailure.title                      = You can''t register with this service
+pages.serviceCriteriaFailure.title                      = You can''t register for VAT using this service
 pages.serviceCriteriaFailure.heading                    = You can''t register for VAT using this service
 pages.serviceCriteriaFailure.linkToLegacyApp            = You need to register using HMRC''s existing service.
 pages.serviceCriteriaFailure.linkToLegacyApp2           = You need to <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register using HMRC''s existing service</a> if:
