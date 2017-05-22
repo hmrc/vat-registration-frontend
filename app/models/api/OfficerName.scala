@@ -29,11 +29,12 @@ case class Name(
                  otherForenames: Option[String],
                  surname: String,
                  title: Option[String]
-                 ){
+               ) {
 
   import cats.instances.option._
   import cats.syntax.applicative._
-  val id: String = List( forename,
+
+  val id: String = List(forename,
     surname.pure,
     otherForenames,
     title
@@ -50,14 +51,14 @@ object Name {
       (__ \ "other_forenames").formatNullable[String] and
       (__ \ "surname").format[String] and
       (__ \ "title").formatNullable[String]
-  )(Name.apply, unlift(Name.unapply))
+    ) (Name.apply, unlift(Name.unapply))
 
   val normalizeNameReads = (
     (__ \ "forename").readNullable[String](Formatters.normalizeReads) and
       (__ \ "other_forenames").readNullable[String](Formatters.normalizeReads) and
       (__ \ "surname").read[String](Formatters.normalizeReads) and
       (__ \ "title").readNullable[String](Formatters.normalizeReads)
-  )(Name.apply _)
+    ) (Name.apply _)
 
   val empty = Name(None, None, "", None)
 
@@ -71,9 +72,7 @@ object Name {
       name.forename,
       name.otherForenames,
       name.surname.pure
-    ).collect {
-      case Some(name) => WordUtils.capitalizeFully(name)
-    }
+    ) flatMap (_ map WordUtils.capitalizeFully)
 
   }
 

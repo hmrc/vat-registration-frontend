@@ -17,18 +17,18 @@
 package forms.vatLodgingOfficer
 
 import forms.FormValidation.textMapping
-import models.view.vatLodgingOfficer.CompleteCapacityView
+import models.view.vatLodgingOfficer.CompletionCapacityView
 import play.api.data.Form
 import play.api.data.Forms._
 
-object CompleteCapacityForm {
+object CompletionCapacityForm {
 
   val NAME_ID: String = "completionCapacityRadio"
 
   val form = Form(
     mapping(
       NAME_ID -> textMapping()("completionCapacity")
-    )(CompleteCapacityView(_))( view => Option(view.id))
+    )(CompletionCapacityView(_))(view => Option(view.id))
 
   )
 }

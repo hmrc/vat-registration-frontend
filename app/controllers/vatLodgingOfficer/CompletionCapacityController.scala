@@ -21,9 +21,9 @@ import javax.inject.Inject
 import cats.data.OptionT
 import connectors.AddressLookupConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatLodgingOfficer.CompleteCapacityForm
+import forms.vatLodgingOfficer.CompletionCapacityForm
 import models.external.Officer
-import models.view.vatLodgingOfficer.CompleteCapacityView
+import models.view.vatLodgingOfficer.CompletionCapacityView
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -31,25 +31,24 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService,
                                              vrs: VatRegistrationService,
-                                             prePopService: PrePopulationService,
-                                             val alfConnector: AddressLookupConnect)
+                                             prePopService: PrePopulationService)
   extends VatRegistrationController(ds) with CommonService {
 
   import cats.instances.future._
   import cats.syntax.applicative._
   import cats.syntax.flatMap._
 
-  private val form = CompleteCapacityForm.form
+  private val form = CompletionCapacityForm.form
   private val officerListKey = "OfficerList"
 
   private def fetchOfficerList()(implicit headerCarrier: HeaderCarrier) =
-     OptionT(keystoreConnector.fetchAndGet[Seq[Officer]](officerListKey))
+    OptionT(keystoreConnector.fetchAndGet[Seq[Officer]](officerListKey))
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
       officerList <- prePopService.getOfficerList()
       _ <- keystoreConnector.cache[Seq[Officer]](officerListKey, officerList)
-      res <- viewModel[CompleteCapacityView].fold(form)(form.fill)
+      res <- viewModel[CompletionCapacityView].fold(form)(form.fill)
     } yield Ok(views.html.pages.vatLodgingOfficer.completion_capacity(res, officerList))
   )
 
@@ -58,14 +57,14 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
       form.bindFromRequest().fold(
         badForm => fetchOfficerList().getOrElse(Seq()).map(
           officerList => BadRequest(views.html.pages.vatLodgingOfficer.completion_capacity(badForm, officerList))),
-        (form: CompleteCapacityView) =>
+        (form: CompletionCapacityView) =>
           (form.id == "other").pure.ifM(
             Ok(views.html.pages.vatEligibility.ineligible("completionCapacity")).pure
             ,
             for {
               officerSeq <- fetchOfficerList().getOrElse(Seq())
               officer = officerSeq.find(_.name.id == form.id)
-              _ <- s4l.saveForm(CompleteCapacityView(form.id, officer))
+              _ <- s4l.saveForm(CompletionCapacityView(form.id, officer))
             } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
           )
       )
