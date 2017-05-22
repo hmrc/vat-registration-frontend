@@ -94,7 +94,9 @@ trait VatRegistrationFixture {
 
   val validServiceEligibility = VatServiceEligibility(Some(true), Some(false), Some(false), Some(false), Some(false))
 
-  val validLodgingOfficer = VatLodgingOfficer(ScrsAddress("",""), DateOfBirth.empty, "")
+  val officerName = Name(Some("Reddy"), None, "Yattapu" , Some("Dr"))
+
+  val validLodgingOfficer = VatLodgingOfficer(ScrsAddress("",""), DateOfBirth.empty, "","director", officerName)
 
   val emptyVatScheme = VatScheme(validRegId)
 

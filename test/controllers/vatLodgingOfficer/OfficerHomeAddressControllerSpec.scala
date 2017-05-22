@@ -16,7 +16,6 @@
 
 package controllers.vatLodgingOfficer
 
-import builders.AuthBuilder
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
@@ -61,7 +60,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
 
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "")))
+      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName)))
 
       when(mockS4LService.fetchAndGet[OfficerHomeAddressView]()(any(), any(), any())).thenReturn(None.pure)
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)

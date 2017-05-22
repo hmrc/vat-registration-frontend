@@ -24,8 +24,6 @@ import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
-
 class VoluntaryRegistrationReasonController @Inject()(ds: CommonPlayDependencies)
                                                      (implicit s4l: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
@@ -43,14 +41,11 @@ class VoluntaryRegistrationReasonController @Inject()(ds: CommonPlayDependencies
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
-      formWithErrors => Future.successful(BadRequest(views.html.pages.vatTradingDetails.vatChoice.voluntary_registration_reason(formWithErrors))),
+      badForm => BadRequest(views.html.pages.vatTradingDetails.vatChoice.voluntary_registration_reason(badForm)).pure,
       (data: VoluntaryRegistrationReason) =>
-        (VoluntaryRegistrationReason.NEITHER == data.reason).pure.ifM(
-          s4l.clear().flatMap(_ => vrs.deleteVatScheme())
-            .map(_ => controllers.routes.WelcomeController.show())
-          ,
-          s4l.saveForm[VoluntaryRegistrationReason](data)
-            .map(_ => controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
+        (data.reason == VoluntaryRegistrationReason.NEITHER).pure.ifM(
+          s4l.clear().flatMap(_ => vrs.deleteVatScheme()).map(_ => controllers.routes.WelcomeController.show()),
+          s4l.saveForm(data).map(_ => controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
         ).map(Redirect)
     )
   })

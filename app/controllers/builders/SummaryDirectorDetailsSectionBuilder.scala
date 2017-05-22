@@ -43,6 +43,7 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLod
   val section: SummarySection = SummarySection(
     id = "directorDetails",
     Seq(
+      (completionCapacity, true),
       (dob, true),
       (nino, true)
     )
