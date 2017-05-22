@@ -112,7 +112,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> VoluntaryRegistrationReason.SELLS
-      ))(_ redirectsTo s"$contextRoot/relationship-to-company")
+      ))(_ redirectsTo s"$contextRoot/who-is-registering-the-company-for-vat")
     }
   }
 
@@ -126,7 +126,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> VoluntaryRegistrationReason.SELLS
-      ))(_ redirectsTo s"$contextRoot/relationship-to-company")
+      ))(_ redirectsTo s"$contextRoot/who-is-registering-the-company-for-vat")
     }
   }
 
