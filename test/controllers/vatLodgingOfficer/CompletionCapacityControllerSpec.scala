@@ -85,7 +85,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
       mockKeystoreFetchAndGet("OfficerList", Option.empty[Seq[Officer]])
 
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> officer.id)
+        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> officer.name.id)
       )(_ redirectsTo s"$contextRoot/your-date-of-birth")
 
     }
@@ -101,7 +101,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
       mockKeystoreFetchAndGet[Seq[Officer]]("OfficerList", Some(Seq(officer)))
 
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> officer.id)
+        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> officer.name.id)
       )(_ redirectsTo s"$contextRoot/your-date-of-birth")
 
     }

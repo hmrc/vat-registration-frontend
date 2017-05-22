@@ -26,7 +26,16 @@ case class Officer(
                     role: String,
                     resignedOn: Option[DateTime] = None,
                     appointmentLink: Option[String] = None // custom read to pick up (if required - TBC)
-                  )
+                  ){
+
+  override def equals(obj: Any): Boolean = obj match {
+    case Officer(nameObj, roleObj, _, _)
+      if role.equalsIgnoreCase(roleObj) && (nameObj == name) => true
+    case _ => false
+  }
+
+  override def hashCode: Int = 1 // TODO temporary fix to ensure Lis
+}
 
 object Officer {
 
@@ -45,6 +54,7 @@ object Officer {
     ) (unlift(Officer.unapply))
 
   val empty = Officer(Name.empty, "", None, None)
+
 }
 
 case class OfficerList(items: Seq[Officer])
