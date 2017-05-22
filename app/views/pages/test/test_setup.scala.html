@@ -74,7 +74,7 @@
             <p>@govHelpers.input(testSetupForm("vatServiceEligibility.applyingForAnyOf"), '_label -> "Applying for any of (true or false)")</p>
             <p>@govHelpers.input(testSetupForm("vatServiceEligibility.companyWillDoAnyOf"), '_label -> "Company will do any of (true or false)")</p>
 
-            <b>Officer's Details</b>
+            <b>VAT LODGING OFFICER</b>
 
             <p><em>Officer's Home Address</em></p>
             <p>@govHelpers.input(testSetupForm("officerHomeAddress.line1"), '_label -> "Line 1") </p>
@@ -91,6 +91,11 @@
 
             <em>Officer's National Insurance number</em>
             <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.nino"),   '_label -> "Nino (eg. NB686868D )") </p>
+
+            <em>Officer's Name</em>
+            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.dobDay"),   '_label -> "Day (1 - 31)") </p>
+            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.dobMonth"), '_label -> "Month (1 - 12)") </p>
+            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.dobYear"),  '_label -> "Year (1900 - present)") </p>
 
         </fieldset>
 

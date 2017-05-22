@@ -102,7 +102,8 @@ object TestSetupForm {
     "dobDay" -> optional(text),
     "dobMonth" -> optional(text),
     "dobYear" -> optional(text),
-    "nino" -> optional(text)
+    "nino" -> optional(text),
+    "nino" -> optional(text),
   )(VatLodgingOfficerTestSetup.apply)(VatLodgingOfficerTestSetup.unapply)
 
   val form = Form(mapping(
