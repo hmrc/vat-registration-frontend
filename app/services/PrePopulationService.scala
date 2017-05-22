@@ -27,7 +27,7 @@ import connectors.{OptionalResponse, PPConnector}
 import models.ApiModelTransformer
 import models.api.ScrsAddress
 import models.external.Officer
-import models.view.vatLodgingOfficer.{CompleteCapacityView, OfficerHomeAddressView}
+import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerHomeAddressView}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -77,13 +77,16 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
 
     val officerListFromII = iis.getOfficerList().getOrElse(Seq.empty[Officer])
 
-    val officerFromS4L = OptionT(s4l.fetchAndGet[CompleteCapacityView]()).subflatMap(_.officer)
+    val officerFromS4L = OptionT(s4l.fetchAndGet[CompletionCapacityView]()).subflatMap(_.officer)
     val s4lList: Future[Seq[Officer]] = officerFromS4L.fold(Seq.empty[Officer])(Seq(_))
 
     for {
       listFromII <- officerListFromII
       officerS4l <- s4lList
     } yield listFromII ++ officerS4l
+
+    // TODO merge from BE
+    // TODO remove duplicates
 
   }
 
