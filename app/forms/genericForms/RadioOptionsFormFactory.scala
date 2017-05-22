@@ -21,6 +21,9 @@ import models.RadioOptions
 import play.api.data.Form
 import play.api.data.Forms._
 
+//currently not in use, awaiting wider-scope refactoring of our forms
+// $COVERAGE-OFF$
+
 class RadioOptionsFormFactory {
 
   def form(option: String): Form[RadioOptions] = {
@@ -30,3 +33,5 @@ class RadioOptionsFormFactory {
     )(RadioOptions(OPTION, _))(radioOptions => Some(radioOptions.value)))
   }
 }
+
+// $COVERAGE-ON$

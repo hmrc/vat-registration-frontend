@@ -19,8 +19,8 @@ package services
 import cats.data.OptionT
 import connectors.KeystoreConnector
 import helpers.VatRegSpec
-import models.api.ScrsAddress
-import models.external.{CoHoCompanyProfile, CoHoRegisteredOfficeAddress}
+import models.api.{Name, ScrsAddress}
+import models.external.{CoHoCompanyProfile, CoHoRegisteredOfficeAddress, Officer, OfficerList}
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
 
@@ -36,6 +36,17 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
     }
   }
 
+  val officer = Officer(
+    name = Name(
+      title = Some("Dr"),
+      forename = Some("Reddy"),
+      otherForenames = Some("Bubbly"),
+      surname = "Reddy"
+    ),
+    role = "director",
+    resignedOn = None,
+    appointmentLink = None)
+
   "getOfficerAddressList" must {
     "call IncorporationInformationConnector to get a CoHoRegisteredOfficeAddress" in new Setup {
 
@@ -50,7 +61,7 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
           postalCode = Some("postal_code"),
           region = Some("region"))
 
-      val scrsAddress = ScrsAddress("premises address_line_1","address_line_2 po_box",Some("locality"),Some("region"),Some("postal_code"),Some("country"))
+      val scrsAddress = ScrsAddress("premises address_line_1", "address_line_2 po_box", Some("locality"), Some("region"), Some("postal_code"), Some("country"))
 
       mockKeystoreFetchAndGet[CoHoCompanyProfile]("CompanyProfile", Some(CoHoCompanyProfile("status", "transactionId")))
       when(mockIIConnector.getRegisteredOfficeAddress("transactionId")).thenReturn(OptionT.pure(coHoRegisteredOfficeAddress))
@@ -58,4 +69,15 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
       service.getRegisteredOfficeAddress() returnsSome scrsAddress
     }
   }
+
+
+  "getOfficerList" must {
+    "return a list of officers" in new Setup {
+      mockKeystoreFetchAndGet[CoHoCompanyProfile]("CompanyProfile", Some(CoHoCompanyProfile("status", "transactionId")))
+      when(mockIIConnector.getOfficerList("transactionId")).thenReturn(OptionT.pure(OfficerList(Seq(officer))))
+
+      service.getOfficerList() returnsSome Seq(officer)
+    }
+  }
+
 }

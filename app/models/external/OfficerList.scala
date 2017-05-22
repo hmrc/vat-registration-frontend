@@ -20,13 +20,6 @@ import models.api.Name
 import org.joda.time.DateTime
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import cats.Show.show
-import models.api.ScrsAddress.inlineShow.inline
-import models.view.vatLodgingOfficer.OfficerHomeAddressView
-import models.{ApiModelTransformer => MT}
-import org.apache.commons.lang3.text.WordUtils
-import play.api.data.validation.ValidationError
-import play.api.libs.json._
 
 case class Officer(
                     name: Name,
@@ -37,13 +30,12 @@ case class Officer(
 
 object Officer {
 
-
   implicit val rd: Reads[Officer] = (
     (__ \ "name_elements").read[Name](Name.normalizeNameReads) and
       (__ \ "officer_role").read[String] and
       (__ \ "resigned_on").readNullable[DateTime] and
       (__ \ "appointment_link").readNullable[String]
-    )(Officer.apply _)
+    ) (Officer.apply _)
 
   implicit val wt: Writes[Officer] = (
     (__ \ "name_elements").write[Name] and
@@ -57,6 +49,6 @@ object Officer {
 
 case class OfficerList(items: Seq[Officer])
 
-object OfficerList{
-    implicit val formatModel: Reads[OfficerList] = __.read[Seq[Officer]] map OfficerList.apply
+object OfficerList {
+  implicit val reads: Reads[OfficerList] = __.read[Seq[Officer]] map OfficerList.apply
 }

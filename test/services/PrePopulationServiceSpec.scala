@@ -24,7 +24,7 @@ import connectors.KeystoreConnector
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.api._
 import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
-import models.view.vatLodgingOfficer.{CompleteCapacityView, OfficerHomeAddressView}
+import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerHomeAddressView}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
@@ -35,7 +35,7 @@ import scala.language.implicitConversions
 
 class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSugar {
 
-  val officerName = Name(Some("Reddy"), None, "Yattapu" , Some("Dr"))
+  val officerName = Name(Some("Reddy"), None, "Yattapu", Some("Dr"))
 
 
   import cats.instances.future._
@@ -107,18 +107,26 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSu
 
   "getOfficerList" must {
 
-    "be non-empty when OfficerList are present" in new Setup {
-      val officer = Officer(officerName, "director", None, None)
-      val emptyVatScheme = VatScheme("123")
-      val completeCapacityView = CompleteCapacityView(officerName.id, Some(officer))
+    val officer = Officer(officerName, "director", None, None)
+    val emptyVatScheme = VatScheme("123")
+    val completionCapacityView = CompletionCapacityView(officer)
 
-      val seqOfficers : Seq[Officer] = Seq(officer)
+    "be non-empty when OfficerList are present" in new Setup {
+      val seqOfficers: Seq[Officer] = Seq(officer)
 
       when(mockIIService.getOfficerList()).thenReturn(OptionT.pure(seqOfficers))
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
-      save4laterReturns[CompleteCapacityView](completeCapacityView)
+      save4laterReturns[CompletionCapacityView](completionCapacityView)
 
       service.getOfficerList() returns seqOfficers
+    }
+
+    "returns an empty sequence when no officer list is returned by service" in new Setup {
+      when(mockIIService.getOfficerList()).thenReturn(OptionT.none[Future, Seq[Officer]])
+      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
+      save4laterReturns[CompletionCapacityView](completionCapacityView)
+
+      service.getOfficerList() returns Seq.empty[Officer]
     }
 
   }
