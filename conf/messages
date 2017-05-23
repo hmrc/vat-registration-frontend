@@ -609,13 +609,13 @@ pages.summary.serviceCriteria.applyingForAnyOf          = Applying For Any Of
 
 
 ## Officer Home Address Page
-pages.officerHomeAddress.title                           = Officer home address
+pages.officerHomeAddress.title                           = Director residential address 
 pages.officerHomeAddress.heading                         = What is your home address?
 pages.officerHomeAddress.different.address               = A different address
 validation.officerHomeAddress.missing                    = Tell us your home address
 
 ## Officer Date of Birth
-pages.officerDOB.title                                   = Officer date of birth
+pages.officerDOB.title                                   = Director''s date of birth
 pages.officerDOB.heading                                 = What is your date of birth?
 pages.officerDOB.day.label                               = Day
 pages.officerDOB.month.label                             = Month
@@ -627,7 +627,7 @@ validation.officerDOB.range.above                        = Date of birth must no
 validation.officerDOB.range.below                        = Date of birth must be after 1 Jan 1900
 
 ## Officer Nino
-pages.officerNino.title                                   = Officer National Insurance number
+pages.officerNino.title                                   = Director''s National Insurance
 pages.officerNino.heading                                 = What is your National Insurance number?
 pages.officerNino.hint                                    = For example, QQ 12 34 56 C
 pages.officerNino.advice.title                            = Where to find your National Insurance number
