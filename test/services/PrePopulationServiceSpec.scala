@@ -22,9 +22,9 @@ import java.time.format.DateTimeFormatter.ofPattern
 import cats.data.OptionT
 import connectors.KeystoreConnector
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer, VatScheme}
-import models.external.{AccountingDetails, CorporationTaxRegistration}
-import models.view.vatLodgingOfficer.OfficerHomeAddressView
+import models.api._
+import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
+import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerHomeAddressView}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
@@ -34,6 +34,9 @@ import scala.concurrent.Future
 import scala.language.implicitConversions
 
 class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSugar {
+
+  val officerName = Name(Some("Reddy"), None, "Yattapu" , Some("Dr"))
+
 
   import cats.instances.future._
   import cats.syntax.applicative._
@@ -82,7 +85,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSu
 
     "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
       val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
-      val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "")))
+      val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName)))
 
       when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
       when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(address))
@@ -91,7 +94,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSu
       service.getOfficerAddressList() returns Seq(address)
     }
 
-    "be empty if a companyProfile is not present and addressDB and addresS4L are not present" in new Setup {
+    "be empty if a companyProfile is not present and addressDB and addressS4L are not present" in new Setup {
       val emptyVatScheme = VatScheme("123")
 
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
@@ -101,5 +104,48 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSu
       service.getOfficerAddressList() returns Seq()
     }
   }
+
+  "getOfficerList" must {
+
+    "be non-empty when OfficerList are present" in new Setup {
+      val officer = Officer(officerName, "director", None, None)
+      val emptyVatScheme = VatScheme("123")
+      val completeCapacityView = CompletionCapacityView(officerName.id, Some(officer))
+
+      val seqOfficers : Seq[Officer] = Seq(officer)
+
+      when(mockIIService.getOfficerList()).thenReturn(OptionT.pure(seqOfficers))
+      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
+      save4laterReturns[CompletionCapacityView](completeCapacityView)
+
+      service.getOfficerList() returns seqOfficers
+    }
+
+    "be empty when no officer list is present" in new Setup {
+      val officer = Officer(officerName, "director", None, None)
+      val emptyVatScheme = VatScheme("123")
+
+      when(mockIIService.getOfficerList()).thenReturn(OptionT.none[Future, Seq[Officer]])
+      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
+      save4laterReturnsNothing[CompletionCapacityView]
+
+      service.getOfficerList() returns Seq()
+    }
+
+
+    "be empty when officer present in BE" in new Setup {
+      val officer = Officer(officerName, "director", None, None)
+      val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
+      val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "nino", "director", officerName)))
+
+      when(mockIIService.getOfficerList()).thenReturn(OptionT.none[Future, Seq[Officer]])
+      when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
+      save4laterReturnsNothing[CompletionCapacityView]
+
+      service.getOfficerList() returns List(officer)
+    }
+
+  }
+
 
 }

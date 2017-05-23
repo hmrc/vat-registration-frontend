@@ -1,0 +1,42 @@
+@import models.view.vatLodgingOfficer.CompletionCapacityView
+@import models.external.Officer
+@(completionCapacityForm: Form[CompletionCapacityView], officerList: Seq[Officer])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.completionCapacity.title")) {
+
+  <div class="column-one-third">
+
+      <header class="page-header">
+          <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.completionCapacity.heading")</h1>
+      </header>
+
+      @errorSummary(
+          Messages("app.common.errorSummaryLabel"),
+          completionCapacityForm
+      )
+
+      @govHelpers.form(action = controllers.vatLodgingOfficer.routes.CompletionCapacityController.submit()) {
+      <div class="form-group">
+
+          <fieldset>
+              @govHelpers.inputRadioGroup(
+                  field = completionCapacityForm("completionCapacityRadio"),
+                  officerList.map( officer => (officer.name.id, officer.name.asLabel)) :+
+                          ("other" -> Messages("pages.completionCapacity.someone.else")),
+                  '_labelAfter -> true,
+                  '_labelClass -> "block-label"
+              )
+          </fieldset>
+
+      </div>
+          <div class="form-group">
+        <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+      </div>
+
+      }
+
+    </div>
+
+}

@@ -22,7 +22,11 @@ case class VatLodgingOfficerTestSetup(
                                   dobDay: Option[String] = None,
                                   dobMonth: Option[String] = None,
                                   dobYear: Option[String] = None,
-                                  nino: Option[String] = None
+                                  nino: Option[String] = None,
+                                  role: Option[String] = None,
+                                  firstname: Option[String] = None,
+                                  othernames: Option[String] = None,
+                                  surname: Option[String] = None
                                 )
 
 object VatLodgingOfficerTestSetup {

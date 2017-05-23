@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package models.api
+package forms.vatLodgingOfficer
 
-import play.api.libs.json.{Json, OFormat}
+import forms.FormValidation.textMapping
+import models.view.vatLodgingOfficer.CompletionCapacityView
+import play.api.data.Form
+import play.api.data.Forms._
 
-case class VatLodgingOfficer(currentAddress: ScrsAddress, dob: DateOfBirth, nino: String, role: String, name: Name)
+object CompletionCapacityForm {
 
-object VatLodgingOfficer {
-  implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
+  val NAME_ID: String = "completionCapacityRadio"
 
-  // TODO remove once no longer required
-  val empty = VatLodgingOfficer(
-    ScrsAddress(line1 = "todo",line2 = "todo", postcode=Some("todo")),
-    DateOfBirth(1,1,1980),
-    "NB686868C",
-    "",
-    Name.empty)
+  val form = Form(
+    mapping(
+      NAME_ID -> textMapping()("completionCapacity")
+    )(CompletionCapacityView(_))(view => Option(view.id))
+
+  )
 }
+
