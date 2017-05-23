@@ -87,7 +87,7 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
       listFromII <- officerListFromII
       backEndList <- backEndFutureList
       officerS4l <- s4lFutureList
-    } yield (listFromII ++ officerS4l).distinct
+    } yield (listFromII ++ officerS4l ++ backEndList).distinct
 
   }
 
