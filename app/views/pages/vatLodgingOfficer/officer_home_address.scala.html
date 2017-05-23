@@ -13,23 +13,22 @@
       </header>
 
       @errorSummary(
-          Messages("app.common.errorSummaryLabel"),
+          messages("app.common.errorSummaryLabel"),
           officerHomeAddressForm
       )
 
       @govHelpers.form(action = controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.submit()) {
-      <div class="form-group">
+      <div class="form-group" id="homeAddressRadio">
 
-          <fieldset>
-              <span id="homeAddressRadio"/>
-              @govHelpers.inputRadioGroup(
-                  field = officerHomeAddressForm("homeAddressRadio"),
-                  addresses.map( a => (a.id, a.asLabel)) :+
-                          ("other" -> Messages("pages.officerHomeAddress.different.address")),
-                  '_labelAfter -> true,
-                  '_labelClass -> "block-label"
-              )
-          </fieldset>
+          @govHelpers.inputRadioGroup(
+              field = officerHomeAddressForm("homeAddressRadio"),
+              addresses.map( a => (a.id, a.asLabel)) :+
+                      ("other" -> messages("pages.officerHomeAddress.different.address")),
+              '_legend -> messages("pages.officerHomeAddress.heading"),
+              '_legendClass -> "hidden",
+              '_labelAfter -> true,
+              '_labelClass -> "block-label"
+          )
 
       </div>
           <div class="form-group">
