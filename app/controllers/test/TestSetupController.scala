@@ -162,8 +162,8 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
           officerDateOfBirth.map(_.dob.getYear.toString),
           officerNino.map(_.nino),
           completionCapacity.map(_.officer.getOrElse(Officer.empty).role),
-          completionCapacity.map(_.officer.getOrElse(Officer.empty).name.forename.get),
-          completionCapacity.map(_.officer.getOrElse(Officer.empty).name.otherForenames.get),
+          completionCapacity.map(_.officer.getOrElse(Officer.empty).name.forename.getOrElse("")),
+          completionCapacity.map(_.officer.getOrElse(Officer.empty).name.otherForenames.getOrElse("")),
           completionCapacity.map(_.officer.getOrElse(Officer.empty).name.surname)
         )
       )
