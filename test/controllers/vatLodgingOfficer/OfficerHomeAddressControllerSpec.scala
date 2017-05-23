@@ -16,10 +16,9 @@
 
 package controllers.vatLodgingOfficer
 
-import builders.AuthBuilder
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer}
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import org.mockito.Matchers.any
@@ -29,16 +28,13 @@ import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   import cats.instances.future._
   import cats.syntax.applicative._
-
-  implicit val headerCarrier = HeaderCarrier()
 
   object TestOfficerHomeAddressController extends OfficerHomeAddressController(ds)(
     mockS4LService,
@@ -59,11 +55,9 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
     when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
     mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", dummyCacheMap)
 
-
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "")))
-
-      when(mockS4LService.fetchAndGet[OfficerHomeAddressView]()(any(), any(), any())).thenReturn(None.pure)
+      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName)))
+      save4laterReturnsNothing[OfficerHomeAddressView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
 
       callAuthorised(TestOfficerHomeAddressController.show()) {
@@ -73,8 +67,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       val vatScheme = validVatScheme.copy(lodgingOfficer = None)
-
-      when(mockS4LService.fetchAndGet[OfficerHomeAddressView]()(any(), any(), any())).thenReturn(None.pure)
+      save4laterReturnsNothing[OfficerHomeAddressView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
 
       callAuthorised(TestOfficerHomeAddressController.show()) {

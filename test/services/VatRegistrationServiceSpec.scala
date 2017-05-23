@@ -29,7 +29,7 @@ import models.external.CoHoCompanyProfile
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
-import models.view.vatLodgingOfficer.{OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
+import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.{VatBankAccountPath, ZeroRatedTurnoverEstimatePath}
@@ -37,7 +37,6 @@ import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -109,9 +108,10 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturns(validApplyEori)
       save4laterReturns(validBusinessContactDetails)
       save4laterReturns(validServiceEligibility)
-      save4laterReturns(OfficerHomeAddressView("", None))
+      save4laterReturns(OfficerHomeAddressView(""))
       save4laterReturns(OfficerDateOfBirthView(LocalDate.now))
       save4laterReturns(OfficerNinoView(""))
+      save4laterReturns(CompletionCapacityView(""))
 
       when(mockRegConnector.upsertVatChoice(any(), any())(any(), any())).thenReturn(validVatChoice.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
@@ -263,27 +263,25 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "submitTradingDetails should process the submission even if VatScheme does not contain a VatFinancials object" in new Setup {
-      val mergedVatTradingDetails = validVatTradingDetails
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-
-      service.submitTradingDetails() returns mergedVatTradingDetails
+      service.submitTradingDetails() returns validVatTradingDetails
     }
 
 
     "submitVatContact should process the submission even if VatScheme does not contain a VatContact object" in new Setup {
-      val mergedvalidVatContact = validVatContact
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-
-      service.submitVatContact() returns mergedvalidVatContact
+      service.submitVatContact() returns validVatContact
     }
 
     "submitVatEligibility should process the submission even if VatScheme does not contain a VatEligibility object" in new Setup {
-      val mergedVatServiceEligibility = validServiceEligibility
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-
-      service.submitVatEligibility() returns mergedVatServiceEligibility
+      service.submitVatEligibility() returns validServiceEligibility
     }
 
+    "submitVatLodgingOfficer should process the submission even if VatScheme does not contain a VatLodgingOfficer object" in new Setup {
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+      service.submitVatLodgingOfficer() returns validLodgingOfficer
+    }
 
   }
 }

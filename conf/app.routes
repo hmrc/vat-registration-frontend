@@ -149,6 +149,10 @@ POST        /your-date-of-birth                      controllers.vatLodgingOffic
 GET         /your-national-insurance-number          controllers.vatLodgingOfficer.OfficerNinoController.show
 POST        /your-national-insurance-number          controllers.vatLodgingOfficer.OfficerNinoController.submit
 
+## OFFICER NINO PAGE
+GET         /who-is-registering-the-company-for-vat    controllers.vatLodgingOfficer.CompletionCapacityController.show
+POST        /who-is-registering-the-company-for-vat    controllers.vatLodgingOfficer.CompletionCapacityController.submit
+
 
 ## FEEDBACK
 GET         /feedback                              controllers.feedback.FeedbackController.show
@@ -166,4 +170,4 @@ GET         /submission-confirmation               controllers.ApplicationSubmis
 
 
 GET         /you-can-register-for-vat-with-this-service        controllers.TwirlViewController.renderViewAuthorised(viewName="eligibility-success")
-GET         /you-cant-register-with-this-service               controllers.vatEligibility.ServiceCriteriaQuestionsController.ineligible()
+GET         /you-cant-register-for-vat-with-this-service               controllers.vatEligibility.ServiceCriteriaQuestionsController.ineligible()

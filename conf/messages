@@ -64,8 +64,8 @@ pages.serviceCriteriaSuccess.panels.vatResponsibilities.bullet.submit  = submit 
 pages.serviceCriteriaSuccess.panels.vatResponsibilities.bullet.records = keep VAT records and a VAT account
 
 ## Service Criteria Failure
-pages.serviceCriteriaFailure.title                      = You can''t register with this service
-pages.serviceCriteriaFailure.heading                    = You can''t register for VAT with this service
+pages.serviceCriteriaFailure.title                      = You can''t register for VAT using this service
+pages.serviceCriteriaFailure.heading                    = You can''t register for VAT using this service
 pages.serviceCriteriaFailure.linkToLegacyApp            = You need to register using HMRC''s existing service.
 pages.serviceCriteriaFailure.linkToLegacyApp2           = You need to <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register using HMRC''s existing service</a> if:
 pages.serviceCriteriaFailure.button.linkToLegacyApp     = Register using HMRC''s existing service
@@ -94,6 +94,9 @@ pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet1    = hires out boats or 
 pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet2    = owns one or more racehorses
 pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet3    = buys, sells or rents out land or property
 
+
+pages.completionCapacityEnd.p1                           = We''re only accepting VAT registrations from company directors or secretaries at the moment.
+pages.completionCapacityEnd.p2                           = If you''re neither of these (for example, you''re an accountant) you can register using HMRC''s existing service once you''ve received a company registration number from Companies House.
 
 ## validation messages for all service eligibility questions
 
@@ -375,6 +378,8 @@ pages.summary.directorDetails.moreThanThreeYears       = Lived at current addres
 pages.summary.directorDetails.previousAddress          = Previous address
 pages.summary.directorDetails.dob                      = Date of birth
 pages.summary.directorDetails.nino                     = National Insurance number
+pages.summary.directorDetails.completionCapacity       = Person registering the company for VAT
+
 
 ##Business Activity Description
 pages.business.activity.description.title                     = Business Activity Description
@@ -630,3 +635,8 @@ pages.officerNino.advice.para1                            = You can find your Na
 validation.officerNino.missing                            = Enter your National Insurance number
 validation.officerNino.invalid                            = Enter a valid National Insurance number
 
+## Officer Complete Capacity
+pages.completionCapacity.title                           = Completion Capacity
+pages.completionCapacity.heading                         = Who is registering the company for VAT?
+pages.completionCapacity.someone.else                    = Someone else
+validation.completionCapacity.missing                    = Tell us who is registering the company for VAT

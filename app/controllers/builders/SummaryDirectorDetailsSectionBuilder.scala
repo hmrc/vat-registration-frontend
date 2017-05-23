@@ -22,6 +22,12 @@ import models.view.{SummaryRow, SummarySection}
 case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLodgingOfficer] = None)
   extends SummarySectionBuilder {
 
+  val completionCapacity: SummaryRow = SummaryRow(
+    "directorDetails.completionCapacity",
+    vatLodgingOfficer.map(_.name.asLabel).getOrElse(""),
+    Some(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
+  )
+
   val dob: SummaryRow = SummaryRow(
     "directorDetails.dob",
     vatLodgingOfficer.map(_.dob.format(presentationFormatter)).getOrElse(""),
@@ -37,6 +43,7 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLod
   val section: SummarySection = SummarySection(
     id = "directorDetails",
     Seq(
+      (completionCapacity, true),
       (dob, true),
       (nino, true)
     )
