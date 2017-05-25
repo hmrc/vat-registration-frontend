@@ -18,11 +18,14 @@ package controllers.vatLodgingOfficer
 
 import javax.inject.Inject
 
+import cats.data.OptionT
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerDateOfBirthForm
+import models.api.Officer
 import models.view.vatLodgingOfficer.OfficerDateOfBirthView
 import play.api.mvc._
 import services.{CommonService, S4LService, VatRegistrationService}
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService,
@@ -34,9 +37,19 @@ class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
 
   val form = OfficerDateOfBirthForm.form
 
+  private def fetchOfficer()(implicit headerCarrier: HeaderCarrier) =
+    OptionT(keystoreConnector.fetchAndGet[Officer]("RegisteredOfficer"))
+
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+
     for {
-      res <- viewModel[OfficerDateOfBirthView].fold(form)(form.fill)
+      dateOfBirth <- fetchOfficer().getOrElse(Officer.empty).map(_.dateOfBirth)
+      res <- viewModel[OfficerDateOfBirthView].fold(form){
+        view => Option(view.dob) match {
+          case Some(date) => form.fill(view)
+          case _ => form.fill(view.copy(dob = dateOfBirth))
+        }
+      }
     } yield Ok(views.html.pages.vatLodgingOfficer.officer_dob(res))
 
   })

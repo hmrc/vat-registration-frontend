@@ -19,7 +19,7 @@ package controllers.vatLodgingOfficer
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.external.Officer
+import models.api.Officer
 import models.view.vatLodgingOfficer.CompletionCapacityView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when

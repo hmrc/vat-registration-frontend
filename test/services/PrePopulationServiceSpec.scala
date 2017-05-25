@@ -21,9 +21,10 @@ import java.time.format.DateTimeFormatter.ofPattern
 
 import cats.data.OptionT
 import connectors.KeystoreConnector
+import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.api._
-import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
+import models.external.{AccountingDetails, CorporationTaxRegistration}
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerHomeAddressView}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -33,9 +34,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.language.implicitConversions
 
-class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSugar {
+class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSugar with VatRegistrationFixture {
 
-  val officerName = Name(Some("Reddy"), None, "Yattapu" , Some("Dr"))
+  override val officerName = Name(Some("Reddy"), None, "Yattapu" , Some("Dr"))
 
 
   import cats.instances.future._
@@ -105,7 +106,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSu
   }
 
   "getOfficerList" must {
-    val officer = Officer(officerName, "director", None, None)
+    val officer = Officer(officerName, "director", validDob, None, None)
 
     // S4L
     val completeCapacityView = CompletionCapacityView(officerName.id, Some(officer))
