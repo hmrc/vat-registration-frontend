@@ -33,11 +33,11 @@ object OfficerContactDetails {
   implicit val format: OFormat[OfficerContactDetails] = Json.format[OfficerContactDetails]
 
   implicit val modelTransformer = ApiModelTransformer[OfficerContactDetails] { (vs: VatScheme) =>
-  Some(OfficerContactDetails(None, None, None))
+    Some(OfficerContactDetails(None,None,None))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: BusinessContactDetails, g: VatContact) =>
-    g.copy(digitalContact = VatDigitalContact(email = c.email, tel = c.daytimePhone, mobile = c.mobile), website = c.website)
+  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerContactDetails, g: VatLodgingOfficer) =>
+    g
   }
 
 }
