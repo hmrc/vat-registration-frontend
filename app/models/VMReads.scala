@@ -22,16 +22,21 @@ trait VMReads[T] {
 
   def read(group: Group): Option[T]
 
+  def udpate(viewModel: T, group: Option[Group]): Group
+
 }
 
 object VMReads {
 
   type Aux[R, Group0] = VMReads[R] {type Group = Group0}
 
-  def apply[T, G](f: G => Option[T]) = new VMReads[T] {
+  def apply[T, G](readF: G => Option[T], updateF: (T, Option[G]) => G) = new VMReads[T] {
     override type Group = G
 
-    def read(group: Group): Option[T] = f(group)
+    def read(group: Group): Option[T] = readF(group)
+
+    def udpate(viewModel: T, group: Option[Group]): Group = updateF(viewModel, group)
+
   }
 
 }

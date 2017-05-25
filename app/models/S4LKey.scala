@@ -78,10 +78,10 @@ object S4LKey {
   implicit val manageAdditionalFunds: S4LKey[ManageAdditionalFunds] = S4LKey("ManageAdditionalFunds")
   implicit val vatServiceEligibility: S4LKey[VatServiceEligibility] = S4LKey("VatServiceEligibility")
 
-  implicit val officerHomeAddress: S4LKey[OfficerHomeAddressView] = S4LKey("VatLodgingOfficer")
-  implicit val officerDateOfBirth: S4LKey[OfficerDateOfBirthView] = S4LKey("VatLodgingOfficer")
-  implicit val officerNino: S4LKey[OfficerNinoView] = S4LKey("VatLodgingOfficer")
-  implicit val completionCapacity: S4LKey[CompletionCapacityView] = S4LKey("VatLodgingOfficer")
+  implicit val officerHomeAddress: S4LKey[OfficerHomeAddressView] = S4LKey("abcd")
+  implicit val officerDateOfBirth: S4LKey[OfficerDateOfBirthView] = S4LKey("abcd")
+  implicit val officerNino: S4LKey[OfficerNinoView] = S4LKey("abcd")
+  implicit val completionCapacity: S4LKey[CompletionCapacityView] = S4LKey("abcd")
 
   implicit val vatLodgingOfficer: S4LKey[S4LVatLodgingOfficer] = S4LKey("VatLodgingOfficer")
 

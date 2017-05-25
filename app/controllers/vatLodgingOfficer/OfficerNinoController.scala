@@ -43,7 +43,7 @@ class OfficerNinoController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
       formWithErrors => BadRequest(views.html.pages.vatLodgingOfficer.officer_nino(formWithErrors)).pure,
-      data => s4l.save[OfficerNinoView](data) flatMap { _ =>
+      data => save[OfficerNinoView](data) flatMap { _ =>
         viewModel2[VoluntaryRegistration]
           .map(_ == VoluntaryRegistration.yes).getOrElse(true).ifM(
           controllers.vatTradingDetails.vatChoice.routes.StartDateController.show().pure,

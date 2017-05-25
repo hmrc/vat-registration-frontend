@@ -24,10 +24,10 @@ import cats.data.OptionT
 import cats.data.OptionT.fromOption
 import com.google.inject.ImplementedBy
 import connectors.{OptionalResponse, PPConnector}
-import models.ApiModelTransformer
 import models.api.ScrsAddress
 import models.external.Officer
-import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerHomeAddressView}
+import models.view.vatLodgingOfficer.CompletionCapacityView
+import models.{ApiModelTransformer, S4LVatLodgingOfficer}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -40,7 +40,7 @@ trait PrePopService {
 
   def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]]
 
-  def getOfficerList()(implicit headerCarrier : HeaderCarrier): Future[Seq[Officer]]
+  def getOfficerList()(implicit headerCarrier: HeaderCarrier): Future[Seq[Officer]]
 
 }
 
@@ -65,7 +65,9 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
     import cats.syntax.traverse._
     val addressFromII = iis.getRegisteredOfficeAddress()
     val addressFromBE = OptionT(vrs.getVatScheme() map ApiModelTransformer[ScrsAddress].toViewModel)
-    val addressFromS4L = OptionT(s4l.fetchAndGet[OfficerHomeAddressView]()).subflatMap(_.address)
+    val addressFromS4L = OptionT(s4l.fetchAndGet[S4LVatLodgingOfficer]()).subflatMap { group =>
+      group.officerHomeAddressView.flatMap(_.address)
+    }
 
     List(addressFromII, addressFromBE, addressFromS4L).traverse(_.value).map(_.flatten.distinct)
 
