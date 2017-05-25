@@ -124,10 +124,13 @@ $(document).ready($(function () {
 // Officer Contact Details Page
 (function (OfficerContactDetailsPage, $, undefined) {
     OfficerContactDetailsPage.init = function() {
-        var phone1error = $('#daytimePhone-error-summary');
-        var phone2error = $('#mobile-error-summary');
+        var daytimePhoneError = $('#daytimePhone-error-summary');
+        var mobileError = $('#mobile-error-summary');
         var emailError = $('#email-error-summary');
-        if (phone1error.text() === phone2error.text()) phone2error.parent('li').hide(); emailError.parent('li').hide();
+        if (daytimePhoneError.text() === mobileError.text())
+            mobileError.parent('li').hide();
+        if (daytimePhoneError.text() === emailError.text())
+            emailError.parent('li').hide();
     }
 }(window.OfficerContactDetailsPage = window.OfficerContactDetailsPage || {}, jQuery));
 
