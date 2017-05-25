@@ -26,9 +26,11 @@ object OfficerNinoView {
 
   implicit val format = Json.format[OfficerNinoView]
 
-  implicit val vmReads = VMReads { group: S4LVatLodgingOfficer =>
-    group.officerNinoView
-  }
+  implicit val vmReads = VMReads(
+    readF = (group: S4LVatLodgingOfficer) => group.officerNinoView,
+    updateF = (c: OfficerNinoView, g: Option[S4LVatLodgingOfficer]) =>
+      g.getOrElse(S4LVatLodgingOfficer()).copy(officerNinoView = Some(c))
+  )
 
   // return a view model from a VatScheme instance
   implicit val modelTransformer = ApiModelTransformer[OfficerNinoView] { vs: VatScheme =>

@@ -28,6 +28,7 @@ import play.api.data.{Form, FormError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Format
 import services.{RegistrationService, S4LService}
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -65,9 +66,9 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
   (implicit s4l: S4LService, vrs: RegistrationService, hc: HeaderCarrier): OptionT[Future, T] =
     OptionT(s4l.fetchAndGet[T]()).orElseF(vrs.getVatScheme() map ApiModelTransformer[T].toViewModel)
 
-  protected[controllers] def viewModel[T] = new WrapHelper[T]
+  protected[controllers] def viewModel[T] = new ViewModelLookupHelper[T]
 
-  protected final class WrapHelper[T] {
+  protected final class ViewModelLookupHelper[T] {
     def apply[G]()
                 (implicit s4l: S4LService,
                  vrs: RegistrationService,
@@ -77,6 +78,17 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
                  hc: HeaderCarrier,
                  transformer: ApiModelTransformer[T]): OptionT[Future, T] =
       s4l.getViewModel[T, G]().orElseF(vrs.getVatScheme() map transformer.toViewModel)
+  }
+
+  protected[controllers] def save[T] = new ViewModelUpdateHelper[T]
+
+  protected final class ViewModelUpdateHelper[T] {
+    def apply[G](data:T)
+                (implicit s4l: S4LService,
+                 r: VMReads.Aux[T, G],
+                 f: Format[G],
+                 k: S4LKey[G],
+                 hc: HeaderCarrier): Future[CacheMap] = s4l.updateViewModel(data)
   }
 
   protected[controllers] def copyGlobalErrorsToFields[T](globalErrors: String*): Form[T] => Form[T] =

@@ -34,12 +34,12 @@ import play.api.libs.json.{Json, OFormat}
 
 final case class S4LVatFinancials
 (
-  estimateVatTurnover: Option[EstimateVatTurnover],
-  zeroRatedTurnoverEstimate: Option[EstimateZeroRatedSales],
-  vatChargeExpectancy: Option[VatChargeExpectancy],
-  vatReturnFrequency: Option[VatReturnFrequency],
-  accountingPeriod: Option[AccountingPeriod],
-  companyBankAccountDetails: Option[CompanyBankAccountDetails]
+  estimateVatTurnover: Option[EstimateVatTurnover] = None,
+  zeroRatedTurnoverEstimate: Option[EstimateZeroRatedSales] = None,
+  vatChargeExpectancy: Option[VatChargeExpectancy] = None,
+  vatReturnFrequency: Option[VatReturnFrequency] = None,
+  accountingPeriod: Option[AccountingPeriod] = None,
+  companyBankAccountDetails: Option[CompanyBankAccountDetails] = None
 )
 
 object S4LVatFinancials {
@@ -48,12 +48,12 @@ object S4LVatFinancials {
 
 final case class S4LTradingDetails
 (
-  tradingName: Option[TradingNameView],
-  startDate: Option[StartDateView],
-  voluntaryRegistration: Option[VoluntaryRegistration],
-  voluntaryRegistrationReason: Option[VoluntaryRegistrationReason],
-  euGoods: Option[EuGoods],
-  applyEori: Option[ApplyEori]
+  tradingName: Option[TradingNameView] = None,
+  startDate: Option[StartDateView] = None,
+  voluntaryRegistration: Option[VoluntaryRegistration] = None,
+  voluntaryRegistrationReason: Option[VoluntaryRegistrationReason] = None,
+  euGoods: Option[EuGoods] = None,
+  applyEori: Option[ApplyEori] = None
 )
 
 object S4LTradingDetails {
@@ -62,26 +62,26 @@ object S4LTradingDetails {
 
 final case class S4LVatSicAndCompliance
 (
-  description: Option[BusinessActivityDescription],
+  description: Option[BusinessActivityDescription] = None,
 
   //Cultural Compliance
-  notForProfit: Option[NotForProfit],
+  notForProfit: Option[NotForProfit] = None,
 
   //Labour Compliance
-  companyProvideWorkers: Option[CompanyProvideWorkers],
-  workers: Option[Workers],
-  temporaryContracts: Option[TemporaryContracts],
-  skilledWorkers: Option[SkilledWorkers],
+  companyProvideWorkers: Option[CompanyProvideWorkers] = None,
+  workers: Option[Workers] = None,
+  temporaryContracts: Option[TemporaryContracts] = None,
+  skilledWorkers: Option[SkilledWorkers] = None,
 
   //Financial Compliance
-  adviceOrConsultancy: Option[AdviceOrConsultancy],
-  actAsIntermediary: Option[ActAsIntermediary],
-  chargeFees: Option[ChargeFees],
-  leaseVehicles: Option[LeaseVehicles],
-  additionalNonSecuritiesWork: Option[AdditionalNonSecuritiesWork],
-  discretionaryInvestmentManagementServices: Option[DiscretionaryInvestmentManagementServices],
-  investmentFundManagement: Option[InvestmentFundManagement],
-  manageAdditionalFunds: Option[ManageAdditionalFunds]
+  adviceOrConsultancy: Option[AdviceOrConsultancy] = None,
+  actAsIntermediary: Option[ActAsIntermediary] = None,
+  chargeFees: Option[ChargeFees] = None,
+  leaseVehicles: Option[LeaseVehicles] = None,
+  additionalNonSecuritiesWork: Option[AdditionalNonSecuritiesWork] = None,
+  discretionaryInvestmentManagementServices: Option[DiscretionaryInvestmentManagementServices] = None,
+  investmentFundManagement: Option[InvestmentFundManagement] = None,
+  manageAdditionalFunds: Option[ManageAdditionalFunds] = None
 )
 
 object S4LVatSicAndCompliance {
@@ -90,7 +90,7 @@ object S4LVatSicAndCompliance {
 
 final case class S4LVatContact
 (
-  businessContactDetails: Option[BusinessContactDetails]
+  businessContactDetails: Option[BusinessContactDetails] = None
 )
 
 object S4LVatContact {
@@ -99,7 +99,7 @@ object S4LVatContact {
 
 final case class S4LVatEligibility
 (
-  vatEligibility: Option[VatServiceEligibility]
+  vatEligibility: Option[VatServiceEligibility] = None
 )
 
 object S4LVatEligibility {
@@ -108,13 +108,12 @@ object S4LVatEligibility {
 
 final case class S4LVatLodgingOfficer
 (
-  officerHomeAddressView: Option[OfficerHomeAddressView],
-  officerDateOfBirthView: Option[OfficerDateOfBirthView],
-  officerNinoView: Option[OfficerNinoView],
-  completionCapacityView: Option[CompletionCapacityView]
+  officerHomeAddressView: Option[OfficerHomeAddressView] = None,
+  officerDateOfBirthView: Option[OfficerDateOfBirthView] = None,
+  officerNinoView: Option[OfficerNinoView] = None,
+  completionCapacityView: Option[CompletionCapacityView] = None
 )
 
 object S4LVatLodgingOfficer {
   implicit val format: OFormat[S4LVatLodgingOfficer] = Json.format[S4LVatLodgingOfficer]
 }
-
