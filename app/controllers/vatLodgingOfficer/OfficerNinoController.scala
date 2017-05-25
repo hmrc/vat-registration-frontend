@@ -37,7 +37,7 @@ class OfficerNinoController @Inject()(ds: CommonPlayDependencies)
   val form = OfficerNinoForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[OfficerNinoView].fold(form)(form.fill)
+    viewModel[OfficerNinoView]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_nino(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {

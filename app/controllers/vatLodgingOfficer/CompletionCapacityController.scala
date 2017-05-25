@@ -48,7 +48,7 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
     for {
       officerList <- prePopService.getOfficerList()
       _ <- keystoreConnector.cache[Seq[Officer]](officerListKey, officerList)
-      res <- viewModel[CompletionCapacityView].fold(form)(form.fill)
+      res <- viewModel[CompletionCapacityView]().fold(form)(form.fill)
     } yield Ok(views.html.pages.vatLodgingOfficer.completion_capacity(res, officerList))
   )
 

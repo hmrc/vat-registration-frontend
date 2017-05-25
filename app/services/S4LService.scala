@@ -43,18 +43,12 @@ trait S4LService extends CommonService {
   def fetch[T](key: String)(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
     fetchRegistrationId.flatMap(s4LConnector.fetchAndGet[T](_, key))
 
-  def getViewModel[T] = new WrapHelper[T]
-
-  final class WrapHelper[T] {
-
-    def apply[G]()(implicit r: VMReads.Aux[T, G], f: Format[G], hc: HeaderCarrier): OptionalResponse[T] =
-      for {
-        regId <- OptionT.liftF(fetchRegistrationId)
-        group <- OptionT(s4LConnector.fetchAndGet[G](regId, r.key))
-        vm <- OptionT.fromOption(r read group)
-      } yield vm
-
-  }
+  def getViewModel[T, G]()(implicit r: VMReads.Aux[T, G], f: Format[G], k: S4LKey[G], hc: HeaderCarrier): OptionalResponse[T] =
+    for {
+      regId <- OptionT.liftF(fetchRegistrationId)
+      group <- OptionT(s4LConnector.fetchAndGet[G](regId, k.key))
+      vm <- OptionT.fromOption(r read group)
+    } yield vm
 
   def clear()(implicit hc: HeaderCarrier): Future[HttpResponse] =
     fetchRegistrationId.flatMap(s4LConnector.clear)

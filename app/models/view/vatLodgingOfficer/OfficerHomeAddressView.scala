@@ -26,14 +26,9 @@ object OfficerHomeAddressView {
 
   implicit val format = Json.format[OfficerHomeAddressView]
 
-  implicit val vmReads: VMReads[OfficerHomeAddressView] = new VMReads[OfficerHomeAddressView] {
-
-    override type Group = S4LVatLodgingOfficer
-    override val key: String = "VatLodgingOfficer"
-
-    override def read(group: Group): Option[OfficerHomeAddressView] = group.officerHomeAddressView
+  implicit val vmReads = VMReads { group: S4LVatLodgingOfficer =>
+    group.officerHomeAddressView
   }
-
 
   // return a view model from a VatScheme instance
   implicit val modelTransformer = ApiModelTransformer[OfficerHomeAddressView] { vs: VatScheme =>

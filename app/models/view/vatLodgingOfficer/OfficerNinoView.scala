@@ -18,7 +18,7 @@ package models.view.vatLodgingOfficer
 
 import models._
 import models.api.{VatLodgingOfficer, VatScheme}
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.Json
 
 case class OfficerNinoView(nino: String)
 
@@ -26,12 +26,8 @@ object OfficerNinoView {
 
   implicit val format = Json.format[OfficerNinoView]
 
-  implicit val vmReads: VMReads[OfficerNinoView] = new VMReads[OfficerNinoView] {
-
-    override type Group = S4LVatLodgingOfficer
-    override val key: String = "VatLodgingOfficer"
-
-    override def read(group: Group): Option[OfficerNinoView] = group.officerNinoView
+  implicit val vmReads = VMReads { group: S4LVatLodgingOfficer =>
+    group.officerNinoView
   }
 
   // return a view model from a VatScheme instance

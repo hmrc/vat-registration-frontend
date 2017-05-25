@@ -20,24 +20,20 @@ import java.time.LocalDate
 
 import models._
 import models.api.{DateOfBirth, VatLodgingOfficer, VatScheme}
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.Json
 
 case class OfficerDateOfBirthView(dob: LocalDate)
 
 object OfficerDateOfBirthView {
+
   def bind(dateModel: DateModel): OfficerDateOfBirthView = OfficerDateOfBirthView(dateModel.toLocalDate.get) // form ensures valid date
 
   def unbind(dobView: OfficerDateOfBirthView): Option[DateModel] = Some(DateModel.fromLocalDate(dobView.dob)) // form ensures valid date
 
   implicit val format = Json.format[OfficerDateOfBirthView]
 
-
-  implicit val vmReads: VMReads[OfficerDateOfBirthView] = new VMReads[OfficerDateOfBirthView] {
-    override type Group = S4LVatLodgingOfficer
-    override val key: String = "VatLodgingOfficer"
-
-
-    override def read(group: Group): Option[OfficerDateOfBirthView] = group.officerDateOfBirthView
+  implicit val vmReads = VMReads { group: S4LVatLodgingOfficer =>
+    group.officerDateOfBirthView
   }
 
   // return a view model from a VatScheme instance
