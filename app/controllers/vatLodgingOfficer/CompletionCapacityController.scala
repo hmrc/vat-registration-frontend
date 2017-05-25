@@ -22,7 +22,7 @@ import cats.data.OptionT
 import connectors.AddressLookupConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.CompletionCapacityForm
-import models.external.Officer
+import models.api.Officer
 import models.view.vatLodgingOfficer.CompletionCapacityView
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}
@@ -40,6 +40,7 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
 
   private val form = CompletionCapacityForm.form
   private val officerListKey = "OfficerList"
+  private val registeringOfficerKey = "RegisteringOfficer"
 
   private def fetchOfficerList()(implicit headerCarrier: HeaderCarrier) =
     OptionT(keystoreConnector.fetchAndGet[Seq[Officer]](officerListKey))
@@ -65,6 +66,7 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
               officerSeq <- fetchOfficerList().getOrElse(Seq())
               officer = officerSeq.find(_.name.id == form.id)
               _ <- s4l.saveForm(CompletionCapacityView(form.id, officer))
+              _ <- keystoreConnector.cache[Officer](registeringOfficerKey, officer.getOrElse(Officer.empty))
             } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
           )
       )
