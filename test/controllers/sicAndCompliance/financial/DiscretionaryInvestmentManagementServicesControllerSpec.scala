@@ -101,7 +101,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
       when(mockVatRegistrationService.deleteElements(any())(any()))
         .thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[DiscretionaryInvestmentManagementServices](any())(any(), any(), any()))
+      when(mockS4LService.save[DiscretionaryInvestmentManagementServices](any())(any(), any(), any()))
         .thenReturn(Future.successful(toReturn))
 
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -116,7 +116,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
       val toReturn = CacheMap("", Map("" -> Json.toJson(DiscretionaryInvestmentManagementServices(false))))
 
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      when(mockS4LService.saveForm[DiscretionaryInvestmentManagementServices](any())(any(), any(), any()))
+      when(mockS4LService.save[DiscretionaryInvestmentManagementServices](any())(any(), any(), any()))
         .thenReturn(Future.successful(toReturn))
 
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(

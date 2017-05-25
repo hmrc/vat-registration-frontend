@@ -93,7 +93,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
         when(mockS4LService.fetchAndGet[VatServiceEligibility]()(any(), any(), any()))
           .thenReturn(Some(validServiceEligibility).pure)
-        when(mockS4LService.saveForm[VatServiceEligibility](any())(any(), any(), any()))
+        when(mockS4LService.save[VatServiceEligibility](any())(any(), any(), any()))
           .thenReturn(dummyCacheMap.pure)
 
         submitAuthorised(TestController.submit(currentQuestion.name),
@@ -112,7 +112,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
           .thenReturn(Option.empty[VatServiceEligibility].pure)
         when(mockVatRegService.getVatScheme()(any()))
           .thenReturn(validVatScheme.copy(vatServiceEligibility = None).pure)
-        when(mockS4LService.saveForm[VatServiceEligibility](any())(any(), any(), any()))
+        when(mockS4LService.save[VatServiceEligibility](any())(any(), any(), any()))
           .thenReturn(dummyCacheMap.pure)
 
         submitAuthorised(TestController.submit(currentQuestion.name),
@@ -130,7 +130,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
         when(mockS4LService.fetchAndGet[VatServiceEligibility]()(any(), any(), any()))
           .thenReturn(Some(validServiceEligibility).pure)
-        when(mockS4LService.saveForm[VatServiceEligibility](any())(any(), any(), any()))
+        when(mockS4LService.save[VatServiceEligibility](any())(any(), any(), any()))
           .thenReturn(dummyCacheMap.pure)
         when(mockKeystoreConnector.cache[String](any(), any())(any(), any()))
           .thenReturn(dummyCacheMap.pure)

@@ -98,7 +98,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
     "return 303" in {
       val returnCacheMapEstimateZeroRatedSales = CacheMap("", Map("" -> Json.toJson(EstimateZeroRatedSales(100L))))
 
-      when(mockS4LService.saveForm[EstimateZeroRatedSales]
+      when(mockS4LService.save[EstimateZeroRatedSales]
         (any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapEstimateZeroRatedSales))
 

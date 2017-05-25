@@ -29,7 +29,7 @@ trait S4LConnector {
 
   val shortCache : ShortLivedCache = VatShortLivedCache
 
-  def saveForm[T](userId: String, formId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
+  def save[T](userId: String, formId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
     shortCache.cache[T](userId, formId, data)
   }
 

@@ -142,7 +142,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDateView())))
 
-      when(mockS4LService.saveForm[StartDateView](any[StartDateView]())(any(), any(), any()))
+      when(mockS4LService.save[StartDateView](any[StartDateView]())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -163,7 +163,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDateView())))
 
-      when(mockS4LService.saveForm[StartDateView](any[StartDateView]())(any(), any(), any()))
+      when(mockS4LService.save[StartDateView](any[StartDateView]())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -181,7 +181,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDateView())))
 
-      when(mockS4LService.saveForm[StartDateView](any())(any(), any(), any()))
+      when(mockS4LService.save[StartDateView](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(

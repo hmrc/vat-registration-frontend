@@ -33,7 +33,7 @@ class TradingNameController @Inject()(ds: CommonPlayDependencies)
   val form = TradingNameForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[TradingNameView].fold(form)(form.fill)
+    viewModel2[TradingNameView].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatTradingDetails.trading_name(f)))
   })
 
@@ -41,7 +41,7 @@ class TradingNameController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatTradingDetails.trading_name(badForm)).pure
       ,
-      (data: TradingNameView) => s4LService.saveForm[TradingNameView](data) map { _ =>
+      (data: TradingNameView) => s4LService.save[TradingNameView](data) map { _ =>
         Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
       }
     )

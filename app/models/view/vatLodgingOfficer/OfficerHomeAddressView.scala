@@ -16,14 +16,23 @@
 
 package models.view.vatLodgingOfficer
 
+import models._
 import models.api.{ScrsAddress, VatLodgingOfficer, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class OfficerHomeAddressView(addressId: String, address: Option[ScrsAddress] = None)
 
 object OfficerHomeAddressView {
+
   implicit val format = Json.format[OfficerHomeAddressView]
+
+  implicit val vmReads: VMReads[OfficerHomeAddressView] = new VMReads[OfficerHomeAddressView] {
+
+    override type Group = S4LVatLodgingOfficer
+    override val key: String = "VatLodgingOfficer"
+
+    override def read(group: Group): Option[OfficerHomeAddressView] = group.officerHomeAddressView
+  }
 
   // return a view model from a VatScheme instance
   implicit val modelTransformer = ApiModelTransformer[OfficerHomeAddressView] { vs: VatScheme =>
@@ -33,9 +42,8 @@ object OfficerHomeAddressView {
   }
 
   // return a new or updated VatLodgingOfficer from the CurrentAddressView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerHomeAddressView, g: VatLodgingOfficer) => {
-      c.address.fold(g)(address => g.copy(currentAddress = address))
-    }
+  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerHomeAddressView, g: VatLodgingOfficer) =>
+    c.address.fold(g)(address => g.copy(currentAddress = address))
   }
 
 }

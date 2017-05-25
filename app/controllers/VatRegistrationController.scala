@@ -22,7 +22,7 @@ import auth.VatTaxRegime
 import cats.data.OptionT
 import cats.instances.future._
 import config.FrontendAuthConnector
-import models.{ApiModelTransformer, S4LKey}
+import models.{ApiModelTransformer, S4LKey, VMReads}
 import play.api.Configuration
 import play.api.data.{Form, FormError}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -59,10 +59,16 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
     */
   protected[controllers] def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
 
-  protected[controllers] def viewModel[T: ApiModelTransformer : S4LKey : Format]
+
+  protected[controllers] def viewModel2[T: ApiModelTransformer : S4LKey : Format]
   ()
   (implicit s4l: S4LService, vrs: RegistrationService, hc: HeaderCarrier): OptionT[Future, T] =
     OptionT(s4l.fetchAndGet[T]()).orElseF(vrs.getVatScheme() map ApiModelTransformer[T].toViewModel)
+
+  protected[controllers] def viewModel[T: ApiModelTransformer : VMReads]
+  ()
+  (implicit s4l: S4LService, vrs: RegistrationService, hc: HeaderCarrier): OptionT[Future, T] =
+    s4l.getViewModel[T]().orElseF(vrs.getVatScheme() map ApiModelTransformer[T].toViewModel)
 
   protected[controllers] def copyGlobalErrorsToFields[T](globalErrors: String*): Form[T] => Form[T] =
     fwe => fwe.copy(errors = fwe.errors ++ fwe.globalErrors.collect {

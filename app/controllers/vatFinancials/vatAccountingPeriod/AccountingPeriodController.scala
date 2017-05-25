@@ -33,7 +33,7 @@ class AccountingPeriodController @Inject()(ds: CommonPlayDependencies)
   import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[AccountingPeriod].map { vm =>
+    viewModel2[AccountingPeriod].map { vm =>
       Ok(views.html.pages.vatFinancials.vatAccountingPeriod.accounting_period(AccountingPeriodForm.form.fill(vm)))
     }.getOrElse(Ok(views.html.pages.vatFinancials.vatAccountingPeriod.accounting_period(AccountingPeriodForm.form)))
   })
@@ -44,7 +44,7 @@ class AccountingPeriodController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.vatFinancials.vatAccountingPeriod.accounting_period(formWithErrors)))
       }, {
         data: AccountingPeriod => {
-          s4LService.saveForm(data) map { _ =>
+          s4LService.save(data) map { _ =>
             Redirect(controllers.routes.SummaryController.show())
           }
         }

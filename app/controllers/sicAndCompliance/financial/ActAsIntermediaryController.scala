@@ -36,7 +36,7 @@ class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
   val form: Form[ActAsIntermediary] = ActAsIntermediaryForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[ActAsIntermediary].fold(form)(form.fill)
+    viewModel2[ActAsIntermediary].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.financial.act_as_intermediary(f)))
   )
 
@@ -44,7 +44,7 @@ class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
     ActAsIntermediaryForm.form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.act_as_intermediary(badForm)).pure
       ,
-      (data: ActAsIntermediary) => s4LService.saveForm[ActAsIntermediary](data).flatMap { _ =>
+      (data: ActAsIntermediary) => s4LService.save[ActAsIntermediary](data).flatMap { _ =>
         if (!data.yesNo) {
           Redirect(controllers.sicAndCompliance.financial.routes.ChargeFeesController.show()).pure
         } else {

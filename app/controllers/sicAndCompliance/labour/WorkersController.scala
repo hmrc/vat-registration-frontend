@@ -33,7 +33,7 @@ class WorkersController @Inject()(ds: CommonPlayDependencies)
   import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[Workers].map { vm =>
+    viewModel2[Workers].map { vm =>
       Ok(views.html.pages.sicAndCompliance.labour.workers(WorkersForm.form.fill(vm)))
     }.getOrElse(Ok(views.html.pages.sicAndCompliance.labour.workers(WorkersForm.form)))
   })
@@ -44,7 +44,7 @@ class WorkersController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.sicAndCompliance.labour.workers(formWithErrors)))
       }, {
         data: Workers => {
-          s4LService.saveForm[Workers](data) map { _ =>
+          s4LService.save[Workers](data) map { _ =>
             if(data.numberOfWorkers >= 8) {
               Redirect(controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show())
             }else{

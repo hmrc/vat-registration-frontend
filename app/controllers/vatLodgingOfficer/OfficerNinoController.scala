@@ -36,25 +36,19 @@ class OfficerNinoController @Inject()(ds: CommonPlayDependencies)
 
   val form = OfficerNinoForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    for {
-      res <- viewModel[OfficerNinoView].fold(form)(form.fill)
-    } yield Ok(views.html.pages.vatLodgingOfficer.officer_nino(res))
-
-  })
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel[OfficerNinoView].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_nino(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
       formWithErrors => BadRequest(views.html.pages.vatLodgingOfficer.officer_nino(formWithErrors)).pure,
-      data => {
-        s4l.saveForm[OfficerNinoView](data) flatMap {
-          _ => viewModel[VoluntaryRegistration]
-            .map(_ == VoluntaryRegistration.yes).getOrElse(true).ifM(
-            controllers.vatTradingDetails.vatChoice.routes.StartDateController.show().pure,
-            controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show().pure
-          ).map(Redirect)
-        }
-      }
-    )
+      data => s4l.save[OfficerNinoView](data) flatMap { _ =>
+        viewModel2[VoluntaryRegistration]
+          .map(_ == VoluntaryRegistration.yes).getOrElse(true).ifM(
+          controllers.vatTradingDetails.vatChoice.routes.StartDateController.show().pure,
+          controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show().pure
+        ).map(Redirect)
+      })
   })
 }

@@ -83,7 +83,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
     "redirects to next screen in the flow" in {
       val leaseVehicles = CacheMap("", Map("" -> Json.toJson(LeaseVehicles(true))))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
-      when(mockS4LService.saveForm[LeaseVehicles](any())(any(), any(), any())).thenReturn(leaseVehicles.pure)
+      when(mockS4LService.save[LeaseVehicles](any())(any(), any(), any())).thenReturn(leaseVehicles.pure)
 
       submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "leaseVehiclesRadio" -> "true"
@@ -97,7 +97,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
     "redirects to next screen in the flow" in {
       val leaseVehicles = CacheMap("", Map("" -> Json.toJson(LeaseVehicles(false))))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
-      when(mockS4LService.saveForm[LeaseVehicles](any())(any(), any(), any())).thenReturn(leaseVehicles.pure)
+      when(mockS4LService.save[LeaseVehicles](any())(any(), any(), any())).thenReturn(leaseVehicles.pure)
 
       submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody("leaseVehiclesRadio" -> "false")) {
         _ redirectsTo s"$contextRoot/provides-investment-fund-management-services"

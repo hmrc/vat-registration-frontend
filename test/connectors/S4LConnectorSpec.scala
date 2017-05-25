@@ -59,7 +59,7 @@ class S4LConnectorSpec extends UnitSpec with MockitoSugar {
       when(mockShortLivedCache.cache[StartDateView](Matchers.anyString(), Matchers.anyString(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      val result = S4LConnectorTest.saveForm[StartDateView]("", "", sDateModel)
+      val result = S4LConnectorTest.save[StartDateView]("", "", sDateModel)
       await(result) shouldBe returnCacheMap
     }
   }

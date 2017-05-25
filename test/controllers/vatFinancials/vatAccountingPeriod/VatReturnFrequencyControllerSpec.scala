@@ -87,8 +87,8 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       val returnCacheMapVatReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.MONTHLY))))
       val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(""))))
 
-      when(mockS4LService.saveForm[VatReturnFrequency](any())(any(), any(), any())).thenReturn(returnCacheMapVatReturnFrequency.pure)
-      when(mockS4LService.saveForm[AccountingPeriod](any())(any(), any(), any())).thenReturn(returnCacheMapAccountingPeriod.pure)
+      when(mockS4LService.save[VatReturnFrequency](any())(any(), any(), any())).thenReturn(returnCacheMapVatReturnFrequency.pure)
+      when(mockS4LService.save[AccountingPeriod](any())(any(), any(), any())).thenReturn(returnCacheMapAccountingPeriod.pure)
       when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
 
       submitAuthorised(TestVatReturnFrequencyController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -104,8 +104,8 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.QUARTERLY))))
       val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.FEB_MAY_AUG_NOV))))
 
-      when(mockS4LService.saveForm[VatReturnFrequency](any())(any(), any(), any())).thenReturn(returnCacheMap.pure)
-      when(mockS4LService.saveForm[AccountingPeriod](any())(any(), any(), any())).thenReturn(returnCacheMapAccountingPeriod.pure)
+      when(mockS4LService.save[VatReturnFrequency](any())(any(), any(), any())).thenReturn(returnCacheMap.pure)
+      when(mockS4LService.save[AccountingPeriod](any())(any(), any(), any())).thenReturn(returnCacheMapAccountingPeriod.pure)
 
       submitAuthorised(TestVatReturnFrequencyController.submit(), fakeRequest.withFormUrlEncodedBody(
         VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.QUARTERLY

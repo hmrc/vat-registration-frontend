@@ -35,7 +35,7 @@ class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
 
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[EstimateVatTurnover].map { vm =>
+    viewModel2[EstimateVatTurnover].map { vm =>
       Ok(views.html.pages.vatFinancials.estimate_vat_turnover(EstimateVatTurnoverForm.form.fill(vm)))
     }.getOrElse(Ok(views.html.pages.vatFinancials.estimate_vat_turnover(EstimateVatTurnoverForm.form)))
   })
@@ -46,7 +46,7 @@ class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.vatFinancials.estimate_vat_turnover(formWithErrors)))
       }, {
         data: EstimateVatTurnover => {
-          s4LService.saveForm[EstimateVatTurnover](data) map { _ =>
+          s4LService.save[EstimateVatTurnover](data) map { _ =>
             Redirect(controllers.vatFinancials.routes.ZeroRatedSalesController.show())
           }
         }

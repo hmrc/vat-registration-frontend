@@ -64,7 +64,7 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
             for {
               officerSeq <- fetchOfficerList().getOrElse(Seq())
               officer = officerSeq.find(_.name.id == form.id)
-              _ <- s4l.saveForm(CompletionCapacityView(form.id, officer))
+              _ <- s4l.save(CompletionCapacityView(form.id, officer))
             } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
           )
       )

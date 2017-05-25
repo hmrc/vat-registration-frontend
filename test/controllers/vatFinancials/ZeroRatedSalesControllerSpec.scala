@@ -83,7 +83,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
     "return 303" in {
       val returnCacheMapZeroRatedSales = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_NO))))
 
-      when(mockS4LService.saveForm[ZeroRatedSales](any())(any(), any(), any()))
+      when(mockS4LService.save[ZeroRatedSales](any())(any(), any(), any()))
         .thenReturn(returnCacheMapZeroRatedSales.pure)
 
       submitAuthorised(TestZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -100,8 +100,8 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_NO))))
       val zeroCacheMap = CacheMap("", Map("" -> Json.toJson(EstimateZeroRatedSales(0L))))
 
-      when(mockS4LService.saveForm[ZeroRatedSales](any())(any(), any(), any())).thenReturn(returnCacheMap.pure)
-      when(mockS4LService.saveForm[EstimateZeroRatedSales](any())(any(), any(), any())).thenReturn(zeroCacheMap.pure)
+      when(mockS4LService.save[ZeroRatedSales](any())(any(), any(), any())).thenReturn(returnCacheMap.pure)
+      when(mockS4LService.save[EstimateZeroRatedSales](any())(any(), any(), any())).thenReturn(zeroCacheMap.pure)
       when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
 
       submitAuthorised(TestZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(

@@ -35,7 +35,7 @@ class EuGoodsController @Inject()(ds: CommonPlayDependencies)
   val form = EuGoodsForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[EuGoods].fold(form)(form.fill)
+    viewModel2[EuGoods].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatTradingDetails.vatEuTrading.eu_goods(f)))
   })
 
@@ -43,10 +43,10 @@ class EuGoodsController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(views.html.pages.vatTradingDetails.vatEuTrading.eu_goods(formWithErrors))),
       (data: EuGoods) =>
-        s4LService.saveForm[EuGoods](data) flatMap {  _ =>
+        s4LService.save[EuGoods](data) flatMap {  _ =>
           if (EuGoods.EU_GOODS_NO == data.yesNo) {
             for {
-              _ <- s4LService.saveForm[ApplyEori](ApplyEori(ApplyEori.APPLY_EORI_NO))
+              _ <- s4LService.save[ApplyEori](ApplyEori(ApplyEori.APPLY_EORI_NO))
             } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())
           } else {
             Future.successful(Redirect(controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show()))

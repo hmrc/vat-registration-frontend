@@ -35,14 +35,14 @@ class ChargeFeesController @Inject()(ds: CommonPlayDependencies)
   val form: Form[ChargeFees] = ChargeFeesForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[ChargeFees].fold(form)(form.fill)
+    viewModel2[ChargeFees].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.financial.charge_fees(f)))
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.charge_fees(formWithErrors))),
-      (data: ChargeFees) => s4LService.saveForm[ChargeFees](data)
+      (data: ChargeFees) => s4LService.save[ChargeFees](data)
         .map(_ => Redirect(controllers.sicAndCompliance.financial.routes.AdditionalNonSecuritiesWorkController.show()))
     )
   )

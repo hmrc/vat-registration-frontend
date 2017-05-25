@@ -45,14 +45,14 @@ class StartDateController @Inject()(startDateFormFactory: StartDateFormFactory, 
 
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[StartDateView].getOrElse(StartDateView())
+    viewModel2[StartDateView].getOrElse(StartDateView())
       .flatMap(populateCtActiveDate).map(f => Ok(start_date(form.fill(f))))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     startDateFormFactory.form().bindFromRequest().fold(
       badForm => BadRequest(start_date(badForm)).pure,
-      goodForm => populateCtActiveDate(goodForm).flatMap(vm => s4LService.saveForm(vm)).map { _ =>
+      goodForm => populateCtActiveDate(goodForm).flatMap(vm => s4LService.save(vm)).map { _ =>
         Redirect(controllers.vatTradingDetails.routes.TradingNameController.show())
       }
     )

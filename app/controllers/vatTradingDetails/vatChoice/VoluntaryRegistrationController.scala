@@ -35,7 +35,7 @@ class VoluntaryRegistrationController @Inject()(ds: CommonPlayDependencies)
   val form = VoluntaryRegistrationForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[VoluntaryRegistration].fold(form)(form.fill)
+    viewModel2[VoluntaryRegistration].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatTradingDetails.vatChoice.voluntary_registration(f)))
   })
 
@@ -46,7 +46,7 @@ class VoluntaryRegistrationController @Inject()(ds: CommonPlayDependencies)
       }, {
         data: VoluntaryRegistration => {
           (VoluntaryRegistration.REGISTER_YES == data.yesNo).pure.ifM(
-            s4l.saveForm[VoluntaryRegistration](data)
+            s4l.save[VoluntaryRegistration](data)
               .map(_ => controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationReasonController.show())
             ,
             s4l.clear().flatMap(_ => vrs.deleteVatScheme())

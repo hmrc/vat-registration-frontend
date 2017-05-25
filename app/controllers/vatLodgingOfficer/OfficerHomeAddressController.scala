@@ -66,7 +66,7 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
             for {
               addressList <- fetchAddressList().getOrElse(Seq())
               address = addressList.find(_.id == form.addressId)
-              _ <- s4l.saveForm(OfficerHomeAddressView(form.addressId, address))
+              _ <- s4l.save(OfficerHomeAddressView(form.addressId, address))
             } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
           ).map(Redirect))
   }
@@ -76,7 +76,7 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
     implicit request =>
       alfConnector.getAddress(id).flatMap { address =>
         Logger.debug(s"address received: $address")
-        s4l.saveForm(OfficerHomeAddressView(address.id, Some(address)))
+        s4l.save(OfficerHomeAddressView(address.id, Some(address)))
       }.map(_ => Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show()))
   }
 

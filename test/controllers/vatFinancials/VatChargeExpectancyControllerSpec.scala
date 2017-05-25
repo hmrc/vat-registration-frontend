@@ -96,7 +96,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return 303" in {
       val returnCacheMapVatChargeExpectancy = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES))))
-      when(mockS4LService.saveForm[VatChargeExpectancy](any())(any(), any(), any())).thenReturn(returnCacheMapVatChargeExpectancy.pure)
+      when(mockS4LService.save[VatChargeExpectancy](any())(any(), any(), any())).thenReturn(returnCacheMapVatChargeExpectancy.pure)
 
       submitAuthorised(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_YES
@@ -113,8 +113,8 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_NO))))
       val returnCacheMapReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.MONTHLY))))
 
-      when(mockS4LService.saveForm[VatChargeExpectancy](any())(any(), any(), any())).thenReturn(returnCacheMap.pure)
-      when(mockS4LService.saveForm[VatReturnFrequency](any())(any(), any(), any())).thenReturn(returnCacheMapReturnFrequency.pure)
+      when(mockS4LService.save[VatChargeExpectancy](any())(any(), any(), any())).thenReturn(returnCacheMap.pure)
+      when(mockS4LService.save[VatReturnFrequency](any())(any(), any(), any())).thenReturn(returnCacheMapReturnFrequency.pure)
 
       submitAuthorised(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_NO

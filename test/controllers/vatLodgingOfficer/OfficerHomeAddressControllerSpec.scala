@@ -92,7 +92,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
       val savedAddressView = OfficerHomeAddressView(address.id, Some(address))
       val returnOfficerHomeAddressView = CacheMap("", Map("" -> Json.toJson(savedAddressView)))
 
-      when(mockS4LService.saveForm[OfficerHomeAddressView](any())(any(), any(), any()))
+      when(mockS4LService.save[OfficerHomeAddressView](any())(any(), any(), any()))
         .thenReturn(returnOfficerHomeAddressView.pure)
       when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
       mockKeystoreFetchAndGet("OfficerAddressList", Option.empty[Seq[ScrsAddress]])
@@ -111,7 +111,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
       val savedAddressView = OfficerHomeAddressView(address.id, Some(address))
       val returnOfficerHomeAddressView = CacheMap("", Map("" -> Json.toJson(savedAddressView)))
 
-      when(mockS4LService.saveForm[OfficerHomeAddressView](any())(any(), any(), any())).thenReturn(returnOfficerHomeAddressView.pure)
+      when(mockS4LService.save[OfficerHomeAddressView](any())(any(), any(), any())).thenReturn(returnOfficerHomeAddressView.pure)
       when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", Some(Seq(address)))
 
@@ -143,14 +143,14 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
     "save an address and redirect to next page" in {
       Mockito.reset(mockS4LService)
       when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
-      when(mockS4LService.saveForm(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
 
       callAuthorised(TestOfficerHomeAddressController.acceptFromTxm("addressId")) {
         _ redirectsTo s"$contextRoot/business-contact"
       }
 
       val expectedAddressView = OfficerHomeAddressView(address.id, Some(address))
-      verify(mockS4LService, times(1)).saveForm(Matchers.eq(expectedAddressView))(any(), any(), any())
+      verify(mockS4LService, times(1)).save(Matchers.eq(expectedAddressView))(any(), any(), any())
     }
   }
 

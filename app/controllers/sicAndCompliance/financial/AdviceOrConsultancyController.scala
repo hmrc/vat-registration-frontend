@@ -35,14 +35,14 @@ class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
   val form: Form[AdviceOrConsultancy] = AdviceOrConsultancyForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[AdviceOrConsultancy].fold(form)(form.fill)
+    viewModel2[AdviceOrConsultancy].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(f)))
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(formWithErrors))),
-      (data: AdviceOrConsultancy) => s4LService.saveForm[AdviceOrConsultancy](data)
+      (data: AdviceOrConsultancy) => s4LService.save[AdviceOrConsultancy](data)
         .map(_ => Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show()))
     )
   )

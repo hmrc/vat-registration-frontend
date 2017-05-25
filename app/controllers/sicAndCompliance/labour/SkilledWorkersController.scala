@@ -32,7 +32,7 @@ class SkilledWorkersController @Inject()(ds: CommonPlayDependencies)
   import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[SkilledWorkers].map { vm =>
+    viewModel2[SkilledWorkers].map { vm =>
       Ok(views.html.pages.sicAndCompliance.labour.skilled_workers(SkilledWorkersForm.form.fill(vm)))
     }.getOrElse(Ok(views.html.pages.sicAndCompliance.labour.skilled_workers(SkilledWorkersForm.form)))
   })
@@ -43,7 +43,7 @@ class SkilledWorkersController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.sicAndCompliance.labour.skilled_workers(formWithErrors)))
       }, {
         data: SkilledWorkers => {
-          s4LService.saveForm[SkilledWorkers](data) map {  _ =>
+          s4LService.save[SkilledWorkers](data) map {  _ =>
               Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
           }
         }

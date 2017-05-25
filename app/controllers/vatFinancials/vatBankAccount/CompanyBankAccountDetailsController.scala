@@ -33,7 +33,7 @@ class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
   import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[CompanyBankAccountDetails].map { vm =>
+    viewModel2[CompanyBankAccountDetails].map { vm =>
       Ok(views.html.pages.vatFinancials.vatBankAccount.company_bank_account_details(CompanyBankAccountDetailsForm.form.fill(
         CompanyBankAccountDetailsForm(
           accountName = vm.accountName.trim,
@@ -47,7 +47,7 @@ class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
       formWithErrors => {
         Future.successful(BadRequest(views.html.pages.vatFinancials.vatBankAccount.company_bank_account_details(formWithErrors)))
       }, (form: CompanyBankAccountDetailsForm) => {
-        s4l.saveForm[CompanyBankAccountDetails](
+        s4l.save[CompanyBankAccountDetails](
           CompanyBankAccountDetails(
             accountName = form.accountName.trim,
             accountNumber = form.accountNumber,

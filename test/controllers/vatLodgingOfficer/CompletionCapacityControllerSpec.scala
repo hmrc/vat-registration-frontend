@@ -80,7 +80,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.CompletionCapacityController.submit()} with selected officer but no officer list in keystore" should {
 
     "return 303" in {
-      when(mockS4LService.saveForm[CompletionCapacityView](any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      when(mockS4LService.save[CompletionCapacityView](any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       when(mockPPService.getOfficerList()(any())).thenReturn(Seq(officer).pure)
       mockKeystoreFetchAndGet("OfficerList", Option.empty[Seq[Officer]])
 
@@ -96,7 +96,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
     "return 303" in {
       val completionCapacityView = CompletionCapacityView(officer)
 
-      when(mockS4LService.saveForm[CompletionCapacityView](any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      when(mockS4LService.save[CompletionCapacityView](any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       when(mockPPService.getOfficerList()(any())).thenReturn(Seq(officer).pure)
       mockKeystoreFetchAndGet[Seq[Officer]]("OfficerList", Some(Seq(officer)))
 

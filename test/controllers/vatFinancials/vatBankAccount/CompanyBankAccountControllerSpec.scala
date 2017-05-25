@@ -93,7 +93,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
     "return 303" in {
       val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES))))
 
-      when(mockS4LService.saveForm[CompanyBankAccount](any())(any(), any(), any()))
+      when(mockS4LService.save[CompanyBankAccount](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapCompanyBankAccount))
 
       submitAuthorised(CompanyBankAccountController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -108,7 +108,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
     "return 303" in {
       val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_NO))))
 
-      when(mockS4LService.saveForm[CompanyBankAccount](any())(any(), any(), any()))
+      when(mockS4LService.save[CompanyBankAccount](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapCompanyBankAccount))
 
       when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))

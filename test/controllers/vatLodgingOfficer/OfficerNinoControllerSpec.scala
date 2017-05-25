@@ -80,7 +80,7 @@ class OfficerNinoControllerSpec extends VatRegSpec with VatRegistrationFixture w
       val returnOfficerNinoView = CacheMap("", Map("" -> Json.toJson(OfficerNinoView("NB686868C"))))
       save4laterReturns(VoluntaryRegistration.yes)
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
-      when(mockS4LService.saveForm[OfficerNinoView](any())(any(), any(), any())).thenReturn(returnOfficerNinoView.pure)
+      when(mockS4LService.save[OfficerNinoView](any())(any(), any(), any())).thenReturn(returnOfficerNinoView.pure)
 
       submitAuthorised(TestOfficerNinoController.submit(),
         fakeRequest.withFormUrlEncodedBody("nino" -> "NB686868C")
@@ -93,7 +93,7 @@ class OfficerNinoControllerSpec extends VatRegSpec with VatRegistrationFixture w
 
     "return 303 (to /start-date-confirmation)" in {
       val returnOfficerNinoView = CacheMap("", Map("" -> Json.toJson(OfficerNinoView("NB686868C"))))
-      when(mockS4LService.saveForm[OfficerNinoView](any())(any(), any(), any()))
+      when(mockS4LService.save[OfficerNinoView](any())(any(), any(), any()))
         .thenReturn(returnOfficerNinoView.pure)
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
       save4laterReturns(VoluntaryRegistration.no)
@@ -111,7 +111,7 @@ class OfficerNinoControllerSpec extends VatRegSpec with VatRegistrationFixture w
       val returnOfficerNinoView = CacheMap("", Map("" -> Json.toJson(OfficerNinoView("NB686868C"))))
 
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
-      when(mockS4LService.saveForm[OfficerNinoView](any())(any(), any(), any())).thenReturn(returnOfficerNinoView.pure)
+      when(mockS4LService.save[OfficerNinoView](any())(any(), any(), any())).thenReturn(returnOfficerNinoView.pure)
       save4laterReturnsNothing[VoluntaryRegistration]()
 
       submitAuthorised(TestOfficerNinoController.submit(), fakeRequest.withFormUrlEncodedBody("nino" -> "NB686868C")) {

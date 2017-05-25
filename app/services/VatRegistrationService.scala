@@ -109,7 +109,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
         s4l[VatReturnFrequency]() |@|
         s4l[AccountingPeriod]() |@|
         s4l[CompanyBankAccountDetails]())
-        .map(S4LVatFinancials).map { s4l =>
+        .map(S4LVatFinancials.apply).map { s4l =>
         update(s4l.estimateVatTurnover, vs)
           .andThen(update(s4l.zeroRatedTurnoverEstimate, vs))
           .andThen(update(s4l.vatChargeExpectancy, vs))
@@ -142,7 +142,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
         s4l[DiscretionaryInvestmentManagementServices]() |@|
         s4l[InvestmentFundManagement]() |@|
         s4l[ManageAdditionalFunds]())
-        .map(S4LVatSicAndCompliance).map { s4l =>
+        .map(S4LVatSicAndCompliance.apply).map { s4l =>
         update(s4l.description, vs)
           .andThen(update(s4l.notForProfit, vs))
           .andThen(update(s4l.companyProvideWorkers, vs))
@@ -175,7 +175,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
         s4l[VoluntaryRegistrationReason]() |@|
         s4l[EuGoods]() |@|
         s4l[ApplyEori]())
-        .map(S4LTradingDetails).map { s4l =>
+        .map(S4LTradingDetails.apply).map { s4l =>
         update(s4l.voluntaryRegistration, vs)
           .andThen(update(s4l.tradingName, vs))
           .andThen(update(s4l.startDate, vs))
@@ -195,7 +195,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
 
   private[services] def submitVatContact()(implicit hc: HeaderCarrier): Future[VatContact] = {
     def mergeWithS4L(vs: VatScheme) =
-      s4l[BusinessContactDetails]().map(S4LVatContact).map { s4l =>
+      s4l[BusinessContactDetails]().map(S4LVatContact.apply).map { s4l =>
         update(s4l.businessContactDetails, vs)
           .apply(vs.vatContact.getOrElse(VatContact.empty)) //TODO remove the "seeding" with empty
       }
@@ -209,7 +209,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
 
   private[services] def submitVatEligibility()(implicit hc: HeaderCarrier): Future[VatServiceEligibility] = {
     def mergeWithS4L(vs: VatScheme) =
-      s4l[VatServiceEligibility]().map(S4LVatEligibility).map { s4l =>
+      s4l[VatServiceEligibility]().map(S4LVatEligibility.apply).map { s4l =>
         update(s4l.vatEligibility, vs)
           .apply(vs.vatServiceEligibility.getOrElse(VatServiceEligibility())) //TODO remove the "seeding" with empty
       }
@@ -227,7 +227,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
         s4l[OfficerDateOfBirthView]() |@|
         s4l[OfficerNinoView]() |@|
         s4l[CompletionCapacityView]())
-        .map(S4LVatLodgingOfficer).map { s4l =>
+        .map(S4LVatLodgingOfficer.apply).map { s4l =>
         update(s4l.officerHomeAddressView, vs)
           .andThen(update(s4l.officerDateOfBirthView, vs))
           .andThen(update(s4l.officerNinoView, vs))

@@ -33,7 +33,7 @@ class NotForProfitController @Inject()(ds: CommonPlayDependencies)
   import cats.syntax.applicative._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[NotForProfit].map { vm =>
+    viewModel2[NotForProfit].map { vm =>
       Ok(views.html.pages.sicAndCompliance.cultural.not_for_profit(NotForProfitForm.form.fill(vm)))
     }.getOrElse(Ok(views.html.pages.sicAndCompliance.cultural.not_for_profit(NotForProfitForm.form)))
   })
@@ -43,7 +43,7 @@ class NotForProfitController @Inject()(ds: CommonPlayDependencies)
       formWithErrors => BadRequest(views.html.pages.sicAndCompliance.cultural.not_for_profit(formWithErrors)).pure
       ,
       (data: NotForProfit) =>
-        s4LService.saveForm[NotForProfit](data) flatMap { _ =>
+        s4LService.save[NotForProfit](data) flatMap { _ =>
           // TODO delete any existing non-cultural compliance questions
           vrs.deleteElement(FinancialCompliancePath).map { _ =>
             Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
