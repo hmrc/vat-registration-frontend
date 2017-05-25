@@ -80,7 +80,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
     "return 303" in {
       val returnCacheMapApplyEori = CacheMap("", Map("" -> Json.toJson(ApplyEori(ApplyEori.APPLY_EORI_YES))))
-      when(mockS4LService.saveForm[ApplyEori](any())(any(), any(), any())).thenReturn(returnCacheMapApplyEori.pure)
+      when(mockS4LService.save[ApplyEori](any())(any(), any(), any())).thenReturn(returnCacheMapApplyEori.pure)
 
       submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_YES)
@@ -95,7 +95,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
     "return 303" in {
       val returnCacheMapApplyEori = CacheMap("", Map("" -> Json.toJson(ApplyEori(ApplyEori.APPLY_EORI_NO))))
-      when(mockS4LService.saveForm[ApplyEori](any())(any(), any(), any())).thenReturn(returnCacheMapApplyEori.pure)
+      when(mockS4LService.save[ApplyEori](any())(any(), any(), any())).thenReturn(returnCacheMapApplyEori.pure)
 
       submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_NO)

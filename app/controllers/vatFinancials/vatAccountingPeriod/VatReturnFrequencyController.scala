@@ -32,7 +32,7 @@ class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
   import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[VatReturnFrequency].map { vm =>
+    viewModel2[VatReturnFrequency].map { vm =>
       Ok(views.html.pages.vatFinancials.vatAccountingPeriod.vat_return_frequency(VatReturnFrequencyForm.form.fill(vm)))
     }.getOrElse(Ok(views.html.pages.vatFinancials.vatAccountingPeriod.vat_return_frequency(VatReturnFrequencyForm.form)))
   })
@@ -43,7 +43,7 @@ class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.vatFinancials.vatAccountingPeriod.vat_return_frequency(formWithErrors)))
       }, {
         data: VatReturnFrequency => {
-          s4LService.saveForm[VatReturnFrequency](data) flatMap { _ =>
+          s4LService.save[VatReturnFrequency](data) flatMap { _ =>
             if (VatReturnFrequency.MONTHLY == data.frequencyType) {
               vrs.deleteElement(AccountingPeriodStartPath).map { _ =>
                 Redirect(controllers.routes.SummaryController.show()) }

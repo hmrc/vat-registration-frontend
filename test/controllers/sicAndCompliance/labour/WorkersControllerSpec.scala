@@ -115,7 +115,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return 303" in {
       val returnCacheMapWorkers = CacheMap("", Map("" -> Json.toJson(Workers(5))))
 
-      when(mockS4LService.saveForm[Workers]
+      when(mockS4LService.save[Workers]
         (any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapWorkers))
 
@@ -134,7 +134,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return 303" in {
       val returnCacheMapWorkers = CacheMap("", Map("" -> Json.toJson(Workers(8))))
 
-      when(mockS4LService.saveForm[Workers]
+      when(mockS4LService.save[Workers]
         (any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapWorkers))
 

@@ -16,9 +16,9 @@
 
 package models.view.vatLodgingOfficer
 
+import models._
 import models.api.{VatLodgingOfficer, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class OfficerNinoView(nino: String)
 
@@ -26,14 +26,21 @@ object OfficerNinoView {
 
   implicit val format = Json.format[OfficerNinoView]
 
+  implicit val vmReads: VMReads[OfficerNinoView] = new VMReads[OfficerNinoView] {
+
+    override type Group = S4LVatLodgingOfficer
+    override val key: String = "VatLodgingOfficer"
+
+    override def read(group: Group): Option[OfficerNinoView] = group.officerNinoView
+  }
+
   // return a view model from a VatScheme instance
   implicit val modelTransformer = ApiModelTransformer[OfficerNinoView] { vs: VatScheme =>
     vs.lodgingOfficer.map(_.nino).map(OfficerNinoView(_))
   }
 
   // return a new or updated VatLodgingOfficer from the CurrentAddressView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerNinoView, g: VatLodgingOfficer) => {
-      g.copy(nino = c.nino)
-    }
+  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerNinoView, g: VatLodgingOfficer) =>
+    g.copy(nino = c.nino)
   }
 }

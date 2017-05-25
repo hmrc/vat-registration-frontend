@@ -37,7 +37,7 @@ class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
   val form: Form[LeaseVehicles] = LeaseVehiclesForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[LeaseVehicles].fold(form)(form.fill)
+    viewModel2[LeaseVehicles].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.financial.lease_vehicles(f)))
   )
 
@@ -47,7 +47,7 @@ class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.lease_vehicles(formWithErrors)))
       }, {
         data: LeaseVehicles => {
-          s4LService.saveForm[LeaseVehicles](data) flatMap { _ =>
+          s4LService.save[LeaseVehicles](data) flatMap { _ =>
             if (!data.yesNo) {
               Future.successful(Redirect(controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show()))
             } else {

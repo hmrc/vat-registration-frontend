@@ -41,7 +41,7 @@ class VatChargeExpectancyController @Inject()(ds: CommonPlayDependencies)
   val form = VatChargeExpectancyForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[VatChargeExpectancy].fold(form)(form.fill)
+    viewModel2[VatChargeExpectancy].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatFinancials.vat_charge_expectancy(f)))
   })
 
@@ -49,8 +49,8 @@ class VatChargeExpectancyController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatFinancials.vat_charge_expectancy(badForm)).pure,
       (data: VatChargeExpectancy) =>
-        s4LService.saveForm(data).map(_ => VAT_CHARGE_NO == data.yesNo).ifM(
-          s4LService.saveForm(VatReturnFrequency(VatReturnFrequency.QUARTERLY))
+        s4LService.save(data).map(_ => VAT_CHARGE_NO == data.yesNo).ifM(
+          s4LService.save(VatReturnFrequency(VatReturnFrequency.QUARTERLY))
             .map(_ => controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show())
           ,
           controllers.vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show().pure

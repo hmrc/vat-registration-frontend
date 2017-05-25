@@ -37,7 +37,7 @@ class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPl
   val form: Form[DiscretionaryInvestmentManagementServices] = DiscretionaryInvestmentManagementServicesForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[DiscretionaryInvestmentManagementServices].fold(form)(form.fill)
+    viewModel2[DiscretionaryInvestmentManagementServices].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(f)))
   )
 
@@ -47,7 +47,7 @@ class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPl
         Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(formWithErrors)))
       }, {
         data: DiscretionaryInvestmentManagementServices => {
-          s4LService.saveForm[DiscretionaryInvestmentManagementServices](data) flatMap { _ =>
+          s4LService.save[DiscretionaryInvestmentManagementServices](data) flatMap { _ =>
             if (!data.yesNo) {
               Future.successful(Redirect(controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show()))
             } else {

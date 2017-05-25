@@ -36,7 +36,7 @@ class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies
   val form: Form[AdditionalNonSecuritiesWork] = AdditionalNonSecuritiesWorkForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[AdditionalNonSecuritiesWork].fold(form)(form.fill)
+    viewModel2[AdditionalNonSecuritiesWork].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(f)))
   )
 
@@ -44,7 +44,7 @@ class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies
     form.bindFromRequest().fold(
       (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(formWithErrors))),
       (data: AdditionalNonSecuritiesWork) => {
-        s4LService.saveForm[AdditionalNonSecuritiesWork](data) flatMap {  _ =>
+        s4LService.save[AdditionalNonSecuritiesWork](data) flatMap {  _ =>
           if(!data.yesNo) {
             Future.successful(Redirect(controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show()))
           }else{

@@ -34,7 +34,7 @@ class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies)
   val form = BusinessContactDetailsForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[BusinessContactDetails].fold(form)(form.fill)
+    viewModel2[BusinessContactDetails].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatContact.business_contact_details(f)))
   })
 
@@ -42,7 +42,7 @@ class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       copyGlobalErrorsToFields("daytimePhone", "mobile")
         .andThen(form => BadRequest(views.html.pages.vatContact.business_contact_details(form)).pure),
-      s4l.saveForm(_).map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
+      s4l.save(_).map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
     )
   })
 

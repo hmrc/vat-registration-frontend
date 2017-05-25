@@ -33,7 +33,7 @@ class ZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
   import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[ZeroRatedSales].map { vm =>
+    viewModel2[ZeroRatedSales].map { vm =>
       Ok(views.html.pages.vatFinancials.zero_rated_sales(ZeroRatedSalesForm.form.fill(vm)))
     }.getOrElse(Ok(views.html.pages.vatFinancials.zero_rated_sales(ZeroRatedSalesForm.form)))
   })
@@ -44,7 +44,7 @@ class ZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.vatFinancials.zero_rated_sales(formWithErrors)))
       }, {
         data: ZeroRatedSales => {
-          s4LService.saveForm[ZeroRatedSales](data) flatMap { _ =>
+          s4LService.save[ZeroRatedSales](data) flatMap { _ =>
             if (ZeroRatedSales.ZERO_RATED_SALES_NO == data.yesNo) {
               vrs.deleteElement(ZeroRatedTurnoverEstimatePath).map { _ =>
                 Redirect(controllers.vatFinancials.routes.VatChargeExpectancyController.show()) }

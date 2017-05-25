@@ -174,7 +174,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     // TODO Special case
     def saveStartDate(data: TestSetup) = {
-      s4LService.saveForm[StartDateView](data.vatChoice.startDateChoice match {
+      s4LService.save[StartDateView](data.vatChoice.startDateChoice match {
         case None => StartDateView()
         case Some("SPECIFIC_DATE") => StartDateView(dateType = "SPECIFIC_DATE", date = Some(LocalDate.of(
           data.vatChoice.startDateYear.map(_.toInt).get,
@@ -191,7 +191,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
     }
 
     def saveToS4Later[T: Format : S4LKey](userEntered: Option[String], data: TestSetup, f: TestSetup => T): Future[Unit] =
-      userEntered.map(_ => s4LService.saveForm(f(data)).map(_ => ())).getOrElse(Future.successful(()))
+      userEntered.map(_ => s4LService.save(f(data)).map(_ => ())).getOrElse(Future.successful(()))
 
     TestSetupForm.form.bindFromRequest().fold(
       formWithErrors => {

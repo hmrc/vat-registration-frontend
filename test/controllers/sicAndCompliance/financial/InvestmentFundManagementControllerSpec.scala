@@ -101,7 +101,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[InvestmentFundManagement](any())(any(), any(), any()))
+      when(mockS4LService.save[InvestmentFundManagement](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapInvestmentFundManagement))
 
       submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -118,7 +118,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[InvestmentFundManagement](any())(any(), any(), any()))
+      when(mockS4LService.save[InvestmentFundManagement](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapInvestmentFundManagement))
 
       submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(

@@ -40,7 +40,7 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
       private val cacheMap = CacheMap("s-date", Map.empty)
       mockS4LSaveForm[StartDateView](cacheMap)
-      service.saveForm[StartDateView](tstStartDateModel) returns cacheMap
+      service.save[StartDateView](tstStartDateModel) returns cacheMap
     }
 
     "fetch a form with the correct key" in new Setup {

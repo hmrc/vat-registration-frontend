@@ -35,7 +35,7 @@ class VoluntaryRegistrationReasonController @Inject()(ds: CommonPlayDependencies
   val form = VoluntaryRegistrationReasonForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[VoluntaryRegistrationReason].fold(form)(form.fill)
+    viewModel2[VoluntaryRegistrationReason].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatTradingDetails.vatChoice.voluntary_registration_reason(f)))
   })
 
@@ -45,7 +45,7 @@ class VoluntaryRegistrationReasonController @Inject()(ds: CommonPlayDependencies
       (data: VoluntaryRegistrationReason) =>
         (data.reason == VoluntaryRegistrationReason.NEITHER).pure.ifM(
           s4l.clear().flatMap(_ => vrs.deleteVatScheme()).map(_ => controllers.routes.WelcomeController.show()),
-          s4l.saveForm(data).map(_ => controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
+          s4l.save(data).map(_ => controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
         ).map(Redirect)
     )
   })

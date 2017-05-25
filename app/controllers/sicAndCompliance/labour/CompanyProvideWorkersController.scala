@@ -33,7 +33,7 @@ class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
   import cats.instances.future._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[CompanyProvideWorkers].map { vm =>
+    viewModel2[CompanyProvideWorkers].map { vm =>
       Ok(views.html.pages.sicAndCompliance.labour.company_provide_workers(CompanyProvideWorkersForm.form.fill(vm)))
     }.getOrElse(Ok(views.html.pages.sicAndCompliance.labour.company_provide_workers(CompanyProvideWorkersForm.form)))
   })
@@ -46,7 +46,7 @@ class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
         data: CompanyProvideWorkers => {
           // TODO delete any existing non-cultural compliance questions
           vrs.deleteElement(FinancialCompliancePath).flatMap { _ =>
-            s4LService.saveForm[CompanyProvideWorkers](data) map { _ =>
+            s4LService.save[CompanyProvideWorkers](data) map { _ =>
               if (CompanyProvideWorkers.PROVIDE_WORKERS_YES == data.yesNo) {
                 Redirect(controllers.sicAndCompliance.labour.routes.WorkersController.show())
               } else {

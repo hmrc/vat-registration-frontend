@@ -29,9 +29,10 @@ import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirth
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
+import play.api.libs.json.{Json, OFormat}
 
 
-case class S4LVatFinancials
+final case class S4LVatFinancials
 (
   estimateVatTurnover: Option[EstimateVatTurnover],
   zeroRatedTurnoverEstimate: Option[EstimateZeroRatedSales],
@@ -41,7 +42,11 @@ case class S4LVatFinancials
   companyBankAccountDetails: Option[CompanyBankAccountDetails]
 )
 
-case class S4LTradingDetails
+object S4LVatFinancials {
+  implicit val format: OFormat[S4LVatFinancials] = Json.format[S4LVatFinancials]
+}
+
+final case class S4LTradingDetails
 (
   tradingName: Option[TradingNameView],
   startDate: Option[StartDateView],
@@ -51,7 +56,11 @@ case class S4LTradingDetails
   applyEori: Option[ApplyEori]
 )
 
-case class S4LVatSicAndCompliance
+object S4LTradingDetails {
+  implicit val format: OFormat[S4LTradingDetails] = Json.format[S4LTradingDetails]
+}
+
+final case class S4LVatSicAndCompliance
 (
   description: Option[BusinessActivityDescription],
 
@@ -75,21 +84,37 @@ case class S4LVatSicAndCompliance
   manageAdditionalFunds: Option[ManageAdditionalFunds]
 )
 
-case class S4LVatContact
+object S4LVatSicAndCompliance {
+  implicit val format: OFormat[S4LVatSicAndCompliance] = Json.format[S4LVatSicAndCompliance]
+}
+
+final case class S4LVatContact
 (
   businessContactDetails: Option[BusinessContactDetails]
 )
 
-case class S4LVatEligibility
+object S4LVatContact {
+  implicit val format: OFormat[S4LVatContact] = Json.format[S4LVatContact]
+}
+
+final case class S4LVatEligibility
 (
   vatEligibility: Option[VatServiceEligibility]
 )
 
-case class S4LVatLodgingOfficer
+object S4LVatEligibility {
+  implicit val format: OFormat[S4LVatEligibility] = Json.format[S4LVatEligibility]
+}
+
+final case class S4LVatLodgingOfficer
 (
   officerHomeAddressView: Option[OfficerHomeAddressView],
   officerDateOfBirthView: Option[OfficerDateOfBirthView],
   officerNinoView: Option[OfficerNinoView],
   completionCapacityView: Option[CompletionCapacityView]
 )
+
+object S4LVatLodgingOfficer {
+  implicit val format: OFormat[S4LVatLodgingOfficer] = Json.format[S4LVatLodgingOfficer]
+}
 

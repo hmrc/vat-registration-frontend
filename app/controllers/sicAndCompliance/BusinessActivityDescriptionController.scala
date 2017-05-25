@@ -36,14 +36,14 @@ class BusinessActivityDescriptionController @Inject()(ds: CommonPlayDependencies
   val form: Form[BusinessActivityDescription] = BusinessActivityDescriptionForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[BusinessActivityDescription].fold(form)(form.fill)
+    viewModel2[BusinessActivityDescription].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.business_activity_description(f)))
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.business_activity_description(formWithErrors))),
-      (data: BusinessActivityDescription) => s4l.saveForm[BusinessActivityDescription](data.copy(description = data.description.trim))
+      (data: BusinessActivityDescription) => s4l.save[BusinessActivityDescription](data.copy(description = data.description.trim))
         .map(_ => Redirect(controllers.test.routes.SicStubController.show()))
     )
   )

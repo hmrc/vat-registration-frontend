@@ -18,9 +18,9 @@ package models.view.vatLodgingOfficer
 
 import java.time.LocalDate
 
+import models._
 import models.api.{DateOfBirth, VatLodgingOfficer, VatScheme}
-import models.{ApiModelTransformer, DateModel, ViewModelTransformer}
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class OfficerDateOfBirthView(dob: LocalDate)
 
@@ -31,17 +31,25 @@ object OfficerDateOfBirthView {
 
   implicit val format = Json.format[OfficerDateOfBirthView]
 
+
+  implicit val vmReads: VMReads[OfficerDateOfBirthView] = new VMReads[OfficerDateOfBirthView] {
+    override type Group = S4LVatLodgingOfficer
+    override val key: String = "VatLodgingOfficer"
+
+
+    override def read(group: Group): Option[OfficerDateOfBirthView] = group.officerDateOfBirthView
+  }
+
   // return a view model from a VatScheme instance
   implicit val modelTransformer = ApiModelTransformer[OfficerDateOfBirthView] { vs: VatScheme =>
     vs.lodgingOfficer.map(_.dob).collect {
-      case DateOfBirth(d,m,y) => OfficerDateOfBirthView(LocalDate.of(y, m, d))
+      case DateOfBirth(d, m, y) => OfficerDateOfBirthView(LocalDate.of(y, m, d))
     }
   }
 
   // return a new or updated VatLodgingOfficer from the CurrentAddressView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerDateOfBirthView, g: VatLodgingOfficer) => {
-      g.copy(dob = DateOfBirth(c.dob.getDayOfMonth, c.dob.getMonthValue, c.dob.getYear))
-    }
+  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerDateOfBirthView, g: VatLodgingOfficer) =>
+    g.copy(dob = DateOfBirth(c.dob.getDayOfMonth, c.dob.getMonthValue, c.dob.getYear))
   }
 
 }

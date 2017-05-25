@@ -35,14 +35,14 @@ class ManageAdditionalFundsController @Inject()(ds: CommonPlayDependencies)
   val form: Form[ManageAdditionalFunds] = ManageAdditionalFundsForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[ManageAdditionalFunds].fold(form)(form.fill)
+    viewModel2[ManageAdditionalFunds].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.financial.manage_additional_funds(f)))
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.manage_additional_funds(formWithErrors))),
-      (data: ManageAdditionalFunds) => s4LService.saveForm[ManageAdditionalFunds](data)
+      (data: ManageAdditionalFunds) => s4LService.save[ManageAdditionalFunds](data)
         .map(_ => Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))
     )
   )

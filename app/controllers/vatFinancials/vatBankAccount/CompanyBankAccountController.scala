@@ -36,7 +36,7 @@ class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
   val form = CompanyBankAccountForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[CompanyBankAccount].map { vm =>
+    viewModel2[CompanyBankAccount].map { vm =>
       Ok(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(CompanyBankAccountForm.form.fill(vm)))
     }.getOrElse(Ok(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(CompanyBankAccountForm.form)))
   })
@@ -46,7 +46,7 @@ class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
       formWithErrors => BadRequest(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(formWithErrors)).pure
       ,
       (data: CompanyBankAccount) => {
-        s4l.saveForm(data).map(_ => data.yesNo == CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES).ifM(
+        s4l.save(data).map(_ => data.yesNo == CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES).ifM(
           controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show().pure,
           vrs.deleteElement(VatBankAccountPath).map { _ =>
             controllers.vatFinancials.routes.EstimateVatTurnoverController.show()

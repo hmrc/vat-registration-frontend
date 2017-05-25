@@ -65,7 +65,7 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
   def show(q: String): Action[AnyContent] = authorised.async(implicit user => implicit request => {
     val question = EligibilityQuestion(q)
     val form: Form[YesOrNoQuestion] = formFactory.form(question.name)
-    viewModel[VatServiceEligibility]
+    viewModel2[VatServiceEligibility]
       .flatMap(e => OptionT.fromOption(e.getAnswer(question)))
       .fold(form)(answer => form.fill(YesOrNoQuestion(question.name, answer)))
       .map(f => Ok(viewForQuestion(question, f)))
@@ -78,8 +78,8 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
       badForm => BadRequest(viewForQuestion(question, badForm)).pure,
       (data: YesOrNoQuestion) =>
         for {
-          vatEligibility <- viewModel[VatServiceEligibility].getOrElse(VatServiceEligibility())
-          _ <- s4LService.saveForm(vatEligibility.setAnswer(question, data.answer))
+          vatEligibility <- viewModel2[VatServiceEligibility].getOrElse(VatServiceEligibility())
+          _ <- s4LService.save(vatEligibility.setAnswer(question, data.answer))
           exit = data.answer == question.exitAnswer
           _ <- keystore.cache(INELIGIBILITY_REASON_KEY, question.name) onlyIf exit
         } yield Redirect(

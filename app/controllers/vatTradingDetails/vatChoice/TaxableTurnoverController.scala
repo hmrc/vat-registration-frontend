@@ -38,17 +38,17 @@ class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies)
   val form = TaxableTurnoverForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[TaxableTurnover].fold(form)(form.fill)
+    viewModel2[TaxableTurnover].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatTradingDetails.vatChoice.taxable_turnover(f)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatTradingDetails.vatChoice.taxable_turnover(badForm)).pure,
-      (data: TaxableTurnover) => s4LService.saveForm(data).map(_ => data.yesNo == TAXABLE_YES).ifM(
+      (data: TaxableTurnover) => s4LService.save(data).map(_ => data.yesNo == TAXABLE_YES).ifM(
         for {
-          _ <- s4LService.saveForm(VoluntaryRegistration(REGISTER_NO))
-          _ <- s4LService.saveForm(StartDateView(COMPANY_REGISTRATION_DATE))
+          _ <- s4LService.save(VoluntaryRegistration(REGISTER_NO))
+          _ <- s4LService.save(StartDateView(COMPANY_REGISTRATION_DATE))
         } yield controllers.vatLodgingOfficer.routes.CompletionCapacityController.show(),
         controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show().pure
       ) map Redirect

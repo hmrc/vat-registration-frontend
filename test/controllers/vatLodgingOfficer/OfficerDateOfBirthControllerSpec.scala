@@ -78,7 +78,7 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.OfficerDateOfBirthController.submit()} with valid DateOfBirth entered" should {
 
     "return 303" in {
-      when(mockS4LService.saveForm[OfficerDateOfBirthView](any())(any(), any(), any()))
+      when(mockS4LService.save[OfficerDateOfBirthView](any())(any(), any(), any()))
         .thenReturn(CacheMap("", Map("" -> Json.toJson(OfficerDateOfBirthView(LocalDate.of(1980, 1, 1))))).pure)
 
       submitAuthorised(TestOfficerDateOfBirthController.submit(),

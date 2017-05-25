@@ -36,7 +36,7 @@ class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
   val form: Form[InvestmentFundManagement] = InvestmentFundManagementForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[InvestmentFundManagement].fold(form)(form.fill)
+    viewModel2[InvestmentFundManagement].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.financial.investment_fund_management(f)))
   )
 
@@ -46,7 +46,7 @@ class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
         Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.investment_fund_management(formWithErrors)))
       }, {
         data: InvestmentFundManagement => {
-          s4LService.saveForm[InvestmentFundManagement](data) flatMap { _ =>
+          s4LService.save[InvestmentFundManagement](data) flatMap { _ =>
             if (data.yesNo) {
               Future.successful(Redirect(controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show()))
             } else {

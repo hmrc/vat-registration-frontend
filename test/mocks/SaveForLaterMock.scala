@@ -49,7 +49,7 @@ trait SaveForLaterMock {
   }
 
   def mockS4LSaveForm[T:S4LKey](cacheMap: CacheMap, mockS4LConnector: S4LConnector = mockS4LConnector) : OngoingStubbing[Future[CacheMap]] = {
-    when(mockS4LConnector.saveForm[T](Matchers.anyString(), Matchers.contains(S4LKey[T].key),
+    when(mockS4LConnector.save[T](Matchers.anyString(), Matchers.contains(S4LKey[T].key),
       Matchers.any[T]())(Matchers.any[HeaderCarrier](), Matchers.any[Format[T]]()))
       .thenReturn(Future.successful(cacheMap))
   }

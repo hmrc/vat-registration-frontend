@@ -52,7 +52,7 @@ class SicStubController @Inject()(s4LService: S4LService, vatRegistrationConnect
         Future.successful(BadRequest(views.html.pages.test.sic_stub(formWithErrors)))
       }, {
         data: SicStub => {
-          s4LService.saveForm[SicStub](data) map { _ =>
+          s4LService.save[SicStub](data) map { _ =>
             ComplianceQuestions(data.sicCodes) match {
               case NoComplianceQuestions =>
                 Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
