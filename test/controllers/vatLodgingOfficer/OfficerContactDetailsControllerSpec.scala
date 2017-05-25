@@ -19,7 +19,7 @@ package controllers.vatLodgingOfficer
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.S4LKey
-import models.view.vatLodgingOfficer.{OfficerContactDetails, OfficerNinoView}
+import models.view.vatLodgingOfficer.OfficerContactDetails
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -29,11 +29,13 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-import cats.syntax.applicative._
+  import cats.instances.future._
+  import cats.syntax.applicative._
 
   object TestOfficerContactDetailsController extends OfficerContactDetailsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -50,7 +52,7 @@ import cats.syntax.applicative._
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestOfficerContactDetailsController.show()) {
-        _ includesText "Company contact details"
+        _ includesText "What are your contact details?"
       }
     }
 
@@ -61,7 +63,7 @@ import cats.syntax.applicative._
         .thenReturn(Future.successful(Some(validOfficerContactDetails)))
 
       callAuthorised(TestOfficerContactDetailsController.show) {
-        _ includesText "Company contact details"
+        _ includesText "What are your contact details?"
       }
     }
 
@@ -73,7 +75,7 @@ import cats.syntax.applicative._
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestOfficerContactDetailsController.show) {
-        _ includesText "Company contact details"
+        _ includesText "What are your contact details?"
       }
     }
   }
@@ -86,7 +88,7 @@ import cats.syntax.applicative._
     }
   }
 
-  s"POST ${routes.OfficerContactDetailsController.submit()} with valid Officer Contact Details entered and default Voluntary Reg = YES" should {
+  s"POST ${routes.OfficerContactDetailsController.submit()} with valid Officer Contact Details entered and default Voluntary Reg = Yes" should {
 
     "return 303" in {
       val returnOfficerContactDetails = CacheMap("", Map("" -> Json.toJson(validOfficerContactDetails)))
@@ -104,7 +106,7 @@ import cats.syntax.applicative._
   s"POST ${routes.OfficerContactDetailsController.submit()} with valid Officer Contact Details entered and default Voluntary Reg = No" should {
 
     "return 303" in {
-      val returnOfficerContactDetails = CacheMap("", Map("" -> Json.toJson(validOfficerContactDetails)))
+      val returnOfficerContactDetails = CacheMap("", Map("" -> Json.toJson(OfficerContactDetails(None,None,None))))
       when(mockS4LService.saveForm[OfficerContactDetails](any())(any(), any(), any()))
         .thenReturn(returnOfficerContactDetails.pure)
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
@@ -118,18 +120,19 @@ import cats.syntax.applicative._
   }
 
 
-  s"POST ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.submit()} with valid officer contact details entered" should {
+  s"POST ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.submit()} with valid Officer Contact Details entered and no Voluntary Reg present" should {
 
     "return 303" in {
       val returnCacheMapOfficerContactDetails = CacheMap("", Map("" -> Json.toJson(validOfficerContactDetails)))
 
       when(mockS4LService.saveForm[OfficerContactDetails](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapOfficerContactDetails))
+      save4laterReturnsNothing[VoluntaryRegistration]()
 
       submitAuthorised(
         TestOfficerContactDetailsController.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com")
-      )(_ redirectsTo s"$contextRoot/business-activity-description")
+      )(_ redirectsTo s"$contextRoot/start-date")
 
     }
   }
