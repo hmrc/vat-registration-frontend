@@ -36,7 +36,7 @@ class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     for {
-      res <- viewModel[OfficerDateOfBirthView].fold(form)(form.fill)
+      res <- viewModel[OfficerDateOfBirthView]().fold(form)(form.fill)
     } yield Ok(views.html.pages.vatLodgingOfficer.officer_dob(res))
 
   })

@@ -50,7 +50,7 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
     for {
       addresses <- prePopService.getOfficerAddressList()
       _ <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
-      res <- viewModel[OfficerHomeAddressView].fold(form)(form.fill)
+      res <- viewModel[OfficerHomeAddressView]().fold(form)(form.fill)
     } yield Ok(views.html.pages.vatLodgingOfficer.officer_home_address(res, addresses))
   )
 

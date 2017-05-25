@@ -20,8 +20,6 @@ trait VMReads[T] {
 
   type Group
 
-  val key: String
-
   def read(group: Group): Option[T]
 
 }
@@ -29,5 +27,11 @@ trait VMReads[T] {
 object VMReads {
 
   type Aux[R, Group0] = VMReads[R] {type Group = Group0}
+
+  def apply[T, G](f: G => Option[T]) = new VMReads[T] {
+    override type Group = G
+
+    def read(group: Group): Option[T] = f(group)
+  }
 
 }

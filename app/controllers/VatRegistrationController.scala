@@ -65,10 +65,19 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
   (implicit s4l: S4LService, vrs: RegistrationService, hc: HeaderCarrier): OptionT[Future, T] =
     OptionT(s4l.fetchAndGet[T]()).orElseF(vrs.getVatScheme() map ApiModelTransformer[T].toViewModel)
 
-  protected[controllers] def viewModel[T: ApiModelTransformer : VMReads]
-  ()
-  (implicit s4l: S4LService, vrs: RegistrationService, hc: HeaderCarrier): OptionT[Future, T] =
-    s4l.getViewModel[T]().orElseF(vrs.getVatScheme() map ApiModelTransformer[T].toViewModel)
+  protected[controllers] def viewModel[T] = new WrapHelper[T]
+
+  protected final class WrapHelper[T] {
+    def apply[G]()
+                (implicit s4l: S4LService,
+                 vrs: RegistrationService,
+                 r: VMReads.Aux[T, G],
+                 f: Format[G],
+                 k: S4LKey[G],
+                 hc: HeaderCarrier,
+                 transformer: ApiModelTransformer[T]): OptionT[Future, T] =
+      s4l.getViewModel[T, G]().orElseF(vrs.getVatScheme() map transformer.toViewModel)
+  }
 
   protected[controllers] def copyGlobalErrorsToFields[T](globalErrors: String*): Form[T] => Form[T] =
     fwe => fwe.copy(errors = fwe.errors ++ fwe.globalErrors.collect {

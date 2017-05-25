@@ -83,5 +83,6 @@ object S4LKey {
   implicit val officerNino: S4LKey[OfficerNinoView] = S4LKey("VatLodgingOfficer")
   implicit val completionCapacity: S4LKey[CompletionCapacityView] = S4LKey("VatLodgingOfficer")
 
+  implicit val vatLodgingOfficer: S4LKey[S4LVatLodgingOfficer] = S4LKey("VatLodgingOfficer")
 
 }

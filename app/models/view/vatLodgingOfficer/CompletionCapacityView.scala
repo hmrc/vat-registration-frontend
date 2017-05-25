@@ -29,11 +29,8 @@ object CompletionCapacityView {
 
   implicit val format = Json.format[CompletionCapacityView]
 
-  implicit val vmReads: VMReads[CompletionCapacityView] = new VMReads[CompletionCapacityView] {
-    override type Group = S4LVatLodgingOfficer
-    override val key: String = "VatLodgingOfficer"
-
-    override def read(group: Group): Option[CompletionCapacityView] = group.completionCapacityView
+  implicit val vmReads = VMReads { group: S4LVatLodgingOfficer =>
+    group.completionCapacityView
   }
 
   // return a view model from a VatScheme instance
