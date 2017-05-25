@@ -74,48 +74,16 @@ class OfficerNinoControllerSpec extends VatRegSpec with VatRegistrationFixture w
 
   }
 
-  s"POST ${routes.OfficerNinoController.submit()} with valid Nino entered and default Voluntary Reg = YES" should {
+  s"POST ${routes.OfficerNinoController.submit()} with valid Nino entered" should {
 
-    "return 303 (to /start-date)" in {
-      val returnOfficerNinoView = CacheMap("", Map("" -> Json.toJson(OfficerNinoView("NB686868C"))))
-      save4laterReturns(VoluntaryRegistration.yes)
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
-      when(mockS4LService.saveForm[OfficerNinoView](any())(any(), any(), any())).thenReturn(returnOfficerNinoView.pure)
-
-      submitAuthorised(TestOfficerNinoController.submit(),
-        fakeRequest.withFormUrlEncodedBody("nino" -> "NB686868C")
-      )(_ redirectsTo s"$contextRoot/start-date")
-
-    }
-  }
-
-  s"POST ${routes.OfficerNinoController.submit()} with valid Nino entered and default Voluntary Reg = No" should {
-
-    "return 303 (to /start-date-confirmation)" in {
-      val returnOfficerNinoView = CacheMap("", Map("" -> Json.toJson(OfficerNinoView("NB686868C"))))
-      when(mockS4LService.saveForm[OfficerNinoView](any())(any(), any(), any()))
-        .thenReturn(returnOfficerNinoView.pure)
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
-      save4laterReturns(VoluntaryRegistration.no)
-
-      submitAuthorised(TestOfficerNinoController.submit(),
-        fakeRequest.withFormUrlEncodedBody("nino" -> "NB686868C")
-      )(_ redirectsTo s"$contextRoot/start-date-confirmation")
-
-    }
-  }
-
-  s"POST ${routes.OfficerNinoController.submit()} with valid Nino entered and no Voluntary Reg present" should {
-
-    "return 303 (to /start-date-confirmation)" in {
+    "return 303" in {
       val returnOfficerNinoView = CacheMap("", Map("" -> Json.toJson(OfficerNinoView("NB686868C"))))
 
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
       when(mockS4LService.saveForm[OfficerNinoView](any())(any(), any(), any())).thenReturn(returnOfficerNinoView.pure)
-      save4laterReturnsNothing[VoluntaryRegistration]()
 
       submitAuthorised(TestOfficerNinoController.submit(), fakeRequest.withFormUrlEncodedBody("nino" -> "NB686868C")) {
-        _ redirectsTo s"$contextRoot/start-date"
+        _ redirectsTo s"$contextRoot/your-contact-details"
       }
 
     }

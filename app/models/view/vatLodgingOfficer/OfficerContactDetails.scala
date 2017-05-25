@@ -16,9 +16,8 @@
 
 package models.view.vatLodgingOfficer
 
+import models.api.{VatLodgingOfficer, VatScheme}
 import models.{ApiModelTransformer, ViewModelTransformer}
-import models.api.{VatContact, VatDigitalContact, VatLodgingOfficer, VatScheme}
-import models.view.vatContact.BusinessContactDetails
 import play.api.libs.json.{Json, OFormat}
 
 case class OfficerContactDetails(
@@ -32,10 +31,12 @@ object OfficerContactDetails {
 
   implicit val format: OFormat[OfficerContactDetails] = Json.format[OfficerContactDetails]
 
+  //TODO Implement as part of SCRS-7006 and SCRS-7059
   implicit val modelTransformer = ApiModelTransformer[OfficerContactDetails] { (vs: VatScheme) =>
     Some(OfficerContactDetails(None,None,None))
   }
 
+  //TODO Implement as part of SCRS-7006 and SCRS-7059
   implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerContactDetails, g: VatLodgingOfficer) =>
     g
   }

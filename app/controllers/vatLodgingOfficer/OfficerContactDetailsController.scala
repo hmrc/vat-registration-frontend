@@ -20,7 +20,8 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerContactDetailsForm
-import models.view.vatLodgingOfficer.OfficerContactDetails
+import models.view.vatLodgingOfficer.{OfficerContactDetails, OfficerNinoView}
+import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -30,6 +31,7 @@ class OfficerContactDetailsController @Inject()(ds: CommonPlayDependencies)
 
   import cats.instances.future._
   import cats.syntax.applicative._
+  import cats.syntax.flatMap._
 
   val form = OfficerContactDetailsForm.form
 
@@ -42,7 +44,15 @@ class OfficerContactDetailsController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       copyGlobalErrorsToFields("email", "daytimePhone", "mobile")
         .andThen(form => BadRequest(views.html.pages.vatLodgingOfficer.officer_contact_details(form)).pure),
-      s4l.saveForm(_).map(_ => Redirect(controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()))
+      data => {
+        s4l.saveForm[OfficerContactDetails](data) flatMap {
+          _ => viewModel[VoluntaryRegistration]
+            .map(_ == VoluntaryRegistration.yes).getOrElse(true).ifM(
+            controllers.vatTradingDetails.vatChoice.routes.StartDateController.show().pure,
+            controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show().pure
+          ).map(Redirect)
+        }
+      }
     )
   })
 
