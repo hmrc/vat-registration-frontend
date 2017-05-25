@@ -127,10 +127,10 @@ $(document).ready($(function () {
         var daytimePhoneError = $('#daytimePhone-error-summary');
         var mobileError = $('#mobile-error-summary');
         var emailError = $('#email-error-summary');
-        if (daytimePhoneError.text() === mobileError.text())
+        if (emailError.text() === mobileError.text())
             mobileError.parent('li').hide();
-        if (daytimePhoneError.text() === emailError.text())
-            emailError.parent('li').hide();
+        if (emailError.text() === daytimePhoneError.text())
+            daytimePhoneError.parent('li').hide();
     }
 }(window.OfficerContactDetailsPage = window.OfficerContactDetailsPage || {}, jQuery));
 
