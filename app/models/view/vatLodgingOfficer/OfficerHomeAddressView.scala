@@ -18,7 +18,7 @@ package models.view.vatLodgingOfficer
 
 import models._
 import models.api.{ScrsAddress, VatLodgingOfficer, VatScheme}
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.Json
 
 case class OfficerHomeAddressView(addressId: String, address: Option[ScrsAddress] = None)
 
@@ -33,6 +33,7 @@ object OfficerHomeAddressView {
 
     override def read(group: Group): Option[OfficerHomeAddressView] = group.officerHomeAddressView
   }
+
 
   // return a view model from a VatScheme instance
   implicit val modelTransformer = ApiModelTransformer[OfficerHomeAddressView] { vs: VatScheme =>
