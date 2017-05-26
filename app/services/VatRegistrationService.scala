@@ -31,7 +31,6 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
-import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
@@ -84,7 +83,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
 
   def deleteElements(elementPaths: List[ElementPath])(implicit hc: HeaderCarrier): Future[Unit] = {
     import cats.instances.list._
-    elementPaths.traverse_(deleteElement)
+    elementPaths traverse_ deleteElement
   }
 
 
@@ -222,12 +221,10 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   }
 
   private[services] def submitVatLodgingOfficer()(implicit hc: HeaderCarrier): Future[VatLodgingOfficer] = {
-    def mergeWithS4L(vs: VatScheme) =
-      (s4l[OfficerHomeAddressView]() |@|
-        s4l[OfficerDateOfBirthView]() |@|
-        s4l[OfficerNinoView]() |@|
-        s4l[CompletionCapacityView]())
-        .map(S4LVatLodgingOfficer.apply).map { s4l =>
+    def merge(fresh: Option[S4LVatLodgingOfficer], vs: VatScheme): VatLodgingOfficer =
+      fresh.fold(
+        vs.lodgingOfficer.getOrElse(throw fail("VatLodgingOfficer"))
+      ) { s4l =>
         update(s4l.officerHomeAddressView, vs)
           .andThen(update(s4l.officerDateOfBirthView, vs))
           .andThen(update(s4l.officerNinoView, vs))
@@ -236,10 +233,12 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       }
 
     for {
-      vs <- getVatScheme()
-      vatLodgingOfficer <- mergeWithS4L(vs)
-      response <- vatRegConnector.upsertVatLodgingOfficer(vs.id, vatLodgingOfficer)
+      (vs, vlo) <- (getVatScheme() |@| s4l[S4LVatLodgingOfficer]()).tupled
+      response <- vatRegConnector.upsertVatLodgingOfficer(vs.id, merge(vlo, vs))
     } yield response
   }
 
+
+  private def fail(logicalGroup: String): Throwable =
+    new AssertionError(s"$logicalGroup data expected to be found in either backend or save for later")
 }

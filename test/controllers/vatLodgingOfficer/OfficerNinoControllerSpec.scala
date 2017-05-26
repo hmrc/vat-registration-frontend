@@ -45,7 +45,7 @@ class OfficerNinoControllerSpec extends VatRegSpec with VatRegistrationFixture w
   s"GET ${routes.OfficerNinoController.show()}" should {
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer.empty))
+      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(validLodgingOfficer))
       save4laterReturnsNothing[OfficerNinoView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
 
