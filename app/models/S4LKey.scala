@@ -82,6 +82,6 @@ object S4LKey {
   implicit val officerNino: S4LKey[OfficerNinoView] = S4LKey("OfficerNinoView")
   implicit val officerContactDetails: S4LKey[OfficerContactDetails] = S4LKey("OfficerContactDetails")
   implicit val completionCapacityView: S4LKey[CompletionCapacityView] = S4LKey("CompletionCapacityView")
-
+  implicit val formerNameView: S4LKey[FormerNameView] = S4LKey("FormerNameView")
 
 }

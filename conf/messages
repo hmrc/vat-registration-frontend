@@ -652,3 +652,12 @@ validation.officerContact.missing                        = Enter at least one co
 validation.officerContactDetails.mobile.invalid          = Enter a valid mobile phone number
 validation.officerContactDetails.daytimePhone.invalid    = Enter a valid daytime phone number
 validation.officerContactDetails.email.invalid           = Enter a valid email address
+
+## Former Name
+pages.formerName.title                                   = Director''s Name
+pages.formerName.heading                                 = Have you ever changed your name?
+pages.formerName.p1                                      = You only need to provide former names which have been used for business purposes in the last 20 years.
+pages.formerName.fullName.label                          = Full name
+validation.formerName.missing                            = Tell us if the director has used a different name for business purposes in the last 20 years
+validation.formerName.selected.missing                   = Tell us the director''s former name
+validation.formerName.selected.invalid                   = Enter a valid former name
