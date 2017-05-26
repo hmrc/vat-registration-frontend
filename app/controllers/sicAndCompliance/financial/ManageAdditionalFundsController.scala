@@ -21,31 +21,24 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.financial.ManageAdditionalFundsForm
 import models.view.sicAndCompliance.financial.ManageAdditionalFunds
-import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
-
-import scala.concurrent.Future
 
 
 class ManageAdditionalFundsController @Inject()(ds: CommonPlayDependencies)
                                                (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
-  import cats.instances.future._
 
-  val form: Form[ManageAdditionalFunds] = ManageAdditionalFundsForm.form
+  val form = ManageAdditionalFundsForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel2[ManageAdditionalFunds].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.manage_additional_funds(f)))
-  )
+      .map(f => Ok(views.html.pages.sicAndCompliance.financial.manage_additional_funds(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.manage_additional_funds(formWithErrors))),
-      (data: ManageAdditionalFunds) => s4LService.save[ManageAdditionalFunds](data)
-        .map(_ => Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))
-    )
-  )
+      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.manage_additional_funds(badForm)).pure,
+      data => s4LService.save(data).map(_ =>
+        Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))))
 
 }
 

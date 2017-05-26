@@ -30,8 +30,6 @@ import scala.concurrent.Future
 
 class ZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
                                         (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
-  import cats.instances.future._
-
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     viewModel2[ZeroRatedSales].map { vm =>
       Ok(views.html.pages.vatFinancials.zero_rated_sales(ZeroRatedSalesForm.form.fill(vm)))
@@ -40,14 +38,15 @@ class ZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     ZeroRatedSalesForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.vatFinancials.zero_rated_sales(formWithErrors)))
+      badForm => {
+        Future.successful(BadRequest(views.html.pages.vatFinancials.zero_rated_sales(badForm)))
       }, {
         data: ZeroRatedSales => {
           s4LService.save[ZeroRatedSales](data) flatMap { _ =>
             if (ZeroRatedSales.ZERO_RATED_SALES_NO == data.yesNo) {
               vrs.deleteElement(ZeroRatedTurnoverEstimatePath).map { _ =>
-                Redirect(controllers.vatFinancials.routes.VatChargeExpectancyController.show()) }
+                Redirect(controllers.vatFinancials.routes.VatChargeExpectancyController.show())
+              }
             } else {
               Future.successful(Redirect(controllers.vatFinancials.routes.EstimateZeroRatedSalesController.show()))
             }

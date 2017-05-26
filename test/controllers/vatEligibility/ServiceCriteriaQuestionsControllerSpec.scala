@@ -16,7 +16,6 @@
 
 package controllers.vatEligibility
 
-import builders.AuthBuilder
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import forms.vatEligibility.ServiceCriteriaFormFactory
@@ -31,12 +30,7 @@ import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistrationFixture {
-
-  import cats.instances.future._
-  import cats.syntax.applicative._
 
   val mockVatRegService = mock[VatRegistrationService]
 

@@ -19,7 +19,6 @@ package controllers.vatTradingDetails.vatChoice
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 
-import builders.AuthBuilder
 import cats.data.OptionT
 import common.Now
 import fixtures.VatRegistrationFixture
@@ -34,7 +33,7 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DateService, PrePopService, VatRegistrationService}
+import services.DateService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -44,14 +43,8 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   val today: LocalDate = LocalDate.of(2017, 3, 21)
 
-
-
   val mockDateService = mock[DateService]
   when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
-
-  import cats.instances.future._
-  import scala.concurrent.ExecutionContext.Implicits.global
-
   when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
   val startDateFormFactory = new StartDateFormFactory(mockDateService, Now[LocalDate](today))

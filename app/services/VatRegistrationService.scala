@@ -225,10 +225,10 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       fresh.fold(
         vs.lodgingOfficer.getOrElse(throw fail("VatLodgingOfficer"))
       ) { s4l =>
-        update(s4l.officerHomeAddressView, vs)
-          .andThen(update(s4l.officerDateOfBirthView, vs))
-          .andThen(update(s4l.officerNinoView, vs))
-          .andThen(update(s4l.completionCapacityView, vs))
+        update(s4l.officerHomeAddress, vs)
+          .andThen(update(s4l.officerDateOfBirth, vs))
+          .andThen(update(s4l.officerNino, vs))
+          .andThen(update(s4l.completionCapacity, vs))
           .apply(vs.lodgingOfficer.getOrElse(VatLodgingOfficer.empty)) //TODO remove the "seeding" with empty
       }
 

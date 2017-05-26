@@ -27,9 +27,9 @@ object OfficerHomeAddressView {
   implicit val format = Json.format[OfficerHomeAddressView]
 
   implicit val vmReads = VMReads(
-    readF = (group: S4LVatLodgingOfficer) => group.officerHomeAddressView,
+    readF = (group: S4LVatLodgingOfficer) => group.officerHomeAddress,
     updateF = (c: OfficerHomeAddressView, g: Option[S4LVatLodgingOfficer]) =>
-      g.getOrElse(S4LVatLodgingOfficer()).copy(officerHomeAddressView = Some(c))
+      g.getOrElse(S4LVatLodgingOfficer()).copy(officerHomeAddress = Some(c))
   )
 
   // return a view model from a VatScheme instance

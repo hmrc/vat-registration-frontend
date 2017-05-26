@@ -30,15 +30,9 @@ import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, Call, Request}
 import services.{RegistrationService, S4LService}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
-
 class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, formFactory: ServiceCriteriaFormFactory)
                                                   (implicit s4LService: S4LService, vrs: RegistrationService)
   extends VatRegistrationController(ds) {
-
-  import cats.instances.future._
-  import cats.syntax.applicative._
 
   // $COVERAGE-OFF$
   lazy val keystore: KeystoreConnector = KeystoreConnector
@@ -76,21 +70,17 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
     import common.ConditionalFlatMap._
     formFactory.form(question.name).bindFromRequest().fold(
       badForm => BadRequest(viewForQuestion(question, badForm)).pure,
-      (data: YesOrNoQuestion) =>
-        for {
-          vatEligibility <- viewModel2[VatServiceEligibility].getOrElse(VatServiceEligibility())
-          _ <- s4LService.save(vatEligibility.setAnswer(question, data.answer))
-          exit = data.answer == question.exitAnswer
-          _ <- keystore.cache(INELIGIBILITY_REASON_KEY, question.name) onlyIf exit
-        } yield Redirect(
-          if (exit) eligibilityRoutes.ServiceCriteriaQuestionsController.ineligible() else nextQuestion(question)
-        )
-    )
+      data => for {
+        vatEligibility <- viewModel2[VatServiceEligibility].getOrElse(VatServiceEligibility())
+        _ <- s4LService.save(vatEligibility.setAnswer(question, data.answer))
+        exit = data.answer == question.exitAnswer
+        _ <- keystore.cache(INELIGIBILITY_REASON_KEY, question.name) onlyIf exit
+      } yield Redirect(
+        if (exit) eligibilityRoutes.ServiceCriteriaQuestionsController.ineligible() else nextQuestion(question)))
   })
 
   def ineligible(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    OptionT(keystore.fetchAndGet[String](INELIGIBILITY_REASON_KEY)).getOrElse("").map {
-      failedQuestion => Ok(views.html.pages.vatEligibility.ineligible(failedQuestion))
-    })
+    OptionT(keystore.fetchAndGet[String](INELIGIBILITY_REASON_KEY)).getOrElse("")
+      .map(failedQuestion => Ok(views.html.pages.vatEligibility.ineligible(failedQuestion))))
 
 }

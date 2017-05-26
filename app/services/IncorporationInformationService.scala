@@ -26,12 +26,13 @@ import models.external.{CoHoCompanyProfile, Officer}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @ImplementedBy(classOf[IncorporationInformationService])
 trait IncorpInfoService {
   def getRegisteredOfficeAddress()(implicit hc: HeaderCarrier): OptionalResponse[ScrsAddress]
 
-  def getOfficerList()(implicit headerCarrier: HeaderCarrier): OptionalResponse[Seq[Officer]]
+  def getOfficerList()(implicit headerCarrier: HeaderCarrier): Future[Seq[Officer]]
 }
 
 class IncorporationInformationService @Inject()(iiConnector: IncorporationInformationConnector)
@@ -46,10 +47,10 @@ class IncorporationInformationService @Inject()(iiConnector: IncorporationInform
     } yield address: ScrsAddress // implicit conversion
   }
 
-  override def getOfficerList()(implicit headerCarrier: HeaderCarrier): OptionalResponse[Seq[Officer]] = {
-    for {
+  override def getOfficerList()(implicit headerCarrier: HeaderCarrier): Future[Seq[Officer]] = {
+    (for {
       companyProfile <- OptionT(keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile"))
       officerList <- iiConnector.getOfficerList(companyProfile.transactionId)
-    } yield officerList.items
+    } yield officerList.items).getOrElse(Seq.empty[Officer])
   }
 }

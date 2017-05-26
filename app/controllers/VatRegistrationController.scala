@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 
 import auth.VatTaxRegime
 import cats.data.OptionT
-import cats.instances.future._
+import cats.syntax.ApplicativeSyntax
 import config.FrontendAuthConnector
 import models.{ApiModelTransformer, S4LKey, VMReads}
 import play.api.Configuration
@@ -34,10 +34,12 @@ import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController with I18nSupport with Actions {
+abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController with I18nSupport with Actions with ApplicativeSyntax {
+
+  implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
+  implicit val futureInstances = cats.instances.future.catsStdInstancesForFuture
 
   //$COVERAGE-OFF$
   lazy val conf: Configuration = ds.conf
@@ -83,7 +85,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
   protected[controllers] def save[T] = new ViewModelUpdateHelper[T]
 
   protected final class ViewModelUpdateHelper[T] {
-    def apply[G](data:T)
+    def apply[G](data: T)
                 (implicit s4l: S4LService,
                  r: VMReads.Aux[T, G],
                  f: Format[G],

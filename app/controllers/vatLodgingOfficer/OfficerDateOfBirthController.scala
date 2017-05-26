@@ -29,24 +29,15 @@ class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
                                              vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with CommonService {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
-
   val form = OfficerDateOfBirthForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    for {
-      res <- viewModel[OfficerDateOfBirthView]().fold(form)(form.fill)
-    } yield Ok(views.html.pages.vatLodgingOfficer.officer_dob(res))
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel[OfficerDateOfBirthView]().fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_dob(f))))
 
-  })
-
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      formWithErrors => BadRequest(views.html.pages.vatLodgingOfficer.officer_dob(formWithErrors)).pure,
-      data => save(data) map { _ =>
-        Redirect(controllers.vatLodgingOfficer.routes.OfficerNinoController.show())
-      })
-  })
+      badForm => BadRequest(views.html.pages.vatLodgingOfficer.officer_dob(badForm)).pure,
+      data => save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerNinoController.show()))))
 
 }

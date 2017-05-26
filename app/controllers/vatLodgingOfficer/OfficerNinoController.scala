@@ -21,18 +21,12 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerNinoForm
 import models.view.vatLodgingOfficer.OfficerNinoView
-import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService, VatRegistrationService}
 
 class OfficerNinoController @Inject()(ds: CommonPlayDependencies)
-                                     (implicit s4l: S4LService,
-                                      vrs: VatRegistrationService)
+                                     (implicit s4l: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with CommonService {
-
-  import cats.instances.future._
-  import cats.syntax.applicative._
-  import cats.syntax.flatMap._
 
   val form = OfficerNinoForm.form
 
@@ -40,15 +34,10 @@ class OfficerNinoController @Inject()(ds: CommonPlayDependencies)
     viewModel[OfficerNinoView]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_nino(f))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      formWithErrors => BadRequest(views.html.pages.vatLodgingOfficer.officer_nino(formWithErrors)).pure,
-      data => save[OfficerNinoView](data) flatMap { _ =>
-        viewModel2[VoluntaryRegistration]
-          .map(_ == VoluntaryRegistration.yes).getOrElse(true).ifM(
-          controllers.vatTradingDetails.vatChoice.routes.StartDateController.show().pure,
-          controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show().pure
-        ).map(Redirect)
-      })
-  })
+      badForm => BadRequest(views.html.pages.vatLodgingOfficer.officer_nino(badForm)).pure,
+      data => save(data).map(_ =>
+        Redirect(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show()))))
+
 }

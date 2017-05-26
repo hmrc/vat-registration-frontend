@@ -26,16 +26,12 @@ import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 
 class VatChargeExpectancyController @Inject()(ds: CommonPlayDependencies)
                                              (implicit s4LService: S4LService,
                                               vatRegistrationService: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
   import cats.syntax.flatMap._
 
   val form = VatChargeExpectancyForm.form

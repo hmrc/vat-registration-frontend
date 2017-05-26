@@ -39,13 +39,10 @@ import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
 class ApplicationSubmissionController @Inject()(ds: CommonPlayDependencies)
-                                 (implicit s4LService: S4LService, vrs: VatRegistrationService)
+                                               (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = authorised.async { implicit user =>
-    implicit request =>
-        for {
-          vatScheme <- vrs.getVatScheme()
-        } yield Ok(views.html.pages.application_submission_confirmation(vatScheme.financials.getOrElse(VatFinancials.empty)))
-      }
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    vrs.getVatScheme().map(vs =>
+      Ok(views.html.pages.application_submission_confirmation(vs.financials.getOrElse(VatFinancials.empty)))))
 }
