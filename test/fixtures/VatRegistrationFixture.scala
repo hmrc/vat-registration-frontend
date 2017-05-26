@@ -92,9 +92,10 @@ trait VatRegistrationFixture {
     financialCompliance = None
   )
 
+  val validDob = DateOfBirth(12,11,1973)
+
   val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", validDob, None, None)
 
-  val validDob = DateOfBirth(1,16,1994)
   val validServiceEligibility = VatServiceEligibility(Some(true), Some(false), Some(false), Some(false), Some(false))
   val officerName = Name(Some("Reddy"), None, "Yattapu" , Some("Dr"))
   val validLodgingOfficer = VatLodgingOfficer(ScrsAddress("",""), DateOfBirth.empty, "","director", officerName)

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package models.external
+package models.api
 
 import fixtures.VatRegistrationFixture
-import models.api.{Name, Officer, OfficerList}
 import play.api.libs.json.{JsSuccess, JsValue, Json}
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -87,10 +86,15 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
           |        "other_forenames" : "Bimbly Bobblous",
           |        "surname" : "Bobbings"
           |    },
+          |    "date_of_birth" : {
+          |        "day" : 12,
+          |        "month" : 11,
+          |        "year" : 1973
+          |    },
           |    "officer_role" : "director"
           |}""".stripMargin)
 
-      Officer.wt.writes(officer) shouldBe bobJson
+       Officer.wt.writes(officer) shouldBe bobJson
     }
   }
 

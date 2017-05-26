@@ -21,7 +21,8 @@ import java.time.LocalDate
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.api.VatLodgingOfficer
+import models.ModelKeys.REGISTERING_OFFICER_KEY
+import models.api.{Officer, VatLodgingOfficer}
 import models.view.vatLodgingOfficer.OfficerDateOfBirthView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -48,6 +49,7 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer.empty))
       save4laterReturnsNothing[OfficerDateOfBirthView]()
+      mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
 
       callAuthorised(TestOfficerDateOfBirthController.show()) {
@@ -58,6 +60,7 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNothing[OfficerDateOfBirthView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.copy(lodgingOfficer = None).pure)
+      mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
 
       callAuthorised(TestOfficerDateOfBirthController.show()) {
         _ includesText "What is your date of birth"
@@ -80,6 +83,7 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
     "return 303" in {
       when(mockS4LService.saveForm[OfficerDateOfBirthView](any())(any(), any(), any()))
         .thenReturn(CacheMap("", Map("" -> Json.toJson(OfficerDateOfBirthView(LocalDate.of(1980, 1, 1))))).pure)
+      mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
 
       submitAuthorised(TestOfficerDateOfBirthController.submit(),
         fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980")
