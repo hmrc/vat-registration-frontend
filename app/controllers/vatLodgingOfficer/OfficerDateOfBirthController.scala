@@ -16,6 +16,7 @@
 
 package controllers.vatLodgingOfficer
 
+import java.time.LocalDate
 import javax.inject.Inject
 
 import cats.data.OptionT
@@ -26,6 +27,7 @@ import models.view.vatLodgingOfficer.OfficerDateOfBirthView
 import play.api.mvc._
 import services.{CommonService, S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
+import models.ModelKeys._
 
 class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService,
@@ -38,17 +40,19 @@ class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
   val form = OfficerDateOfBirthForm.form
 
   private def fetchOfficer()(implicit headerCarrier: HeaderCarrier) =
-    OptionT(keystoreConnector.fetchAndGet[Officer]("RegisteredOfficer"))
+    OptionT(keystoreConnector.fetchAndGet[Officer](REGISTERING_OFFICER_KEY))
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request => {
 
     for {
-      dateOfBirth <- fetchOfficer().getOrElse(Officer.empty).map(_.dateOfBirth)
-      res <- viewModel[OfficerDateOfBirthView].fold(form){
-        view => Option(view.dob) match {
-          case Some(date) => form.fill(view)
-          case _ => form.fill(view.copy(dob = dateOfBirth))
-        }
+      officer <- fetchOfficer().getOrElse(Officer.empty)
+      res <- viewModel[OfficerDateOfBirthView].fold(form.fill(OfficerDateOfBirthView(officer.dateOfBirth))
+      ) {
+        view =>  view.officerName
+                                  match {
+                                    case Some(name) if (name == officer.name) => form.fill(view)
+                                    case _ => form.fill(view.copy(dob = officer.dateOfBirth))
+                                  }
       }
     } yield Ok(views.html.pages.vatLodgingOfficer.officer_dob(res))
 
@@ -57,10 +61,11 @@ class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
       formWithErrors => BadRequest(views.html.pages.vatLodgingOfficer.officer_dob(formWithErrors)).pure,
-      data => {
-        s4l.saveForm[OfficerDateOfBirthView](data) map { _ =>
-          Redirect(controllers.vatLodgingOfficer.routes.OfficerNinoController.show())
-        }
+      data =>{
+        for{
+          officer <- fetchOfficer().getOrElse(Officer.empty)
+          _ <- s4l.saveForm[OfficerDateOfBirthView](data.copy(officerName = Some(officer.name)))
+        }yield Redirect(controllers.vatLodgingOfficer.routes.OfficerNinoController.show())
       }
     )
   })
