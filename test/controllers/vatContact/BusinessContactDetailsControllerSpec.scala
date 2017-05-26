@@ -16,7 +16,6 @@
 
 package controllers.vatContact
 
-import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.S4LKey
@@ -26,15 +25,12 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture {
-
-
 
   object TestBusinessContactDetailsController extends BusinessContactDetailsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
