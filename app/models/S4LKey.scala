@@ -26,7 +26,7 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
-import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
+import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails._
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
@@ -77,10 +77,10 @@ object S4LKey {
   implicit val discretionaryInvestmentManagementServices: S4LKey[DiscretionaryInvestmentManagementServices] = S4LKey("DiscretionaryInvestmentManagementServices")
   implicit val manageAdditionalFunds: S4LKey[ManageAdditionalFunds] = S4LKey("ManageAdditionalFunds")
   implicit val vatServiceEligibility: S4LKey[VatServiceEligibility] = S4LKey("VatServiceEligibility")
-
   implicit val officerHomeAddress: S4LKey[OfficerHomeAddressView] = S4LKey("OfficerHomeAddressView")
   implicit val officerDateOfBirth: S4LKey[OfficerDateOfBirthView] = S4LKey("OfficerDateOfBirthView")
   implicit val officerNino: S4LKey[OfficerNinoView] = S4LKey("OfficerNinoView")
+  implicit val officerContactDetails: S4LKey[OfficerContactDetails] = S4LKey("OfficerContactDetails")
   implicit val completionCapacityView: S4LKey[CompletionCapacityView] = S4LKey("CompletionCapacityView")
 
 
