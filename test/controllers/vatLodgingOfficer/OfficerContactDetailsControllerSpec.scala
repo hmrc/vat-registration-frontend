@@ -18,10 +18,8 @@ package controllers.vatLodgingOfficer
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LKey
 import models.view.vatLodgingOfficer.OfficerContactDetails
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
@@ -46,8 +44,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
   s"GET ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show()}" should {
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[OfficerContactDetails]()(any(), any(), any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing[OfficerContactDetails]()
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
@@ -58,9 +55,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
 
 
     "return HTML when there's an answer in S4L" in {
-      when(mockS4LService.fetchAndGet[OfficerContactDetails]()
-        (Matchers.eq(S4LKey[OfficerContactDetails]), any(), any()))
-        .thenReturn(Future.successful(Some(validOfficerContactDetails)))
+      save4laterReturns(validOfficerContactDetails)
 
       callAuthorised(TestOfficerContactDetailsController.show) {
         _ includesText "What are your contact details?"
@@ -68,8 +63,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockS4LService.fetchAndGet[OfficerContactDetails]()(Matchers.eq(S4LKey[OfficerContactDetails]), any(), any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing[OfficerContactDetails]()
 
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
