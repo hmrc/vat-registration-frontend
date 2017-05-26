@@ -33,7 +33,7 @@ object OfficerContactDetails {
 
   //TODO Implement as part of SCRS-7006 and SCRS-7059
   implicit val modelTransformer = ApiModelTransformer[OfficerContactDetails] { (vs: VatScheme) =>
-    Some(OfficerContactDetails(None,None,None))
+    None
   }
 
   //TODO Implement as part of SCRS-7006 and SCRS-7059
