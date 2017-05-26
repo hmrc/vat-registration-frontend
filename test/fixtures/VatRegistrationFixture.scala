@@ -28,6 +28,7 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
+import models.view.vatLodgingOfficer.OfficerContactDetails
 import models.view.vatTradingDetails.vatChoice.StartDateView
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.http.Status._
@@ -98,6 +99,7 @@ trait VatRegistrationFixture {
 
   val validServiceEligibility = VatServiceEligibility(Some(true), Some(false), Some(false), Some(false), Some(false))
   val officerName = Name(Some("Reddy"), None, "Yattapu" , Some("Dr"))
+  val validOfficerContactDetails = OfficerContactDetails (Some ("test@test.com"), Some("07837483287"), Some("07827483287") )
   val validLodgingOfficer = VatLodgingOfficer(ScrsAddress("",""), DateOfBirth.empty, "","director", officerName)
 
   val emptyVatScheme = VatScheme(validRegId)

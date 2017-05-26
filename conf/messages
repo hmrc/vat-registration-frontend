@@ -640,3 +640,15 @@ pages.completionCapacity.title                           = Completion Capacity
 pages.completionCapacity.heading                         = Who is registering the company for VAT?
 pages.completionCapacity.someone.else                    = Someone else
 validation.completionCapacity.missing                    = Tell us who is registering the company for VAT
+
+## Officer Contact Details
+pages.officerContact.title                               = Director contact details
+pages.officerContact.heading                             = What are your contact details?
+pages.officerContact.p1                                  = You need to provide at least one of the following contact details.
+pages.officerContact.emailAddress.label                  = Email address
+pages.officerContact.mobile.label                        = Mobile number
+pages.officerContact.daytimePhone.label                  = Daytime phone number
+validation.officerContact.missing                        = Enter at least one contact detail
+validation.officerContactDetails.mobile.invalid          = Enter a valid mobile phone number
+validation.officerContactDetails.daytimePhone.invalid    = Enter a valid daytime phone number
+validation.officerContactDetails.email.invalid           = Enter a valid email address

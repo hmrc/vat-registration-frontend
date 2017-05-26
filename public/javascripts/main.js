@@ -121,6 +121,18 @@ $(document).ready($(function () {
     }
 }(window.BusinessContactDetailsPage = window.BusinessContactDetailsPage || {}, jQuery));
 
+// Officer Contact Details Page
+(function (OfficerContactDetailsPage, $, undefined) {
+    OfficerContactDetailsPage.init = function() {
+        var daytimePhoneError = $('#daytimePhone-error-summary');
+        var mobileError = $('#mobile-error-summary');
+        var emailError = $('#email-error-summary');
+        if (emailError.text() === mobileError.text())
+            mobileError.parent('li').hide();
+        if (emailError.text() === daytimePhoneError.text())
+            daytimePhoneError.parent('li').hide();
+    }
+}(window.OfficerContactDetailsPage = window.OfficerContactDetailsPage || {}, jQuery));
 
 // Officer DOB page
 (function (OfficerDOBPage, $, undefined) {
@@ -129,7 +141,6 @@ $(document).ready($(function () {
         UI.preventNonNumericInput(numericInputs);
     }
 }(window.OfficerDOBPage = window.OfficerDOBPage || {}, jQuery));
-
 
 /*
  example of multiple hide/show areas
