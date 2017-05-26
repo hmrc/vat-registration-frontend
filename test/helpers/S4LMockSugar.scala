@@ -17,25 +17,51 @@
 package helpers
 
 import cats.data.OptionT
-import models.S4LKey
+import models.{S4LKey, VMReads}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import play.api.libs.json.Format
 import services.S4LService
+import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.ExecutionContext
-import scala.concurrent.ExecutionContext.Implicits.global
 
 trait S4LMockSugar {
   self: VatRegSpec =>
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
+  implicit val dummyCacheMap = CacheMap("", Map.empty)
 
-  def save4laterReturnsNothing[T: S4LKey]()(implicit s4LService: S4LService, ec: ExecutionContext): Unit =
-    when(s4LService.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(None.pure)
+  //TODO remove these two and drop the 2 suffix later
+  def save4laterReturnsNothing[T: S4LKey]()(implicit s4l: S4LService, ec: ExecutionContext): Unit =
+    when(s4l.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(None.pure)
 
-  def save4laterReturns[T: S4LKey](t: T)(implicit s4lService: S4LService, ec: ExecutionContext): Unit =
-    when(s4lService.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(OptionT.pure(t).value)
+  def save4laterReturns[T: S4LKey](t: T)(implicit s4l: S4LService, ec: ExecutionContext): Unit =
+    when(s4l.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(OptionT.pure(t).value)
+
+  final class S4LFetchHelper[T](private val t: Option[T]) {
+    def apply[G]()
+                (implicit
+                 vMReads: VMReads.Aux[T, G],
+                 k: S4LKey[G],
+                 s4l: S4LService): Unit =
+      when(s4l.getViewModel[T, G]()(any(), any(), Matchers.eq(k), any())).thenReturn(OptionT.fromOption(t))
+  }
+
+  def save4laterReturnsNothing2[T] = new S4LFetchHelper[T](Option.empty[T])
+
+  def save4laterReturns2[T](t: T) = new S4LFetchHelper[T](Some(t))
+
+
+  final class S4LSaveHelper[T] {
+    def apply[G]()
+                (implicit
+                 vMReads: VMReads.Aux[T, G],
+                 k: S4LKey[G],
+                 s4l: S4LService): Unit =
+      when(s4l.updateViewModel[T, G](any())(any(), any(), any(), Matchers.eq(k))).thenReturn(dummyCacheMap.pure)
+  }
+
+  def save4laterExpectsSave[T] = new S4LSaveHelper[T]()
 
 }

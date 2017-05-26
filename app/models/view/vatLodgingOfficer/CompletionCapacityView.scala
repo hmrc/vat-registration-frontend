@@ -30,9 +30,9 @@ object CompletionCapacityView {
   implicit val format = Json.format[CompletionCapacityView]
 
   implicit val vmReads = VMReads(
-    readF = (group: S4LVatLodgingOfficer) => group.completionCapacityView,
+    readF = (group: S4LVatLodgingOfficer) => group.completionCapacity,
     updateF = (c: CompletionCapacityView, g: Option[S4LVatLodgingOfficer]) =>
-      g.getOrElse(S4LVatLodgingOfficer()).copy(completionCapacityView = Some(c))
+      g.getOrElse(S4LVatLodgingOfficer()).copy(completionCapacity = Some(c))
   )
 
   // return a view model from a VatScheme instance

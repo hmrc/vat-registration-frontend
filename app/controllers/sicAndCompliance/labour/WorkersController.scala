@@ -24,35 +24,24 @@ import models.view.sicAndCompliance.labour.Workers
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
-
 
 class WorkersController @Inject()(ds: CommonPlayDependencies)
                                  (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
+  import cats.syntax.flatMap._
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel2[Workers].map { vm =>
-      Ok(views.html.pages.sicAndCompliance.labour.workers(WorkersForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.sicAndCompliance.labour.workers(WorkersForm.form)))
-  })
+  val form = WorkersForm.form
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    WorkersForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.sicAndCompliance.labour.workers(formWithErrors)))
-      }, {
-        data: Workers => {
-          s4LService.save[Workers](data) map { _ =>
-            if(data.numberOfWorkers >= 8) {
-              Redirect(controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show())
-            }else{
-              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
-            }
-          }
-        }
-      })
-  })
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel2[Workers].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.sicAndCompliance.labour.workers(f))))
+
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    form.bindFromRequest().fold(
+      badForm => BadRequest(views.html.pages.sicAndCompliance.labour.workers(badForm)).pure,
+      goodForm => s4LService.save(goodForm).map(_ => goodForm.numberOfWorkers >= 8).ifM(
+        controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show().pure,
+        controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show().pure)
+        .map(Redirect)))
 
 }

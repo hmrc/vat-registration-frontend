@@ -24,11 +24,7 @@ import models.external.{CoHoCompanyProfile, CoHoRegisteredOfficeAddress, Officer
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
-
-  import cats.instances.future._
 
   private class Setup {
     val service = new IncorporationInformationService(mockIIConnector) {
@@ -76,7 +72,7 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
       mockKeystoreFetchAndGet[CoHoCompanyProfile]("CompanyProfile", Some(CoHoCompanyProfile("status", "transactionId")))
       when(mockIIConnector.getOfficerList("transactionId")).thenReturn(OptionT.pure(OfficerList(Seq(officer))))
 
-      service.getOfficerList() returnsSome Seq(officer)
+      service.getOfficerList() returns Seq(officer)
     }
   }
 

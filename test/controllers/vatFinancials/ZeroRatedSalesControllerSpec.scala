@@ -26,12 +26,7 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
-
-  import cats.instances.future._
-  import cats.syntax.applicative._
 
   object TestZeroRatedSalesController extends ZeroRatedSalesController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector

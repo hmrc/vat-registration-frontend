@@ -28,26 +28,20 @@ class VoluntaryRegistrationReasonController @Inject()(ds: CommonPlayDependencies
                                                      (implicit s4l: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
   import cats.syntax.flatMap._
 
   val form = VoluntaryRegistrationReasonForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel2[VoluntaryRegistrationReason].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatTradingDetails.vatChoice.voluntary_registration_reason(f)))
-  })
+      .map(f => Ok(views.html.pages.vatTradingDetails.vatChoice.voluntary_registration_reason(f))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatTradingDetails.vatChoice.voluntary_registration_reason(badForm)).pure,
-      (data: VoluntaryRegistrationReason) =>
-        (data.reason == VoluntaryRegistrationReason.NEITHER).pure.ifM(
-          s4l.clear().flatMap(_ => vrs.deleteVatScheme()).map(_ => controllers.routes.WelcomeController.show()),
-          s4l.save(data).map(_ => controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
-        ).map(Redirect)
-    )
-  })
+      goodForm => (goodForm.reason == VoluntaryRegistrationReason.NEITHER).pure.ifM(
+        s4l.clear().flatMap(_ => vrs.deleteVatScheme()).map(_ => controllers.routes.WelcomeController.show()),
+        s4l.save(goodForm).map(_ => controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
+      ).map(Redirect)))
 
 }

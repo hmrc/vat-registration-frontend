@@ -33,9 +33,9 @@ object OfficerDateOfBirthView {
   implicit val format = Json.format[OfficerDateOfBirthView]
 
   implicit val vmReads = VMReads(
-    readF = (group: S4LVatLodgingOfficer) => group.officerDateOfBirthView,
+    readF = (group: S4LVatLodgingOfficer) => group.officerDateOfBirth,
     updateF = (c: OfficerDateOfBirthView, g: Option[S4LVatLodgingOfficer]) =>
-      g.getOrElse(S4LVatLodgingOfficer()).copy(officerDateOfBirthView = Some(c))
+      g.getOrElse(S4LVatLodgingOfficer()).copy(officerDateOfBirth = Some(c))
   )
 
   // return a view model from a VatScheme instance

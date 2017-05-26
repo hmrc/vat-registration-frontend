@@ -23,7 +23,6 @@ import org.mockito.Matchers
 import org.mockito.Mockito.when
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {

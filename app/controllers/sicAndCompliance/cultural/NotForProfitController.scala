@@ -29,27 +29,18 @@ import services.{S4LService, VatRegistrationService}
 class NotForProfitController @Inject()(ds: CommonPlayDependencies)
                                       (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
+  val form = NotForProfitForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel2[NotForProfit].map { vm =>
-      Ok(views.html.pages.sicAndCompliance.cultural.not_for_profit(NotForProfitForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.sicAndCompliance.cultural.not_for_profit(NotForProfitForm.form)))
-  })
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel2[NotForProfit].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.sicAndCompliance.cultural.not_for_profit(f))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    NotForProfitForm.form.bindFromRequest().fold(
-      formWithErrors => BadRequest(views.html.pages.sicAndCompliance.cultural.not_for_profit(formWithErrors)).pure
-      ,
-      (data: NotForProfit) =>
-        s4LService.save[NotForProfit](data) flatMap { _ =>
-          // TODO delete any existing non-cultural compliance questions
-          vrs.deleteElement(FinancialCompliancePath).map { _ =>
-            Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
-          }
-        }
-    )
-  })
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    form.bindFromRequest().fold(
+      badForm => BadRequest(views.html.pages.sicAndCompliance.cultural.not_for_profit(badForm)).pure,
+      data => for {
+        _ <- s4LService.save(data)
+        _ <- vrs.deleteElement(FinancialCompliancePath)
+      } yield Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())))
 
 }

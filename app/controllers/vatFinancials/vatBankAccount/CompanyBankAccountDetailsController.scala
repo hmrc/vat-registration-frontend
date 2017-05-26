@@ -30,8 +30,6 @@ import scala.concurrent.Future
 class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
                                                    (implicit s4l: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
-
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     viewModel2[CompanyBankAccountDetails].map { vm =>
       Ok(views.html.pages.vatFinancials.vatBankAccount.company_bank_account_details(CompanyBankAccountDetailsForm.form.fill(
@@ -44,8 +42,8 @@ class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     CompanyBankAccountDetailsForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.vatFinancials.vatBankAccount.company_bank_account_details(formWithErrors)))
+      badForm => {
+        Future.successful(BadRequest(views.html.pages.vatFinancials.vatBankAccount.company_bank_account_details(badForm)))
       }, (form: CompanyBankAccountDetailsForm) => {
         s4l.save[CompanyBankAccountDetails](
           CompanyBankAccountDetails(

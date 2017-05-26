@@ -26,9 +26,6 @@ import play.api.Logger
 import play.api.mvc._
 import services.S4LService
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
-
 class ComplianceIntroductionController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies)
   extends VatRegistrationController(ds) {
 
@@ -37,7 +34,6 @@ class ComplianceIntroductionController @Inject()(s4LService: S4LService, ds: Com
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    import cats.instances.future._
     OptionT(s4LService.fetchAndGet[SicStub]()).map(ss => ComplianceQuestions(ss.sicCodes))
       .fold( controllers.test.routes.SicStubController.show()) { //TODO point to non-stub page for SIC code selection
         complianceQuestions =>

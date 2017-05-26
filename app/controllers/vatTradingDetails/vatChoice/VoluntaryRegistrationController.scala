@@ -28,33 +28,20 @@ class VoluntaryRegistrationController @Inject()(ds: CommonPlayDependencies)
                                                (implicit s4l: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
   import cats.syntax.flatMap._
 
   val form = VoluntaryRegistrationForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel2[VoluntaryRegistration].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatTradingDetails.vatChoice.voluntary_registration(f)))
-  })
+      .map(f => Ok(views.html.pages.vatTradingDetails.vatChoice.voluntary_registration(f))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    VoluntaryRegistrationForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        BadRequest(views.html.pages.vatTradingDetails.vatChoice.voluntary_registration(formWithErrors)).pure
-      }, {
-        data: VoluntaryRegistration => {
-          (VoluntaryRegistration.REGISTER_YES == data.yesNo).pure.ifM(
-            s4l.save[VoluntaryRegistration](data)
-              .map(_ => controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationReasonController.show())
-            ,
-            s4l.clear().flatMap(_ => vrs.deleteVatScheme())
-              .map(_ => controllers.routes.WelcomeController.show())
-          ).map(Redirect)
-        }
-      }
-    )
-  })
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    form.bindFromRequest().fold(
+      vadForm => BadRequest(views.html.pages.vatTradingDetails.vatChoice.voluntary_registration(vadForm)).pure,
+      goodForm => (VoluntaryRegistration.REGISTER_YES == goodForm.yesNo).pure.ifM(
+        s4l.save(goodForm).map(_ => controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationReasonController.show()),
+        s4l.clear().flatMap(_ => vrs.deleteVatScheme()).map(_ => controllers.routes.WelcomeController.show())
+      ).map(Redirect)))
 
 }

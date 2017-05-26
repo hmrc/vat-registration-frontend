@@ -24,32 +24,21 @@ import models.view.sicAndCompliance.labour.SkilledWorkers
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
-
 
 class SkilledWorkersController @Inject()(ds: CommonPlayDependencies)
-                                        (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
-  import cats.instances.future._
+                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel2[SkilledWorkers].map { vm =>
-      Ok(views.html.pages.sicAndCompliance.labour.skilled_workers(SkilledWorkersForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.sicAndCompliance.labour.skilled_workers(SkilledWorkersForm.form)))
-  })
+  val form = SkilledWorkersForm.form
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel2[SkilledWorkers].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.sicAndCompliance.labour.skilled_workers(f))))
+
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     SkilledWorkersForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.sicAndCompliance.labour.skilled_workers(formWithErrors)))
-      }, {
-        data: SkilledWorkers => {
-          s4LService.save[SkilledWorkers](data) map {  _ =>
-              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
-          }
-        }
-      })
-  })
+      badForm => BadRequest(views.html.pages.sicAndCompliance.labour.skilled_workers(badForm)).pure,
+      goodForm => s4LService.save(goodForm).map(_ =>
+        Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))))
 
 }
-
-

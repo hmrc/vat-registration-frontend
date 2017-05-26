@@ -19,7 +19,6 @@ package controllers.vatLodgingOfficer
 import javax.inject.Inject
 
 import cats.data.OptionT
-import connectors.AddressLookupConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.CompletionCapacityForm
 import models.external.Officer
@@ -34,14 +33,12 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
                                              prePopService: PrePopulationService)
   extends VatRegistrationController(ds) with CommonService {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
   import cats.syntax.flatMap._
 
   private val form = CompletionCapacityForm.form
   private val officerListKey = "OfficerList"
 
-  private def fetchOfficerList()(implicit headerCarrier: HeaderCarrier) =
+  private def fetchOfficerList()(implicit hc: HeaderCarrier) =
     OptionT(keystoreConnector.fetchAndGet[Seq[Officer]](officerListKey))
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
@@ -49,25 +46,18 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
       officerList <- prePopService.getOfficerList()
       _ <- keystoreConnector.cache[Seq[Officer]](officerListKey, officerList)
       res <- viewModel[CompletionCapacityView]().fold(form)(form.fill)
-    } yield Ok(views.html.pages.vatLodgingOfficer.completion_capacity(res, officerList))
-  )
+    } yield Ok(views.html.pages.vatLodgingOfficer.completion_capacity(res, officerList)))
 
-  def submit: Action[AnyContent] = authorised.async { implicit user =>
-    implicit request =>
-      form.bindFromRequest().fold(
-        badForm => fetchOfficerList().getOrElse(Seq()).map(
-          officerList => BadRequest(views.html.pages.vatLodgingOfficer.completion_capacity(badForm, officerList))),
-        (form: CompletionCapacityView) =>
-          (form.id == "other").pure.ifM(
-            Ok(views.html.pages.vatEligibility.ineligible("completionCapacity")).pure
-            ,
-            for {
-              officerSeq <- fetchOfficerList().getOrElse(Seq())
-              officer = officerSeq.find(_.name.id == form.id)
-              _ <- save(CompletionCapacityView(form.id, officer))
-            } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
-          )
-      )
-  }
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    form.bindFromRequest().fold(
+      badForm => fetchOfficerList().getOrElse(Seq()).map(officerList =>
+        BadRequest(views.html.pages.vatLodgingOfficer.completion_capacity(badForm, officerList))),
+      data => (data.id == "other").pure.ifM(
+        ifTrue = Ok(views.html.pages.vatEligibility.ineligible("completionCapacity")).pure,
+        ifFalse = for {
+          officerSeq <- fetchOfficerList().getOrElse(Seq())
+          officer = officerSeq.find(_.name.id == data.id)
+          _ <- save(CompletionCapacityView(data.id, officer))
+        } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show()))))
 
 }

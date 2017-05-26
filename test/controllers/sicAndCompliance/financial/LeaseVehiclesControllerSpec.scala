@@ -26,12 +26,10 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
+
 
 class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
 
   object LeaseVehiclesController extends LeaseVehiclesController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector

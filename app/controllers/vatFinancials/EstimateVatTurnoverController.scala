@@ -31,9 +31,6 @@ class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
                                              (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
-
-
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     viewModel2[EstimateVatTurnover].map { vm =>
       Ok(views.html.pages.vatFinancials.estimate_vat_turnover(EstimateVatTurnoverForm.form.fill(vm)))
@@ -42,8 +39,8 @@ class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     EstimateVatTurnoverForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.vatFinancials.estimate_vat_turnover(formWithErrors)))
+      badForm => {
+        Future.successful(BadRequest(views.html.pages.vatFinancials.estimate_vat_turnover(badForm)))
       }, {
         data: EstimateVatTurnover => {
           s4LService.save[EstimateVatTurnover](data) map { _ =>

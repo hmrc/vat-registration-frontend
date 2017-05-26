@@ -22,41 +22,28 @@ import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.financial.InvestmentFundManagementForm
 import models.ElementPath
 import models.view.sicAndCompliance.financial.InvestmentFundManagement
-import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
-
-import scala.concurrent.Future
 
 
 class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
                                                   (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
-  import cats.instances.future._
 
-  val form: Form[InvestmentFundManagement] = InvestmentFundManagementForm.form
+  val form = InvestmentFundManagementForm.form
+
+  import cats.syntax.flatMap._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel2[InvestmentFundManagement].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.investment_fund_management(f)))
-  )
+      .map(f => Ok(views.html.pages.sicAndCompliance.financial.investment_fund_management(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.investment_fund_management(formWithErrors)))
-      }, {
-        data: InvestmentFundManagement => {
-          s4LService.save[InvestmentFundManagement](data) flatMap { _ =>
-            if (data.yesNo) {
-              Future.successful(Redirect(controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show()))
-            } else {
-              vrs.deleteElements(ElementPath.finCompElementPaths.drop(5)).map { _ =>
-                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()) }
-            }
-          }
-        }
-      }
-    )
-  )
+      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.investment_fund_management(badForm)).pure,
+      data => s4LService.save(data).map(_ => data.yesNo).ifM(
+        controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show().pure,
+        vrs.deleteElements(ElementPath.finCompElementPaths.drop(5)).map(_ =>
+          controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))
+        .map(Redirect)))
 
 }
