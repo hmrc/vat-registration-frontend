@@ -72,12 +72,13 @@ class OfficerNinoControllerSpec extends VatRegSpec with VatRegistrationFixture w
     "return 303" in {
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
       save4laterExpectsSave[OfficerNinoView]()
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody("nino" -> "NB686868C")) {
-        _ redirectsTo s"$contextRoot/your-contact-details"
+
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody("nino" -> "NB686868C")) {
+      _ redirectsTo s"$contextRoot/your-contact-details"
       }
     }
 
   }
-
 }
 
