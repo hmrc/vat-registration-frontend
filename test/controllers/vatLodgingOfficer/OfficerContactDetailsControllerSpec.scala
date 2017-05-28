@@ -18,14 +18,13 @@ package controllers.vatLodgingOfficer
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LVatLodgingOfficer
 import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 
-class OfficerContactDetailsViewControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object Controller extends OfficerContactDetailsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -46,7 +45,7 @@ class OfficerContactDetailsViewControllerSpec extends VatRegSpec with VatRegistr
 
 
     "return HTML when there's an answer in S4L" in {
-      save4laterReturns(S4LVatLodgingOfficer(officerContactDetails = Some(validOfficerContactDetails)))
+      save4laterReturns2(validOfficerContactDetails)
 
       callAuthorised(Controller.show) {
         _ includesText "What are your contact details?"
@@ -55,7 +54,6 @@ class OfficerContactDetailsViewControllerSpec extends VatRegSpec with VatRegistr
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNothing2[OfficerContactDetailsView]()
-
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {
@@ -70,6 +68,7 @@ class OfficerContactDetailsViewControllerSpec extends VatRegSpec with VatRegistr
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
     }
+
   }
 
   s"POST ${routes.OfficerContactDetailsController.submit()} with valid Officer Contact Details entered and default Voluntary Reg = Yes" should {
@@ -90,8 +89,8 @@ class OfficerContactDetailsViewControllerSpec extends VatRegSpec with VatRegistr
 
     "return 303" in {
       save4laterExpectsSave[OfficerContactDetailsView]()
-      save4laterReturns(VoluntaryRegistration.no)
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+      save4laterReturns(VoluntaryRegistration.no)
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com")
