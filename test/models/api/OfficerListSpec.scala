@@ -25,7 +25,8 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
   val reader = OfficerList.reads
 
   val json: JsValue = Json.parse(
-    """[{
+    """{
+      |  "officers":[{
       |    "name_elements" : {
       |        "forename" : "Bob",
       |        "other_forenames" : "Bimbly Bobblous",
@@ -65,7 +66,7 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
       |        "postal_code" : "NE1 4BB"
       |    },
       |    "officer_role" : "secretary"
-      |}]""".stripMargin)
+      |}]}""".stripMargin)
 
   "OfficerList" should {
     "deserialise from valid JSON" in {
@@ -73,7 +74,7 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
         officer,
         Officer(Name(Some("Jingly"), None, "Jingles", Some("Mx")), "secretary", validDob, None, None)
       ))
-      reader.reads(json) shouldBe JsSuccess(officerList)
+      reader.reads(json).value shouldBe JsSuccess(officerList)
     }
   }
 
