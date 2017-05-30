@@ -272,7 +272,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
               data.vatLodgingOfficer.othernames,
               data.vatLodgingOfficer.surname.getOrElse("")),
               role = data.vatLodgingOfficer.role.getOrElse(""),
-              dateOfBirth = DateOfBirth(data.vatLodgingOfficer.dobDay.getOrElse("").toInt, data.vatLodgingOfficer.dobMonth.getOrElse("").toInt, data.vatLodgingOfficer.dobYear.getOrElse("").toInt))
+              dateOfBirth = DateOfBirth(data.vatLodgingOfficer.dobDay.getOrElse("1").toInt, data.vatLodgingOfficer.dobMonth.getOrElse("1").toInt, data.vatLodgingOfficer.dobYear.getOrElse("1900").toInt))
             _ <- saveToS4Later(data.vatLodgingOfficer.role, data, { x => CompletionCapacityView(officer.name.id, Some(officer)) })
 
           } yield Ok("Test setup complete")
