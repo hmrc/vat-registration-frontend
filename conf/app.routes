@@ -157,6 +157,10 @@ POST        /who-is-registering-the-company-for-vat    controllers.vatLodgingOff
 GET         /your-contact-details                      controllers.vatLodgingOfficer.OfficerContactDetailsController.show
 POST        /your-contact-details                      controllers.vatLodgingOfficer.OfficerContactDetailsController.submit
 
+## FORMER NAME PAGE
+GET         /former-name                              controllers.vatLodgingOfficer.FormerNameController.show
+POST        /former-name                              controllers.vatLodgingOfficer.FormerNameController.submit
+
 
 ## FEEDBACK
 GET         /feedback                              controllers.feedback.FeedbackController.show
