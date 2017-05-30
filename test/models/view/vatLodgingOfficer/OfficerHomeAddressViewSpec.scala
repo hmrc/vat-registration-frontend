@@ -32,12 +32,13 @@ class OfficerHomeAddressViewSpec extends UnitSpec with VatRegistrationFixture wi
       dob = DateOfBirth.empty,
       nino = "",
       role = "director",
-      name = officerName)
+      name = officerName,
+      contact = validVatDigitalContact)
 
     val newAddress = ScrsAddress(line1 = "new", line2 = "address", postcode = Some("postcode"))
     val officerHomeAddressView = OfficerHomeAddressView(newAddress.id, Some(newAddress))
 
-    val updatedVatLodgingOfficer = VatLodgingOfficer(newAddress, DateOfBirth.empty, "", "director", officerName)
+    val updatedVatLodgingOfficer = VatLodgingOfficer(newAddress, DateOfBirth.empty, "", "director", officerName, validVatDigitalContact)
 
     "update VatLodgingOfficer with new current address" in {
       ViewModelTransformer[OfficerHomeAddressView, VatLodgingOfficer]
@@ -54,7 +55,7 @@ class OfficerHomeAddressViewSpec extends UnitSpec with VatRegistrationFixture wi
 
     "convert VatScheme with VatLodgingOfficer section to view model" in {
       val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
-      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName)
+      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName, validVatDigitalContact)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       val expectedOfficerHomeAddressView = OfficerHomeAddressView(address.id, Some(address))

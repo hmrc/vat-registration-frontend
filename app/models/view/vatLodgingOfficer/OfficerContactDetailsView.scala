@@ -16,7 +16,7 @@
 
 package models.view.vatLodgingOfficer
 
-import models.api.{VatLodgingOfficer, VatScheme}
+import models.api._
 import models.{ApiModelTransformer, S4LVatLodgingOfficer, VMReads, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
@@ -38,14 +38,15 @@ object OfficerContactDetailsView {
       g.getOrElse(S4LVatLodgingOfficer()).copy(officerContactDetails = Some(c))
   )
 
-  //TODO Implement as part of SCRS-7006 and SCRS-7059
   implicit val modelTransformer = ApiModelTransformer[OfficerContactDetailsView] { (vs: VatScheme) =>
-    None
+    vs.lodgingOfficer.map(_.contact).collect {
+      case VatDigitalContact(email,tel,mob) =>
+        OfficerContactDetailsView(email = Some(email), daytimePhone = tel, mobile = mob)
+    }
   }
 
-  //TODO Implement as part of SCRS-7006 and SCRS-7059
   implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerContactDetailsView, g: VatLodgingOfficer) =>
-    g
+    g.copy(contact = VatDigitalContact(c.email.getOrElse(""), c.daytimePhone, c.mobile))
   }
 
 }
