@@ -19,7 +19,7 @@ package fixtures
 import java.time.LocalDate
 
 import models.api.{VatComplianceCultural, _}
-import models.external.{CoHoCompanyProfile, Officer}
+import models.external.CoHoCompanyProfile
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
@@ -93,7 +93,9 @@ trait VatRegistrationFixture {
     financialCompliance = None
   )
 
-  val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", None, None)
+  val validDob = DateOfBirth(12,11,1973)
+
+  val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", validDob, None, None)
 
   val validServiceEligibility = VatServiceEligibility(Some(true), Some(false), Some(false), Some(false), Some(false))
   val officerName = Name(Some("Reddy"), None, "Yattapu" , Some("Dr"))

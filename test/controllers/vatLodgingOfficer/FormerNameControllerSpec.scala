@@ -21,13 +21,11 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatLodgingOfficer.FormerNameView
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
@@ -42,11 +40,8 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "return HTML when there's a former name in S4L" in {
       val formerName = FormerNameView(true, Some("Test Former Name"))
-
-      save4laterReturns(formerName)
-
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-        .thenReturn(Future.successful(validVatScheme))
+      save4laterReturns2(formerName)
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(TestFormerNameController.show) {
         _ includesText "Have you ever changed your name?"
@@ -54,10 +49,8 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing[FormerNameView]()
-
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-        .thenReturn(Future.successful(validVatScheme))
+      save4laterReturnsNothing2[FormerNameView]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(TestFormerNameController.show) {
         _ includesText "Have you ever changed your name?"
@@ -65,10 +58,8 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing[FormerNameView]()
-
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-        .thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsNothing2[FormerNameView]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(TestFormerNameController.show) {
         _ includesText "Have you ever changed your name?"
@@ -90,10 +81,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
   s"POST ${vatLodgingOfficer.routes.FormerNameController.submit()} with valid data no former name" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(FormerNameView(false, None))))
-
-      when(mockS4LService.saveForm[FormerNameView](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMap))
+      save4laterExpectsSave[FormerNameView]()
 
       submitAuthorised(TestFormerNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "formerNameRadio" -> "false"
@@ -107,11 +95,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
   s"POST ${vatLodgingOfficer.routes.FormerNameController.submit()} with valid data with former name" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(FormerNameView(true, Some("some name")))))
-
-      when(mockS4LService.saveForm[FormerNameView](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMap))
-
+      save4laterExpectsSave[FormerNameView]()
       submitAuthorised(TestFormerNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "formerNameRadio" -> "true",
         "formerName" -> "some name"

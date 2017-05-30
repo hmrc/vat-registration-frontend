@@ -112,7 +112,8 @@ final case class S4LVatLodgingOfficer
   officerDateOfBirth: Option[OfficerDateOfBirthView] = None,
   officerNino: Option[OfficerNinoView] = None,
   completionCapacity: Option[CompletionCapacityView] = None,
-  officerContactDetails: Option[OfficerContactDetailsView] = None
+  officerContactDetails: Option[OfficerContactDetailsView] = None,
+  formerName: Option[FormerNameView] = None
 )
 
 object S4LVatLodgingOfficer {

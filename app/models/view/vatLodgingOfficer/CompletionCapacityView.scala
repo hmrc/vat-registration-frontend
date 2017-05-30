@@ -16,9 +16,8 @@
 
 package models.view.vatLodgingOfficer
 
-import models._
-import models.api.{VatLodgingOfficer, VatScheme}
-import models.external.Officer
+import models.api.{Officer, VatLodgingOfficer, VatScheme}
+import models.{ApiModelTransformer, ViewModelTransformer, _}
 import play.api.libs.json.Json
 
 case class CompletionCapacityView(id: String, officer: Option[Officer] = None)
@@ -37,7 +36,7 @@ object CompletionCapacityView {
 
   // return a view model from a VatScheme instance
   implicit val modelTransformer = ApiModelTransformer[CompletionCapacityView] { vs: VatScheme =>
-    vs.lodgingOfficer.map(o => CompletionCapacityView(o.name.id, Some(Officer(o.name, o.role, None, None))))
+    vs.lodgingOfficer.map(o => CompletionCapacityView(o.name.id, Some(Officer(o.name, o.role, o.dob, None, None))))
   }
 
   // return a new or updated VatLodgingOfficer from the CompleteCapacityView instance

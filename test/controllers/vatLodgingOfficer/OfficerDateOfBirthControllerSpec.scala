@@ -16,9 +16,13 @@
 
 package controllers.vatLodgingOfficer
 
+import java.time.LocalDate
+
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.ModelKeys.REGISTERING_OFFICER_KEY
+import models.api.{Name, Officer, VatLodgingOfficer}
 import models.view.vatLodgingOfficer.OfficerDateOfBirthView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -38,6 +42,7 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       val vatScheme = validVatScheme.copy(lodgingOfficer = Some(validLodgingOfficer))
       save4laterReturnsNothing2[OfficerDateOfBirthView]()
+      mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
 
       callAuthorised(Controller.show()) {
@@ -48,6 +53,19 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNothing2[OfficerDateOfBirthView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.copy(lodgingOfficer = None).pure)
+      mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
+
+      callAuthorised(Controller.show()) {
+        _ includesText "What is your date of birth"
+      }
+    }
+
+    "return HTML Test Data in S4L and vatScheme contains data" in {
+      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer.empty))
+      val officerReddy = OfficerDateOfBirthView(LocalDate.of(1980, 1, 1), Some(Name(Some("Yattapu"), None, "Reddy", Some("Dr"))))
+      mockKeystoreFetchAndGet[Officer](REGISTERING_OFFICER_KEY, Some(officer))
+      save4laterReturns2[OfficerDateOfBirthView](officerReddy)
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
 
       callAuthorised(Controller.show()) {
         _ includesText "What is your date of birth"
@@ -67,10 +85,10 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return 303" in {
       save4laterExpectsSave[OfficerDateOfBirthView]()
+      mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980")
       )(_ redirectsTo s"$contextRoot/your-national-insurance-number")
-
     }
   }
 

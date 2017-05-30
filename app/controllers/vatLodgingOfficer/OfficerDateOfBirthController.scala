@@ -18,11 +18,15 @@ package controllers.vatLodgingOfficer
 
 import javax.inject.Inject
 
+import cats.data.OptionT
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerDateOfBirthForm
+import models.ModelKeys._
+import models.api.Officer
 import models.view.vatLodgingOfficer.OfficerDateOfBirthView
 import play.api.mvc._
 import services.{CommonService, S4LService, VatRegistrationService}
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService,
@@ -31,13 +35,27 @@ class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
 
   val form = OfficerDateOfBirthForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[OfficerDateOfBirthView]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_dob(f))))
+  private def fetchOfficer()(implicit headerCarrier: HeaderCarrier) =
+    OptionT(keystoreConnector.fetchAndGet[Officer](REGISTERING_OFFICER_KEY))
+
+  def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request =>
+    for {
+      officer <- fetchOfficer().getOrElse(Officer.empty)
+      res <- viewModel[OfficerDateOfBirthView]().fold(form.fill(OfficerDateOfBirthView(officer.dateOfBirth))) {
+        view =>
+          view.officerName match {
+            case Some(name) if name == officer.name => form.fill(view)
+            case _ => form.fill(view.copy(dob = officer.dateOfBirth))
+          }
+      }
+    } yield Ok(views.html.pages.vatLodgingOfficer.officer_dob(res)))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatLodgingOfficer.officer_dob(badForm)).pure,
-      data => save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerNinoController.show()))))
+      data => for {
+        officer <- fetchOfficer().getOrElse(Officer.empty)
+        _ <- save(data.copy(officerName = Some(officer.name)))
+      } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerNinoController.show())))
 
 }

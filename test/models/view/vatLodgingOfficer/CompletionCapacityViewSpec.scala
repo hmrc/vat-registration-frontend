@@ -18,8 +18,7 @@ package models.view.vatLodgingOfficer
 
 import fixtures.VatRegistrationFixture
 import models.ApiModelTransformer
-import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer}
-import models.external.Officer
+import models.api.{DateOfBirth, Officer, ScrsAddress, VatLodgingOfficer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -32,7 +31,7 @@ class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture wi
       val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName, validVatDigitalContact)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
-      val expected = CompletionCapacityView(officerName.id, Some(Officer(officerName, "director", None, None)))
+      val expected = CompletionCapacityView(officerName.id, Some(Officer(officerName, "director", validDob, None, None)))
 
       ApiModelTransformer[CompletionCapacityView].toViewModel(vs) shouldBe Some(expected)
     }

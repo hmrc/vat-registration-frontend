@@ -24,8 +24,7 @@ import cats.data.OptionT
 import cats.data.OptionT.fromOption
 import com.google.inject.ImplementedBy
 import connectors.{OptionalResponse, PPConnector}
-import models.api.ScrsAddress
-import models.external.Officer
+import models.api.{Officer, ScrsAddress}
 import models.view.vatLodgingOfficer.CompletionCapacityView
 import models.{ApiModelTransformer, S4LVatLodgingOfficer}
 import uk.gov.hmrc.play.http.HeaderCarrier

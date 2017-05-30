@@ -17,17 +17,23 @@
 package models.view.vatLodgingOfficer
 
 import models.api._
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatLodgingOfficer, VMReads, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class FormerNameView(
-                            yesNo: Boolean,
-                            formerName: Option[String] = None
-                          )
+                           yesNo: Boolean,
+                           formerName: Option[String] = None
+                         )
 
 object FormerNameView {
 
   implicit val format = Json.format[FormerNameView]
+
+  implicit val vmReads = VMReads(
+    readF = (group: S4LVatLodgingOfficer) => group.formerName,
+    updateF = (c: FormerNameView, g: Option[S4LVatLodgingOfficer]) =>
+      g.getOrElse(S4LVatLodgingOfficer()).copy(formerName = Some(c))
+  )
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[FormerNameView] { vs: VatScheme =>
