@@ -23,8 +23,7 @@ import connectors.VatRegistrationConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.test.TestSetupForm
 import models.S4LKey
-import models.api.{Name, ScrsAddress, VatServiceEligibility}
-import models.external.Officer
+import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
@@ -259,19 +258,22 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
             _ <- saveToS4Later(data.officerHomeAddress.line1, data, { x => OfficerHomeAddressView(address.id, Some(address)) })
 
             _ <- saveToS4Later(data.vatLodgingOfficer.dobDay, data, {
-                      x => OfficerDateOfBirthView(LocalDate.of(
-                        x.vatLodgingOfficer.dobYear.getOrElse("1900").toInt,
-                        x.vatLodgingOfficer.dobMonth.getOrElse("1").toInt,
-                        x.vatLodgingOfficer.dobDay.getOrElse("1").toInt
-                      ))})
+              x =>
+                OfficerDateOfBirthView(LocalDate.of(
+                  x.vatLodgingOfficer.dobYear.getOrElse("1900").toInt,
+                  x.vatLodgingOfficer.dobMonth.getOrElse("1").toInt,
+                  x.vatLodgingOfficer.dobDay.getOrElse("1").toInt
+                ))
+            })
 
-            _ <- saveToS4Later(data.vatLodgingOfficer.nino, data, { x => OfficerNinoView(x.vatLodgingOfficer.nino.getOrElse(""))})
+            _ <- saveToS4Later(data.vatLodgingOfficer.nino, data, { x => OfficerNinoView(x.vatLodgingOfficer.nino.getOrElse("")) })
 
             officer = Officer(name = Name(data.vatLodgingOfficer.firstname,
-                                    data.vatLodgingOfficer.othernames,
-                                    data.vatLodgingOfficer.surname.getOrElse("")),
-                              role = data.vatLodgingOfficer.role.getOrElse(""))
-              _ <- saveToS4Later(data.vatLodgingOfficer.role, data, { x => CompletionCapacityView(officer.name.id, Some(officer))})
+              data.vatLodgingOfficer.othernames,
+              data.vatLodgingOfficer.surname.getOrElse("")),
+              role = data.vatLodgingOfficer.role.getOrElse(""),
+              dateOfBirth = DateOfBirth(data.vatLodgingOfficer.dobDay.getOrElse("").toInt, data.vatLodgingOfficer.dobMonth.getOrElse("").toInt, data.vatLodgingOfficer.dobYear.getOrElse("").toInt))
+            _ <- saveToS4Later(data.vatLodgingOfficer.role, data, { x => CompletionCapacityView(officer.name.id, Some(officer)) })
 
           } yield Ok("Test setup complete")
         }

@@ -16,10 +16,12 @@
 
 package controllers.vatLodgingOfficer
 
+import cats.data.OptionT
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.external.Officer
+import models.ModelKeys.REGISTERING_OFFICER_KEY
+import models.api.Officer
 import models.view.vatLodgingOfficer.CompletionCapacityView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -83,6 +85,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockS4LService.saveForm[CompletionCapacityView](any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       when(mockPPService.getOfficerList()(any())).thenReturn(Seq(officer).pure)
       mockKeystoreFetchAndGet("OfficerList", Option.empty[Seq[Officer]])
+      mockKeystoreCache[Officer](REGISTERING_OFFICER_KEY, dummyCacheMap)
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> officer.name.id)
@@ -99,6 +102,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockS4LService.saveForm[CompletionCapacityView](any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       when(mockPPService.getOfficerList()(any())).thenReturn(Seq(officer).pure)
       mockKeystoreFetchAndGet[Seq[Officer]]("OfficerList", Some(Seq(officer)))
+      mockKeystoreCache[Officer](REGISTERING_OFFICER_KEY, dummyCacheMap)
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> officer.name.id)

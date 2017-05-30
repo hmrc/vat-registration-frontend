@@ -19,7 +19,7 @@ package models.api
 import cats.Show
 import cats.Show.show
 import models.api.Name.inlineShow.inline
-import models.external.Officer
+
 import org.apache.commons.lang3.text.WordUtils
 import play.api.libs.functional.syntax._
 import play.api.libs.json._

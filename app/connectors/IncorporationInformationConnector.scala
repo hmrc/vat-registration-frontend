@@ -21,7 +21,8 @@ import javax.inject.Singleton
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
-import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
+import models.api.OfficerList
+import models.external.CoHoRegisteredOfficeAddress
 import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.ws.WSHttp
