@@ -66,6 +66,18 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
         _ includesText "What is your date of birth"
       }
     }
+
+    "return HTML Test Data in S4L and vatScheme contains data" in {
+      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer.empty))
+      when(mockS4LService.saveForm[OfficerDateOfBirthView](any())(any(), any(), any()))
+        .thenReturn(CacheMap("", Map("" -> Json.toJson(OfficerDateOfBirthView(LocalDate.of(1980, 1, 1))))).pure)
+      mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
+
+      callAuthorised(TestOfficerDateOfBirthController.show()) {
+        _ includesText "What is your date of birth"
+      }
+    }
   }
 
   s"POST ${routes.OfficerDateOfBirthController.submit()} with Empty data" should {
