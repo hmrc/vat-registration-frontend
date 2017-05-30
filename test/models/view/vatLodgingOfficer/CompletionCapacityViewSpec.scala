@@ -29,7 +29,7 @@ class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture wi
 
     "convert VatScheme with VatLodgingOfficer details into a CompletionCapacityView" in {
       val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
-      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName)
+      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName, validVatDigitalContact)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       val expected = CompletionCapacityView(officerName.id, Some(Officer(officerName, "director", None, None)))

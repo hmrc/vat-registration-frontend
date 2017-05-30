@@ -18,7 +18,7 @@ package models.api
 
 import play.api.libs.json.{Json, OFormat}
 
-case class VatLodgingOfficer(currentAddress: ScrsAddress, dob: DateOfBirth, nino: String, role: String, name: Name)
+case class VatLodgingOfficer(currentAddress: ScrsAddress, dob: DateOfBirth, nino: String, role: String, name: Name, contact: VatDigitalContact)
 
 object VatLodgingOfficer {
   implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
@@ -29,5 +29,6 @@ object VatLodgingOfficer {
     DateOfBirth(1,1,1980),
     "NB686868C",
     "",
-    Name.empty)
+    Name.empty,
+    VatDigitalContact.empty)
 }
