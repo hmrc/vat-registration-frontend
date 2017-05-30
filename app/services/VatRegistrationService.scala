@@ -53,14 +53,24 @@ trait RegistrationService {
 
   def deleteElements(elementPath: List[ElementPath])(implicit hc: HeaderCarrier): Future[Unit]
 
+  def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials]
+
+  def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[VatSicAndCompliance]
+
+  def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails]
+
+  def submitVatContact()(implicit hc: HeaderCarrier): Future[VatContact]
+
+  def submitVatEligibility()(implicit hc: HeaderCarrier): Future[VatServiceEligibility]
+
+  def submitVatLodgingOfficer()(implicit hc: HeaderCarrier): Future[VatLodgingOfficer]
+
 }
 
 class VatRegistrationService @Inject()(s4LService: S4LService,
                                        vatRegConnector: VatRegistrationConnector,
                                        companyRegistrationConnector: CompanyRegistrationConnector)
-
-  extends RegistrationService
-    with CommonService {
+  extends RegistrationService with CommonService {
 
   import cats.instances.future._
   import cats.syntax.applicative._
@@ -99,7 +109,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@|
       submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer map { case _ => () }
 
-  private[services] def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
+  def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
 
     def mergeWithS4L(vs: VatScheme) =
       (s4l[EstimateVatTurnover]() |@|
@@ -125,7 +135,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     } yield response
   }
 
-  private[services] def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[VatSicAndCompliance] = {
+  def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[VatSicAndCompliance] = {
     def mergeWithS4L(vs: VatScheme) =
       (s4l[BusinessActivityDescription]() |@|
         s4l[NotForProfit]() |@|
@@ -166,7 +176,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     } yield response
   }
 
-  private[services] def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
+  def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
     def mergeWithS4L(vs: VatScheme) =
       (s4l[TradingNameView]() |@|
         s4l[StartDateView]() |@|
@@ -192,7 +202,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   }
 
 
-  private[services] def submitVatContact()(implicit hc: HeaderCarrier): Future[VatContact] = {
+  def submitVatContact()(implicit hc: HeaderCarrier): Future[VatContact] = {
     def mergeWithS4L(vs: VatScheme) =
       s4l[BusinessContactDetails]().map(S4LVatContact.apply).map { s4l =>
         update(s4l.businessContactDetails, vs)
@@ -206,7 +216,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     } yield response
   }
 
-  private[services] def submitVatEligibility()(implicit hc: HeaderCarrier): Future[VatServiceEligibility] = {
+  def submitVatEligibility()(implicit hc: HeaderCarrier): Future[VatServiceEligibility] = {
     def mergeWithS4L(vs: VatScheme) =
       s4l[VatServiceEligibility]().map(S4LVatEligibility.apply).map { s4l =>
         update(s4l.vatEligibility, vs)
@@ -220,7 +230,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     } yield response
   }
 
-  private[services] def submitVatLodgingOfficer()(implicit hc: HeaderCarrier): Future[VatLodgingOfficer] = {
+  def submitVatLodgingOfficer()(implicit hc: HeaderCarrier): Future[VatLodgingOfficer] = {
     def merge(fresh: Option[S4LVatLodgingOfficer], vs: VatScheme): VatLodgingOfficer =
       fresh.fold(
         vs.lodgingOfficer.getOrElse(throw fail("VatLodgingOfficer"))

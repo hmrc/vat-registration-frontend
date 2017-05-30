@@ -24,6 +24,7 @@ import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
+import controllers.vatTradingDetails.vatChoice.{routes => vatChoiceRoutes}
 
 class OfficerContactDetailsController @Inject()(ds: CommonPlayDependencies)
                                                (implicit s4l: S4LService, vrs: VatRegistrationService)
@@ -33,22 +34,21 @@ class OfficerContactDetailsController @Inject()(ds: CommonPlayDependencies)
 
   val form = OfficerContactDetailsForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel[OfficerContactDetailsView]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_contact_details(f)))
-  })
+      .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_contact_details(f))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       copyGlobalErrorsToFields("email", "daytimePhone", "mobile")
         .andThen(form => BadRequest(views.html.pages.vatLodgingOfficer.officer_contact_details(form)).pure),
-      data => save[OfficerContactDetailsView](data) flatMap { _ =>
-        viewModel2[VoluntaryRegistration]
-          .map(_ == VoluntaryRegistration.yes).getOrElse(true).ifM(
-          controllers.vatTradingDetails.vatChoice.routes.StartDateController.show().pure,
-          controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show().pure
-        ).map(Redirect)
-      })
-  })
+      view => (for {
+        _ <- save[OfficerContactDetailsView](view)
+        _ <- vrs.submitVatLodgingOfficer()
+        optVR <- viewModel2[VoluntaryRegistration].value
+      } yield optVR.fold(true)(_ == VoluntaryRegistration.yes)).ifM(
+        ifTrue = vatChoiceRoutes.StartDateController.show().pure,
+        ifFalse = vatChoiceRoutes.MandatoryStartDateController.show().pure
+      ).map(Redirect)))
 
 }
