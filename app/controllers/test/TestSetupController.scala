@@ -145,21 +145,21 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
           applyingForAnyOf = eligibility.map(_.applyingForAnyOf.getOrElse("").toString),
           companyWillDoAnyOf = eligibility.map(_.companyWillDoAnyOf.getOrElse("").toString)),
         officerHomeAddress = OfficerHomeAddressTestSetup(
-          line1 = vatLodgingOfficer.flatMap(vlo => vlo.officerHomeAddress).flatMap(oha => oha.address).map(a => a.line1),
-          line2 = vatLodgingOfficer.flatMap(vlo => vlo.officerHomeAddress).flatMap(oha => oha.address).map(a => a.line2),
-          line3 = vatLodgingOfficer.flatMap(vlo => vlo.officerHomeAddress).flatMap(oha => oha.address).flatMap(a => a.line3),
-          line4 = vatLodgingOfficer.flatMap(vlo => vlo.officerHomeAddress).flatMap(oha => oha.address).flatMap(a => a.line4),
-          postcode = vatLodgingOfficer.flatMap(vlo => vlo.officerHomeAddress).flatMap(oha => oha.address).flatMap(a => a.postcode),
-          country = vatLodgingOfficer.flatMap(vlo => vlo.officerHomeAddress).flatMap(oha => oha.address).flatMap(a => a.country)),
+          line1 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).map(_.line1),
+          line2 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).map(_.line2),
+          line3 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.line3),
+          line4 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.line4),
+          postcode = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.postcode),
+          country = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.country)),
         vatLodgingOfficer = VatLodgingOfficerTestSetup(
-          vatLodgingOfficer.flatMap(vlo => vlo.officerDateOfBirth).map(odob => odob.dob.getDayOfMonth.toString),
-          vatLodgingOfficer.flatMap(vlo => vlo.officerDateOfBirth).map(odob => odob.dob.getMonthValue.toString),
-          vatLodgingOfficer.flatMap(vlo => vlo.officerDateOfBirth).map(odob => odob.dob.getYear.toString),
-          vatLodgingOfficer.flatMap(vlo => vlo.officerNino).map(onino => onino.nino),
-          vatLodgingOfficer.flatMap(vlo => vlo.completionCapacity).flatMap(ccv => ccv.officer).map(o => o.role),
-          vatLodgingOfficer.flatMap(vlo => vlo.completionCapacity).flatMap(ccv => ccv.officer).flatMap(o => o.name.forename),
-          vatLodgingOfficer.flatMap(vlo => vlo.completionCapacity).flatMap(ccv => ccv.officer).flatMap(o => o.name.otherForenames),
-          vatLodgingOfficer.flatMap(vlo => vlo.completionCapacity).flatMap(ccv => ccv.officer).map(o => o.name.surname)
+          vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getDayOfMonth.toString),
+          vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getMonthValue.toString),
+          vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getYear.toString),
+          vatLodgingOfficer.flatMap(_.officerNino).map(_.nino),
+          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).map(_.role),
+          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).flatMap(_.name.forename),
+          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).flatMap(_.name.otherForenames),
+          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).map(_.name.surname)
         )
       )
       form = TestSetupForm.form.fill(testSetup)
