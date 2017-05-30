@@ -25,7 +25,7 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.S4LVatLodgingOfficer
 import models.api._
-import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
+import models.external.{AccountingDetails, CorporationTaxRegistration}
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerHomeAddressView}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -34,7 +34,7 @@ import org.scalatest.Inspectors
 import scala.concurrent.Future
 import scala.language.implicitConversions
 
-class PrePopulationServiceSpec extends VatRegSpec with Inspectors with VatRegistrationFixture with S4LMockSugar {
+class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture with Inspectors with S4LMockSugar {
 
   override val officerName = Name(Some("Reddy"), None, "Yattapu", Some("Dr"))
 
@@ -102,11 +102,9 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with VatRegist
   }
 
   "getOfficerList" must {
-    val officer = Officer(officerName, "director", None, None)
-
+    val officer = Officer(officerName, "director", validDob, None, None)
     // S4L
     val completeCapacityView = CompletionCapacityView(officerName.id, Some(officer))
-
     // BE
     val emptyVatScheme = VatScheme("123")
     val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))

@@ -21,8 +21,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.test.TestSetupForm
-import models.api.{Name, ScrsAddress, VatServiceEligibility}
-import models.external.Officer
+import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
@@ -262,7 +261,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
       postcode = data.officerHomeAddress.postcode,
       country = data.officerHomeAddress.country)
 
-    val dateOfBirth = LocalDate.of(
+    val dob = LocalDate.of(
       data.vatLodgingOfficer.dobYear.getOrElse("1900").toInt,
       data.vatLodgingOfficer.dobMonth.getOrElse("1").toInt,
       data.vatLodgingOfficer.dobDay.getOrElse("1").toInt
@@ -272,12 +271,13 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
       forename = data.vatLodgingOfficer.firstname,
       otherForenames = data.vatLodgingOfficer.othernames,
       surname = data.vatLodgingOfficer.surname.getOrElse("")),
-      role = data.vatLodgingOfficer.role.getOrElse("")
+      role = data.vatLodgingOfficer.role.getOrElse(""),
+      dateOfBirth = DateOfBirth(dob.getDayOfMonth, dob.getMonthValue, dob.getYear)
     )
 
     S4LVatLodgingOfficer(
       officerHomeAddress = Some(OfficerHomeAddressView(address.id, Some(address))),
-      officerDateOfBirth = Some(OfficerDateOfBirthView(dateOfBirth)),
+      officerDateOfBirth = Some(OfficerDateOfBirthView(dob)),
       officerNino = Some(OfficerNinoView(data.vatLodgingOfficer.nino.getOrElse(""))),
       completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
       officerContactDetails = None

@@ -18,11 +18,11 @@ package models.view.vatLodgingOfficer
 
 import java.time.LocalDate
 
-import models._
-import models.api.{DateOfBirth, VatLodgingOfficer, VatScheme}
+import models.api.{DateOfBirth, VatLodgingOfficer, VatScheme, _}
+import models.{ApiModelTransformer, DateModel, ViewModelTransformer, _}
 import play.api.libs.json.Json
 
-case class OfficerDateOfBirthView(dob: LocalDate)
+case class OfficerDateOfBirthView(dob: LocalDate, officerName: Option[Name] = None)
 
 object OfficerDateOfBirthView {
 
@@ -40,8 +40,8 @@ object OfficerDateOfBirthView {
 
   // return a view model from a VatScheme instance
   implicit val modelTransformer = ApiModelTransformer[OfficerDateOfBirthView] { vs: VatScheme =>
-    vs.lodgingOfficer.map(_.dob).collect {
-      case DateOfBirth(d, m, y) => OfficerDateOfBirthView(LocalDate.of(y, m, d))
+    vs.lodgingOfficer.map {
+      lodgingOfficer => OfficerDateOfBirthView(lodgingOfficer.dob, Some(lodgingOfficer.name))
     }
   }
 

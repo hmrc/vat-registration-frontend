@@ -25,26 +25,18 @@ import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
 class FormerNameController @Inject()(ds: CommonPlayDependencies)
-                                    (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService) extends VatRegistrationController(ds) {
-
-  import cats.instances.future._
-  import cats.syntax.applicative._
+                                    (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService)
+  extends VatRegistrationController(ds) {
 
   val form = FormerNameForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[FormerNameView].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatLodgingOfficer.former_name(f)))
-  })
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel[FormerNameView]().fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.vatLodgingOfficer.former_name(f))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.vatLodgingOfficer.former_name(badForm)).pure
-      ,
-      (data: FormerNameView) => s4LService.saveForm[FormerNameView](data) map { _ =>
-        Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
-      }
-    )
-  })
+      badForm => BadRequest(views.html.pages.vatLodgingOfficer.former_name(badForm)).pure,
+      data => save(data) map (_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show()))))
 
 }

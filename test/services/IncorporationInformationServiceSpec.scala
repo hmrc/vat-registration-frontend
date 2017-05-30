@@ -18,13 +18,14 @@ package services
 
 import cats.data.OptionT
 import connectors.KeystoreConnector
+import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{Name, ScrsAddress}
-import models.external.{CoHoCompanyProfile, CoHoRegisteredOfficeAddress, Officer, OfficerList}
+import models.api.{Name, Officer, OfficerList, ScrsAddress}
+import models.external.{CoHoCompanyProfile, CoHoRegisteredOfficeAddress}
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
 
-class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
+class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors with VatRegistrationFixture {
 
   private class Setup {
     val service = new IncorporationInformationService(mockIIConnector) {
@@ -32,7 +33,7 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
     }
   }
 
-  val officer = Officer(
+  override val officer = Officer(
     name = Name(
       title = Some("Dr"),
       forename = Some("Reddy"),
@@ -40,6 +41,7 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors {
       surname = "Reddy"
     ),
     role = "director",
+    dateOfBirth = validDob,
     resignedOn = None,
     appointmentLink = None)
 
