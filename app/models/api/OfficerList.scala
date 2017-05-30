@@ -62,5 +62,5 @@ object Officer {
 case class OfficerList(items: Seq[Officer])
 
 object OfficerList {
-  implicit val reads: Reads[OfficerList] = __.read[Seq[Officer]] map OfficerList.apply
+  implicit val reads: Reads[OfficerList] = (__ \ "officers").read[Seq[Officer]] map OfficerList.apply
 }

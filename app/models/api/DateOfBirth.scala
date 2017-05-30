@@ -26,14 +26,12 @@ import models.StringToNumberReaders._
 case class DateOfBirth(day: Int, month: Int, year: Int)
 
 object DateOfBirth {
- // implicit val format: OFormat[DateOfBirth] = Json.format[DateOfBirth]
-
   implicit def toLocalDate(dob: DateOfBirth): LocalDate = LocalDate.of(dob.year, dob.month, dob.day)
 
   // TODO remove once no longer required
   val empty = DateOfBirth(1,1,1980)
 
-  implicit val formater = (
+  implicit val formatter = (
     (__ \ "day").format((__).readStringifiedInt) and
       (__ \ "month").format((__).readStringifiedInt) and
       (__ \ "year").format((__).readStringifiedInt)
