@@ -24,30 +24,20 @@ import models.view.vatFinancials.EstimateVatTurnover
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
-
 
 class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
                                              (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
+  val form = EstimateVatTurnoverForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel2[EstimateVatTurnover].map { vm =>
-      Ok(views.html.pages.vatFinancials.estimate_vat_turnover(EstimateVatTurnoverForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.vatFinancials.estimate_vat_turnover(EstimateVatTurnoverForm.form)))
-  })
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel2[EstimateVatTurnover].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.vatFinancials.estimate_vat_turnover(f))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     EstimateVatTurnoverForm.form.bindFromRequest().fold(
-      badForm => {
-        Future.successful(BadRequest(views.html.pages.vatFinancials.estimate_vat_turnover(badForm)))
-      }, {
-        data: EstimateVatTurnover => {
-          s4LService.save[EstimateVatTurnover](data) map { _ =>
-            Redirect(controllers.vatFinancials.routes.ZeroRatedSalesController.show())
-          }
-        }
-      })
-  })
+      badForm => BadRequest(views.html.pages.vatFinancials.estimate_vat_turnover(badForm)).pure,
+      goodForm => s4LService.save[EstimateVatTurnover](goodForm).map(_ =>
+        Redirect(controllers.vatFinancials.routes.ZeroRatedSalesController.show()))))
 
 }
