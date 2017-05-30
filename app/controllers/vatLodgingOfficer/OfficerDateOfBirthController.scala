@@ -48,9 +48,7 @@ class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
       officer <- fetchOfficer().getOrElse(Officer.empty)
       res <- viewModel[OfficerDateOfBirthView].fold(form.fill(OfficerDateOfBirthView(officer.dateOfBirth))
       ) {
-        view
-        =>
-          view.officerName
+        view =>  view.officerName
                                   match {
                                     case Some(name) if (name == officer.name) => form.fill(view)
                                     case _ => form.fill(view.copy(dob = officer.dateOfBirth))
