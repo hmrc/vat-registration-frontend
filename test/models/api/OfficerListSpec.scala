@@ -17,7 +17,7 @@
 package models.api
 
 import fixtures.VatRegistrationFixture
-import play.api.libs.json.{JsSuccess, JsValue, Json}
+import play.api.libs.json.{JsSuccess, JsValue, Json, __}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
@@ -74,7 +74,7 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
         officer,
         Officer(Name(Some("Jingly"), None, "Jingles", Some("Mx")), "secretary", validDob, None, None)
       ))
-      reader.reads(json).value shouldBe JsSuccess(officerList)
+      reader.reads(json) shouldBe JsSuccess(officerList, (__ \ "officers"))
     }
   }
 
