@@ -1,0 +1,72 @@
+@import models.view.vatLodgingOfficer.FormerNameView
+@(formerNameForm: Form[FormerNameView])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+@fieldSetClasses = @{
+    if(formerNameForm.hasErrors && (formerNameForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
+}
+
+@main_template(title = messages("pages.formerName.title")) {
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+
+            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.formerName.heading")</h1>
+
+            @errorSummary(
+                Messages("app.common.errorSummaryLabel"),
+                formerNameForm,
+                Seq("formerName")
+            )
+
+            <p>
+            @messages("pages.formerName.p1")
+            </p>
+
+            @govHelpers.form(action = controllers.vatLodgingOfficer.routes.FormerNameController.submit()) {
+                <div class="form-group">
+                    <fieldset class="inline">
+                        <span id="formmerNameRadio"/>
+                        @govHelpers.inputRadioGroup(
+                            field = formerNameForm("formerNameRadio"),
+                            Seq(
+                                "true" -> Messages("app.common.yes"),
+                                "false" -> Messages("app.common.no")
+                            ),
+                            '_labelAfter -> true,
+                            '_labelClass -> "block-label"
+                        )
+
+                        <div class="panel panel-indent hidden @fieldSetClasses" id="former_name_panel">
+
+                            @formerNameForm.errors.find(_.args.contains("formerName")).map { error =>
+                                @govHelpers.errorInline("formerName", Messages(error.message))
+                            }
+
+                            @govHelpers.input(
+                                formerNameForm("formerName"),
+                                '_divClass -> "form-group",
+                                '_inputClass -> "form-control",
+                                '_label -> Messages("pages.formerName.fullName.label"),
+                                '_labelClass -> "form-label"
+                            )
+
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+                </div>
+            }
+
+        </div>
+    </div>
+
+}
+
+<script type="text/javascript">
+        $(document).ready($(function () {
+            FormerNamePage.init()
+        }));
+</script>

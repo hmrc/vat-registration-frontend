@@ -42,7 +42,7 @@ object S4LKey {
   def apply[T](implicit cacheKey: S4LKey[T]): S4LKey[T] = cacheKey
 
   def apply[T](k: String): S4LKey[T] = new S4LKey[T] {
-    val key = k
+    override val key = k
   }
 
   implicit val applyeori: S4LKey[ApplyEori] = S4LKey("ApplyEori")
