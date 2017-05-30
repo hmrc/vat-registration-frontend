@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter.ofPattern
 
 import cats.data.OptionT
 import connectors.KeystoreConnector
+import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.S4LVatLodgingOfficer
 import models.api._
@@ -33,9 +34,9 @@ import org.scalatest.Inspectors
 import scala.concurrent.Future
 import scala.language.implicitConversions
 
-class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSugar {
+class PrePopulationServiceSpec extends VatRegSpec with Inspectors with VatRegistrationFixture with S4LMockSugar {
 
-  val officerName = Name(Some("Reddy"), None, "Yattapu", Some("Dr"))
+  override val officerName = Name(Some("Reddy"), None, "Yattapu", Some("Dr"))
 
   private class Setup {
 
@@ -81,7 +82,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSu
 
     "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
       val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
-      val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName)))
+      val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName, validVatDigitalContact)))
 
       when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
       when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(address))
@@ -109,7 +110,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSu
     // BE
     val emptyVatScheme = VatScheme("123")
     val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
-    val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "nino", "director", officerName)))
+    val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "nino", "director", officerName, validVatDigitalContact)))
 
     "be non-empty when OfficerList is present and nothing in S4L and BE" in new Setup {
 
