@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package models.external
+package models.api
 
 import fixtures.VatRegistrationFixture
-import models.api.Name
-import play.api.libs.json.{JsSuccess, JsValue, Json}
+import play.api.libs.json.{JsSuccess, JsValue, Json, __}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
@@ -26,7 +25,8 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
   val reader = OfficerList.reads
 
   val json: JsValue = Json.parse(
-    """[{
+    """{
+      |  "officers":[{
       |    "name_elements" : {
       |        "forename" : "Bob",
       |        "other_forenames" : "Bimbly Bobblous",
@@ -66,15 +66,15 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
       |        "postal_code" : "NE1 4BB"
       |    },
       |    "officer_role" : "secretary"
-      |}]""".stripMargin)
+      |}]}""".stripMargin)
 
   "OfficerList" should {
     "deserialise from valid JSON" in {
       val officerList = OfficerList(Seq(
         officer,
-        Officer(Name(Some("Jingly"), None, "Jingles", Some("Mx")), "secretary", None, None)
+        Officer(Name(Some("Jingly"), None, "Jingles", Some("Mx")), "secretary", validDob, None, None)
       ))
-      reader.reads(json) shouldBe JsSuccess(officerList)
+      reader.reads(json) shouldBe JsSuccess(officerList, (__ \ "officers"))
     }
   }
 
@@ -87,17 +87,22 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
           |        "other_forenames" : "Bimbly Bobblous",
           |        "surname" : "Bobbings"
           |    },
+          |    "date_of_birth" : {
+          |        "day" : 12,
+          |        "month" : 11,
+          |        "year" : 1973
+          |    },
           |    "officer_role" : "director"
           |}""".stripMargin)
 
-      Officer.wt.writes(officer) shouldBe bobJson
+       Officer.wt.writes(officer) shouldBe bobJson
     }
   }
 
   "Officer" should {
     "have equality equal" in {
-      val officer1 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director")
-      val officer2 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director")
+      val officer1 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director", validDob)
+      val officer2 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director", validDob)
 
       (officer1 == officer2) shouldBe true
     }
@@ -105,8 +110,8 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
 
   "Officer" should {
     "have equality not-equal" in {
-      val officer1 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director")
-      val officer2 = Officer(name = Name(Some("forename"), None, "surname"), role = "director")
+      val officer1 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director", validDob)
+      val officer2 = Officer(name = Name(Some("forename"), None, "surname"), role = "director", validDob)
 
       (officer1 == officer2) shouldBe false
     }
