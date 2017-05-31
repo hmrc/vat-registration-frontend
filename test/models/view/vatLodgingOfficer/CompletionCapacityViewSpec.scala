@@ -17,17 +17,19 @@
 package models.view.vatLodgingOfficer
 
 import fixtures.VatRegistrationFixture
-import models.ApiModelTransformer
-import models.api.{DateOfBirth, Officer, ScrsAddress, VatLodgingOfficer}
+import models.{ApiModelTransformer, S4LVatLodgingOfficer, VMReads, ViewModelTransformer}
+import models.api._
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
-  "modelTransformer" should {
+  val anOfficer = Officer(Name(Some("name1"), Some("name2"),"SurName"), "director", validDob)
+  val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
+
+  "apiModelTransformer" should {
 
     "convert VatScheme with VatLodgingOfficer details into a CompletionCapacityView" in {
-      val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
       val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName,  formerName, validVatDigitalContact)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
@@ -44,4 +46,38 @@ class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture wi
 
   }
 
+  "viewModelTransformer" should {
+    "update logical group given a component" in {
+      val ccv = CompletionCapacityView(anOfficer)
+      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty,  formerName, validVatDigitalContact)
+      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", anOfficer.name,  formerName, validVatDigitalContact)
+
+      ViewModelTransformer[CompletionCapacityView, VatLodgingOfficer].
+        toApi(ccv, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
+    }
+  }
+
+
+    "apply" should {
+    "create a CompletionCapacityView instance with the correct id" in {
+      val ccv = CompletionCapacityView(anOfficer)
+
+      ccv.id shouldBe anOfficer.name.id
+    }
+  }
+
+  "VMReads" should {
+    val ccv = CompletionCapacityView(anOfficer)
+    val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(completionCapacity = Some(ccv))
+
+    "extract completionCapacityView from lodgingOfficer" in {
+
+      CompletionCapacityView.vmReads.read(s4LVatLodgingOfficer) shouldBe Some(ccv)
+    }
+
+    "update lodgingOfficer with completionCapacityView" in {
+
+      CompletionCapacityView.vmReads.udpate(ccv, Some(s4LVatLodgingOfficer)).completionCapacity shouldBe Some(ccv)
+    }
+  }
 }
