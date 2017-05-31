@@ -37,10 +37,11 @@ object FormerNameView {
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[FormerNameView] { vs: VatScheme =>
-    None
+    vs.lodgingOfficer.map(_.formerName).map(fn => FormerNameView(fn.selection, fn.formerName))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: FormerNameView, g: VatLodgingOfficer) => g
+  implicit val viewModelTransformer = ViewModelTransformer { (c: FormerNameView, g: VatLodgingOfficer) =>
+    g.copy(formerName = FormerName(c.yesNo, c.formerName))
   }
 
 }

@@ -18,17 +18,26 @@ package models.api
 
 import play.api.libs.json.{Json, OFormat}
 
-case class VatLodgingOfficer(currentAddress: ScrsAddress, dob: DateOfBirth, nino: String, role: String, name: Name, contact: VatDigitalContact)
+case class VatLodgingOfficer(
+                              currentAddress: ScrsAddress,
+                              dob: DateOfBirth,
+                              nino: String,
+                              role: String,
+                              name: Name,
+                              formerName: FormerName,
+                              contact: VatDigitalContact
+                            )
 
 object VatLodgingOfficer {
   implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
 
   // TODO remove once no longer required
   val empty = VatLodgingOfficer(
-    ScrsAddress(line1 = "",line2 = ""),
-    DateOfBirth(1,1,1980),
-    "NB686868C",
-    "",
-    Name.empty,
-    VatDigitalContact.empty)
+    currentAddress = ScrsAddress(line1 = "", line2 = ""),
+    dob = DateOfBirth(1, 1, 1980),
+    nino = "NB686868C",
+    role = "",
+    name = Name.empty,
+    formerName = FormerName(selection = false, formerName = None),
+    contact = VatDigitalContact.empty)
 }
