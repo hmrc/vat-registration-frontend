@@ -241,6 +241,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
           .andThen(update(s4l.officerNino, vs))
           .andThen(update(s4l.completionCapacity, vs))
           .andThen(update(s4l.officerContactDetails, vs))
+          .andThen(update(s4l.formerName, vs))
           .apply(vs.lodgingOfficer.getOrElse(VatLodgingOfficer.empty)) //TODO remove the "seeding" with empty
       }
 
