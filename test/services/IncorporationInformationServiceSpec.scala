@@ -71,10 +71,15 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors wit
 
   "getOfficerList" must {
     "return a list of officers" in new Setup {
-      mockKeystoreFetchAndGet[CoHoCompanyProfile]("CompanyProfile", Some(CoHoCompanyProfile("status", "transactionId")))
+      mockKeystoreFetchAndGet("CompanyProfile", Some(CoHoCompanyProfile("status", "transactionId")))
       when(mockIIConnector.getOfficerList("transactionId")).thenReturn(OptionT.pure(OfficerList(Seq(officer))))
 
       service.getOfficerList() returns Seq(officer)
+    }
+
+    "return am empty sequence when no OfficerList in keystore" in new Setup {
+      mockKeystoreFetchAndGet("CompanyProfile", Option.empty[CoHoCompanyProfile])
+      service.getOfficerList() returns Seq.empty[Officer]
     }
   }
 
