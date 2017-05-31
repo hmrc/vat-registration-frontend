@@ -15,7 +15,6 @@ alternatively, create an alias for the above line, and get in the habit of runni
 ```bash
 alias precommit="sbt clean coverage test it:test scalastyle coverageReport"
 ```
-
 ### NOTE: Only commit if test coverage report is above or equal to 95%, scalastyle warnings are corrected and tests green.
 
 ## Running locally

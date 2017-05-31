@@ -31,7 +31,7 @@ $(document).ready($(function () {
 
     UI.preventNonNumericInput = function(inputs) {
         //             \t,\n, 0,  1,  2,  3,  3,  5,  6,  7,  8,  9
-        var allowed = [9, 13, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57];
+        var allowed = [8, 9, 13, 26, 27, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 127, ];
         $.each(inputs, function(idx, inputName){
             $('input[name='+inputName+']').keypress (function(evt) {
                 // if current key not found in the array of allowed key codes, ignore keypress

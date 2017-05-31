@@ -16,15 +16,15 @@
 
 package models.view.vatLodgingOfficer
 
-import models.api.{Officer, VatLodgingOfficer, VatScheme}
+import models.api.{CompletionCapacity, VatLodgingOfficer, VatScheme}
 import models.{ApiModelTransformer, ViewModelTransformer, _}
 import play.api.libs.json.Json
 
-case class CompletionCapacityView(id: String, officer: Option[Officer] = None)
+case class CompletionCapacityView(id: String, completionCapacity: Option[CompletionCapacity] = None)
 
 object CompletionCapacityView {
 
-  def apply(o: Officer): CompletionCapacityView = new CompletionCapacityView(o.name.id, Some(o))
+  def apply(cc: CompletionCapacity): CompletionCapacityView = new CompletionCapacityView(cc.name.id, Some(cc))
 
   implicit val format = Json.format[CompletionCapacityView]
 
@@ -36,11 +36,11 @@ object CompletionCapacityView {
 
   // return a view model from a VatScheme instance
   implicit val modelTransformer = ApiModelTransformer[CompletionCapacityView] { vs: VatScheme =>
-    vs.lodgingOfficer.map(o => CompletionCapacityView(o.name.id, Some(Officer(o.name, o.role, o.dob, None, None))))
+    vs.lodgingOfficer.map(cc => CompletionCapacityView(cc.name.id, Some(CompletionCapacity(cc.name, cc.role))))
   }
 
   // return a new or updated VatLodgingOfficer from the CompleteCapacityView instance
   implicit val viewModelTransformer = ViewModelTransformer { (c: CompletionCapacityView, g: VatLodgingOfficer) =>
-    g.copy(name = c.officer.getOrElse(Officer.empty).name, role = c.officer.getOrElse(Officer.empty).role)
+    g.copy(name = c.completionCapacity.getOrElse(CompletionCapacity.empty).name, role = c.completionCapacity.getOrElse(CompletionCapacity.empty).role)
   }
 }
