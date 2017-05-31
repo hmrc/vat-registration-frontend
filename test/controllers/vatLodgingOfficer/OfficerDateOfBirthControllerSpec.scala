@@ -70,6 +70,17 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
         _ includesText "What is your date of birth"
       }
     }
+
+    "return HTML Test Data in S4L and vatScheme contains data matching data in keystore" in {
+      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer.empty))
+      val officerReddy = OfficerDateOfBirthView(LocalDate.of(1980, 1, 1), Some(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None)))
+      mockKeystoreFetchAndGet[Officer](REGISTERING_OFFICER_KEY, Some(officer))
+      save4laterReturns2(officerReddy)()
+
+      callAuthorised(Controller.show()) {
+        _ includesText "What is your date of birth"
+      }
+    }
   }
 
   s"POST ${routes.OfficerDateOfBirthController.submit()} with Empty data" should {
