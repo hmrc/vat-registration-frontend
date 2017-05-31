@@ -36,7 +36,7 @@ import scala.language.implicitConversions
 
 class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture with Inspectors with S4LMockSugar {
 
-  override val officerName = Name(Some("Reddy"), None, "Yattapu", Some("Dr"))
+  override val officerName = Name(Some("Bob" ), Some("Bimbly Bobblous"), "Bobbings", None)
 
   private class Setup {
 
@@ -105,7 +105,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
   "getOfficerList" must {
     val officer = Officer(officerName, "director", validDob, None, None)
     // S4L
-    val completeCapacityView = CompletionCapacityView(officerName.id, Some(officer))
+    val completeCapacityView = CompletionCapacityView(completionCapacity.name.id, Some(completionCapacity))
     // BE
     val emptyVatScheme = VatScheme("123")
     val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
@@ -115,7 +115,6 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
     "be non-empty when OfficerList is present and nothing in S4L and BE" in new Setup {
 
       when(mockIIService.getOfficerList()).thenReturn(Seq(officer).pure)
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
       save4laterReturnsNothing[S4LVatLodgingOfficer]
 
       service.getOfficerList() returns Seq(officer)
@@ -148,16 +147,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
       service.getOfficerList() returns Seq()
     }
 
-    "be non-empty when officer present in BE" in new Setup {
-
-      when(mockIIService.getOfficerList()).thenReturn(Seq.empty[Officer].pure)
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
-      save4laterReturnsNothing[S4LVatLodgingOfficer]
-
-      service.getOfficerList() returns List(officer)
-    }
-
-  }
+ }
 
 
 }
