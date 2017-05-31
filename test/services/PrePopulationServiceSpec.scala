@@ -109,7 +109,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSu
     val officer = Officer(officerName, "director", validDob, None, None)
 
     // S4L
-    val completeCapacityView = CompletionCapacityView(officerName.id, Some(officer))
+    val completeCapacityView = CompletionCapacityView(completionCapacity.name.id, Some(completionCapacity))
 
     // BE
     val emptyVatScheme = VatScheme("123")
@@ -129,7 +129,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSu
 
       when(mockIIService.getOfficerList()).thenReturn(OptionT.none[Future, Seq[Officer]])
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
-      save4laterReturns[CompletionCapacityView](completeCapacityView)
+      //save4laterReturns[CompletionCapacityView](completeCapacityView)
 
       service.getOfficerList() returns Seq(officer)
     }
