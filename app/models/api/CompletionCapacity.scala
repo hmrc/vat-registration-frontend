@@ -21,16 +21,7 @@ import play.api.libs.json.Json
 case class CompletionCapacity(
                     name: Name,
                     role: String
-                  ){
-
-  override def equals(obj: Any): Boolean = obj match {
-    case CompletionCapacity(nameObj, roleObj)
-      if role.equalsIgnoreCase(roleObj) && (nameObj == name) => true
-    case _ => false
-  }
-
-  override def hashCode: Int = 1 // TODO temporary fix
-}
+                  )
 
 object CompletionCapacity {
 
