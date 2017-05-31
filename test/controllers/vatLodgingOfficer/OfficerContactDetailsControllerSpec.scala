@@ -76,12 +76,14 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
     "return 303" in {
       save4laterReturns(VoluntaryRegistration.yes)
       save4laterExpectsSave[OfficerContactDetailsView]()
+      when(mockVatRegistrationService.submitVatLodgingOfficer()(any())).thenReturn(validLodgingOfficer.pure)
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com")
       )(_ redirectsTo s"$contextRoot/start-date")
 
+      verify(mockVatRegistrationService).submitVatLodgingOfficer()(any())
     }
   }
 

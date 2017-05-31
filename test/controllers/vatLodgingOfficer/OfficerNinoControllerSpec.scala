@@ -19,7 +19,6 @@ package controllers.vatLodgingOfficer
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LVatLodgingOfficer
 import models.view.vatLodgingOfficer.OfficerNinoView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -75,7 +74,7 @@ class OfficerNinoControllerSpec extends VatRegSpec with VatRegistrationFixture w
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("nino" -> "NB686868C")) {
-      _ redirectsTo s"$contextRoot/your-contact-details"
+        _ redirectsTo s"$contextRoot/your-contact-details"
       }
     }
 

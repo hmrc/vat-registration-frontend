@@ -64,7 +64,7 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
       val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer.empty))
       val officerReddy = OfficerDateOfBirthView(LocalDate.of(1980, 1, 1), Some(Name(Some("Yattapu"), None, "Reddy", Some("Dr"))))
       mockKeystoreFetchAndGet[Officer](REGISTERING_OFFICER_KEY, Some(officer))
-      save4laterReturns2[OfficerDateOfBirthView](officerReddy)
+      save4laterReturns2(officerReddy)
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
 
       callAuthorised(Controller.show()) {

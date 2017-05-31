@@ -20,13 +20,9 @@ import controllers.vatLodgingOfficer
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatLodgingOfficer.FormerNameView
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.HeaderCarrier
-
-import scala.concurrent.Future
 
 class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
@@ -38,9 +34,10 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
   s"GET ${vatLodgingOfficer.routes.FormerNameController.show()}" should {
 
+    reset(mockVatRegistrationService)
+
     "return HTML when there's a former name in S4L" in {
-      val formerName = FormerNameView(true, Some("Test Former Name"))
-      save4laterReturns2(formerName)
+      save4laterReturns2(FormerNameView(yesNo = true, formerName = Some("Smooth Handler")))()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(TestFormerNameController.show) {

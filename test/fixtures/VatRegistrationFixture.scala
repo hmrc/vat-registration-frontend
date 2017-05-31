@@ -93,15 +93,23 @@ trait VatRegistrationFixture {
     financialCompliance = None
   )
 
-  val validDob = DateOfBirth(12,11,1973)
+  val validDob = DateOfBirth(12, 11, 1973)
 
   val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", validDob, None, None)
 
   val validServiceEligibility = VatServiceEligibility(Some(true), Some(false), Some(false), Some(false), Some(false))
-  val officerName = Name(Some("Reddy"), None, "Yattapu" , Some("Dr"))
-  val validOfficerContactDetails = OfficerContactDetailsView (Some ("test@test.com"), Some("07837483287"), Some("07827483287"))
-  val validVatDigitalContact = VatDigitalContact(("test@test.com"), None, None)
-  val validLodgingOfficer = VatLodgingOfficer(ScrsAddress("",""), DateOfBirth.empty, "","director", officerName, validVatDigitalContact)
+  val officerName = Name(Some("Reddy"), None, "Yattapu", Some("Dr"))
+  val validOfficerContactDetails = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
+  val validVatDigitalContact = VatDigitalContact("test@test.com", None, None)
+  val formerName = FormerName(selection = true, formerName = Some("Bubbly Bobbings"))
+  val validLodgingOfficer = VatLodgingOfficer(
+    ScrsAddress("", ""),
+    DateOfBirth.empty,
+    "", "director",
+    officerName,
+    formerName,
+    validVatDigitalContact
+  )
 
   val emptyVatScheme = VatScheme(validRegId)
 
@@ -135,14 +143,23 @@ trait VatRegistrationFixture {
 
   def vatSicAndCompliance(
                            activityDescription: String = "Some business activity",
-                           culturalComplianceSection: Option[VatComplianceCultural] = Some(VatComplianceCultural(notForProfit = false)),
-                           labourComplianceSection: Option[VatComplianceLabour] = Some(VatComplianceLabour(true, Some(8), Some(true), Some(true))),
-                           financialComplianceSection: Option[VatComplianceFinancial] = Some(VatComplianceFinancial(true, false, Some(true), Some(true)))
-                         ): VatSicAndCompliance =
-    VatSicAndCompliance(businessDescription = activityDescription,
-                        culturalCompliance = culturalComplianceSection,
-                        labourCompliance = labourComplianceSection,
-                        financialCompliance = financialComplianceSection)
+                           culturalComplianceSection: Option[VatComplianceCultural] = Some(VatComplianceCultural(
+                             notForProfit = false)),
+                           labourComplianceSection: Option[VatComplianceLabour] = Some(VatComplianceLabour(
+                             labour = true,
+                             workers = Some(8),
+                             temporaryContracts = Some(true),
+                             skilledWorkers = Some(true))),
+                           financialComplianceSection: Option[VatComplianceFinancial] = Some(VatComplianceFinancial(
+                             adviceOrConsultancyOnly = true,
+                             actAsIntermediary = false,
+                             chargeFees = Some(true),
+                             additionalNonSecuritiesWork = Some(true)))): VatSicAndCompliance =
+    VatSicAndCompliance(
+      businessDescription = activityDescription,
+      culturalCompliance = culturalComplianceSection,
+      labourCompliance = labourComplianceSection,
+      financialCompliance = financialComplianceSection)
 
 
   def vatScheme(
