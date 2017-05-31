@@ -40,13 +40,13 @@ object OfficerContactDetailsView {
 
   implicit val modelTransformer = ApiModelTransformer[OfficerContactDetailsView] { (vs: VatScheme) =>
     vs.lodgingOfficer.map(_.contact).collect {
-      case VatDigitalContact(email,tel,mob) =>
-        OfficerContactDetailsView(email = Some(email), daytimePhone = tel, mobile = mob)
+      case OfficerContactDetails(e,t,m) =>
+        OfficerContactDetailsView(email = e, daytimePhone = t, mobile = m)
     }
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerContactDetailsView, g: VatLodgingOfficer) =>
-    g.copy(contact = VatDigitalContact(c.email.getOrElse(""), c.daytimePhone, c.mobile))
+    g.copy(contact = OfficerContactDetails(c.email, c.daytimePhone, c.mobile))
   }
 
 }
