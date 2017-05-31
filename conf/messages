@@ -379,6 +379,9 @@ pages.summary.directorDetails.previousAddress          = Previous address
 pages.summary.directorDetails.dob                      = Date of birth
 pages.summary.directorDetails.nino                     = National Insurance number
 pages.summary.directorDetails.completionCapacity       = Person registering the company for VAT
+pages.summary.directorDetails.email                    = Email address
+pages.summary.directorDetails.daytimePhone             = Daytime phone number
+pages.summary.directorDetails.mobile                   = Mobile number
 
 
 ##Business Activity Description
