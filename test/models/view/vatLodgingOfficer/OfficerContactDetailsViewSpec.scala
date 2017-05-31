@@ -25,14 +25,14 @@ import uk.gov.hmrc.play.test.UnitSpec
 class OfficerContactDetailsViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
   val officerContactDetailsView = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
-  val vatDigitalContact = VatDigitalContact("test@test.com", Some("07837483287"), Some("07827483287"))
+  val officerContactDetails = OfficerContactDetails(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
 
   val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
 
   "apiModelTransformer" should {
 
     "convert VatScheme with VatLodgingOfficer details into a OfficerContactDetailsView" in {
-      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(false, None), vatDigitalContact)
+      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(false, None), officerContactDetails)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       ApiModelTransformer[OfficerContactDetailsView].toViewModel(vs) shouldBe Some(officerContactDetailsView)
@@ -48,8 +48,8 @@ class OfficerContactDetailsViewSpec extends UnitSpec with VatRegistrationFixture
 
   "viewModelTransformer" should {
     "update logical group given a component" in {
-      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(false, None), VatDigitalContact.empty)
-      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(false, None), vatDigitalContact)
+      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(false, None), OfficerContactDetails.empty)
+      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(false, None), officerContactDetails)
 
       ViewModelTransformer[OfficerContactDetailsView, VatLodgingOfficer].
         toApi(officerContactDetailsView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
