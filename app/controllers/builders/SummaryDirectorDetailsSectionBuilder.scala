@@ -40,12 +40,33 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLod
     Some(controllers.vatLodgingOfficer.routes.OfficerNinoController.show())
   )
 
+  val email: SummaryRow = SummaryRow(
+    "directorDetails.email",
+    vatLodgingOfficer.flatMap(_.contact.email).getOrElse(""),
+    Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
+  )
+
+  val daytimePhone: SummaryRow = SummaryRow(
+    "directorDetails.daytimePhone",
+    vatLodgingOfficer.flatMap(_.contact.tel).getOrElse(""),
+    Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
+  )
+
+  val mobile: SummaryRow = SummaryRow(
+    "directorDetails.mobile",
+    vatLodgingOfficer.flatMap(_.contact.mobile).getOrElse(""),
+    Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
+  )
+
   val section: SummarySection = SummarySection(
     id = "directorDetails",
     Seq(
       (completionCapacity, true),
       (dob, true),
-      (nino, true)
+      (nino, true),
+      (email, vatLodgingOfficer.exists(_.contact.email.isDefined)),
+      (daytimePhone, vatLodgingOfficer.exists(_.contact.tel.isDefined)),
+      (mobile, vatLodgingOfficer.exists(_.contact.mobile.isDefined))
     )
   )
 }
