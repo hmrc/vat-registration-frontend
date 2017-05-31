@@ -16,20 +16,46 @@
 
 package services
 
+import common.exceptions.DownstreamExceptions.RegistrationIdNotFoundException
 import fixtures.{S4LFixture, VatRegistrationFixture}
 import helpers.VatRegSpec
-import models.S4LKey
 import models.view.vatTradingDetails.vatChoice.StartDateView
+import models.{S4LKey, VMReads}
+import org.mockito.Matchers.{any, eq => =~=}
+import org.mockito.Mockito._
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 
 class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixture {
+
+  private final case class TestView(property: String)
+
+  private final case class TestGroup(testView: Option[TestView] = None)
+
+
+  private object TestView {
+    implicit val fmt = Json.format[TestView]
+    implicit val vmReads = VMReads[TestView, TestGroup](
+      readF = (_: TestGroup).testView,
+      updateF = (v: TestView, g: Option[TestGroup]) => g.getOrElse(TestGroup()).copy(testView = Some(v))
+    )
+  }
+
+  private object TestGroup {
+    implicit val fmt = Json.format[TestGroup]
+    implicit val s4lKey = S4LKey[TestGroup]("testGroupKey")
+  }
 
   trait Setup {
     val service = new S4LService {
       override val s4LConnector = mockS4LConnector
       override val keystoreConnector = mockKeystoreConnector
     }
+
+    val key = TestGroup.s4lKey.key
+    reset(mockS4LConnector)
+
   }
 
   val tstStartDateModel = StartDateView("", None)
@@ -63,5 +89,81 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
     }
 
   }
+
+  "getting a View Model form Save 4 Later" should {
+
+    "fail with an exception when registration ID cannot be found in keystore" in new Setup {
+      mockKeystoreFetchAndGet[String]("RegistrationId", None)
+      service.getViewModel[TestView, TestGroup]() failedWith classOf[RegistrationIdNotFoundException]
+    }
+
+    "return None if not in S4L" in new Setup {
+      mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
+      when(mockS4LConnector.fetchAndGet[TestGroup](=~=(validRegId), =~=(key))(any(), any()))
+        .thenReturn(Option.empty.pure)
+      service.getViewModel[TestView, TestGroup]().returnsNone
+    }
+
+    "return None if container object in S4l does not contain requested View" in new Setup {
+      mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
+      when(mockS4LConnector.fetchAndGet[TestGroup](=~=(validRegId), =~=(key))(any(), any()))
+        .thenReturn(Some(TestGroup()).pure)
+      service.getViewModel[TestView, TestGroup]().returnsNone
+    }
+
+    "return a view model if container object in S4l contains requested View" in new Setup {
+      mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
+      when(mockS4LConnector.fetchAndGet[TestGroup](=~=(validRegId), =~=(key))(any(), any()))
+        .thenReturn(Some(TestGroup(testView = Some(TestView("test")))).pure)
+      service.getViewModel[TestView, TestGroup]() returnsSome TestView("test")
+    }
+
+  }
+
+  "updating a View Model in Save 4 Later" should {
+
+    val cacheMap = CacheMap("id", Map())
+    val testView = TestView("test")
+
+
+    "fail with an exception when registration ID cannot be found in keystore" in new Setup {
+      mockKeystoreFetchAndGet[String]("RegistrationId", None)
+      service.updateViewModel[TestView, TestGroup](testView) failedWith classOf[RegistrationIdNotFoundException]
+    }
+
+    "save test view in appropriate container object in Save 4 Later" when {
+
+      "no container in s4l" in new Setup {
+        mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
+        when(mockS4LConnector.fetchAndGet[TestGroup](=~=(validRegId), =~=(key))(any(), any())).thenReturn(Option.empty.pure)
+        when(mockS4LConnector.save(=~=(validRegId), =~=(key), any())(any(), any())).thenReturn(cacheMap.pure)
+
+        service.updateViewModel[TestView, TestGroup](testView) returns cacheMap
+        verify(mockS4LConnector).save(validRegId, key, TestGroup(Some(testView)))
+      }
+
+      "container in s4l does not already contain the view" in new Setup {
+        mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
+        when(mockS4LConnector.fetchAndGet[TestGroup](=~=(validRegId), =~=(key))(any(), any())).thenReturn(Option(TestGroup()).pure)
+        when(mockS4LConnector.save(=~=(validRegId), =~=(key), any())(any(), any())).thenReturn(cacheMap.pure)
+
+        service.updateViewModel[TestView, TestGroup](testView) returns cacheMap
+        verify(mockS4LConnector).save(validRegId, key, TestGroup(Some(testView)))
+      }
+
+      "container in s4l already contains the view" in new Setup {
+        mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
+        when(mockS4LConnector.fetchAndGet[TestGroup](=~=(validRegId), =~=(key))(any(), any()))
+          .thenReturn(Option(TestGroup(Some(TestView("oldProperty")))).pure)
+        when(mockS4LConnector.save(=~=(validRegId), =~=(key), any())(any(), any())).thenReturn(cacheMap.pure)
+
+        service.updateViewModel[TestView, TestGroup](testView) returns cacheMap
+        verify(mockS4LConnector).save(validRegId, key, TestGroup(Some(testView)))
+      }
+
+    }
+
+  }
+
 
 }

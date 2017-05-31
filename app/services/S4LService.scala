@@ -48,9 +48,6 @@ trait S4LService extends CommonService {
   def fetchAndGet[T: S4LKey]()(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
     fetchRegistrationId.flatMap(s4LConnector.fetchAndGet[T](_, S4LKey[T].key))
 
-  def fetch[T](key: String)(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
-    fetchRegistrationId.flatMap(s4LConnector.fetchAndGet[T](_, key))
-
   def getViewModel[T, G]()(implicit r: VMReads.Aux[T, G], f: Format[G], k: S4LKey[G], hc: HeaderCarrier): OptionalResponse[T] =
     for {
       regId <- OptionT.liftF(fetchRegistrationId)

@@ -77,7 +77,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   import cats.syntax.cartesian._
   import cats.syntax.foldable._
 
-  private def s4l[T: Format : S4LKey]()(implicit headerCarrier: HeaderCarrier) = s4LService.fetchAndGet[T]()
+  private def s4l[T: Format : S4LKey]()(implicit headerCarrier: HeaderCarrier) =
+    s4LService.fetchAndGet[T]()
 
   private def update[C, G](c: Option[C], vs: VatScheme)(implicit vmTransformer: ViewModelTransformer[C, G]): G => G =
     g => c.map(vmTransformer.toApi(_, g)).getOrElse(g)
@@ -250,6 +251,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   }
 
 
-  private def fail(logicalGroup: String): Throwable =
-    new AssertionError(s"$logicalGroup data expected to be found in either backend or save for later")
+  private def fail(logicalGroup: String): Exception =
+    new IllegalStateException(s"$logicalGroup data expected to be found in either backend or save for later")
 }
