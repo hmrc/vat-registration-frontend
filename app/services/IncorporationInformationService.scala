@@ -40,17 +40,17 @@ class IncorporationInformationService @Inject()(iiConnector: IncorporationInform
 
   import cats.instances.future._
 
-  override def getRegisteredOfficeAddress()(implicit headerCarrier: HeaderCarrier): OptionalResponse[ScrsAddress] = {
+  override def getRegisteredOfficeAddress()(implicit hc: HeaderCarrier): OptionalResponse[ScrsAddress] = {
     for {
       companyProfile <- OptionT(keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile"))
       address <- iiConnector.getRegisteredOfficeAddress(companyProfile.transactionId)
     } yield address: ScrsAddress // implicit conversion
   }
 
-  override def getOfficerList()(implicit headerCarrier: HeaderCarrier): Future[Seq[Officer]] = {
+  override def getOfficerList()(implicit hc: HeaderCarrier): Future[Seq[Officer]] =
     (for {
       companyProfile <- OptionT(keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile"))
       officerList <- iiConnector.getOfficerList(companyProfile.transactionId)
     } yield officerList.items).getOrElse(Seq.empty[Officer])
-  }
+
 }

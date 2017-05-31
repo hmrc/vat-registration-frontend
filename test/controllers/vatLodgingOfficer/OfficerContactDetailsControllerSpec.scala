@@ -45,7 +45,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
 
 
     "return HTML when there's an answer in S4L" in {
-      save4laterReturns2(validOfficerContactDetails)
+      save4laterReturns2(validOfficerContactDetails)()
 
       callAuthorised(Controller.show) {
         _ includesText "What are your contact details?"
