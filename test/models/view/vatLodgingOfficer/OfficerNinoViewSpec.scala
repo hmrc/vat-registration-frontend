@@ -16,8 +16,6 @@
 
 package models.view.vatLodgingOfficer
 
-import java.time.LocalDate
-
 import fixtures.VatRegistrationFixture
 import models.api._
 import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelTransformer}
@@ -35,7 +33,7 @@ class OfficerNinoViewSpec extends UnitSpec with VatRegistrationFixture with Insi
   "apiModelTransformer" should {
 
     "convert VatScheme with VatLodgingOfficer details into a OfficerDateOfBirthView" in {
-      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, testNino, "", Name.empty, FormerName(false, None), VatDigitalContact.empty)
+      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, testNino, "", Name.empty, FormerName(false, None), OfficerContactDetails.empty)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       ApiModelTransformer[OfficerNinoView].toViewModel(vs) shouldBe Some(testNinoView)
@@ -50,8 +48,10 @@ class OfficerNinoViewSpec extends UnitSpec with VatRegistrationFixture with Insi
 
   "viewModelTransformer" should {
     "update logical group given a component" in {
-      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(false, None), VatDigitalContact.empty)
-      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, testNino, "", Name.empty, FormerName(false, None), VatDigitalContact.empty)
+      val initialVatLodgingOfficer =
+        VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(false, None), OfficerContactDetails.empty)
+      val updatedVatLodgingOfficer =
+        VatLodgingOfficer(address, DateOfBirth.empty, testNino, "", Name.empty, FormerName(false, None), OfficerContactDetails.empty)
 
       ViewModelTransformer[OfficerNinoView, VatLodgingOfficer].
         toApi(testNinoView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer

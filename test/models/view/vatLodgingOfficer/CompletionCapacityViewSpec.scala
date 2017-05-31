@@ -17,14 +17,14 @@
 package models.view.vatLodgingOfficer
 
 import fixtures.VatRegistrationFixture
-import models.{ApiModelTransformer, S4LVatLodgingOfficer, VMReads, ViewModelTransformer}
 import models.api._
+import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelTransformer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
-  val anOfficer = Officer(Name(Some("name1"), Some("name2"),"SurName"), "director", validDob)
+  val anOfficer = CompletionCapacity(Name(Some("name1"), Some("name2"),"SurName"), "director")
   val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
 
   "apiModelTransformer" should {
@@ -49,8 +49,8 @@ class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture wi
   "viewModelTransformer" should {
     "update logical group given a component" in {
       val ccv = CompletionCapacityView(anOfficer)
-      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty,  formerName, validVatDigitalContact)
-      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", anOfficer.name,  formerName, validVatDigitalContact)
+      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty,  formerName, validOfficerContactDetails)
+      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", anOfficer.name,  formerName, validOfficerContactDetails)
 
       ViewModelTransformer[CompletionCapacityView, VatLodgingOfficer].
         toApi(ccv, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
