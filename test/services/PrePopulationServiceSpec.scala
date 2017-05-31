@@ -127,9 +127,9 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSu
 
     "be non-empty when officer only in S4L" in new Setup {
 
-      when(mockIIService.getOfficerList()).thenReturn(OptionT.none[Future, Seq[Officer]])
+      when(mockIIService.getOfficerList()).thenReturn(OptionT.pure(Seq(officer)))
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
-      //save4laterReturns[CompletionCapacityView](completeCapacityView)
+      save4laterReturns[CompletionCapacityView](completeCapacityView)
 
       service.getOfficerList() returns Seq(officer)
     }
@@ -152,16 +152,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSu
       service.getOfficerList() returns Seq()
     }
 
-    "be non-empty when officer present in BE" in new Setup {
-
-      when(mockIIService.getOfficerList()).thenReturn(OptionT.none[Future, Seq[Officer]])
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
-      save4laterReturnsNothing[CompletionCapacityView]
-
-      service.getOfficerList() returns List(officer)
-    }
-
-  }
+ }
 
 
 }
