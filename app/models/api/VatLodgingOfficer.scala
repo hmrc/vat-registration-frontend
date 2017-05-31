@@ -25,7 +25,7 @@ case class VatLodgingOfficer(
                               role: String,
                               name: Name,
                               formerName: FormerName,
-                              contact: VatDigitalContact
+                              contact: OfficerContactDetails
                             )
 
 object VatLodgingOfficer {
@@ -39,5 +39,5 @@ object VatLodgingOfficer {
     role = "",
     name = Name.empty,
     formerName = FormerName(selection = false, formerName = None),
-    contact = VatDigitalContact.empty)
+    contact = OfficerContactDetails.empty)
 }

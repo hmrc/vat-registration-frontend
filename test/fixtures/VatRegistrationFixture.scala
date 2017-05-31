@@ -99,8 +99,8 @@ trait VatRegistrationFixture {
 
   val validServiceEligibility = VatServiceEligibility(Some(true), Some(false), Some(false), Some(false), Some(false))
   val officerName = Name(Some("Reddy"), None, "Yattapu", Some("Dr"))
-  val validOfficerContactDetails = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
-  val validVatDigitalContact = VatDigitalContact("test@test.com", None, None)
+  val validOfficerContactDetailsView = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
+  val validOfficerContactDetails = OfficerContactDetails(Some("test@test.com"), None, None)
   val formerName = FormerName(selection = true, formerName = Some("Bubbly Bobbings"))
   val validLodgingOfficer = VatLodgingOfficer(
     ScrsAddress("", ""),
@@ -108,7 +108,7 @@ trait VatRegistrationFixture {
     "", "director",
     officerName,
     formerName,
-    validVatDigitalContact
+    validOfficerContactDetails
   )
 
   val emptyVatScheme = VatScheme(validRegId)
