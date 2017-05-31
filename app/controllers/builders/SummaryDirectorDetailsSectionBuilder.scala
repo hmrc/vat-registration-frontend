@@ -28,6 +28,14 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLod
     Some(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
   )
 
+  val formerName: SummaryRow = SummaryRow(
+    "directorDetails.formerName",
+    vatLodgingOfficer.map(_.formerName.selection).collect {
+      case true => vatLodgingOfficer.flatMap(_.formerName.formerName).getOrElse("")
+    }.getOrElse("pages.summary.directorDetails.noFormerName"),
+    Some(controllers.vatLodgingOfficer.routes.FormerNameController.show())
+  )
+
   val dob: SummaryRow = SummaryRow(
     "directorDetails.dob",
     vatLodgingOfficer.map(_.dob.format(presentationFormatter)).getOrElse(""),
@@ -62,6 +70,7 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLod
     id = "directorDetails",
     Seq(
       (completionCapacity, true),
+      (formerName, true),
       (dob, true),
       (nino, true),
       (email, vatLodgingOfficer.exists(_.contact.email.isDefined)),
