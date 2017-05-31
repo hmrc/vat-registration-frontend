@@ -79,7 +79,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
     }
   }
 
-  s"POST ${routes.CompletionCapacityController.submit()} with selected officer but no officer list in keystore" should {
+  s"POST ${routes.CompletionCapacityController.submit()} with selected completionCapacity but no completionCapacity list in keystore" should {
 
     "return 303" in {
       when(mockS4LService.saveForm[CompletionCapacityView](any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
@@ -88,16 +88,16 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
       mockKeystoreCache[Officer](REGISTERING_OFFICER_KEY, dummyCacheMap)
 
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> officer.name.id)
+        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> completionCapacity.name.id)
       )(_ redirectsTo s"$contextRoot/your-date-of-birth")
 
     }
   }
 
-  s"POST ${routes.CompletionCapacityController.submit()} with selected officer" should {
+  s"POST ${routes.CompletionCapacityController.submit()} with selected completionCapacity" should {
 
     "return 303" in {
-      val completionCapacityView = CompletionCapacityView(officer)
+      val completionCapacityView = CompletionCapacityView(completionCapacity)
 
       when(mockS4LService.saveForm[CompletionCapacityView](any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       when(mockPPService.getOfficerList()(any())).thenReturn(Seq(officer).pure)
@@ -105,7 +105,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
       mockKeystoreCache[Officer](REGISTERING_OFFICER_KEY, dummyCacheMap)
 
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> officer.name.id)
+        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> completionCapacity.name.id)
       )(_ redirectsTo s"$contextRoot/your-date-of-birth")
 
     }
