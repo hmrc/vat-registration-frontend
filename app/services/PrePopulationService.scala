@@ -25,7 +25,7 @@ import cats.data.OptionT.fromOption
 import com.google.inject.ImplementedBy
 import connectors.{OptionalResponse, PPConnector}
 import models.ApiModelTransformer
-import models.api.{Officer, ScrsAddress}
+import models.api._
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerHomeAddressView}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -76,17 +76,16 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
 
     val officerListFromII = iis.getOfficerList().getOrElse(Seq.empty[Officer])
 
-    val officerListFromBE = OptionT(vrs.getVatScheme() map ApiModelTransformer[CompletionCapacityView].toViewModel).subflatMap(_.officer)
-    val backEndFutureList = officerListFromBE.fold(Seq.empty[Officer])(Seq(_))
+    val officerFromS4L  = OptionT(s4l.fetchAndGet[CompletionCapacityView]())
+                                                  .subflatMap(completionCapacityView =>
+                                                    completionCapacityView.completionCapacity.map(completionCapacity =>
+                                                      Officer(completionCapacity.name, completionCapacity.role, DateOfBirth.empty)))
 
-    val officerFromS4L = OptionT(s4l.fetchAndGet[CompletionCapacityView]()).subflatMap(_.officer)
     val s4lFutureList = officerFromS4L.fold(Seq.empty[Officer])(Seq(_))
-
     for {
       listFromII <- officerListFromII
-      backEndList <- backEndFutureList
       officerS4l <- s4lFutureList
-    } yield (listFromII ++ officerS4l ++ backEndList).distinct
+    } yield (listFromII ++ officerS4l).distinct
 
   }
 
