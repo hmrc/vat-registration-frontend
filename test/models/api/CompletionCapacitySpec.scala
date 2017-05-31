@@ -39,22 +39,4 @@ class CompletionCapacitySpec extends UnitSpec with VatRegistrationFixture {
     }
   }
 
-  "CompletionCapacity" should {
-    "have equality equal" in {
-      val completionCapacity1 = CompletionCapacity(name = Name(Some("forename"), Some("other names"), "surname"), role = "director")
-      val completionCapacity2 = CompletionCapacity(name = Name(Some("forename"), Some("other names"), "surname"), role = "director")
-
-      (completionCapacity1 == completionCapacity2) shouldBe true
-    }
-  }
-
-  "CompletionCapacity" should {
-    "have equality not-equal" in {
-      val completionCapacity1 = CompletionCapacity(name = Name(Some("forename"), Some("other names"), "surname"), role = "director")
-      val completionCapacity2 = CompletionCapacity(name = Name(Some("forename"), None, "surname"), role = "director")
-
-      (completionCapacity1 == completionCapacity2) shouldBe false
-    }
-  }
-
 }
