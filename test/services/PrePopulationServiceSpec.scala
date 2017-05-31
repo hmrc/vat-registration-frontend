@@ -36,7 +36,8 @@ import scala.language.implicitConversions
 
 class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSugar with VatRegistrationFixture {
 
-  override val officerName = Name(Some("Reddy"), None, "Yattapu" , Some("Dr"))
+  override  val officerName = Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None)
+
 
 
   import cats.instances.future._
@@ -119,7 +120,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSu
     "be non-empty when OfficerList is present and nothing in S4L and BE" in new Setup {
 
       when(mockIIService.getOfficerList()).thenReturn(OptionT.pure(Seq(officer)))
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
+      //when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
       save4laterReturnsNothing[CompletionCapacityView]
 
       service.getOfficerList() returns Seq(officer)
@@ -127,7 +128,7 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSu
 
     "be non-empty when officer only in S4L" in new Setup {
 
-      when(mockIIService.getOfficerList()).thenReturn(OptionT.pure(Seq(officer)))
+      when(mockIIService.getOfficerList()).thenReturn(OptionT.none[Future, Seq[Officer]])
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
       save4laterReturns[CompletionCapacityView](completeCapacityView)
 
