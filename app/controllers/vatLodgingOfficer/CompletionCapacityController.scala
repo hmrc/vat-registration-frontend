@@ -21,12 +21,12 @@ import javax.inject.Inject
 import cats.data.OptionT
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.CompletionCapacityForm
-import models.api.Officer
+import models.ModelKeys._
+import models.api.{CompletionCapacity, Officer}
 import models.view.vatLodgingOfficer.CompletionCapacityView
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
-import models.ModelKeys._
 
 class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService,
@@ -62,9 +62,9 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
             ,
             for {
               officerSeq <- fetchOfficerList().getOrElse(Seq())
-              officer = officerSeq.find(_.name.id == form.id)
-              _ <- s4l.saveForm(CompletionCapacityView(form.id, officer))
-              _ <- keystoreConnector.cache[Officer](REGISTERING_OFFICER_KEY, officer.getOrElse(Officer.empty))
+              officer = officerSeq.find(_.name.id == form.id).getOrElse(Officer.empty)
+              _ <- s4l.saveForm[CompletionCapacityView](CompletionCapacityView(form.id, Some(CompletionCapacity(officer.name, officer.role ))))
+              _ <- keystoreConnector.cache[Officer](REGISTERING_OFFICER_KEY, officer)
             } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
           )
       )
