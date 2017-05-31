@@ -76,25 +76,16 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
 
     val officerListFromII = iis.getOfficerList().getOrElse(Seq.empty[Officer])
 
-    /*val officerListFromBE = OptionT(vrs.getVatScheme() map ApiModelTransformer[CompletionCapacityView].toViewModel).subflatMap(_.officer)
+    val officerFromS4L  = OptionT(s4l.fetchAndGet[CompletionCapacityView]())
+                                                  .subflatMap(completionCapacityView =>
+                                                    completionCapacityView.completionCapacity.map(completionCapacity =>
+                                                      Officer(completionCapacity.name, completionCapacity.role, DateOfBirth.empty)))
 
-    vs: VatScheme =>
-      vs.lodgingOfficer.map(cc => CompletionCapacityView(cc.name.id, Some(CompletionCapacity(cc.name, cc.role))))
-
-    val backEndFutureList = officerListFromBE.fold(Seq.empty[Officer])(Seq(_))
-
-    val officerFromS4L = OptionT(s4l.fetchAndGet[CompletionCapacityView]()).subflatMap(_.officer)
     val s4lFutureList = officerFromS4L.fold(Seq.empty[Officer])(Seq(_))
     for {
       listFromII <- officerListFromII
-      backEndList <- backEndFutureList
       officerS4l <- s4lFutureList
-    } yield (listFromII ++ officerS4l ++ backEndList).distinct
-    */
-
-    for {
-      listFromII <- officerListFromII
-    } yield (listFromII).distinct
+    } yield (listFromII ++ officerS4l).distinct
 
   }
 
