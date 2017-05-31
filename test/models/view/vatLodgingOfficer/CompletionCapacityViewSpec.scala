@@ -30,10 +30,10 @@ class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture wi
   "apiModelTransformer" should {
 
     "convert VatScheme with VatLodgingOfficer details into a CompletionCapacityView" in {
-      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName,  formerName, validVatDigitalContact)
+      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName,  formerName, validOfficerContactDetails)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
-      val expected = CompletionCapacityView(officerName.id, Some(Officer(officerName, "director", validDob, None, None)))
+      val expected = CompletionCapacityView(officerName.id, Some(CompletionCapacity(officerName, "director")))
 
       ApiModelTransformer[CompletionCapacityView].toViewModel(vs) shouldBe Some(expected)
     }

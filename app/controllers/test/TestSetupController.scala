@@ -155,10 +155,10 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
           vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getMonthValue.toString),
           vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getYear.toString),
           vatLodgingOfficer.flatMap(_.officerNino).map(_.nino),
-          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).map(_.role),
-          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).flatMap(_.name.forename),
-          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).flatMap(_.name.otherForenames),
-          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).map(_.name.surname)
+          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).map(_.role),
+          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).flatMap(_.name.forename),
+          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).flatMap(_.name.otherForenames),
+          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).map(_.name.surname)
         )
       )
       form = TestSetupForm.form.fill(testSetup)
@@ -274,12 +274,16 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
       role = data.vatLodgingOfficer.role.getOrElse(""),
       dateOfBirth = DateOfBirth(dob.getDayOfMonth, dob.getMonthValue, dob.getYear)
     )
+    val completionCapacity = CompletionCapacity(name = Name(data.vatLodgingOfficer.firstname,
+      data.vatLodgingOfficer.othernames,
+      data.vatLodgingOfficer.surname.getOrElse("")),
+      role = data.vatLodgingOfficer.role.getOrElse(""))
 
     S4LVatLodgingOfficer(
       officerHomeAddress = Some(OfficerHomeAddressView(address.id, Some(address))),
       officerDateOfBirth = Some(OfficerDateOfBirthView(dob)),
       officerNino = Some(OfficerNinoView(data.vatLodgingOfficer.nino.getOrElse(""))),
-      completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
+      completionCapacity = Some(CompletionCapacityView(completionCapacity)),
       officerContactDetails = None
     )
   }

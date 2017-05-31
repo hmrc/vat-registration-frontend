@@ -16,7 +16,6 @@
 
 package controllers.vatLodgingOfficer
 
-import cats.data.OptionT
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
@@ -41,7 +40,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
 
   s"GET ${routes.CompletionCapacityController.show()}" should {
 
-    when(mockPPService.getOfficerList()(any(), any())).thenReturn(Seq(officer).pure)
+    when(mockPPService.getOfficerList()(any())).thenReturn(Seq(officer).pure)
     mockKeystoreCache[Seq[Officer]]("OfficerList", dummyCacheMap)
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
@@ -71,7 +70,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
     }
   }
 
-  s"POST ${routes.CompletionCapacityController.submit()} with selected officer but no officer list in keystore" should {
+  s"POST ${routes.CompletionCapacityController.submit()} with selected completionCapacity but no completionCapacity list in keystore" should {
 
     "return 303" in {
       save4laterExpectsSave[CompletionCapacityView]()
@@ -79,21 +78,23 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
       mockKeystoreCache[Officer](REGISTERING_OFFICER_KEY, dummyCacheMap)
 
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> officer.name.id)
+        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> completionCapacity.name.id)
       )(_ redirectsTo s"$contextRoot/your-date-of-birth")
 
     }
   }
 
-  s"POST ${routes.CompletionCapacityController.submit()} with selected officer" should {
+  s"POST ${routes.CompletionCapacityController.submit()} with selected completionCapacity" should {
 
     "return 303" in {
+      val completionCapacityView = CompletionCapacityView(completionCapacity)
+      when(mockPPService.getOfficerList()(any())).thenReturn(Seq(officer).pure)
       save4laterExpectsSave[CompletionCapacityView]()
       mockKeystoreFetchAndGet[Seq[Officer]]("OfficerList", Some(Seq(officer)))
       mockKeystoreCache[Officer](REGISTERING_OFFICER_KEY, dummyCacheMap)
 
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> officer.name.id)
+        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> completionCapacity.name.id)
       )(_ redirectsTo s"$contextRoot/your-date-of-birth")
 
     }
