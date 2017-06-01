@@ -56,6 +56,12 @@ class OfficerContactDetailsViewSpec extends UnitSpec with VatRegistrationFixture
     }
   }
 
+  "apply" should {
+    "create a OfficerContactDetailsView instance" in {
+      OfficerContactDetailsView(officerContactDetails) shouldBe officerContactDetailsView
+    }
+  }
+
 
   "VMReads" should {
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(officerContactDetails = Some(officerContactDetailsView))

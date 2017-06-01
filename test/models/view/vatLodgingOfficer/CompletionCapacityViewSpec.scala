@@ -58,7 +58,7 @@ class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture wi
   }
 
 
-    "apply" should {
+  "apply" should {
     "create a CompletionCapacityView instance with the correct id" in {
       val ccv = CompletionCapacityView(anOfficer)
 
