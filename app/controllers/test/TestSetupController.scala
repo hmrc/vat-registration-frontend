@@ -272,7 +272,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
       otherForenames = data.vatLodgingOfficer.othernames,
       surname = data.vatLodgingOfficer.surname.getOrElse("")),
       role = data.vatLodgingOfficer.role.getOrElse(""),
-      dateOfBirth = DateOfBirth(dob.getDayOfMonth, dob.getMonthValue, dob.getYear)
+      dateOfBirth = Some(DateOfBirth(dob.getDayOfMonth, dob.getMonthValue, dob.getYear))
     )
     val completionCapacity = CompletionCapacity(name = Name(data.vatLodgingOfficer.firstname,
       data.vatLodgingOfficer.othernames,
