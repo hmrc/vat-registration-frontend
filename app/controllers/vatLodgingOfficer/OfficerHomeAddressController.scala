@@ -62,6 +62,7 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
           addressList <- fetchAddressList().getOrElse(Seq())
           address = addressList.find(_.id == data.addressId)
           _ <- save(OfficerHomeAddressView(data.addressId, address))
+          _ <- vrs.submitVatLodgingOfficer()
         } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
       ).map(Redirect)))
 
