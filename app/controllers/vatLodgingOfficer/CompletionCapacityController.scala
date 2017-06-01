@@ -60,6 +60,6 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
             officer = officerSeq.find(_.name.id == view.id).getOrElse(Officer.empty)
             _ <- save(CompletionCapacityView(view.id, Some(CompletionCapacity(officer.name, officer.role))))
             _ <- keystoreConnector.cache(REGISTERING_OFFICER_KEY, officer)
-          } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show()))))
+          } yield Redirect(controllers.vatLodgingOfficer.routes.FormerNameController.show()))))
 
 }
