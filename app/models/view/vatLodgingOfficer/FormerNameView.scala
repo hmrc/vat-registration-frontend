@@ -27,6 +27,8 @@ case class FormerNameView(
 
 object FormerNameView {
 
+  def apply(fn: FormerName): FormerNameView = new FormerNameView(fn.selection, fn.formerName)
+
   implicit val format = Json.format[FormerNameView]
 
   implicit val vmReads = VMReads(
