@@ -22,7 +22,7 @@ import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.ModelKeys.REGISTERING_OFFICER_KEY
-import models.api.{Name, Officer, VatLodgingOfficer}
+import models.api.{Name, Officer}
 import models.view.vatLodgingOfficer.OfficerDateOfBirthView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -60,11 +60,20 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
       }
     }
 
-    "return HTML Test Data in S4L and vatScheme contains data" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer.empty))
-      val officerReddy = OfficerDateOfBirthView(LocalDate.of(1980, 1, 1), Some(Name(Some("Yattapu"), None, "Reddy", Some("Dr"))))
+    "return HTML when there's nothing in S4L, vatScheme contains no data and officer in keystore" in {
+      save4laterReturnsNothing2[OfficerDateOfBirthView]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.copy(lodgingOfficer = None).pure)
       mockKeystoreFetchAndGet[Officer](REGISTERING_OFFICER_KEY, Some(officer))
-      save4laterReturns2(officerReddy)()
+
+      callAuthorised(Controller.show()) {
+        _ includesText "What is your date of birth"
+      }
+    }
+
+    "return HTML Test Data in S4L and vatScheme contains data" in {
+      val officerDobView = OfficerDateOfBirthView(LocalDate.of(1980, 1, 1), Some(Name(Some("Yattapu"), None, "Reddy", Some("Dr"))))
+      mockKeystoreFetchAndGet[Officer](REGISTERING_OFFICER_KEY, Some(officer))
+      save4laterReturns2(officerDobView)()
 
       callAuthorised(Controller.show()) {
         _ includesText "What is your date of birth"
@@ -72,7 +81,6 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return HTML Test Data in S4L and vatScheme contains data matching data in keystore" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer.empty))
       val officerReddy = OfficerDateOfBirthView(LocalDate.of(1980, 1, 1), Some(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None)))
       mockKeystoreFetchAndGet[Officer](REGISTERING_OFFICER_KEY, Some(officer))
       save4laterReturns2(officerReddy)()

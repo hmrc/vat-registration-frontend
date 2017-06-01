@@ -27,7 +27,7 @@ class FormerNameViewSpec extends UnitSpec with VatRegistrationFixture with Insid
   val testFormerName = FormerName(selection = true, formerName = Some("Test Name"))
   val testFormerNameView = FormerNameView(true, testFormerName.formerName)
 
-  val anOfficer = Officer(Name(Some("name1"), Some("name2"),"SurName"), "director", validDob)
+  val anOfficer = Officer(Name(Some("name1"), Some("name2"),"SurName"), "director", Some(validDob))
   val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
 
   "apiModelTransformer" should {

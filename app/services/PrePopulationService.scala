@@ -79,7 +79,12 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
       .subflatMap(group =>
         group.completionCapacity.flatMap(ccv =>
           ccv.completionCapacity.map(cc =>
-            Officer(cc.name, cc.role, DateOfBirth.empty))))
+            Officer(name = cc.name,
+                    role = cc.role,
+                    dateOfBirth = group.officerDateOfBirth.map(dobView =>
+                                    DateOfBirth(day = dobView.dob.getDayOfMonth,
+                                                month = dobView.dob.getMonthValue,
+                                                year = dobView.dob.getYear))))))
 
     val s4lFutureList = officerFromS4L.fold(Seq.empty[Officer])(Seq(_))
     for {
