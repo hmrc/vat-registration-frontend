@@ -29,7 +29,7 @@ object DateOfBirth {
   implicit def toLocalDate(dob: DateOfBirth): LocalDate = LocalDate.of(dob.year, dob.month, dob.day)
 
   // TODO remove once no longer required
-  val empty = DateOfBirth(1,1,1980)
+  val empty = DateOfBirth(1,1,1967)
 
   implicit val formatter = (
     (__ \ "day").format((__).readStringifiedInt) and

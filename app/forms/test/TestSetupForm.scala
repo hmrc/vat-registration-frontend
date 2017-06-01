@@ -106,7 +106,12 @@ object TestSetupForm {
     "role" -> optional(text),
     "firstname" -> optional(text),
     "othernames" -> optional(text),
-    "surname" -> optional(text)
+    "surname" -> optional(text),
+    "email" -> optional(text),
+    "mobile" -> optional(text),
+    "phone" -> optional(text),
+    "formernameChoice" -> optional(text),
+    "formername" -> optional(text)
   )(VatLodgingOfficerTestSetup.apply)(VatLodgingOfficerTestSetup.unapply)
 
   val form = Form(mapping(

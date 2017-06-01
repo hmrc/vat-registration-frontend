@@ -29,6 +29,9 @@ case class OfficerContactDetailsView(
 
 object OfficerContactDetailsView {
 
+  def apply(ocd: OfficerContactDetails): OfficerContactDetailsView =
+    OfficerContactDetailsView(email = ocd.email, daytimePhone = ocd.tel, mobile = ocd.mobile)
+
   implicit val format: OFormat[OfficerContactDetailsView] = Json.format[OfficerContactDetailsView]
 
 

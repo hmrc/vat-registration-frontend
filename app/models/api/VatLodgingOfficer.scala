@@ -34,7 +34,7 @@ object VatLodgingOfficer {
   // TODO remove once no longer required
   val empty = VatLodgingOfficer(
     currentAddress = ScrsAddress(line1 = "", line2 = ""),
-    dob = DateOfBirth(1, 1, 1980),
+    dob = DateOfBirth(1, 1, 1977),
     nino = "NB686868C",
     role = "",
     name = Name.empty,

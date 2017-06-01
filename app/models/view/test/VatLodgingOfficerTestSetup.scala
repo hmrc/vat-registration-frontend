@@ -26,8 +26,13 @@ case class VatLodgingOfficerTestSetup(
                                   role: Option[String] = None,
                                   firstname: Option[String] = None,
                                   othernames: Option[String] = None,
-                                  surname: Option[String] = None
-                                )
+                                  surname: Option[String] = None,
+                                  email: Option[String] = None,
+                                  mobile: Option[String] = None,
+                                  phone: Option[String] = None,
+                                  formernameChoice: Option[String] = None,
+                                  formername: Option[String] = None
+                                     )
 
 object VatLodgingOfficerTestSetup {
   implicit val format = Json.format[VatLodgingOfficerTestSetup]
