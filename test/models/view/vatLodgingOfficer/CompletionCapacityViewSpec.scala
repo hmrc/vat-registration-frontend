@@ -71,12 +71,14 @@ class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture wi
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(completionCapacity = Some(ccv))
 
     "extract completionCapacityView from lodgingOfficer" in {
-
       CompletionCapacityView.vmReads.read(s4LVatLodgingOfficer) shouldBe Some(ccv)
     }
 
-    "update lodgingOfficer with completionCapacityView" in {
+    "update empty lodgingOfficer with completionCapacityView" in {
+      CompletionCapacityView.vmReads.udpate(ccv, Option.empty[S4LVatLodgingOfficer]).completionCapacity shouldBe Some(ccv)
+    }
 
+    "update non-empty lodgingOfficer with completionCapacityView" in {
       CompletionCapacityView.vmReads.udpate(ccv, Some(s4LVatLodgingOfficer)).completionCapacity shouldBe Some(ccv)
     }
   }
