@@ -61,12 +61,15 @@ class OfficerContactDetailsViewSpec extends UnitSpec with VatRegistrationFixture
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(officerContactDetails = Some(officerContactDetailsView))
 
     "extract officerContactDetailsView from lodgingOfficer" in {
-
       OfficerContactDetailsView.vmReads.read(s4LVatLodgingOfficer) shouldBe Some(officerContactDetailsView)
     }
 
-    "update lodgingOfficer with officerContactDetailsView" in {
+    "update empty lodgingOfficer with officerContactDetailsView" in {
+      OfficerContactDetailsView.vmReads.udpate(officerContactDetailsView, Option.empty[S4LVatLodgingOfficer]).
+        officerContactDetails shouldBe Some(officerContactDetailsView)
+    }
 
+    "update non-empty lodgingOfficer with officerContactDetailsView" in {
       OfficerContactDetailsView.vmReads.udpate(officerContactDetailsView, Some(s4LVatLodgingOfficer)).
         officerContactDetails shouldBe Some(officerContactDetailsView)
     }
