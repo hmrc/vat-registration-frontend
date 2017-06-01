@@ -41,11 +41,13 @@ class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
   def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request =>
     for {
       officer <- fetchOfficer().getOrElse(Officer.empty)
-      res <- viewModel[OfficerDateOfBirthView]().fold(form.fill(OfficerDateOfBirthView(officer.dateOfBirth))) {
+      res <- viewModel[OfficerDateOfBirthView]().
+          fold(officer.dateOfBirth.fold(form)(dob =>
+            form.fill(OfficerDateOfBirthView(dob)))) {
         view =>
           view.officerName match {
             case Some(name) if name == officer.name => form.fill(view)
-            case _ => form.fill(view.copy(dob = officer.dateOfBirth))
+            case _ => officer.dateOfBirth.fold(form)(dob => form.fill(OfficerDateOfBirthView(dob)))
           }
       }
     } yield Ok(views.html.pages.vatLodgingOfficer.officer_dob(res)))

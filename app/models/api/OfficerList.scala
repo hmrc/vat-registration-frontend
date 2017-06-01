@@ -23,7 +23,7 @@ import play.api.libs.json._
 case class Officer(
                     name: Name,
                     role: String,
-                    dateOfBirth: DateOfBirth,
+                    dateOfBirth: Option[DateOfBirth] = None,
                     resignedOn: Option[DateTime] = None,
                     appointmentLink: Option[String] = None // custom read to pick up (if required - TBC)
                   ){
@@ -42,7 +42,7 @@ object Officer {
   implicit val rd: Reads[Officer] = (
       (__ \ "name_elements").read[Name](Name.normalizeNameReads) and
           (__ \ "officer_role").read[String] and
-          (__ \ "date_of_birth").read[DateOfBirth] and
+          (__ \ "date_of_birth").readNullable[DateOfBirth] and
           (__ \ "resigned_on").readNullable[DateTime] and
           (__ \ "appointment_link").readNullable[String]
     ) (Officer.apply _)
@@ -50,12 +50,12 @@ object Officer {
   implicit val wt: Writes[Officer] = (
       (__ \ "name_elements").write[Name] and
           (__ \ "officer_role").write[String] and
-          (__ \ "date_of_birth").write[DateOfBirth] and
+          (__ \ "date_of_birth").writeNullable[DateOfBirth] and
           (__ \ "resigned_on").writeNullable[DateTime] and
           (__ \ "appointment_link").writeNullable[String]
     ) (unlift(Officer.unapply))
 
-  val empty = Officer(Name.empty, "", DateOfBirth.empty, None, None)
+  val empty = Officer(Name.empty, "", None, None, None)
 
 }
 

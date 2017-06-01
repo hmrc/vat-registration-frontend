@@ -26,7 +26,7 @@ import helpers.{S4LMockSugar, VatRegSpec}
 import models.S4LVatLodgingOfficer
 import models.api._
 import models.external.{AccountingDetails, CorporationTaxRegistration}
-import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerHomeAddressView}
+import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
@@ -103,16 +103,14 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
   }
 
   "getOfficerList" must {
-    val officer = Officer(officerName, "director", validDob, None, None)
+    val officer = Officer(officerName, "director", Some(validDob), None, None)
     // S4L
     val completeCapacityView = CompletionCapacityView(completionCapacity.name.id, Some(completionCapacity))
     // BE
     val emptyVatScheme = VatScheme("123")
     val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
-    val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(
-      address, DateOfBirth.empty, "nino", "director", officerName, formerName, validOfficerContactDetails)))
 
-    "be non-empty when OfficerList is present and nothing in S4L and BE" in new Setup {
+    "be non-empty when OfficerList is present and nothing in S4L" in new Setup {
 
       when(mockIIService.getOfficerList()).thenReturn(Seq(officer).pure)
       save4laterReturnsNothing[S4LVatLodgingOfficer]
@@ -124,7 +122,8 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
 
       when(mockIIService.getOfficerList()).thenReturn(Seq.empty[Officer].pure)
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
-      save4laterReturns(S4LVatLodgingOfficer(completionCapacity = Some(completeCapacityView)))
+      save4laterReturns(S4LVatLodgingOfficer(completionCapacity = Some(completeCapacityView),
+                                              officerDateOfBirth = Some(OfficerDateOfBirthView(LocalDate.of(1999,1,1)))))
 
       service.getOfficerList() returns Seq(officer)
     }

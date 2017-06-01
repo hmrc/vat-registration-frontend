@@ -72,7 +72,7 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
     "deserialise from valid JSON" in {
       val officerList = OfficerList(Seq(
         officer,
-        Officer(Name(Some("Jingly"), None, "Jingles", Some("Mx")), "secretary", validDob, None, None)
+        Officer(Name(Some("Jingly"), None, "Jingles", Some("Mx")), "secretary", Some(validDob), None, None)
       ))
       reader.reads(json) shouldBe JsSuccess(officerList, (__ \ "officers"))
     }
@@ -101,8 +101,8 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
 
   "Officer" should {
     "have equality equal" in {
-      val officer1 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director", validDob)
-      val officer2 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director", validDob)
+      val officer1 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director", Some(validDob))
+      val officer2 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director", Some(validDob))
 
       (officer1 == officer2) shouldBe true
     }
@@ -110,8 +110,8 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
 
   "Officer" should {
     "have equality not-equal" in {
-      val officer1 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director", validDob)
-      val officer2 = Officer(name = Name(Some("forename"), None, "surname"), role = "director", validDob)
+      val officer1 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director", Some(validDob))
+      val officer2 = Officer(name = Name(Some("forename"), None, "surname"), role = "director", Some(validDob))
 
       (officer1 == officer2) shouldBe false
     }
