@@ -76,13 +76,15 @@
 
             <b>VAT LODGING OFFICER</b>
 
-            <p><em>Officer's Home Address</em></p>
-            <p>@govHelpers.input(testSetupForm("officerHomeAddress.line1"), '_label -> "Line 1") </p>
-            <p>@govHelpers.input(testSetupForm("officerHomeAddress.line2"), '_label -> "Line 2")</p>
-            <p>@govHelpers.input(testSetupForm("officerHomeAddress.line3"), '_label -> "Line 3")</p>
-            <p>@govHelpers.input(testSetupForm("officerHomeAddress.line4"), '_label -> "Line 4")</p>
-            <p>@govHelpers.input(testSetupForm("officerHomeAddress.postcode"), '_label -> "Post code")</p>
-            <p>@govHelpers.input(testSetupForm("officerHomeAddress.country"), '_label -> "Country")</p>
+            <p><em>Officer's Role and Name</em></p>
+            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.role"),   '_label -> "Role (director or secretary)") </p>
+            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.firstname"),   '_label -> "First name") </p>
+            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.othernames"), '_label -> "Other names") </p>
+            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.surname"),  '_label -> "Surname") </p>
+
+            <em>Officer's Former Name</em>
+            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.formernameChoice"), '_label -> "Former name choice (true, false)") </p>
+            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.formername"), '_label -> "Former name") </p>
 
             <em>Officer's Date of Birth</em>
             <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.dobDay"),   '_label -> "Day (1 - 31)") </p>
@@ -92,11 +94,18 @@
             <em>Officer's National Insurance number</em>
             <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.nino"),   '_label -> "Nino (eg. NB686868D)") </p>
 
-            <em>Officer's Role and Name</em>
-            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.role"),   '_label -> "Role (director or secretary)") </p>
-            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.firstname"),   '_label -> "First name") </p>
-            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.othernames"), '_label -> "Other names") </p>
-            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.surname"),  '_label -> "Surname") </p>
+            <em>Officer's Contact Details</em>
+            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.email"), '_label -> "Email") </p>
+            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.mobile"), '_label -> "Mobile number") </p>
+            <p>@govHelpers.input(testSetupForm("vatLodgingOfficer.phone"), '_label -> "Daytime phone number") </p>
+
+            <em>Officer's Home Address</em>
+            <p>@govHelpers.input(testSetupForm("officerHomeAddress.line1"), '_label -> "Line 1") </p>
+            <p>@govHelpers.input(testSetupForm("officerHomeAddress.line2"), '_label -> "Line 2")</p>
+            <p>@govHelpers.input(testSetupForm("officerHomeAddress.line3"), '_label -> "Line 3")</p>
+            <p>@govHelpers.input(testSetupForm("officerHomeAddress.line4"), '_label -> "Line 4")</p>
+            <p>@govHelpers.input(testSetupForm("officerHomeAddress.postcode"), '_label -> "Post code")</p>
+            <p>@govHelpers.input(testSetupForm("officerHomeAddress.country"), '_label -> "Country")</p>
 
         </fieldset>
 

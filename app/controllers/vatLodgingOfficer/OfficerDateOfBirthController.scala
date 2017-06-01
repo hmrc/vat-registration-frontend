@@ -41,9 +41,9 @@ class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
   def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request =>
     for {
       officer <- fetchOfficer().getOrElse(Officer.empty)
-      res <- viewModel[OfficerDateOfBirthView]().fold(
-                                                        officer.dateOfBirth.fold(form)(dob => form.fill(OfficerDateOfBirthView(dob)))
-                                                      ) {
+      res <- viewModel[OfficerDateOfBirthView]().
+          fold(officer.dateOfBirth.fold(form)(dob =>
+            form.fill(OfficerDateOfBirthView(dob)))) {
         view =>
           view.officerName match {
             case Some(name) if name == officer.name => form.fill(view)

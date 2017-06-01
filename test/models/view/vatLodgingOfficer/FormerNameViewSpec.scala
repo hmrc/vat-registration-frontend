@@ -57,6 +57,11 @@ class FormerNameViewSpec extends UnitSpec with VatRegistrationFixture with Insid
     }
   }
 
+  "apply" should {
+    "create a FormerNameView instance" in {
+      FormerNameView(testFormerName) shouldBe testFormerNameView
+    }
+  }
 
   "VMReads" should {
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(formerName = Some(testFormerNameView))
