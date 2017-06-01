@@ -151,14 +151,19 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
           postcode = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.postcode),
           country = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.country)),
         vatLodgingOfficer = VatLodgingOfficerTestSetup(
-          vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getDayOfMonth.toString),
-          vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getMonthValue.toString),
-          vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getYear.toString),
-          vatLodgingOfficer.flatMap(_.officerNino).map(_.nino),
-          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).map(_.role),
-          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).flatMap(_.name.forename),
-          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).flatMap(_.name.otherForenames),
-          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).map(_.name.surname)
+          dobDay = vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getDayOfMonth.toString),
+          dobMonth = vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getMonthValue.toString),
+          dobYear = vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getYear.toString),
+          nino = vatLodgingOfficer.flatMap(_.officerNino).map(_.nino),
+          role = vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).map(_.role),
+          firstname = vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).flatMap(_.name.forename),
+          othernames = vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).flatMap(_.name.otherForenames),
+          surname = vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).map(_.name.surname),
+          email = vatLodgingOfficer.flatMap(_.officerContactDetails).flatMap(_.email),
+          mobile = vatLodgingOfficer.flatMap(_.officerContactDetails).flatMap(_.daytimePhone),
+          phone = vatLodgingOfficer.flatMap(_.officerContactDetails).flatMap(_.mobile),
+          formernameChoice = vatLodgingOfficer.flatMap(_.formerName).map(_.yesNo.toString),
+          formername = vatLodgingOfficer.flatMap(_.formerName).flatMap(_.formerName)
         )
       )
       form = TestSetupForm.form.fill(testSetup)
@@ -245,46 +250,56 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
                 x.vatServiceEligibility.companyWillDoAnyOf.map(_.toBoolean))
             })
 
-            _ <- s4LService.save(vatLodingingOfficerFromData(data))
+            _ <- s4LService.save(vatLodingOfficerFromData(data))
 
           } yield Ok("Test setup complete")
         }
       })
   })
 
-  private def vatLodingingOfficerFromData(data: TestSetup): S4LVatLodgingOfficer = {
-    val address = ScrsAddress(
-      line1 = data.officerHomeAddress.line1.getOrElse(""),
-      line2 = data.officerHomeAddress.line2.getOrElse(""),
-      line3 = data.officerHomeAddress.line3,
-      line4 = data.officerHomeAddress.line4,
-      postcode = data.officerHomeAddress.postcode,
-      country = data.officerHomeAddress.country)
+  private def vatLodingOfficerFromData(data: TestSetup): S4LVatLodgingOfficer = {
+    val address: Option[ScrsAddress] = data.officerHomeAddress.line1.map(_ =>
+      ScrsAddress(
+        line1 = data.officerHomeAddress.line1.getOrElse(""),
+        line2 = data.officerHomeAddress.line2.getOrElse(""),
+        line3 = data.officerHomeAddress.line3,
+        line4 = data.officerHomeAddress.line4,
+        postcode = data.officerHomeAddress.postcode,
+        country = data.officerHomeAddress.country))
 
-    val dob = LocalDate.of(
-      data.vatLodgingOfficer.dobYear.getOrElse("1900").toInt,
-      data.vatLodgingOfficer.dobMonth.getOrElse("1").toInt,
-      data.vatLodgingOfficer.dobDay.getOrElse("1").toInt
-    )
+    val dob: Option[LocalDate] = data.vatLodgingOfficer.dobDay.map(_ =>
+      LocalDate.of(
+        data.vatLodgingOfficer.dobYear.getOrElse("1900").toInt,
+        data.vatLodgingOfficer.dobMonth.getOrElse("1").toInt,
+        data.vatLodgingOfficer.dobDay.getOrElse("1").toInt))
 
-    val officer = Officer(name = Name(
-      forename = data.vatLodgingOfficer.firstname,
-      otherForenames = data.vatLodgingOfficer.othernames,
-      surname = data.vatLodgingOfficer.surname.getOrElse("")),
-      role = data.vatLodgingOfficer.role.getOrElse(""),
-      dateOfBirth = DateOfBirth(dob.getDayOfMonth, dob.getMonthValue, dob.getYear)
-    )
-    val completionCapacity = CompletionCapacity(name = Name(data.vatLodgingOfficer.firstname,
-      data.vatLodgingOfficer.othernames,
-      data.vatLodgingOfficer.surname.getOrElse("")),
-      role = data.vatLodgingOfficer.role.getOrElse(""))
+    val nino = data.vatLodgingOfficer.nino
+
+    val completionCapacity = data.vatLodgingOfficer.role.map(_ =>
+      CompletionCapacity(
+        name = Name(data.vatLodgingOfficer.firstname,
+        data.vatLodgingOfficer.othernames,
+        data.vatLodgingOfficer.surname.getOrElse("")),
+        role = data.vatLodgingOfficer.role.getOrElse("")))
+
+    val contactDetails = data.vatLodgingOfficer.email.map(_ =>
+      OfficerContactDetails(
+        email = data.vatLodgingOfficer.email,
+        mobile = data.vatLodgingOfficer.mobile,
+        tel = data.vatLodgingOfficer.phone))
+
+    val formerName = data.vatLodgingOfficer.formernameChoice.map(_ =>
+      FormerName(
+        selection = data.vatLodgingOfficer.formernameChoice.map(_.toBoolean).getOrElse(false),
+        formerName = data.vatLodgingOfficer.formername))
 
     S4LVatLodgingOfficer(
-      officerHomeAddress = Some(OfficerHomeAddressView(address.id, Some(address))),
-      officerDateOfBirth = Some(OfficerDateOfBirthView(dob)),
-      officerNino = Some(OfficerNinoView(data.vatLodgingOfficer.nino.getOrElse(""))),
-      completionCapacity = Some(CompletionCapacityView(completionCapacity)),
-      officerContactDetails = None
+      officerHomeAddress = address.map(a => OfficerHomeAddressView(a.id, Some(a))),
+      officerDateOfBirth = dob.map(OfficerDateOfBirthView(_)),
+      officerNino = nino.map(OfficerNinoView(_)),
+      completionCapacity = completionCapacity.map(CompletionCapacityView(_)),
+      officerContactDetails = contactDetails.map(OfficerContactDetailsView(_)),
+      formerName = formerName.map(FormerNameView(_))
     )
   }
 
