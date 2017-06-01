@@ -77,11 +77,7 @@ object S4LKey {
   implicit val discretionaryInvestmentManagementServices: S4LKey[DiscretionaryInvestmentManagementServices] = S4LKey("DiscretionaryInvestmentManagementServices")
   implicit val manageAdditionalFunds: S4LKey[ManageAdditionalFunds] = S4LKey("ManageAdditionalFunds")
   implicit val vatServiceEligibility: S4LKey[VatServiceEligibility] = S4LKey("VatServiceEligibility")
-  implicit val officerHomeAddress: S4LKey[OfficerHomeAddressView] = S4LKey("OfficerHomeAddressView")
-  implicit val officerDateOfBirth: S4LKey[OfficerDateOfBirthView] = S4LKey("OfficerDateOfBirthView")
-  implicit val officerNino: S4LKey[OfficerNinoView] = S4LKey("OfficerNinoView")
-  implicit val officerContactDetails: S4LKey[OfficerContactDetails] = S4LKey("OfficerContactDetails")
-  implicit val completionCapacityView: S4LKey[CompletionCapacityView] = S4LKey("CompletionCapacityView")
 
+  implicit val vatLodgingOfficer: S4LKey[S4LVatLodgingOfficer] = S4LKey("VatLodgingOfficer")
 
 }

@@ -16,58 +16,46 @@
 
 package controllers.vatLodgingOfficer
 
-import java.time.LocalDate
 import javax.inject.Inject
 
 import cats.data.OptionT
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerDateOfBirthForm
+import models.ModelKeys._
 import models.api.Officer
 import models.view.vatLodgingOfficer.OfficerDateOfBirthView
 import play.api.mvc._
 import services.{CommonService, S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
-import models.ModelKeys._
 
 class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService,
                                              vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with CommonService {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
-
   val form = OfficerDateOfBirthForm.form
 
   private def fetchOfficer()(implicit headerCarrier: HeaderCarrier) =
     OptionT(keystoreConnector.fetchAndGet[Officer](REGISTERING_OFFICER_KEY))
 
-  def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request => {
-
+  def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request =>
     for {
       officer <- fetchOfficer().getOrElse(Officer.empty)
-      res <- viewModel[OfficerDateOfBirthView].fold(form.fill(OfficerDateOfBirthView(officer.dateOfBirth))
-      ) {
-        view =>  view.officerName
-                                  match {
-                                    case Some(name) if (name == officer.name) => form.fill(view)
-                                    case _ => form.fill(view.copy(dob = officer.dateOfBirth))
-                                  }
+      res <- viewModel[OfficerDateOfBirthView]().fold(form.fill(OfficerDateOfBirthView(officer.dateOfBirth))) {
+        view =>
+          view.officerName match {
+            case Some(name) if name == officer.name => form.fill(view)
+            case _ => form.fill(view.copy(dob = officer.dateOfBirth))
+          }
       }
-    } yield Ok(views.html.pages.vatLodgingOfficer.officer_dob(res))
+    } yield Ok(views.html.pages.vatLodgingOfficer.officer_dob(res)))
 
-  })
-
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      formWithErrors => BadRequest(views.html.pages.vatLodgingOfficer.officer_dob(formWithErrors)).pure,
-      data =>{
-        for{
-          officer <- fetchOfficer().getOrElse(Officer.empty)
-          _ <- s4l.saveForm[OfficerDateOfBirthView](data.copy(officerName = Some(officer.name)))
-        }yield Redirect(controllers.vatLodgingOfficer.routes.OfficerNinoController.show())
-      }
-    )
-  })
+      badForm => BadRequest(views.html.pages.vatLodgingOfficer.officer_dob(badForm)).pure,
+      data => for {
+        officer <- fetchOfficer().getOrElse(Officer.empty)
+        _ <- save(data.copy(officerName = Some(officer.name)))
+      } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerNinoController.show())))
 
 }

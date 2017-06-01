@@ -34,27 +34,21 @@ import scala.concurrent.Future
 class StartDateController @Inject()(startDateFormFactory: StartDateFormFactory, iis: PrePopService, ds: CommonPlayDependencies)
                                    (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
-
   val form: Form[StartDateView] = startDateFormFactory.form()
 
   protected[controllers]
-  def populateCtActiveDate(vm: StartDateView)(implicit headerCarrier: HeaderCarrier, today: Now[LocalDate]): Future[StartDateView] =
+  def populateCtActiveDate(vm: StartDateView)(implicit hc: HeaderCarrier, today: Now[LocalDate]): Future[StartDateView] =
     iis.getCTActiveDate().filter(today().plusMonths(3).isAfter).fold(vm)(vm.withCtActiveDateOption)
 
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[StartDateView].getOrElse(StartDateView())
-      .flatMap(populateCtActiveDate).map(f => Ok(start_date(form.fill(f))))
-  })
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel2[StartDateView].getOrElse(StartDateView())
+      .flatMap(populateCtActiveDate).map(f => Ok(start_date(form.fill(f)))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     startDateFormFactory.form().bindFromRequest().fold(
       badForm => BadRequest(start_date(badForm)).pure,
-      goodForm => populateCtActiveDate(goodForm).flatMap(vm => s4LService.saveForm(vm)).map { _ =>
-        Redirect(controllers.vatTradingDetails.routes.TradingNameController.show())
-      }
-    )
-  })
+      goodForm => populateCtActiveDate(goodForm).flatMap(vm => s4LService.save(vm)).map(_ =>
+        Redirect(controllers.vatTradingDetails.routes.TradingNameController.show()))))
+
 }

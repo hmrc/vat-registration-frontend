@@ -26,39 +26,26 @@ import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
 
-import scala.concurrent.Future
-
 
 class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
                                        (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
+  import cats.syntax.flatMap._
 
   val form: Form[LeaseVehicles] = LeaseVehiclesForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[LeaseVehicles].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.lease_vehicles(f)))
-  )
+    viewModel2[LeaseVehicles].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.sicAndCompliance.financial.lease_vehicles(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.lease_vehicles(formWithErrors)))
-      }, {
-        data: LeaseVehicles => {
-          s4LService.saveForm[LeaseVehicles](data) flatMap { _ =>
-            if (!data.yesNo) {
-              Future.successful(Redirect(controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show()))
-            } else {
-              vrs.deleteElements(ElementPath.finCompElementPaths.drop(4)).map { _ =>
-                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()) }
-            }
-          }
-        }
-      }
-    )
-  )
+      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.lease_vehicles(badForm)).pure,
+      goodForm => s4LService.save(goodForm).map(_ => goodForm.yesNo).ifM(
+        ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths.drop(4)).map(_ =>
+          controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()),
+        ifFalse = controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show().pure)
+        .map(Redirect)))
 
 }
 

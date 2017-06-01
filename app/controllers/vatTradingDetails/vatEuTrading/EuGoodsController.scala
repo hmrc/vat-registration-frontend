@@ -24,35 +24,25 @@ import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
-
 
 class EuGoodsController @Inject()(ds: CommonPlayDependencies)
                                  (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
+  import cats.syntax.flatMap._
 
   val form = EuGoodsForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[EuGoods].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatTradingDetails.vatEuTrading.eu_goods(f)))
-  })
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel2[EuGoods].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.vatTradingDetails.vatEuTrading.eu_goods(f))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      formWithErrors => Future.successful(BadRequest(views.html.pages.vatTradingDetails.vatEuTrading.eu_goods(formWithErrors))),
-      (data: EuGoods) =>
-        s4LService.saveForm[EuGoods](data) flatMap {  _ =>
-          if (EuGoods.EU_GOODS_NO == data.yesNo) {
-            for {
-              _ <- s4LService.saveForm[ApplyEori](ApplyEori(ApplyEori.APPLY_EORI_NO))
-            } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())
-          } else {
-            Future.successful(Redirect(controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show()))
-          }
-        }
-    )
-  })
+      badForm => BadRequest(views.html.pages.vatTradingDetails.vatEuTrading.eu_goods(badForm)).pure,
+      goodForm => s4LService.save(goodForm).map(_ => goodForm.yesNo == EuGoods.EU_GOODS_NO).ifM(
+        s4LService.save(ApplyEori(ApplyEori.APPLY_EORI_NO)).map(_ =>
+          controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show()),
+        controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show().pure
+      ).map(Redirect)))
 
 }

@@ -122,6 +122,8 @@ private[forms] object FormValidation {
       }
   }
 
+
+
   /* overrides Play's implicit stringFormatter and handles missing options (e.g. no radio button selected) */
   private def stringFormat(suffix: String)(implicit e: ErrorCode): Formatter[String] = new Formatter[String] {
 

@@ -23,9 +23,7 @@ import play.api.mvc.{Action, AnyContent}
 
 class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
-  def postSignIn: Action[AnyContent] = authorised {
-    implicit user =>
-      implicit request =>
-          Redirect(controllers.routes.WelcomeController.start())
-  }
+  def postSignIn: Action[AnyContent] = authorised(implicit user => implicit request =>
+    Redirect(controllers.routes.WelcomeController.start()))
+
 }

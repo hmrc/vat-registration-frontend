@@ -20,40 +20,27 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.labour.TemporaryContractsForm
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, TemporaryContracts}
+import models.view.sicAndCompliance.labour.TemporaryContracts
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
-
-import scala.concurrent.Future
-
 
 class TemporaryContractsController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
+  import cats.syntax.flatMap._
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[TemporaryContracts].map { vm =>
-      Ok(views.html.pages.sicAndCompliance.labour.temporary_contracts(TemporaryContractsForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.sicAndCompliance.labour.temporary_contracts(TemporaryContractsForm.form)))
-  })
+  val form = TemporaryContractsForm.form
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    TemporaryContractsForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.sicAndCompliance.labour.temporary_contracts(formWithErrors)))
-      }, {
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel2[TemporaryContracts].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.sicAndCompliance.labour.temporary_contracts(f))))
 
-        data: TemporaryContracts => {
-          s4LService.saveForm[TemporaryContracts](data) map { _ =>
-            if(TemporaryContracts.TEMP_CONTRACTS_YES == data.yesNo) {
-              Redirect(controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show())
-            }else{
-              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
-            }
-          }
-        }
-      })
-  })
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    form.bindFromRequest().fold(
+      badForm => BadRequest(views.html.pages.sicAndCompliance.labour.temporary_contracts(badForm)).pure,
+      goodForm => s4LService.save(goodForm).map(_ => goodForm.yesNo == TemporaryContracts.TEMP_CONTRACTS_YES).ifM(
+        controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show().pure,
+        controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show().pure)
+        .map(Redirect)))
 
 }

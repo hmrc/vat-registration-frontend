@@ -27,10 +27,6 @@ import services.PrePopService
 class TestCTController @Inject()(iis: PrePopService, ds: CommonPlayDependencies)
   extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
-
-  import scala.concurrent.ExecutionContext.Implicits.global
-
   def show(): Action[AnyContent] = authorised.async { implicit user =>
     implicit req =>
       iis.getCTActiveDate().map(DateTimeFormatter.ISO_LOCAL_DATE.format).getOrElse("NONE").map(s => Ok(Html(s)))

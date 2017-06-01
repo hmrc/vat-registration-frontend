@@ -28,7 +28,7 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
-import models.view.vatLodgingOfficer.OfficerContactDetails
+import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import models.view.vatTradingDetails.vatChoice.StartDateView
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.http.Status._
@@ -93,16 +93,25 @@ trait VatRegistrationFixture {
     financialCompliance = None
   )
 
-  val validDob = DateOfBirth(12,11,1973)
+  val validDob = DateOfBirth(12, 11, 1973)
 
   val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", validDob, None, None)
   val completionCapacity = CompletionCapacity(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director")
 
 
   val validServiceEligibility = VatServiceEligibility(Some(true), Some(false), Some(false), Some(false), Some(false))
-  val officerName = Name(Some("Reddy"), None, "Yattapu" , Some("Dr"))
-  val validOfficerContactDetails = OfficerContactDetails (Some ("test@test.com"), Some("07837483287"), Some("07827483287") )
-  val validLodgingOfficer = VatLodgingOfficer(ScrsAddress("",""), DateOfBirth.empty, "","director", officerName)
+  val officerName = Name(Some("Reddy"), None, "Yattapu", Some("Dr"))
+  val validOfficerContactDetailsView = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
+  val validOfficerContactDetails = OfficerContactDetails(Some("test@test.com"), None, None)
+  val formerName = FormerName(selection = true, formerName = Some("Bubbly Bobbings"))
+  val validLodgingOfficer = VatLodgingOfficer(
+    ScrsAddress("", ""),
+    DateOfBirth.empty,
+    "", "director",
+    officerName,
+    formerName,
+    validOfficerContactDetails
+  )
 
   val emptyVatScheme = VatScheme(validRegId)
 
@@ -136,14 +145,23 @@ trait VatRegistrationFixture {
 
   def vatSicAndCompliance(
                            activityDescription: String = "Some business activity",
-                           culturalComplianceSection: Option[VatComplianceCultural] = Some(VatComplianceCultural(notForProfit = false)),
-                           labourComplianceSection: Option[VatComplianceLabour] = Some(VatComplianceLabour(true, Some(8), Some(true), Some(true))),
-                           financialComplianceSection: Option[VatComplianceFinancial] = Some(VatComplianceFinancial(true, false, Some(true), Some(true)))
-                         ): VatSicAndCompliance =
-    VatSicAndCompliance(businessDescription = activityDescription,
-                        culturalCompliance = culturalComplianceSection,
-                        labourCompliance = labourComplianceSection,
-                        financialCompliance = financialComplianceSection)
+                           culturalComplianceSection: Option[VatComplianceCultural] = Some(VatComplianceCultural(
+                             notForProfit = false)),
+                           labourComplianceSection: Option[VatComplianceLabour] = Some(VatComplianceLabour(
+                             labour = true,
+                             workers = Some(8),
+                             temporaryContracts = Some(true),
+                             skilledWorkers = Some(true))),
+                           financialComplianceSection: Option[VatComplianceFinancial] = Some(VatComplianceFinancial(
+                             adviceOrConsultancyOnly = true,
+                             actAsIntermediary = false,
+                             chargeFees = Some(true),
+                             additionalNonSecuritiesWork = Some(true)))): VatSicAndCompliance =
+    VatSicAndCompliance(
+      businessDescription = activityDescription,
+      culturalCompliance = culturalComplianceSection,
+      labourCompliance = labourComplianceSection,
+      financialCompliance = financialComplianceSection)
 
 
   def vatScheme(

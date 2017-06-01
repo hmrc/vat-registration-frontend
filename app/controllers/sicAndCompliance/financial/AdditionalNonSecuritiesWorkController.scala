@@ -22,38 +22,28 @@ import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.financial.AdditionalNonSecuritiesWorkForm
 import models.ElementPath
 import models.view.sicAndCompliance.financial.AdditionalNonSecuritiesWork
-import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
-
-import scala.concurrent.Future
 
 
 class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies)
                                                      (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
-  import cats.instances.future._
 
-  val form: Form[AdditionalNonSecuritiesWork] = AdditionalNonSecuritiesWorkForm.form
+  val form = AdditionalNonSecuritiesWorkForm.form
+
+  import cats.syntax.flatMap._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[AdditionalNonSecuritiesWork].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(f)))
-  )
+    viewModel2[AdditionalNonSecuritiesWork].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(formWithErrors))),
-      (data: AdditionalNonSecuritiesWork) => {
-        s4LService.saveForm[AdditionalNonSecuritiesWork](data) flatMap {  _ =>
-          if(!data.yesNo) {
-            Future.successful(Redirect(controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show()))
-          }else{
-            vrs.deleteElements(ElementPath.finCompElementPaths.drop(2)).map { _ =>
-              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()) }
-          }
-        }
-      }
-    )
-  )
+      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(badForm)).pure,
+      data => s4LService.save(data).map(_ => data.yesNo).ifM(
+        ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths.drop(2)).map(_ =>
+          controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()),
+        ifFalse = controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show().pure
+      ).map(Redirect)))
 
 }

@@ -92,7 +92,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
     "return 303" in {
       val returnCacheMapBusinessActivityDescription = CacheMap("", Map("" -> Json.toJson(BusinessActivityDescription(DESCRIPTION))))
 
-      when(mockS4LService.saveForm[BusinessActivityDescription](any())(any(), any(), any()))
+      when(mockS4LService.save[BusinessActivityDescription](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapBusinessActivityDescription))
 
       submitAuthorised(TestController.submit(), fakeRequest.withFormUrlEncodedBody("description" -> DESCRIPTION)) {

@@ -18,6 +18,7 @@ package helpers
 
 import builders.AuthBuilder
 import cats.data.OptionT
+import cats.syntax.ApplicativeSyntax
 import controllers.CommonPlayDependencies
 import fixtures.LoginFixture
 import mocks.VatMocks
@@ -36,7 +37,10 @@ import scala.concurrent.Future
 
 class VatRegSpec extends PlaySpec with OneAppPerSuite
   with MockitoSugar with VatMocks with LoginFixture with Inside with Inspectors
-  with ScalaFutures {
+  with ScalaFutures with ApplicativeSyntax {
+
+  implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
+  implicit val futureInstances = cats.instances.future.catsStdInstancesForFuture
 
   import play.api.test.Helpers._
 
@@ -81,6 +85,8 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
     def returnsNone: Assertion = whenReady(ot.value)(_ mustBe Option.empty[T])
 
     def failedWith(e: Exception): Assertion = whenReady(ot.value.failed)(_ mustBe e)
+
+    def failedWith[T <: Throwable](exClass: Class[T]): Assertion = whenReady(ot.value.failed)(_.getClass mustBe exClass)
 
   }
 

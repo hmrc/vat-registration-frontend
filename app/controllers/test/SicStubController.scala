@@ -48,11 +48,11 @@ class SicStubController @Inject()(s4LService: S4LService, vatRegistrationConnect
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     SicStubForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.test.sic_stub(formWithErrors)))
+      badForm => {
+        Future.successful(BadRequest(views.html.pages.test.sic_stub(badForm)))
       }, {
         data: SicStub => {
-          s4LService.saveForm[SicStub](data) map { _ =>
+          s4LService.save[SicStub](data) map { _ =>
             ComplianceQuestions(data.sicCodes) match {
               case NoComplianceQuestions =>
                 Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())

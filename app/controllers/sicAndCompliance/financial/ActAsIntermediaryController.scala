@@ -28,33 +28,25 @@ import services.{RegistrationService, S4LService}
 
 
 class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
-                                           (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
+                                           (implicit s4LService: S4LService, vrs: RegistrationService)
+  extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
+  import cats.syntax.flatMap._
 
   val form: Form[ActAsIntermediary] = ActAsIntermediaryForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[ActAsIntermediary].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.act_as_intermediary(f)))
-  )
+    viewModel2[ActAsIntermediary].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.sicAndCompliance.financial.act_as_intermediary(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    ActAsIntermediaryForm.form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.act_as_intermediary(badForm)).pure
-      ,
-      (data: ActAsIntermediary) => s4LService.saveForm[ActAsIntermediary](data).flatMap { _ =>
-        if (!data.yesNo) {
-          Redirect(controllers.sicAndCompliance.financial.routes.ChargeFeesController.show()).pure
-        } else {
-          vrs.deleteElements(ElementPath.finCompElementPaths).map { _ =>
-            Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
-          }
-        }
-      }
-    )
-  )
+    form.bindFromRequest().fold(
+      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.act_as_intermediary(badForm)).pure,
+      data => s4LService.save(data).map(_ => data.yesNo).ifM(
+        vrs.deleteElements(ElementPath.finCompElementPaths).map(_ =>
+          controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()),
+        controllers.sicAndCompliance.financial.routes.ChargeFeesController.show().pure
+      ).map(Redirect)))
 
 }
 

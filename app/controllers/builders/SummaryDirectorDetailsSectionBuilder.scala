@@ -28,6 +28,14 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLod
     Some(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
   )
 
+  val formerName: SummaryRow = SummaryRow(
+    "directorDetails.formerName",
+    vatLodgingOfficer.map(_.formerName.selection).collect {
+      case true => vatLodgingOfficer.flatMap(_.formerName.formerName).getOrElse("")
+    }.getOrElse("pages.summary.directorDetails.noFormerName"),
+    Some(controllers.vatLodgingOfficer.routes.FormerNameController.show())
+  )
+
   val dob: SummaryRow = SummaryRow(
     "directorDetails.dob",
     vatLodgingOfficer.map(_.dob.format(presentationFormatter)).getOrElse(""),
@@ -40,12 +48,34 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLod
     Some(controllers.vatLodgingOfficer.routes.OfficerNinoController.show())
   )
 
+  val email: SummaryRow = SummaryRow(
+    "directorDetails.email",
+    vatLodgingOfficer.flatMap(_.contact.email).getOrElse(""),
+    Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
+  )
+
+  val daytimePhone: SummaryRow = SummaryRow(
+    "directorDetails.daytimePhone",
+    vatLodgingOfficer.flatMap(_.contact.tel).getOrElse(""),
+    Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
+  )
+
+  val mobile: SummaryRow = SummaryRow(
+    "directorDetails.mobile",
+    vatLodgingOfficer.flatMap(_.contact.mobile).getOrElse(""),
+    Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
+  )
+
   val section: SummarySection = SummarySection(
     id = "directorDetails",
     Seq(
       (completionCapacity, true),
+      (formerName, true),
       (dob, true),
-      (nino, true)
+      (nino, true),
+      (email, vatLodgingOfficer.exists(_.contact.email.isDefined)),
+      (daytimePhone, vatLodgingOfficer.exists(_.contact.tel.isDefined)),
+      (mobile, vatLodgingOfficer.exists(_.contact.mobile.isDefined))
     )
   )
 }

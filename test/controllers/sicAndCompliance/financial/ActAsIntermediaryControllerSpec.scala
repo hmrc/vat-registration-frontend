@@ -97,7 +97,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
 
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[ActAsIntermediary](any())(any(), any(), any()))
+      when(mockS4LService.save[ActAsIntermediary](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapActAsIntermediary))
 
       submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -113,7 +113,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
 
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[ActAsIntermediary](any())(any(), any(), any()))
+      when(mockS4LService.save[ActAsIntermediary](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapActAsIntermediary))
 
       submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(

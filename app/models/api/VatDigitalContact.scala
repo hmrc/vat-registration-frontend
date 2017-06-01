@@ -28,4 +28,7 @@ object VatDigitalContact {
       (__ \ "tel").formatNullable[String] and
       (__ \ "mobile").formatNullable[String]
     ) (VatDigitalContact.apply, unlift(VatDigitalContact.unapply))
+
+  val empty = VatDigitalContact("", None, None)
+
 }

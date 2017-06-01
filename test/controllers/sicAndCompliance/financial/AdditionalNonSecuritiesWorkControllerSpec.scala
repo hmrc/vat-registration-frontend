@@ -26,7 +26,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
+
 import scala.concurrent.Future
 
 class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
@@ -87,7 +87,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
       val returnCacheMapAdditionalNonSecuritiesWork = CacheMap("", Map("" -> Json.toJson(AdditionalNonSecuritiesWork(true))))
 
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      when(mockS4LService.saveForm[AdditionalNonSecuritiesWork](any())(any(), any(), any()))
+      when(mockS4LService.save[AdditionalNonSecuritiesWork](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapAdditionalNonSecuritiesWork))
 
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -102,7 +102,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
       val returnCacheMapAdditionalNonSecuritiesWork = CacheMap("", Map("" -> Json.toJson(AdditionalNonSecuritiesWork(false))))
 
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      when(mockS4LService.saveForm[AdditionalNonSecuritiesWork](any())(any(), any(), any()))
+      when(mockS4LService.save[AdditionalNonSecuritiesWork](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapAdditionalNonSecuritiesWork))
 
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(

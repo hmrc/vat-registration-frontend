@@ -25,27 +25,20 @@ import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
-
 
 class ApplyEoriController @Inject()(ds: CommonPlayDependencies)
                                    (implicit s4l: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
-
   val form: Form[ApplyEori] = ApplyEoriForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[ApplyEori].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatTradingDetails.vatEuTrading.eori_apply(f)))
-  )
+    viewModel2[ApplyEori].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.vatTradingDetails.vatEuTrading.eori_apply(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      (formWithErrors) => Future.successful(BadRequest(views.html.pages.vatTradingDetails.vatEuTrading.eori_apply(formWithErrors))),
-      (data: ApplyEori) => s4l.saveForm[ApplyEori](data)
-        .map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show()))
-    )
-  )
+      badForm => BadRequest(views.html.pages.vatTradingDetails.vatEuTrading.eori_apply(badForm)).pure,
+      goodForm => s4l.save(goodForm).map(_ =>
+        Redirect(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show()))))
 
 }

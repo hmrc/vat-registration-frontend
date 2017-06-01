@@ -26,6 +26,6 @@ class TestVatRegistrationAdminController @Inject()(vatRegConnector: TestRegistra
   extends VatRegistrationController(ds) {
 
   def dropCollection(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    vatRegConnector.dropCollection().map(_ => Ok("DB cleared"))
-  )
+    vatRegConnector.dropCollection().map(_ => Ok("DB cleared")))
+
 }

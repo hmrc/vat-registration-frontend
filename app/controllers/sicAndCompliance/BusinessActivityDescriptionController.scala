@@ -25,27 +25,22 @@ import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
-
 
 class BusinessActivityDescriptionController @Inject()(ds: CommonPlayDependencies)
-                                                     (implicit s4l: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
-
-  import cats.instances.future._
+                                                     (implicit s4l: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) {
 
   val form: Form[BusinessActivityDescription] = BusinessActivityDescriptionForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[BusinessActivityDescription].fold(form)(form.fill)
+    viewModel2[BusinessActivityDescription].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.business_activity_description(f)))
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.business_activity_description(formWithErrors))),
-      (data: BusinessActivityDescription) => s4l.saveForm[BusinessActivityDescription](data.copy(description = data.description.trim))
-        .map(_ => Redirect(controllers.test.routes.SicStubController.show()))
-    )
-  )
+      badForm => BadRequest(views.html.pages.sicAndCompliance.business_activity_description(badForm)).pure,
+      data => s4l.save(data.copy(description = data.description.trim)).map(_ =>
+        Redirect(controllers.test.routes.SicStubController.show()))))
 
 }

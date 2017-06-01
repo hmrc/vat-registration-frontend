@@ -95,7 +95,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
     "return 303" in {
       val returnCacheMapEstimateVatTurnover = CacheMap("", Map("" -> Json.toJson(EstimateVatTurnover(50000L))))
 
-      when(mockS4LService.saveForm[EstimateVatTurnover](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.save[EstimateVatTurnover](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapEstimateVatTurnover))
 
       submitAuthorised(

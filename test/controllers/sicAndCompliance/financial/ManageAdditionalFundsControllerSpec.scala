@@ -102,7 +102,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
     "return 303" in {
       val returnCacheMapManageAdditionalFunds = CacheMap("", Map("" -> Json.toJson(ManageAdditionalFunds(true))))
 
-      when(mockS4LService.saveForm[ManageAdditionalFunds]
+      when(mockS4LService.save[ManageAdditionalFunds]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapManageAdditionalFunds))
 
@@ -121,7 +121,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
     "return 303" in {
       val returnCacheMapManageAdditionalFunds = CacheMap("", Map("" -> Json.toJson(ManageAdditionalFunds(false))))
 
-      when(mockS4LService.saveForm[ManageAdditionalFunds]
+      when(mockS4LService.save[ManageAdditionalFunds]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapManageAdditionalFunds))
 

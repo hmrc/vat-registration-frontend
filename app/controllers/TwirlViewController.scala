@@ -22,8 +22,8 @@ import play.api.mvc.{Action, AnyContent, Result}
 
 class TwirlViewController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
-  def renderViewAuthorised(viewName: String): Action[AnyContent] = authorised(implicit user =>
-    implicit request => Some(viewName).collect {
+  def renderViewAuthorised(viewName: String): Action[AnyContent] = authorised(implicit user => implicit request =>
+    Some(viewName).collect {
       case "eligibility-success" => views.html.pages.vatEligibility.eligible()
     }.fold[Result](NotFound)(Ok(_))
   )

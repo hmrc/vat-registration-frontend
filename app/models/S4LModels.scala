@@ -25,71 +25,97 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
-import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
+import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
+import play.api.libs.json.{Json, OFormat}
 
 
-case class S4LVatFinancials
+final case class S4LVatFinancials
 (
-  estimateVatTurnover: Option[EstimateVatTurnover],
-  zeroRatedTurnoverEstimate: Option[EstimateZeroRatedSales],
-  vatChargeExpectancy: Option[VatChargeExpectancy],
-  vatReturnFrequency: Option[VatReturnFrequency],
-  accountingPeriod: Option[AccountingPeriod],
-  companyBankAccountDetails: Option[CompanyBankAccountDetails]
+  estimateVatTurnover: Option[EstimateVatTurnover] = None,
+  zeroRatedTurnoverEstimate: Option[EstimateZeroRatedSales] = None,
+  vatChargeExpectancy: Option[VatChargeExpectancy] = None,
+  vatReturnFrequency: Option[VatReturnFrequency] = None,
+  accountingPeriod: Option[AccountingPeriod] = None,
+  companyBankAccountDetails: Option[CompanyBankAccountDetails] = None
 )
 
-case class S4LTradingDetails
+object S4LVatFinancials {
+  implicit val format: OFormat[S4LVatFinancials] = Json.format[S4LVatFinancials]
+}
+
+final case class S4LTradingDetails
 (
-  tradingName: Option[TradingNameView],
-  startDate: Option[StartDateView],
-  voluntaryRegistration: Option[VoluntaryRegistration],
-  voluntaryRegistrationReason: Option[VoluntaryRegistrationReason],
-  euGoods: Option[EuGoods],
-  applyEori: Option[ApplyEori]
+  tradingName: Option[TradingNameView] = None,
+  startDate: Option[StartDateView] = None,
+  voluntaryRegistration: Option[VoluntaryRegistration] = None,
+  voluntaryRegistrationReason: Option[VoluntaryRegistrationReason] = None,
+  euGoods: Option[EuGoods] = None,
+  applyEori: Option[ApplyEori] = None
 )
 
-case class S4LVatSicAndCompliance
+object S4LTradingDetails {
+  implicit val format: OFormat[S4LTradingDetails] = Json.format[S4LTradingDetails]
+}
+
+final case class S4LVatSicAndCompliance
 (
-  description: Option[BusinessActivityDescription],
+  description: Option[BusinessActivityDescription] = None,
 
   //Cultural Compliance
-  notForProfit: Option[NotForProfit],
+  notForProfit: Option[NotForProfit] = None,
 
   //Labour Compliance
-  companyProvideWorkers: Option[CompanyProvideWorkers],
-  workers: Option[Workers],
-  temporaryContracts: Option[TemporaryContracts],
-  skilledWorkers: Option[SkilledWorkers],
+  companyProvideWorkers: Option[CompanyProvideWorkers] = None,
+  workers: Option[Workers] = None,
+  temporaryContracts: Option[TemporaryContracts] = None,
+  skilledWorkers: Option[SkilledWorkers] = None,
 
   //Financial Compliance
-  adviceOrConsultancy: Option[AdviceOrConsultancy],
-  actAsIntermediary: Option[ActAsIntermediary],
-  chargeFees: Option[ChargeFees],
-  leaseVehicles: Option[LeaseVehicles],
-  additionalNonSecuritiesWork: Option[AdditionalNonSecuritiesWork],
-  discretionaryInvestmentManagementServices: Option[DiscretionaryInvestmentManagementServices],
-  investmentFundManagement: Option[InvestmentFundManagement],
-  manageAdditionalFunds: Option[ManageAdditionalFunds]
+  adviceOrConsultancy: Option[AdviceOrConsultancy] = None,
+  actAsIntermediary: Option[ActAsIntermediary] = None,
+  chargeFees: Option[ChargeFees] = None,
+  leaseVehicles: Option[LeaseVehicles] = None,
+  additionalNonSecuritiesWork: Option[AdditionalNonSecuritiesWork] = None,
+  discretionaryInvestmentManagementServices: Option[DiscretionaryInvestmentManagementServices] = None,
+  investmentFundManagement: Option[InvestmentFundManagement] = None,
+  manageAdditionalFunds: Option[ManageAdditionalFunds] = None
 )
 
-case class S4LVatContact
+object S4LVatSicAndCompliance {
+  implicit val format: OFormat[S4LVatSicAndCompliance] = Json.format[S4LVatSicAndCompliance]
+}
+
+final case class S4LVatContact
 (
-  businessContactDetails: Option[BusinessContactDetails]
+  businessContactDetails: Option[BusinessContactDetails] = None
 )
 
-case class S4LVatEligibility
+object S4LVatContact {
+  implicit val format: OFormat[S4LVatContact] = Json.format[S4LVatContact]
+}
+
+final case class S4LVatEligibility
 (
-  vatEligibility: Option[VatServiceEligibility]
+  vatEligibility: Option[VatServiceEligibility] = None
 )
 
-case class S4LVatLodgingOfficer
+object S4LVatEligibility {
+  implicit val format: OFormat[S4LVatEligibility] = Json.format[S4LVatEligibility]
+}
+
+final case class S4LVatLodgingOfficer
 (
-  officerHomeAddressView: Option[OfficerHomeAddressView],
-  officerDateOfBirthView: Option[OfficerDateOfBirthView],
-  officerNinoView: Option[OfficerNinoView],
-  completionCapacityView: Option[CompletionCapacityView]
+  officerHomeAddress: Option[OfficerHomeAddressView] = None,
+  officerDateOfBirth: Option[OfficerDateOfBirthView] = None,
+  officerNino: Option[OfficerNinoView] = None,
+  completionCapacity: Option[CompletionCapacityView] = None,
+  officerContactDetails: Option[OfficerContactDetailsView] = None,
+  formerName: Option[FormerNameView] = None
 )
 
+object S4LVatLodgingOfficer {
+  implicit val format: OFormat[S4LVatLodgingOfficer] = Json.format[S4LVatLodgingOfficer]
+}

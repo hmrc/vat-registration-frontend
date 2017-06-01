@@ -25,38 +25,29 @@ import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
-
 
 class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
-                                               (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
-  import cats.instances.future._
+                                               (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[CompanyProvideWorkers].map { vm =>
-      Ok(views.html.pages.sicAndCompliance.labour.company_provide_workers(CompanyProvideWorkersForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.sicAndCompliance.labour.company_provide_workers(CompanyProvideWorkersForm.form)))
-  })
+  import cats.syntax.flatMap._
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    CompanyProvideWorkersForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.sicAndCompliance.labour.company_provide_workers(formWithErrors)))
-      }, {
-        data: CompanyProvideWorkers => {
-          // TODO delete any existing non-cultural compliance questions
-          vrs.deleteElement(FinancialCompliancePath).flatMap { _ =>
-            s4LService.saveForm[CompanyProvideWorkers](data) map { _ =>
-              if (CompanyProvideWorkers.PROVIDE_WORKERS_YES == data.yesNo) {
-                Redirect(controllers.sicAndCompliance.labour.routes.WorkersController.show())
-              } else {
-                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
-              }
-            }
-          }
-        }
-      })
-  })
+  val form = CompanyProvideWorkersForm.form
+
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel2[CompanyProvideWorkers].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.sicAndCompliance.labour.company_provide_workers(f))))
+
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    form.bindFromRequest().fold(
+      badForm => BadRequest(views.html.pages.sicAndCompliance.labour.company_provide_workers(badForm)).pure,
+      goodForm => // TODO delete any existing non-cultural compliance questions
+        vrs.deleteElement(FinancialCompliancePath).flatMap(_ =>
+          s4LService.save(goodForm).map(_ =>
+            CompanyProvideWorkers.PROVIDE_WORKERS_YES == goodForm.yesNo).ifM(
+            ifTrue = controllers.sicAndCompliance.labour.routes.WorkersController.show().pure,
+            ifFalse = controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show().pure)
+            .map(Redirect))))
 
 }
 

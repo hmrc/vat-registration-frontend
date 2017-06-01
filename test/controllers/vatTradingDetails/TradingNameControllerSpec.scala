@@ -116,7 +116,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingNameView(TradingNameView.TRADING_NAME_NO, None))))
 
-      when(mockS4LService.saveForm[TradingNameView](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.save[TradingNameView](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       submitAuthorised(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -135,7 +135,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingNameView(TradingNameView.TRADING_NAME_YES, Some("some name")))))
 
-      when(mockS4LService.saveForm[TradingNameView](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockS4LService.save[TradingNameView](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       submitAuthorised(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(

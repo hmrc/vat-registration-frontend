@@ -26,22 +26,18 @@ import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 
 class VatChargeExpectancyController @Inject()(ds: CommonPlayDependencies)
                                              (implicit s4LService: S4LService,
                                               vatRegistrationService: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
   import cats.syntax.flatMap._
 
   val form = VatChargeExpectancyForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[VatChargeExpectancy].fold(form)(form.fill)
+    viewModel2[VatChargeExpectancy].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatFinancials.vat_charge_expectancy(f)))
   })
 
@@ -49,8 +45,8 @@ class VatChargeExpectancyController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatFinancials.vat_charge_expectancy(badForm)).pure,
       (data: VatChargeExpectancy) =>
-        s4LService.saveForm(data).map(_ => VAT_CHARGE_NO == data.yesNo).ifM(
-          s4LService.saveForm(VatReturnFrequency(VatReturnFrequency.QUARTERLY))
+        s4LService.save(data).map(_ => VAT_CHARGE_NO == data.yesNo).ifM(
+          s4LService.save(VatReturnFrequency(VatReturnFrequency.QUARTERLY))
             .map(_ => controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show())
           ,
           controllers.vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show().pure

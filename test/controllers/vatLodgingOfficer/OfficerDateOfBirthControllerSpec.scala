@@ -23,22 +23,14 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.ModelKeys.REGISTERING_OFFICER_KEY
 import models.api.{Name, Officer, VatLodgingOfficer}
-import models.view.vatFinancials.ZeroRatedSales
 import models.view.vatLodgingOfficer.OfficerDateOfBirthView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.cache.client.CacheMap
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
-
-  object TestOfficerDateOfBirthController extends OfficerDateOfBirthController(ds)(mockS4LService, mockVatRegistrationService) {
+  object Controller extends OfficerDateOfBirthController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
     override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
   }
@@ -48,33 +40,44 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
   s"GET ${routes.OfficerDateOfBirthController.show()}" should {
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer.empty))
-      save4laterReturnsNothing[OfficerDateOfBirthView]()
+      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(validLodgingOfficer))
+      save4laterReturnsNothing2[OfficerDateOfBirthView]()
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
 
-      callAuthorised(TestOfficerDateOfBirthController.show()) {
+      callAuthorised(Controller.show()) {
         _ includesText "What is your date of birth"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing[OfficerDateOfBirthView]()
+      save4laterReturnsNothing2[OfficerDateOfBirthView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.copy(lodgingOfficer = None).pure)
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
 
-      callAuthorised(TestOfficerDateOfBirthController.show()) {
+      callAuthorised(Controller.show()) {
         _ includesText "What is your date of birth"
       }
     }
 
     "return HTML Test Data in S4L and vatScheme contains data" in {
       val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer.empty))
+      val officerReddy = OfficerDateOfBirthView(LocalDate.of(1980, 1, 1), Some(Name(Some("Yattapu"), None, "Reddy", Some("Dr"))))
       mockKeystoreFetchAndGet[Officer](REGISTERING_OFFICER_KEY, Some(officer))
-      save4laterReturns[OfficerDateOfBirthView](OfficerDateOfBirthView(LocalDate.of(1980, 1, 1), Some(Name(Some("Yattapu"), None, "Reddy" , Some("Mr")))))
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
+      save4laterReturns2(officerReddy)()
 
-      callAuthorised(TestOfficerDateOfBirthController.show()) {
+      callAuthorised(Controller.show()) {
+        _ includesText "What is your date of birth"
+      }
+    }
+
+    "return HTML Test Data in S4L and vatScheme contains data matching data in keystore" in {
+      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer.empty))
+      val officerReddy = OfficerDateOfBirthView(LocalDate.of(1980, 1, 1), Some(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None)))
+      mockKeystoreFetchAndGet[Officer](REGISTERING_OFFICER_KEY, Some(officer))
+      save4laterReturns2(officerReddy)()
+
+      callAuthorised(Controller.show()) {
         _ includesText "What is your date of birth"
       }
     }
@@ -83,9 +86,7 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.OfficerDateOfBirthController.submit()} with Empty data" should {
 
     "return 400" in {
-      submitAuthorised(TestOfficerDateOfBirthController.submit(), fakeRequest.withFormUrlEncodedBody()) { result =>
-        result isA 400
-      }
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
 
   }
@@ -93,14 +94,11 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.OfficerDateOfBirthController.submit()} with valid DateOfBirth entered" should {
 
     "return 303" in {
-      when(mockS4LService.saveForm[OfficerDateOfBirthView](any())(any(), any(), any()))
-        .thenReturn(CacheMap("", Map("" -> Json.toJson(OfficerDateOfBirthView(LocalDate.of(1980, 1, 1))))).pure)
+      save4laterExpectsSave[OfficerDateOfBirthView]()
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
-
-      submitAuthorised(TestOfficerDateOfBirthController.submit(),
+      submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980")
       )(_ redirectsTo s"$contextRoot/your-national-insurance-number")
-
     }
   }
 

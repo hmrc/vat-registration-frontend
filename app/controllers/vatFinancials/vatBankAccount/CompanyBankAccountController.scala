@@ -29,24 +29,22 @@ import services.{S4LService, VatRegistrationService}
 class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
   import cats.syntax.flatMap._
 
   val form = CompanyBankAccountForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[CompanyBankAccount].map { vm =>
+    viewModel2[CompanyBankAccount].map { vm =>
       Ok(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(CompanyBankAccountForm.form.fill(vm)))
     }.getOrElse(Ok(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(CompanyBankAccountForm.form)))
   })
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     form.bindFromRequest().fold(
-      formWithErrors => BadRequest(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(formWithErrors)).pure
+      badForm => BadRequest(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(badForm)).pure
       ,
       (data: CompanyBankAccount) => {
-        s4l.saveForm(data).map(_ => data.yesNo == CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES).ifM(
+        s4l.save(data).map(_ => data.yesNo == CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES).ifM(
           controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show().pure,
           vrs.deleteElement(VatBankAccountPath).map { _ =>
             controllers.vatFinancials.routes.EstimateVatTurnoverController.show()
