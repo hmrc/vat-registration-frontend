@@ -41,7 +41,7 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors wit
       surname = "Reddy"
     ),
     role = "director",
-    dateOfBirth = validDob,
+    dateOfBirth = Some(validDob),
     resignedOn = None,
     appointmentLink = None)
 
