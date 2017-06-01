@@ -19,8 +19,6 @@ package services
 import java.time.LocalDate
 
 import cats.data.OptionT
-import cats.instances.future.catsStdInstancesForFuture
-import cats.syntax.applicative.catsSyntaxApplicativeId
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
@@ -32,13 +30,12 @@ import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
-import models.{VatBankAccountPath, ZeroRatedTurnoverEstimatePath}
+import models.{S4LVatLodgingOfficer, VatBankAccountPath, ZeroRatedTurnoverEstimatePath}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.language.postfixOps
 
@@ -108,10 +105,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturns(validApplyEori)
       save4laterReturns(validBusinessContactDetails)
       save4laterReturns(validServiceEligibility)
-      save4laterReturns(OfficerHomeAddressView(""))
-      save4laterReturns(OfficerDateOfBirthView(LocalDate.now))
-      save4laterReturns(OfficerNinoView(""))
-      save4laterReturns(CompletionCapacityView(""))
+      save4laterReturns(S4LVatLodgingOfficer(
+        officerHomeAddress = Some(OfficerHomeAddressView("")),
+        officerDateOfBirth = Some(OfficerDateOfBirthView(LocalDate.now)),
+        officerNino = Some(OfficerNinoView("")),
+        completionCapacity = Some(CompletionCapacityView(""))
+      ))
 
       when(mockRegConnector.upsertVatChoice(any(), any())(any(), any())).thenReturn(validVatChoice.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
@@ -281,6 +280,13 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "submitVatLodgingOfficer should process the submission even if VatScheme does not contain a VatLodgingOfficer object" in new Setup {
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       service.submitVatLodgingOfficer() returns validLodgingOfficer
+    }
+
+    "submitVatLodgingOfficer should fail if there's not trace of VatLodgingOfficer in neither backend nor S4L" in new Setup {
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+      save4laterReturnsNothing[S4LVatLodgingOfficer]()
+
+      service.submitVatLodgingOfficer() failedWith classOf[IllegalStateException]
     }
 
   }

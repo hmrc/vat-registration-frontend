@@ -114,7 +114,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
 
       when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[NotForProfit](any())(any(), any(), any()))
+      when(mockS4LService.save[NotForProfit](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapNotForProfit))
 
       submitAuthorised(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -131,7 +131,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
 
       when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[NotForProfit](any())(any(), any(), any()))
+      when(mockS4LService.save[NotForProfit](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapNotForProfit))
 
       submitAuthorised(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(

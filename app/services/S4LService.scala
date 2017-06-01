@@ -16,9 +16,10 @@
 
 package services
 
+import cats.data.OptionT
 import com.google.inject.ImplementedBy
-import connectors.{KeystoreConnector, S4LConnector}
-import models.S4LKey
+import connectors.{KeystoreConnector, OptionalResponse, S4LConnector}
+import models.{S4LKey, VMReads}
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
@@ -29,13 +30,30 @@ import scala.concurrent.Future
 @ImplementedBy(classOf[PersistenceService])
 trait S4LService extends CommonService {
 
+  import cats.instances.future._
+
   private[services] val s4LConnector: S4LConnector
 
-  def saveForm[T: S4LKey](data: T)(implicit headerCarrier: HeaderCarrier, format: Format[T]): Future[CacheMap] =
-    fetchRegistrationId.flatMap(s4LConnector.saveForm[T](_, S4LKey[T].key, data))
+  def save[T: S4LKey](data: T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] =
+    fetchRegistrationId.flatMap(s4LConnector.save[T](_, S4LKey[T].key, data))
 
-  def fetchAndGet[T: S4LKey]()(implicit headerCarrier: HeaderCarrier, format: Format[T]): Future[Option[T]] =
+  def updateViewModel[T, G](data: T)(implicit hc: HeaderCarrier, r: VMReads.Aux[T, G], f: Format[G], k: S4LKey[G]): Future[CacheMap] =
+    for {
+      regId <- fetchRegistrationId
+      group <- s4LConnector.fetchAndGet[G](regId, k.key)
+      updatedGroup = r.udpate(data, group)
+      cm <- s4LConnector.save(regId, k.key, updatedGroup)
+  } yield cm
+
+  def fetchAndGet[T: S4LKey]()(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
     fetchRegistrationId.flatMap(s4LConnector.fetchAndGet[T](_, S4LKey[T].key))
+
+  def getViewModel[T, G]()(implicit r: VMReads.Aux[T, G], f: Format[G], k: S4LKey[G], hc: HeaderCarrier): OptionalResponse[T] =
+    for {
+      regId <- OptionT.liftF(fetchRegistrationId)
+      group <- OptionT(s4LConnector.fetchAndGet[G](regId, k.key))
+      vm <- OptionT.fromOption(r read group)
+    } yield vm
 
   def clear()(implicit hc: HeaderCarrier): Future[HttpResponse] =
     fetchRegistrationId.flatMap(s4LConnector.clear)

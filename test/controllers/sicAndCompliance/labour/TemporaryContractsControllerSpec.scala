@@ -116,7 +116,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
     "return 303" in {
       val returnCacheMapTemporaryContracts = CacheMap("", Map("" -> Json.toJson(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES))))
 
-      when(mockS4LService.saveForm[TemporaryContracts]
+      when(mockS4LService.save[TemporaryContracts]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapTemporaryContracts))
 
@@ -136,7 +136,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
     "return 303" in {
       val returnCacheMapTemporaryContracts = CacheMap("", Map("" -> Json.toJson(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO))))
 
-      when(mockS4LService.saveForm[TemporaryContracts]
+      when(mockS4LService.save[TemporaryContracts]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapTemporaryContracts))
 

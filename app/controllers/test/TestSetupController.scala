@@ -19,10 +19,8 @@ package controllers.test
 import java.time.LocalDate
 import javax.inject.Inject
 
-import connectors.VatRegistrationConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.test.TestSetupForm
-import models.S4LKey
 import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
@@ -37,14 +35,15 @@ import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
+import models.{S4LKey, S4LVatLodgingOfficer}
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, S4LService}
+import services.{CommonService, S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
-class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConnector: VatRegistrationConnector,
-                                    ds: CommonPlayDependencies) extends VatRegistrationController(ds) with CommonService {
+class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService)
+  extends VatRegistrationController(ds) with CommonService {
 
   def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request => {
     for {
@@ -83,11 +82,7 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
       investmentFundManagement <- s4LService.fetchAndGet[InvestmentFundManagement]()
       manageAdditionalFunds <- s4LService.fetchAndGet[ManageAdditionalFunds]()
 
-      officerHomeAddress <- s4LService.fetchAndGet[OfficerHomeAddressView]()
-      officerDateOfBirth <- s4LService.fetchAndGet[OfficerDateOfBirthView]()
-      officerNino <- s4LService.fetchAndGet[OfficerNinoView]()
-
-      completionCapacity <- s4LService.fetchAndGet[CompletionCapacityView]()
+      vatLodgingOfficer <- s4LService.fetchAndGet[S4LVatLodgingOfficer]()
 
       eligibility <- s4LService.fetchAndGet[VatServiceEligibility]()
 
@@ -124,56 +119,57 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
           vatReturnFrequency.map(_.frequencyType),
           accountingPeriod.map(_.accountingPeriod)),
         SicAndComplianceTestSetup(
-          businessActivityDescription.map(_.description),
-          sicStub.map(_.sicCode1.getOrElse("")),
-          sicStub.map(_.sicCode2.getOrElse("")),
-          sicStub.map(_.sicCode3.getOrElse("")),
-          sicStub.map(_.sicCode4.getOrElse("")),
-          culturalNotForProfit.map(_.yesNo),
-          labourCompanyProvideWorkers.map(_.yesNo),
-          labourWorkers.map(_.numberOfWorkers.toString),
-          labourTemporaryContracts.map(_.yesNo),
-          labourSkilledWorkers.map(_.yesNo),
-          adviceOrConsultancy.map(_.yesNo.toString),
-          actAsIntermediary.map(_.yesNo.toString),
-          chargeFees.map(_.yesNo.toString),
-          additionalNonSecuritiesWork.map(_.yesNo.toString),
-          discretionaryInvestment.map(_.yesNo.toString),
-          leaseVehiclesOrEquipment.map(_.yesNo.toString),
-          investmentFundManagement.map(_.yesNo.toString),
-          manageAdditionalFunds.map(_.yesNo.toString)),
+          businessActivityDescription = businessActivityDescription.map(_.description),
+          sicCode1 = sicStub.map(_.sicCode1.getOrElse("")),
+          sicCode2 = sicStub.map(_.sicCode2.getOrElse("")),
+          sicCode3 = sicStub.map(_.sicCode3.getOrElse("")),
+          sicCode4 = sicStub.map(_.sicCode4.getOrElse("")),
+          culturalNotForProfit = culturalNotForProfit.map(_.yesNo),
+          labourCompanyProvideWorkers = labourCompanyProvideWorkers.map(_.yesNo),
+          labourWorkers = labourWorkers.map(_.numberOfWorkers.toString),
+          labourTemporaryContracts = labourTemporaryContracts.map(_.yesNo),
+          labourSkilledWorkers = labourSkilledWorkers.map(_.yesNo),
+          financialAdviceOrConsultancy = adviceOrConsultancy.map(_.yesNo.toString),
+          financialActAsIntermediary = actAsIntermediary.map(_.yesNo.toString),
+          financialChargeFees = chargeFees.map(_.yesNo.toString),
+          financialAdditionalNonSecuritiesWork = additionalNonSecuritiesWork.map(_.yesNo.toString),
+          financialDiscretionaryInvestment = discretionaryInvestment.map(_.yesNo.toString),
+          financialLeaseVehiclesOrEquipment = leaseVehiclesOrEquipment.map(_.yesNo.toString),
+          financialInvestmentFundManagement = investmentFundManagement.map(_.yesNo.toString),
+          financialManageAdditionalFunds = manageAdditionalFunds.map(_.yesNo.toString)),
         VatServiceEligibilityTestSetup(
-          eligibility.map(_.haveNino.getOrElse("").toString),
-          eligibility.map(_.doingBusinessAbroad.getOrElse("").toString),
-          eligibility.map(_.doAnyApplyToYou.getOrElse("").toString),
-          eligibility.map(_.applyingForAnyOf.getOrElse("").toString),
-          eligibility.map(_.companyWillDoAnyOf.getOrElse("").toString)),
+          haveNino = eligibility.map(_.haveNino.getOrElse("").toString),
+          doingBusinessAbroad = eligibility.map(_.doingBusinessAbroad.getOrElse("").toString),
+          doAnyApplyToYou = eligibility.map(_.doAnyApplyToYou.getOrElse("").toString),
+          applyingForAnyOf = eligibility.map(_.applyingForAnyOf.getOrElse("").toString),
+          companyWillDoAnyOf = eligibility.map(_.companyWillDoAnyOf.getOrElse("").toString)),
         officerHomeAddress = OfficerHomeAddressTestSetup(
-          officerHomeAddress.flatMap(_.address).map(_.line1),
-          officerHomeAddress.flatMap(_.address).map(_.line2),
-          officerHomeAddress.flatMap(_.address).flatMap(_.line3),
-          officerHomeAddress.flatMap(_.address).flatMap(_.line4),
-          officerHomeAddress.flatMap(_.address).flatMap(_.postcode),
-          officerHomeAddress.flatMap(_.address).flatMap(_.country)),
+          line1 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).map(_.line1),
+          line2 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).map(_.line2),
+          line3 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.line3),
+          line4 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.line4),
+          postcode = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.postcode),
+          country = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.country)),
         vatLodgingOfficer = VatLodgingOfficerTestSetup(
-          officerDateOfBirth.map(_.dob.getDayOfMonth.toString),
-          officerDateOfBirth.map(_.dob.getMonthValue.toString),
-          officerDateOfBirth.map(_.dob.getYear.toString),
-          officerNino.map(_.nino),
-          completionCapacity.map(_.completionCapacity.getOrElse(CompletionCapacity.empty).role),
-          completionCapacity.map(_.completionCapacity.getOrElse(CompletionCapacity.empty).name.forename.getOrElse("")),
-          completionCapacity.map(_.completionCapacity.getOrElse(CompletionCapacity.empty).name.otherForenames.getOrElse("")),
-          completionCapacity.map(_.completionCapacity.getOrElse(CompletionCapacity.empty).name.surname)
+          vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getDayOfMonth.toString),
+          vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getMonthValue.toString),
+          vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getYear.toString),
+          vatLodgingOfficer.flatMap(_.officerNino).map(_.nino),
+          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).map(_.role),
+          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).flatMap(_.name.forename),
+          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).flatMap(_.name.otherForenames),
+          vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).map(_.name.surname)
         )
       )
       form = TestSetupForm.form.fill(testSetup)
     } yield Ok(views.html.pages.test.test_setup(form))
   })
 
+
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     // TODO Special case
     def saveStartDate(data: TestSetup) = {
-      s4LService.saveForm[StartDateView](data.vatChoice.startDateChoice match {
+      s4LService.save[StartDateView](data.vatChoice.startDateChoice match {
         case None => StartDateView()
         case Some("SPECIFIC_DATE") => StartDateView(dateType = "SPECIFIC_DATE", date = Some(LocalDate.of(
           data.vatChoice.startDateYear.map(_.toInt).get,
@@ -190,11 +186,11 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
     }
 
     def saveToS4Later[T: Format : S4LKey](userEntered: Option[String], data: TestSetup, f: TestSetup => T): Future[Unit] =
-      userEntered.map(_ => s4LService.saveForm(f(data)).map(_ => ())).getOrElse(Future.successful(()))
+      userEntered.map(_ => s4LService.save(f(data)).map(_ => ())).getOrElse(Future.successful(()))
 
     TestSetupForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.test.test_setup(formWithErrors)))
+      badForm => {
+        Future.successful(BadRequest(views.html.pages.test.test_setup(badForm)))
       }, {
         data: TestSetup => {
           for {
@@ -249,34 +245,47 @@ class TestSetupController @Inject()(s4LService: S4LService, vatRegistrationConne
                 x.vatServiceEligibility.companyWillDoAnyOf.map(_.toBoolean))
             })
 
-            address = ScrsAddress(data.officerHomeAddress.line1.getOrElse(""),
-              data.officerHomeAddress.line2.getOrElse(""),
-              data.officerHomeAddress.line3,
-              data.officerHomeAddress.line4,
-              data.officerHomeAddress.postcode,
-              data.officerHomeAddress.country)
-            _ <- saveToS4Later(data.officerHomeAddress.line1, data, { x => OfficerHomeAddressView(address.id, Some(address)) })
-
-            _ <- saveToS4Later(data.vatLodgingOfficer.dobDay, data, {
-              x =>
-                OfficerDateOfBirthView(LocalDate.of(
-                  x.vatLodgingOfficer.dobYear.getOrElse("1900").toInt,
-                  x.vatLodgingOfficer.dobMonth.getOrElse("1").toInt,
-                  x.vatLodgingOfficer.dobDay.getOrElse("1").toInt
-                ))
-            })
-
-            _ <- saveToS4Later(data.vatLodgingOfficer.nino, data, { x => OfficerNinoView(x.vatLodgingOfficer.nino.getOrElse("")) })
-
-            completionCapacity = CompletionCapacity(name = Name(data.vatLodgingOfficer.firstname,
-              data.vatLodgingOfficer.othernames,
-              data.vatLodgingOfficer.surname.getOrElse("")),
-              role = data.vatLodgingOfficer.role.getOrElse(""))
-            _ <- saveToS4Later(data.vatLodgingOfficer.role, data, { x => CompletionCapacityView(completionCapacity.name.id, Some(completionCapacity)) })
+            _ <- s4LService.save(vatLodingingOfficerFromData(data))
 
           } yield Ok("Test setup complete")
         }
       })
   })
+
+  private def vatLodingingOfficerFromData(data: TestSetup): S4LVatLodgingOfficer = {
+    val address = ScrsAddress(
+      line1 = data.officerHomeAddress.line1.getOrElse(""),
+      line2 = data.officerHomeAddress.line2.getOrElse(""),
+      line3 = data.officerHomeAddress.line3,
+      line4 = data.officerHomeAddress.line4,
+      postcode = data.officerHomeAddress.postcode,
+      country = data.officerHomeAddress.country)
+
+    val dob = LocalDate.of(
+      data.vatLodgingOfficer.dobYear.getOrElse("1900").toInt,
+      data.vatLodgingOfficer.dobMonth.getOrElse("1").toInt,
+      data.vatLodgingOfficer.dobDay.getOrElse("1").toInt
+    )
+
+    val officer = Officer(name = Name(
+      forename = data.vatLodgingOfficer.firstname,
+      otherForenames = data.vatLodgingOfficer.othernames,
+      surname = data.vatLodgingOfficer.surname.getOrElse("")),
+      role = data.vatLodgingOfficer.role.getOrElse(""),
+      dateOfBirth = DateOfBirth(dob.getDayOfMonth, dob.getMonthValue, dob.getYear)
+    )
+    val completionCapacity = CompletionCapacity(name = Name(data.vatLodgingOfficer.firstname,
+      data.vatLodgingOfficer.othernames,
+      data.vatLodgingOfficer.surname.getOrElse("")),
+      role = data.vatLodgingOfficer.role.getOrElse(""))
+
+    S4LVatLodgingOfficer(
+      officerHomeAddress = Some(OfficerHomeAddressView(address.id, Some(address))),
+      officerDateOfBirth = Some(OfficerDateOfBirthView(dob)),
+      officerNino = Some(OfficerNinoView(data.vatLodgingOfficer.nino.getOrElse(""))),
+      completionCapacity = Some(CompletionCapacityView(completionCapacity)),
+      officerContactDetails = None
+    )
+  }
 
 }

@@ -28,22 +28,16 @@ class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies)
                                                 (implicit s4l: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
-
   val form = BusinessContactDetailsForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[BusinessContactDetails].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatContact.business_contact_details(f)))
-  })
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel2[BusinessContactDetails].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.vatContact.business_contact_details(f))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       copyGlobalErrorsToFields("daytimePhone", "mobile")
         .andThen(form => BadRequest(views.html.pages.vatContact.business_contact_details(form)).pure),
-      s4l.saveForm(_).map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
-    )
-  })
+      s4l.save(_).map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))))
 
 }

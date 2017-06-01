@@ -142,6 +142,14 @@ $(document).ready($(function () {
     }
 }(window.OfficerDOBPage = window.OfficerDOBPage || {}, jQuery));
 
+// FormerNamePage module
+(function (FormerNamePage, $, undefined) {
+    FormerNamePage.init = function() {
+        UI.hideShowOnRadioButton("formerNameRadio",
+            { "#formerNameRadio-true": "#former_name_panel" });
+    }
+}(window.FormerNamePage = window.FormerNamePage || {}, jQuery));
+
 /*
  example of multiple hide/show areas
  UI.hideShowOnRadioButton("startDate",

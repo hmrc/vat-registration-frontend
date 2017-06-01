@@ -24,30 +24,19 @@ import models.view.vatFinancials.EstimateZeroRatedSales
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
-
 class EstimateZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
                                                 (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
+  val form = EstimateZeroRatedSalesForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[EstimateZeroRatedSales].map { vm =>
-      Ok(views.html.pages.vatFinancials.estimate_zero_rated_sales(EstimateZeroRatedSalesForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.vatFinancials.estimate_zero_rated_sales(EstimateZeroRatedSalesForm.form)))
-  })
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel2[EstimateZeroRatedSales].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.vatFinancials.estimate_zero_rated_sales(f))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    EstimateZeroRatedSalesForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.vatFinancials.estimate_zero_rated_sales(formWithErrors)))
-      }, {
-        data: EstimateZeroRatedSales => {
-          s4LService.saveForm[EstimateZeroRatedSales](data) map { _ =>
-            Redirect(controllers.vatFinancials.routes.VatChargeExpectancyController.show())
-          }
-        }
-      })
-  })
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    form.bindFromRequest().fold(
+      badForm => BadRequest(views.html.pages.vatFinancials.estimate_zero_rated_sales(badForm)).pure,
+      goodForm => s4LService.save(goodForm) map (_ =>
+        Redirect(controllers.vatFinancials.routes.VatChargeExpectancyController.show()))))
 
 }

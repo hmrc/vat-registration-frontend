@@ -34,40 +34,32 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
                                              prePopService: PrePopulationService)
   extends VatRegistrationController(ds) with CommonService {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
   import cats.syntax.flatMap._
 
   private val form = CompletionCapacityForm.form
 
-  private def fetchOfficerList()(implicit headerCarrier: HeaderCarrier) =
+  private def fetchOfficerList()(implicit hc: HeaderCarrier) =
     OptionT(keystoreConnector.fetchAndGet[Seq[Officer]](OFFICER_LIST_KEY))
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
       officerList <- prePopService.getOfficerList()
-      _ <- keystoreConnector.cache[Seq[Officer]](OFFICER_LIST_KEY, officerList)
-      res <- viewModel[CompletionCapacityView].fold(form)(form.fill)
-    } yield Ok(views.html.pages.vatLodgingOfficer.completion_capacity(res, officerList))
-  )
+      _ <- keystoreConnector.cache(OFFICER_LIST_KEY, officerList)
+      res <- viewModel[CompletionCapacityView]().fold(form)(form.fill)
+    } yield Ok(views.html.pages.vatLodgingOfficer.completion_capacity(res, officerList)))
 
-  def submit: Action[AnyContent] = authorised.async { implicit user =>
+  def submit: Action[AnyContent] = authorised.async(implicit user =>
     implicit request =>
       form.bindFromRequest().fold(
         badForm => fetchOfficerList().getOrElse(Seq()).map(
           officerList => BadRequest(views.html.pages.vatLodgingOfficer.completion_capacity(badForm, officerList))),
-        (form: CompletionCapacityView) =>
-          (form.id == "other").pure.ifM(
-            Ok(views.html.pages.vatEligibility.ineligible("completionCapacity")).pure
-            ,
-            for {
-              officerSeq <- fetchOfficerList().getOrElse(Seq())
-              officer = officerSeq.find(_.name.id == form.id).getOrElse(Officer.empty)
-              _ <- s4l.saveForm[CompletionCapacityView](CompletionCapacityView(form.id, Some(CompletionCapacity(officer.name, officer.role ))))
-              _ <- keystoreConnector.cache[Officer](REGISTERING_OFFICER_KEY, officer)
-            } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
-          )
-      )
-  }
+        view => (view.id == "other").pure.ifM(
+          ifTrue = Ok(views.html.pages.vatEligibility.ineligible("completionCapacity")).pure,
+          ifFalse = for {
+            officerSeq <- fetchOfficerList().getOrElse(Seq())
+            officer = officerSeq.find(_.name.id == view.id).getOrElse(Officer.empty)
+            _ <- save(CompletionCapacityView(view.id, Some(CompletionCapacity(officer.name, officer.role))))
+            _ <- keystoreConnector.cache(REGISTERING_OFFICER_KEY, officer)
+          } yield Redirect(controllers.vatLodgingOfficer.routes.FormerNameController.show()))))
 
 }

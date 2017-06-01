@@ -99,7 +99,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
 
       when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[CompanyProvideWorkers](any())(any(), any(), any()))
+      when(mockS4LService.save[CompanyProvideWorkers](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapCompanyProvideWorkers))
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -116,7 +116,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
 
       when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
 
-      when(mockS4LService.saveForm[CompanyProvideWorkers](any())(any(), any(), any()))
+      when(mockS4LService.save[CompanyProvideWorkers](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapCompanyProvideWorkers))
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(

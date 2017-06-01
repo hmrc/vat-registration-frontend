@@ -25,12 +25,7 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
-
-  import cats.instances.future._
-  import cats.syntax.applicative._
 
   object ApplyEoriController extends ApplyEoriController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -80,7 +75,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
     "return 303" in {
       val returnCacheMapApplyEori = CacheMap("", Map("" -> Json.toJson(ApplyEori(ApplyEori.APPLY_EORI_YES))))
-      when(mockS4LService.saveForm[ApplyEori](any())(any(), any(), any())).thenReturn(returnCacheMapApplyEori.pure)
+      when(mockS4LService.save[ApplyEori](any())(any(), any(), any())).thenReturn(returnCacheMapApplyEori.pure)
 
       submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_YES)
@@ -95,7 +90,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
     "return 303" in {
       val returnCacheMapApplyEori = CacheMap("", Map("" -> Json.toJson(ApplyEori(ApplyEori.APPLY_EORI_NO))))
-      when(mockS4LService.saveForm[ApplyEori](any())(any(), any(), any())).thenReturn(returnCacheMapApplyEori.pure)
+      when(mockS4LService.save[ApplyEori](any())(any(), any(), any())).thenReturn(returnCacheMapApplyEori.pure)
 
       submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_NO)

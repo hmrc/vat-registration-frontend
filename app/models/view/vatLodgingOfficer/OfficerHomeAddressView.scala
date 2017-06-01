@@ -16,14 +16,21 @@
 
 package models.view.vatLodgingOfficer
 
+import models._
 import models.api.{ScrsAddress, VatLodgingOfficer, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class OfficerHomeAddressView(addressId: String, address: Option[ScrsAddress] = None)
 
 object OfficerHomeAddressView {
+
   implicit val format = Json.format[OfficerHomeAddressView]
+
+  implicit val vmReads = VMReads(
+    readF = (group: S4LVatLodgingOfficer) => group.officerHomeAddress,
+    updateF = (c: OfficerHomeAddressView, g: Option[S4LVatLodgingOfficer]) =>
+      g.getOrElse(S4LVatLodgingOfficer()).copy(officerHomeAddress = Some(c))
+  )
 
   // return a view model from a VatScheme instance
   implicit val modelTransformer = ApiModelTransformer[OfficerHomeAddressView] { vs: VatScheme =>
@@ -33,9 +40,8 @@ object OfficerHomeAddressView {
   }
 
   // return a new or updated VatLodgingOfficer from the CurrentAddressView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerHomeAddressView, g: VatLodgingOfficer) => {
-      c.address.fold(g)(address => g.copy(currentAddress = address))
-    }
+  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerHomeAddressView, g: VatLodgingOfficer) =>
+    c.address.fold(g)(address => g.copy(currentAddress = address))
   }
 
 }

@@ -23,20 +23,14 @@ import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer}
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
+import org.mockito.verification.VerificationMode
 import org.mockito.{Matchers, Mockito}
-import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.cache.client.CacheMap
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
-
-  object TestOfficerHomeAddressController extends OfficerHomeAddressController(ds)(
+  object Controller extends OfficerHomeAddressController(ds)(
     mockS4LService,
     mockVatRegistrationService,
     mockPPService,
@@ -48,7 +42,6 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
   val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())
 
   val address = ScrsAddress(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
-  val dummyCacheMap = CacheMap("", Map.empty)
 
   s"GET ${routes.OfficerHomeAddressController.show()}" should {
 
@@ -56,103 +49,97 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
     mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", dummyCacheMap)
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName)))
-      save4laterReturnsNothing[OfficerHomeAddressView]()
+      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName, formerName, validOfficerContactDetails)))
+      save4laterReturnsNothing2[OfficerHomeAddressView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
-
-      callAuthorised(TestOfficerHomeAddressController.show()) {
+      callAuthorised(Controller.show()) {
         _ includesText "What is your home address"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       val vatScheme = validVatScheme.copy(lodgingOfficer = None)
-      save4laterReturnsNothing[OfficerHomeAddressView]()
+      save4laterReturnsNothing2[OfficerHomeAddressView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
-
-      callAuthorised(TestOfficerHomeAddressController.show()) {
+      callAuthorised(Controller.show()) {
         _ includesText "What is your home address"
       }
     }
+
   }
 
   s"POST ${routes.OfficerHomeAddressController.submit()} with Empty data" should {
 
     "return 400" in {
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", None)
-
-      submitAuthorised(TestOfficerHomeAddressController.submit(), fakeRequest.withFormUrlEncodedBody()
-      )(result => result isA 400)
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
-  }
 
-  s"POST ${routes.OfficerHomeAddressController.submit()} with selected address but no address list in keystore" should {
-
-    "return 303" in {
-      val savedAddressView = OfficerHomeAddressView(address.id, Some(address))
-      val returnOfficerHomeAddressView = CacheMap("", Map("" -> Json.toJson(savedAddressView)))
-
-      when(mockS4LService.saveForm[OfficerHomeAddressView](any())(any(), any(), any()))
-        .thenReturn(returnOfficerHomeAddressView.pure)
-      when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
-      mockKeystoreFetchAndGet("OfficerAddressList", Option.empty[Seq[ScrsAddress]])
-
-      submitAuthorised(
-        TestOfficerHomeAddressController.submit(),
-        fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.id)
-      )(_ redirectsTo s"$contextRoot/business-contact")
-
-    }
   }
 
   s"POST ${routes.OfficerHomeAddressController.submit()} with selected address" should {
 
     "return 303" in {
-      val savedAddressView = OfficerHomeAddressView(address.id, Some(address))
-      val returnOfficerHomeAddressView = CacheMap("", Map("" -> Json.toJson(savedAddressView)))
-
-      when(mockS4LService.saveForm[OfficerHomeAddressView](any())(any(), any(), any())).thenReturn(returnOfficerHomeAddressView.pure)
+      save4laterExpectsSave[OfficerHomeAddressView]()
       when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
+      when(mockVatRegistrationService.submitVatLodgingOfficer()(any())).thenReturn(validLodgingOfficer.pure)
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", Some(Seq(address)))
 
-      submitAuthorised(
-        TestOfficerHomeAddressController.submit(),
+      submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.id)
       )(_ redirectsTo s"$contextRoot/business-contact")
 
+      verify(mockVatRegistrationService).submitVatLodgingOfficer()(any())
     }
+
+  }
+
+  s"POST ${routes.OfficerHomeAddressController.submit()} with selected address but no address list in keystore" should {
+
+    "return 303" in {
+      save4laterExpectsSave[OfficerHomeAddressView]()
+      when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
+      when(mockVatRegistrationService.submitVatLodgingOfficer()(any())).thenReturn(validLodgingOfficer.pure)
+      mockKeystoreFetchAndGet("OfficerAddressList", Option.empty[Seq[ScrsAddress]])
+
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.id)
+      )(_ redirectsTo s"$contextRoot/business-contact")
+
+      verify(mockVatRegistrationService, times(2)).submitVatLodgingOfficer()(any())
+    }
+
   }
 
   s"POST ${routes.OfficerHomeAddressController.submit()} with 'other address' selected" should {
 
     "redirect the user to TxM address capture page" in {
       val savedAddressView = OfficerHomeAddressView(address.id, Some(address))
-      val returnOfficerHomeAddressView = CacheMap("", Map("" -> Json.toJson(savedAddressView)))
 
       when(mockAddressLookupConnector.getOnRampUrl(any[Call])(any(), any())).thenReturn(Call("GET", "TxM").pure)
 
-      submitAuthorised(
-        TestOfficerHomeAddressController.submit(),
+      submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> "other")
       )(_ redirectsTo "TxM")
     }
+
   }
 
 
   s"GET ${routes.OfficerHomeAddressController.acceptFromTxm()}" should {
+
     "save an address and redirect to next page" in {
       Mockito.reset(mockS4LService)
+      save4laterExpectsSave[OfficerHomeAddressView]()
       when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
-      when(mockS4LService.saveForm(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
-
-      callAuthorised(TestOfficerHomeAddressController.acceptFromTxm("addressId")) {
+      callAuthorised(Controller.acceptFromTxm("addressId")) {
         _ redirectsTo s"$contextRoot/business-contact"
       }
 
       val expectedAddressView = OfficerHomeAddressView(address.id, Some(address))
-      verify(mockS4LService, times(1)).saveForm(Matchers.eq(expectedAddressView))(any(), any(), any())
+      verify(mockS4LService, times(1)).updateViewModel(Matchers.eq(expectedAddressView))(any(), any(), any(), any())
     }
-  }
 
+  }
 
 }

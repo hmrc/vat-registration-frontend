@@ -373,12 +373,17 @@ pages.summary.directorContactDetails.mobilePhone       = Mobile number
 ## Summary Page Director details
 pages.summary.directorDetails.sectionHeading           = Director details
 pages.summary.directorDetails.whoIsRegistering         = Who is registering the company for VAT
+pages.summary.directorDetails.formerName               = Former name
+pages.summary.directorDetails.noFormerName             = No former name
 pages.summary.directorDetails.homeAddress              = Home address
 pages.summary.directorDetails.moreThanThreeYears       = Lived at current address for more than 3 years
 pages.summary.directorDetails.previousAddress          = Previous address
 pages.summary.directorDetails.dob                      = Date of birth
 pages.summary.directorDetails.nino                     = National Insurance number
 pages.summary.directorDetails.completionCapacity       = Person registering the company for VAT
+pages.summary.directorDetails.email                    = Email address
+pages.summary.directorDetails.daytimePhone             = Daytime phone number
+pages.summary.directorDetails.mobile                   = Mobile number
 
 
 ##Business Activity Description
@@ -652,3 +657,12 @@ validation.officerContact.missing                        = Enter at least one co
 validation.officerContactDetails.mobile.invalid          = Enter a valid mobile phone number
 validation.officerContactDetails.daytimePhone.invalid    = Enter a valid daytime phone number
 validation.officerContactDetails.email.invalid           = Enter a valid email address
+
+## Former Name
+pages.formerName.title                                   = Director''s Name
+pages.formerName.heading                                 = Have you ever changed your name?
+pages.formerName.p1                                      = You only need to provide former names which have been used for business purposes in the last 20 years.
+pages.formerName.fullName.label                          = Full name
+validation.formerName.missing                            = Tell us if the director has used a different name for business purposes in the last 20 years
+validation.formerName.selected.missing                   = Tell us the director''s former name
+validation.formerName.selected.invalid                   = Enter a valid former name

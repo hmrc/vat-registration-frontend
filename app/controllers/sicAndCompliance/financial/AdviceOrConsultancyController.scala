@@ -25,25 +25,23 @@ import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
 
-import scala.concurrent.Future
-
 
 class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
-                                             (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
-  import cats.instances.future._
+                                             (implicit s4LService: S4LService, vrs: RegistrationService)
+  extends VatRegistrationController(ds) {
 
   val form: Form[AdviceOrConsultancy] = AdviceOrConsultancyForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[AdviceOrConsultancy].fold(form)(form.fill)
+    viewModel2[AdviceOrConsultancy].fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(f)))
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(formWithErrors))),
-      (data: AdviceOrConsultancy) => s4LService.saveForm[AdviceOrConsultancy](data)
-        .map(_ => Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show()))
+      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(badForm)).pure,
+      data => s4LService.save(data).map(_ =>
+        Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show()))
     )
   )
 

@@ -25,30 +25,19 @@ import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService, VatRegistrationService}
 
 class OfficerNinoController @Inject()(ds: CommonPlayDependencies)
-                                     (implicit s4l: S4LService,
-                                      vrs: VatRegistrationService)
+                                     (implicit s4l: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with CommonService {
-
-  import cats.instances.future._
-  import cats.syntax.applicative._
 
   val form = OfficerNinoForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    for {
-      res <- viewModel[OfficerNinoView].fold(form)(form.fill)
-    } yield Ok(views.html.pages.vatLodgingOfficer.officer_nino(res))
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel[OfficerNinoView]().fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_nino(f))))
 
-  })
-
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      formWithErrors => BadRequest(views.html.pages.vatLodgingOfficer.officer_nino(formWithErrors)).pure,
-      data => {
-        s4l.saveForm[OfficerNinoView](data) map { _ =>
-          Redirect(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
-        }
-      }
-    )
-  })
+      badForm => BadRequest(views.html.pages.vatLodgingOfficer.officer_nino(badForm)).pure,
+      data => save(data).map(_ =>
+        Redirect(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show()))))
+
 }

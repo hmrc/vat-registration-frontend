@@ -25,26 +25,19 @@ import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
 class TradingNameController @Inject()(ds: CommonPlayDependencies)
-                                     (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService) extends VatRegistrationController(ds) {
-
-  import cats.instances.future._
-  import cats.syntax.applicative._
+                                     (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService)
+  extends VatRegistrationController(ds) {
 
   val form = TradingNameForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[TradingNameView].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatTradingDetails.trading_name(f)))
-  })
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel2[TradingNameView].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.vatTradingDetails.trading_name(f))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.vatTradingDetails.trading_name(badForm)).pure
-      ,
-      (data: TradingNameView) => s4LService.saveForm[TradingNameView](data) map { _ =>
-        Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
-      }
-    )
-  })
+      badForm => BadRequest(views.html.pages.vatTradingDetails.trading_name(badForm)).pure,
+      goodForm => s4LService.save(goodForm).map(_ =>
+        Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()))))
 
 }

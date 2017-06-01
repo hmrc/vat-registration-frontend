@@ -36,8 +36,6 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
                                              val alfConnector: AddressLookupConnect)
   extends VatRegistrationController(ds) with CommonService {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
   import cats.syntax.flatMap._
 
   private val form = OfficerHomeAddressForm.form
@@ -50,34 +48,29 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
     for {
       addresses <- prePopService.getOfficerAddressList()
       _ <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
-      res <- viewModel[OfficerHomeAddressView].fold(form)(form.fill)
+      res <- viewModel[OfficerHomeAddressView]().fold(form)(form.fill)
     } yield Ok(views.html.pages.vatLodgingOfficer.officer_home_address(res, addresses))
   )
 
-  def submit: Action[AnyContent] = authorised.async { implicit user =>
-    implicit request =>
-      form.bindFromRequest().fold(
-        badForm => fetchAddressList().getOrElse(Seq()).map(
-          addressList => BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(badForm, addressList))),
-        (form: OfficerHomeAddressView) =>
-          (form.addressId == "other").pure.ifM(
-            alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm())
-            ,
-            for {
-              addressList <- fetchAddressList().getOrElse(Seq())
-              address = addressList.find(_.id == form.addressId)
-              _ <- s4l.saveForm(OfficerHomeAddressView(form.addressId, address))
-            } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
-          ).map(Redirect))
-  }
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    form.bindFromRequest().fold(
+      badForm => fetchAddressList().getOrElse(Seq()).map(
+        addressList => BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(badForm, addressList))),
+      data => (data.addressId == "other").pure.ifM(
+        alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm()),
+        for {
+          addressList <- fetchAddressList().getOrElse(Seq())
+          address = addressList.find(_.id == data.addressId)
+          _ <- save(OfficerHomeAddressView(data.addressId, address))
+          _ <- vrs.submitVatLodgingOfficer()
+        } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
+      ).map(Redirect)))
 
 
-  def acceptFromTxm(id: String): Action[AnyContent] = authorised.async { implicit user =>
-    implicit request =>
-      alfConnector.getAddress(id).flatMap { address =>
-        Logger.debug(s"address received: $address")
-        s4l.saveForm(OfficerHomeAddressView(address.id, Some(address)))
-      }.map(_ => Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show()))
-  }
+  def acceptFromTxm(id: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    alfConnector.getAddress(id).flatMap { address =>
+      Logger.debug(s"address received: $address")
+      save(OfficerHomeAddressView(address.id, Some(address)))
+    }.map(_ => Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())))
 
 }

@@ -116,7 +116,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return 303" in {
       val returnCacheMapEuGoods = CacheMap("", Map("" -> Json.toJson(EuGoods(EuGoods.EU_GOODS_YES))))
 
-      when(mockS4LService.saveForm[EuGoods]
+      when(mockS4LService.save[EuGoods]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapEuGoods))
 
@@ -135,7 +135,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return 303" in {
       val returnCacheMapEuGoods = CacheMap("", Map("" -> Json.toJson(EuGoods(EuGoods.EU_GOODS_NO))))
 
-      when(mockS4LService.saveForm[EuGoods]
+      when(mockS4LService.save[EuGoods]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapEuGoods))
 

@@ -98,7 +98,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
     "return 303" in {
       val returnCacheMapAdviceOrConsultancy = CacheMap("", Map("" -> Json.toJson(AdviceOrConsultancy(true))))
 
-      when(mockS4LService.saveForm[AdviceOrConsultancy]
+      when(mockS4LService.save[AdviceOrConsultancy]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAdviceOrConsultancy))
 
@@ -117,7 +117,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
     "return 303" in {
       val returnCacheMapAdviceOrConsultancy = CacheMap("", Map("" -> Json.toJson(AdviceOrConsultancy(false))))
 
-      when(mockS4LService.saveForm[AdviceOrConsultancy]
+      when(mockS4LService.save[AdviceOrConsultancy]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAdviceOrConsultancy))
 

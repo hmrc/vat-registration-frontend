@@ -26,39 +26,26 @@ import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
 
-import scala.concurrent.Future
-
 
 class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPlayDependencies)
-                                                                   (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
+                                                                   (implicit s4LService: S4LService, vrs: RegistrationService)
+  extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
+  import cats.syntax.flatMap._
 
   val form: Form[DiscretionaryInvestmentManagementServices] = DiscretionaryInvestmentManagementServicesForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[DiscretionaryInvestmentManagementServices].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(f)))
-  )
+    viewModel2[DiscretionaryInvestmentManagementServices].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(formWithErrors)))
-      }, {
-        data: DiscretionaryInvestmentManagementServices => {
-          s4LService.saveForm[DiscretionaryInvestmentManagementServices](data) flatMap { _ =>
-            if (!data.yesNo) {
-              Future.successful(Redirect(controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show()))
-            } else {
-              vrs.deleteElements(ElementPath.finCompElementPaths.drop(3)).map { _ =>
-                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
-              }
-            }
-          }
-        }
-      }
-    )
-  )
+      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(badForm)).pure,
+      data => s4LService.save(data).map(_ => data.yesNo).ifM(
+        vrs.deleteElements(ElementPath.finCompElementPaths.drop(3)).map(_ =>
+          controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()),
+        controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show().pure
+      ).map(Redirect)))
 
 }

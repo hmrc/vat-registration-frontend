@@ -26,8 +26,7 @@ class WelcomeController @Inject()(vatRegistrationService: RegistrationService, d
   //access to root of application should by default direct the user to the proper URL for start of VAT registration
   def show: Action[AnyContent] = Action(implicit request => Redirect(routes.WelcomeController.start()))
 
-  def start: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    vatRegistrationService.createRegistrationFootprint().map(_ => Ok(views.html.pages.welcome()))
-  })
+  def start: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    vatRegistrationService.createRegistrationFootprint().map(_ => Ok(views.html.pages.welcome())))
 
 }

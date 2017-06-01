@@ -18,11 +18,11 @@ package models.view.vatLodgingOfficer
 
 import java.time.LocalDate
 
-import models.api._
-import models.{ApiModelTransformer, DateModel, ViewModelTransformer}
+import models.api.{DateOfBirth, VatLodgingOfficer, VatScheme, _}
+import models.{ApiModelTransformer, DateModel, ViewModelTransformer, _}
 import play.api.libs.json.Json
 
-case class OfficerDateOfBirthView(dob: LocalDate, officerName : Option[Name] = None)
+case class OfficerDateOfBirthView(dob: LocalDate, officerName: Option[Name] = None)
 
 object OfficerDateOfBirthView {
 
@@ -32,18 +32,22 @@ object OfficerDateOfBirthView {
 
   implicit val format = Json.format[OfficerDateOfBirthView]
 
+  implicit val vmReads = VMReads(
+    readF = (group: S4LVatLodgingOfficer) => group.officerDateOfBirth,
+    updateF = (c: OfficerDateOfBirthView, g: Option[S4LVatLodgingOfficer]) =>
+      g.getOrElse(S4LVatLodgingOfficer()).copy(officerDateOfBirth = Some(c))
+  )
+
   // return a view model from a VatScheme instance
-  implicit val modelTransformer = ApiModelTransformer[OfficerDateOfBirthView] {
-    vs: VatScheme =>
+  implicit val modelTransformer = ApiModelTransformer[OfficerDateOfBirthView] { vs: VatScheme =>
     vs.lodgingOfficer.map {
-      lodgingOfficer =>  OfficerDateOfBirthView(lodgingOfficer.dob, Some(lodgingOfficer.name))
+      lodgingOfficer => OfficerDateOfBirthView(lodgingOfficer.dob, Some(lodgingOfficer.name))
     }
   }
 
   // return a new or updated VatLodgingOfficer from the CurrentAddressView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerDateOfBirthView, g: VatLodgingOfficer) => {
-      g.copy(dob = DateOfBirth(c.dob.getDayOfMonth, c.dob.getMonthValue, c.dob.getYear))
-    }
+  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerDateOfBirthView, g: VatLodgingOfficer) =>
+    g.copy(dob = DateOfBirth(c.dob.getDayOfMonth, c.dob.getMonthValue, c.dob.getYear))
   }
 
 }

@@ -102,7 +102,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return 303" in {
       val returnCacheMapChargeFees = CacheMap("", Map("" -> Json.toJson(ChargeFees(true))))
 
-      when(mockS4LService.saveForm[ChargeFees]
+      when(mockS4LService.save[ChargeFees]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapChargeFees))
 
@@ -121,7 +121,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return 303" in {
       val returnCacheMapChargeFees = CacheMap("", Map("" -> Json.toJson(ChargeFees(false))))
 
-      when(mockS4LService.saveForm[ChargeFees]
+      when(mockS4LService.save[ChargeFees]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapChargeFees))
 

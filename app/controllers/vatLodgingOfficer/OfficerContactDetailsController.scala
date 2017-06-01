@@ -20,40 +20,34 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerContactDetailsForm
-import models.view.vatLodgingOfficer.{OfficerContactDetails, OfficerNinoView}
+import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
+import controllers.vatTradingDetails.vatChoice.{routes => vatChoiceRoutes}
 
 class OfficerContactDetailsController @Inject()(ds: CommonPlayDependencies)
                                                (implicit s4l: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
   import cats.syntax.flatMap._
 
   val form = OfficerContactDetailsForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[OfficerContactDetails].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_contact_details(f)))
-  })
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel[OfficerContactDetailsView]().fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_contact_details(f))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       copyGlobalErrorsToFields("email", "daytimePhone", "mobile")
         .andThen(form => BadRequest(views.html.pages.vatLodgingOfficer.officer_contact_details(form)).pure),
-      data => {
-        s4l.saveForm[OfficerContactDetails](data) flatMap {
-          _ => viewModel[VoluntaryRegistration]
-            .map(_ == VoluntaryRegistration.yes).getOrElse(true).ifM(
-            controllers.vatTradingDetails.vatChoice.routes.StartDateController.show().pure,
-            controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show().pure
-          ).map(Redirect)
-        }
-      }
-    )
-  })
+      view => (for {
+        _ <- save[OfficerContactDetailsView](view)
+        optVR <- viewModel2[VoluntaryRegistration].value
+      } yield optVR.fold(true)(_ == VoluntaryRegistration.yes)).ifM(
+        ifTrue = vatChoiceRoutes.StartDateController.show().pure,
+        ifFalse = vatChoiceRoutes.MandatoryStartDateController.show().pure
+      ).map(Redirect)))
 
 }

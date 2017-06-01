@@ -97,13 +97,13 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
       val returnCacheMapVoluntaryRegistration = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration(VoluntaryRegistration.REGISTER_NO))))
       val returnCacheMapStartDate = CacheMap("", Map("" -> Json.toJson(StartDateView(dateType = StartDateView.COMPANY_REGISTRATION_DATE))))
 
-      when(mockS4LService.saveForm[TaxableTurnover](any())(any(), any(), any()))
+      when(mockS4LService.save[TaxableTurnover](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapTaxableTurnover))
 
-      when(mockS4LService.saveForm[VoluntaryRegistration](any())(any(), any(), any()))
+      when(mockS4LService.save[VoluntaryRegistration](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapVoluntaryRegistration))
 
-      when(mockS4LService.saveForm[StartDateView](any())(any(), any(), any()))
+      when(mockS4LService.save[StartDateView](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMapStartDate))
 
       submitAuthorised(TestTaxableTurnoverController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -118,7 +118,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TaxableTurnover(TaxableTurnover.TAXABLE_NO))))
 
-      when(mockS4LService.saveForm[TaxableTurnover](any())(any(), any(), any()))
+      when(mockS4LService.save[TaxableTurnover](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       submitAuthorised(TestTaxableTurnoverController.submit(), fakeRequest.withFormUrlEncodedBody(

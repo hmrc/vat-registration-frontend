@@ -18,24 +18,15 @@ package controllers.vatLodgingOfficer
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.view.vatLodgingOfficer.OfficerContactDetails
+import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  import cats.instances.future._
-  import cats.syntax.applicative._
-
-  object TestOfficerContactDetailsController extends OfficerContactDetailsController(ds)(mockS4LService, mockVatRegistrationService) {
+  object Controller extends OfficerContactDetailsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -44,31 +35,28 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
   s"GET ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show()}" should {
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing[OfficerContactDetails]()
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-        .thenReturn(Future.successful(validVatScheme))
+      save4laterReturnsNothing2[OfficerContactDetailsView]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
-      callAuthorised(TestOfficerContactDetailsController.show()) {
+      callAuthorised(Controller.show()) {
         _ includesText "What are your contact details?"
       }
     }
 
 
     "return HTML when there's an answer in S4L" in {
-      save4laterReturns(validOfficerContactDetails)
+      save4laterReturns2(validOfficerContactDetailsView)()
 
-      callAuthorised(TestOfficerContactDetailsController.show) {
+      callAuthorised(Controller.show) {
         _ includesText "What are your contact details?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing[OfficerContactDetails]()
+      save4laterReturnsNothing2[OfficerContactDetailsView]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-        .thenReturn(Future.successful(emptyVatScheme))
-
-      callAuthorised(TestOfficerContactDetailsController.show) {
+      callAuthorised(Controller.show) {
         _ includesText "What are your contact details?"
       }
     }
@@ -77,39 +65,35 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
   s"POST ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.submit()} with Empty data" should {
 
     "return 400" in {
-      submitAuthorised(TestOfficerContactDetailsController.submit(), fakeRequest.withFormUrlEncodedBody()
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
     }
+
   }
 
   s"POST ${routes.OfficerContactDetailsController.submit()} with valid Officer Contact Details entered and default Voluntary Reg = Yes" should {
 
     "return 303" in {
-      val returnOfficerContactDetails = CacheMap("", Map("" -> Json.toJson(validOfficerContactDetails)))
       save4laterReturns(VoluntaryRegistration.yes)
+      save4laterExpectsSave[OfficerContactDetailsView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
-      when(mockS4LService.saveForm[OfficerContactDetails](any())(any(), any(), any())).thenReturn(returnOfficerContactDetails.pure)
 
-      submitAuthorised(TestOfficerContactDetailsController.submit(),
+      submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com")
       )(_ redirectsTo s"$contextRoot/start-date")
-
     }
   }
 
   s"POST ${routes.OfficerContactDetailsController.submit()} with valid Officer Contact Details entered and default Voluntary Reg = No" should {
 
     "return 303" in {
-      val returnOfficerContactDetails = CacheMap("", Map("" -> Json.toJson(OfficerContactDetails(None,None,None))))
-      when(mockS4LService.saveForm[OfficerContactDetails](any())(any(), any(), any()))
-        .thenReturn(returnOfficerContactDetails.pure)
+      save4laterExpectsSave[OfficerContactDetailsView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
       save4laterReturns(VoluntaryRegistration.no)
 
-      submitAuthorised(TestOfficerContactDetailsController.submit(),
+      submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com")
       )(_ redirectsTo s"$contextRoot/start-date-confirmation")
-
     }
   }
 
@@ -117,14 +101,11 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
   s"POST ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.submit()} with valid Officer Contact Details entered and no Voluntary Reg present" should {
 
     "return 303" in {
-      val returnCacheMapOfficerContactDetails = CacheMap("", Map("" -> Json.toJson(validOfficerContactDetails)))
-
-      when(mockS4LService.saveForm[OfficerContactDetails](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMapOfficerContactDetails))
+      save4laterExpectsSave[OfficerContactDetailsView]()
       save4laterReturnsNothing[VoluntaryRegistration]()
 
       submitAuthorised(
-        TestOfficerContactDetailsController.submit(),
+        Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com")
       )(_ redirectsTo s"$contextRoot/start-date")
 

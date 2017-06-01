@@ -113,7 +113,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     "return 303" in {
       val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.JAN_APR_JUL_OCT))))
 
-      when(mockS4LService.saveForm[AccountingPeriod]
+      when(mockS4LService.save[AccountingPeriod]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
 
@@ -133,7 +133,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     "return 303" in {
       val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.FEB_MAY_AUG_NOV))))
 
-      when(mockS4LService.saveForm[AccountingPeriod]
+      when(mockS4LService.save[AccountingPeriod]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
 
@@ -153,7 +153,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     "return 303" in {
       val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.MAR_JUN_SEP_DEC))))
 
-      when(mockS4LService.saveForm[AccountingPeriod]
+      when(mockS4LService.save[AccountingPeriod]
         (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
 

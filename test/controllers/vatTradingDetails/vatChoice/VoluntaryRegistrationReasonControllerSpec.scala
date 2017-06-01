@@ -107,7 +107,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistrationReason.sells)))
 
-      when(mockS4LService.saveForm[VoluntaryRegistrationReason](any())(any(), any(), any()))
+      when(mockS4LService.save[VoluntaryRegistrationReason](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -121,7 +121,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
     "return 303" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistrationReason.intendsToSell)))
 
-      when(mockS4LService.saveForm[VoluntaryRegistrationReason](any())(any(), any(), any()))
+      when(mockS4LService.save[VoluntaryRegistrationReason](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -136,7 +136,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistrationReason.neither)))
 
       when(mockS4LService.clear()(any())).thenReturn(Future.successful(validHttpResponse))
-      when(mockS4LService.saveForm[VoluntaryRegistrationReason](any())(any(), any(), any()))
+      when(mockS4LService.save[VoluntaryRegistrationReason](any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
       when(mockVatRegistrationService.deleteVatScheme()(any())).thenReturn(Future.successful(()))
 

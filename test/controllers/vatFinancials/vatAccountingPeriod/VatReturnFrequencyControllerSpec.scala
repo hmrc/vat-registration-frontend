@@ -28,12 +28,7 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
-
-  import cats.instances.future._
-  import cats.syntax.applicative._
 
   object TestVatReturnFrequencyController extends VatReturnFrequencyController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -87,8 +82,8 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       val returnCacheMapVatReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.MONTHLY))))
       val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(""))))
 
-      when(mockS4LService.saveForm[VatReturnFrequency](any())(any(), any(), any())).thenReturn(returnCacheMapVatReturnFrequency.pure)
-      when(mockS4LService.saveForm[AccountingPeriod](any())(any(), any(), any())).thenReturn(returnCacheMapAccountingPeriod.pure)
+      when(mockS4LService.save[VatReturnFrequency](any())(any(), any(), any())).thenReturn(returnCacheMapVatReturnFrequency.pure)
+      when(mockS4LService.save[AccountingPeriod](any())(any(), any(), any())).thenReturn(returnCacheMapAccountingPeriod.pure)
       when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
 
       submitAuthorised(TestVatReturnFrequencyController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -104,8 +99,8 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.QUARTERLY))))
       val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.FEB_MAY_AUG_NOV))))
 
-      when(mockS4LService.saveForm[VatReturnFrequency](any())(any(), any(), any())).thenReturn(returnCacheMap.pure)
-      when(mockS4LService.saveForm[AccountingPeriod](any())(any(), any(), any())).thenReturn(returnCacheMapAccountingPeriod.pure)
+      when(mockS4LService.save[VatReturnFrequency](any())(any(), any(), any())).thenReturn(returnCacheMap.pure)
+      when(mockS4LService.save[AccountingPeriod](any())(any(), any(), any())).thenReturn(returnCacheMapAccountingPeriod.pure)
 
       submitAuthorised(TestVatReturnFrequencyController.submit(), fakeRequest.withFormUrlEncodedBody(
         VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.QUARTERLY

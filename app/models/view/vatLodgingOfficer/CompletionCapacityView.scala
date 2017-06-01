@@ -17,7 +17,7 @@
 package models.view.vatLodgingOfficer
 
 import models.api.{CompletionCapacity, VatLodgingOfficer, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, ViewModelTransformer, _}
 import play.api.libs.json.Json
 
 case class CompletionCapacityView(id: String, completionCapacity: Option[CompletionCapacity] = None)
@@ -27,6 +27,12 @@ object CompletionCapacityView {
   def apply(cc: CompletionCapacity): CompletionCapacityView = new CompletionCapacityView(cc.name.id, Some(cc))
 
   implicit val format = Json.format[CompletionCapacityView]
+
+  implicit val vmReads = VMReads(
+    readF = (group: S4LVatLodgingOfficer) => group.completionCapacity,
+    updateF = (c: CompletionCapacityView, g: Option[S4LVatLodgingOfficer]) =>
+      g.getOrElse(S4LVatLodgingOfficer()).copy(completionCapacity = Some(c))
+  )
 
   // return a view model from a VatScheme instance
   implicit val modelTransformer = ApiModelTransformer[CompletionCapacityView] { vs: VatScheme =>

@@ -16,31 +16,22 @@
 
 package controllers.vatFinancials
 
-import builders.AuthBuilder
 import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatFinancials.VatChargeExpectancy
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
-class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationFixture {
-
+class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object TestVatChargeExpectancyController extends VatChargeExpectancyController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
-
-  import cats.instances.future._
-  import cats.syntax.applicative._
 
   val fakeRequest = FakeRequest(vatFinancials.routes.VatChargeExpectancyController.show())
 
@@ -48,10 +39,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return HTML when there's a Vat Charge Expectancy model in S4L" in {
       val vatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
-
-      when(mockS4LService.fetchAndGet[VatChargeExpectancy]()(any(), any(), any()))
-        .thenReturn(Some(vatChargeExpectancy).pure)
-
+      save4laterReturns(vatChargeExpectancy)
       submitAuthorised(TestVatChargeExpectancyController.show(), fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> ""
       )) {
@@ -60,9 +48,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[VatChargeExpectancy]()
-        (Matchers.eq(S4LKey[VatChargeExpectancy]), any(), any())).thenReturn(None.pure)
-
+      save4laterReturnsNothing[VatChargeExpectancy]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(TestVatChargeExpectancyController.show) {
@@ -71,9 +57,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockS4LService.fetchAndGet[VatChargeExpectancy]()
-        (Matchers.eq(S4LKey[VatChargeExpectancy]), any(), any())).thenReturn(None.pure)
-
+      save4laterReturnsNothing[VatChargeExpectancy]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(TestVatChargeExpectancyController.show) {
@@ -96,7 +80,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return 303" in {
       val returnCacheMapVatChargeExpectancy = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES))))
-      when(mockS4LService.saveForm[VatChargeExpectancy](any())(any(), any(), any())).thenReturn(returnCacheMapVatChargeExpectancy.pure)
+      when(mockS4LService.save[VatChargeExpectancy](any())(any(), any(), any())).thenReturn(returnCacheMapVatChargeExpectancy.pure)
 
       submitAuthorised(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_YES
@@ -113,8 +97,8 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_NO))))
       val returnCacheMapReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.MONTHLY))))
 
-      when(mockS4LService.saveForm[VatChargeExpectancy](any())(any(), any(), any())).thenReturn(returnCacheMap.pure)
-      when(mockS4LService.saveForm[VatReturnFrequency](any())(any(), any(), any())).thenReturn(returnCacheMapReturnFrequency.pure)
+      when(mockS4LService.save[VatChargeExpectancy](any())(any(), any(), any())).thenReturn(returnCacheMap.pure)
+      when(mockS4LService.save[VatReturnFrequency](any())(any(), any(), any())).thenReturn(returnCacheMapReturnFrequency.pure)
 
       submitAuthorised(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_NO

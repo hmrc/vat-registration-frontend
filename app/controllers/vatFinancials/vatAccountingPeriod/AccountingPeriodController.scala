@@ -24,31 +24,20 @@ import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
-
 
 class AccountingPeriodController @Inject()(ds: CommonPlayDependencies)
-                                          (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+                                          (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) {
 
-  import cats.instances.future._
+  val form = AccountingPeriodForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel[AccountingPeriod].map { vm =>
-      Ok(views.html.pages.vatFinancials.vatAccountingPeriod.accounting_period(AccountingPeriodForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.vatFinancials.vatAccountingPeriod.accounting_period(AccountingPeriodForm.form)))
-  })
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel2[AccountingPeriod].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.vatFinancials.vatAccountingPeriod.accounting_period(f))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    AccountingPeriodForm.form.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.pages.vatFinancials.vatAccountingPeriod.accounting_period(formWithErrors)))
-      }, {
-        data: AccountingPeriod => {
-          s4LService.saveForm(data) map { _ =>
-            Redirect(controllers.routes.SummaryController.show())
-          }
-        }
-      })
-  })
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    form.bindFromRequest().fold(
+      badForm => BadRequest(views.html.pages.vatFinancials.vatAccountingPeriod.accounting_period(badForm)).pure,
+      data => s4LService.save(data) map (_ => Redirect(controllers.routes.SummaryController.show()))))
 
 }

@@ -16,9 +16,11 @@
 
 package models.view.vatLodgingOfficer
 
+import java.time.LocalDate
+
 import fixtures.VatRegistrationFixture
-import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.api.{DateOfBirth, Name, ScrsAddress, VatLodgingOfficer}
+import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelTransformer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -26,18 +28,20 @@ import uk.gov.hmrc.play.test.UnitSpec
 class OfficerHomeAddressViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
 
-  "toApi" should {
+  "ViewModelTransformer" should {
     val initialLodgingOfficer = VatLodgingOfficer(
       currentAddress = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode")),
       dob = DateOfBirth.empty,
       nino = "",
       role = "director",
-      name = officerName)
+      name = officerName,
+      formerName = formerName,
+      contact = validOfficerContactDetails)
 
     val newAddress = ScrsAddress(line1 = "new", line2 = "address", postcode = Some("postcode"))
     val officerHomeAddressView = OfficerHomeAddressView(newAddress.id, Some(newAddress))
 
-    val updatedVatLodgingOfficer = VatLodgingOfficer(newAddress, DateOfBirth.empty, "", "director", officerName)
+    val updatedVatLodgingOfficer = VatLodgingOfficer(newAddress, DateOfBirth.empty, "", "director", officerName, formerName, validOfficerContactDetails)
 
     "update VatLodgingOfficer with new current address" in {
       ViewModelTransformer[OfficerHomeAddressView, VatLodgingOfficer]
@@ -45,7 +49,7 @@ class OfficerHomeAddressViewSpec extends UnitSpec with VatRegistrationFixture wi
     }
   }
 
-  "apply" should {
+  "ApiModelTransformer" should {
 
     "convert VatScheme without VatLodgingOfficer to empty view model" in {
       val vs = vatScheme().copy(lodgingOfficer = None)
@@ -54,12 +58,33 @@ class OfficerHomeAddressViewSpec extends UnitSpec with VatRegistrationFixture wi
 
     "convert VatScheme with VatLodgingOfficer section to view model" in {
       val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
-      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName)
+      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName, formerName, validOfficerContactDetails)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       val expectedOfficerHomeAddressView = OfficerHomeAddressView(address.id, Some(address))
 
       ApiModelTransformer[OfficerHomeAddressView].toViewModel(vs) shouldBe Some(expectedOfficerHomeAddressView)
+    }
+  }
+
+
+  "VMReads" should {
+    val testAddress = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
+    val testAddressView = OfficerHomeAddressView(testAddress.id, Some(testAddress))
+    val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(officerHomeAddress = Some(testAddressView))
+
+    "extract OfficerHomeAddressView from lodgingOfficer" in {
+      OfficerHomeAddressView.vmReads.read(s4LVatLodgingOfficer) shouldBe Some(testAddressView)
+    }
+
+    "update empty lodgingOfficer with OfficerHomeAddressView" in {
+      OfficerHomeAddressView.vmReads.udpate(testAddressView, Option.empty[S4LVatLodgingOfficer]).
+        officerHomeAddress shouldBe Some(testAddressView)
+    }
+
+    "update non-empty lodgingOfficer with OfficerHomeAddressView" in {
+      OfficerHomeAddressView.vmReads.udpate(testAddressView, Some(s4LVatLodgingOfficer)).
+        officerHomeAddress shouldBe Some(testAddressView)
     }
   }
 }

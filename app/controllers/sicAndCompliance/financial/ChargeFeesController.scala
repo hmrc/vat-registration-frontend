@@ -25,27 +25,20 @@ import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
 
-import scala.concurrent.Future
-
 
 class ChargeFeesController @Inject()(ds: CommonPlayDependencies)
                                     (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
-  import cats.instances.future._
-
   val form: Form[ChargeFees] = ChargeFeesForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[ChargeFees].fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.charge_fees(f)))
-  )
+    viewModel2[ChargeFees].fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.sicAndCompliance.financial.charge_fees(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      (formWithErrors) => Future.successful(BadRequest(views.html.pages.sicAndCompliance.financial.charge_fees(formWithErrors))),
-      (data: ChargeFees) => s4LService.saveForm[ChargeFees](data)
-        .map(_ => Redirect(controllers.sicAndCompliance.financial.routes.AdditionalNonSecuritiesWorkController.show()))
-    )
-  )
+      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.charge_fees(badForm)).pure,
+      data => s4LService.save(data).map(_ =>
+        Redirect(controllers.sicAndCompliance.financial.routes.AdditionalNonSecuritiesWorkController.show()))))
 
 }
 

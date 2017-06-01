@@ -17,7 +17,7 @@
 package forms.vatLodgingOfficer
 
 import forms.FormValidation._
-import models.view.vatLodgingOfficer.OfficerContactDetails
+import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
@@ -41,11 +41,11 @@ object OfficerContactDetailsForm {
       EMAIL -> optional(text.verifying(regexPattern(EMAIL_PATTERN)(s"$FORM_NAME.$EMAIL"))),
       DAYTIME_PHONE -> optional(text.verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$DAYTIME_PHONE"))),
       MOBILE -> optional(text.verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$MOBILE")))
-    )(OfficerContactDetails.apply)(OfficerContactDetails.unapply).verifying(atLeastOneContactDetail)
+    )(OfficerContactDetailsView.apply)(OfficerContactDetailsView.unapply).verifying(atLeastOneContactDetail)
   )
 
-  def atLeastOneContactDetail: Constraint[OfficerContactDetails] = Constraint {
-    case OfficerContactDetails(None, None, None) =>
+  def atLeastOneContactDetail: Constraint[OfficerContactDetailsView] = Constraint {
+    case OfficerContactDetailsView(None, None, None) =>
       Invalid(Seq(EMAIL,MOBILE,DAYTIME_PHONE).map(validationError))
     case _ => Valid
   }
