@@ -40,7 +40,7 @@ class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
 
   def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request =>
     for {
-      officer <- fetchOfficer().getOrElse(Officer.empty)
+      officer <- fetchOfficer().getOrElse(Officer.empty) // TODO: getOrElse(Officer.empty) ??
       res <- viewModel[OfficerDateOfBirthView]().
           fold(officer.dateOfBirth.fold(form)(dob =>
             form.fill(OfficerDateOfBirthView(dob)))) {
