@@ -26,6 +26,7 @@ import com.google.inject.ImplementedBy
 import connectors.{OptionalResponse, PPConnector}
 import models.api._
 import models.external.Officer
+import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerView}
 import models.{ApiModelTransformer, S4LVatLodgingOfficer}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -87,11 +88,19 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
                                                 month = dobView.dob.getMonthValue,
                                                 year = dobView.dob.getYear))))))
 
+    // BE
+    val officerFromBE: OptionT[Future, Officer] =
+      OptionT(vrs.getVatScheme() map
+          ApiModelTransformer[OfficerView].toViewModel).map(_.officer)
+
+
     val s4lFutureList = officerFromS4L.fold(Seq.empty[Officer])(Seq(_))
+    val beFutureList = officerFromBE.fold(Seq.empty[Officer])(Seq(_))
     for {
       listFromII <- officerListFromII
       officerS4l <- s4lFutureList
-    } yield (listFromII ++ officerS4l).distinct
+      officerBE <- beFutureList
+    } yield (listFromII ++ officerS4l ++ officerBE).distinct
 
   }
 
