@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package models.api
+package models.external
 
+import models.api.{DateOfBirth, Name}
 import org.joda.time.DateTime
 import play.api.libs.functional.syntax._
 import play.api.libs.json._

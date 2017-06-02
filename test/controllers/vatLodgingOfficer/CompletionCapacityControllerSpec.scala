@@ -20,7 +20,7 @@ import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.ModelKeys.REGISTERING_OFFICER_KEY
-import models.api.Officer
+import models.external.Officer
 import models.view.vatLodgingOfficer.CompletionCapacityView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when

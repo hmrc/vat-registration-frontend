@@ -17,6 +17,7 @@
 package models.api
 
 import fixtures.VatRegistrationFixture
+import models.external.{Officer, OfficerList}
 import play.api.libs.json.{JsSuccess, JsValue, Json, __}
 import uk.gov.hmrc.play.test.UnitSpec
 

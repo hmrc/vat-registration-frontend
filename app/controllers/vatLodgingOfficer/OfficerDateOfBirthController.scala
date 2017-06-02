@@ -22,7 +22,7 @@ import cats.data.OptionT
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerDateOfBirthForm
 import models.ModelKeys._
-import models.api.Officer
+import models.external.Officer
 import models.view.vatLodgingOfficer.OfficerDateOfBirthView
 import play.api.mvc._
 import services.{CommonService, S4LService, VatRegistrationService}
