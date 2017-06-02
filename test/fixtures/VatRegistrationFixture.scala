@@ -104,12 +104,15 @@ trait VatRegistrationFixture {
   val validOfficerContactDetailsView = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
   val validOfficerContactDetails = OfficerContactDetails(Some("test@test.com"), None, None)
   val formerName = FormerName(selection = true, formerName = Some("Bubbly Bobbings"))
+  val currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(ScrsAddress("", "")))
+
   val validLodgingOfficer = VatLodgingOfficer(
     ScrsAddress("", ""),
     DateOfBirth.empty,
     "", "director",
     officerName,
     formerName,
+    currentOrPreviousAddress,
     validOfficerContactDetails
   )
 
