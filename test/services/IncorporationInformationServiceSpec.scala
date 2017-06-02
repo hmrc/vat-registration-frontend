@@ -20,8 +20,8 @@ import cats.data.OptionT
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{Name, Officer, OfficerList, ScrsAddress}
-import models.external.{CoHoCompanyProfile, CoHoRegisteredOfficeAddress}
+import models.api.{Name, ScrsAddress}
+import models.external.{CoHoCompanyProfile, CoHoRegisteredOfficeAddress, Officer, OfficerList}
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
 

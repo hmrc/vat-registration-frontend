@@ -22,7 +22,8 @@ import cats.data.OptionT
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.CompletionCapacityForm
 import models.ModelKeys._
-import models.api.{CompletionCapacity, Officer}
+import models.api.CompletionCapacity
+import models.external.Officer
 import models.view.vatLodgingOfficer.CompletionCapacityView
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}

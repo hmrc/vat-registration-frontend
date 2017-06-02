@@ -18,8 +18,7 @@ package connectors
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.OfficerList
-import models.external.CoHoRegisteredOfficeAddress
+import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
 import uk.gov.hmrc.play.http.ws.WSHttp
 
 class IncorporationInformationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
