@@ -668,6 +668,6 @@ validation.formerName.selected.missing                   = Enter a name
 validation.formerName.selected.invalid                   = Enter a valid name
 
 ## Previous Address Question
-pages.previousAddress.title                              = Have you lived at your current address for 3 years or more?
-pages.previousAddress.heading                            = Have you lived at your current address for 3 years or more?
-validation.previousAddress.missing                       = Tell us if you've lived at your current address for 3 years or more
+pages.previousAddressQuestion.title                      = Have you lived at your current address for 3 years or more?
+pages.previousAddressQuestion.heading                    = Have you lived at your current address for 3 years or more?
+validation.previousAddressQuestion.missing               = Tell us if you''ve lived at your current address for 3 years or more
