@@ -25,7 +25,38 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class PreviousAddressQuestionViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
+  val anOfficer = Officer(Name(Some("name1"), Some("name2"),"SurName"), "director", Some(validDob))
+  val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
+
+  val testPreviousAddressQuestion = CurrentOrPreviousAddress(currentAddressThreeYears = true, previousAddress = Some(address))
   val testPreviousAddressQuestionView = PreviousAddressQuestionView(true)
+
+  "apiModelTransformer" should {
+
+    "convert VatScheme with VatLodgingOfficer details into a PreviousAddressQuestionView" in {
+      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName, FormerName(true, None), testPreviousAddressQuestion, validOfficerContactDetails)
+      val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
+
+      ApiModelTransformer[PreviousAddressQuestionView].toViewModel(vs) shouldBe Some(testPreviousAddressQuestionView)
+    }
+
+
+    "convert VatScheme without VatLodgingOfficer to empty view model" in {
+      val vs = vatScheme().copy(lodgingOfficer = None)
+      ApiModelTransformer[PreviousAddressQuestionView].toViewModel(vs) shouldBe None
+    }
+
+  }
+
+  "viewModelTransformer" should {
+    "update logical group given a component" in {
+      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(true, None), CurrentOrPreviousAddress(false, Some(address)), validOfficerContactDetails)
+      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(true, None), testPreviousAddressQuestion, validOfficerContactDetails)
+
+      ViewModelTransformer[PreviousAddressQuestionView, VatLodgingOfficer].
+        toApi(testPreviousAddressQuestionView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
+    }
+  }
 
   "VMReads" should {
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(previousAddressQuestion = Some(testPreviousAddressQuestionView))
