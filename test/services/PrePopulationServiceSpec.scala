@@ -83,7 +83,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
     "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
       val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
       val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(
-        address, DateOfBirth.empty, "", "director", officerName, formerName, validOfficerContactDetails)))
+        address, DateOfBirth.empty, "", "director", officerName, formerName, currentOrPreviousAddress, validOfficerContactDetails)))
 
       when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
       when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(address))
