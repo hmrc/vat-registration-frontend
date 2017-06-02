@@ -21,8 +21,8 @@ import javax.inject.Inject
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import connectors.{IncorporationInformationConnector, OptionalResponse}
-import models.api.{Officer, ScrsAddress}
-import models.external.CoHoCompanyProfile
+import models.api.ScrsAddress
+import models.external.{CoHoCompanyProfile, Officer}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global

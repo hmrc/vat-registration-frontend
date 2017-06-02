@@ -25,7 +25,7 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.S4LVatLodgingOfficer
 import models.api._
-import models.external.{AccountingDetails, CorporationTaxRegistration}
+import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
