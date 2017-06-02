@@ -25,6 +25,7 @@ import cats.data.OptionT.fromOption
 import com.google.inject.ImplementedBy
 import connectors.{OptionalResponse, PPConnector}
 import models.api._
+import models.external.Officer
 import models.{ApiModelTransformer, S4LVatLodgingOfficer}
 import uk.gov.hmrc.play.http.HeaderCarrier
 

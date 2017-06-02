@@ -19,7 +19,7 @@ package fixtures
 import java.time.LocalDate
 
 import models.api.{VatComplianceCultural, _}
-import models.external.CoHoCompanyProfile
+import models.external.{CoHoCompanyProfile, Officer}
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
