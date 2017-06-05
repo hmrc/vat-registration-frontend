@@ -28,12 +28,14 @@ class OfficerViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
   "apiModelTransformer" should {
 
     "convert VatScheme with VatLodgingOfficer details into an OfficerView" in {
-      val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
       val testName = Name(Some("forename"), None, "surname")
       val testRole = "role"
       val testDOB = DateOfBirth(1,2,1984)
 
       val testOfficerView = OfficerView(Officer(testName, testRole, Some(testDOB)))
+
+      val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
+      val currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(address))
 
       val vatLodgingOfficer = VatLodgingOfficer(
         currentAddress = address,
@@ -42,6 +44,7 @@ class OfficerViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
         role = testRole,
         name = testName,
         formerName = FormerName(false, None),
+        currentOrPreviousAddress = currentOrPreviousAddress,
         contact = OfficerContactDetails.empty)
 
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))

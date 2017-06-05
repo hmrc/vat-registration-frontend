@@ -21,6 +21,7 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer}
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{reset, verify, when}
 import play.api.mvc.Call
