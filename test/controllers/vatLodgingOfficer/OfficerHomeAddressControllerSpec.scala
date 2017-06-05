@@ -89,14 +89,11 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
     "return 303" in {
       save4laterExpectsSave[OfficerHomeAddressView]()
       when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
-      when(mockVatRegistrationService.submitVatLodgingOfficer()(any())).thenReturn(validLodgingOfficer.pure)
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", Some(Seq(address)))
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.id)
-      )(_ redirectsTo s"$contextRoot/business-contact")
-
-      verify(mockVatRegistrationService).submitVatLodgingOfficer()(any())
+      )(_ redirectsTo s"$contextRoot/current-address-three-years-or-more")
     }
 
   }
@@ -106,14 +103,11 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
     "return 303" in {
       save4laterExpectsSave[OfficerHomeAddressView]()
       when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
-      when(mockVatRegistrationService.submitVatLodgingOfficer()(any())).thenReturn(validLodgingOfficer.pure)
       mockKeystoreFetchAndGet("OfficerAddressList", Option.empty[Seq[ScrsAddress]])
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.id)
-      )(_ redirectsTo s"$contextRoot/business-contact")
-
-      verify(mockVatRegistrationService).submitVatLodgingOfficer()(any())
+      )(_ redirectsTo s"$contextRoot/current-address-three-years-or-more")
     }
 
   }
@@ -137,7 +131,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
       save4laterExpectsSave[OfficerHomeAddressView]()
       when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
       callAuthorised(Controller.acceptFromTxm("addressId")) {
-        _ redirectsTo s"$contextRoot/business-contact"
+        _ redirectsTo s"$contextRoot/current-address-three-years-or-more"
       }
 
       val expectedAddressView = OfficerHomeAddressView(address.id, Some(address))

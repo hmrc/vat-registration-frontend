@@ -19,18 +19,24 @@ package controllers.vatLodgingOfficer
 import controllers.vatLodgingOfficer
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.view.vatLodgingOfficer.PreviousAddressView
+import models.api.ScrsAddress
+import models.view.vatLodgingOfficer.{OfficerHomeAddressView, PreviousAddressView}
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
+import play.api.mvc.Call
 import play.api.test.FakeRequest
 
 class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object TestPreviousAddressController$ extends PreviousAddressController(ds)(mockS4LService, mockVatRegistrationService) {
+  object TestPreviousAddressController extends PreviousAddressController(ds)(mockS4LService, mockVatRegistrationService,
+    mockAddressLookupConnector) {
     override val authConnector = mockAuthConnector
   }
 
   val fakeRequest = FakeRequest(vatLodgingOfficer.routes.PreviousAddressController.show())
+
+  val address = ScrsAddress(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
 
   s"GET ${vatLodgingOfficer.routes.PreviousAddressController.show()}" should {
 
@@ -40,7 +46,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
       save4laterReturns2(PreviousAddressView(yesNo = true))()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
-      callAuthorised(TestPreviousAddressController$.show) {
+      callAuthorised(TestPreviousAddressController.show) {
         _ includesText "Have you lived at your current address for 3 years or more?"
       }
     }
@@ -49,7 +55,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
       save4laterReturnsNothing2[PreviousAddressView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
-      callAuthorised(TestPreviousAddressController$.show) {
+      callAuthorised(TestPreviousAddressController.show) {
         _ includesText "Have you lived at your current address for 3 years or more?"
       }
     }
@@ -58,7 +64,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
       save4laterReturnsNothing2[PreviousAddressView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
-      callAuthorised(TestPreviousAddressController$.show) {
+      callAuthorised(TestPreviousAddressController.show) {
         _ includesText "Have you lived at your current address for 3 years or more?"
       }
     }
@@ -67,7 +73,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
   s"POST ${vatLodgingOfficer.routes.PreviousAddressController.submit()} with Empty data" should {
 
     "return 400" in {
-      submitAuthorised(TestPreviousAddressController$.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestPreviousAddressController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result => result isA 400
       }
@@ -77,29 +83,57 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
   s"POST ${vatLodgingOfficer.routes.PreviousAddressController.submit()} with previous address question no selected" should {
 
-    "return 303" in {
-      save4laterExpectsSave[PreviousAddressView]()
+    "redirect the user to TxM address capture page" in {
+      when(mockAddressLookupConnector.getOnRampUrl(any[Call])(any(), any())).thenReturn(Call("GET", "TxM").pure)
 
-      submitAuthorised(TestPreviousAddressController$.submit(), fakeRequest.withFormUrlEncodedBody(
-        "previousAddressQuestionRadio" -> "false"
-      )) {
-        _ redirectsTo s"$contextRoot/business-contact"
-      }
-
+      submitAuthorised(TestPreviousAddressController.submit(),
+        fakeRequest.withFormUrlEncodedBody("previousAddressQuestionRadio" -> "false")
+      )(_ redirectsTo "TxM")
     }
+
   }
 
   s"POST ${vatLodgingOfficer.routes.PreviousAddressController.submit()} with previous address question yes selected" should {
 
     "return 303" in {
       save4laterExpectsSave[PreviousAddressView]()
-      submitAuthorised(TestPreviousAddressController$.submit(), fakeRequest.withFormUrlEncodedBody(
+      when(mockVatRegistrationService.submitVatLodgingOfficer()(any())).thenReturn(validLodgingOfficer.pure)
+      submitAuthorised(TestPreviousAddressController.submit(), fakeRequest.withFormUrlEncodedBody(
         "previousAddressQuestionRadio" -> "true"
       )) {
         _ redirectsTo s"$contextRoot/business-contact"
       }
 
+      verify(mockVatRegistrationService).submitVatLodgingOfficer()(any())
     }
   }
+
+  s"GET ${vatLodgingOfficer.routes.PreviousAddressController.acceptFromTxm()}" should {
+
+    "save an address and redirect to next page" in {
+      save4laterExpectsSave[PreviousAddressView]()
+      when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
+      callAuthorised(TestPreviousAddressController.acceptFromTxm("addressId")) {
+        _ redirectsTo s"$contextRoot/business-contact"
+      }
+
+      val expectedAddressView = PreviousAddressView(false, Some(address))
+      verify(mockS4LService).updateViewModel(Matchers.eq(expectedAddressView))(any(), any(), any(), any())
+    }
+
+  }
+
+  s"GET ${vatLodgingOfficer.routes.PreviousAddressController.changeAddress()}" should {
+
+    "save an address and redirect to next page" in {
+      save4laterExpectsSave[PreviousAddressView]()
+      when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
+      callAuthorised(TestPreviousAddressController.changeAddress()) {
+        (_ redirectsTo "TxM")
+      }
+
+    }
+  }
+
 
 }

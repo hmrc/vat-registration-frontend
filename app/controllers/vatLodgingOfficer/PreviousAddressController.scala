@@ -31,7 +31,6 @@ import services.{PrePopulationService, S4LService, VatRegistrationService}
 class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
                                          (implicit s4l: S4LService,
                                                   vrs: VatRegistrationService,
-                                                  prePopService: PrePopulationService,
                                                   val alfConnector: AddressLookupConnect)
   extends VatRegistrationController(ds) {
 
@@ -48,8 +47,11 @@ class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.vatLodgingOfficer.previous_address(badForm)).pure,
 
       data => (!data.yesNo).pure.ifM(
-        ifTrue = alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm()),
-        ifFalse = controllers.vatContact.routes.BusinessContactDetailsController.show().pure
+        ifTrue = alfConnector.getOnRampUrl(routes.PreviousAddressController.acceptFromTxm()),
+        ifFalse = for {
+          _ <- save(PreviousAddressView(true))
+          _ <- vrs.submitVatLodgingOfficer()
+        } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
       ).map(Redirect)
     )
   )
@@ -61,9 +63,7 @@ class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
     }.map(_ => Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())))
 
   def changeAddress: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-
-    alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm()).map(Redirect)
-
+    alfConnector.getOnRampUrl(routes.PreviousAddressController.acceptFromTxm()).map(Redirect)
   )
 }
 
