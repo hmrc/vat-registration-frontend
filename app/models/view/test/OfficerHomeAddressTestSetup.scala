@@ -32,3 +32,19 @@ case class OfficerHomeAddressTestSetup(
 object OfficerHomeAddressTestSetup {
   implicit val format = Json.format[OfficerHomeAddressTestSetup]
 }
+
+case class OfficerPreviousAddressTestSetup (
+                                        threeYears: Option[String],
+                                        line1: Option[String],
+                                        line2: Option[String],
+                                        line3: Option[String],
+                                        line4: Option[String],
+                                        postcode: Option[String] = None,
+                                        country: Option[String] = None
+                                      )
+
+
+object OfficerPreviousAddressTestSetup {
+  implicit val format = Json.format[OfficerPreviousAddressTestSetup]
+}
+
