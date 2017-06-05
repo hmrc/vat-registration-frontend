@@ -34,7 +34,6 @@ import scala.concurrent.Future
 class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
                                          (implicit s4l: S4LService,
                                                   vrs: VatRegistrationService,
-                                                  prePopService: PrePopulationService,
                                                   val alfConnector: AddressLookupConnect)
   extends VatRegistrationController(ds) {
 
