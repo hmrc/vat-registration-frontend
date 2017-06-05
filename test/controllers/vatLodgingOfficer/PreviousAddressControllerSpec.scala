@@ -24,7 +24,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 
-class PreviousAddressQuestionControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object TestPreviousAddressController$ extends PreviousAddressController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
