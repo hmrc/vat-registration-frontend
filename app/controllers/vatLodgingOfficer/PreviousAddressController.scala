@@ -18,17 +18,14 @@ package controllers.vatLodgingOfficer
 
 import javax.inject.Inject
 
-import cats.data.OptionT
 import connectors.AddressLookupConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.PreviousAddressForm
-import models.view.vatLodgingOfficer.{OfficerHomeAddressView, PreviousAddressView}
+import models.view.vatLodgingOfficer.PreviousAddressView
 import play.api.Logger
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{PrePopulationService, S4LService, VatRegistrationService}
-
-import scala.concurrent.Future
 
 
 class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
@@ -61,6 +58,12 @@ class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
       Logger.debug(s"address received: $address")
           save(PreviousAddressView(false, Some(address)))
     }.map(_ => Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())))
+
+  def changeAddress: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+
+    alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm()).map(Redirect)
+
+  )
 }
 
 
