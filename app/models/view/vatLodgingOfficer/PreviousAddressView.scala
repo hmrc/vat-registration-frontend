@@ -20,24 +20,24 @@ import models.api._
 import models.{ApiModelTransformer, S4LVatLodgingOfficer, VMReads, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class PreviousAddressQuestionView(yesNo: Boolean, address: Option[ScrsAddress] = None)
+case class PreviousAddressView(yesNo: Boolean, address: Option[ScrsAddress] = None)
 
-object PreviousAddressQuestionView {
+object PreviousAddressView {
 
-  implicit val format = Json.format[PreviousAddressQuestionView]
+  implicit val format = Json.format[PreviousAddressView]
 
   implicit val vmReads = VMReads(
     readF = (group: S4LVatLodgingOfficer) => group.previousAddressQuestion,
-    updateF = (c: PreviousAddressQuestionView, g: Option[S4LVatLodgingOfficer]) =>
+    updateF = (c: PreviousAddressView, g: Option[S4LVatLodgingOfficer]) =>
       g.getOrElse(S4LVatLodgingOfficer()).copy(previousAddressQuestion = Some(c))
   )
 
   // Returns a view model for a specific part of a given VatScheme API model
-  implicit val modelTransformer = ApiModelTransformer[PreviousAddressQuestionView] { vs: VatScheme =>
-    vs.lodgingOfficer.map(_.currentOrPreviousAddress).map(p => PreviousAddressQuestionView(p.currentAddressThreeYears, p.previousAddress))
+  implicit val modelTransformer = ApiModelTransformer[PreviousAddressView] { vs: VatScheme =>
+    vs.lodgingOfficer.map(_.currentOrPreviousAddress).map(p => PreviousAddressView(p.currentAddressThreeYears, p.previousAddress))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: PreviousAddressQuestionView, g: VatLodgingOfficer) =>
+  implicit val viewModelTransformer = ViewModelTransformer { (c: PreviousAddressView, g: VatLodgingOfficer) =>
     g.copy(currentOrPreviousAddress = g.currentOrPreviousAddress.copy(currentAddressThreeYears = c.yesNo, previousAddress = c.address)
     )
   }

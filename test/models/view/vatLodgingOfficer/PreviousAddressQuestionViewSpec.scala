@@ -29,21 +29,21 @@ class PreviousAddressQuestionViewSpec extends UnitSpec with VatRegistrationFixtu
   val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
 
   val testPreviousAddressQuestion = CurrentOrPreviousAddress(currentAddressThreeYears = true, previousAddress = Some(address))
-  val testPreviousAddressQuestionView = PreviousAddressQuestionView(true)
+  val testPreviousAddressQuestionView = PreviousAddressView(true)
 
   "apiModelTransformer" should {
 
-    "convert VatScheme with VatLodgingOfficer details into a PreviousAddressQuestionView" in {
+    "convert VatScheme with VatLodgingOfficer details into a PreviousAddressView" in {
       val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName, FormerName(true, None), testPreviousAddressQuestion, validOfficerContactDetails)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
-      ApiModelTransformer[PreviousAddressQuestionView].toViewModel(vs) shouldBe Some(testPreviousAddressQuestionView)
+      ApiModelTransformer[PreviousAddressView].toViewModel(vs) shouldBe Some(testPreviousAddressQuestionView)
     }
 
 
     "convert VatScheme without VatLodgingOfficer to empty view model" in {
       val vs = vatScheme().copy(lodgingOfficer = None)
-      ApiModelTransformer[PreviousAddressQuestionView].toViewModel(vs) shouldBe None
+      ApiModelTransformer[PreviousAddressView].toViewModel(vs) shouldBe None
     }
 
   }
@@ -53,7 +53,7 @@ class PreviousAddressQuestionViewSpec extends UnitSpec with VatRegistrationFixtu
       val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(true, None), CurrentOrPreviousAddress(false, Some(address)), validOfficerContactDetails)
       val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(true, None), testPreviousAddressQuestion, validOfficerContactDetails)
 
-      ViewModelTransformer[PreviousAddressQuestionView, VatLodgingOfficer].
+      ViewModelTransformer[PreviousAddressView, VatLodgingOfficer].
         toApi(testPreviousAddressQuestionView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
     }
   }
@@ -62,15 +62,15 @@ class PreviousAddressQuestionViewSpec extends UnitSpec with VatRegistrationFixtu
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(previousAddressQuestion = Some(testPreviousAddressQuestionView))
 
     "extract previousAddressQuestionView from lodgingOfficer" in {
-      PreviousAddressQuestionView.vmReads.read(s4LVatLodgingOfficer) shouldBe Some(testPreviousAddressQuestionView)
+      PreviousAddressView.vmReads.read(s4LVatLodgingOfficer) shouldBe Some(testPreviousAddressQuestionView)
     }
 
     "update empty lodgingOfficer with previousAddressQuestionView" in {
-      PreviousAddressQuestionView.vmReads.udpate(testPreviousAddressQuestionView, Option.empty[S4LVatLodgingOfficer]).previousAddressQuestion shouldBe Some(testPreviousAddressQuestionView)
+      PreviousAddressView.vmReads.udpate(testPreviousAddressQuestionView, Option.empty[S4LVatLodgingOfficer]).previousAddressQuestion shouldBe Some(testPreviousAddressQuestionView)
     }
 
     "update non-empty lodgingOfficer with previousAddressQuestionView" in {
-      PreviousAddressQuestionView.vmReads.udpate(testPreviousAddressQuestionView, Some(s4LVatLodgingOfficer)).previousAddressQuestion shouldBe Some(testPreviousAddressQuestionView)
+      PreviousAddressView.vmReads.udpate(testPreviousAddressQuestionView, Some(s4LVatLodgingOfficer)).previousAddressQuestion shouldBe Some(testPreviousAddressQuestionView)
     }
 
   }

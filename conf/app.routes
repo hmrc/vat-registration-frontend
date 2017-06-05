@@ -162,8 +162,8 @@ GET         /have-you-ever-changed-your-name          controllers.vatLodgingOffi
 POST        /have-you-ever-changed-your-name          controllers.vatLodgingOfficer.FormerNameController.submit
 
 ## PREVIOUS ADDRESS QUESTION
-GET         /current-address-three-years-or-more      controllers.vatLodgingOfficer.PreviousAddressQuestionController.show
-POST        /current-address-three-years-or-more      controllers.vatLodgingOfficer.PreviousAddressQuestionController.submit
+GET         /current-address-three-years-or-more      controllers.vatLodgingOfficer.PreviousAddressController.show
+POST        /current-address-three-years-or-more      controllers.vatLodgingOfficer.PreviousAddressController.submit
 
 ## FEEDBACK
 GET         /feedback                              controllers.feedback.FeedbackController.show

@@ -19,55 +19,55 @@ package controllers.vatLodgingOfficer
 import controllers.vatLodgingOfficer
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.view.vatLodgingOfficer.PreviousAddressQuestionView
+import models.view.vatLodgingOfficer.PreviousAddressView
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 
 class PreviousAddressQuestionControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object TestPreviousAddressQuestionController extends PreviousAddressQuestionController(ds)(mockS4LService, mockVatRegistrationService) {
+  object TestPreviousAddressController$ extends PreviousAddressController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(vatLodgingOfficer.routes.PreviousAddressQuestionController.show())
+  val fakeRequest = FakeRequest(vatLodgingOfficer.routes.PreviousAddressController.show())
 
-  s"GET ${vatLodgingOfficer.routes.PreviousAddressQuestionController.show()}" should {
+  s"GET ${vatLodgingOfficer.routes.PreviousAddressController.show()}" should {
 
     reset(mockVatRegistrationService)
 
     "return HTML when there's a previous address question in S4L" in {
-      save4laterReturns2(PreviousAddressQuestionView(yesNo = true))()
+      save4laterReturns2(PreviousAddressView(yesNo = true))()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
-      callAuthorised(TestPreviousAddressQuestionController.show) {
+      callAuthorised(TestPreviousAddressController$.show) {
         _ includesText "Have you lived at your current address for 3 years or more?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[PreviousAddressQuestionView]()
+      save4laterReturnsNothing2[PreviousAddressView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
-      callAuthorised(TestPreviousAddressQuestionController.show) {
+      callAuthorised(TestPreviousAddressController$.show) {
         _ includesText "Have you lived at your current address for 3 years or more?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[PreviousAddressQuestionView]()
+      save4laterReturnsNothing2[PreviousAddressView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
-      callAuthorised(TestPreviousAddressQuestionController.show) {
+      callAuthorised(TestPreviousAddressController$.show) {
         _ includesText "Have you lived at your current address for 3 years or more?"
       }
     }
   }
 
-  s"POST ${vatLodgingOfficer.routes.PreviousAddressQuestionController.submit()} with Empty data" should {
+  s"POST ${vatLodgingOfficer.routes.PreviousAddressController.submit()} with Empty data" should {
 
     "return 400" in {
-      submitAuthorised(TestPreviousAddressQuestionController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestPreviousAddressController$.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result => result isA 400
       }
@@ -75,12 +75,12 @@ class PreviousAddressQuestionControllerSpec extends VatRegSpec with VatRegistrat
     }
   }
 
-  s"POST ${vatLodgingOfficer.routes.PreviousAddressQuestionController.submit()} with previous address question no selected" should {
+  s"POST ${vatLodgingOfficer.routes.PreviousAddressController.submit()} with previous address question no selected" should {
 
     "return 303" in {
-      save4laterExpectsSave[PreviousAddressQuestionView]()
+      save4laterExpectsSave[PreviousAddressView]()
 
-      submitAuthorised(TestPreviousAddressQuestionController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(TestPreviousAddressController$.submit(), fakeRequest.withFormUrlEncodedBody(
         "previousAddressQuestionRadio" -> "false"
       )) {
         _ redirectsTo s"$contextRoot/business-contact"
@@ -89,11 +89,11 @@ class PreviousAddressQuestionControllerSpec extends VatRegSpec with VatRegistrat
     }
   }
 
-  s"POST ${vatLodgingOfficer.routes.PreviousAddressQuestionController.submit()} with previous address question yes selected" should {
+  s"POST ${vatLodgingOfficer.routes.PreviousAddressController.submit()} with previous address question yes selected" should {
 
     "return 303" in {
-      save4laterExpectsSave[PreviousAddressQuestionView]()
-      submitAuthorised(TestPreviousAddressQuestionController.submit(), fakeRequest.withFormUrlEncodedBody(
+      save4laterExpectsSave[PreviousAddressView]()
+      submitAuthorised(TestPreviousAddressController$.submit(), fakeRequest.withFormUrlEncodedBody(
         "previousAddressQuestionRadio" -> "true"
       )) {
         _ redirectsTo s"$contextRoot/business-contact"

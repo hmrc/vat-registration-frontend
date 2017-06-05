@@ -17,17 +17,17 @@
 package forms.vatLodgingOfficer
 
 import forms.FormValidation.missingBooleanFieldMapping
-import models.view.vatLodgingOfficer.PreviousAddressQuestionView
+import models.view.vatLodgingOfficer.PreviousAddressView
 import play.api.data.Form
 import play.api.data.Forms._
 
-object PreviousAddressQuestionForm {
+object PreviousAddressForm {
   val RADIO_YES_NO: String = "previousAddressQuestionRadio"
 
   val form = Form(
     mapping(
       RADIO_YES_NO -> missingBooleanFieldMapping()("previousAddressQuestion")
-    )(PreviousAddressQuestionView.apply)(PreviousAddressQuestionView.unapply)
+    )(PreviousAddressView.apply(_))(view => Option(view.yesNo))
   )
 
 }
