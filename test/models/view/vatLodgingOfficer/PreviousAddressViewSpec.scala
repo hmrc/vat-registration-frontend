@@ -34,7 +34,17 @@ class PreviousAddressViewSpec extends UnitSpec with VatRegistrationFixture with 
   "apiModelTransformer" should {
 
     "convert VatScheme with VatLodgingOfficer details into a PreviousAddressView" in {
-      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName, FormerName(true, None), testPreviousAddress, validOfficerContactDetails)
+      val vatLodgingOfficer =
+        VatLodgingOfficer(
+          currentAddress = address,
+          dob = DateOfBirth.empty,
+          nino = "",
+          role = "director",
+          name = officerName,
+          formerName = FormerName(true, None),
+          currentOrPreviousAddress = testPreviousAddress,
+          contact = validOfficerContactDetails)
+
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       ApiModelTransformer[PreviousAddressView].toViewModel(vs) shouldBe Some(testPreviousAddressView)
