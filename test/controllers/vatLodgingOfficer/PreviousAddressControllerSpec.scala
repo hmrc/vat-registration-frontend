@@ -26,7 +26,7 @@ import play.api.test.FakeRequest
 
 class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object TestPreviousAddressController$ extends PreviousAddressController(ds)(mockS4LService, mockVatRegistrationService) {
+  object TestPreviousAddressController$ extends PreviousAddressController(ds)(mockS4LService, mockVatRegistrationService, mockAddressLookupConnector) {
     override val authConnector = mockAuthConnector
   }
 
