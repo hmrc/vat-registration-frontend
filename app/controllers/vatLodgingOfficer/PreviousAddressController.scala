@@ -59,6 +59,12 @@ class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
       Logger.debug(s"address received: $address")
           save(PreviousAddressView(false, Some(address)))
     }.map(_ => Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())))
+
+  def changeAddress: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+
+    alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm()).map(Redirect)
+
+  )
 }
 
 
