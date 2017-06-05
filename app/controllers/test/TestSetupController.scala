@@ -152,6 +152,14 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
           line4 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.line4),
           postcode = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.postcode),
           country = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.country)),
+        officerPreviousAddress = OfficerPreviousAddressTestSetup(
+          threeYears = vatLodgingOfficer.flatMap(_.previousAddress).map(_.yesNo.toString),
+          line1 = vatLodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).map(_.line1),
+          line2 = vatLodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).map(_.line2),
+          line3 = vatLodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.line3),
+          line4 = vatLodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.line4),
+          postcode = vatLodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.postcode),
+          country = vatLodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.country)),
         vatLodgingOfficer = VatLodgingOfficerTestSetup(
           dobDay = vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getDayOfMonth.toString),
           dobMonth = vatLodgingOfficer.flatMap(_.officerDateOfBirth).map(_.dob.getMonthValue.toString),
@@ -255,6 +263,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
             vatLodgingOfficer = vatLodingOfficerFromData(data)
             _ <- s4LService.save(vatLodgingOfficer)
 
+            // KeyStore hack
             officer = vatLodgingOfficer.completionCapacity.
                 flatMap(ccv => ccv.completionCapacity.
                   map(cc => Officer(cc.name, cc.role, None)))
@@ -267,7 +276,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
   })
 
   private def vatLodingOfficerFromData(data: TestSetup): S4LVatLodgingOfficer = {
-    val address: Option[ScrsAddress] = data.officerHomeAddress.line1.map(_ =>
+    val homeAddress: Option[ScrsAddress] = data.officerHomeAddress.line1.map(_ =>
       ScrsAddress(
         line1 = data.officerHomeAddress.line1.getOrElse(""),
         line2 = data.officerHomeAddress.line2.getOrElse(""),
@@ -275,6 +284,16 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
         line4 = data.officerHomeAddress.line4,
         postcode = data.officerHomeAddress.postcode,
         country = data.officerHomeAddress.country))
+
+    val threeYears: Option[String] = data.officerPreviousAddress.threeYears
+    val previousAddress: Option[ScrsAddress] = data.officerPreviousAddress.line1.map(_ =>
+      ScrsAddress(
+        line1 = data.officerPreviousAddress.line1.getOrElse(""),
+        line2 = data.officerPreviousAddress.line2.getOrElse(""),
+        line3 = data.officerPreviousAddress.line3,
+        line4 = data.officerPreviousAddress.line4,
+        postcode = data.officerPreviousAddress.postcode,
+        country = data.officerPreviousAddress.country))
 
     val dob: Option[LocalDate] = data.vatLodgingOfficer.dobDay.map(_ =>
       LocalDate.of(
@@ -304,7 +323,8 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
         formerName = data.vatLodgingOfficer.formername))
 
     S4LVatLodgingOfficer(
-      officerHomeAddress = address.map(a => OfficerHomeAddressView(a.id, Some(a))),
+      previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
+      officerHomeAddress = homeAddress.map(a => OfficerHomeAddressView(a.id, Some(a))),
       officerDateOfBirth = dob.map(OfficerDateOfBirthView(_, completionCapacity.map(_.name))),
       officerNino = nino.map(OfficerNinoView(_)),
       completionCapacity = completionCapacity.map(CompletionCapacityView(_)),

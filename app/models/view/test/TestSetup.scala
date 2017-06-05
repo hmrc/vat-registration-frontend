@@ -16,7 +16,6 @@
 
 package models.view.test
 
-import models.api.VatLodgingOfficer
 import play.api.libs.json.Json
 
 
@@ -28,6 +27,7 @@ case class TestSetup(
                       sicAndCompliance: SicAndComplianceTestSetup,
                       vatServiceEligibility: VatServiceEligibilityTestSetup,
                       officerHomeAddress: OfficerHomeAddressTestSetup,
+                      officerPreviousAddress: OfficerPreviousAddressTestSetup,
                       vatLodgingOfficer: VatLodgingOfficerTestSetup
                     )
 

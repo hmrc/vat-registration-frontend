@@ -137,9 +137,9 @@ GET         /business-contact                      controllers.vatContact.Busine
 POST        /business-contact                      controllers.vatContact.BusinessContactDetailsController.submit
 
 ## OFFICER ADDRESS PAGE
-GET         /your-home-address                      controllers.vatLodgingOfficer.OfficerHomeAddressController.show
-POST        /your-home-address                      controllers.vatLodgingOfficer.OfficerHomeAddressController.submit
-GET         /your-mohe-address/acceptFromTxm        controllers.vatLodgingOfficer.OfficerHomeAddressController.acceptFromTxm(id: String ?= "")
+GET         /your-home-address                              controllers.vatLodgingOfficer.OfficerHomeAddressController.show
+POST        /your-home-address                              controllers.vatLodgingOfficer.OfficerHomeAddressController.submit
+GET         /your-home-address/acceptFromTxm                controllers.vatLodgingOfficer.OfficerHomeAddressController.acceptFromTxm(id: String ?= "")
 
 ## OFFICER DOB PAGE
 GET         /your-date-of-birth                      controllers.vatLodgingOfficer.OfficerDateOfBirthController.show
@@ -161,6 +161,12 @@ POST        /your-contact-details                      controllers.vatLodgingOff
 GET         /have-you-ever-changed-your-name          controllers.vatLodgingOfficer.FormerNameController.show
 POST        /have-you-ever-changed-your-name          controllers.vatLodgingOfficer.FormerNameController.submit
 
+## PREVIOUS ADDRESS QUESTION
+GET         /current-address-three-years-or-more                              controllers.vatLodgingOfficer.PreviousAddressController.show
+POST        /current-address-three-years-or-more                              controllers.vatLodgingOfficer.PreviousAddressController.submit
+GET         /current-address-three-years-or-more/changePreviousAddress        controllers.vatLodgingOfficer.PreviousAddressController.changeAddress
+GET         /current-address-three-years-or-more/acceptFromTxm                controllers.vatLodgingOfficer.PreviousAddressController.acceptFromTxm(id: String ?= "")
+
 ## FEEDBACK
 GET         /feedback                              controllers.feedback.FeedbackController.show
 
@@ -174,7 +180,6 @@ GET         /post-sign-in                          controllers.callbacks.SignInO
 ## APPLICATION SUBMISSION CONFIRMATION
 GET         /submission-confirmation               controllers.ApplicationSubmissionController.show
 
-
-
+## CAN OR CAN'T REGISTER
 GET         /you-can-register-for-vat-with-this-service        controllers.TwirlViewController.renderViewAuthorised(viewName="eligibility-success")
-GET         /you-cant-register-for-vat-with-this-service               controllers.vatEligibility.ServiceCriteriaQuestionsController.ineligible()
+GET         /you-cant-register-for-vat-with-this-service       controllers.vatEligibility.ServiceCriteriaQuestionsController.ineligible()

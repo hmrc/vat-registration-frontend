@@ -16,7 +16,6 @@
 
 package forms.test
 
-import models.api.ScrsAddress
 import models.view.test._
 import play.api.data.Form
 import play.api.data.Forms._
@@ -89,15 +88,6 @@ object TestSetupForm {
     "companyWillDoAnyOf" -> optional(text)
   )(VatServiceEligibilityTestSetup.apply)(VatServiceEligibilityTestSetup.unapply)
 
-  val officeHomeAddressMapping = mapping(
-    "line1" -> optional(text),
-    "line2" -> optional(text),
-    "line3" -> optional(text),
-    "line4" -> optional(text),
-    "postcode" -> optional(text),
-    "country" -> optional(text)
-  )(OfficerHomeAddressTestSetup.apply)(OfficerHomeAddressTestSetup.unapply)
-
   val vatLodgingOfficerTestSetup = mapping(
     "dobDay" -> optional(text),
     "dobMonth" -> optional(text),
@@ -114,6 +104,25 @@ object TestSetupForm {
     "formername" -> optional(text)
   )(VatLodgingOfficerTestSetup.apply)(VatLodgingOfficerTestSetup.unapply)
 
+  val officeHomeAddressMapping = mapping(
+    "line1" -> optional(text),
+    "line2" -> optional(text),
+    "line3" -> optional(text),
+    "line4" -> optional(text),
+    "postcode" -> optional(text),
+    "country" -> optional(text)
+  )(OfficerHomeAddressTestSetup.apply)(OfficerHomeAddressTestSetup.unapply)
+
+  val officePreviousAddressMapping = mapping(
+    "threeYears" -> optional(text),
+    "line1" -> optional(text),
+    "line2" -> optional(text),
+    "line3" -> optional(text),
+    "line4" -> optional(text),
+    "postcode" -> optional(text),
+    "country" -> optional(text)
+  )(OfficerPreviousAddressTestSetup.apply)(OfficerPreviousAddressTestSetup.unapply)
+
   val form = Form(mapping(
     "vatChoice" -> vatChoiceTestSetupMapping,
     "vatTradingDetails" -> vatTradingDetailsTestSetupMapping,
@@ -122,6 +131,7 @@ object TestSetupForm {
     "sicAndCompliance" -> sicAndComplianceTestSetupMapping,
     "vatServiceEligibility" -> vatServiceEligibilityTestSetupMapping,
     "officerHomeAddress" -> officeHomeAddressMapping,
+    "officerPreviousAddress" -> officePreviousAddressMapping,
     "vatLodgingOfficer" -> vatLodgingOfficerTestSetup
   )(TestSetup.apply)(TestSetup.unapply))
 

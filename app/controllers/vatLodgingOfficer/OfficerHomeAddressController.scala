@@ -57,13 +57,12 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
       badForm => fetchAddressList().getOrElse(Seq()).map(
         addressList => BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(badForm, addressList))),
       data => (data.addressId == "other").pure.ifM(
-        alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm()),
-        for {
+        ifTrue = alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm()),
+        ifFalse = for {
           addressList <- fetchAddressList().getOrElse(Seq())
           address = addressList.find(_.id == data.addressId)
           _ <- save(OfficerHomeAddressView(data.addressId, address))
-          _ <- vrs.submitVatLodgingOfficer()
-        } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
+        } yield controllers.vatLodgingOfficer.routes.PreviousAddressController.show()
       ).map(Redirect)))
 
 
@@ -71,6 +70,6 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
     alfConnector.getAddress(id).flatMap { address =>
       Logger.debug(s"address received: $address")
       save(OfficerHomeAddressView(address.id, Some(address)))
-    }.map(_ => Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())))
+    }.map(_ => Redirect(controllers.vatLodgingOfficer.routes.PreviousAddressController.show())))
 
 }
