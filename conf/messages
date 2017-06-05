@@ -422,6 +422,8 @@ pages.summary.taxableSales.zeroRatedSalesValue                = Estimated zero-r
 ## Summary Page Director Addresses
 pages.summary.directorAddresses.sectionHeading                = Director addresses
 pages.summary.directorAddresses.homeAddress                   = Home address
+pages.summary.directorAddresses.currentAddressThreeYears      = Lived at current address for more than 3 years
+pages.summary.directorAddresses.previousAddress               = Previous address        
 
 ## Summary Page Doing Business Abroad
 pages.summary.doingBusinessAbroad.sectionHeading              = Doing business abroad

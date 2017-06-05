@@ -34,10 +34,28 @@ case class SummaryDirectorAddressesSectionBuilder
     Some(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())
   )
 
+  val currentAddressThreeYears: SummaryRow = SummaryRow(
+    "directorAddresses.currentAddressThreeYears",
+    vatLodgingOfficer.map(_.currentOrPreviousAddress.currentAddressThreeYears).collect {
+      case true => "app.common.yes"
+    }.getOrElse("app.common.no"),
+    Some(controllers.vatLodgingOfficer.routes.PreviousAddressController.show())
+  )
+
+  val previousAddress: SummaryRow = SummaryRow(
+    "directorAddresses.previousAddress",
+    vatLodgingOfficer.map(_.currentOrPreviousAddress.previousAddress).collect {
+      case Some(address) => address.show
+    }.getOrElse(""),
+    Some(controllers.vatLodgingOfficer.routes.PreviousAddressController.changeAddress())
+  )
+
   val section: SummarySection = SummarySection(
     id = "directorAddresses",
     Seq(
-      (homeAddress, true)
+      (homeAddress, true),
+      (currentAddressThreeYears, true),
+      (previousAddress, vatLodgingOfficer.exists(_.currentOrPreviousAddress.previousAddress.isDefined))
     )
   )
 }
