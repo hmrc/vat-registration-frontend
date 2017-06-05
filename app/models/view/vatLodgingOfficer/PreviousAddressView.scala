@@ -27,9 +27,9 @@ object PreviousAddressView {
   implicit val format = Json.format[PreviousAddressView]
 
   implicit val vmReads = VMReads(
-    readF = (group: S4LVatLodgingOfficer) => group.previousAddressQuestion,
+    readF = (group: S4LVatLodgingOfficer) => group.previousAddress,
     updateF = (c: PreviousAddressView, g: Option[S4LVatLodgingOfficer]) =>
-      g.getOrElse(S4LVatLodgingOfficer()).copy(previousAddressQuestion = Some(c))
+      g.getOrElse(S4LVatLodgingOfficer()).copy(previousAddress = Some(c))
   )
 
   // Returns a view model for a specific part of a given VatScheme API model

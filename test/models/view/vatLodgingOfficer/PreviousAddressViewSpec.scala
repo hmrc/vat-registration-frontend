@@ -50,8 +50,27 @@ class PreviousAddressViewSpec extends UnitSpec with VatRegistrationFixture with 
 
   "viewModelTransformer" should {
     "update logical group given a component" in {
-      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(true, None), CurrentOrPreviousAddress(false, Some(address)), validOfficerContactDetails)
-      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(true, None), testPreviousAddress, validOfficerContactDetails)
+      val initialVatLodgingOfficer =
+        VatLodgingOfficer(
+          currentAddress = address,
+          dob = DateOfBirth.empty,
+          nino = "",
+          role = "",
+          name = Name.empty,
+          formerName = FormerName(true, None),
+          currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(address)),
+          contact = validOfficerContactDetails)
+
+      val updatedVatLodgingOfficer =
+        VatLodgingOfficer(
+          currentAddress = address,
+          dob = DateOfBirth.empty,
+          nino = "",
+          role = "",
+          name = Name.empty,
+          formerName = FormerName(true, None),
+          currentOrPreviousAddress = testPreviousAddress,
+          contact = validOfficerContactDetails)
 
       ViewModelTransformer[PreviousAddressView, VatLodgingOfficer].
         toApi(testPreviousAddressView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
@@ -59,18 +78,18 @@ class PreviousAddressViewSpec extends UnitSpec with VatRegistrationFixture with 
   }
 
   "VMReads" should {
-    val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(previousAddressQuestion = Some(testPreviousAddressView))
+    val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(previousAddress = Some(testPreviousAddressView))
 
-    "extract previousAddressQuestionView from lodgingOfficer" in {
+    "extract previousAddressView from lodgingOfficer" in {
       PreviousAddressView.vmReads.read(s4LVatLodgingOfficer) shouldBe Some(testPreviousAddressView)
     }
 
-    "update empty lodgingOfficer with previousAddressQuestionView" in {
-      PreviousAddressView.vmReads.udpate(testPreviousAddressView, Option.empty[S4LVatLodgingOfficer]).previousAddressQuestion shouldBe Some(testPreviousAddressView)
+    "update empty lodgingOfficer with previousAddressView" in {
+      PreviousAddressView.vmReads.udpate(testPreviousAddressView, Option.empty[S4LVatLodgingOfficer]).previousAddress shouldBe Some(testPreviousAddressView)
     }
 
-    "update non-empty lodgingOfficer with previousAddressQuestionView" in {
-      PreviousAddressView.vmReads.udpate(testPreviousAddressView, Some(s4LVatLodgingOfficer)).previousAddressQuestion shouldBe Some(testPreviousAddressView)
+    "update non-empty lodgingOfficer with previousAddressView" in {
+      PreviousAddressView.vmReads.udpate(testPreviousAddressView, Some(s4LVatLodgingOfficer)).previousAddress shouldBe Some(testPreviousAddressView)
     }
 
   }
