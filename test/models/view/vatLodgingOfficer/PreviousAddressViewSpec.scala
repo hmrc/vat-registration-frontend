@@ -29,7 +29,7 @@ class PreviousAddressViewSpec extends UnitSpec with VatRegistrationFixture with 
   val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
 
   val testPreviousAddress = CurrentOrPreviousAddress(currentAddressThreeYears = true, previousAddress = Some(address))
-  val testPreviousAddressView = PreviousAddressView(true)
+  val testPreviousAddressView = PreviousAddressView(true, Some(address))
 
   "apiModelTransformer" should {
 
