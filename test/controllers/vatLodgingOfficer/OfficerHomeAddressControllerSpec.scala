@@ -56,7 +56,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       val vatScheme = validVatScheme.copy(lodgingOfficer =
         Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director",
-                        officerName, formerName, validOfficerContactDetails)))
+                        officerName, formerName, currentOrPreviousAddress, validOfficerContactDetails)))
       save4laterReturnsNothing2[OfficerHomeAddressView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
       callAuthorised(Controller.show()) {
@@ -89,14 +89,11 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
     "return 303" in {
       save4laterExpectsSave[OfficerHomeAddressView]()
       when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
-      when(mockVatRegistrationService.submitVatLodgingOfficer()(any())).thenReturn(validLodgingOfficer.pure)
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", Some(Seq(address)))
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.id)
-      )(_ redirectsTo s"$contextRoot/business-contact")
-
-      verify(mockVatRegistrationService).submitVatLodgingOfficer()(any())
+      )(_ redirectsTo s"$contextRoot/current-address-three-years-or-more")
     }
 
   }
@@ -106,14 +103,11 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
     "return 303" in {
       save4laterExpectsSave[OfficerHomeAddressView]()
       when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
-      when(mockVatRegistrationService.submitVatLodgingOfficer()(any())).thenReturn(validLodgingOfficer.pure)
       mockKeystoreFetchAndGet("OfficerAddressList", Option.empty[Seq[ScrsAddress]])
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.id)
-      )(_ redirectsTo s"$contextRoot/business-contact")
-
-      verify(mockVatRegistrationService).submitVatLodgingOfficer()(any())
+      )(_ redirectsTo s"$contextRoot/current-address-three-years-or-more")
     }
 
   }
@@ -137,7 +131,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
       save4laterExpectsSave[OfficerHomeAddressView]()
       when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
       callAuthorised(Controller.acceptFromTxm("addressId")) {
-        _ redirectsTo s"$contextRoot/business-contact"
+        _ redirectsTo s"$contextRoot/current-address-three-years-or-more"
       }
 
       val expectedAddressView = OfficerHomeAddressView(address.id, Some(address))

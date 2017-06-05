@@ -25,6 +25,7 @@ case class VatLodgingOfficer(
                               role: String,
                               name: Name,
                               formerName: FormerName,
+                              currentOrPreviousAddress : CurrentOrPreviousAddress,
                               contact: OfficerContactDetails
                             )
 
@@ -32,12 +33,15 @@ object VatLodgingOfficer {
   implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
 
   // TODO remove once no longer required
+  val currentAddress = ScrsAddress(line1 = "", line2 = "")
+  val currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(currentAddress))
   val empty = VatLodgingOfficer(
-    currentAddress = ScrsAddress(line1 = "", line2 = ""),
+    currentAddress,
     dob = DateOfBirth(1, 1, 1977),
     nino = "NB686868C",
     role = "",
     name = Name.empty,
     formerName = FormerName(selection = false, formerName = None),
+    currentOrPreviousAddress,
     contact = OfficerContactDetails.empty)
 }

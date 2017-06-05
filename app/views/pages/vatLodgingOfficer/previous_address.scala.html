@@ -1,0 +1,42 @@
+@import models.view.vatLodgingOfficer.PreviousAddressView
+@(previousAddressQuestionForm: Form[PreviousAddressView])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.previousAddressQuestion.title")) {
+
+    <div class="column-one-third">
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.previousAddressQuestion.heading")</h1>
+
+        @errorSummary(
+            messages("app.common.errorSummaryLabel"),
+            previousAddressQuestionForm
+        )
+        
+        @govHelpers.form(action = controllers.vatLodgingOfficer.routes.PreviousAddressController.submit()) {
+            <div class="form-group">
+                <fieldset class="inline">
+                    <span id="previousAddressQuestionRadio"/>
+
+                    @govHelpers.inputRadioGroup(
+                        field = previousAddressQuestionForm("previousAddressQuestionRadio"),
+                        Seq(
+                            "true" -> messages("app.common.yes"),
+                            "false" -> messages("app.common.no")
+                        ),
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label"
+                    )
+                </fieldset>
+            </div>
+
+            <div class="form-group">
+                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+            </div>
+
+        }
+
+    </div>
+
+}
