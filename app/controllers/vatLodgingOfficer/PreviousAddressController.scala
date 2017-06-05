@@ -18,17 +18,14 @@ package controllers.vatLodgingOfficer
 
 import javax.inject.Inject
 
-import cats.data.OptionT
 import connectors.AddressLookupConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.PreviousAddressForm
-import models.view.vatLodgingOfficer.{OfficerHomeAddressView, PreviousAddressView}
+import models.view.vatLodgingOfficer.PreviousAddressView
 import play.api.Logger
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{PrePopulationService, S4LService, VatRegistrationService}
-
-import scala.concurrent.Future
 
 
 class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
