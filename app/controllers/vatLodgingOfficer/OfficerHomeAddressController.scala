@@ -57,8 +57,8 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
       badForm => fetchAddressList().getOrElse(Seq()).map(
         addressList => BadRequest(views.html.pages.vatLodgingOfficer.officer_home_address(badForm, addressList))),
       data => (data.addressId == "other").pure.ifM(
-        alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm()),
-        for {
+        ifTrue = alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm()),
+        ifFalse = for {
           addressList <- fetchAddressList().getOrElse(Seq())
           address = addressList.find(_.id == data.addressId)
           _ <- save(OfficerHomeAddressView(data.addressId, address))
