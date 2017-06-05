@@ -57,8 +57,8 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
         view => (view.id == "other").pure.ifM(
           ifTrue = Ok(views.html.pages.vatEligibility.ineligible("completionCapacity")).pure,
           ifFalse = for {
-            officerSeq <- fetchOfficerList().getOrElse(Seq())
-            officer = officerSeq.find(_.name.id == view.id).getOrElse(Officer.empty)
+            officerSeq <- fetchOfficerList().getOrElse(Seq()) // TODO shouldn't need getOrElse(Seq())
+            officer = officerSeq.find(_.name.id == view.id).getOrElse(Officer.empty) // TODO this wrong: getOrElse(Officer.empty)
             _ <- save(CompletionCapacityView(view.id, Some(CompletionCapacity(officer.name, officer.role))))
             _ <- keystoreConnector.cache(REGISTERING_OFFICER_KEY, officer)
           } yield Redirect(controllers.vatLodgingOfficer.routes.FormerNameController.show()))))
