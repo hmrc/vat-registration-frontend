@@ -24,12 +24,11 @@ import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{reset, verify, when}
-import org.scalatest.BeforeAndAfterEach
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 
 class OfficerHomeAddressControllerSpec extends VatRegSpec
-  with VatRegistrationFixture with S4LMockSugar with BeforeAndAfterEach {
+  with VatRegistrationFixture with S4LMockSugar {
 
   object Controller extends OfficerHomeAddressController(ds)(
     mockS4LService,
@@ -55,7 +54,9 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
     mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", dummyCacheMap)
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName, formerName, validOfficerContactDetails)))
+      val vatScheme = validVatScheme.copy(lodgingOfficer =
+        Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director",
+                        officerName, formerName, validOfficerContactDetails)))
       save4laterReturnsNothing2[OfficerHomeAddressView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
       callAuthorised(Controller.show()) {
