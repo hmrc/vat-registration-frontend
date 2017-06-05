@@ -22,13 +22,12 @@ import helpers.{S4LMockSugar, VatRegSpec}
 import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer}
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{times, verify, when}
-import org.mockito.verification.VerificationMode
-import org.mockito.{Matchers, Mockito}
+import org.mockito.Mockito.{reset, verify, when}
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 
-class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+class OfficerHomeAddressControllerSpec extends VatRegSpec
+  with VatRegistrationFixture with S4LMockSugar {
 
   object Controller extends OfficerHomeAddressController(ds)(
     mockS4LService,
@@ -43,13 +42,20 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
 
   val address = ScrsAddress(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
 
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
+  }
+
   s"GET ${routes.OfficerHomeAddressController.show()}" should {
 
     when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
     mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", dummyCacheMap)
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName, formerName, currentOrPreviousAddress, validOfficerContactDetails)))
+      val vatScheme = validVatScheme.copy(lodgingOfficer =
+        Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director",
+                        officerName, formerName, currentOrPreviousAddress, validOfficerContactDetails)))
       save4laterReturnsNothing2[OfficerHomeAddressView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
       callAuthorised(Controller.show()) {
@@ -106,7 +112,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> address.id)
       )(_ redirectsTo s"$contextRoot/business-contact")
 
-      verify(mockVatRegistrationService, times(2)).submitVatLodgingOfficer()(any())
+      verify(mockVatRegistrationService).submitVatLodgingOfficer()(any())
     }
 
   }
@@ -114,8 +120,6 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.OfficerHomeAddressController.submit()} with 'other address' selected" should {
 
     "redirect the user to TxM address capture page" in {
-      val savedAddressView = OfficerHomeAddressView(address.id, Some(address))
-
       when(mockAddressLookupConnector.getOnRampUrl(any[Call])(any(), any())).thenReturn(Call("GET", "TxM").pure)
 
       submitAuthorised(Controller.submit(),
@@ -129,7 +133,6 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
   s"GET ${routes.OfficerHomeAddressController.acceptFromTxm()}" should {
 
     "save an address and redirect to next page" in {
-      Mockito.reset(mockS4LService)
       save4laterExpectsSave[OfficerHomeAddressView]()
       when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
       callAuthorised(Controller.acceptFromTxm("addressId")) {
@@ -137,7 +140,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec with VatRegistrationFi
       }
 
       val expectedAddressView = OfficerHomeAddressView(address.id, Some(address))
-      verify(mockS4LService, times(1)).updateViewModel(Matchers.eq(expectedAddressView))(any(), any(), any(), any())
+      verify(mockS4LService).updateViewModel(Matchers.eq(expectedAddressView))(any(), any(), any(), any())
     }
 
   }
