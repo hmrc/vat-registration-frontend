@@ -123,9 +123,23 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
       when(mockIIService.getOfficerList()).thenReturn(Seq.empty[Officer].pure)
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
       save4laterReturns(S4LVatLodgingOfficer(completionCapacity = Some(completeCapacityView),
-                                              officerDateOfBirth = Some(OfficerDateOfBirthView(LocalDate.of(1999,1,1)))))
+        officerDateOfBirth = Some(OfficerDateOfBirthView(LocalDate.of(1999,1,1)))))
 
       service.getOfficerList() returns Seq(officer)
+    }
+
+    "be non-empty when officer only in BE" in new Setup {
+      val testRole = "director"
+      val testDob = DateOfBirth(1, 2, 1984)
+      val testName = officerName
+      val vatSchemeWithOfficer = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(
+        address, testDob, "nino", testRole, testName, formerName, currentOrPreviousAddress, validOfficerContactDetails)))
+
+      when(mockIIService.getOfficerList()).thenReturn(Seq.empty[Officer].pure)
+      when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithOfficer.pure)
+      save4laterReturnsNothing[S4LVatLodgingOfficer]
+
+      service.getOfficerList() returns Seq(Officer(testName, testRole, Some(testDob)))
     }
 
     "be non-empty and no duplicates when OfficerList and same officer in S4L are present" in new Setup {

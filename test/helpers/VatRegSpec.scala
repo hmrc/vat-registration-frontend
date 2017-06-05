@@ -25,7 +25,7 @@ import mocks.VatMocks
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.{Assertion, Inside, Inspectors}
+import org.scalatest.{Assertion, BeforeAndAfterEach, Inside, Inspectors}
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.http.Status
 import play.api.mvc._
@@ -37,7 +37,7 @@ import scala.concurrent.Future
 
 class VatRegSpec extends PlaySpec with OneAppPerSuite
   with MockitoSugar with VatMocks with LoginFixture with Inside with Inspectors
-  with ScalaFutures with ApplicativeSyntax {
+  with ScalaFutures with ApplicativeSyntax with BeforeAndAfterEach {
 
   implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
   implicit val futureInstances = cats.instances.future.catsStdInstancesForFuture
