@@ -18,17 +18,27 @@ package controllers.vatLodgingOfficer
 
 import javax.inject.Inject
 
+import cats.data.OptionT
+import connectors.AddressLookupConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.PreviousAddressQuestionForm
-import models.view.vatLodgingOfficer.PreviousAddressQuestionView
+import models.view.vatLodgingOfficer.{OfficerHomeAddressView, PreviousAddressQuestionView}
+import play.api.Logger
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{RegistrationService, S4LService}
+import services.{PrePopulationService, S4LService, VatRegistrationService}
+
+import scala.concurrent.Future
 
 
 class PreviousAddressQuestionController @Inject()(ds: CommonPlayDependencies)
-                                       (implicit s4LService: S4LService, vrs: RegistrationService)
+                                                 (implicit s4l: S4LService,
+                                                  vrs: VatRegistrationService,
+                                                  prePopService: PrePopulationService,
+                                                  val alfConnector: AddressLookupConnect)
   extends VatRegistrationController(ds) {
+
+  import cats.syntax.flatMap._
 
   val form: Form[PreviousAddressQuestionView] = PreviousAddressQuestionForm.form
 
@@ -39,8 +49,22 @@ class PreviousAddressQuestionController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatLodgingOfficer.previous_address_question(badForm)).pure,
-      data => save(data) map (_ => Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show()))))
 
+      data => (data.yesNo == false).pure.ifM(
+        alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm()),
+        controllers.vatContact.routes.BusinessContactDetailsController.show().pure
+      ).map(Redirect)
+    )
+  )
+
+
+  def acceptFromTxm(id: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    alfConnector.getAddress(id).flatMap { address =>
+      Logger.debug(s"address received: $address")
+      val previousAddressQuestionView: OptionT[Future, PreviousAddressQuestionView] = viewModel[PreviousAddressQuestionView]()
+      previousAddressQuestionView.fold()(previousAddress => previousAddress.copy(address = Some(address)))
+      save(previousAddressQuestionView)
+    }.map(_ => Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())))
 }
 
 

@@ -55,7 +55,7 @@ class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatLodgingOfficer.officer_dob(badForm)).pure,
-      data => for {
+      data  => for {
         officer <- fetchOfficer().getOrElse(Officer.empty)
         _ <- save(data.copy(officerName = Some(officer.name)))
       } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerNinoController.show())))

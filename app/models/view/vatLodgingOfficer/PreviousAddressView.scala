@@ -20,7 +20,7 @@ import models.api._
 import models.{ApiModelTransformer, S4LVatLodgingOfficer, VMReads, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class PreviousAddressQuestionView(yesNo: Boolean)
+case class PreviousAddressQuestionView(yesNo: Boolean, address: Option[ScrsAddress] = None)
 
 object PreviousAddressQuestionView {
 
@@ -34,11 +34,12 @@ object PreviousAddressQuestionView {
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[PreviousAddressQuestionView] { vs: VatScheme =>
-    vs.lodgingOfficer.map(_.currentOrPreviousAddress).map(p => PreviousAddressQuestionView(p.currentAddressThreeYears))
+    vs.lodgingOfficer.map(_.currentOrPreviousAddress).map(p => PreviousAddressQuestionView(p.currentAddressThreeYears, p.previousAddress))
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: PreviousAddressQuestionView, g: VatLodgingOfficer) =>
-    g.copy(currentOrPreviousAddress = g.currentOrPreviousAddress.copy(currentAddressThreeYears = c.yesNo))
+    g.copy(currentOrPreviousAddress = g.currentOrPreviousAddress.copy(currentAddressThreeYears = c.yesNo, previousAddress = c.address)
+    )
   }
 
 }
