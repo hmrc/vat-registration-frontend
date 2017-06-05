@@ -21,7 +21,9 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.test.TestSetupForm
+import models.ModelKeys.REGISTERING_OFFICER_KEY
 import models.api._
+import models.external.Officer
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
@@ -250,7 +252,14 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
                 x.vatServiceEligibility.companyWillDoAnyOf.map(_.toBoolean))
             })
 
-            _ <- s4LService.save(vatLodingOfficerFromData(data))
+            vatLodgingOfficer = vatLodingOfficerFromData(data)
+            _ <- s4LService.save(vatLodgingOfficer)
+
+            officer = vatLodgingOfficer.completionCapacity.
+                flatMap(ccv => ccv.completionCapacity.
+                  map(cc => Officer(cc.name, cc.role, None)))
+            _ <- keystoreConnector.cache(REGISTERING_OFFICER_KEY, officer.getOrElse(Officer.empty))
+
 
           } yield Ok("Test setup complete")
         }
@@ -275,12 +284,13 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
 
     val nino = data.vatLodgingOfficer.nino
 
-    val completionCapacity = data.vatLodgingOfficer.role.map(_ =>
+    val completionCapacity = data.vatLodgingOfficer.role.map(_ => {
       CompletionCapacity(
         name = Name(data.vatLodgingOfficer.firstname,
         data.vatLodgingOfficer.othernames,
         data.vatLodgingOfficer.surname.getOrElse("")),
-        role = data.vatLodgingOfficer.role.getOrElse("")))
+        role = data.vatLodgingOfficer.role.getOrElse(""))
+    })
 
     val contactDetails = data.vatLodgingOfficer.email.map(_ =>
       OfficerContactDetails(
@@ -295,7 +305,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
 
     S4LVatLodgingOfficer(
       officerHomeAddress = address.map(a => OfficerHomeAddressView(a.id, Some(a))),
-      officerDateOfBirth = dob.map(OfficerDateOfBirthView(_)),
+      officerDateOfBirth = dob.map(OfficerDateOfBirthView(_, completionCapacity.map(_.name))),
       officerNino = nino.map(OfficerNinoView(_)),
       completionCapacity = completionCapacity.map(CompletionCapacityView(_)),
       officerContactDetails = contactDetails.map(OfficerContactDetailsView(_)),
