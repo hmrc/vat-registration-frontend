@@ -63,7 +63,7 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
           address = addressList.find(_.id == data.addressId)
           _ <- save(OfficerHomeAddressView(data.addressId, address))
           _ <- vrs.submitVatLodgingOfficer()
-        } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
+        } yield controllers.vatLodgingOfficer.routes.PreviousAddressController.show()
       ).map(Redirect)))
 
 
@@ -71,6 +71,6 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
     alfConnector.getAddress(id).flatMap { address =>
       Logger.debug(s"address received: $address")
       save(OfficerHomeAddressView(address.id, Some(address)))
-    }.map(_ => Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())))
+    }.map(_ => Redirect(controllers.vatLodgingOfficer.routes.PreviousAddressController.show())))
 
 }
