@@ -18,7 +18,6 @@ package connectors
 
 import javax.inject.{Inject, Singleton}
 
-import auth.VatExternalUrls.getConfString
 import com.google.inject.ImplementedBy
 import config.WSHttp
 import models.AddressLookupJourneyId

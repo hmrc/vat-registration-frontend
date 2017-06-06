@@ -19,5 +19,7 @@ package models
 final case class AddressLookupJourneyId(id: String)
 
 object AddressLookupJourneyId {
-  implicit val defaultJourneyId = AddressLookupJourneyId("vatreg1")
+  implicit val homeAddressJourneyId = AddressLookupJourneyId("vatreg1")
+  implicit val previousAddressId = AddressLookupJourneyId("vatreg2")
+
 }
