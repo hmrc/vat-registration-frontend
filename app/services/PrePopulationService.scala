@@ -77,7 +77,7 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
 
   override def getOfficerList()(implicit headerCarrier: HeaderCarrier): Future[Seq[Officer]] = {
     val officerListFromII = iis.getOfficerList()
-    val officerFromS4L = OptionT(s4l.fetchAndGet[S4LVatLodgingOfficer]())
+    val officerFromS4L: OptionT[Future, Officer] = OptionT(s4l.fetchAndGet[S4LVatLodgingOfficer]())
       .subflatMap(group =>
         group.completionCapacity.flatMap(ccv =>
           ccv.completionCapacity.map(cc =>
@@ -87,7 +87,18 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
                                     DateOfBirth(day = dobView.dob.getDayOfMonth,
                                                 month = dobView.dob.getMonthValue,
                                                 year = dobView.dob.getYear))))))
-
+//    val officerFromS4L: OptionT[Future, Officer] = for{
+//
+//      s4LVatLodgingOfficer  <- s4l.fetchAndGet[S4LVatLodgingOfficer]()
+//      completionCapacity  <- s4LVatLodgingOfficer.map(vatLodgingOfficer => vatLodgingOfficer.completionCapacity)
+//      officerDateOfBirth  <- s4LVatLodgingOfficer.map(vatLodgingOfficer => vatLodgingOfficer.officerDateOfBirth)
+//      officer <- Officer(name = completionCapacity.name,
+//        role = cc.role,
+//        dateOfBirth = group.officerDateOfBirth.map(dobView =>
+//          DateOfBirth(day = dobView.dob.getDayOfMonth,
+//            month = dobView.dob.getMonthValue,
+//            year = dobView.dob.getYear))))))
+//    }yield OptionT()
     // BE
     val officerFromBE: OptionT[Future, Officer] =
       OptionT(vrs.getVatScheme() map
