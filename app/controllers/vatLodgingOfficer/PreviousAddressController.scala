@@ -25,7 +25,7 @@ import models.view.vatLodgingOfficer.PreviousAddressView
 import play.api.Logger
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{PrePopulationService, S4LService, VatRegistrationService}
+import services.{S4LService, VatRegistrationService}
 
 
 class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
@@ -35,6 +35,7 @@ class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
   extends VatRegistrationController(ds) {
 
   import cats.syntax.flatMap._
+  import models.AddressLookupJourneyId.previousAddressId
 
   val form: Form[PreviousAddressView] = PreviousAddressForm.form
 

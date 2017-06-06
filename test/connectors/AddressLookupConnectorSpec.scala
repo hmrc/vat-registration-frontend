@@ -28,6 +28,7 @@ import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.http.{HttpResponse, InternalServerException}
 
 class AddressLookupConnectorSpec extends VatRegSpec with VatRegistrationFixture {
+  import models.AddressLookupJourneyId.homeAddressJourneyId
 
   class Setup {
 

@@ -17,7 +17,7 @@
 package models.view.vatLodgingOfficer
 
 import models.api._
-import models.{ApiModelTransformer, S4LVatLodgingOfficer, VMReads, ViewModelTransformer}
+import models._
 import play.api.libs.json.Json
 
 case class PreviousAddressView(yesNo: Boolean, address: Option[ScrsAddress] = None)
