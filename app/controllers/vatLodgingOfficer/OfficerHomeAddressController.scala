@@ -33,10 +33,11 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService,
                                              vrs: VatRegistrationService,
                                              prePopService: PrePopulationService,
-                                             val alfConnector: AddressLookupConnect)
+                                             alfConnector: AddressLookupConnect)
   extends VatRegistrationController(ds) with CommonService {
 
   import cats.syntax.flatMap._
+  import models.AddressLookupJourneyId.homeAddressJourneyId
 
   private val form = OfficerHomeAddressForm.form
   private val addressListKey = "OfficerAddressList"
