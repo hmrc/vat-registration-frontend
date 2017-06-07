@@ -18,7 +18,7 @@ package models.view.vatContact
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatContact, VatDigitalContact}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatContact, ViewModelTransformer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -55,4 +55,22 @@ class BusinessContactDetailsSpec extends UnitSpec with VatRegistrationFixture wi
     }
 
   }
+
+  "VMReads" should {
+    val s4LVatContact: S4LVatContact = S4LVatContact(businessContactDetails = Some(validBusinessContactDetails))
+
+    "extract businessContactDetails from vatContact" in {
+      BusinessContactDetails.vmReads.read(s4LVatContact) shouldBe Some(validBusinessContactDetails)
+    }
+
+    "update empty vatContact with businessContactDetails" in {
+      BusinessContactDetails.vmReads.udpate(validBusinessContactDetails, Option.empty[S4LVatContact]).businessContactDetails shouldBe Some(validBusinessContactDetails)
+    }
+
+    "update non-empty vatContact with businessContactDetails" in {
+      BusinessContactDetails.vmReads.udpate(validBusinessContactDetails, Some(s4LVatContact)).businessContactDetails shouldBe Some(validBusinessContactDetails)
+    }
+
+  }
+
 }

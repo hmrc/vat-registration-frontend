@@ -30,7 +30,7 @@ import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
-import models.{S4LVatLodgingOfficer, VatBankAccountPath, ZeroRatedTurnoverEstimatePath}
+import models.{S4LVatContact, S4LVatLodgingOfficer, VatBankAccountPath, ZeroRatedTurnoverEstimatePath}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -103,7 +103,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturns(ManageAdditionalFunds(true))
       save4laterReturns(validEuGoods)
       save4laterReturns(validApplyEori)
-      save4laterReturns(validBusinessContactDetails)
+      save4laterReturns(S4LVatContact(businessContactDetails = Some(validBusinessContactDetails)))
       save4laterReturns(validServiceEligibility)
       save4laterReturns(S4LVatLodgingOfficer(
         officerHomeAddress = Some(OfficerHomeAddressView("")),
@@ -270,6 +270,13 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "submitVatContact should process the submission even if VatScheme does not contain a VatContact object" in new Setup {
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       service.submitVatContact() returns validVatContact
+    }
+
+    "submitVatContact should fail if there's not trace of VatContact in neither backend nor S4L" in new Setup {
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+      save4laterReturnsNothing[S4LVatContact]()
+
+      service.submitVatContact() failedWith classOf[IllegalStateException]
     }
 
     "submitVatEligibility should process the submission even if VatScheme does not contain a VatEligibility object" in new Setup {
