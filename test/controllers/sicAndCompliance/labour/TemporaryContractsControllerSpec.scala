@@ -125,7 +125,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/compliance/skilled-workers"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/provides-skilled-workers"
       }
 
     }
@@ -145,7 +145,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/company-bank-account"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/business-bank-account"
       }
 
     }

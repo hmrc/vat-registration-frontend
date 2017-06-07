@@ -98,7 +98,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
 
       submitAuthorised(CompanyBankAccountController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyBankAccountRadio" -> CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES
-      ))(_ redirectsTo s"$contextRoot/bank-details")
+      ))(_ redirectsTo s"$contextRoot/business-bank-account-details")
 
     }
   }
@@ -115,7 +115,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
 
       submitAuthorised(CompanyBankAccountController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyBankAccountRadio" -> CompanyBankAccount.COMPANY_BANK_ACCOUNT_NO
-      ))(_ redirectsTo s"$contextRoot/estimate-vat-turnover")
+      ))(_ redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months")
 
     }
   }

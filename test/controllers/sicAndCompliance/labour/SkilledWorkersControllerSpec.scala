@@ -125,7 +125,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/company-bank-account"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/business-bank-account"
       }
 
     }
@@ -145,7 +145,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/company-bank-account"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/business-bank-account"
       }
 
     }

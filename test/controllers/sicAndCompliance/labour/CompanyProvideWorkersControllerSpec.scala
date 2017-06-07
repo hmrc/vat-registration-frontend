@@ -104,7 +104,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_YES
-      ))(_ redirectsTo s"$contextRoot/compliance/workers")
+      ))(_ redirectsTo s"$contextRoot/how-many-workers-does-company-provide-at-one-time")
 
     }
   }
@@ -121,7 +121,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_NO
-      ))(_ redirectsTo s"$contextRoot/company-bank-account")
+      ))(_ redirectsTo s"$contextRoot/business-bank-account")
 
     }
   }
