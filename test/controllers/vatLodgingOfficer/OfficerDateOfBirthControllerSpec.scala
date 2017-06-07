@@ -39,7 +39,7 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
   val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
 
   s"GET ${routes.OfficerDateOfBirthController.show()}" should {
-    
+
     "succeed for all possible Officer / OfficerDateOfBirthView combinations" in {
 
       val nameSame = Name(Some("forename"), None, "surname")
