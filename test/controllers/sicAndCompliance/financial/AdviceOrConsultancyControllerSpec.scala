@@ -106,7 +106,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
         "adviceOrConsultancyRadio" -> "true"
       )) {
         response =>
-          response redirectsTo s"$contextRoot/compliance/act-as-intermediary"
+          response redirectsTo s"$contextRoot/acts-as-intermediary"
       }
 
     }
@@ -125,7 +125,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
         "adviceOrConsultancyRadio" -> "false"
       )) {
         response =>
-          response redirectsTo s"$contextRoot/compliance/act-as-intermediary"
+          response redirectsTo s"$contextRoot/acts-as-intermediary"
       }
 
     }
