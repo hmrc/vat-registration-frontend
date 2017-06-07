@@ -123,7 +123,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
       submitAuthorised(TestTaxableTurnoverController.submit(), fakeRequest.withFormUrlEncodedBody(
         "taxableTurnoverRadio" -> TaxableTurnover.TAXABLE_NO
-      ))(_ redirectsTo s"$contextRoot/voluntary-registration")
+      ))(_ redirectsTo s"$contextRoot/do-you-want-to-register-voluntarily")
 
     }
   }

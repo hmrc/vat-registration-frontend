@@ -123,7 +123,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
         "numberOfWorkers" -> "5"
       )) {
         result =>
-          result redirectsTo s"$contextRoot/company-bank-account"
+          result redirectsTo s"$contextRoot/business-bank-account"
       }
 
     }
@@ -142,7 +142,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
         "numberOfWorkers" -> "8"
       )) {
         result =>
-          result redirectsTo s"$contextRoot/compliance/temporary-contracts"
+          result redirectsTo s"$contextRoot/provides-workers-on-temporary-contracts"
       }
     }
   }

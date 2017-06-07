@@ -110,7 +110,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
         "manageAdditionalFundsRadio" -> "true"
       )) {
         response =>
-          response redirectsTo s"$contextRoot/company-bank-account"
+          response redirectsTo s"$contextRoot/business-bank-account"
       }
 
     }
@@ -129,7 +129,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
         "manageAdditionalFundsRadio" -> "false"
       )) {
         response =>
-          response redirectsTo s"$contextRoot/company-bank-account"
+          response redirectsTo s"$contextRoot/business-bank-account"
       }
 
     }
