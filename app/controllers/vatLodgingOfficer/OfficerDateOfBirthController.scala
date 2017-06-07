@@ -18,7 +18,6 @@ package controllers.vatLodgingOfficer
 
 import javax.inject.Inject
 
-import cats.data.OptionT
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerDateOfBirthForm
 import models.ModelKeys._
@@ -35,30 +34,33 @@ class OfficerDateOfBirthController @Inject()(ds: CommonPlayDependencies)
 
   val form = OfficerDateOfBirthForm.form
 
-  private def fetchOfficer()(implicit headerCarrier: HeaderCarrier) =
-    OptionT(keystoreConnector.fetchAndGet[Officer](REGISTERING_OFFICER_KEY))
+  private def fetchOfficer()(implicit headerCarrier: HeaderCarrier) = keystoreConnector.fetchAndGet[Officer](REGISTERING_OFFICER_KEY)
 
+  import cats.syntax.cartesian._
   def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request =>
-    for {
-      officer <- fetchOfficer().getOrElse(Officer.empty) // TODO: getOrElse(Officer.empty) ??
-      res <- viewModel[OfficerDateOfBirthView]().
-          fold(
-            officer.dateOfBirth.fold(form)(dob => form.fill(OfficerDateOfBirthView(dob)))
-          ) {
-          view =>
-            view.officerName match {
-              case Some(name) if name == officer.name => form.fill(view)
-              case _ => officer.dateOfBirth.fold(form)(dob => form.fill(OfficerDateOfBirthView(dob)))
-            }
-      }
-    } yield Ok(views.html.pages.vatLodgingOfficer.officer_dob(res)))
+    (fetchOfficer() |@| viewModel[OfficerDateOfBirthView]().value).map((officer, view) => {
+      val resView = getView(officer, view)
+      Ok(views.html.pages.vatLodgingOfficer.officer_dob(resView.fold(form)(form.fill)))
+    }
+  ))
+
+  def getView(officer: Option[Officer], view: Option[OfficerDateOfBirthView]): Option[OfficerDateOfBirthView] =
+    (officer.map(_.name) == view.flatMap(_.officerName), officer.flatMap(_.dateOfBirth), view)
+      match {
+        case (_, None, None) => None
+        case (true, _, Some(v)) => Some(v)
+        case (false, None, Some(v)) if officer.isEmpty => Some(v)
+        case (false, None, Some(_)) => None
+        case (false, Some(dob), _) => Some(OfficerDateOfBirthView(dob, Some(officer.get.name)))}
+
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatLodgingOfficer.officer_dob(badForm)).pure,
-      data  => for {
-        officer <- fetchOfficer().getOrElse(Officer.empty)
-        _ <- save(data.copy(officerName = Some(officer.name)))
-      } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerNinoController.show())))
+      data => {
+        fetchOfficer().map(_.fold(save(data))(officer => save(data.copy(officerName = Some(officer.name)))))
+        Redirect(controllers.vatLodgingOfficer.routes.OfficerNinoController.show()).pure
+      })
+  )
 
 }
