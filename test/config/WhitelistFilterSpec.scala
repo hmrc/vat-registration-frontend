@@ -55,7 +55,7 @@ class WhitelistFilterSpec extends PlaySpec with OneAppPerTest {
 
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result) mustBe Some("/register-for-vat/start")
+        redirectLocation(result) mustBe Some("/register-for-vat/before-you-register-for-vat")
       }
 
       "coming from a IP NOT in the white-list and not with a white-listed path must be redirected" in {

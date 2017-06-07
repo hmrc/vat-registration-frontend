@@ -124,7 +124,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/eu-goods"
+          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/trade-goods-services-with-countries-outside-uk"
       }
 
     }
@@ -144,7 +144,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/eu-goods"
+          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/trade-goods-services-with-countries-outside-uk"
 
       }
 

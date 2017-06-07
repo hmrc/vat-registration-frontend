@@ -106,7 +106,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
 
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/company-bank-account")
+      ))(_ redirectsTo s"$contextRoot/business-bank-account")
     }
   }
 

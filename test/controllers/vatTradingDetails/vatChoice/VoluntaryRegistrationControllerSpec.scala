@@ -113,7 +113,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
 
       submitAuthorised(TestVoluntaryRegistrationController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationRadio" -> VoluntaryRegistration.REGISTER_YES
-      ))(_ redirectsTo s"$contextRoot/voluntary-registration-reason")
+      ))(_ redirectsTo s"$contextRoot/reason-for-registering")
     }
   }
 

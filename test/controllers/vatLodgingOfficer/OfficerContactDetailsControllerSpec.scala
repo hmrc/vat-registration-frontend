@@ -80,7 +80,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com")
-      )(_ redirectsTo s"$contextRoot/start-date")
+      )(_ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be")
     }
   }
 
@@ -93,7 +93,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com")
-      )(_ redirectsTo s"$contextRoot/start-date-confirmation")
+      )(_ redirectsTo s"$contextRoot/vat-start-date")
     }
   }
 
@@ -107,7 +107,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
       submitAuthorised(
         Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com")
-      )(_ redirectsTo s"$contextRoot/start-date")
+      )(_ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be")
 
     }
   }

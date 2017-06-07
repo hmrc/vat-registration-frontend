@@ -100,7 +100,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
       submitAuthorised(TestPreviousAddressController.submit(), fakeRequest.withFormUrlEncodedBody(
         "previousAddressQuestionRadio" -> "true"
       )) {
-        _ redirectsTo s"$contextRoot/business-contact"
+        _ redirectsTo s"$contextRoot/company-contact-details"
       }
 
       verify(mockVatRegistrationService).submitVatLodgingOfficer()(any())
@@ -113,7 +113,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
       save4laterExpectsSave[PreviousAddressView]()
       when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
       callAuthorised(TestPreviousAddressController.acceptFromTxm("addressId")) {
-        _ redirectsTo s"$contextRoot/business-contact"
+        _ redirectsTo s"$contextRoot/company-contact-details"
       }
 
       val expectedAddressView = PreviousAddressView(false, Some(address))
