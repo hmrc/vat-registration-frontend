@@ -37,7 +37,7 @@ import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
-import models.{S4LKey, S4LVatLodgingOfficer}
+import models.{S4LKey, S4LVatContact, S4LVatLodgingOfficer}
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService, VatRegistrationService}
@@ -54,7 +54,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
       voluntaryRegistrationReason <- s4LService.fetchAndGet[VoluntaryRegistrationReason]()
       startDate <- s4LService.fetchAndGet[StartDateView]()
       tradingName <- s4LService.fetchAndGet[TradingNameView]()
-      businessContactDetails <- s4LService.fetchAndGet[BusinessContactDetails]()
+
       euGoods <- s4LService.fetchAndGet[EuGoods]()
       applyEori <- s4LService.fetchAndGet[ApplyEori]()
       companyBankAccount <- s4LService.fetchAndGet[CompanyBankAccount]()
@@ -84,6 +84,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
       investmentFundManagement <- s4LService.fetchAndGet[InvestmentFundManagement]()
       manageAdditionalFunds <- s4LService.fetchAndGet[ManageAdditionalFunds]()
 
+      vatContact <- s4LService.fetchAndGet[S4LVatContact]()
       vatLodgingOfficer <- s4LService.fetchAndGet[S4LVatLodgingOfficer]()
 
       eligibility <- s4LService.fetchAndGet[VatServiceEligibility]()
@@ -104,10 +105,10 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
           euGoods.map(_.yesNo),
           applyEori.map(_.yesNo.toString)),
         VatContactTestSetup(
-          businessContactDetails.map(_.email),
-          businessContactDetails.flatMap(_.daytimePhone),
-          businessContactDetails.flatMap(_.mobile),
-          businessContactDetails.flatMap(_.website)
+          email = vatContact.flatMap(_.businessContactDetails).map(_.email),
+          daytimePhone = vatContact.flatMap(_.businessContactDetails).flatMap(_.daytimePhone),
+          mobile = vatContact.flatMap(_.businessContactDetails).flatMap(_.mobile),
+          website = vatContact.flatMap(_.businessContactDetails).flatMap(_.website)
         ),
         VatFinancialsTestSetup(
           companyBankAccount.map(_.yesNo),
@@ -216,7 +217,6 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
             _ <- saveToS4Later(data.vatTradingDetails.tradingNameChoice, data, { x => TradingNameView(x.vatTradingDetails.tradingNameChoice.get, data.vatTradingDetails.tradingName) })
             _ <- saveToS4Later(data.vatTradingDetails.euGoods, data, { x => EuGoods(x.vatTradingDetails.euGoods.get) })
             _ <- saveToS4Later(data.vatTradingDetails.applyEori, data, { x => ApplyEori(x.vatTradingDetails.applyEori.get.toBoolean) })
-            _ <- saveToS4Later(data.vatContact.email, data, { x => BusinessContactDetails(x.vatContact.email.get, x.vatContact.daytimePhone, x.vatContact.mobile, x.vatContact.website) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountChoice, data, { x => CompanyBankAccount(x.vatFinancials.companyBankAccountChoice.get) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountName, data, {
               x =>
@@ -260,7 +260,10 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
                 x.vatServiceEligibility.companyWillDoAnyOf.map(_.toBoolean))
             })
 
-            vatLodgingOfficer = vatLodingOfficerFromData(data)
+            vatContact = vatContactFromData(data)
+            _ <- s4LService.save(vatContact)
+
+            vatLodgingOfficer = vatLodgingOfficerFromData(data)
             _ <- s4LService.save(vatLodgingOfficer)
 
             // KeyStore hack
@@ -269,13 +272,22 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
                   map(cc => Officer(cc.name, cc.role, None)))
             _ <- keystoreConnector.cache(REGISTERING_OFFICER_KEY, officer.getOrElse(Officer.empty))
 
-
           } yield Ok("Test setup complete")
         }
       })
   })
 
-  private def vatLodingOfficerFromData(data: TestSetup): S4LVatLodgingOfficer = {
+  private def vatContactFromData(data: TestSetup): S4LVatContact = {
+    val businessContactDetails = BusinessContactDetails(data.vatContact.email.getOrElse(""),
+                                                        data.vatContact.daytimePhone,
+                                                        data.vatContact.mobile,
+                                                        data.vatContact.website)
+    S4LVatContact(
+      businessContactDetails = Some(businessContactDetails)
+    )
+  }
+
+  private def vatLodgingOfficerFromData(data: TestSetup): S4LVatLodgingOfficer = {
     val homeAddress: Option[ScrsAddress] = data.officerHomeAddress.line1.map(_ =>
       ScrsAddress(
         line1 = data.officerHomeAddress.line1.getOrElse(""),

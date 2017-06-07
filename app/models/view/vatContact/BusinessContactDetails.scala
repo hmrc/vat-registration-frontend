@@ -16,8 +16,8 @@
 
 package models.view.vatContact
 
+import models._
 import models.api.{VatContact, VatDigitalContact, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
 case class BusinessContactDetails(
@@ -30,6 +30,12 @@ case class BusinessContactDetails(
 object BusinessContactDetails {
 
   implicit val format: OFormat[BusinessContactDetails] = Json.format[BusinessContactDetails]
+
+  implicit val vmReads = VMReads(
+    readF = (group: S4LVatContact) => group.businessContactDetails,
+    updateF = (c: BusinessContactDetails, g: Option[S4LVatContact]) =>
+      g.getOrElse(S4LVatContact()).copy(businessContactDetails = Some(c))
+  )
 
   implicit val modelTransformer = ApiModelTransformer[BusinessContactDetails] { (vs: VatScheme) =>
     vs.vatContact.map {
