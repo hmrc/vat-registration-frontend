@@ -17,20 +17,16 @@
 package controllers.vatContact
 
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatContact.BusinessContactDetails
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object TestBusinessContactDetailsController extends BusinessContactDetailsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -41,8 +37,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
   s"GET ${controllers.vatContact.routes.BusinessContactDetailsController.show()}" should {
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[BusinessContactDetails]()(any(), any(), any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[BusinessContactDetails]()
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
@@ -51,11 +46,8 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
       }
     }
 
-
     "return HTML when there's an answer in S4L" in {
-      when(mockS4LService.fetchAndGet[BusinessContactDetails]()
-        (Matchers.eq(S4LKey[BusinessContactDetails]), any(), any()))
-        .thenReturn(Future.successful(Some(validBusinessContactDetails)))
+      save4laterReturns2(validBusinessContactDetails)()
 
       callAuthorised(TestBusinessContactDetailsController.show) {
         _ includesText "Company contact details"
@@ -63,8 +55,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockS4LService.fetchAndGet[BusinessContactDetails]()(Matchers.eq(S4LKey[BusinessContactDetails]), any(), any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[BusinessContactDetails]()
 
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
@@ -86,16 +77,15 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
   s"POST ${controllers.vatContact.routes.BusinessContactDetailsController.submit()} with a valid business contact entered" should {
 
     "return 303" in {
-      val returnCacheMapBusinessContactDetails = CacheMap("", Map("" -> Json.toJson(validBusinessContactDetails)))
-
-      when(mockS4LService.save[BusinessContactDetails](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMapBusinessContactDetails))
+      save4laterExpectsSave[BusinessContactDetails]()
+      when(mockVatRegistrationService.submitVatContact()(any())).thenReturn(validVatContact.pure)
 
       submitAuthorised(
         TestBusinessContactDetailsController.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com", "mobile" -> "0123456789")
       )(_ redirectsTo s"$contextRoot/describe-what-company-does")
 
+      verify(mockVatRegistrationService).submitVatContact()(any())
     }
   }
 

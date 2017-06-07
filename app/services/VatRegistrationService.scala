@@ -202,18 +202,18 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     } yield response
   }
 
-
   def submitVatContact()(implicit hc: HeaderCarrier): Future[VatContact] = {
-    def mergeWithS4L(vs: VatScheme) =
-      s4l[BusinessContactDetails]().map(S4LVatContact.apply).map { s4l =>
+    def merge(fresh: Option[S4LVatContact], vs: VatScheme): VatContact =
+      fresh.fold(
+        vs.vatContact.getOrElse(throw fail("VatContact"))
+      ) { s4l =>
         update(s4l.businessContactDetails, vs)
           .apply(vs.vatContact.getOrElse(VatContact.empty)) //TODO remove the "seeding" with empty
       }
 
     for {
-      vs <- getVatScheme()
-      vatContact <- mergeWithS4L(vs)
-      response <- vatRegConnector.upsertVatContact(vs.id, vatContact)
+      (vs, vlo) <- (getVatScheme() |@| s4l[S4LVatContact]()).tupled
+      response <- vatRegConnector.upsertVatContact(vs.id, merge(vlo, vs))
     } yield response
   }
 
@@ -251,6 +251,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       response <- vatRegConnector.upsertVatLodgingOfficer(vs.id, merge(vlo, vs))
     } yield response
   }
+
 
 
   private def fail(logicalGroup: String): Exception =
