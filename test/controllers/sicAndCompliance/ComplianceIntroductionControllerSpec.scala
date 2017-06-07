@@ -47,7 +47,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
         .thenReturn(Future.successful(Some(SicStub(Some("12345678"), None, None, None))))
       callAuthorised(ComplianceIntroductionController.submit) {
         result =>
-          result redirectsTo s"$contextRoot/company-bank-account"
+          result redirectsTo s"$contextRoot/business-bank-account"
       }
     }
   }
@@ -71,7 +71,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
       ))
       callAuthorised(ComplianceIntroductionController.submit) {
         result =>
-          result redirectsTo s"$contextRoot/compliance/not-for-profit"
+          result redirectsTo s"$contextRoot/not-for-profit-or-public-body"
       }
     }
   }
@@ -84,7 +84,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
       ))
       callAuthorised(ComplianceIntroductionController.submit) {
         result =>
-          result redirectsTo s"$contextRoot/compliance/provide-workers"
+          result redirectsTo s"$contextRoot/provides-workers-to-other-employers"
       }
     }
   }
@@ -97,7 +97,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
       ))
       callAuthorised(ComplianceIntroductionController.submit) {
         result =>
-          result redirectsTo s"$contextRoot/compliance/advice-or-consultancy"
+          result redirectsTo s"$contextRoot/provides-advice-only-or-consultancy-services"
       }
     }
   }

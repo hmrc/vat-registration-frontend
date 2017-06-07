@@ -1,185 +1,185 @@
 # microservice specific routes
 
-GET         /assets/*file                          controllers.Assets.at(path="/public", file)
+GET         /assets/*file                                                                      controllers.Assets.at(path="/public", file)
 
 ## WELCOME PAGE
-GET         /                                      controllers.WelcomeController.show
-GET         /start                                 controllers.WelcomeController.start
+GET         /                                                                                  controllers.WelcomeController.show
+GET         /before-you-register-for-vat                                                       controllers.WelcomeController.start
 
 ## SERVICE CRITERIA QUESTIONS
-GET         /do-you-have-national-insurance-number              controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "haveNino")
-POST        /do-you-have-national-insurance-number              controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "haveNino")
-GET         /will-you-do-any-of-the-following                   controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "doingBusinessAbroad")
-POST        /will-you-do-any-of-the-following                   controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "doingBusinessAbroad")
-GET         /do-the-following-apply-to-you-or-the-business      controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "doAnyApplyToYou")
-POST        /do-the-following-apply-to-you-or-the-business      controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "doAnyApplyToYou")
-GET         /will-you-apply-for-following                       controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "applyingForAnyOf")
-POST        /will-you-apply-for-following                       controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "applyingForAnyOf")
-GET         /will-you-do-the-following                          controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "companyWillDoAnyOf")
-POST        /will-you-do-the-following                          controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "companyWillDoAnyOf")
+GET         /do-you-have-national-insurance-number                                             controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "haveNino")
+POST        /do-you-have-national-insurance-number                                             controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "haveNino")
+GET         /will-you-do-any-of-the-following                                                  controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "doingBusinessAbroad")
+POST        /will-you-do-any-of-the-following                                                  controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "doingBusinessAbroad")
+GET         /do-the-following-apply-to-you-or-the-business                                     controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "doAnyApplyToYou")
+POST        /do-the-following-apply-to-you-or-the-business                                     controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "doAnyApplyToYou")
+GET         /will-you-apply-for-following                                                      controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "applyingForAnyOf")
+POST        /will-you-apply-for-following                                                      controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "applyingForAnyOf")
+GET         /will-you-do-the-following                                                         controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "companyWillDoAnyOf")
+POST        /will-you-do-the-following                                                         controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "companyWillDoAnyOf")
 
 ## VOLUNTARY START DATE PAGE
-GET         /start-date                            controllers.vatTradingDetails.vatChoice.StartDateController.show
-POST        /start-date                            controllers.vatTradingDetails.vatChoice.StartDateController.submit
+GET         /what-do-you-want-your-vat-start-date-to-be                                        controllers.vatTradingDetails.vatChoice.StartDateController.show
+POST        /what-do-you-want-your-vat-start-date-to-be                                        controllers.vatTradingDetails.vatChoice.StartDateController.submit
 
 ## MANDATORY START DATE PAGE
-GET         /start-date-confirmation               controllers.vatTradingDetails.vatChoice.MandatoryStartDateController.show
-POST        /start-date-confirmation               controllers.vatTradingDetails.vatChoice.MandatoryStartDateController.submit
+GET         /vat-start-date                                                                    controllers.vatTradingDetails.vatChoice.MandatoryStartDateController.show
+POST        /vat-start-date                                                                    controllers.vatTradingDetails.vatChoice.MandatoryStartDateController.submit
 
 ## TRADING NAME PAGE
-GET         /trading-name                          controllers.vatTradingDetails.TradingNameController.show
-POST        /trading-name                          controllers.vatTradingDetails.TradingNameController.submit
+GET         /trading-name                                                                      controllers.vatTradingDetails.TradingNameController.show
+POST        /trading-name                                                                      controllers.vatTradingDetails.TradingNameController.submit
 
 ## EU GOODS PAGE
-GET         /eu-goods                              controllers.vatTradingDetails.vatEuTrading.EuGoodsController.show
-POST        /eu-goods                              controllers.vatTradingDetails.vatEuTrading.EuGoodsController.submit
+GET         /trade-goods-services-with-countries-outside-uk                                    controllers.vatTradingDetails.vatEuTrading.EuGoodsController.show
+POST        /trade-goods-services-with-countries-outside-uk                                    controllers.vatTradingDetails.vatEuTrading.EuGoodsController.submit
 
 ## EU GOODS APPLY EORI
-GET         /apply-eori                            controllers.vatTradingDetails.vatEuTrading.ApplyEoriController.show
-POST        /apply-eori                            controllers.vatTradingDetails.vatEuTrading.ApplyEoriController.submit
+GET         /apply-economic-operator-registration-identification-number                        controllers.vatTradingDetails.vatEuTrading.ApplyEoriController.show
+POST        /apply-economic-operator-registration-identification-number                        controllers.vatTradingDetails.vatEuTrading.ApplyEoriController.submit
 
 ## VOLUNTARY REGISTRATION PAGE
-GET         /voluntary-registration                controllers.vatTradingDetails.vatChoice.VoluntaryRegistrationController.show
-POST        /voluntary-registration                controllers.vatTradingDetails.vatChoice.VoluntaryRegistrationController.submit
+GET         /do-you-want-to-register-voluntarily                                               controllers.vatTradingDetails.vatChoice.VoluntaryRegistrationController.show
+POST        /do-you-want-to-register-voluntarily                                               controllers.vatTradingDetails.vatChoice.VoluntaryRegistrationController.submit
 
 ## VOLUNTARY REGISTRATION REASON PAGE
-GET         /voluntary-registration-reason         controllers.vatTradingDetails.vatChoice.VoluntaryRegistrationReasonController.show
-POST        /voluntary-registration-reason         controllers.vatTradingDetails.vatChoice.VoluntaryRegistrationReasonController.submit
+GET         /reason-for-registering                                                            controllers.vatTradingDetails.vatChoice.VoluntaryRegistrationReasonController.show
+POST        /reason-for-registering                                                            controllers.vatTradingDetails.vatChoice.VoluntaryRegistrationReasonController.submit
 
 ## ESTIMATE VAT TAXABLE TURNOVER PAGE
-GET         /estimate-vat-turnover                 controllers.vatFinancials.EstimateVatTurnoverController.show
-POST        /estimate-vat-turnover                 controllers.vatFinancials.EstimateVatTurnoverController.submit
+GET         /estimate-vat-taxable-turnover-next-12-months                                      controllers.vatFinancials.EstimateVatTurnoverController.show
+POST        /estimate-vat-taxable-turnover-next-12-months                                      controllers.vatFinancials.EstimateVatTurnoverController.submit
 
 ## ZERO RATED SALES PAGE
-GET         /zero-rated-sales                      controllers.vatFinancials.ZeroRatedSalesController.show
-POST        /zero-rated-sales                      controllers.vatFinancials.ZeroRatedSalesController.submit
+GET         /sell-zero-rated-items-next-12-months                                              controllers.vatFinancials.ZeroRatedSalesController.show
+POST        /sell-zero-rated-items-next-12-months                                              controllers.vatFinancials.ZeroRatedSalesController.submit
 
 ## ESTIMATE ZERO RATED SALES PAGE
-GET         /estimate-zero-rated-sales             controllers.vatFinancials.EstimateZeroRatedSalesController.show
-POST        /estimate-zero-rated-sales             controllers.vatFinancials.EstimateZeroRatedSalesController.submit
+GET         /estimate-zero-rated-sales-next-12-months                                          controllers.vatFinancials.EstimateZeroRatedSalesController.show
+POST        /estimate-zero-rated-sales-next-12-months                                          controllers.vatFinancials.EstimateZeroRatedSalesController.submit
 
 ## VAT CHARGE EXPECTANCY PAGE
-GET         /vat-charge-expectancy                 controllers.vatFinancials.VatChargeExpectancyController.show
-POST        /vat-charge-expectancy                 controllers.vatFinancials.VatChargeExpectancyController.submit
+GET         /expect-to-reclaim-more-vat-than-you-charge                                        controllers.vatFinancials.VatChargeExpectancyController.show
+POST        /expect-to-reclaim-more-vat-than-you-charge                                        controllers.vatFinancials.VatChargeExpectancyController.submit
 
 ## ACCOUNTING PERIOD PAGE
-GET         /accounting-period                     controllers.vatFinancials.vatAccountingPeriod.AccountingPeriodController.show
-POST        /accounting-period                     controllers.vatFinancials.vatAccountingPeriod.AccountingPeriodController.submit
+GET         /vat-return-periods-end                                                            controllers.vatFinancials.vatAccountingPeriod.AccountingPeriodController.show
+POST        /vat-return-periods-end                                                            controllers.vatFinancials.vatAccountingPeriod.AccountingPeriodController.submit
 
 ## TAXABLE TURNOVER PAGE
-GET         /taxable-turnover                      controllers.vatTradingDetails.vatChoice.TaxableTurnoverController.show
-POST        /taxable-turnover                      controllers.vatTradingDetails.vatChoice.TaxableTurnoverController.submit
+GET         /do-you-expect-taxable-turnover-to-be-more-than-threshold                          controllers.vatTradingDetails.vatChoice.TaxableTurnoverController.show
+POST        /do-you-expect-taxable-turnover-to-be-more-than-threshold                          controllers.vatTradingDetails.vatChoice.TaxableTurnoverController.submit
 
 ## VAT RETURN FREQUENCY
-GET         /vat-return-frequency                  controllers.vatFinancials.vatAccountingPeriod.VatReturnFrequencyController.show
-POST        /vat-return-frequency                  controllers.vatFinancials.vatAccountingPeriod.VatReturnFrequencyController.submit
+GET         /how-often-do-you-want-to-submit-vat-returns                                       controllers.vatFinancials.vatAccountingPeriod.VatReturnFrequencyController.show
+POST        /how-often-do-you-want-to-submit-vat-returns                                       controllers.vatFinancials.vatAccountingPeriod.VatReturnFrequencyController.submit
 
 ## COMPANY BANK ACCOUNT
-GET         /company-bank-account                  controllers.vatFinancials.vatBankAccount.CompanyBankAccountController.show
-POST        /company-bank-account                  controllers.vatFinancials.vatBankAccount.CompanyBankAccountController.submit
+GET         /business-bank-account                                                             controllers.vatFinancials.vatBankAccount.CompanyBankAccountController.show
+POST        /business-bank-account                                                             controllers.vatFinancials.vatBankAccount.CompanyBankAccountController.submit
 
 ## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
-GET         /bank-details                          controllers.vatFinancials.vatBankAccount.CompanyBankAccountDetailsController.show
-POST        /bank-details                          controllers.vatFinancials.vatBankAccount.CompanyBankAccountDetailsController.submit
+GET         /business-bank-account-details                                                     controllers.vatFinancials.vatBankAccount.CompanyBankAccountDetailsController.show
+POST        /business-bank-account-details                                                     controllers.vatFinancials.vatBankAccount.CompanyBankAccountDetailsController.submit
 
 ## BUSINESS ACTIVITY DESCRIPTION
-GET         /business-activity-description         controllers.sicAndCompliance.BusinessActivityDescriptionController.show
-POST        /business-activity-description         controllers.sicAndCompliance.BusinessActivityDescriptionController.submit
+GET         /describe-what-company-does                                                        controllers.sicAndCompliance.BusinessActivityDescriptionController.show
+POST        /describe-what-company-does                                                        controllers.sicAndCompliance.BusinessActivityDescriptionController.submit
 
 ## COMPLIANCE INTRODUCTION
-GET         /compliance/compliance-help            controllers.sicAndCompliance.ComplianceIntroductionController.show
-POST        /compliance/compliance-help            controllers.sicAndCompliance.ComplianceIntroductionController.submit
+GET         /tell-us-more-about-the-company                                                        controllers.sicAndCompliance.ComplianceIntroductionController.show
+POST        /tell-us-more-about-the-company                                                        controllers.sicAndCompliance.ComplianceIntroductionController.submit
 
 ## CULTURAL COMPLIANCE QUESTIONS
-GET         /compliance/not-for-profit             controllers.sicAndCompliance.cultural.NotForProfitController.show
-POST        /compliance/not-for-profit             controllers.sicAndCompliance.cultural.NotForProfitController.submit
+GET         /not-for-profit-or-public-body                                                     controllers.sicAndCompliance.cultural.NotForProfitController.show
+POST        /not-for-profit-or-public-body                                                     controllers.sicAndCompliance.cultural.NotForProfitController.submit
 
 ## LABOUR COMPLIANCE QUESTIONS
-GET         /compliance/provide-workers            controllers.sicAndCompliance.labour.CompanyProvideWorkersController.show
-POST        /compliance/provide-workers            controllers.sicAndCompliance.labour.CompanyProvideWorkersController.submit
+GET         /provides-workers-to-other-employers                                               controllers.sicAndCompliance.labour.CompanyProvideWorkersController.show
+POST        /provides-workers-to-other-employers                                               controllers.sicAndCompliance.labour.CompanyProvideWorkersController.submit
 
-GET         /compliance/workers                    controllers.sicAndCompliance.labour.WorkersController.show
-POST        /compliance/workers                    controllers.sicAndCompliance.labour.WorkersController.submit
+GET         /how-many-workers-does-company-provide-at-one-time                                 controllers.sicAndCompliance.labour.WorkersController.show
+POST        /how-many-workers-does-company-provide-at-one-time                                 controllers.sicAndCompliance.labour.WorkersController.submit
 
-GET         /compliance/temporary-contracts        controllers.sicAndCompliance.labour.TemporaryContractsController.show
-POST        /compliance/temporary-contracts        controllers.sicAndCompliance.labour.TemporaryContractsController.submit
+GET         /provides-workers-on-temporary-contracts                                           controllers.sicAndCompliance.labour.TemporaryContractsController.show
+POST        /provides-workers-on-temporary-contracts                                           controllers.sicAndCompliance.labour.TemporaryContractsController.submit
 
-GET         /compliance/skilled-workers            controllers.sicAndCompliance.labour.SkilledWorkersController.show
-POST        /compliance/skilled-workers            controllers.sicAndCompliance.labour.SkilledWorkersController.submit
+GET         /provides-skilled-workers                                                          controllers.sicAndCompliance.labour.SkilledWorkersController.show
+POST        /provides-skilled-workers                                                          controllers.sicAndCompliance.labour.SkilledWorkersController.submit
 
 ## FINANCIAL COMPLIANCE QUESTIONS
-GET         /compliance/advice-or-consultancy      controllers.sicAndCompliance.financial.AdviceOrConsultancyController.show
-POST        /compliance/advice-or-consultancy      controllers.sicAndCompliance.financial.AdviceOrConsultancyController.submit
+GET         /provides-advice-only-or-consultancy-services                                      controllers.sicAndCompliance.financial.AdviceOrConsultancyController.show
+POST        /provides-advice-only-or-consultancy-services                                      controllers.sicAndCompliance.financial.AdviceOrConsultancyController.submit
 
-GET         /compliance/act-as-intermediary        controllers.sicAndCompliance.financial.ActAsIntermediaryController.show
-POST        /compliance/act-as-intermediary        controllers.sicAndCompliance.financial.ActAsIntermediaryController.submit
+GET         /acts-as-intermediary                                                              controllers.sicAndCompliance.financial.ActAsIntermediaryController.show
+POST        /acts-as-intermediary                                                              controllers.sicAndCompliance.financial.ActAsIntermediaryController.submit
 
-GET         /charges-fees-for-introducing-clients-to-financial-service-providers     controllers.sicAndCompliance.financial.ChargeFeesController.show
-POST        /charges-fees-for-introducing-clients-to-financial-service-providers     controllers.sicAndCompliance.financial.ChargeFeesController.submit
+GET         /charges-fees-for-introducing-clients-to-financial-service-providers               controllers.sicAndCompliance.financial.ChargeFeesController.show
+POST        /charges-fees-for-introducing-clients-to-financial-service-providers               controllers.sicAndCompliance.financial.ChargeFeesController.submit
 
-GET         /provides-investment-fund-management-services     controllers.sicAndCompliance.financial.InvestmentFundManagementController.show
-POST        /provides-investment-fund-management-services     controllers.sicAndCompliance.financial.InvestmentFundManagementController.submit
+GET         /provides-investment-fund-management-services                                      controllers.sicAndCompliance.financial.InvestmentFundManagementController.show
+POST        /provides-investment-fund-management-services                                      controllers.sicAndCompliance.financial.InvestmentFundManagementController.submit
 
-GET         /does-additional-work-when-introducing-client-to-financial-service-provider     controllers.sicAndCompliance.financial.AdditionalNonSecuritiesWorkController.show
-POST        /does-additional-work-when-introducing-client-to-financial-service-provider     controllers.sicAndCompliance.financial.AdditionalNonSecuritiesWorkController.submit
+GET         /does-additional-work-when-introducing-client-to-financial-service-provider        controllers.sicAndCompliance.financial.AdditionalNonSecuritiesWorkController.show
+POST        /does-additional-work-when-introducing-client-to-financial-service-provider        controllers.sicAndCompliance.financial.AdditionalNonSecuritiesWorkController.submit
 
-GET         /involved-in-leasing-vehicles-or-equipment     controllers.sicAndCompliance.financial.LeaseVehiclesController.show
-POST        /involved-in-leasing-vehicles-or-equipment     controllers.sicAndCompliance.financial.LeaseVehiclesController.submit
+GET         /involved-in-leasing-vehicles-or-equipment                                         controllers.sicAndCompliance.financial.LeaseVehiclesController.show
+POST        /involved-in-leasing-vehicles-or-equipment                                         controllers.sicAndCompliance.financial.LeaseVehiclesController.submit
 
-GET         /provides-discretionary-investment-management-services     controllers.sicAndCompliance.financial.DiscretionaryInvestmentManagementServicesController.show
-POST        /provides-discretionary-investment-management-services     controllers.sicAndCompliance.financial.DiscretionaryInvestmentManagementServicesController.submit
+GET         /provides-discretionary-investment-management-services                             controllers.sicAndCompliance.financial.DiscretionaryInvestmentManagementServicesController.show
+POST        /provides-discretionary-investment-management-services                             controllers.sicAndCompliance.financial.DiscretionaryInvestmentManagementServicesController.submit
 
-GET         /manages-funds-not-included-in-this-list     controllers.sicAndCompliance.financial.ManageAdditionalFundsController.show
-POST        /manages-funds-not-included-in-this-list     controllers.sicAndCompliance.financial.ManageAdditionalFundsController.submit
+GET         /manages-funds-not-included-in-this-list                                           controllers.sicAndCompliance.financial.ManageAdditionalFundsController.show
+POST        /manages-funds-not-included-in-this-list                                           controllers.sicAndCompliance.financial.ManageAdditionalFundsController.submit
 
 ## BUSINESS CONTACT DETAILS PAGE
-GET         /business-contact                      controllers.vatContact.BusinessContactDetailsController.show
-POST        /business-contact                      controllers.vatContact.BusinessContactDetailsController.submit
+GET         /company-contact-details                                                           controllers.vatContact.BusinessContactDetailsController.show
+POST        /company-contact-details                                                           controllers.vatContact.BusinessContactDetailsController.submit
 
 ## OFFICER ADDRESS PAGE
-GET         /your-home-address                              controllers.vatLodgingOfficer.OfficerHomeAddressController.show
-POST        /your-home-address                              controllers.vatLodgingOfficer.OfficerHomeAddressController.submit
-GET         /your-home-address/acceptFromTxm                controllers.vatLodgingOfficer.OfficerHomeAddressController.acceptFromTxm(id: String ?= "")
+GET         /your-home-address                                                                 controllers.vatLodgingOfficer.OfficerHomeAddressController.show
+POST        /your-home-address                                                                 controllers.vatLodgingOfficer.OfficerHomeAddressController.submit
+GET         /your-home-address/acceptFromTxm                                                   controllers.vatLodgingOfficer.OfficerHomeAddressController.acceptFromTxm(id: String ?= "")
 
 ## OFFICER DOB PAGE
-GET         /your-date-of-birth                      controllers.vatLodgingOfficer.OfficerDateOfBirthController.show
-POST        /your-date-of-birth                      controllers.vatLodgingOfficer.OfficerDateOfBirthController.submit
+GET         /your-date-of-birth                                                                controllers.vatLodgingOfficer.OfficerDateOfBirthController.show
+POST        /your-date-of-birth                                                                controllers.vatLodgingOfficer.OfficerDateOfBirthController.submit
 
 ## OFFICER NINO PAGE
-GET         /your-national-insurance-number          controllers.vatLodgingOfficer.OfficerNinoController.show
-POST        /your-national-insurance-number          controllers.vatLodgingOfficer.OfficerNinoController.submit
+GET         /your-national-insurance-number                                                    controllers.vatLodgingOfficer.OfficerNinoController.show
+POST        /your-national-insurance-number                                                    controllers.vatLodgingOfficer.OfficerNinoController.submit
 
 ## COMPLETION CAPACITY PAGE
-GET         /who-is-registering-the-company-for-vat    controllers.vatLodgingOfficer.CompletionCapacityController.show
-POST        /who-is-registering-the-company-for-vat    controllers.vatLodgingOfficer.CompletionCapacityController.submit
+GET         /who-is-registering-the-company-for-vat                                            controllers.vatLodgingOfficer.CompletionCapacityController.show
+POST        /who-is-registering-the-company-for-vat                                            controllers.vatLodgingOfficer.CompletionCapacityController.submit
 
 ## OFFICER CONTACT DETAILS PAGE
-GET         /your-contact-details                      controllers.vatLodgingOfficer.OfficerContactDetailsController.show
-POST        /your-contact-details                      controllers.vatLodgingOfficer.OfficerContactDetailsController.submit
+GET         /your-contact-details                                                              controllers.vatLodgingOfficer.OfficerContactDetailsController.show
+POST        /your-contact-details                                                              controllers.vatLodgingOfficer.OfficerContactDetailsController.submit
 
 ## FORMER NAME PAGE
-GET         /have-you-ever-changed-your-name          controllers.vatLodgingOfficer.FormerNameController.show
-POST        /have-you-ever-changed-your-name          controllers.vatLodgingOfficer.FormerNameController.submit
+GET         /have-you-ever-changed-your-name                                                   controllers.vatLodgingOfficer.FormerNameController.show
+POST        /have-you-ever-changed-your-name                                                   controllers.vatLodgingOfficer.FormerNameController.submit
 
 ## PREVIOUS ADDRESS QUESTION
-GET         /current-address-three-years-or-more                              controllers.vatLodgingOfficer.PreviousAddressController.show
-POST        /current-address-three-years-or-more                              controllers.vatLodgingOfficer.PreviousAddressController.submit
-GET         /current-address-three-years-or-more/changePreviousAddress        controllers.vatLodgingOfficer.PreviousAddressController.changeAddress
-GET         /current-address-three-years-or-more/acceptFromTxm                controllers.vatLodgingOfficer.PreviousAddressController.acceptFromTxm(id: String ?= "")
+GET         /current-address-three-years-or-more                                               controllers.vatLodgingOfficer.PreviousAddressController.show
+POST        /current-address-three-years-or-more                                               controllers.vatLodgingOfficer.PreviousAddressController.submit
+GET         /current-address-three-years-or-more/changePreviousAddress                         controllers.vatLodgingOfficer.PreviousAddressController.changeAddress
+GET         /current-address-three-years-or-more/acceptFromTxm                                 controllers.vatLodgingOfficer.PreviousAddressController.acceptFromTxm(id: String ?= "")
 
 ## FEEDBACK
-GET         /feedback                              controllers.feedback.FeedbackController.show
+GET         /feedback                                                                          controllers.feedback.FeedbackController.show
 
 ## SUMMARY
-GET         /summary                               controllers.SummaryController.show
+GET         /check-your-answers                                                                controllers.SummaryController.show
 
 ## CALLBACKS FROM OTHER SERVICES
 ## POST SIGN IN
-GET         /post-sign-in                          controllers.callbacks.SignInOutController.postSignIn
+GET         /post-sign-in                                                                      controllers.callbacks.SignInOutController.postSignIn
 
 ## APPLICATION SUBMISSION CONFIRMATION
-GET         /submission-confirmation               controllers.ApplicationSubmissionController.show
+GET         /submission-confirmation                                                           controllers.ApplicationSubmissionController.show
 
 ## CAN OR CAN'T REGISTER
-GET         /you-can-register-for-vat-with-this-service        controllers.TwirlViewController.renderViewAuthorised(viewName="eligibility-success")
-GET         /you-cant-register-for-vat-with-this-service       controllers.vatEligibility.ServiceCriteriaQuestionsController.ineligible()
+GET         /you-can-register-for-vat-with-this-service                                        controllers.TwirlViewController.renderViewAuthorised(viewName="eligibility-success")
+GET         /you-cant-register-for-vat-with-this-service                                       controllers.vatEligibility.ServiceCriteriaQuestionsController.ineligible()

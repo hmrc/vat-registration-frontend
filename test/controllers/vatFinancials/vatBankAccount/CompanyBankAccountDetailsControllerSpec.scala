@@ -141,7 +141,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       submitAuthorised(CompanyBankAccountDetailsController.submit(),
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
         result =>
-          result redirectsTo s"$contextRoot/estimate-vat-turnover"
+          result redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months"
       }
     }
   }

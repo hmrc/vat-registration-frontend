@@ -84,7 +84,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       submitAuthorised(TestZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "zeroRatedSalesRadio" -> ZeroRatedSales.ZERO_RATED_SALES_YES
       )) {
-        _ redirectsTo s"$contextRoot/estimate-zero-rated-sales"
+        _ redirectsTo s"$contextRoot/estimate-zero-rated-sales-next-12-months"
       }
     }
   }
@@ -101,7 +101,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
       submitAuthorised(TestZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "zeroRatedSalesRadio" -> ZeroRatedSales.ZERO_RATED_SALES_NO
-      ))(_ redirectsTo s"$contextRoot/vat-charge-expectancy")
+      ))(_ redirectsTo s"$contextRoot/expect-to-reclaim-more-vat-than-you-charge")
     }
   }
 

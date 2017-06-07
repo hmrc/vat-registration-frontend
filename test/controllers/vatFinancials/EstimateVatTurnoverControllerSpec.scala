@@ -101,7 +101,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       submitAuthorised(
         TestEstimateVatTurnoverController.submit(),
         fakeRequest.withFormUrlEncodedBody("turnoverEstimate" -> "50000")
-      )(_ redirectsTo s"$contextRoot/zero-rated-sales")
+      )(_ redirectsTo s"$contextRoot/sell-zero-rated-items-next-12-months")
     }
   }
 
