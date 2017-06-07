@@ -88,7 +88,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
       submitAuthorised(TestVatReturnFrequencyController.submit(), fakeRequest.withFormUrlEncodedBody(
         VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY
-      ))(_ redirectsTo s"$contextRoot/summary")
+      ))(_ redirectsTo s"$contextRoot/check-your-answers")
 
     }
   }
@@ -104,7 +104,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
       submitAuthorised(TestVatReturnFrequencyController.submit(), fakeRequest.withFormUrlEncodedBody(
         VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.QUARTERLY
-      ))(_ redirectsTo s"$contextRoot/accounting-period")
+      ))(_ redirectsTo s"$contextRoot/vat-return-periods-end")
 
     }
   }

@@ -104,7 +104,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
 
       submitAuthorised(TestEstimateZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "zeroRatedTurnoverEstimate" -> "60000"
-      ))(_ redirectsTo s"$contextRoot/vat-charge-expectancy")
+      ))(_ redirectsTo s"$contextRoot/expect-to-reclaim-more-vat-than-you-charge")
 
     }
   }
