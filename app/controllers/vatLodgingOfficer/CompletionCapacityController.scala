@@ -49,15 +49,14 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
       res <- viewModel[CompletionCapacityView]().fold(form)(form.fill)
     } yield Ok(views.html.pages.vatLodgingOfficer.completion_capacity(res, officerList)))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user =>
-    implicit request =>
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
       form.bindFromRequest().fold(
         badForm => fetchOfficerList().getOrElse(Seq()).map(
           officerList => BadRequest(views.html.pages.vatLodgingOfficer.completion_capacity(badForm, officerList))),
         view => (view.id == "other").pure.ifM(
           ifTrue = Ok(views.html.pages.vatEligibility.ineligible("completionCapacity")).pure,
           ifFalse = for {
-            officerSeq <- fetchOfficerList().getOrElse(Seq()) // TODO shouldn't need getOrElse(Seq())
+            officerSeq <- fetchOfficerList().getOrElse(Seq())
             _ = officerSeq.find(_.name.id == view.id).map(o =>
               save(CompletionCapacityView(view.id, Some(CompletionCapacity(o.name, o.role)))).map(
                 _ => keystoreConnector.cache(REGISTERING_OFFICER_KEY, o)))
