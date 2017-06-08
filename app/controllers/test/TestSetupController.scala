@@ -16,7 +16,6 @@
 
 package controllers.test
 
-import java.time.LocalDate
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
@@ -29,13 +28,9 @@ import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.test._
-import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
-import models.view.vatTradingDetails.TradingNameView
-import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
-import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import models.{S4LKey, S4LTradingDetails, S4LVatContact, S4LVatLodgingOfficer}
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
@@ -45,7 +40,7 @@ import scala.concurrent.Future
 
 class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LService: S4LService,
                                                                 vatRegistrationService: VatRegistrationService,
-                                                                testVatLodgingOfficer: TestVatLodgingOfficerBuilder)
+                                                                s4LBuilder: TestS4LBuilder)
   extends VatRegistrationController(ds) with CommonService {
 
   def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request => {
@@ -177,26 +172,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
     } yield Ok(views.html.pages.test.test_setup(form))
   })
 
-
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    // TODO Special case
-    def saveStartDate(data: TestSetup) = {
-      s4LService.save[StartDateView](data.vatChoice.startDateChoice match {
-        case None => StartDateView()
-        case Some("SPECIFIC_DATE") => StartDateView(dateType = "SPECIFIC_DATE", date = Some(LocalDate.of(
-          data.vatChoice.startDateYear.map(_.toInt).get,
-          data.vatChoice.startDateMonth.map(_.toInt).get,
-          data.vatChoice.startDateDay.map(_.toInt).get
-        )))
-        case Some("BUSINESS_START_DATE") => StartDateView(dateType = "BUSINESS_START_DATE", ctActiveDate = Some(LocalDate.of(
-          data.vatChoice.startDateYear.map(_.toInt).get,
-          data.vatChoice.startDateMonth.map(_.toInt).get,
-          data.vatChoice.startDateDay.map(_.toInt).get
-        )))
-        case Some(t) => StartDateView(t, None)
-      })
-    }
-
     def saveToS4Later[T: Format : S4LKey](userEntered: Option[String], data: TestSetup, f: TestSetup => T): Future[Unit] =
       userEntered.map(_ => s4LService.save(f(data)).map(_ => ())).getOrElse(Future.successful(()))
 
@@ -206,13 +182,6 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
       }, {
         data: TestSetup => {
           for {
-            _ <- saveStartDate(data)
-            _ <- saveToS4Later(data.vatChoice.taxableTurnoverChoice, data, { x => TaxableTurnover(x.vatChoice.taxableTurnoverChoice.get) })
-            _ <- saveToS4Later(data.vatChoice.voluntaryChoice, data, { x => VoluntaryRegistration(x.vatChoice.voluntaryChoice.get) })
-            _ <- saveToS4Later(data.vatChoice.voluntaryRegistrationReason, data, { x => VoluntaryRegistrationReason(x.vatChoice.voluntaryRegistrationReason.get) })
-            _ <- saveToS4Later(data.vatTradingDetails.tradingNameChoice, data, { x => TradingNameView(x.vatTradingDetails.tradingNameChoice.get, data.vatTradingDetails.tradingName) })
-            _ <- saveToS4Later(data.vatTradingDetails.euGoods, data, { x => EuGoods(x.vatTradingDetails.euGoods.get) })
-            _ <- saveToS4Later(data.vatTradingDetails.applyEori, data, { x => ApplyEori(x.vatTradingDetails.applyEori.get.toBoolean) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountChoice, data, { x => CompanyBankAccount(x.vatFinancials.companyBankAccountChoice.get) })
             _ <- saveToS4Later(data.vatFinancials.companyBankAccountName, data, {
               x =>
@@ -256,32 +225,25 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
                 x.vatServiceEligibility.companyWillDoAnyOf.map(_.toBoolean))
             })
 
-            vatContact = vatContactFromData(data)
+            tradingDetails = s4LBuilder.tradingDetailsFromData(data)
+            _ <- s4LService.save(tradingDetails)
+
+            vatContact = s4LBuilder.vatContactFromData(data)
             _ <- s4LService.save(vatContact)
 
-            vatLodgingOfficer = testVatLodgingOfficer.vatLodgingOfficerFromData(data)
+            vatLodgingOfficer = s4LBuilder.vatLodgingOfficerFromData(data)
             _ <- s4LService.save(vatLodgingOfficer)
 
             // KeyStore hack
             officer = vatLodgingOfficer.completionCapacity.
-                flatMap(ccv => ccv.completionCapacity.
-                  map(cc => Officer(cc.name, cc.role, None)))
+              flatMap(ccv => ccv.completionCapacity.
+                map(cc => Officer(cc.name, cc.role, None)))
             _ <- keystoreConnector.cache(REGISTERING_OFFICER_KEY, officer.getOrElse(Officer.empty))
 
           } yield Ok("Test setup complete")
         }
       })
   })
-
-  private def vatContactFromData(data: TestSetup): S4LVatContact = {
-    val businessContactDetails = BusinessContactDetails(data.vatContact.email.getOrElse(""),
-                                                        data.vatContact.daytimePhone,
-                                                        data.vatContact.mobile,
-                                                        data.vatContact.website)
-    S4LVatContact(
-      businessContactDetails = Some(businessContactDetails)
-    )
-  }
 
 
 }
