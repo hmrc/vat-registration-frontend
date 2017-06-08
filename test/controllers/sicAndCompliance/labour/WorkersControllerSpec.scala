@@ -16,28 +16,20 @@
 
 package controllers.sicAndCompliance.labour
 
-import builders.AuthBuilder
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.sicAndCompliance.labour.Workers
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.VatRegistrationService
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
-
-
+class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object WorkersController extends WorkersController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -48,11 +40,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"GET ${sicAndCompliance.labour.routes.WorkersController.show()}" should {
 
     "return HTML when there's a Workers model in S4L" in {
-      val workers = Workers(5)
-
-      when(mockS4LService.fetchAndGet[Workers]()(any(), any(), any()))
-        .thenReturn(Future.successful(Some(workers)))
-
+      save4laterReturns2(Workers(5))()
       submitAuthorised(WorkersController.show(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
@@ -65,12 +53,8 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[Workers]()
-        (Matchers.eq(S4LKey[Workers]), any(), any()))
-        .thenReturn(Future.successful(None))
-
-      when(mockVatRegistrationService.getVatScheme()(any()))
-        .thenReturn(Future.successful(validVatScheme))
+      save4laterReturnsNothing2[Workers]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(WorkersController.show) {
         result =>
@@ -83,12 +67,8 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    when(mockS4LService.fetchAndGet[Workers]()
-      (Matchers.eq(S4LKey[Workers]), any(), any()))
-      .thenReturn(Future.successful(None))
-
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-      .thenReturn(Future.successful(emptyVatScheme))
+    save4laterReturnsNothing2[Workers]()
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(WorkersController.show) {
       result =>
@@ -113,31 +93,20 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${sicAndCompliance.labour.routes.WorkersController.submit()} with less than 8 workers entered" should {
 
     "return 303" in {
-      val returnCacheMapWorkers = CacheMap("", Map("" -> Json.toJson(Workers(5))))
-
-      when(mockS4LService.save[Workers]
-        (any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMapWorkers))
-
+      save4laterExpectsSave[Workers]()
       submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
         result =>
           result redirectsTo s"$contextRoot/business-bank-account"
       }
-
     }
   }
 
   s"POST ${sicAndCompliance.labour.routes.WorkersController.submit()} with 8 or more workers entered" should {
 
     "return 303" in {
-      val returnCacheMapWorkers = CacheMap("", Map("" -> Json.toJson(Workers(8))))
-
-      when(mockS4LService.save[Workers]
-        (any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMapWorkers))
-
+      save4laterExpectsSave[Workers]()
       submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "8"
       )) {
@@ -146,5 +115,4 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture {
       }
     }
   }
-
 }

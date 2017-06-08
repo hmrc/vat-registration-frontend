@@ -16,24 +16,17 @@
 
 package controllers.sicAndCompliance.financial
 
-import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.sicAndCompliance.financial.AdviceOrConsultancy
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.VatRegistrationService
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
 
 
@@ -46,11 +39,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"GET ${routes.AdviceOrConsultancyController.show()}" should {
 
     "return HTML when there's a Advice Or Consultancy model in S4L" in {
-      val adviceOrConsultancy = AdviceOrConsultancy(true)
-
-      when(mockS4LService.fetchAndGet[AdviceOrConsultancy]()(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(adviceOrConsultancy)))
-
+      save4laterReturns2(AdviceOrConsultancy(true))()
       submitAuthorised(AdviceOrConsultancyController.show(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> ""
       )) {
@@ -59,12 +48,8 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[AdviceOrConsultancy]()
-        (Matchers.eq(S4LKey[AdviceOrConsultancy]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
-        .thenReturn(Future.successful(validVatScheme))
+      save4laterReturnsNothing2[AdviceOrConsultancy]()
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(AdviceOrConsultancyController.show) {
         _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
@@ -73,12 +58,8 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    when(mockS4LService.fetchAndGet[AdviceOrConsultancy]()
-      (Matchers.eq(S4LKey[AdviceOrConsultancy]), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(None))
-
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-      .thenReturn(Future.successful(emptyVatScheme))
+    save4laterReturnsNothing2[AdviceOrConsultancy]()
+    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(AdviceOrConsultancyController.show) {
       _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
@@ -96,12 +77,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.AdviceOrConsultancyController.submit()} with Advice Or Consultancy Yes selected" should {
 
     "return 303" in {
-      val returnCacheMapAdviceOrConsultancy = CacheMap("", Map("" -> Json.toJson(AdviceOrConsultancy(true))))
-
-      when(mockS4LService.save[AdviceOrConsultancy]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapAdviceOrConsultancy))
-
+      save4laterExpectsSave[AdviceOrConsultancy]()
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "true"
       )) {
@@ -115,12 +91,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.AdviceOrConsultancyController.submit()} with Advice Or Consultancy No selected" should {
 
     "return 303" in {
-      val returnCacheMapAdviceOrConsultancy = CacheMap("", Map("" -> Json.toJson(AdviceOrConsultancy(false))))
-
-      when(mockS4LService.save[AdviceOrConsultancy]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapAdviceOrConsultancy))
-
+      save4laterExpectsSave[AdviceOrConsultancy]()
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "false"
       )) {

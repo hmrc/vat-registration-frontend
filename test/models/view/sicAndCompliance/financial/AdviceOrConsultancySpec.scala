@@ -17,8 +17,8 @@
 package models.view.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
-import models.ApiModelTransformer
 import models.api.VatComplianceFinancial
+import models.{ApiModelTransformer, S4LVatSicAndCompliance}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class AdviceOrConsultancySpec extends UnitSpec with VatRegistrationFixture {
@@ -43,6 +43,25 @@ class AdviceOrConsultancySpec extends UnitSpec with VatRegistrationFixture {
     "convert VatScheme with FinancialCompliance section to view model - Advice or Consultancy no" in {
       val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(false, false)))))
       ApiModelTransformer[AdviceOrConsultancy].toViewModel(vs) shouldBe Some(AdviceOrConsultancy(false))
+    }
+
+  }
+
+  val testView = AdviceOrConsultancy(true)
+
+  "ViewModelFormat" should {
+    val s4LVatSicAndCompliance = S4LVatSicAndCompliance(adviceOrConsultancy = Some(testView))
+
+    "extract adviceOrConsultancy from s4LVatSicAndCompliance" in {
+      AdviceOrConsultancy.viewModelFormat.read(s4LVatSicAndCompliance) shouldBe Some(testView)
+    }
+
+    "update empty s4LVatSicAndCompliance with adviceOrConsultancy" in {
+      AdviceOrConsultancy.viewModelFormat.update(testView, Option.empty[S4LVatSicAndCompliance]).adviceOrConsultancy shouldBe Some(testView)
+    }
+
+    "update non-empty s4LVatSicAndCompliance with adviceOrConsultancy" in {
+      AdviceOrConsultancy.viewModelFormat.update(testView, Some(s4LVatSicAndCompliance)).adviceOrConsultancy shouldBe Some(testView)
     }
 
   }

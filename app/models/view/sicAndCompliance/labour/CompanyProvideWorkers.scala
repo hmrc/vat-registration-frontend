@@ -17,7 +17,7 @@
 package models.view.sicAndCompliance.labour
 
 import models.api.{VatComplianceLabour, VatScheme, VatSicAndCompliance}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class  CompanyProvideWorkers(yesNo: String)
@@ -30,6 +30,12 @@ object CompanyProvideWorkers {
   val valid = (item: String) => List(PROVIDE_WORKERS_YES, PROVIDE_WORKERS_NO).contains(item.toUpperCase)
 
   implicit val format = Json.format[CompanyProvideWorkers]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatSicAndCompliance) => group.companyProvideWorkers,
+    updateF = (c: CompanyProvideWorkers, g: Option[S4LVatSicAndCompliance]) =>
+      g.getOrElse(S4LVatSicAndCompliance()).copy(companyProvideWorkers = Some(c))
+  )
 
   implicit val modelTransformer = ApiModelTransformer[CompanyProvideWorkers] { (vs: VatScheme) =>
     vs.vatSicAndCompliance.flatMap(_.labourCompliance).map { labourCompliance =>
