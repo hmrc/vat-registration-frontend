@@ -17,8 +17,8 @@
 package models.view.sicAndCompliance.cultural
 
 import fixtures.VatRegistrationFixture
-import models.ApiModelTransformer
 import models.api.VatComplianceCultural
+import models.{ApiModelTransformer, S4LVatSicAndCompliance}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class NotForProfitSpec extends UnitSpec with VatRegistrationFixture {
@@ -45,6 +45,24 @@ class NotForProfitSpec extends UnitSpec with VatRegistrationFixture {
       ApiModelTransformer[NotForProfit].toViewModel(vs) shouldBe Some(NotForProfit(NotForProfit.NOT_PROFIT_YES))
     }
 
+  }
+
+  val testView = NotForProfit("yes")
+
+  "ViewModelFormat" should {
+    val s4LVatSicAndCompliance = S4LVatSicAndCompliance(notForProfit = Some(testView))
+
+    "extract notForProfit from s4LVatSicAndCompliance" in {
+      NotForProfit.viewModelFormat.read(s4LVatSicAndCompliance) shouldBe Some(testView)
+    }
+
+    "update empty s4LVatSicAndCompliance with notForProfit" in {
+      NotForProfit.viewModelFormat.update(testView, Option.empty[S4LVatSicAndCompliance]).notForProfit shouldBe Some(testView)
+    }
+
+    "update non-empty s4LVatSicAndCompliance with notForProfit" in {
+      NotForProfit.viewModelFormat.update(testView, Some(s4LVatSicAndCompliance)).notForProfit shouldBe Some(testView)
+    }
   }
 }
 

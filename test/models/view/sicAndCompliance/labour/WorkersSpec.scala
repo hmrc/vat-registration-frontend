@@ -17,8 +17,8 @@
 package models.view.sicAndCompliance.labour
 
 import fixtures.VatRegistrationFixture
-import models.ApiModelTransformer
 import models.api.VatComplianceLabour
+import models.{ApiModelTransformer, S4LVatSicAndCompliance}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class WorkersSpec extends UnitSpec with VatRegistrationFixture {
@@ -36,8 +36,30 @@ class WorkersSpec extends UnitSpec with VatRegistrationFixture {
     }
 
     "convert VatScheme with LabourCompliance section to view model" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = Some(VatComplianceLabour(true, Some(8), Some(true), Some(true))))))
+      val vs = vatScheme(sicAndCompliance =
+        Some(vatSicAndCompliance(labourComplianceSection =
+          Some(VatComplianceLabour(true, Some(8), Some(true), Some(true))))))
+
       ApiModelTransformer[Workers].toViewModel(vs) shouldBe Some(Workers(8))
+    }
+
+  }
+
+  val testView = Workers(1)
+
+  "ViewModelFormat" should {
+    val s4LVatSicAndCompliance = S4LVatSicAndCompliance(workers = Some(testView))
+
+    "extract workers from s4LVatSicAndCompliance" in {
+      Workers.viewModelFormat.read(s4LVatSicAndCompliance) shouldBe Some(testView)
+    }
+
+    "update empty s4LVatSicAndCompliance with workers" in {
+      Workers.viewModelFormat.update(testView, Option.empty[S4LVatSicAndCompliance]).workers shouldBe Some(testView)
+    }
+
+    "update non-empty s4LVatSicAndCompliance with workers" in {
+      Workers.viewModelFormat.update(testView, Some(s4LVatSicAndCompliance)).workers shouldBe Some(testView)
     }
 
   }

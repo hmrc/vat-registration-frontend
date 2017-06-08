@@ -18,7 +18,7 @@ package models.view.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatComplianceFinancial, VatSicAndCompliance}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class ManageAdditionalFundsSpec extends UnitSpec with VatRegistrationFixture {
@@ -68,6 +68,27 @@ class ManageAdditionalFundsSpec extends UnitSpec with VatRegistrationFixture {
                                                                                                         true,
                                                                                                         manageFundsAdditional = Some(false))))))
       ApiModelTransformer[ManageAdditionalFunds].toViewModel(vs) shouldBe Some(ManageAdditionalFunds(false))
+    }
+
+  }
+
+  val testView = ManageAdditionalFunds(true)
+
+  "ViewModelFormat" should {
+    val s4LVatSicAndCompliance = S4LVatSicAndCompliance(manageAdditionalFunds = Some(testView))
+
+    "extract manageAdditionalFunds from s4LVatSicAndCompliance" in {
+      ManageAdditionalFunds.viewModelFormat.read(s4LVatSicAndCompliance) shouldBe Some(testView)
+    }
+
+    "update empty s4LVatSicAndCompliance with manageAdditionalFunds" in {
+      ManageAdditionalFunds.viewModelFormat.update(testView,
+        Option.empty[S4LVatSicAndCompliance]).manageAdditionalFunds shouldBe Some(testView)
+    }
+
+    "update non-empty s4LVatSicAndCompliance with manageAdditionalFunds" in {
+      ManageAdditionalFunds.viewModelFormat.update(testView,
+        Some(s4LVatSicAndCompliance)).manageAdditionalFunds shouldBe Some(testView)
     }
 
   }
