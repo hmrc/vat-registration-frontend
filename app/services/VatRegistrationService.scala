@@ -68,7 +68,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
                                        companyRegistrationConnector: CompanyRegistrationConnector)
   extends RegistrationService with CommonService {
 
-  import cats.instances.future._
   import cats.syntax.applicative._
   import cats.syntax.cartesian._
   import cats.syntax.foldable._

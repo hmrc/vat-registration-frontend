@@ -38,8 +38,6 @@ trait IncorpInfoService {
 class IncorporationInformationService @Inject()(iiConnector: IncorporationInformationConnector)
   extends IncorpInfoService with CommonService {
 
-  import cats.instances.future._
-
   override def getRegisteredOfficeAddress()(implicit hc: HeaderCarrier): OptionalResponse[ScrsAddress] = {
     for {
       companyProfile <- OptionT(keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile"))
