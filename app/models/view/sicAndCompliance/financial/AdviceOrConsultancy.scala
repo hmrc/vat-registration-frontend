@@ -17,7 +17,7 @@
 package models.view.sicAndCompliance.financial
 
 import models.api._
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class AdviceOrConsultancy(yesNo: Boolean)
@@ -25,6 +25,12 @@ case class AdviceOrConsultancy(yesNo: Boolean)
 object AdviceOrConsultancy {
   
   implicit val format = Json.format[AdviceOrConsultancy]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatSicAndCompliance) => group.adviceOrConsultancy,
+    updateF = (c: AdviceOrConsultancy, g: Option[S4LVatSicAndCompliance]) =>
+      g.getOrElse(S4LVatSicAndCompliance()).copy(adviceOrConsultancy = Some(c))
+  )
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[AdviceOrConsultancy] { vs: VatScheme =>

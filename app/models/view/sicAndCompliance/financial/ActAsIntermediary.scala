@@ -16,8 +16,8 @@
 
 package models.view.sicAndCompliance.financial
 
-import models.{ApiModelTransformer, ViewModelTransformer}
 import models.api.{VatComplianceFinancial, VatScheme, VatSicAndCompliance}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class ActAsIntermediary(yesNo: Boolean)
@@ -25,6 +25,12 @@ case class ActAsIntermediary(yesNo: Boolean)
 object ActAsIntermediary {
 
   implicit val format = Json.format[ActAsIntermediary]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatSicAndCompliance) => group.actAsIntermediary,
+    updateF = (c: ActAsIntermediary, g: Option[S4LVatSicAndCompliance]) =>
+      g.getOrElse(S4LVatSicAndCompliance()).copy(actAsIntermediary = Some(c))
+  )
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[ActAsIntermediary] { vs: VatScheme =>

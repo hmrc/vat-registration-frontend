@@ -18,9 +18,9 @@ package controllers.sicAndCompliance.financial
 
 import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.S4LKey
-import models.view.sicAndCompliance.financial.DiscretionaryInvestmentManagementServices
+import models.view.sicAndCompliance.financial.{AdviceOrConsultancy, ChargeFees, DiscretionaryInvestmentManagementServices}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -32,11 +32,10 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-
-
-  object DiscretionaryInvestmentManagementServicesController extends DiscretionaryInvestmentManagementServicesController(ds)(mockS4LService, mockVatRegistrationService) {
+  object DiscretionaryInvestmentManagementServicesController extends
+    DiscretionaryInvestmentManagementServicesController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -45,10 +44,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
   s"GET ${routes.DiscretionaryInvestmentManagementServicesController.show()}" should {
 
     "return HTML when there's a DiscretionaryInvestmentManagementServices model in S4L" in {
-      val discretionaryInvestmentManagementServices = DiscretionaryInvestmentManagementServices(true)
-
-      when(mockS4LService.fetchAndGet[DiscretionaryInvestmentManagementServices]()(any(), any(), any()))
-        .thenReturn(Future.successful(Some(discretionaryInvestmentManagementServices)))
+      save4laterReturns2(DiscretionaryInvestmentManagementServices(true))()
 
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.show(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> ""
@@ -58,12 +54,8 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[DiscretionaryInvestmentManagementServices]()
-        (Matchers.eq(S4LKey[DiscretionaryInvestmentManagementServices]), any(), any()))
-        .thenReturn(Future.successful(None))
-
-      when(mockVatRegistrationService.getVatScheme()(any()))
-        .thenReturn(Future.successful(validVatScheme))
+      save4laterReturnsNothing2[DiscretionaryInvestmentManagementServices]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(DiscretionaryInvestmentManagementServicesController.show) {
         _ includesText "Does the company provide discretionary investment management services, or introduce clients to companies who do?"
@@ -72,12 +64,8 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    when(mockS4LService.fetchAndGet[DiscretionaryInvestmentManagementServices]()
-      (Matchers.eq(S4LKey[DiscretionaryInvestmentManagementServices]), any(), any()))
-      .thenReturn(Future.successful(None))
-
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-      .thenReturn(Future.successful(emptyVatScheme))
+    save4laterReturnsNothing2[DiscretionaryInvestmentManagementServices]()
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(DiscretionaryInvestmentManagementServicesController.show) {
       _ includesText "Does the company provide discretionary investment management services, or introduce clients to companies who do?"
@@ -96,13 +84,8 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
   s"POST ${routes.DiscretionaryInvestmentManagementServicesController.submit()} with Provide Discretionary Investment Management Services Yes selected" should {
 
     "return 303" in {
-      val toReturn = CacheMap("", Map("" -> Json.toJson(DiscretionaryInvestmentManagementServices(true))))
-
-      when(mockVatRegistrationService.deleteElements(any())(any()))
-        .thenReturn(Future.successful(()))
-
-      when(mockS4LService.save[DiscretionaryInvestmentManagementServices](any())(any(), any(), any()))
-        .thenReturn(Future.successful(toReturn))
+      save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
 
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> "true"
@@ -113,11 +96,8 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
   s"POST ${routes.ChargeFeesController.submit()} with Provide Discretionary Investment Management Services No selected" should {
 
     "return 303" in {
-      val toReturn = CacheMap("", Map("" -> Json.toJson(DiscretionaryInvestmentManagementServices(false))))
-
+      save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      when(mockS4LService.save[DiscretionaryInvestmentManagementServices](any())(any(), any(), any()))
-        .thenReturn(Future.successful(toReturn))
 
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> "false"
