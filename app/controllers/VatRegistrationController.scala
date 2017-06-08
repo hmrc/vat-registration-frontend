@@ -22,7 +22,7 @@ import auth.VatTaxRegime
 import cats.data.OptionT
 import cats.syntax.ApplicativeSyntax
 import config.FrontendAuthConnector
-import models.{ApiModelTransformer, S4LKey, VMReads}
+import models.{ApiModelTransformer, S4LKey, ViewModelFormat}
 import play.api.Configuration
 import play.api.data.{Form, FormError}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -74,7 +74,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
     def apply[G]()
                 (implicit s4l: S4LService,
                  vrs: RegistrationService,
-                 r: VMReads.Aux[T, G],
+                 r: ViewModelFormat.Aux[T, G],
                  f: Format[G],
                  k: S4LKey[G],
                  hc: HeaderCarrier,
@@ -87,7 +87,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
   protected final class ViewModelUpdateHelper[T] {
     def apply[G](data: T)
                 (implicit s4l: S4LService,
-                 r: VMReads.Aux[T, G],
+                 r: ViewModelFormat.Aux[T, G],
                  f: Format[G],
                  k: S4LKey[G],
                  hc: HeaderCarrier): Future[CacheMap] = s4l.updateViewModel(data)
