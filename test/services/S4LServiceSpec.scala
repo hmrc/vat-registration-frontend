@@ -36,7 +36,7 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
 
   private object TestView {
     implicit val fmt = Json.format[TestView]
-    implicit val vmReads = ViewModelFormat[TestView, TestGroup](
+    implicit val viewModelFormat = ViewModelFormat[TestView, TestGroup](
       readF = (_: TestGroup).testView,
       updateF = (v: TestView, g: Option[TestGroup]) => g.getOrElse(TestGroup()).copy(testView = Some(v))
     )

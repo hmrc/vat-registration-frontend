@@ -31,7 +31,7 @@ object FormerNameView {
 
   implicit val format = Json.format[FormerNameView]
 
-  implicit val vmReads = ViewModelFormat(
+  implicit val viewModelFormat = ViewModelFormat(
     readF = (group: S4LVatLodgingOfficer) => group.formerName,
     updateF = (c: FormerNameView, g: Option[S4LVatLodgingOfficer]) =>
       g.getOrElse(S4LVatLodgingOfficer()).copy(formerName = Some(c))

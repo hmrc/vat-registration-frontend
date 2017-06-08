@@ -66,20 +66,20 @@ class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture wi
     }
   }
 
-  "VMReads" should {
+  "ViewModelFormat" should {
     val ccv = CompletionCapacityView(anOfficer)
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(completionCapacity = Some(ccv))
 
     "extract completionCapacityView from lodgingOfficer" in {
-      CompletionCapacityView.vmReads.read(s4LVatLodgingOfficer) shouldBe Some(ccv)
+      CompletionCapacityView.viewModelFormat.read(s4LVatLodgingOfficer) shouldBe Some(ccv)
     }
 
     "update empty lodgingOfficer with completionCapacityView" in {
-      CompletionCapacityView.vmReads.update(ccv, Option.empty[S4LVatLodgingOfficer]).completionCapacity shouldBe Some(ccv)
+      CompletionCapacityView.viewModelFormat.update(ccv, Option.empty[S4LVatLodgingOfficer]).completionCapacity shouldBe Some(ccv)
     }
 
     "update non-empty lodgingOfficer with completionCapacityView" in {
-      CompletionCapacityView.vmReads.update(ccv, Some(s4LVatLodgingOfficer)).completionCapacity shouldBe Some(ccv)
+      CompletionCapacityView.viewModelFormat.update(ccv, Some(s4LVatLodgingOfficer)).completionCapacity shouldBe Some(ccv)
     }
   }
 }
