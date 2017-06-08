@@ -42,7 +42,7 @@ trait S4LMockSugar {
   final class S4LFetchHelper[T](private val t: Option[T]) {
     def apply[G]()
                 (implicit
-                 vMReads: ViewModelFormat.Aux[T, G],
+                 viewModelFormat: ViewModelFormat.Aux[T, G],
                  k: S4LKey[G],
                  s4l: S4LService): Unit =
       when(s4l.getViewModel[T, G]()(any(), any(), Matchers.eq(k), any())).thenReturn(OptionT.fromOption(t))
@@ -56,7 +56,7 @@ trait S4LMockSugar {
   final class S4LSaveHelper[T] {
     def apply[G]()
                 (implicit
-                 vMReads: ViewModelFormat.Aux[T, G],
+                 viewModelFormat: ViewModelFormat.Aux[T, G],
                  k: S4LKey[G],
                  s4l: S4LService): Unit =
       when(s4l.updateViewModel[T, G](any())(any(), any(), any(), Matchers.eq(k))).thenReturn(dummyCacheMap.pure)

@@ -26,7 +26,7 @@ object PreviousAddressView {
 
   implicit val format = Json.format[PreviousAddressView]
 
-  implicit val vmReads = ViewModelFormat(
+  implicit val viewModelFormat = ViewModelFormat(
     readF = (group: S4LVatLodgingOfficer) => group.previousAddress,
     updateF = (c: PreviousAddressView, g: Option[S4LVatLodgingOfficer]) =>
       g.getOrElse(S4LVatLodgingOfficer()).copy(previousAddress = Some(c))

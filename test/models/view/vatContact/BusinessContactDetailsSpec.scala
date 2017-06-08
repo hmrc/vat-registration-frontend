@@ -56,19 +56,19 @@ class BusinessContactDetailsSpec extends UnitSpec with VatRegistrationFixture wi
 
   }
 
-  "VMReads" should {
+  "ViewModelFormat" should {
     val s4LVatContact: S4LVatContact = S4LVatContact(businessContactDetails = Some(validBusinessContactDetails))
 
     "extract businessContactDetails from vatContact" in {
-      BusinessContactDetails.vmReads.read(s4LVatContact) shouldBe Some(validBusinessContactDetails)
+      BusinessContactDetails.viewModelFormat.read(s4LVatContact) shouldBe Some(validBusinessContactDetails)
     }
 
     "update empty vatContact with businessContactDetails" in {
-      BusinessContactDetails.vmReads.update(validBusinessContactDetails, Option.empty[S4LVatContact]).businessContactDetails shouldBe Some(validBusinessContactDetails)
+      BusinessContactDetails.viewModelFormat.update(validBusinessContactDetails, Option.empty[S4LVatContact]).businessContactDetails shouldBe Some(validBusinessContactDetails)
     }
 
     "update non-empty vatContact with businessContactDetails" in {
-      BusinessContactDetails.vmReads.update(validBusinessContactDetails, Some(s4LVatContact)).businessContactDetails shouldBe Some(validBusinessContactDetails)
+      BusinessContactDetails.viewModelFormat.update(validBusinessContactDetails, Some(s4LVatContact)).businessContactDetails shouldBe Some(validBusinessContactDetails)
     }
 
   }

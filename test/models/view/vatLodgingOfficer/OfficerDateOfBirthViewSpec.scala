@@ -58,20 +58,20 @@ class OfficerDateOfBirthViewSpec extends UnitSpec with VatRegistrationFixture wi
     }
   }
 
-  "VMReads" should {
+  "ViewModelFormat" should {
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(officerDateOfBirth = Some(testDOBView))
 
     "extract OfficerDateOfBirthView from lodgingOfficer" in {
-      OfficerDateOfBirthView.vmReads.read(s4LVatLodgingOfficer) shouldBe Some(testDOBView)
+      OfficerDateOfBirthView.viewModelFormat.read(s4LVatLodgingOfficer) shouldBe Some(testDOBView)
     }
 
     "update empty lodgingOfficer with OfficerDateOfBirthView" in {
-      OfficerDateOfBirthView.vmReads.update(testDOBView, Option.empty[S4LVatLodgingOfficer]).
+      OfficerDateOfBirthView.viewModelFormat.update(testDOBView, Option.empty[S4LVatLodgingOfficer]).
         officerDateOfBirth shouldBe Some(testDOBView)
     }
 
     "update non-empty lodgingOfficer with OfficerDateOfBirthView" in {
-      OfficerDateOfBirthView.vmReads.update(testDOBView, Some(s4LVatLodgingOfficer)).
+      OfficerDateOfBirthView.viewModelFormat.update(testDOBView, Some(s4LVatLodgingOfficer)).
         officerDateOfBirth shouldBe Some(testDOBView)
     }
   }

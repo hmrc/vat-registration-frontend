@@ -69,22 +69,22 @@ class OfficerHomeAddressViewSpec extends UnitSpec with VatRegistrationFixture wi
   }
 
 
-  "VMReads" should {
+  "ViewModelFormat" should {
     val testAddress = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
     val testAddressView = OfficerHomeAddressView(testAddress.id, Some(testAddress))
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(officerHomeAddress = Some(testAddressView))
 
     "extract OfficerHomeAddressView from lodgingOfficer" in {
-      OfficerHomeAddressView.vmReads.read(s4LVatLodgingOfficer) shouldBe Some(testAddressView)
+      OfficerHomeAddressView.viewModelFormat.read(s4LVatLodgingOfficer) shouldBe Some(testAddressView)
     }
 
     "update empty lodgingOfficer with OfficerHomeAddressView" in {
-      OfficerHomeAddressView.vmReads.update(testAddressView, Option.empty[S4LVatLodgingOfficer]).
+      OfficerHomeAddressView.viewModelFormat.update(testAddressView, Option.empty[S4LVatLodgingOfficer]).
         officerHomeAddress shouldBe Some(testAddressView)
     }
 
     "update non-empty lodgingOfficer with OfficerHomeAddressView" in {
-      OfficerHomeAddressView.vmReads.update(testAddressView, Some(s4LVatLodgingOfficer)).
+      OfficerHomeAddressView.viewModelFormat.update(testAddressView, Some(s4LVatLodgingOfficer)).
         officerHomeAddress shouldBe Some(testAddressView)
     }
   }
