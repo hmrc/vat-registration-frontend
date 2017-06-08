@@ -59,20 +59,20 @@ class OfficerNinoViewSpec extends UnitSpec with VatRegistrationFixture with Insi
   }
 
 
-  "VMReads" should {
+  "ViewModelFormat" should {
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(officerNino = Some(testNinoView))
 
     "extract OfficerNinoView from lodgingOfficer" in {
-      OfficerNinoView.vmReads.read(s4LVatLodgingOfficer) shouldBe Some(testNinoView)
+      OfficerNinoView.viewModelFormat.read(s4LVatLodgingOfficer) shouldBe Some(testNinoView)
     }
 
     "update empty lodgingOfficer with OfficerNinoView" in {
-      OfficerNinoView.vmReads.udpate(testNinoView, Option.empty[S4LVatLodgingOfficer]).
+      OfficerNinoView.viewModelFormat.update(testNinoView, Option.empty[S4LVatLodgingOfficer]).
         officerNino shouldBe Some(testNinoView)
     }
 
     "update non-empty lodgingOfficer with OfficerNinoView" in {
-      OfficerNinoView.vmReads.udpate(testNinoView, Some(s4LVatLodgingOfficer)).
+      OfficerNinoView.viewModelFormat.update(testNinoView, Some(s4LVatLodgingOfficer)).
         officerNino shouldBe Some(testNinoView)
     }
   }
