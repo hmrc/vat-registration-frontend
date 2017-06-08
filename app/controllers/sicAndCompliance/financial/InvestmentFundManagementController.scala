@@ -34,13 +34,13 @@ class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
   import cats.syntax.flatMap._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[InvestmentFundManagement].fold(form)(form.fill)
+    viewModel[InvestmentFundManagement]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.financial.investment_fund_management(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.investment_fund_management(badForm)).pure,
-      data => s4LService.save(data).map(_ => data.yesNo).ifM(
+      data => save(data).map(_ => data.yesNo).ifM(
         controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show().pure,
         vrs.deleteElements(ElementPath.finCompElementPaths.drop(5)).map(_ =>
           controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))

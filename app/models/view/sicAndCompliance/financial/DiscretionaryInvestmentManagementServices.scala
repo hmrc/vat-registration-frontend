@@ -17,7 +17,7 @@
 package models.view.sicAndCompliance.financial
 
 import models.api.{VatScheme, VatSicAndCompliance}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class DiscretionaryInvestmentManagementServices(yesNo: Boolean)
@@ -25,6 +25,12 @@ case class DiscretionaryInvestmentManagementServices(yesNo: Boolean)
 object DiscretionaryInvestmentManagementServices {
 
   implicit val format = Json.format[DiscretionaryInvestmentManagementServices]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatSicAndCompliance) => group.discretionaryInvestmentManagementServices,
+    updateF = (c: DiscretionaryInvestmentManagementServices, g: Option[S4LVatSicAndCompliance]) =>
+      g.getOrElse(S4LVatSicAndCompliance()).copy(discretionaryInvestmentManagementServices = Some(c))
+  )
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[DiscretionaryInvestmentManagementServices] { vs: VatScheme =>

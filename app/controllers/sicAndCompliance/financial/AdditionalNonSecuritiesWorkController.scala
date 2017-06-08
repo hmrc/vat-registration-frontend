@@ -34,13 +34,13 @@ class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies
   import cats.syntax.flatMap._
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[AdditionalNonSecuritiesWork].fold(form)(form.fill)
+    viewModel[AdditionalNonSecuritiesWork]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(badForm)).pure,
-      data => s4LService.save(data).map(_ => data.yesNo).ifM(
+      data => save(data).map(_ => data.yesNo).ifM(
         ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths.drop(2)).map(_ =>
           controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()),
         ifFalse = controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show().pure

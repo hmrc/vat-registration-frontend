@@ -31,13 +31,13 @@ class ManageAdditionalFundsController @Inject()(ds: CommonPlayDependencies)
   val form = ManageAdditionalFundsForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[ManageAdditionalFunds].fold(form)(form.fill)
+    viewModel[ManageAdditionalFunds]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.financial.manage_additional_funds(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.manage_additional_funds(badForm)).pure,
-      data => s4LService.save(data).map(_ =>
+      data => save(data).map(_ =>
         Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))))
 
 }
