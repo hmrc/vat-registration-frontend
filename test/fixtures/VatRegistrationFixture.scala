@@ -29,7 +29,8 @@ import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
 import models.view.vatLodgingOfficer.OfficerContactDetailsView
-import models.view.vatTradingDetails.vatChoice.StartDateView
+import models.view.vatTradingDetails.TradingNameView
+import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.http.Status._
 import uk.gov.hmrc.play.http._
@@ -52,11 +53,13 @@ trait VatRegistrationFixture {
   val validRegId = "VAT123456"
   val someTestDate = Some(LocalDate.of(2017, 3, 21))
   val vatStartDate = VatStartDate(StartDateView.SPECIFIC_DATE, someTestDate)
+  val validStartDateView = StartDateView(StartDateView.SPECIFIC_DATE, someTestDate)
 
   val validVatChoice = VatChoice(VatChoice.NECESSITY_VOLUNTARY, vatStartDate)
 
   val tradingName: String = "ACME INC"
   val validTradingName = TradingName(selection = true, tradingName = Some(tradingName))
+  val validTradingNameView = TradingNameView("TRADING_NAME_YES", Some("Test Trading Name"))
   val validEuTrading = VatEuTrading(selection = false, eoriApplication = None)
   val validVatTradingDetails = VatTradingDetails(vatChoice = validVatChoice, tradingName = validTradingName, validEuTrading)
 
@@ -69,6 +72,7 @@ trait VatRegistrationFixture {
   val accountNumber = "12345678"
   val businessActivityDescription = "description"
 
+  val validTaxableTurnover = TaxableTurnover("TAXABLE_YES")
   val validEstimateVatTurnover = EstimateVatTurnover(turnoverEstimate)
   val validEstimateZeroRatedSales = EstimateZeroRatedSales(estimatedSales)
   val validVatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)

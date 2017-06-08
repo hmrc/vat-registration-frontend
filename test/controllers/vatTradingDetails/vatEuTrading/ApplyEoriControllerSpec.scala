@@ -21,9 +21,7 @@ import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatTradingDetails.vatEuTrading.ApplyEori
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.cache.client.CacheMap
 
 class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
@@ -33,17 +31,22 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
   val fakeRequest = FakeRequest(routes.ApplyEoriController.show())
 
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
+  }
+
   s"GET ${routes.ApplyEoriController.show()}" should {
 
     "return HTML when there's a Apply Eori model in S4L" in {
-      save4laterReturns(ApplyEori(ApplyEori.APPLY_EORI_YES))
+      save4laterReturns2(ApplyEori(ApplyEori.APPLY_EORI_YES))()
       submitAuthorised(ApplyEoriController.show(), fakeRequest.withFormUrlEncodedBody("applyEoriRadio" -> "")) {
         _ includesText "You need to apply for an Economic Operator Registration and Identification (EORI) number"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing[ApplyEori]()
+      save4laterReturnsNothing2[ApplyEori]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(ApplyEoriController.show) {
@@ -53,7 +56,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing[ApplyEori]()
+    save4laterReturnsNothing2[ApplyEori]()
     when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
     callAuthorised(ApplyEoriController.show) {
@@ -74,8 +77,8 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
   s"POST ${routes.ApplyEoriController.submit()} with Apply Eori Yes selected" should {
 
     "return 303" in {
-      val returnCacheMapApplyEori = CacheMap("", Map("" -> Json.toJson(ApplyEori(ApplyEori.APPLY_EORI_YES))))
-      when(mockS4LService.save[ApplyEori](any())(any(), any(), any())).thenReturn(returnCacheMapApplyEori.pure)
+      save4laterExpectsSave[ApplyEori]()
+      when(mockVatRegistrationService.submitTradingDetails()(any())).thenReturn(validVatTradingDetails.pure)
 
       submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_YES)
@@ -83,20 +86,23 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
         _ redirectsTo s"$contextRoot/your-home-address"
       }
 
+      verify(mockVatRegistrationService).submitTradingDetails()(any())
     }
   }
 
   s"POST ${routes.ApplyEoriController.submit()} with Apply Eori No selected" should {
 
     "return 303" in {
-      val returnCacheMapApplyEori = CacheMap("", Map("" -> Json.toJson(ApplyEori(ApplyEori.APPLY_EORI_NO))))
-      when(mockS4LService.save[ApplyEori](any())(any(), any(), any())).thenReturn(returnCacheMapApplyEori.pure)
+      save4laterExpectsSave[ApplyEori]()
+      when(mockVatRegistrationService.submitTradingDetails()(any())).thenReturn(validVatTradingDetails.pure)
 
       submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_NO)
       )) {
         _ redirectsTo s"$contextRoot/your-home-address"
       }
+
+      verify(mockVatRegistrationService).submitTradingDetails()(any())
     }
 
   }

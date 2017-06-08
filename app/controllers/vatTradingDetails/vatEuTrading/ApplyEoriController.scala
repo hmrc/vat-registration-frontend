@@ -38,7 +38,7 @@ class ApplyEoriController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatTradingDetails.vatEuTrading.eori_apply(badForm)).pure,
-      goodForm => save(goodForm).map(_ =>
-        Redirect(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show()))))
+      goodForm => save(goodForm).flatMap(_ => vrs.submitTradingDetails().map(_ =>
+        Redirect(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())))))
 
 }

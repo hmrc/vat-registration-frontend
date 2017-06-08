@@ -74,7 +74,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
   s"POST ${routes.OfficerContactDetailsController.submit()} with valid Officer Contact Details entered and default Voluntary Reg = Yes" should {
 
     "return 303" in {
-      save4laterReturns(VoluntaryRegistration.yes)
+      save4laterReturns2(VoluntaryRegistration.yes)()
       save4laterExpectsSave[OfficerContactDetailsView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
@@ -89,7 +89,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
     "return 303" in {
       save4laterExpectsSave[OfficerContactDetailsView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
-      save4laterReturns(VoluntaryRegistration.no)
+      save4laterReturns2(VoluntaryRegistration.no)()
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com")
@@ -102,7 +102,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
 
     "return 303" in {
       save4laterExpectsSave[OfficerContactDetailsView]()
-      save4laterReturnsNothing[VoluntaryRegistration]()
+      save4laterReturnsNothing2[VoluntaryRegistration]()
 
       submitAuthorised(
         Controller.submit(),
