@@ -64,11 +64,11 @@ class BusinessContactDetailsSpec extends UnitSpec with VatRegistrationFixture wi
     }
 
     "update empty vatContact with businessContactDetails" in {
-      BusinessContactDetails.vmReads.udpate(validBusinessContactDetails, Option.empty[S4LVatContact]).businessContactDetails shouldBe Some(validBusinessContactDetails)
+      BusinessContactDetails.vmReads.update(validBusinessContactDetails, Option.empty[S4LVatContact]).businessContactDetails shouldBe Some(validBusinessContactDetails)
     }
 
     "update non-empty vatContact with businessContactDetails" in {
-      BusinessContactDetails.vmReads.udpate(validBusinessContactDetails, Some(s4LVatContact)).businessContactDetails shouldBe Some(validBusinessContactDetails)
+      BusinessContactDetails.vmReads.update(validBusinessContactDetails, Some(s4LVatContact)).businessContactDetails shouldBe Some(validBusinessContactDetails)
     }
 
   }

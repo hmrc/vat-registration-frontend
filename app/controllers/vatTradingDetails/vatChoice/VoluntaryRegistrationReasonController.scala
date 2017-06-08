@@ -33,7 +33,7 @@ class VoluntaryRegistrationReasonController @Inject()(ds: CommonPlayDependencies
   val form = VoluntaryRegistrationReasonForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[VoluntaryRegistrationReason].fold(form)(form.fill)
+    viewModel[VoluntaryRegistrationReason]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatTradingDetails.vatChoice.voluntary_registration_reason(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>

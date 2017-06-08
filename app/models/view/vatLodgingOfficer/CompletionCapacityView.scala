@@ -28,7 +28,7 @@ object CompletionCapacityView {
 
   implicit val format = Json.format[CompletionCapacityView]
 
-  implicit val vmReads = VMReads(
+  implicit val vmReads = ViewModelFormat(
     readF = (group: S4LVatLodgingOfficer) => group.completionCapacity,
     updateF = (c: CompletionCapacityView, g: Option[S4LVatLodgingOfficer]) =>
       g.getOrElse(S4LVatLodgingOfficer()).copy(completionCapacity = Some(c))

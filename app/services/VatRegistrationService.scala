@@ -178,14 +178,10 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   }
 
   def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
-    def mergeWithS4L(vs: VatScheme) =
-      (s4l[TradingNameView]() |@|
-        s4l[StartDateView]() |@|
-        s4l[VoluntaryRegistration]() |@|
-        s4l[VoluntaryRegistrationReason]() |@|
-        s4l[EuGoods]() |@|
-        s4l[ApplyEori]())
-        .map(S4LTradingDetails.apply).map { s4l =>
+    def merge(fresh: Option[S4LTradingDetails], vs: VatScheme): VatTradingDetails =
+      fresh.fold(
+        vs.tradingDetails.getOrElse(throw fail("VatTradingDetails"))
+      ) { s4l =>
         update(s4l.voluntaryRegistration, vs)
           .andThen(update(s4l.tradingName, vs))
           .andThen(update(s4l.startDate, vs))
@@ -196,9 +192,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       }
 
     for {
-      vs <- getVatScheme()
-      vatTradingDetails <- mergeWithS4L(vs)
-      response <- vatRegConnector.upsertVatTradingDetails(vs.id, vatTradingDetails)
+      (vs, vlo) <- (getVatScheme() |@| s4l[S4LTradingDetails]()).tupled
+      response <- vatRegConnector.upsertVatTradingDetails(vs.id, merge(vlo, vs))
     } yield response
   }
 

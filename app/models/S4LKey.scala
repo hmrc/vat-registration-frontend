@@ -45,13 +45,6 @@ object S4LKey {
     override val key = k
   }
 
-  implicit val applyeori: S4LKey[ApplyEori] = S4LKey("ApplyEori")
-  implicit val startDateS4LKey: S4LKey[StartDateView] = S4LKey("StartDate")
-  implicit val tradingNameS4LKey: S4LKey[TradingNameView] = S4LKey("TradingNameView")
-  implicit val euGoods: S4LKey[EuGoods] = S4LKey("EuGoods")
-  implicit val voluntaryRegistrationS4LKey: S4LKey[VoluntaryRegistration] = S4LKey("VoluntaryRegistration")
-  implicit val voluntaryRegistrationReasonS4LKey: S4LKey[VoluntaryRegistrationReason] = S4LKey("VoluntaryRegistrationReason")
-  implicit val taxableTurnoverS4LKey: S4LKey[TaxableTurnover] = S4LKey("TaxableTurnover")
   implicit val estimateVatTurnoverS4LKey: S4LKey[EstimateVatTurnover] = S4LKey("EstimateVatTurnover")
   implicit val zeroRatedSalesS4LKey: S4LKey[ZeroRatedSales] = S4LKey("ZeroRatedSales")
   implicit val estimateZeroRatedSalesS4LKey: S4LKey[EstimateZeroRatedSales] = S4LKey("EstimateZeroRatedSales")
@@ -77,6 +70,7 @@ object S4LKey {
   implicit val manageAdditionalFunds: S4LKey[ManageAdditionalFunds] = S4LKey("ManageAdditionalFunds")
   implicit val vatServiceEligibility: S4LKey[VatServiceEligibility] = S4LKey("VatServiceEligibility")
 
+  implicit val tradingDetails: S4LKey[S4LTradingDetails] = S4LKey("VatTradingDetails")
   implicit val vatContact: S4LKey[S4LVatContact] = S4LKey("VatContact")
   implicit val vatLodgingOfficer: S4LKey[S4LVatLodgingOfficer] = S4LKey("VatLodgingOfficer")
 

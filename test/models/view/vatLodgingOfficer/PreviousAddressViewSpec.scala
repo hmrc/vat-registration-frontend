@@ -95,11 +95,11 @@ class PreviousAddressViewSpec extends UnitSpec with VatRegistrationFixture with 
     }
 
     "update empty lodgingOfficer with previousAddressView" in {
-      PreviousAddressView.vmReads.udpate(testPreviousAddressView, Option.empty[S4LVatLodgingOfficer]).previousAddress shouldBe Some(testPreviousAddressView)
+      PreviousAddressView.vmReads.update(testPreviousAddressView, Option.empty[S4LVatLodgingOfficer]).previousAddress shouldBe Some(testPreviousAddressView)
     }
 
     "update non-empty lodgingOfficer with previousAddressView" in {
-      PreviousAddressView.vmReads.udpate(testPreviousAddressView, Some(s4LVatLodgingOfficer)).previousAddress shouldBe Some(testPreviousAddressView)
+      PreviousAddressView.vmReads.update(testPreviousAddressView, Some(s4LVatLodgingOfficer)).previousAddress shouldBe Some(testPreviousAddressView)
     }
 
   }

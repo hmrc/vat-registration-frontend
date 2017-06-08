@@ -33,30 +33,24 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
-import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
-import models.{S4LKey, S4LVatContact, S4LVatLodgingOfficer}
+import models.{S4LKey, S4LTradingDetails, S4LVatContact, S4LVatLodgingOfficer}
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService, VatRegistrationService}
 
 import scala.concurrent.Future
 
-class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService)
+class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LService: S4LService,
+                                                                vatRegistrationService: VatRegistrationService,
+                                                                testVatLodgingOfficer: TestVatLodgingOfficerBuilder)
   extends VatRegistrationController(ds) with CommonService {
 
   def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request => {
     for {
-      taxableTurnover <- s4LService.fetchAndGet[TaxableTurnover]()
-      voluntaryRegistration <- s4LService.fetchAndGet[VoluntaryRegistration]()
-      voluntaryRegistrationReason <- s4LService.fetchAndGet[VoluntaryRegistrationReason]()
-      startDate <- s4LService.fetchAndGet[StartDateView]()
-      tradingName <- s4LService.fetchAndGet[TradingNameView]()
 
-      euGoods <- s4LService.fetchAndGet[EuGoods]()
-      applyEori <- s4LService.fetchAndGet[ApplyEori]()
       companyBankAccount <- s4LService.fetchAndGet[CompanyBankAccount]()
       companyBankAccountDetails <- s4LService.fetchAndGet[CompanyBankAccountDetails]()
       estimateVatTurnover <- s4LService.fetchAndGet[EstimateVatTurnover]()
@@ -84,6 +78,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
       investmentFundManagement <- s4LService.fetchAndGet[InvestmentFundManagement]()
       manageAdditionalFunds <- s4LService.fetchAndGet[ManageAdditionalFunds]()
 
+      tradingDetails <- s4LService.fetchAndGet[S4LTradingDetails]()
       vatContact <- s4LService.fetchAndGet[S4LVatContact]()
       vatLodgingOfficer <- s4LService.fetchAndGet[S4LVatLodgingOfficer]()
 
@@ -91,19 +86,20 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
 
       testSetup = TestSetup(
         VatChoiceTestSetup(
-          taxableTurnover.map(_.yesNo),
-          voluntaryRegistration.map(_.yesNo),
-          voluntaryRegistrationReason.map(_.reason),
-          startDate.map(_.dateType),
-          startDate.flatMap(_.date).map(_.getDayOfMonth.toString),
-          startDate.flatMap(_.date).map(_.getMonthValue.toString),
-          startDate.flatMap(_.date).map(_.getYear.toString)
+          taxableTurnoverChoice = tradingDetails.flatMap(_.taxableTurnover).map(_.yesNo),
+          voluntaryChoice = tradingDetails.flatMap(_.voluntaryRegistration).map(_.yesNo),
+          voluntaryRegistrationReason = tradingDetails.flatMap(_.voluntaryRegistrationReason).map(_.reason),
+          startDateChoice = tradingDetails.flatMap(_.startDate).map(_.dateType),
+          startDateDay = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getDayOfMonth.toString),
+          startDateMonth = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getMonthValue.toString),
+          startDateYear = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getYear.toString)
         ),
         VatTradingDetailsTestSetup(
-          tradingName.map(_.yesNo),
-          tradingName.flatMap(_.tradingName),
-          euGoods.map(_.yesNo),
-          applyEori.map(_.yesNo.toString)),
+          tradingNameChoice = tradingDetails.flatMap(_.tradingName).map(_.yesNo),
+          tradingName = tradingDetails.flatMap(_.tradingName).flatMap(_.tradingName),
+          euGoods = tradingDetails.flatMap(_.euGoods).map(_.yesNo),
+          applyEori = tradingDetails.flatMap(_.applyEori).map(_.yesNo.toString)
+        ),
         VatContactTestSetup(
           email = vatContact.flatMap(_.businessContactDetails).map(_.email),
           daytimePhone = vatContact.flatMap(_.businessContactDetails).flatMap(_.daytimePhone),
@@ -263,7 +259,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
             vatContact = vatContactFromData(data)
             _ <- s4LService.save(vatContact)
 
-            vatLodgingOfficer = vatLodgingOfficerFromData(data)
+            vatLodgingOfficer = testVatLodgingOfficer.vatLodgingOfficerFromData(data)
             _ <- s4LService.save(vatLodgingOfficer)
 
             // KeyStore hack
@@ -287,62 +283,5 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
     )
   }
 
-  private def vatLodgingOfficerFromData(data: TestSetup): S4LVatLodgingOfficer = {
-    val homeAddress: Option[ScrsAddress] = data.officerHomeAddress.line1.map(_ =>
-      ScrsAddress(
-        line1 = data.officerHomeAddress.line1.getOrElse(""),
-        line2 = data.officerHomeAddress.line2.getOrElse(""),
-        line3 = data.officerHomeAddress.line3,
-        line4 = data.officerHomeAddress.line4,
-        postcode = data.officerHomeAddress.postcode,
-        country = data.officerHomeAddress.country))
-
-    val threeYears: Option[String] = data.officerPreviousAddress.threeYears
-    val previousAddress: Option[ScrsAddress] = data.officerPreviousAddress.line1.map(_ =>
-      ScrsAddress(
-        line1 = data.officerPreviousAddress.line1.getOrElse(""),
-        line2 = data.officerPreviousAddress.line2.getOrElse(""),
-        line3 = data.officerPreviousAddress.line3,
-        line4 = data.officerPreviousAddress.line4,
-        postcode = data.officerPreviousAddress.postcode,
-        country = data.officerPreviousAddress.country))
-
-    val dob: Option[LocalDate] = data.vatLodgingOfficer.dobDay.map(_ =>
-      LocalDate.of(
-        data.vatLodgingOfficer.dobYear.getOrElse("1900").toInt,
-        data.vatLodgingOfficer.dobMonth.getOrElse("1").toInt,
-        data.vatLodgingOfficer.dobDay.getOrElse("1").toInt))
-
-    val nino = data.vatLodgingOfficer.nino
-
-    val completionCapacity = data.vatLodgingOfficer.role.map(_ => {
-      CompletionCapacity(
-        name = Name(data.vatLodgingOfficer.firstname,
-        data.vatLodgingOfficer.othernames,
-        data.vatLodgingOfficer.surname.getOrElse("")),
-        role = data.vatLodgingOfficer.role.getOrElse(""))
-    })
-
-    val contactDetails = data.vatLodgingOfficer.email.map(_ =>
-      OfficerContactDetails(
-        email = data.vatLodgingOfficer.email,
-        mobile = data.vatLodgingOfficer.mobile,
-        tel = data.vatLodgingOfficer.phone))
-
-    val formerName = data.vatLodgingOfficer.formernameChoice.map(_ =>
-      FormerName(
-        selection = data.vatLodgingOfficer.formernameChoice.map(_.toBoolean).getOrElse(false),
-        formerName = data.vatLodgingOfficer.formername))
-
-    S4LVatLodgingOfficer(
-      previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
-      officerHomeAddress = homeAddress.map(a => OfficerHomeAddressView(a.id, Some(a))),
-      officerDateOfBirth = dob.map(OfficerDateOfBirthView(_, completionCapacity.map(_.name))),
-      officerNino = nino.map(OfficerNinoView(_)),
-      completionCapacity = completionCapacity.map(CompletionCapacityView(_)),
-      officerContactDetails = contactDetails.map(OfficerContactDetailsView(_)),
-      formerName = formerName.map(FormerNameView(_))
-    )
-  }
 
 }

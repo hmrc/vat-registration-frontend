@@ -72,11 +72,11 @@ class FormerNameViewSpec extends UnitSpec with VatRegistrationFixture with Insid
     }
 
     "update empty lodgingOfficer with formerNameView" in {
-      FormerNameView.vmReads.udpate(testFormerNameView, Option.empty[S4LVatLodgingOfficer]).formerName shouldBe Some(testFormerNameView)
+      FormerNameView.vmReads.update(testFormerNameView, Option.empty[S4LVatLodgingOfficer]).formerName shouldBe Some(testFormerNameView)
     }
 
     "update non-empty lodgingOfficer with formerNameView" in {
-      FormerNameView.vmReads.udpate(testFormerNameView, Some(s4LVatLodgingOfficer)).formerName shouldBe Some(testFormerNameView)
+      FormerNameView.vmReads.update(testFormerNameView, Some(s4LVatLodgingOfficer)).formerName shouldBe Some(testFormerNameView)
     }
 
   }

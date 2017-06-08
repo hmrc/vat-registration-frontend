@@ -17,7 +17,7 @@
 package models.view.vatLodgingOfficer
 
 import models.api._
-import models.{ApiModelTransformer, S4LVatLodgingOfficer, VMReads, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
 case class OfficerContactDetailsView(
@@ -35,7 +35,7 @@ object OfficerContactDetailsView {
   implicit val format: OFormat[OfficerContactDetailsView] = Json.format[OfficerContactDetailsView]
 
 
-  implicit val vmReads = VMReads(
+  implicit val vmReads = ViewModelFormat(
     readF = (group: S4LVatLodgingOfficer) => group.officerContactDetails,
     updateF = (c: OfficerContactDetailsView, g: Option[S4LVatLodgingOfficer]) =>
       g.getOrElse(S4LVatLodgingOfficer()).copy(officerContactDetails = Some(c))
