@@ -44,7 +44,7 @@ class OfficerContactDetailsController @Inject()(ds: CommonPlayDependencies)
         .andThen(form => BadRequest(views.html.pages.vatLodgingOfficer.officer_contact_details(form)).pure),
       view => (for {
         _ <- save[OfficerContactDetailsView](view)
-        optVR <- viewModel2[VoluntaryRegistration].value
+        optVR <- viewModel[VoluntaryRegistration]().value
       } yield optVR.fold(true)(_ == VoluntaryRegistration.yes)).ifM(
         ifTrue = vatChoiceRoutes.StartDateController.show().pure,
         ifFalse = vatChoiceRoutes.MandatoryStartDateController.show().pure

@@ -41,7 +41,7 @@ class VoluntaryRegistrationReasonController @Inject()(ds: CommonPlayDependencies
       badForm => BadRequest(views.html.pages.vatTradingDetails.vatChoice.voluntary_registration_reason(badForm)).pure,
       goodForm => (goodForm.reason == VoluntaryRegistrationReason.NEITHER).pure.ifM(
         s4l.clear().flatMap(_ => vrs.deleteVatScheme()).map(_ => controllers.routes.WelcomeController.show()),
-        s4l.save(goodForm).map(_ => controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
+        save(goodForm).map(_ => controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
       ).map(Redirect)))
 
 }
