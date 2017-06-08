@@ -64,19 +64,19 @@ class FormerNameViewSpec extends UnitSpec with VatRegistrationFixture with Insid
     }
   }
 
-  "VMReads" should {
+  "ViewModelFormat" should {
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(formerName = Some(testFormerNameView))
 
     "extract formerNameView from lodgingOfficer" in {
-      FormerNameView.vmReads.read(s4LVatLodgingOfficer) shouldBe Some(testFormerNameView)
+      FormerNameView.viewModelFormat.read(s4LVatLodgingOfficer) shouldBe Some(testFormerNameView)
     }
 
     "update empty lodgingOfficer with formerNameView" in {
-      FormerNameView.vmReads.udpate(testFormerNameView, Option.empty[S4LVatLodgingOfficer]).formerName shouldBe Some(testFormerNameView)
+      FormerNameView.viewModelFormat.update(testFormerNameView, Option.empty[S4LVatLodgingOfficer]).formerName shouldBe Some(testFormerNameView)
     }
 
     "update non-empty lodgingOfficer with formerNameView" in {
-      FormerNameView.vmReads.udpate(testFormerNameView, Some(s4LVatLodgingOfficer)).formerName shouldBe Some(testFormerNameView)
+      FormerNameView.viewModelFormat.update(testFormerNameView, Some(s4LVatLodgingOfficer)).formerName shouldBe Some(testFormerNameView)
     }
 
   }
