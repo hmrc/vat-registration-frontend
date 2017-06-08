@@ -19,13 +19,17 @@ package controllers.test
 import java.time.LocalDate
 
 import models.api._
+import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.sicAndCompliance.cultural.NotForProfit
+import models.view.sicAndCompliance.financial._
+import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.test.TestSetup
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
-import models.{S4LTradingDetails, S4LVatContact, S4LVatLodgingOfficer}
+import models.{S4LTradingDetails, S4LVatContact, S4LVatLodgingOfficer, S4LVatSicAndCompliance}
 
 class TestS4LBuilder {
 
@@ -65,15 +69,40 @@ class TestS4LBuilder {
     )
   }
 
-  def vatContactFromData(data: TestSetup): S4LVatContact = {
-    val businessContactDetails = BusinessContactDetails(data.vatContact.email.getOrElse(""),
-      data.vatContact.daytimePhone,
-      data.vatContact.mobile,
-      data.vatContact.website)
+  def vatSicAndComplianceFromData(data: TestSetup): S4LVatSicAndCompliance = {
+    val base = data.sicAndCompliance
+    val compliance: S4LVatSicAndCompliance =
+      (base.culturalNotForProfit, base.labourCompanyProvideWorkers, base.financialAdviceOrConsultancy) match {
+        case (None, None, None) => S4LVatSicAndCompliance()
+        case (Some(_), None, None) => S4LVatSicAndCompliance(
+          notForProfit = Some(NotForProfit(base.culturalNotForProfit.get)))
+        case(None, Some(_), None) => S4LVatSicAndCompliance(
+          companyProvideWorkers = Some(CompanyProvideWorkers(base.labourCompanyProvideWorkers.get)),
+          workers = Some(Workers(base.labourWorkers.get.toInt)),
+          temporaryContracts = Some(TemporaryContracts(base.labourTemporaryContracts.get)),
+          skilledWorkers = Some(SkilledWorkers(base.labourSkilledWorkers.get)))
+        case(None, None, Some(_)) => S4LVatSicAndCompliance(
+          adviceOrConsultancy = Some(AdviceOrConsultancy(base.financialAdviceOrConsultancy.get.toBoolean)),
+          actAsIntermediary = Some(ActAsIntermediary(base.financialActAsIntermediary.get.toBoolean)),
+          chargeFees = Some(ChargeFees(base.financialChargeFees.get.toBoolean)),
+          leaseVehicles = Some(LeaseVehicles(base.financialLeaseVehiclesOrEquipment.get.toBoolean)),
+          additionalNonSecuritiesWork = Some(AdditionalNonSecuritiesWork(base.financialAdditionalNonSecuritiesWork.get.toBoolean)),
+          discretionaryInvestmentManagementServices = Some(DiscretionaryInvestmentManagementServices(base.financialDiscretionaryInvestment.get.toBoolean)),
+          investmentFundManagement = Some(InvestmentFundManagement(base.financialInvestmentFundManagement.get.toBoolean)),
+          manageAdditionalFunds = Some(ManageAdditionalFunds(base.financialManageAdditionalFunds.get.toBoolean)))
+      }
 
-    S4LVatContact(
-      businessContactDetails = Some(businessContactDetails)
-    )
+    compliance.copy(description = base.businessActivityDescription.map(BusinessActivityDescription(_)))
+  }
+
+  def vatContactFromData(data: TestSetup): S4LVatContact = {
+    val businessContactDetails = data.vatContact.email.map(_ =>
+      BusinessContactDetails(data.vatContact.email.get,
+        data.vatContact.daytimePhone,
+        data.vatContact.mobile,
+        data.vatContact.website))
+
+    S4LVatContact(businessContactDetails = businessContactDetails)
   }
 
   def vatLodgingOfficerFromData(data: TestSetup): S4LVatLodgingOfficer = {
