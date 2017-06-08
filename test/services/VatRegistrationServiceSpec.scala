@@ -22,6 +22,7 @@ import cats.data.OptionT
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models._
 import models.api._
 import models.external.CoHoCompanyProfile
 import models.view.sicAndCompliance.BusinessActivityDescription
@@ -30,7 +31,6 @@ import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
-import models.{S4LVatContact, S4LVatLodgingOfficer, VatBankAccountPath, ZeroRatedTurnoverEstimatePath}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -77,10 +77,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "return a success response when the VatScheme is upserted" in new Setup {
       mockFetchRegId(validRegId)
 
-      save4laterReturns(StartDateView(StartDateView.SPECIFIC_DATE, someTestDate))
-      save4laterReturns(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES))
-      save4laterReturns(VoluntaryRegistrationReason(VoluntaryRegistrationReason.SELLS))
-      save4laterReturns(TradingNameView(TradingNameView.TRADING_NAME_NO))
       save4laterReturns(validEstimateVatTurnover)
       save4laterReturns(validEstimateZeroRatedSales)
       save4laterReturns(validVatChargeExpectancy)
@@ -101,10 +97,23 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturns(DiscretionaryInvestmentManagementServices(true))
       save4laterReturns(InvestmentFundManagement(true))
       save4laterReturns(ManageAdditionalFunds(true))
-      save4laterReturns(validEuGoods)
-      save4laterReturns(validApplyEori)
-      save4laterReturns(S4LVatContact(businessContactDetails = Some(validBusinessContactDetails)))
+
+      save4laterReturns(S4LVatContact(
+        businessContactDetails = Some(validBusinessContactDetails)
+      ))
+
       save4laterReturns(validServiceEligibility)
+
+      save4laterReturns(S4LTradingDetails(
+        taxableTurnover = Some(validTaxableTurnover),
+        tradingName = Some(validTradingNameView),
+        startDate = Some(validStartDateView),
+        voluntaryRegistration = Some(VoluntaryRegistration("")),
+        voluntaryRegistrationReason = Some(VoluntaryRegistrationReason("")),
+        euGoods = Some(validEuGoods),
+        applyEori = Some(validApplyEori)
+      ))
+
       save4laterReturns(S4LVatLodgingOfficer(
         officerHomeAddress = Some(OfficerHomeAddressView("")),
         officerDateOfBirth = Some(OfficerDateOfBirthView(LocalDate.now)),
@@ -128,7 +137,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   "Calling submitTradingDetails" should {
     "return a success response when VatTradingDetails is submitted" in new Setup {
       mockFetchRegId(validRegId)
-      save4laterReturns(TradingNameView(yesNo = TradingNameView.TRADING_NAME_YES))
+      save4laterReturns2(TradingNameView(yesNo = TradingNameView.TRADING_NAME_YES))
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
 
@@ -142,16 +151,16 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       mockFetchRegId(validRegId)
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(tradingDetailsWithCtActiveDateSelected.pure)
-      save4laterReturns(StartDateView(StartDateView.BUSINESS_START_DATE, someTestDate))
+      save4laterReturns2(StartDateView(StartDateView.BUSINESS_START_DATE, someTestDate))
 
       service.submitTradingDetails() returns tradingDetailsWithCtActiveDateSelected
     }
 
     "return a success response when VatTradingDetails is submitted and no Trading Name is found in S4L" in new Setup {
       mockFetchRegId(validRegId)
-      save4laterReturnsNothing[TradingNameView]()
-      save4laterReturns(validEuGoods)
-      save4laterReturns(validApplyEori)
+      save4laterReturnsNothing2[TradingNameView]()
+      save4laterReturns2(validEuGoods)
+      save4laterReturns2(validApplyEori)
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
 
@@ -266,6 +275,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       service.submitTradingDetails() returns validVatTradingDetails
     }
 
+    "submitTradingDetails should fail if there's not trace of VatTradingDetails in neither backend nor S4L" in new Setup {
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+      save4laterReturnsNothing[S4LTradingDetails]()
+
+      service.submitTradingDetails() failedWith classOf[IllegalStateException]
+    }
 
     "submitVatContact should process the submission even if VatScheme does not contain a VatContact object" in new Setup {
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)

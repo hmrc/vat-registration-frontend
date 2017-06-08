@@ -60,7 +60,7 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
 
   val tstStartDateModel = StartDateView("", None)
 
-  "S4L Service" should {
+  /*"S4L Service" should {
 
     "save a form with the correct key" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
@@ -88,9 +88,9 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
       service.fetchAll() returns Some(cacheMap)
     }
 
-  }
+  }*/
 
-  "getting a View Model form Save 4 Later" should {
+  "getting a View Model from Save 4 Later" should {
 
     "fail with an exception when registration ID cannot be found in keystore" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", None)

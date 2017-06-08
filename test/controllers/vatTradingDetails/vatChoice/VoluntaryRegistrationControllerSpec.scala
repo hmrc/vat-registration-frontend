@@ -32,22 +32,17 @@
 
 package controllers.vatTradingDetails.vatChoice
 
-import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object TestVoluntaryRegistrationController extends VoluntaryRegistrationController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -60,8 +55,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     "return HTML Voluntary Registration  page with no Selection" in {
       val voluntaryRegistration = VoluntaryRegistration("")
 
-      when(mockS4LService.fetchAndGet[VoluntaryRegistration]()(any(), any(), any()))
-        .thenReturn(Future.successful(Some(voluntaryRegistration)))
+      save4laterReturns2(voluntaryRegistration)()
 
       submitAuthorised(TestVoluntaryRegistrationController.show(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationRadio" -> ""
@@ -71,8 +65,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[VoluntaryRegistration]()(Matchers.eq(S4LKey[VoluntaryRegistration]), any(), any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[VoluntaryRegistration]()
 
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
@@ -83,8 +76,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockS4LService.fetchAndGet[VoluntaryRegistration]()
-        (Matchers.eq(S4LKey[VoluntaryRegistration]), any(), any())).thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[VoluntaryRegistration]()
 
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
@@ -106,10 +98,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
   s"POST ${routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected Yes" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration.yes)))
-
-      when(mockS4LService.save[VoluntaryRegistration](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMap))
+      save4laterExpectsSave[VoluntaryRegistration]()
 
       submitAuthorised(TestVoluntaryRegistrationController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationRadio" -> VoluntaryRegistration.REGISTER_YES
@@ -120,11 +109,8 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
   s"POST ${routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected No" should {
 
     "redirect to the welcome page" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistration.no)))
-
       when(mockS4LService.clear()(any[HeaderCarrier]())).thenReturn(Future.successful(validHttpResponse))
-      when(mockS4LService.save[VoluntaryRegistration](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMap))
+      save4laterExpectsSave[VoluntaryRegistration]()
       when(mockVatRegistrationService.deleteVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(()))
 

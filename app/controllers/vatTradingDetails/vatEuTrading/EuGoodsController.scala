@@ -41,6 +41,7 @@ class EuGoodsController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.vatTradingDetails.vatEuTrading.eu_goods(badForm)).pure,
       goodForm => save(goodForm).map(_ => goodForm.yesNo == EuGoods.EU_GOODS_NO).ifM(
         save(ApplyEori(ApplyEori.APPLY_EORI_NO)).map(_ =>
+          vrs.submitTradingDetails()).map(_ =>
           controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show()),
         controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show().pure
       ).map(Redirect)))

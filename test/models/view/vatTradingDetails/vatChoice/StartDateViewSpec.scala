@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import fixtures.VatRegistrationFixture
 import models.api.VatTradingDetails
-import models.{DateModel, ViewModelTransformer}
+import models.{DateModel, S4LTradingDetails, ViewModelTransformer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -73,6 +73,23 @@ class StartDateViewSpec extends UnitSpec with VatRegistrationFixture with Inside
       val transformed = ViewModelTransformer[StartDateView, VatTradingDetails].toApi(c, g)
       transformed shouldBe g.copy(vatChoice = g.vatChoice.copy(vatStartDate = g.vatChoice.vatStartDate.copy(selection = "from S4L")))
     }
+  }
+
+  "ViewModelFormat" should {
+    val s4LTradingDetails: S4LTradingDetails = S4LTradingDetails(startDate = Some(validStartDateView))
+
+    "extract startDate from vatTradingDetails" in {
+      StartDateView.viewModelFormat.read(s4LTradingDetails) shouldBe Some(validStartDateView)
+    }
+
+    "update empty vatContact with startDate" in {
+      StartDateView.viewModelFormat.update(validStartDateView, Option.empty[S4LTradingDetails]).startDate shouldBe Some(validStartDateView)
+    }
+
+    "update non-empty vatContact with startDate" in {
+      StartDateView.viewModelFormat.update(validStartDateView, Some(s4LTradingDetails)).startDate shouldBe Some(validStartDateView)
+    }
+
   }
 
 }
