@@ -19,7 +19,7 @@ package controllers.vatEligibility
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import forms.vatEligibility.ServiceCriteriaFormFactory
-import helpers.VatRegSpec
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.api.EligibilityQuestion._
 import models.api.{EligibilityQuestion, VatServiceEligibility}
 import org.mockito.Matchers
@@ -30,7 +30,7 @@ import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistrationFixture  with S4LMockSugar {
 
   val mockVatRegService = mock[VatRegistrationService]
 
@@ -48,8 +48,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
   "GET ServiceCriteriaQuestionsController.show()" should {
 
     "return HTML for relevant page with no data in the form" in {
-      when(mockS4LService.fetchAndGet[VatServiceEligibility]()(any(), any(), any()))
-        .thenReturn(Some(validServiceEligibility).pure)
+      save4laterReturns2[VatServiceEligibility](validServiceEligibility)()
 
       val eligibilityQuestions = Seq[(EligibilityQuestion, String)](
         HaveNinoQuestion -> "Do you have a National Insurance number?",
@@ -85,8 +84,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
 
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
-        when(mockS4LService.fetchAndGet[VatServiceEligibility]()(any(), any(), any()))
-          .thenReturn(Some(validServiceEligibility).pure)
+        save4laterReturns2[VatServiceEligibility](validServiceEligibility)()
         when(mockS4LService.save[VatServiceEligibility](any())(any(), any(), any()))
           .thenReturn(dummyCacheMap.pure)
 
@@ -102,8 +100,8 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
 
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
-        when(mockS4LService.fetchAndGet[VatServiceEligibility]()(any(), any(), any()))
-          .thenReturn(Option.empty[VatServiceEligibility].pure)
+        save4laterReturnsNothing2[VatServiceEligibility]()
+
         when(mockVatRegService.getVatScheme()(any()))
           .thenReturn(validVatScheme.copy(vatServiceEligibility = None).pure)
         when(mockS4LService.save[VatServiceEligibility](any())(any(), any(), any()))
@@ -122,8 +120,8 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
 
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
-        when(mockS4LService.fetchAndGet[VatServiceEligibility]()(any(), any(), any()))
-          .thenReturn(Some(validServiceEligibility).pure)
+        save4laterReturns2[VatServiceEligibility](validServiceEligibility)()
+
         when(mockS4LService.save[VatServiceEligibility](any())(any(), any(), any()))
           .thenReturn(dummyCacheMap.pure)
         when(mockKeystoreConnector.cache[String](any(), any())(any(), any()))
