@@ -19,7 +19,7 @@ package models.view.vatFinancials.vatAccountingPeriod
 import fixtures.VatRegistrationFixture
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.{MONTHLY, QUARTERLY}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class VatReturnFrequencySpec extends UnitSpec with VatRegistrationFixture {
@@ -77,6 +77,26 @@ class VatReturnFrequencySpec extends UnitSpec with VatRegistrationFixture {
     "convert VatScheme without VatFinancials to empty view model" in {
       val vs = vatScheme.copy(financials = None)
       ApiModelTransformer[VatReturnFrequency].toViewModel(vs) shouldBe None
+    }
+  }
+
+  "ViewModelFormat" should {
+    val testReturnFrequency = VatReturnFrequency(VatReturnFrequency.MONTHLY)
+
+    val s4lVatFinancials: S4LVatFinancials = S4LVatFinancials(vatReturnFrequency = Some(testReturnFrequency))
+
+    "extract VatReturnFrequency from VatReturnFrequency" in {
+      VatReturnFrequency.viewModelFormat.read(s4lVatFinancials) shouldBe Some(testReturnFrequency)
+    }
+
+    "update empty VatReturnFrequency with VatReturnFrequency" in {
+      VatReturnFrequency.viewModelFormat.update(testReturnFrequency, Option.empty[S4LVatFinancials]).
+        vatReturnFrequency shouldBe Some(testReturnFrequency)
+    }
+
+    "update non-empty VatReturnFrequency with VatReturnFrequency" in {
+      VatReturnFrequency.viewModelFormat.update(testReturnFrequency, Some(s4lVatFinancials)).
+        vatReturnFrequency shouldBe Some(testReturnFrequency)
     }
   }
 

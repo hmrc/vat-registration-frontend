@@ -30,8 +30,6 @@ import scala.concurrent.Future
 @ImplementedBy(classOf[PersistenceService])
 trait S4LService extends CommonService {
 
-  import cats.instances.future._
-
   private[services] val s4LConnector: S4LConnector
 
   def save[T: S4LKey](data: T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] =

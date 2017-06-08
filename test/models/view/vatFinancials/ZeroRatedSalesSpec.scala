@@ -17,9 +17,8 @@
 package models.view.vatFinancials
 
 import fixtures.VatRegistrationFixture
-import models.ApiModelTransformer
 import models.api.{VatFinancials, VatScheme}
-import models.view.vatFinancials.ZeroRatedSales.{ZERO_RATED_SALES_NO, ZERO_RATED_SALES_YES}
+import models.{ApiModelTransformer, S4LVatFinancials}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
@@ -35,7 +34,7 @@ class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
         accountingPeriods = monthlyAccountingPeriod
       )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithZeroRated))
-      ApiModelTransformer[ZeroRatedSales].toViewModel(vs) shouldBe Some(ZeroRatedSales(ZERO_RATED_SALES_YES))
+      ApiModelTransformer[ZeroRatedSales].toViewModel(vs) shouldBe Some(ZeroRatedSales.yes)
     }
 
     "convert VatFinancials without zero rated sales to view model" in {
@@ -46,12 +45,31 @@ class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
       )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithoutZeroRated))
 
-      ApiModelTransformer[ZeroRatedSales].toViewModel(vs) shouldBe Some(ZeroRatedSales(ZERO_RATED_SALES_NO))
+      ApiModelTransformer[ZeroRatedSales].toViewModel(vs) shouldBe Some(ZeroRatedSales.no)
     }
 
     "convert VatScheme without VatFinancials to empty view model" in {
       val vs = vatScheme.copy(financials = None)
       ApiModelTransformer[ZeroRatedSales].toViewModel(vs) shouldBe None
+    }
+  }
+
+  "ViewModelFormat" should {
+
+    val s4lVatFinancials: S4LVatFinancials = S4LVatFinancials(zeroRatedTurnover = Some(ZeroRatedSales.yes))
+
+    "extract ZeroRatedSales from VatFinancials" in {
+      ZeroRatedSales.viewModelFormat.read(s4lVatFinancials) shouldBe Some(ZeroRatedSales.yes)
+    }
+
+    "update empty VatFinancials with ZeroRatedSales" in {
+      ZeroRatedSales.viewModelFormat.update(ZeroRatedSales.yes, Option.empty[S4LVatFinancials]).
+        zeroRatedTurnover shouldBe Some(ZeroRatedSales.yes)
+    }
+
+    "update non-empty VatFinancials with ZeroRatedSales" in {
+      ZeroRatedSales.viewModelFormat.update(ZeroRatedSales.yes, Some(s4lVatFinancials)).
+        zeroRatedTurnover shouldBe Some(ZeroRatedSales.yes)
     }
   }
 }

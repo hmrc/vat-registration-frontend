@@ -18,10 +18,11 @@ package models.view.vatFinancials
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
+
   val turnover = 5000L
   val turnoverNew = 1000L
   val estimatedVatTurnover = EstimateVatTurnover(turnover)
@@ -53,6 +54,25 @@ class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
     "Extract an empty EstimateVatTurnover view model from a VatScheme without financials" in {
       val vatSchemeWithoutFinancials = VatScheme(id = validRegId, financials = None)
       ApiModelTransformer[EstimateVatTurnover].toViewModel(vatSchemeWithoutFinancials) shouldBe None
+    }
+  }
+
+  "ViewModelFormat" should {
+
+    val s4lVatFinancials: S4LVatFinancials = S4LVatFinancials(estimateVatTurnover = Some(validEstimateVatTurnover))
+
+    "extract EstimateVatTurnover from VatFinancials" in {
+      EstimateVatTurnover.viewModelFormat.read(s4lVatFinancials) shouldBe Some(validEstimateVatTurnover)
+    }
+
+    "update empty VatFinancials with EstimateVatTurnover" in {
+      EstimateVatTurnover.viewModelFormat.update(validEstimateVatTurnover, Option.empty[S4LVatFinancials]).
+        estimateVatTurnover shouldBe Some(validEstimateVatTurnover)
+    }
+
+    "update non-empty VatFinancials with EstimateVatTurnover" in {
+      EstimateVatTurnover.viewModelFormat.update(validEstimateVatTurnover, Some(s4lVatFinancials)).
+        estimateVatTurnover shouldBe Some(validEstimateVatTurnover)
     }
   }
 }

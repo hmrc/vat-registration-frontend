@@ -18,7 +18,7 @@ package models.view.vatFinancials
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
@@ -56,6 +56,25 @@ class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
     "convert a VatScheme without a VatFinancials to an empty view model" in {
       val vatScheme = VatScheme(id = validRegId)
       ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vatScheme) shouldBe None
+    }
+  }
+
+  "ViewModelFormat" should {
+
+    val s4lVatFinancials: S4LVatFinancials = S4LVatFinancials(zeroRatedTurnoverEstimate = Some(validEstimateZeroRatedSales))
+
+    "extract EstimateZeroRatedSales from VatFinancials" in {
+      EstimateZeroRatedSales.viewModelFormat.read(s4lVatFinancials) shouldBe Some(validEstimateZeroRatedSales)
+    }
+
+    "update empty VatFinancials with EstimateZeroRatedSales" in {
+      EstimateZeroRatedSales.viewModelFormat.update(validEstimateZeroRatedSales, Option.empty[S4LVatFinancials]).
+        zeroRatedTurnoverEstimate shouldBe Some(validEstimateZeroRatedSales)
+    }
+
+    "update non-empty VatFinancials with EstimateZeroRatedSales" in {
+      EstimateZeroRatedSales.viewModelFormat.update(validEstimateZeroRatedSales, Some(s4lVatFinancials)).
+        zeroRatedTurnoverEstimate shouldBe Some(validEstimateZeroRatedSales)
     }
   }
 

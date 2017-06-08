@@ -23,13 +23,11 @@ import models.view.vatFinancials.VatChargeExpectancy
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.cache.client.CacheMap
 
 class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object TestVatChargeExpectancyController extends VatChargeExpectancyController(ds)(mockS4LService, mockVatRegistrationService) {
+  object Controller extends VatChargeExpectancyController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -38,29 +36,27 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"GET ${vatFinancials.routes.VatChargeExpectancyController.show()}" should {
 
     "return HTML when there's a Vat Charge Expectancy model in S4L" in {
-      val vatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
-      save4laterReturns(vatChargeExpectancy)
-      submitAuthorised(TestVatChargeExpectancyController.show(), fakeRequest.withFormUrlEncodedBody(
-        "vatChargeRadio" -> ""
-      )) {
+      save4laterReturns2(VatChargeExpectancy.yes)()
+
+      callAuthorised(Controller.show()) {
         _ includesText "Do you expect to reclaim more VAT than you charge?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing[VatChargeExpectancy]()
+      save4laterReturnsNothing2[VatChargeExpectancy]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
-      callAuthorised(TestVatChargeExpectancyController.show) {
+      callAuthorised(Controller.show) {
         _ includesText "Do you expect to reclaim more VAT than you charge?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing[VatChargeExpectancy]()
+      save4laterReturnsNothing2[VatChargeExpectancy]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
-      callAuthorised(TestVatChargeExpectancyController.show) {
+      callAuthorised(Controller.show) {
         _ includesText "Do you expect to reclaim more VAT than you charge?"
       }
     }
@@ -68,23 +64,18 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
   }
 
   s"POST ${vatFinancials.routes.VatChargeExpectancyController.submit()} with Empty data" should {
-
     "return 400" in {
-      submitAuthorised(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
-      ))(result => result isA 400)
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
-
   }
 
   s"POST ${vatFinancials.routes.VatChargeExpectancyController.submit()} with Vat Charge Expectancy selected Yes" should {
 
     "return 303" in {
-      val returnCacheMapVatChargeExpectancy = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES))))
-      when(mockS4LService.save[VatChargeExpectancy](any())(any(), any(), any())).thenReturn(returnCacheMapVatChargeExpectancy.pure)
+      save4laterExpectsSave[VatChargeExpectancy]()
 
-      submitAuthorised(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_YES
-      )) {
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody("vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_YES)) {
         _ redirectsTo s"$contextRoot/how-often-do-you-want-to-submit-vat-returns"
       }
     }
@@ -94,15 +85,10 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${vatFinancials.routes.VatChargeExpectancyController.submit()} with Vat Charge Expectancy selected No" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_NO))))
-      val returnCacheMapReturnFrequency = CacheMap("", Map("" -> Json.toJson(VatReturnFrequency(VatReturnFrequency.MONTHLY))))
-
-      when(mockS4LService.save[VatChargeExpectancy](any())(any(), any(), any())).thenReturn(returnCacheMap.pure)
-      when(mockS4LService.save[VatReturnFrequency](any())(any(), any(), any())).thenReturn(returnCacheMapReturnFrequency.pure)
-
-      submitAuthorised(TestVatChargeExpectancyController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_NO
-      )) {
+      save4laterExpectsSave[VatChargeExpectancy]()
+      save4laterExpectsSave[VatReturnFrequency]()
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody("vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_NO)) {
         _ redirectsTo s"$contextRoot/vat-return-periods-end"
       }
     }
