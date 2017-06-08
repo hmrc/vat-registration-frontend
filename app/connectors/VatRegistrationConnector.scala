@@ -106,6 +106,14 @@ trait RegistrationConnector {
     }
   }
 
+  def upsertPpob(regId: String, address: ScrsAddress)
+                          (implicit hc: HeaderCarrier, rds: HttpReads[ScrsAddress]): Future[ScrsAddress] = {
+    http.PATCH[ScrsAddress, ScrsAddress](s"$vatRegUrl/vatreg/$regId/ppob", address) recover {
+      case e: Exception => throw logResponse(e, className, "upsertPpob")
+    }
+  }
+
+
   def deleteVatScheme(regId: String)
                      (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Unit] = {
     http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-scheme") recover {
