@@ -71,9 +71,9 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
         val officerOpt = testCase.officer
         val dobViewOpt = testCase.dobView
 
+        // setup mocks
         dobViewOpt.fold(save4laterReturnsNothing2[OfficerDateOfBirthView]())(view => save4laterReturns2(view)())
-        officerOpt.fold(
-          mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer]))(
+        officerOpt.fold(mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer]))(
           (officer: Officer) => mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Some(officer)))
 
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.copy(lodgingOfficer = None).pure)
@@ -83,7 +83,7 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
       }
 
       // test all scenarios
-      testCases.map(test).forall(p => p)
+      forAll (testCases) (tc => test(tc) mustBe true)
     }
 
 
