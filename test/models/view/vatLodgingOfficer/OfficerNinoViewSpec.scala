@@ -67,12 +67,12 @@ class OfficerNinoViewSpec extends UnitSpec with VatRegistrationFixture with Insi
     }
 
     "update empty lodgingOfficer with OfficerNinoView" in {
-      OfficerNinoView.vmReads.udpate(testNinoView, Option.empty[S4LVatLodgingOfficer]).
+      OfficerNinoView.vmReads.update(testNinoView, Option.empty[S4LVatLodgingOfficer]).
         officerNino shouldBe Some(testNinoView)
     }
 
     "update non-empty lodgingOfficer with OfficerNinoView" in {
-      OfficerNinoView.vmReads.udpate(testNinoView, Some(s4LVatLodgingOfficer)).
+      OfficerNinoView.vmReads.update(testNinoView, Some(s4LVatLodgingOfficer)).
         officerNino shouldBe Some(testNinoView)
     }
   }

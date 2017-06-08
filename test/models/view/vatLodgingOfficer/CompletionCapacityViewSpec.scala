@@ -75,11 +75,11 @@ class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture wi
     }
 
     "update empty lodgingOfficer with completionCapacityView" in {
-      CompletionCapacityView.vmReads.udpate(ccv, Option.empty[S4LVatLodgingOfficer]).completionCapacity shouldBe Some(ccv)
+      CompletionCapacityView.vmReads.update(ccv, Option.empty[S4LVatLodgingOfficer]).completionCapacity shouldBe Some(ccv)
     }
 
     "update non-empty lodgingOfficer with completionCapacityView" in {
-      CompletionCapacityView.vmReads.udpate(ccv, Some(s4LVatLodgingOfficer)).completionCapacity shouldBe Some(ccv)
+      CompletionCapacityView.vmReads.update(ccv, Some(s4LVatLodgingOfficer)).completionCapacity shouldBe Some(ccv)
     }
   }
 }

@@ -31,7 +31,7 @@ object BusinessContactDetails {
 
   implicit val format: OFormat[BusinessContactDetails] = Json.format[BusinessContactDetails]
 
-  implicit val vmReads = VMReads(
+  implicit val vmReads = ViewModelFormat(
     readF = (group: S4LVatContact) => group.businessContactDetails,
     updateF = (c: BusinessContactDetails, g: Option[S4LVatContact]) =>
       g.getOrElse(S4LVatContact()).copy(businessContactDetails = Some(c))

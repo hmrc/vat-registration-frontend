@@ -27,7 +27,7 @@ import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatRetur
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
-import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
+import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.libs.json.{Json, OFormat}
 
@@ -48,6 +48,7 @@ object S4LVatFinancials {
 
 final case class S4LTradingDetails
 (
+  taxableTurnover: Option[TaxableTurnover] = None,
   tradingName: Option[TradingNameView] = None,
   startDate: Option[StartDateView] = None,
   voluntaryRegistration: Option[VoluntaryRegistration] = None,

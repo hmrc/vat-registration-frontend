@@ -66,12 +66,12 @@ class OfficerDateOfBirthViewSpec extends UnitSpec with VatRegistrationFixture wi
     }
 
     "update empty lodgingOfficer with OfficerDateOfBirthView" in {
-      OfficerDateOfBirthView.vmReads.udpate(testDOBView, Option.empty[S4LVatLodgingOfficer]).
+      OfficerDateOfBirthView.vmReads.update(testDOBView, Option.empty[S4LVatLodgingOfficer]).
         officerDateOfBirth shouldBe Some(testDOBView)
     }
 
     "update non-empty lodgingOfficer with OfficerDateOfBirthView" in {
-      OfficerDateOfBirthView.vmReads.udpate(testDOBView, Some(s4LVatLodgingOfficer)).
+      OfficerDateOfBirthView.vmReads.update(testDOBView, Some(s4LVatLodgingOfficer)).
         officerDateOfBirth shouldBe Some(testDOBView)
     }
   }

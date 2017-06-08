@@ -79,12 +79,12 @@ class OfficerHomeAddressViewSpec extends UnitSpec with VatRegistrationFixture wi
     }
 
     "update empty lodgingOfficer with OfficerHomeAddressView" in {
-      OfficerHomeAddressView.vmReads.udpate(testAddressView, Option.empty[S4LVatLodgingOfficer]).
+      OfficerHomeAddressView.vmReads.update(testAddressView, Option.empty[S4LVatLodgingOfficer]).
         officerHomeAddress shouldBe Some(testAddressView)
     }
 
     "update non-empty lodgingOfficer with OfficerHomeAddressView" in {
-      OfficerHomeAddressView.vmReads.udpate(testAddressView, Some(s4LVatLodgingOfficer)).
+      OfficerHomeAddressView.vmReads.update(testAddressView, Some(s4LVatLodgingOfficer)).
         officerHomeAddress shouldBe Some(testAddressView)
     }
   }

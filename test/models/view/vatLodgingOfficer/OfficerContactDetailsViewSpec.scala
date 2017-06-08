@@ -71,12 +71,12 @@ class OfficerContactDetailsViewSpec extends UnitSpec with VatRegistrationFixture
     }
 
     "update empty lodgingOfficer with officerContactDetailsView" in {
-      OfficerContactDetailsView.vmReads.udpate(officerContactDetailsView, Option.empty[S4LVatLodgingOfficer]).
+      OfficerContactDetailsView.vmReads.update(officerContactDetailsView, Option.empty[S4LVatLodgingOfficer]).
         officerContactDetails shouldBe Some(officerContactDetailsView)
     }
 
     "update non-empty lodgingOfficer with officerContactDetailsView" in {
-      OfficerContactDetailsView.vmReads.udpate(officerContactDetailsView, Some(s4LVatLodgingOfficer)).
+      OfficerContactDetailsView.vmReads.update(officerContactDetailsView, Some(s4LVatLodgingOfficer)).
         officerContactDetails shouldBe Some(officerContactDetailsView)
     }
   }

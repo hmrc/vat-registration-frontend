@@ -16,26 +16,26 @@
 
 package models
 
-trait VMReads[T] {
+trait ViewModelFormat[T] {
 
   type Group
 
   def read(group: Group): Option[T]
 
-  def udpate(viewModel: T, group: Option[Group]): Group
+  def update(viewModel: T, group: Option[Group]): Group
 
 }
 
-object VMReads {
+object ViewModelFormat {
 
-  type Aux[R, Group0] = VMReads[R] {type Group = Group0}
+  type Aux[R, Group0] = ViewModelFormat[R] {type Group = Group0}
 
-  def apply[T, G](readF: G => Option[T], updateF: (T, Option[G]) => G) = new VMReads[T] {
+  def apply[T, G](readF: G => Option[T], updateF: (T, Option[G]) => G) = new ViewModelFormat[T] {
     override type Group = G
 
     def read(group: Group): Option[T] = readF(group)
 
-    def udpate(viewModel: T, group: Option[Group]): Group = updateF(viewModel, group)
+    def update(viewModel: T, group: Option[Group]): Group = updateF(viewModel, group)
 
   }
 
