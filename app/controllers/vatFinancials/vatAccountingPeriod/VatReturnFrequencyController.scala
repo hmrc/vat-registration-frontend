@@ -18,38 +18,31 @@ package controllers.vatFinancials.vatAccountingPeriod
 
 import javax.inject.Inject
 
+import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.vatAccountingPeriod.VatReturnFrequencyForm
 import models.AccountingPeriodStartPath
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
+import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.MONTHLY
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
-
 class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
-                                            (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel2[VatReturnFrequency].map { vm =>
-      Ok(views.html.pages.vatFinancials.vatAccountingPeriod.vat_return_frequency(VatReturnFrequencyForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.vatFinancials.vatAccountingPeriod.vat_return_frequency(VatReturnFrequencyForm.form)))
-  })
+                                            (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with FlatMapSyntax {
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    VatReturnFrequencyForm.form.bindFromRequest().fold(
-      badForm => {
-        Future.successful(BadRequest(views.html.pages.vatFinancials.vatAccountingPeriod.vat_return_frequency(badForm)))
-      }, {
-        data: VatReturnFrequency => {
-          s4LService.save[VatReturnFrequency](data) flatMap { _ =>
-            if (VatReturnFrequency.MONTHLY == data.frequencyType) {
-              vrs.deleteElement(AccountingPeriodStartPath).map { _ =>
-                Redirect(controllers.routes.SummaryController.show()) }
-            } else {
-              Future.successful(Redirect(controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show()))
-            }
-          }
-        }
-      })
-  })
+  val form = VatReturnFrequencyForm.form
+
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel[VatReturnFrequency]().fold(form)(form.fill)
+      .map(frm => Ok(views.html.pages.vatFinancials.vatAccountingPeriod.vat_return_frequency(frm))))
+
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    form.bindFromRequest().fold(
+      badForm => BadRequest(views.html.pages.vatFinancials.vatAccountingPeriod.vat_return_frequency(badForm)).pure,
+      view => save(view).map(_ => view.frequencyType == MONTHLY).ifM(
+        vrs.deleteElement(AccountingPeriodStartPath).map(_ => controllers.routes.SummaryController.show()),
+        controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show().pure)
+        .map(Redirect)))
+
 }

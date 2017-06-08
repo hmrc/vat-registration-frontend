@@ -17,7 +17,7 @@
 package models.view.vatFinancials
 
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
 case class VatChargeExpectancy(yesNo: String)
@@ -30,6 +30,12 @@ object VatChargeExpectancy {
   val valid = (item: String) => List(VAT_CHARGE_YES, VAT_CHARGE_NO).contains(item.toUpperCase)
 
   implicit val format: OFormat[VatChargeExpectancy] = Json.format[VatChargeExpectancy]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatFinancials) => group.vatChargeExpectancy,
+    updateF = (c: VatChargeExpectancy, g: Option[S4LVatFinancials]) =>
+      g.getOrElse(S4LVatFinancials()).copy(vatChargeExpectancy = Some(c))
+  )
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>

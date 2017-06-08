@@ -18,6 +18,8 @@ package controllers.vatFinancials
 
 import javax.inject.Inject
 
+import cats.syntax.FlatMapSyntax
+import controllers.vatFinancials.{routes => financialRoutes}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.ZeroRatedSalesForm
 import models.ZeroRatedTurnoverEstimatePath
@@ -25,34 +27,24 @@ import models.view.vatFinancials.ZeroRatedSales
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
-
 
 class ZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
-                                        (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel2[ZeroRatedSales].map { vm =>
-      Ok(views.html.pages.vatFinancials.zero_rated_sales(ZeroRatedSalesForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.vatFinancials.zero_rated_sales(ZeroRatedSalesForm.form)))
-  })
+                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with FlatMapSyntax {
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    ZeroRatedSalesForm.form.bindFromRequest().fold(
-      badForm => {
-        Future.successful(BadRequest(views.html.pages.vatFinancials.zero_rated_sales(badForm)))
-      }, {
-        data: ZeroRatedSales => {
-          s4LService.save[ZeroRatedSales](data) flatMap { _ =>
-            if (ZeroRatedSales.ZERO_RATED_SALES_NO == data.yesNo) {
-              vrs.deleteElement(ZeroRatedTurnoverEstimatePath).map { _ =>
-                Redirect(controllers.vatFinancials.routes.VatChargeExpectancyController.show())
-              }
-            } else {
-              Future.successful(Redirect(controllers.vatFinancials.routes.EstimateZeroRatedSalesController.show()))
-            }
-          }
-        }
-      })
-  })
+  val form = ZeroRatedSalesForm.form
+
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel[ZeroRatedSales]().fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.vatFinancials.zero_rated_sales(f))))
+
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    form.bindFromRequest().fold(
+      badForm => BadRequest(views.html.pages.vatFinancials.zero_rated_sales(badForm)).pure,
+      view => save(view).map(_ => view.yesNo == ZeroRatedSales.ZERO_RATED_SALES_YES).ifM(
+        financialRoutes.EstimateZeroRatedSalesController.show().pure,
+        vrs.deleteElement(ZeroRatedTurnoverEstimatePath)
+          .map(_ => financialRoutes.VatChargeExpectancyController.show())
+      ).map(Redirect)))
 
 }
