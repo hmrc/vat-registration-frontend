@@ -16,25 +16,17 @@
 
 package controllers.sicAndCompliance.financial
 
-import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.sicAndCompliance.financial.InvestmentFundManagement
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import services.VatRegistrationService
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistrationFixture {
-
-
+class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object InvestmentFundManagementController extends InvestmentFundManagementController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -45,11 +37,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
   s"GET ${routes.InvestmentFundManagementController.show()}" should {
 
     "return HTML when there's a Investment Fund Management model in S4L" in {
-      val chargeFees = InvestmentFundManagement(true)
-
-      when(mockS4LService.fetchAndGet[InvestmentFundManagement]()(any(), any(), any()))
-        .thenReturn(Future.successful(Some(chargeFees)))
-
+      save4laterReturns2(InvestmentFundManagement(true))()
       submitAuthorised(InvestmentFundManagementController.show(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> ""
       )) {
@@ -58,12 +46,8 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[InvestmentFundManagement]()
-        (Matchers.eq(S4LKey[InvestmentFundManagement]), any(), any()))
-        .thenReturn(Future.successful(None))
-
-      when(mockVatRegistrationService.getVatScheme()(any()))
-        .thenReturn(Future.successful(validVatScheme))
+      save4laterReturnsNothing2[InvestmentFundManagement]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(InvestmentFundManagementController.show) {
         _ includesText "Does the company provide investment fund management services?"
@@ -72,12 +56,8 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    when(mockS4LService.fetchAndGet[InvestmentFundManagement]()
-      (Matchers.eq(S4LKey[InvestmentFundManagement]), any(), any()))
-      .thenReturn(Future.successful(None))
-
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-      .thenReturn(Future.successful(emptyVatScheme))
+    save4laterReturnsNothing2[InvestmentFundManagement]()
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(InvestmentFundManagementController.show) {
       _ includesText "Does the company provide investment fund management services?"
@@ -97,29 +77,20 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
   s"POST ${routes.InvestmentFundManagementController.submit()} with Investment Fund Management Yes selected" should {
 
     "return 303" in {
-      val returnCacheMapInvestmentFundManagement = CacheMap("", Map("" -> Json.toJson(InvestmentFundManagement(true))))
-
+      save4laterExpectsSave[InvestmentFundManagement]()
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-
-      when(mockS4LService.save[InvestmentFundManagement](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMapInvestmentFundManagement))
 
       submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/manages-funds-not-included-in-this-list")
-
     }
   }
 
   s"POST ${routes.InvestmentFundManagementController.submit()} with Investment Fund Management No selected" should {
 
     "return 303" in {
-      val returnCacheMapInvestmentFundManagement = CacheMap("", Map("" -> Json.toJson(InvestmentFundManagement(false))))
-
+      save4laterExpectsSave[InvestmentFundManagement]()
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-
-      when(mockS4LService.save[InvestmentFundManagement](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMapInvestmentFundManagement))
 
       submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "false"

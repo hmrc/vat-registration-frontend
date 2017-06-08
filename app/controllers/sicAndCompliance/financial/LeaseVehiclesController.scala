@@ -35,13 +35,13 @@ class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
   val form: Form[LeaseVehicles] = LeaseVehiclesForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[LeaseVehicles].fold(form)(form.fill)
+    viewModel[LeaseVehicles]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.financial.lease_vehicles(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.lease_vehicles(badForm)).pure,
-      goodForm => s4LService.save(goodForm).map(_ => goodForm.yesNo).ifM(
+      goodForm => save(goodForm).map(_ => goodForm.yesNo).ifM(
         ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths.drop(4)).map(_ =>
           controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()),
         ifFalse = controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show().pure)

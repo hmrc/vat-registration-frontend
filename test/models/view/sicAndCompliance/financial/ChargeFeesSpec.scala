@@ -18,7 +18,7 @@ package models.view.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatComplianceFinancial, VatSicAndCompliance}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class ChargeFeesSpec extends UnitSpec with VatRegistrationFixture {
@@ -68,6 +68,25 @@ class ChargeFeesSpec extends UnitSpec with VatRegistrationFixture {
                                                                                                         true,
                                                                                                         chargeFees = Some(false))))))
       ApiModelTransformer[ChargeFees].toViewModel(vs) shouldBe Some(ChargeFees(false))
+    }
+
+  }
+
+  val testView = ChargeFees(true)
+
+  "ViewModelFormat" should {
+    val s4LVatSicAndCompliance = S4LVatSicAndCompliance(chargeFees = Some(testView))
+
+    "extract chargeFees from s4LVatSicAndCompliance" in {
+      ChargeFees.viewModelFormat.read(s4LVatSicAndCompliance) shouldBe Some(testView)
+    }
+
+    "update empty s4LVatSicAndCompliance with chargeFees" in {
+      ChargeFees.viewModelFormat.update(testView, Option.empty[S4LVatSicAndCompliance]).chargeFees shouldBe Some(testView)
+    }
+
+    "update non-empty s4LVatSicAndCompliance with chargeFees" in {
+      ChargeFees.viewModelFormat.update(testView, Some(s4LVatSicAndCompliance)).chargeFees shouldBe Some(testView)
     }
 
   }

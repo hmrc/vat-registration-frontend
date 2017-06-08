@@ -33,14 +33,14 @@ class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
   val form: Form[AdviceOrConsultancy] = AdviceOrConsultancyForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[AdviceOrConsultancy].fold(form)(form.fill)
+    viewModel[AdviceOrConsultancy]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(f)))
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(badForm)).pure,
-      data => s4LService.save(data).map(_ =>
+      data => save(data).map(_ => // TODO delete any existing non-financial compliance questions - i.e labour and cultural
         Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show()))
     )
   )

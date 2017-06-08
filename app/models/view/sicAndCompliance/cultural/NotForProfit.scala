@@ -17,7 +17,7 @@
 package models.view.sicAndCompliance.cultural
 
 import models.api.{VatComplianceCultural, VatScheme, VatSicAndCompliance}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class NotForProfit(yesNo: String)
@@ -30,6 +30,12 @@ object NotForProfit {
   val valid = (item: String) => List(NOT_PROFIT_YES, NOT_PROFIT_NO).contains(item.toUpperCase)
 
   implicit val format = Json.format[NotForProfit]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatSicAndCompliance) => group.notForProfit,
+    updateF = (c: NotForProfit, g: Option[S4LVatSicAndCompliance]) =>
+      g.getOrElse(S4LVatSicAndCompliance()).copy(notForProfit = Some(c))
+  )
 
   implicit val modelTransformer = ApiModelTransformer[NotForProfit] { (vs: VatScheme) =>
     vs.vatSicAndCompliance.flatMap(_.culturalCompliance).map { q1 =>

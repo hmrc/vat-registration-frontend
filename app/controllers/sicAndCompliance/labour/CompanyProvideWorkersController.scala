@@ -35,15 +35,15 @@ class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
   val form = CompanyProvideWorkersForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[CompanyProvideWorkers].fold(form)(form.fill)
+    viewModel[CompanyProvideWorkers]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.labour.company_provide_workers(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.company_provide_workers(badForm)).pure,
-      goodForm => // TODO delete any existing non-cultural compliance questions
+      goodForm => // TODO delete any existing non-labour compliance questions - i.e financial and cultural
         vrs.deleteElement(FinancialCompliancePath).flatMap(_ =>
-          s4LService.save(goodForm).map(_ =>
+          save(goodForm).map(_ =>
             CompanyProvideWorkers.PROVIDE_WORKERS_YES == goodForm.yesNo).ifM(
             ifTrue = controllers.sicAndCompliance.labour.routes.WorkersController.show().pure,
             ifFalse = controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show().pure)
