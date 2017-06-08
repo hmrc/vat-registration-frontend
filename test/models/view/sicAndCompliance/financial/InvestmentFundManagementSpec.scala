@@ -18,7 +18,7 @@ package models.view.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatComplianceFinancial, VatSicAndCompliance}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class InvestmentFundManagementSpec extends UnitSpec with VatRegistrationFixture {
@@ -68,6 +68,27 @@ class InvestmentFundManagementSpec extends UnitSpec with VatRegistrationFixture 
                                                                                                         true,
                                                                                                         investmentFundManagementServices = Some(false))))))
       ApiModelTransformer[InvestmentFundManagement].toViewModel(vs) shouldBe Some(InvestmentFundManagement(false))
+    }
+
+  }
+
+  val testView = InvestmentFundManagement(true)
+
+  "ViewModelFormat" should {
+    val s4LVatSicAndCompliance = S4LVatSicAndCompliance(investmentFundManagement = Some(testView))
+
+    "extract investmentFundManagement from s4LVatSicAndCompliance" in {
+      InvestmentFundManagement.viewModelFormat.read(s4LVatSicAndCompliance) shouldBe Some(testView)
+    }
+
+    "update empty s4LVatSicAndCompliance with investmentFundManagement" in {
+      InvestmentFundManagement.viewModelFormat.update(testView,
+        Option.empty[S4LVatSicAndCompliance]).investmentFundManagement shouldBe Some(testView)
+    }
+
+    "update non-empty s4LVatSicAndCompliance with investmentFundManagement" in {
+      InvestmentFundManagement.viewModelFormat.update(testView,
+        Some(s4LVatSicAndCompliance)).investmentFundManagement shouldBe Some(testView)
     }
 
   }

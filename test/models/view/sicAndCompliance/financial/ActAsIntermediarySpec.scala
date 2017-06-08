@@ -17,8 +17,8 @@
 package models.view.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
-import models.ApiModelTransformer
 import models.api.VatComplianceFinancial
+import models.{ApiModelTransformer, S4LVatSicAndCompliance}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class ActAsIntermediarySpec extends UnitSpec with VatRegistrationFixture {
@@ -43,6 +43,25 @@ class ActAsIntermediarySpec extends UnitSpec with VatRegistrationFixture {
     "convert VatScheme with FinancialCompliance section to view model - Act as Intermediary no" in {
       val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(false, false)))))
       ApiModelTransformer[ActAsIntermediary].toViewModel(vs) shouldBe Some(ActAsIntermediary(false))
+    }
+
+  }
+
+  val testView = ActAsIntermediary(true)
+
+  "ViewModelFormat" should {
+    val s4LVatSicAndCompliance = S4LVatSicAndCompliance(actAsIntermediary = Some(testView))
+
+    "extract actAsIntermediary from s4LVatSicAndCompliance" in {
+      ActAsIntermediary.viewModelFormat.read(s4LVatSicAndCompliance) shouldBe Some(testView)
+    }
+
+    "update empty s4LVatSicAndCompliance with ActAsIntermediary" in {
+      ActAsIntermediary.viewModelFormat.update(testView, Option.empty[S4LVatSicAndCompliance]).actAsIntermediary shouldBe Some(testView)
+    }
+
+    "update non-empty s4LVatSicAndCompliance with ActAsIntermediary" in {
+      ActAsIntermediary.viewModelFormat.update(testView, Some(s4LVatSicAndCompliance)).actAsIntermediary shouldBe Some(testView)
     }
 
   }

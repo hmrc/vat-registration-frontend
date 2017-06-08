@@ -18,7 +18,7 @@ package models.view.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatComplianceFinancial, VatSicAndCompliance}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class LeaseVehiclesSpec extends UnitSpec with VatRegistrationFixture {
@@ -74,6 +74,25 @@ class LeaseVehiclesSpec extends UnitSpec with VatRegistrationFixture {
           actAsIntermediary = true,
           vehicleOrEquipmentLeasing = Some(false))))))
       ApiModelTransformer[LeaseVehicles].toViewModel(vs) shouldBe Some(LeaseVehicles(false))
+    }
+
+  }
+
+  val testView = LeaseVehicles(true)
+
+  "ViewModelFormat" should {
+    val s4LVatSicAndCompliance = S4LVatSicAndCompliance(leaseVehicles = Some(testView))
+
+    "extract leaseVehicles from s4LVatSicAndCompliance" in {
+      LeaseVehicles.viewModelFormat.read(s4LVatSicAndCompliance) shouldBe Some(testView)
+    }
+
+    "update empty s4LVatSicAndCompliance with leaseVehicles" in {
+      LeaseVehicles.viewModelFormat.update(testView, Option.empty[S4LVatSicAndCompliance]).leaseVehicles shouldBe Some(testView)
+    }
+
+    "update non-empty s4LVatSicAndCompliance with leaseVehicles" in {
+      LeaseVehicles.viewModelFormat.update(testView, Some(s4LVatSicAndCompliance)).leaseVehicles shouldBe Some(testView)
     }
 
   }
