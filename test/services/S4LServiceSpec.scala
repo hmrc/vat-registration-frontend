@@ -20,7 +20,7 @@ import common.exceptions.DownstreamExceptions.RegistrationIdNotFoundException
 import fixtures.{S4LFixture, VatRegistrationFixture}
 import helpers.VatRegSpec
 import models.view.vatTradingDetails.vatChoice.StartDateView
-import models.{S4LKey, VMReads}
+import models.{S4LKey, ViewModelFormat}
 import org.mockito.Matchers.{any, eq => =~=}
 import org.mockito.Mockito._
 import play.api.libs.json.Json
@@ -36,7 +36,7 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
 
   private object TestView {
     implicit val fmt = Json.format[TestView]
-    implicit val vmReads = VMReads[TestView, TestGroup](
+    implicit val viewModelFormat = ViewModelFormat[TestView, TestGroup](
       readF = (_: TestGroup).testView,
       updateF = (v: TestView, g: Option[TestGroup]) => g.getOrElse(TestGroup()).copy(testView = Some(v))
     )
