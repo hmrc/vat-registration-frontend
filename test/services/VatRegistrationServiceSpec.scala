@@ -16,8 +16,6 @@
 
 package services
 
-import java.time.LocalDate
-
 import cats.data.OptionT
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
@@ -28,10 +26,8 @@ import models.external.CoHoCompanyProfile
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
-import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
-import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
-import models._
+import models.view.vatTradingDetails.vatChoice.StartDateView
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
