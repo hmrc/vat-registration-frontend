@@ -86,21 +86,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturns(validBankAccountDetails)
 
       save4laterReturns(S4LVatSicAndCompliance())
-
-
       save4laterReturns(S4LVatContact())
       save4laterReturns(validServiceEligibility)
-
-      save4laterReturns(S4LTradingDetails(
-        taxableTurnover = Some(validTaxableTurnover),
-        tradingName = Some(validTradingNameView),
-        startDate = Some(validStartDateView),
-        voluntaryRegistration = Some(VoluntaryRegistration("")),
-        voluntaryRegistrationReason = Some(VoluntaryRegistrationReason("")),
-        euGoods = Some(validEuGoods),
-        applyEori = Some(validApplyEori)
-      ))
-
+      save4laterReturns(S4LTradingDetails())
       save4laterReturns(S4LVatLodgingOfficer())
 
       when(mockRegConnector.upsertVatChoice(any(), any())(any(), any())).thenReturn(validVatChoice.pure)
