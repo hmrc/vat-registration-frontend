@@ -74,7 +74,7 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
 
     def failedWith(e: Exception): Assertion = whenReady(f.failed)(_ mustBe e)
 
-    def failedWith[T <: Throwable](exClass: Class[T]): Assertion = whenReady(f.failed)(_.getClass mustBe exClass)
+    def failedWith[F <: Throwable](exClass: Class[F]): Assertion = whenReady(f.failed)(_.getClass mustBe exClass)
 
   }
 
@@ -86,7 +86,7 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
 
     def failedWith(e: Exception): Assertion = whenReady(ot.value.failed)(_ mustBe e)
 
-    def failedWith[T <: Throwable](exClass: Class[T]): Assertion = whenReady(ot.value.failed)(_.getClass mustBe exClass)
+    def failedWith[F <: Throwable](exClass: Class[F]): Assertion = whenReady(ot.value.failed)(_.getClass mustBe exClass)
 
   }
 
