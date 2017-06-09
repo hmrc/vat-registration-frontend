@@ -98,7 +98,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
         "numberOfWorkers" -> "5"
       )) {
         result =>
-          result redirectsTo s"$contextRoot/business-bank-account"
+          result redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit"
       }
     }
   }

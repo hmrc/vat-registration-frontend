@@ -42,7 +42,7 @@ class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(badForm)).pure,
       data => save(data).map(_ => data.yesNo).ifM(
         ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths.drop(2)).map(_ =>
-          controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()),
+          controllers.sicAndCompliance.routes.ComplianceExitController.exit()),
         ifFalse = controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show().pure
       ).map(Redirect)))
 

@@ -40,7 +40,7 @@ class TemporaryContractsController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.temporary_contracts(badForm)).pure,
       goodForm => save(goodForm).map(_ => goodForm.yesNo == TemporaryContracts.TEMP_CONTRACTS_YES).ifM(
         controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show().pure,
-        controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show().pure)
+        controllers.sicAndCompliance.routes.ComplianceExitController.exit().pure)
         .map(Redirect)))
 
 }

@@ -20,8 +20,8 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.labour.CompanyProvideWorkersForm
-import models.FinancialCompliancePath
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
+import models.{CulturalCompliancePath, FinancialCompliancePath, S4LVatSicAndCompliance}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -29,8 +29,6 @@ import services.{S4LService, VatRegistrationService}
 class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
                                                (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
-
-  import cats.syntax.flatMap._
 
   val form = CompanyProvideWorkersForm.form
 
@@ -41,14 +39,15 @@ class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.company_provide_workers(badForm)).pure,
-      goodForm => // TODO delete any existing non-labour compliance questions - i.e financial and cultural
-        vrs.deleteElement(FinancialCompliancePath).flatMap(_ =>
-          save(goodForm).map(_ =>
-            CompanyProvideWorkers.PROVIDE_WORKERS_YES == goodForm.yesNo).ifM(
-            ifTrue = controllers.sicAndCompliance.labour.routes.WorkersController.show().pure,
-            ifFalse = controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show().pure)
-            .map(Redirect))))
+      data => for {
+          _ <- save(S4LVatSicAndCompliance())
+          _ <- save(data)
+          _ <- vrs.deleteElements(List(CulturalCompliancePath, FinancialCompliancePath))
+          route =
+            if (CompanyProvideWorkers.PROVIDE_WORKERS_YES == data.yesNo) {
+              controllers.sicAndCompliance.labour.routes.WorkersController.show()
+            } else {
+              controllers.sicAndCompliance.routes.ComplianceExitController.exit() }
+        } yield Redirect(route)))
 
 }
-
-
