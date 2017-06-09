@@ -26,11 +26,12 @@ import models.api._
 import models.external.CoHoCompanyProfile
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial._
-import models.view.sicAndCompliance.labour.CompanyProvideWorkers
+import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models._
+import models.view.sicAndCompliance.cultural.NotForProfit
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -88,13 +89,36 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturns(validAccountingPeriod)
       save4laterReturns(validBankAccountDetails)
 
-      save4laterReturns(S4LVatSicAndCompliance())
+      save4laterReturns(S4LVatSicAndCompliance(
+        description = Some(BusinessActivityDescription(businessActivityDescription)),
+
+        notForProfit = Some(NotForProfit(NotForProfit.NOT_PROFIT_NO)),
+
+        companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)),
+        workers = Some(Workers(8)),
+        temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)),
+        skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO)),
+
+        adviceOrConsultancy = Some(AdviceOrConsultancy(true)),
+        actAsIntermediary = Some(ActAsIntermediary(true)),
+        chargeFees = Some(ChargeFees(true)),
+        leaseVehicles = Some(LeaseVehicles(true)),
+        additionalNonSecuritiesWork = Some(AdditionalNonSecuritiesWork(true)),
+        discretionaryInvestmentManagementServices = Some(DiscretionaryInvestmentManagementServices(true)),
+        investmentFundManagement = Some(InvestmentFundManagement(true)),
+        manageAdditionalFunds = Some(ManageAdditionalFunds(true))
+      ))
 
       save4laterReturns(validEuGoods)
       save4laterReturns(validApplyEori)
-      save4laterReturns(S4LVatContact())
+      save4laterReturns(S4LVatContact(businessContactDetails = Some(validBusinessContactDetails)))
       save4laterReturns(validServiceEligibility)
-      save4laterReturns(S4LVatLodgingOfficer())
+      save4laterReturns(S4LVatLodgingOfficer(
+        officerHomeAddress = Some(OfficerHomeAddressView("")),
+        officerDateOfBirth = Some(OfficerDateOfBirthView(LocalDate.now)),
+        officerNino = Some(OfficerNinoView("")),
+        completionCapacity = Some(CompletionCapacityView(""))
+      ))
 
       when(mockRegConnector.upsertVatChoice(any(), any())(any(), any())).thenReturn(validVatChoice.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
@@ -280,5 +304,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       service.submitVatLodgingOfficer() failedWith classOf[IllegalStateException]
     }
 
+
+    "submitSicAndCompliance should fail if VatSicAndCompliance not in backend and S4L" in new Setup {
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+      save4laterReturnsNothing[S4LVatSicAndCompliance]()
+
+      service.submitSicAndCompliance() failedWith classOf[IllegalStateException]
+    }
   }
 }
