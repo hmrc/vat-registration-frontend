@@ -45,8 +45,7 @@ object CompanyBankAccountDetails {
     g.copy(bankAccount = Some(VatBankAccount(
       accountName = c.accountName,
       accountSortCode = c.sortCode,
-      accountNumber = c.accountNumber
-    )))
+      accountNumber = c.accountNumber)))
   }
 
 }
