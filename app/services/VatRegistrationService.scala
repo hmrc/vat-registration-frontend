@@ -27,10 +27,6 @@ import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
-import models.view.vatContact.BusinessContactDetails
-import models.view.vatFinancials._
-import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
-import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
@@ -72,7 +68,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
                                        companyRegistrationConnector: CompanyRegistrationConnector)
   extends RegistrationService with CommonService {
 
-  import cats.instances.future._
   import cats.syntax.applicative._
   import cats.syntax.cartesian._
   import cats.syntax.foldable._
@@ -111,15 +106,10 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer map { case _ => () }
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
-
-    def mergeWithS4L(vs: VatScheme) =
-      (s4l[EstimateVatTurnover]() |@|
-        s4l[EstimateZeroRatedSales]() |@|
-        s4l[VatChargeExpectancy]() |@|
-        s4l[VatReturnFrequency]() |@|
-        s4l[AccountingPeriod]() |@|
-        s4l[CompanyBankAccountDetails]())
-        .map(S4LVatFinancials.apply).map { s4l =>
+    def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =
+      fresh.fold(
+        vs.financials.getOrElse(throw fail("VatFinancials"))
+      ) { s4l =>
         update(s4l.estimateVatTurnover, vs)
           .andThen(update(s4l.zeroRatedTurnoverEstimate, vs))
           .andThen(update(s4l.vatChargeExpectancy, vs))
@@ -130,9 +120,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       }
 
     for {
-      vs <- getVatScheme()
-      vatFinancials <- mergeWithS4L(vs)
-      response <- vatRegConnector.upsertVatFinancials(vs.id, vatFinancials)
+      (vs, vf) <- (getVatScheme() |@| s4l[S4LVatFinancials]()).tupled
+      response <- vatRegConnector.upsertVatFinancials(vs.id, merge(vf, vs))
     } yield response
   }
 
@@ -238,7 +227,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       response <- vatRegConnector.upsertVatLodgingOfficer(vs.id, merge(vlo, vs))
     } yield response
   }
-
 
 
   private def fail(logicalGroup: String): Exception =

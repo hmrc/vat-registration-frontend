@@ -30,13 +30,12 @@ class EstimateZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
   val form = EstimateZeroRatedSalesForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[EstimateZeroRatedSales].fold(form)(form.fill)
+    viewModel[EstimateZeroRatedSales]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatFinancials.estimate_zero_rated_sales(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatFinancials.estimate_zero_rated_sales(badForm)).pure,
-      goodForm => s4LService.save(goodForm) map (_ =>
-        Redirect(controllers.vatFinancials.routes.VatChargeExpectancyController.show()))))
+      view => save(view) map (_ => Redirect(controllers.vatFinancials.routes.VatChargeExpectancyController.show()))))
 
 }

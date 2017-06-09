@@ -32,12 +32,12 @@ class AccountingPeriodController @Inject()(ds: CommonPlayDependencies)
   val form = AccountingPeriodForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[AccountingPeriod].fold(form)(form.fill)
+    viewModel[AccountingPeriod]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatFinancials.vatAccountingPeriod.accounting_period(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatFinancials.vatAccountingPeriod.accounting_period(badForm)).pure,
-      data => s4LService.save(data) map (_ => Redirect(controllers.routes.SummaryController.show()))))
+      data => save(data) map (_ => Redirect(controllers.routes.SummaryController.show()))))
 
 }

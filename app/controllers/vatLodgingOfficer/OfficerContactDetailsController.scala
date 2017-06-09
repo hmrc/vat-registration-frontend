@@ -18,19 +18,18 @@ package controllers.vatLodgingOfficer
 
 import javax.inject.Inject
 
+import cats.syntax.FlatMapSyntax
+import controllers.vatTradingDetails.vatChoice.{routes => vatChoiceRoutes}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerContactDetailsForm
 import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
-import controllers.vatTradingDetails.vatChoice.{routes => vatChoiceRoutes}
 
 class OfficerContactDetailsController @Inject()(ds: CommonPlayDependencies)
                                                (implicit s4l: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) {
-
-  import cats.syntax.flatMap._
+  extends VatRegistrationController(ds) with FlatMapSyntax {
 
   val form = OfficerContactDetailsForm.form
 
@@ -43,7 +42,7 @@ class OfficerContactDetailsController @Inject()(ds: CommonPlayDependencies)
       copyGlobalErrorsToFields("email", "daytimePhone", "mobile")
         .andThen(form => BadRequest(views.html.pages.vatLodgingOfficer.officer_contact_details(form)).pure),
       view => (for {
-        _ <- save[OfficerContactDetailsView](view)
+        _ <- save(view)
         optVR <- viewModel2[VoluntaryRegistration].value
       } yield optVR.fold(true)(_ == VoluntaryRegistration.yes)).ifM(
         ifTrue = vatChoiceRoutes.StartDateController.show().pure,

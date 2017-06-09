@@ -24,7 +24,7 @@ import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorker
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
-import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
+import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
@@ -35,10 +35,12 @@ import play.api.libs.json.{Json, OFormat}
 final case class S4LVatFinancials
 (
   estimateVatTurnover: Option[EstimateVatTurnover] = None,
+  zeroRatedTurnover: Option[ZeroRatedSales] = None,
   zeroRatedTurnoverEstimate: Option[EstimateZeroRatedSales] = None,
   vatChargeExpectancy: Option[VatChargeExpectancy] = None,
   vatReturnFrequency: Option[VatReturnFrequency] = None,
   accountingPeriod: Option[AccountingPeriod] = None,
+  companyBankAccount: Option[CompanyBankAccount] = None,
   companyBankAccountDetails: Option[CompanyBankAccountDetails] = None
 )
 
