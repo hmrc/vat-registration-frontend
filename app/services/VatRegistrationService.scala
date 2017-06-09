@@ -164,47 +164,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     } yield response
   }
 
-//  def submitSicAndComplianceOld()(implicit hc: HeaderCarrier): Future[VatSicAndCompliance] = {
-//    def mergeWithS4L(vs: VatScheme) =
-//      (s4l[BusinessActivityDescription]() |@|
-//        s4l[NotForProfit]() |@|
-//        s4l[CompanyProvideWorkers]() |@|
-//        s4l[Workers]() |@|
-//        s4l[TemporaryContracts]() |@|
-//        s4l[SkilledWorkers]() |@|
-//        s4l[AdviceOrConsultancy]() |@|
-//        s4l[ActAsIntermediary]() |@|
-//        s4l[ChargeFees]() |@|
-//        s4l[LeaseVehicles]() |@|
-//        s4l[AdditionalNonSecuritiesWork]() |@|
-//        s4l[DiscretionaryInvestmentManagementServices]() |@|
-//        s4l[InvestmentFundManagement]() |@|
-//        s4l[ManageAdditionalFunds]())
-//        .map(S4LVatSicAndCompliance.apply).map { s4l =>
-//        update(s4l.description, vs)
-//          .andThen(update(s4l.notForProfit, vs))
-//          .andThen(update(s4l.companyProvideWorkers, vs))
-//          .andThen(update(s4l.workers, vs))
-//          .andThen(update(s4l.temporaryContracts, vs))
-//          .andThen(update(s4l.skilledWorkers, vs))
-//          .andThen(update(s4l.adviceOrConsultancy, vs))
-//          .andThen(update(s4l.actAsIntermediary, vs))
-//          .andThen(update(s4l.chargeFees, vs))
-//          .andThen(update(s4l.leaseVehicles, vs))
-//          .andThen(update(s4l.additionalNonSecuritiesWork, vs))
-//          .andThen(update(s4l.discretionaryInvestmentManagementServices, vs))
-//          .andThen(update(s4l.investmentFundManagement, vs))
-//          .andThen(update(s4l.manageAdditionalFunds, vs))
-//          .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance(""))) //TODO remove the "seeding" with empty
-//      }
-//
-//    for {
-//      vs <- getVatScheme()
-//      sicAndCompliance <- mergeWithS4L(vs)
-//      response <- vatRegConnector.upsertSicAndCompliance(vs.id, sicAndCompliance)
-//    } yield response
-//  }
-
   def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
     def mergeWithS4L(vs: VatScheme) =
       (s4l[TradingNameView]() |@|
