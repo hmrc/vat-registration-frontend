@@ -34,8 +34,7 @@ import models.{S4LTradingDetails, S4LVatContact, S4LVatLodgingOfficer, S4LVatSic
 class TestS4LBuilder {
 
   def tradingDetailsFromData(data: TestSetup): S4LTradingDetails = {
-
-    val taxableTurnover = TaxableTurnover(data.vatChoice.taxableTurnoverChoice.getOrElse(""))
+    val taxableTurnover: Option[String] = data.vatChoice.taxableTurnoverChoice
 
     val startDate = data.vatChoice.startDateChoice match {
       case None => StartDateView()
@@ -52,20 +51,25 @@ class TestS4LBuilder {
       case Some(t) => StartDateView(t, None)
     }
 
-    val voluntaryRegistration = VoluntaryRegistration(data.vatChoice.voluntaryChoice.getOrElse(""))
-    val voluntaryRegistrationReason = VoluntaryRegistrationReason(data.vatChoice.voluntaryRegistrationReason.getOrElse(""))
-    val tradingName = TradingNameView(data.vatTradingDetails.tradingNameChoice.getOrElse(""), data.vatTradingDetails.tradingName)
-    val euGoods = EuGoods(data.vatTradingDetails.euGoods.getOrElse(""))
-    val applyEori = ApplyEori(data.vatTradingDetails.applyEori.getOrElse("false").toBoolean)
+    val voluntaryRegistration: Option[String] = data.vatChoice.voluntaryChoice
+    val voluntaryRegistrationReason: Option[String] = data.vatChoice.voluntaryRegistrationReason
+
+    val tradingName = data.vatTradingDetails.tradingNameChoice.map(_ =>
+      TradingName(
+        selection = data.vatTradingDetails.tradingNameChoice.map(_.toBoolean).getOrElse(false),
+        tradingName = data.vatTradingDetails.tradingName))
+
+    val euGoods: Option[String] = data.vatTradingDetails.euGoods
+    val applyEori: Option[String] = data.vatTradingDetails.applyEori
 
     S4LTradingDetails(
-      taxableTurnover = Some(taxableTurnover),
+      taxableTurnover = taxableTurnover.map(TaxableTurnover(_)),
       startDate = Some(startDate),
-      voluntaryRegistration = Some(voluntaryRegistration),
-      voluntaryRegistrationReason = Some(voluntaryRegistrationReason),
-      tradingName = Some(tradingName),
-      euGoods = Some(euGoods),
-      applyEori = Some(applyEori)
+      voluntaryRegistration = voluntaryRegistration.map(VoluntaryRegistration(_)),
+      voluntaryRegistrationReason = voluntaryRegistrationReason.map(VoluntaryRegistrationReason(_)),
+      tradingName = tradingName.map(t => TradingNameView(t.selection.toString, t.tradingName)),
+      euGoods = euGoods.map(EuGoods(_)),
+      applyEori = applyEori.map(a => ApplyEori(a.toBoolean))
     )
   }
 
@@ -73,23 +77,24 @@ class TestS4LBuilder {
     val base = data.sicAndCompliance
     val compliance: S4LVatSicAndCompliance =
       (base.culturalNotForProfit, base.labourCompanyProvideWorkers, base.financialAdviceOrConsultancy) match {
-        case (None, None, None) => S4LVatSicAndCompliance()
         case (Some(_), None, None) => S4LVatSicAndCompliance(
           notForProfit = Some(NotForProfit(base.culturalNotForProfit.get)))
         case(None, Some(_), None) => S4LVatSicAndCompliance(
-          companyProvideWorkers = Some(CompanyProvideWorkers(base.labourCompanyProvideWorkers.get)),
-          workers = Some(Workers(base.labourWorkers.get.toInt)),
-          temporaryContracts = Some(TemporaryContracts(base.labourTemporaryContracts.get)),
-          skilledWorkers = Some(SkilledWorkers(base.labourSkilledWorkers.get)))
+          companyProvideWorkers = base.labourCompanyProvideWorkers.flatMap(x => Some(CompanyProvideWorkers(x))),
+          workers = base.labourWorkers.flatMap(x => Some(Workers(x.toInt))),
+          temporaryContracts = base.labourTemporaryContracts.flatMap(x => Some(TemporaryContracts(x))),
+          skilledWorkers = base.labourSkilledWorkers.flatMap(x => Some(SkilledWorkers(x))))
         case(None, None, Some(_)) => S4LVatSicAndCompliance(
-          adviceOrConsultancy = Some(AdviceOrConsultancy(base.financialAdviceOrConsultancy.get.toBoolean)),
-          actAsIntermediary = Some(ActAsIntermediary(base.financialActAsIntermediary.get.toBoolean)),
-          chargeFees = Some(ChargeFees(base.financialChargeFees.get.toBoolean)),
-          leaseVehicles = Some(LeaseVehicles(base.financialLeaseVehiclesOrEquipment.get.toBoolean)),
-          additionalNonSecuritiesWork = Some(AdditionalNonSecuritiesWork(base.financialAdditionalNonSecuritiesWork.get.toBoolean)),
-          discretionaryInvestmentManagementServices = Some(DiscretionaryInvestmentManagementServices(base.financialDiscretionaryInvestment.get.toBoolean)),
-          investmentFundManagement = Some(InvestmentFundManagement(base.financialInvestmentFundManagement.get.toBoolean)),
-          manageAdditionalFunds = Some(ManageAdditionalFunds(base.financialManageAdditionalFunds.get.toBoolean)))
+          adviceOrConsultancy = base.financialAdviceOrConsultancy.flatMap(x => Some(AdviceOrConsultancy(x.toBoolean))),
+          actAsIntermediary = base.financialActAsIntermediary.flatMap(x => Some(ActAsIntermediary(x.toBoolean))),
+          chargeFees = base.financialChargeFees.flatMap(x => Some(ChargeFees(x.toBoolean))),
+          leaseVehicles = base.financialLeaseVehiclesOrEquipment.flatMap(x => Some(LeaseVehicles(x.toBoolean))),
+          additionalNonSecuritiesWork = base.financialAdditionalNonSecuritiesWork.flatMap(x => Some(AdditionalNonSecuritiesWork(x.toBoolean))),
+          discretionaryInvestmentManagementServices =
+            base.financialDiscretionaryInvestment.flatMap(x => Some(DiscretionaryInvestmentManagementServices(x.toBoolean))),
+          investmentFundManagement = base.financialInvestmentFundManagement.flatMap(x => Some(InvestmentFundManagement(x.toBoolean))),
+          manageAdditionalFunds = base.financialManageAdditionalFunds.flatMap(x => Some(ManageAdditionalFunds(x.toBoolean))))
+        case (_, _, _) => S4LVatSicAndCompliance()
       }
 
     compliance.copy(description = base.businessActivityDescription.map(BusinessActivityDescription(_)))
