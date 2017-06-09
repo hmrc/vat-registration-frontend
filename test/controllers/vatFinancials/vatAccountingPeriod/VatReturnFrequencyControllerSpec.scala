@@ -77,11 +77,14 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       save4laterExpectsSave[VatReturnFrequency]()
       save4laterExpectsSave[AccountingPeriod]()
       when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+      when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
         _ redirectsTo s"$contextRoot/check-your-answers"
       }
+
+      verify(mockVatRegistrationService).submitVatFinancials()(any())
     }
 
   }
