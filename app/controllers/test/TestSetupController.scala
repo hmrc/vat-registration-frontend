@@ -21,13 +21,13 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.test.TestSetupForm
 import models.ModelKeys.REGISTERING_OFFICER_KEY
+import models._
 import models.api._
 import models.external.Officer
 import models.view.test._
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
-import models._
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService, VatRegistrationService}
@@ -211,92 +211,6 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
       })
   })
 
-  private def vatContactFromData(data: TestSetup): S4LVatContact = {
-    val businessContactDetails = data.vatContact.email.map(_ =>
-              BusinessContactDetails(data.vatContact.email.get,
-                                      data.vatContact.daytimePhone,
-                                      data.vatContact.mobile,
-                                      data.vatContact.website))
 
-    S4LVatContact(businessContactDetails = businessContactDetails)
-  }
-
-  private def vatSicAndComplianceFromData(data: TestSetup): S4LVatSicAndCompliance = {
-    val base = data.sicAndCompliance
-    val compliance: S4LVatSicAndCompliance =
-      (base.culturalNotForProfit, base.labourCompanyProvideWorkers, base.financialAdviceOrConsultancy) match {
-        case (Some(_), None, None) => S4LVatSicAndCompliance(
-          notForProfit = Some(NotForProfit(base.culturalNotForProfit.get)))
-        case(None, Some(_), None) => S4LVatSicAndCompliance(
-          companyProvideWorkers = base.labourCompanyProvideWorkers.flatMap(x => Some(CompanyProvideWorkers(x))),
-          workers = base.labourWorkers.flatMap(x => Some(Workers(x.toInt))),
-          temporaryContracts = base.labourTemporaryContracts.flatMap(x => Some(TemporaryContracts(x))),
-          skilledWorkers = base.labourSkilledWorkers.flatMap(x => Some(SkilledWorkers(x))))
-        case(None, None, Some(_)) => S4LVatSicAndCompliance(
-          adviceOrConsultancy = base.financialAdviceOrConsultancy.flatMap(x => Some(AdviceOrConsultancy(x.toBoolean))),
-          actAsIntermediary = base.financialActAsIntermediary.flatMap(x => Some(ActAsIntermediary(x.toBoolean))),
-          chargeFees = base.financialChargeFees.flatMap(x => Some(ChargeFees(x.toBoolean))),
-          leaseVehicles = base.financialLeaseVehiclesOrEquipment.flatMap(x => Some(LeaseVehicles(x.toBoolean))),
-          additionalNonSecuritiesWork = base.financialAdditionalNonSecuritiesWork.flatMap(x => Some(AdditionalNonSecuritiesWork(x.toBoolean))),
-          discretionaryInvestmentManagementServices =
-            base.financialDiscretionaryInvestment.flatMap(x => Some(DiscretionaryInvestmentManagementServices(x.toBoolean))),
-          investmentFundManagement = base.financialInvestmentFundManagement.flatMap(x => Some(InvestmentFundManagement(x.toBoolean))),
-          manageAdditionalFunds = base.financialManageAdditionalFunds.flatMap(x => Some(ManageAdditionalFunds(x.toBoolean))))
-        case (_, _, _) => S4LVatSicAndCompliance()
-      }
-
-    compliance.copy(description = base.businessActivityDescription.map(BusinessActivityDescription(_)))
-  }
-
-  private def vatLodgingOfficerFromData(data: TestSetup): S4LVatLodgingOfficer = {
-    val homeAddress: Option[ScrsAddress] = data.officerHomeAddress.line1.map(_ =>
-      ScrsAddress(
-        line1 = data.officerHomeAddress.line1.getOrElse(""),
-        line2 = data.officerHomeAddress.line2.getOrElse(""),
-        line3 = data.officerHomeAddress.line3,
-        line4 = data.officerHomeAddress.line4,
-        postcode = data.officerHomeAddress.postcode,
-        country = data.officerHomeAddress.country))
-    val threeYears: Option[String] = data.officerPreviousAddress.threeYears
-    val previousAddress: Option[ScrsAddress] = data.officerPreviousAddress.line1.map(_ =>
-      ScrsAddress(
-        line1 = data.officerPreviousAddress.line1.getOrElse(""),
-        line2 = data.officerPreviousAddress.line2.getOrElse(""),
-        line3 = data.officerPreviousAddress.line3,
-        line4 = data.officerPreviousAddress.line4,
-        postcode = data.officerPreviousAddress.postcode,
-        country = data.officerPreviousAddress.country))
-    val dob: Option[LocalDate] = data.vatLodgingOfficer.dobDay.map(_ =>
-      LocalDate.of(
-        data.vatLodgingOfficer.dobYear.getOrElse("1900").toInt,
-        data.vatLodgingOfficer.dobMonth.getOrElse("1").toInt,
-        data.vatLodgingOfficer.dobDay.getOrElse("1").toInt))
-    val nino = data.vatLodgingOfficer.nino
-    val completionCapacity = data.vatLodgingOfficer.role.map(_ => {
-      CompletionCapacity(
-        name = Name(data.vatLodgingOfficer.firstname,
-        data.vatLodgingOfficer.othernames,
-        data.vatLodgingOfficer.surname.getOrElse("")),
-        role = data.vatLodgingOfficer.role.getOrElse(""))
-    })
-    val contactDetails = data.vatLodgingOfficer.email.map(_ =>
-      OfficerContactDetails(
-        email = data.vatLodgingOfficer.email,
-        mobile = data.vatLodgingOfficer.mobile,
-        tel = data.vatLodgingOfficer.phone))
-    val formerName = data.vatLodgingOfficer.formernameChoice.map(_ =>
-      FormerName(
-        selection = data.vatLodgingOfficer.formernameChoice.map(_.toBoolean).getOrElse(false),
-        formerName = data.vatLodgingOfficer.formername))
-    S4LVatLodgingOfficer(
-      previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
-      officerHomeAddress = homeAddress.map(a => OfficerHomeAddressView(a.id, Some(a))),
-      officerDateOfBirth = dob.map(OfficerDateOfBirthView(_, completionCapacity.map(_.name))),
-      officerNino = nino.map(OfficerNinoView(_)),
-      completionCapacity = completionCapacity.map(CompletionCapacityView(_)),
-      officerContactDetails = contactDetails.map(OfficerContactDetailsView(_)),
-      formerName = formerName.map(FormerNameView(_))
-    )
-  }
 
 }
