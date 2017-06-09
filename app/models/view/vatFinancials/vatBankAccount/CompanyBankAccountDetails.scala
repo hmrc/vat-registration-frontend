@@ -17,7 +17,7 @@
 package models.view.vatFinancials.vatBankAccount
 
 import models.api.{VatBankAccount, VatFinancials, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class CompanyBankAccountDetails(accountName: String, accountNumber: String, sortCode: String)
@@ -25,6 +25,12 @@ case class CompanyBankAccountDetails(accountName: String, accountNumber: String,
 object CompanyBankAccountDetails {
 
   implicit val format = Json.format[CompanyBankAccountDetails]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatFinancials) => group.companyBankAccountDetails,
+    updateF = (c: CompanyBankAccountDetails, g: Option[S4LVatFinancials]) =>
+      g.getOrElse(S4LVatFinancials()).copy(companyBankAccountDetails = Some(c))
+  )
 
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
     vs.financials.flatMap(_.bankAccount)
@@ -39,8 +45,7 @@ object CompanyBankAccountDetails {
     g.copy(bankAccount = Some(VatBankAccount(
       accountName = c.accountName,
       accountSortCode = c.sortCode,
-      accountNumber = c.accountNumber
-    )))
+      accountNumber = c.accountNumber)))
   }
 
 }

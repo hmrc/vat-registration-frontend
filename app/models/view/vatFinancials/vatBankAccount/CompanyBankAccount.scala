@@ -16,8 +16,8 @@
 
 package models.view.vatFinancials.vatBankAccount
 
-import models.ApiModelTransformer
 import models.api.VatScheme
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class CompanyBankAccount(yesNo: String)
@@ -27,17 +27,21 @@ object CompanyBankAccount {
   val COMPANY_BANK_ACCOUNT_YES = "COMPANY_BANK_ACCOUNT_YES"
   val COMPANY_BANK_ACCOUNT_NO = "COMPANY_BANK_ACCOUNT_NO"
 
+  val yes = CompanyBankAccount(COMPANY_BANK_ACCOUNT_YES)
+  val no = CompanyBankAccount(COMPANY_BANK_ACCOUNT_NO)
+
   val valid = (item: String) => List(COMPANY_BANK_ACCOUNT_YES, COMPANY_BANK_ACCOUNT_NO).contains(item.toUpperCase)
 
   implicit val format = Json.format[CompanyBankAccount]
 
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatFinancials) => group.companyBankAccount,
+    updateF = (c: CompanyBankAccount, g: Option[S4LVatFinancials]) =>
+      g.getOrElse(S4LVatFinancials()).copy(companyBankAccount = Some(c))
+  )
+
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
-    vs.financials.map {
-      _.bankAccount match {
-        case Some(_) => CompanyBankAccount(COMPANY_BANK_ACCOUNT_YES)
-        case None => CompanyBankAccount(COMPANY_BANK_ACCOUNT_NO)
-      }
-    }
+    vs.financials.map(_.bankAccount.fold(CompanyBankAccount.no)(_ => CompanyBankAccount.yes))
   }
 
 }

@@ -22,11 +22,6 @@ import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{SkilledWorkers, _}
 import models.view.test.SicStub
-import models.view.vatContact.BusinessContactDetails
-import models.view.vatFinancials._
-import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
-import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
-import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails._
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
@@ -52,14 +47,6 @@ object S4LKey {
   implicit val voluntaryRegistrationS4LKey: S4LKey[VoluntaryRegistration] = S4LKey("VoluntaryRegistration")
   implicit val voluntaryRegistrationReasonS4LKey: S4LKey[VoluntaryRegistrationReason] = S4LKey("VoluntaryRegistrationReason")
   implicit val taxableTurnoverS4LKey: S4LKey[TaxableTurnover] = S4LKey("TaxableTurnover")
-  implicit val estimateVatTurnoverS4LKey: S4LKey[EstimateVatTurnover] = S4LKey("EstimateVatTurnover")
-  implicit val zeroRatedSalesS4LKey: S4LKey[ZeroRatedSales] = S4LKey("ZeroRatedSales")
-  implicit val estimateZeroRatedSalesS4LKey: S4LKey[EstimateZeroRatedSales] = S4LKey("EstimateZeroRatedSales")
-  implicit val vatChargeExpectancyS4LKey: S4LKey[VatChargeExpectancy] = S4LKey("VatChargeExpectancy")
-  implicit val vatReturnFrequencyS4LKey: S4LKey[VatReturnFrequency] = S4LKey("VatReturnFrequency")
-  implicit val accountingPeriodS4LKey: S4LKey[AccountingPeriod] = S4LKey("AccountingPeriod")
-  implicit val companyBankAccountS4LKey: S4LKey[CompanyBankAccount] = S4LKey("CompanyBankAccount")
-  implicit val companyBankAccountDetailsS4LKey: S4LKey[CompanyBankAccountDetails] = S4LKey("CompanyBankAccountDetails")
   implicit val businessActivityDescriptionS4LKey: S4LKey[BusinessActivityDescription] = S4LKey("BusinessActivityDescription")
   implicit val sicStub: S4LKey[SicStub] = S4LKey("SicStub")
   implicit val notForProfit: S4LKey[NotForProfit] = S4LKey("NotForProfit")
@@ -79,6 +66,7 @@ object S4LKey {
 
   implicit val vatContact: S4LKey[S4LVatContact] = S4LKey("VatContact")
   implicit val vatLodgingOfficer: S4LKey[S4LVatLodgingOfficer] = S4LKey("VatLodgingOfficer")
+  implicit val vatFinancials: S4LKey[S4LVatFinancials] = S4LKey("VatFinancials")
   implicit val sicAndCompliance: S4LKey[S4LVatSicAndCompliance] = S4LKey("VatSicAndCompliance")
 
 }

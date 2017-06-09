@@ -17,7 +17,7 @@
 package models.view.vatFinancials.vatBankAccount
 
 import fixtures.VatRegistrationFixture
-import models.ApiModelTransformer
+import models.{ApiModelTransformer, S4LVatFinancials}
 import models.api.{VatBankAccount, VatFinancials, VatScheme}
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -53,6 +53,26 @@ class CompanyBankAccountDetailsSpec extends UnitSpec with VatRegistrationFixture
     "convert VatScheme without VatFinancials to empty view model" in {
       val vs = vatScheme.copy(financials = None)
       ApiModelTransformer[CompanyBankAccountDetails].toViewModel(vs) shouldBe None
+    }
+  }
+
+
+  "ViewModelFormat" should {
+
+    val s4lVatFinancials: S4LVatFinancials = S4LVatFinancials(companyBankAccountDetails = Some(validBankAccountDetails))
+
+    "extract CompanyBankAccountDetails from VatFinancials" in {
+      CompanyBankAccountDetails.viewModelFormat.read(s4lVatFinancials) shouldBe Some(validBankAccountDetails)
+    }
+
+    "update empty VatFinancials with CompanyBankAccountDetails" in {
+      CompanyBankAccountDetails.viewModelFormat.update(validBankAccountDetails, Option.empty[S4LVatFinancials]).
+        companyBankAccountDetails shouldBe Some(validBankAccountDetails)
+    }
+
+    "update non-empty VatFinancials with CompanyBankAccountDetails" in {
+      CompanyBankAccountDetails.viewModelFormat.update(validBankAccountDetails, Some(s4lVatFinancials)).
+        companyBankAccountDetails shouldBe Some(validBankAccountDetails)
     }
   }
 

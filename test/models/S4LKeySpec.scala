@@ -17,11 +17,8 @@
 package models
 
 import models.view.sicAndCompliance.BusinessActivityDescription
-import models.view.vatFinancials._
-import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
-import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.view.vatTradingDetails.TradingNameView
-import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration}
+import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class S4LKeySpec extends UnitSpec {
@@ -31,15 +28,6 @@ class S4LKeySpec extends UnitSpec {
       S4LKey[StartDateView].key shouldBe "StartDate"
       S4LKey[TradingNameView].key shouldBe "TradingNameView"
       S4LKey[VoluntaryRegistration].key shouldBe "VoluntaryRegistration"
-      S4LKey[TaxableTurnover].key shouldBe "TaxableTurnover"
-      S4LKey[EstimateVatTurnover].key shouldBe "EstimateVatTurnover"
-      S4LKey[ZeroRatedSales].key shouldBe "ZeroRatedSales"
-      S4LKey[EstimateZeroRatedSales].key shouldBe "EstimateZeroRatedSales"
-      S4LKey[VatChargeExpectancy].key shouldBe "VatChargeExpectancy"
-      S4LKey[VatReturnFrequency].key shouldBe "VatReturnFrequency"
-      S4LKey[AccountingPeriod].key shouldBe "AccountingPeriod"
-      S4LKey[CompanyBankAccount].key shouldBe "CompanyBankAccount"
-      S4LKey[CompanyBankAccountDetails].key shouldBe "CompanyBankAccountDetails"
       S4LKey[BusinessActivityDescription].key shouldBe "BusinessActivityDescription"
     }
   }
