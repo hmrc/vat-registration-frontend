@@ -16,28 +16,18 @@
 
 package controllers.vatFinancials
 
-import builders.AuthBuilder
 import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatFinancials.EstimateZeroRatedSales
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import services.VatRegistrationService
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
-
-class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
 
-
-  object TestEstimateZeroRatedSalesController extends EstimateZeroRatedSalesController(ds)(mockS4LService, mockVatRegistrationService) {
+  object Controller extends EstimateZeroRatedSalesController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -46,38 +36,27 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
   s"GET ${vatFinancials.routes.EstimateZeroRatedSalesController.show()}" should {
 
     "return HTML Estimate Zero Rated Sales page with no data in the form" in {
-      when(mockS4LService.fetchAndGet[EstimateZeroRatedSales]()(any(), any(), any()))
-        .thenReturn(Future.successful(Some(EstimateZeroRatedSales(100L))))
+      save4laterReturns2(EstimateZeroRatedSales(100L))()
 
-      submitAuthorised(TestEstimateZeroRatedSalesController.show(), fakeRequest.withFormUrlEncodedBody(
-        "zeroRatedTurnoverEstimate" -> ""
-      )) {
+      callAuthorised(Controller.show()) {
         _ includesText "Estimated zero-rated sales for the next 12 months"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[EstimateZeroRatedSales]()
-        (Matchers.eq(S4LKey[EstimateZeroRatedSales]), any(), any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[EstimateZeroRatedSales]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-        .thenReturn(Future.successful(validVatScheme))
-
-      callAuthorised(TestEstimateZeroRatedSalesController.show) {
+      callAuthorised(Controller.show) {
         _ includesText "Estimated zero-rated sales for the next 12 months"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockS4LService.fetchAndGet[EstimateZeroRatedSales]()
-        (Matchers.eq(S4LKey[EstimateZeroRatedSales]), any(), any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[EstimateZeroRatedSales]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-        .thenReturn(Future.successful(emptyVatScheme))
-
-      callAuthorised(TestEstimateZeroRatedSalesController.show) {
+      callAuthorised(Controller.show) {
         _ includesText "Estimated zero-rated sales for the next 12 months"
       }
     }
@@ -86,26 +65,19 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
 
 
   s"POST ${vatFinancials.routes.EstimateZeroRatedSalesController.submit()} with Empty data" should {
-
     "return 400" in {
-      submitAuthorised(TestEstimateZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
-      ))(result => result isA 400)
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
   }
 
   s"POST ${vatFinancials.routes.EstimateZeroRatedSalesController.submit()} with a valid turnover estimate entered" should {
 
     "return 303" in {
-      val returnCacheMapEstimateZeroRatedSales = CacheMap("", Map("" -> Json.toJson(EstimateZeroRatedSales(100L))))
+      save4laterExpectsSave[EstimateZeroRatedSales]()
 
-      when(mockS4LService.save[EstimateZeroRatedSales]
-        (any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMapEstimateZeroRatedSales))
-
-      submitAuthorised(TestEstimateZeroRatedSalesController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "zeroRatedTurnoverEstimate" -> "60000"
-      ))(_ redirectsTo s"$contextRoot/expect-to-reclaim-more-vat-than-you-charge")
-
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody("zeroRatedTurnoverEstimate" -> "60000")) {
+        _ redirectsTo s"$contextRoot/expect-to-reclaim-more-vat-than-you-charge"
+      }
     }
   }
 

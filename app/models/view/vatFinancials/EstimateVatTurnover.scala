@@ -17,7 +17,7 @@
 package models.view.vatFinancials
 
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
 case class EstimateVatTurnover(vatTurnoverEstimate: Long)
@@ -25,6 +25,12 @@ case class EstimateVatTurnover(vatTurnoverEstimate: Long)
 object EstimateVatTurnover {
 
   implicit val format: OFormat[EstimateVatTurnover] = Json.format[EstimateVatTurnover]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatFinancials) => group.estimateVatTurnover,
+    updateF = (c: EstimateVatTurnover, g: Option[S4LVatFinancials]) =>
+      g.getOrElse(S4LVatFinancials()).copy(estimateVatTurnover = Some(c))
+  )
 
   implicit val modelTransformer = ApiModelTransformer[EstimateVatTurnover] { (vs: VatScheme) =>
     vs.financials.map(_.turnoverEstimate).collect {

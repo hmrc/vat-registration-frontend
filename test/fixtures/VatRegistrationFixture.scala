@@ -27,7 +27,7 @@ import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorker
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
-import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
+import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover}
@@ -81,6 +81,7 @@ trait VatRegistrationFixture {
   val validBankAccountDetails = CompanyBankAccountDetails(tradingName, accountNumber, sortCode)
   val monthlyAccountingPeriod = VatAccountingPeriod(frequency = "monthly")
   val validBankAccount = VatBankAccount(tradingName, accountNumber, sortCode)
+  val validCompanyBankAccount = CompanyBankAccount.yes
 
   val validVatFinancials = VatFinancials(
     bankAccount = Some(validBankAccount),

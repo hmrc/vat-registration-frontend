@@ -19,7 +19,7 @@ package models.view.vatFinancials.vatAccountingPeriod
 import fixtures.VatRegistrationFixture
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
 import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod.{FEB_MAY_AUG_NOV, JAN_APR_JUL_OCT, MAR_JUN_SEP_DEC}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class AccountingPeriodSpec extends UnitSpec with VatRegistrationFixture {
@@ -92,6 +92,26 @@ class AccountingPeriodSpec extends UnitSpec with VatRegistrationFixture {
       ApiModelTransformer[AccountingPeriod].toViewModel(vs) shouldBe None
     }
 
+  }
+
+  "ViewModelFormat" should {
+    val testAccountingPeriod = AccountingPeriod(AccountingPeriod.MAR_JUN_SEP_DEC)
+
+    val s4lVatFinancials: S4LVatFinancials = S4LVatFinancials(accountingPeriod = Some(testAccountingPeriod))
+
+    "extract AccountingPeriod from VatFinancials" in {
+      AccountingPeriod.viewModelFormat.read(s4lVatFinancials) shouldBe Some(testAccountingPeriod)
+    }
+
+    "update empty VatFinancials with AccountingPeriod" in {
+      AccountingPeriod.viewModelFormat.update(testAccountingPeriod, Option.empty[S4LVatFinancials]).
+        accountingPeriod shouldBe Some(testAccountingPeriod)
+    }
+
+    "update non-empty VatFinancials with AccountingPeriod" in {
+      AccountingPeriod.viewModelFormat.update(testAccountingPeriod, Some(s4lVatFinancials)).
+        accountingPeriod shouldBe Some(testAccountingPeriod)
+    }
   }
 
 }

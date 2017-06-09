@@ -28,16 +28,16 @@ import services.{S4LService, VatRegistrationService}
 class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
                                              (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
+
   val form = EstimateVatTurnoverForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[EstimateVatTurnover].fold(form)(form.fill)
+    viewModel[EstimateVatTurnover]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatFinancials.estimate_vat_turnover(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     EstimateVatTurnoverForm.form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatFinancials.estimate_vat_turnover(badForm)).pure,
-      goodForm => s4LService.save[EstimateVatTurnover](goodForm).map(_ =>
-        Redirect(controllers.vatFinancials.routes.ZeroRatedSalesController.show()))))
+      view => save(view).map(_ => Redirect(controllers.vatFinancials.routes.ZeroRatedSalesController.show()))))
 
 }
