@@ -30,7 +30,7 @@ import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
-import models.{S4LVatContact, S4LVatLodgingOfficer, VatBankAccountPath, ZeroRatedTurnoverEstimatePath}
+import models._
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -87,30 +87,14 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturns(validVatReturnFrequency)
       save4laterReturns(validAccountingPeriod)
       save4laterReturns(validBankAccountDetails)
-      save4laterReturns(validBusinessActivityDescription)
-      save4laterReturns(validNotForProfit)
-      save4laterReturns(validCompanyProvideWorkers)
-      save4laterReturns(validWorkers)
-      save4laterReturns(validTemporaryContracts)
-      save4laterReturns(validSkilledWorkers)
-      save4laterReturns(validAdviceOrConsultancy)
-      save4laterReturns(validActAsIntermediary)
-      save4laterReturns(ChargeFees(true))
-      save4laterReturns(LeaseVehicles(true))
-      save4laterReturns(AdditionalNonSecuritiesWork(true))
-      save4laterReturns(DiscretionaryInvestmentManagementServices(true))
-      save4laterReturns(InvestmentFundManagement(true))
-      save4laterReturns(ManageAdditionalFunds(true))
+
+      save4laterReturns(S4LVatSicAndCompliance())
+
       save4laterReturns(validEuGoods)
       save4laterReturns(validApplyEori)
-      save4laterReturns(S4LVatContact(businessContactDetails = Some(validBusinessContactDetails)))
+      save4laterReturns(S4LVatContact())
       save4laterReturns(validServiceEligibility)
-      save4laterReturns(S4LVatLodgingOfficer(
-        officerHomeAddress = Some(OfficerHomeAddressView("")),
-        officerDateOfBirth = Some(OfficerDateOfBirthView(LocalDate.now)),
-        officerNino = Some(OfficerNinoView("")),
-        completionCapacity = Some(CompletionCapacityView(""))
-      ))
+      save4laterReturns(S4LVatLodgingOfficer())
 
       when(mockRegConnector.upsertVatChoice(any(), any())(any(), any())).thenReturn(validVatChoice.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
