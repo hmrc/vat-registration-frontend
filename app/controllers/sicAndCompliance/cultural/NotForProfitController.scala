@@ -41,7 +41,7 @@ class NotForProfitController @Inject()(ds: CommonPlayDependencies)
       data => for {
         _ <- save(data)
         _ <- vrs.deleteElement(FinancialCompliancePath) // TODO need to delete any non-cultural questions (financial and labour)
-        _ <- vrs.submitVatLodgingOfficer()
+        //_ <- vrs.submitVatLodgingOfficer()
       } yield Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())))
 
 }
