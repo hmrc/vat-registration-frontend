@@ -31,7 +31,7 @@ import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
-import models.view.vatTradingDetails.vatChoice.StartDateView
+import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -87,14 +87,11 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       save4laterReturns(S4LVatSicAndCompliance(
         description = Some(BusinessActivityDescription(businessActivityDescription)),
-
         notForProfit = Some(NotForProfit(NotForProfit.NOT_PROFIT_NO)),
-
         companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)),
         workers = Some(Workers(8)),
         temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)),
         skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO)),
-
         adviceOrConsultancy = Some(AdviceOrConsultancy(true)),
         actAsIntermediary = Some(ActAsIntermediary(true)),
         chargeFees = Some(ChargeFees(true)),
@@ -106,8 +103,19 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       ))
 
       save4laterReturns(S4LVatContact(businessContactDetails = Some(validBusinessContactDetails)))
+
       save4laterReturns(validServiceEligibility)
-      save4laterReturns(S4LTradingDetails())
+
+      save4laterReturns(S4LTradingDetails(
+        taxableTurnover = Some(validTaxableTurnover),
+        tradingName = Some(validTradingNameView),
+        startDate = Some(validStartDateView),
+        voluntaryRegistration = Some(VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES)),
+        voluntaryRegistrationReason = Some(VoluntaryRegistrationReason(VoluntaryRegistrationReason.INTENDS_TO_SELL)),
+        euGoods = Some(validEuGoods),
+        applyEori = Some(validApplyEori)
+      ))
+
       save4laterReturns(S4LVatLodgingOfficer(
         officerHomeAddress = Some(OfficerHomeAddressView("")),
         officerDateOfBirth = Some(OfficerDateOfBirthView(LocalDate.now)),
