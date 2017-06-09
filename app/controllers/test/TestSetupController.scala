@@ -68,24 +68,6 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
 
       sicStub <- s4LService.fetchAndGet[SicStub]()
 
-//      businessActivityDescription <- s4LService.fetchAndGet[BusinessActivityDescription]()
-//
-//      culturalNotForProfit <- s4LService.fetchAndGet[NotForProfit]()
-//
-//      labourCompanyProvideWorkers <- s4LService.fetchAndGet[CompanyProvideWorkers]()
-//      labourWorkers <- s4LService.fetchAndGet[Workers]()
-//      labourTemporaryContracts <- s4LService.fetchAndGet[TemporaryContracts]()
-//      labourSkilledWorkers <- s4LService.fetchAndGet[SkilledWorkers]()
-//
-//      adviceOrConsultancy <- s4LService.fetchAndGet[AdviceOrConsultancy]()
-//      actAsIntermediary <- s4LService.fetchAndGet[ActAsIntermediary]()
-//      chargeFees <- s4LService.fetchAndGet[ChargeFees]()
-//      additionalNonSecuritiesWork <- s4LService.fetchAndGet[AdditionalNonSecuritiesWork]()
-//      discretionaryInvestment <- s4LService.fetchAndGet[DiscretionaryInvestmentManagementServices]()
-//      leaseVehiclesOrEquipment <- s4LService.fetchAndGet[LeaseVehicles]()
-//      investmentFundManagement <- s4LService.fetchAndGet[InvestmentFundManagement]()
-//      manageAdditionalFunds <- s4LService.fetchAndGet[ManageAdditionalFunds]()
-
       vatSicAndCompliance <- s4LService.fetchAndGet[S4LVatSicAndCompliance]()
 
       vatContact <- s4LService.fetchAndGet[S4LVatContact]()
@@ -281,23 +263,24 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
     val base = data.sicAndCompliance
     val compliance: S4LVatSicAndCompliance =
       (base.culturalNotForProfit, base.labourCompanyProvideWorkers, base.financialAdviceOrConsultancy) match {
-        case (None, None, None) => S4LVatSicAndCompliance()
         case (Some(_), None, None) => S4LVatSicAndCompliance(
           notForProfit = Some(NotForProfit(base.culturalNotForProfit.get)))
         case(None, Some(_), None) => S4LVatSicAndCompliance(
-          companyProvideWorkers = Some(CompanyProvideWorkers(base.labourCompanyProvideWorkers.get)),
-          workers = Some(Workers(base.labourWorkers.get.toInt)),
-          temporaryContracts = Some(TemporaryContracts(base.labourTemporaryContracts.get)),
-          skilledWorkers = Some(SkilledWorkers(base.labourSkilledWorkers.get)))
+          companyProvideWorkers = base.labourCompanyProvideWorkers.flatMap(x => Some(CompanyProvideWorkers(x))),
+          workers = base.labourWorkers.flatMap(x => Some(Workers(x.toInt))),
+          temporaryContracts = base.labourTemporaryContracts.flatMap(x => Some(TemporaryContracts(x))),
+          skilledWorkers = base.labourSkilledWorkers.flatMap(x => Some(SkilledWorkers(x))))
         case(None, None, Some(_)) => S4LVatSicAndCompliance(
-          adviceOrConsultancy = Some(AdviceOrConsultancy(base.financialAdviceOrConsultancy.get.toBoolean)),
-          actAsIntermediary = Some(ActAsIntermediary(base.financialActAsIntermediary.get.toBoolean)),
-          chargeFees = Some(ChargeFees(base.financialChargeFees.get.toBoolean)),
-          leaseVehicles = Some(LeaseVehicles(base.financialLeaseVehiclesOrEquipment.get.toBoolean)),
-          additionalNonSecuritiesWork = Some(AdditionalNonSecuritiesWork(base.financialAdditionalNonSecuritiesWork.get.toBoolean)),
-          discretionaryInvestmentManagementServices = Some(DiscretionaryInvestmentManagementServices(base.financialDiscretionaryInvestment.get.toBoolean)),
-          investmentFundManagement = Some(InvestmentFundManagement(base.financialInvestmentFundManagement.get.toBoolean)),
-          manageAdditionalFunds = Some(ManageAdditionalFunds(base.financialManageAdditionalFunds.get.toBoolean)))
+          adviceOrConsultancy = base.financialAdviceOrConsultancy.flatMap(x => Some(AdviceOrConsultancy(x.toBoolean))),
+          actAsIntermediary = base.financialActAsIntermediary.flatMap(x => Some(ActAsIntermediary(x.toBoolean))),
+          chargeFees = base.financialChargeFees.flatMap(x => Some(ChargeFees(x.toBoolean))),
+          leaseVehicles = base.financialLeaseVehiclesOrEquipment.flatMap(x => Some(LeaseVehicles(x.toBoolean))),
+          additionalNonSecuritiesWork = base.financialAdditionalNonSecuritiesWork.flatMap(x => Some(AdditionalNonSecuritiesWork(x.toBoolean))),
+          discretionaryInvestmentManagementServices =
+            base.financialDiscretionaryInvestment.flatMap(x => Some(DiscretionaryInvestmentManagementServices(x.toBoolean))),
+          investmentFundManagement = base.financialInvestmentFundManagement.flatMap(x => Some(InvestmentFundManagement(x.toBoolean))),
+          manageAdditionalFunds = base.financialManageAdditionalFunds.flatMap(x => Some(ManageAdditionalFunds(x.toBoolean))))
+        case (_, _, _) => S4LVatSicAndCompliance()
       }
 
     compliance.copy(description = base.businessActivityDescription.map(BusinessActivityDescription(_)))
