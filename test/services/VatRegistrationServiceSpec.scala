@@ -16,6 +16,8 @@
 
 package services
 
+import java.time.LocalDate
+
 import cats.data.OptionT
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
@@ -26,6 +28,8 @@ import models.external.CoHoCompanyProfile
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
+import models.view.vatFinancials.ZeroRatedSales
+import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import org.mockito.Matchers
@@ -62,9 +66,8 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "return a success response when the Registration is successfully created without finding a company profile" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
       when(mockRegConnector.createNewRegistration()(any(), any())).thenReturn(validVatScheme.pure)
-      val none: OptionT[Future, CoHoCompanyProfile] = OptionT.none
       mockKeystoreCache[String]("CompanyProfile", CacheMap("", Map.empty))
-      when(mockCompanyRegConnector.getCompanyRegistrationDetails(any())(any())).thenReturn(none)
+      when(mockCompanyRegConnector.getCompanyRegistrationDetails(any())(any())).thenReturn(OptionT.none[Future, CoHoCompanyProfile])
 
       service.createRegistrationFootprint() completedSuccessfully
     }
@@ -100,10 +103,23 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturns(ManageAdditionalFunds(true))
       save4laterReturns(validEuGoods)
       save4laterReturns(validApplyEori)
-      save4laterReturns(S4LVatContact())
-      save4laterReturns(S4LVatFinancials())
+      save4laterReturns(S4LVatContact(businessContactDetails = Some(validBusinessContactDetails)))
       save4laterReturns(validServiceEligibility)
-      save4laterReturns(S4LVatLodgingOfficer())
+      save4laterReturns(S4LVatLodgingOfficer(
+        officerHomeAddress = Some(OfficerHomeAddressView("")),
+        officerDateOfBirth = Some(OfficerDateOfBirthView(LocalDate.now)),
+        officerNino = Some(OfficerNinoView("")),
+        completionCapacity = Some(CompletionCapacityView(""))
+      ))
+      save4laterReturns(S4LVatFinancials(
+        estimateVatTurnover = Some(validEstimateVatTurnover),
+        zeroRatedTurnover = Some(ZeroRatedSales.yes),
+        zeroRatedTurnoverEstimate = Some(validEstimateZeroRatedSales),
+        vatChargeExpectancy = Some(validVatChargeExpectancy),
+        vatReturnFrequency = Some(validVatReturnFrequency),
+        accountingPeriod = Some(validAccountingPeriod),
+        companyBankAccount = Some(validCompanyBankAccount),
+        companyBankAccountDetails = Some(validBankAccountDetails)))
 
       when(mockRegConnector.upsertVatChoice(any(), any())(any(), any())).thenReturn(validVatChoice.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)

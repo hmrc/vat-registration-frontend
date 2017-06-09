@@ -27,6 +27,9 @@ object VatReturnFrequency {
   val MONTHLY = "monthly"
   val QUARTERLY = "quarterly"
 
+  val monthly = VatReturnFrequency(MONTHLY)
+  val quarterly = VatReturnFrequency(QUARTERLY)
+
   val valid = (item: String) => List(MONTHLY, QUARTERLY).contains(item.toLowerCase)
 
   implicit val format = Json.format[VatReturnFrequency]
