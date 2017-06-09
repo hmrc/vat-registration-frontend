@@ -75,6 +75,7 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
         _ <- s4LService.save(vatEligibility.setAnswer(question, data.answer))
         exit = data.answer == question.exitAnswer
         _ <- keystore.cache(INELIGIBILITY_REASON_KEY, question.name) onlyIf exit
+        _ <- vrs.submitVatEligibility() onlyIf question == CompanyWillDoAnyOfQuestion
       } yield Redirect(
         if (exit) eligibilityRoutes.ServiceCriteriaQuestionsController.ineligible() else nextQuestion(question)))
   })
