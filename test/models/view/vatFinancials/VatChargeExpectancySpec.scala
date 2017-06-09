@@ -19,7 +19,7 @@ package models.view.vatFinancials
 import fixtures.VatRegistrationFixture
 import models.api.{VatFinancials, VatScheme}
 import models.view.vatFinancials.VatChargeExpectancy.{VAT_CHARGE_NO, VAT_CHARGE_YES}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class VatChargeExpectancySpec extends UnitSpec with VatRegistrationFixture {
@@ -66,6 +66,25 @@ class VatChargeExpectancySpec extends UnitSpec with VatRegistrationFixture {
     "convert VatScheme without VatFinancials to empty view model" in {
       val vs = vatScheme.copy(financials = None)
       ApiModelTransformer[VatChargeExpectancy].toViewModel(vs) shouldBe None
+    }
+  }
+
+  "ViewModelFormat" should {
+
+    val s4lVatFinancials: S4LVatFinancials = S4LVatFinancials(vatChargeExpectancy = Some(validVatChargeExpectancy))
+
+    "extract VatChargeExpectancy from VatFinancials" in {
+      VatChargeExpectancy.viewModelFormat.read(s4lVatFinancials) shouldBe Some(validVatChargeExpectancy)
+    }
+
+    "update empty VatFinancials with VatChargeExpectancy" in {
+      VatChargeExpectancy.viewModelFormat.update(validVatChargeExpectancy, Option.empty[S4LVatFinancials]).
+        vatChargeExpectancy shouldBe Some(validVatChargeExpectancy)
+    }
+
+    "update non-empty VatFinancials with VatChargeExpectancy" in {
+      VatChargeExpectancy.viewModelFormat.update(validVatChargeExpectancy, Some(s4lVatFinancials)).
+        vatChargeExpectancy shouldBe Some(validVatChargeExpectancy)
     }
   }
 }

@@ -21,13 +21,10 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.test.TestSetupForm
 import models.ModelKeys.REGISTERING_OFFICER_KEY
-import models._
 import models.api._
 import models.external.Officer
 import models.view.test._
-import models.view.vatFinancials._
-import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
-import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
+import models.{S4LKey, S4LVatContact, S4LVatFinancials, S4LVatLodgingOfficer, S4LVatSicAndCompliance, _}
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService, VatRegistrationService}
@@ -42,23 +39,12 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
   def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request => {
     for {
 
-      companyBankAccount <- s4LService.fetchAndGet[CompanyBankAccount]()
-      companyBankAccountDetails <- s4LService.fetchAndGet[CompanyBankAccountDetails]()
-      estimateVatTurnover <- s4LService.fetchAndGet[EstimateVatTurnover]()
-      zeroRatedSales <- s4LService.fetchAndGet[ZeroRatedSales]()
-      estimateZeroRatedSales <- s4LService.fetchAndGet[EstimateZeroRatedSales]()
-      vatChargeExpectancy <- s4LService.fetchAndGet[VatChargeExpectancy]()
-      vatReturnFrequency <- s4LService.fetchAndGet[VatReturnFrequency]()
-      accountingPeriod <- s4LService.fetchAndGet[AccountingPeriod]()
-
+      vatFinancials <- s4LService.fetchAndGet[S4LVatFinancials]()
       sicStub <- s4LService.fetchAndGet[SicStub]()
-
       vatSicAndCompliance <- s4LService.fetchAndGet[S4LVatSicAndCompliance]()
-
       tradingDetails <- s4LService.fetchAndGet[S4LTradingDetails]()
       vatContact <- s4LService.fetchAndGet[S4LVatContact]()
       vatLodgingOfficer <- s4LService.fetchAndGet[S4LVatLodgingOfficer]()
-
       eligibility <- s4LService.fetchAndGet[VatServiceEligibility]()
 
       testSetup = TestSetup(
@@ -84,16 +70,16 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
           website = vatContact.flatMap(_.businessContactDetails).flatMap(_.website)
         ),
         VatFinancialsTestSetup(
-          companyBankAccount.map(_.yesNo),
-          companyBankAccountDetails.map(_.accountName),
-          companyBankAccountDetails.map(_.accountNumber),
-          companyBankAccountDetails.map(_.sortCode),
-          estimateVatTurnover.map(_.vatTurnoverEstimate.toString),
-          zeroRatedSales.map(_.yesNo),
-          estimateZeroRatedSales.map(_.zeroRatedTurnoverEstimate.toString),
-          vatChargeExpectancy.map(_.yesNo),
-          vatReturnFrequency.map(_.frequencyType),
-          accountingPeriod.map(_.accountingPeriod)),
+          vatFinancials.flatMap(_.companyBankAccount).map(_.yesNo),
+          vatFinancials.flatMap(_.companyBankAccountDetails).map(_.accountName),
+          vatFinancials.flatMap(_.companyBankAccountDetails).map(_.accountNumber),
+          vatFinancials.flatMap(_.companyBankAccountDetails).map(_.sortCode),
+          vatFinancials.flatMap(_.estimateVatTurnover).map(_.vatTurnoverEstimate.toString),
+          vatFinancials.flatMap(_.zeroRatedTurnover).map(_.yesNo),
+          vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).map(_.zeroRatedTurnoverEstimate.toString),
+          vatFinancials.flatMap(_.vatChargeExpectancy).map(_.yesNo),
+          vatFinancials.flatMap(_.vatReturnFrequency).map(_.frequencyType),
+          vatFinancials.flatMap(_.accountingPeriod).map(_.accountingPeriod)),
         SicAndComplianceTestSetup(
           businessActivityDescription = vatSicAndCompliance.flatMap(_.description.map(_.description)),
           sicCode1 = sicStub.map(_.sicCode1.getOrElse("")),
@@ -164,19 +150,6 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
       }, {
         data: TestSetup => {
           for {
-            _ <- saveToS4Later(data.vatFinancials.companyBankAccountChoice, data, { x => CompanyBankAccount(x.vatFinancials.companyBankAccountChoice.get) })
-            _ <- saveToS4Later(data.vatFinancials.companyBankAccountName, data, {
-              x =>
-                CompanyBankAccountDetails(x.vatFinancials.companyBankAccountName.get,
-                  x.vatFinancials.companyBankAccountNumber.get, x.vatFinancials.sortCode.get)
-            })
-            _ <- saveToS4Later(data.vatFinancials.estimateVatTurnover, data, { x => EstimateVatTurnover(x.vatFinancials.estimateVatTurnover.get.toLong) })
-            _ <- saveToS4Later(data.vatFinancials.zeroRatedSalesChoice, data, { x => ZeroRatedSales(x.vatFinancials.zeroRatedSalesChoice.get) })
-            _ <- saveToS4Later(data.vatFinancials.zeroRatedTurnoverEstimate, data, { x => EstimateZeroRatedSales(x.vatFinancials.zeroRatedTurnoverEstimate.get.toLong) })
-            _ <- saveToS4Later(data.vatFinancials.vatChargeExpectancyChoice, data, { x => VatChargeExpectancy(x.vatFinancials.vatChargeExpectancyChoice.get) })
-            _ <- saveToS4Later(data.vatFinancials.vatReturnFrequency, data, { x => VatReturnFrequency(x.vatFinancials.vatReturnFrequency.get) })
-            _ <- saveToS4Later(data.vatFinancials.accountingPeriod, data, { x => AccountingPeriod(x.vatFinancials.accountingPeriod.get) })
-
             _ <- saveToS4Later(data.sicAndCompliance.sicCode1, data, { x =>
               SicStub(Some(x.sicAndCompliance.sicCode1.getOrElse("")),
                 Some(x.sicAndCompliance.sicCode2.getOrElse("")),
@@ -194,6 +167,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
                 x.vatServiceEligibility.companyWillDoAnyOf.map(_.toBoolean))
             })
 
+            _ <- s4LService.save(s4LBuilder.vatFinancialsFromData(data))
             _ <- s4LService.save(s4LBuilder.tradingDetailsFromData(data))
             _ <- s4LService.save(s4LBuilder.vatContactFromData(data))
 
@@ -202,15 +176,13 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
 
             // Keystore hack for Officer DOB page
             officer = vatLodgingOfficer.completionCapacity.
-                flatMap(ccv => ccv.completionCapacity.
-                  map(cc => Officer(cc.name, cc.role, None)))
+              flatMap(ccv => ccv.completionCapacity.
+                map(cc => Officer(cc.name, cc.role, None)))
             _ <- keystoreConnector.cache(REGISTERING_OFFICER_KEY, officer.getOrElse(Officer.empty))
 
           } yield Ok("Test setup complete")
         }
       })
   })
-
-
 
 }

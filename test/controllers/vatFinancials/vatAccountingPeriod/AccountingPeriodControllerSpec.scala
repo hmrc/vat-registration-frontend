@@ -16,29 +16,20 @@
 
 package controllers.vatFinancials.vatAccountingPeriod
 
-import builders.AuthBuilder
 import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod
-import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.VatRegistrationService
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
 
-
-  object TestAccountingPeriodController extends AccountingPeriodController(ds)(mockS4LService, mockVatRegistrationService) {
+  object Controller extends AccountingPeriodController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -47,82 +38,46 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"GET ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show()}" should {
 
     "return HTML when there's a Accounting Period model in S4L" in {
-      val accountingPeriod = AccountingPeriod("")
+      save4laterReturns2(AccountingPeriod(""))()
 
-      when(mockS4LService.fetchAndGet[AccountingPeriod]()(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(accountingPeriod)))
-
-      submitAuthorised(TestAccountingPeriodController.show(), fakeRequest.withFormUrlEncodedBody(
-        "accountingPeriodRadio" -> ""
-      )) {
-
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("When do you want your VAT Return periods to end?")
+      submitAuthorised(Controller.show(),
+        fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> "")) {
+        _ includesText "When do you want your VAT Return periods to end?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contain data" in {
-      when(mockS4LService.fetchAndGet[AccountingPeriod]()(Matchers.eq(S4LKey[AccountingPeriod]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[AccountingPeriod]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-        .thenReturn(Future.successful(validVatScheme))
-
-      callAuthorised(TestAccountingPeriodController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("When do you want your VAT Return periods to end?")
+      callAuthorised(Controller.show) {
+        _ includesText "When do you want your VAT Return periods to end?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contain no data" in {
-      when(mockS4LService.fetchAndGet[AccountingPeriod]()
-        (Matchers.eq(S4LKey[AccountingPeriod]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[AccountingPeriod]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(emptyVatScheme))
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-        .thenReturn(Future.successful(emptyVatScheme))
-
-      callAuthorised(TestAccountingPeriodController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("When do you want your VAT Return periods to end?")
+      callAuthorised(Controller.show) {
+        _ includesText "When do you want your VAT Return periods to end?"
       }
     }
   }
 
   s"POST ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.submit()} with Empty data" should {
-
     "return 400" in {
-      submitAuthorised(
-        TestAccountingPeriodController.submit(),
-        fakeRequest.withFormUrlEncodedBody(
-        ))(status(_) mustBe Status.BAD_REQUEST)
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(_ isA 400)
     }
   }
 
   s"POST ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.submit()} with accounting period selected is January, April, July and October" should {
 
     "return 303" in {
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.JAN_APR_JUL_OCT))))
-
-      when(mockS4LService.save[AccountingPeriod]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
-
-      submitAuthorised(TestAccountingPeriodController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "accountingPeriodRadio" -> AccountingPeriod.JAN_APR_JUL_OCT
-      )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/check-your-answers"
+      save4laterExpectsSave[AccountingPeriod]()
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> AccountingPeriod.JAN_APR_JUL_OCT)) {
+        _ redirectsTo s"$contextRoot/check-your-answers"
       }
 
     }
@@ -131,38 +86,23 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"POST ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.submit()} with accounting period selected is February, May, August and November" should {
 
     "return 303" in {
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.FEB_MAY_AUG_NOV))))
+      save4laterExpectsSave[AccountingPeriod]()
 
-      when(mockS4LService.save[AccountingPeriod]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
-
-      submitAuthorised(TestAccountingPeriodController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "accountingPeriodRadio" -> AccountingPeriod.FEB_MAY_AUG_NOV
-      )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/check-your-answers"
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> AccountingPeriod.FEB_MAY_AUG_NOV)) {
+        _ redirectsTo s"$contextRoot/check-your-answers"
       }
-
     }
+
   }
 
   s"POST ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.submit()} with accounting period selected is March, June, September and December" should {
 
     "return 303" in {
-      val returnCacheMapAccountingPeriod = CacheMap("", Map("" -> Json.toJson(AccountingPeriod(AccountingPeriod.MAR_JUN_SEP_DEC))))
-
-      when(mockS4LService.save[AccountingPeriod]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapAccountingPeriod))
-
-      submitAuthorised(TestAccountingPeriodController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "accountingPeriodRadio" -> AccountingPeriod.MAR_JUN_SEP_DEC
-      )) {
-        response =>
-          status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/check-your-answers"
+      save4laterExpectsSave[AccountingPeriod]()
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> AccountingPeriod.MAR_JUN_SEP_DEC)) {
+        _ redirectsTo s"$contextRoot/check-your-answers"
       }
 
     }

@@ -18,6 +18,7 @@ package controllers.vatFinancials.vatBankAccount
 
 import javax.inject.Inject
 
+import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.vatBankAccount.CompanyBankAccountForm
 import models.VatBankAccountPath
@@ -27,30 +28,22 @@ import services.{S4LService, VatRegistrationService}
 
 
 class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
-                                            (implicit s4l: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
-
-  import cats.syntax.flatMap._
+                                            (implicit s4l: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with FlatMapSyntax {
 
   val form = CompanyBankAccountForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel2[CompanyBankAccount].map { vm =>
-      Ok(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(CompanyBankAccountForm.form.fill(vm)))
-    }.getOrElse(Ok(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(CompanyBankAccountForm.form)))
-  })
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel[CompanyBankAccount]().fold(form)(form.fill)
+      .map(frm => Ok(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(frm))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(badForm)).pure
-      ,
-      (data: CompanyBankAccount) => {
-        s4l.save(data).map(_ => data.yesNo == CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES).ifM(
-          controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show().pure,
-          vrs.deleteElement(VatBankAccountPath).map { _ =>
-            controllers.vatFinancials.routes.EstimateVatTurnoverController.show()
-          }
-        ).map(Redirect)
-      }
-    )
-  })
+      badForm => BadRequest(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(badForm)).pure,
+      data => save(data).map(_ => data.yesNo == CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES).ifM(
+        controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show().pure,
+        vrs.deleteElement(VatBankAccountPath).map(_ =>
+          controllers.vatFinancials.routes.EstimateVatTurnoverController.show()))
+        .map(Redirect)))
+
 }

@@ -18,6 +18,7 @@ package controllers.test
 
 import java.time.LocalDate
 
+import models._
 import models.api._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
@@ -25,11 +26,13 @@ import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.test.TestSetup
 import models.view.vatContact.BusinessContactDetails
+import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
+import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
+import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, VatChargeExpectancy, ZeroRatedSales}
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
-import models.{S4LTradingDetails, S4LVatContact, S4LVatLodgingOfficer, S4LVatSicAndCompliance}
 
 class TestS4LBuilder {
 
@@ -70,6 +73,31 @@ class TestS4LBuilder {
       tradingName = tradingName.map(t => TradingNameView(t.selection.toString, t.tradingName)),
       euGoods = euGoods.map(EuGoods(_)),
       applyEori = applyEori.map(a => ApplyEori(a.toBoolean))
+    )
+  }
+
+  def vatFinancialsFromData(data: TestSetup): S4LVatFinancials = {
+    val fin = data.vatFinancials
+
+    val estimateVatTurnover = fin.estimateVatTurnover.map(x => EstimateVatTurnover(x.toLong))
+    val zeroRatedTurnover = fin.zeroRatedSalesChoice.map(ZeroRatedSales.apply)
+    val zeroRatedTurnoverEstimate = fin.zeroRatedTurnoverEstimate.map(x => EstimateZeroRatedSales(x.toLong))
+    val vatChargeExpectancy = fin.vatChargeExpectancyChoice.map(VatChargeExpectancy.apply)
+    val vatReturnFrequency = fin.vatReturnFrequency.map(VatReturnFrequency.apply)
+    val accountingPeriod = fin.accountingPeriod.map(AccountingPeriod.apply)
+    val companyBankAccount = fin.companyBankAccountChoice.map(CompanyBankAccount.apply)
+    val companyBankAccountDetails = fin.companyBankAccountName.map(name =>
+      CompanyBankAccountDetails(name, fin.companyBankAccountNumber.get, fin.sortCode.get)
+    )
+    S4LVatFinancials(
+      estimateVatTurnover = estimateVatTurnover,
+      zeroRatedTurnover = zeroRatedTurnover,
+      zeroRatedTurnoverEstimate = zeroRatedTurnoverEstimate,
+      vatChargeExpectancy = vatChargeExpectancy,
+      vatReturnFrequency = vatReturnFrequency,
+      accountingPeriod = accountingPeriod,
+      companyBankAccount = companyBankAccount,
+      companyBankAccountDetails = companyBankAccountDetails
     )
   }
 
@@ -168,5 +196,7 @@ class TestS4LBuilder {
       formerName = formerName.map(FormerNameView(_))
     )
   }
+
+
 
 }

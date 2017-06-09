@@ -25,35 +25,29 @@ import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
-
 class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
-                                                   (implicit s4l: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+                                                   (implicit s4l: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    viewModel2[CompanyBankAccountDetails].map { vm =>
-      Ok(views.html.pages.vatFinancials.vatBankAccount.company_bank_account_details(CompanyBankAccountDetailsForm.form.fill(
-        CompanyBankAccountDetailsForm(
-          accountName = vm.accountName.trim,
-          accountNumber = "",
-          sortCode = SortCode.parse(vm.sortCode).getOrElse(SortCode("", "", ""))))))
-    }.getOrElse(Ok(views.html.pages.vatFinancials.vatBankAccount.company_bank_account_details(CompanyBankAccountDetailsForm.form)))
-  })
+  val form = CompanyBankAccountDetailsForm.form
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    CompanyBankAccountDetailsForm.form.bindFromRequest().fold(
-      badForm => {
-        Future.successful(BadRequest(views.html.pages.vatFinancials.vatBankAccount.company_bank_account_details(badForm)))
-      }, (form: CompanyBankAccountDetailsForm) => {
-        s4l.save[CompanyBankAccountDetails](
-          CompanyBankAccountDetails(
-            accountName = form.accountName.trim,
-            accountNumber = form.accountNumber,
-            sortCode = Show[SortCode].show(form.sortCode)
-          )).map(_ => Redirect(controllers.vatFinancials.routes.EstimateVatTurnoverController.show()))
-      })
-  })
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    viewModel[CompanyBankAccountDetails]().map(vm =>
+      CompanyBankAccountDetailsForm(
+        accountName = vm.accountName.trim,
+        accountNumber = "",
+        sortCode = SortCode.parse(vm.sortCode).getOrElse(SortCode("", "", ""))))
+      .fold(form)(form.fill)
+      .map(frm => Ok(views.html.pages.vatFinancials.vatBankAccount.company_bank_account_details(frm))))
+
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    form.bindFromRequest().fold(
+      badForm => BadRequest(views.html.pages.vatFinancials.vatBankAccount.company_bank_account_details(badForm)).pure,
+      view => save(
+        CompanyBankAccountDetails(
+          accountName = view.accountName.trim,
+          accountNumber = view.accountNumber,
+          sortCode = Show[SortCode].show(view.sortCode)))
+        .map(_ => Redirect(controllers.vatFinancials.routes.EstimateVatTurnoverController.show()))))
 
 }
-
-

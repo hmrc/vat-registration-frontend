@@ -16,8 +16,8 @@
 
 package models.view.vatFinancials
 
-import models.ApiModelTransformer
 import models.api.{VatFinancials, VatScheme}
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat}
 import play.api.libs.json.{Json, OFormat}
 
 case class ZeroRatedSales(yesNo: String)
@@ -27,9 +27,18 @@ object ZeroRatedSales {
   val ZERO_RATED_SALES_YES = "ZERO_RATED_SALES_YES"
   val ZERO_RATED_SALES_NO = "ZERO_RATED_SALES_NO"
 
+  val yes = ZeroRatedSales(ZERO_RATED_SALES_YES)
+  val no = ZeroRatedSales(ZERO_RATED_SALES_NO)
+
   val valid = (item: String) => List(ZERO_RATED_SALES_YES, ZERO_RATED_SALES_NO).contains(item.toUpperCase)
 
   implicit val format: OFormat[ZeroRatedSales] = Json.format[ZeroRatedSales]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (_: S4LVatFinancials).zeroRatedTurnover,
+    updateF = (c: ZeroRatedSales, g: Option[S4LVatFinancials]) =>
+      g.getOrElse(S4LVatFinancials()).copy(zeroRatedTurnover = Some(c))
+  )
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[ZeroRatedSales] { (vs: VatScheme) =>

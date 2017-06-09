@@ -16,25 +16,17 @@
 
 package controllers.vatFinancials.vatBankAccount
 
-import builders.AuthBuilder
 import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccount
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
+class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFixture {
-
-  object CompanyBankAccountController extends CompanyBankAccountController(ds)(mockS4LService, mockVatRegistrationService) {
+  object Controller extends CompanyBankAccountController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -43,80 +35,61 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
   s"GET ${vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()}" should {
 
     "return HTML when there's a Company Bank Account model in S4L" in {
-      val companyBankAccount = CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES)
+      save4laterReturns2(CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES))()
 
-      when(mockS4LService.fetchAndGet[CompanyBankAccount]()(any(), any(), any()))
-        .thenReturn(Future.successful(Some(companyBankAccount)))
-
-      submitAuthorised(CompanyBankAccountController.show(), fakeRequest.withFormUrlEncodedBody(
-        "companyBankAccountRadio" -> ""
-      )) {
+      submitAuthorised(Controller.show(),
+        fakeRequest.withFormUrlEncodedBody("companyBankAccountRadio" -> "")) {
         _ includesText "Do you have a bank account set up in the name of your company?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[CompanyBankAccount]()(Matchers.eq(S4LKey[CompanyBankAccount]), any(), any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[CompanyBankAccount]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
-      when(mockVatRegistrationService.getVatScheme()(any()))
-        .thenReturn(Future.successful(validVatScheme))
-
-      callAuthorised(CompanyBankAccountController.show) {
+      callAuthorised(Controller.show) {
         _ includesText "Do you have a bank account set up in the name of your company?"
       }
     }
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    when(mockS4LService.fetchAndGet[CompanyBankAccount]()(Matchers.eq(S4LKey[CompanyBankAccount]), any(), any()))
-      .thenReturn(Future.successful(None))
+    save4laterReturnsNothing2[CompanyBankAccount]()
+    when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-      .thenReturn(Future.successful(emptyVatScheme))
-
-    callAuthorised(CompanyBankAccountController.show) {
+    callAuthorised(Controller.show) {
       _ includesText "Do you have a bank account set up in the name of your company?"
     }
   }
 
   s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()} with Empty data" should {
-
     "return 400" in {
-      submitAuthorised(CompanyBankAccountController.submit(), fakeRequest.withFormUrlEncodedBody(
-      ))(result => result isA 400)
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(_ isA 400)
     }
   }
 
   s"POST ${vatFinancials.vatBankAccount.routes.CompanyBankAccountController.submit()} with Company Bank Account selected Yes" should {
 
     "return 303" in {
-      val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES))))
+      save4laterExpectsSave[CompanyBankAccount]()
 
-      when(mockS4LService.save[CompanyBankAccount](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMapCompanyBankAccount))
-
-      submitAuthorised(CompanyBankAccountController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "companyBankAccountRadio" -> CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES
-      ))(_ redirectsTo s"$contextRoot/business-bank-account-details")
-
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody("companyBankAccountRadio" -> CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES)) {
+        _ redirectsTo s"$contextRoot/business-bank-account-details"
+      }
     }
   }
 
   s"POST ${vatFinancials.vatBankAccount.routes.CompanyBankAccountController.submit()} with Company Bank Account selected No" should {
 
     "return 303" in {
-      val returnCacheMapCompanyBankAccount = CacheMap("", Map("" -> Json.toJson(CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_NO))))
+      save4laterExpectsSave[CompanyBankAccount]()
+      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
 
-      when(mockS4LService.save[CompanyBankAccount](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMapCompanyBankAccount))
-
-      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
-
-      submitAuthorised(CompanyBankAccountController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "companyBankAccountRadio" -> CompanyBankAccount.COMPANY_BANK_ACCOUNT_NO
-      ))(_ redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months")
-
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody("companyBankAccountRadio" -> CompanyBankAccount.COMPANY_BANK_ACCOUNT_NO)) {
+        _ redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months"
+      }
     }
   }
 }
