@@ -17,7 +17,7 @@
 package models.view.sicAndCompliance.labour
 
 import models.api.{VatScheme, VatSicAndCompliance}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class TemporaryContracts(yesNo: String)
@@ -30,6 +30,12 @@ object TemporaryContracts {
   val valid = (item: String) => List(TEMP_CONTRACTS_YES, TEMP_CONTRACTS_NO).contains(item.toUpperCase)
 
   implicit val format = Json.format[TemporaryContracts]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatSicAndCompliance) => group.temporaryContracts,
+    updateF = (c: TemporaryContracts, g: Option[S4LVatSicAndCompliance]) =>
+      g.getOrElse(S4LVatSicAndCompliance()).copy(temporaryContracts = Some(c))
+  )
 
   implicit val modelTransformer = ApiModelTransformer[TemporaryContracts] { (vs: VatScheme) =>
     for {

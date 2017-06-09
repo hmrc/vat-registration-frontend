@@ -247,4 +247,23 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
+  "Calling upsertPpob" should {
+
+    "return the correct VatResponse when the microservice completes and returns a upsertPpob model" in new Setup {
+      mockHttpPATCH[ScrsAddress, ScrsAddress]("tst-url", scrsAddress)
+      connector.upsertPpob("tstID", scrsAddress) returns scrsAddress
+    }
+    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[ScrsAddress, ScrsAddress]("tst-url", forbidden)
+      connector.upsertPpob("tstID", scrsAddress) failedWith forbidden
+    }
+    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
+      mockHttpFailedPATCH[ScrsAddress, ScrsAddress]("tst-url", notFound)
+      connector.upsertPpob("tstID", scrsAddress) failedWith notFound
+    }
+    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[ScrsAddress, ScrsAddress]("tst-url", internalServiceException)
+      connector.upsertPpob("tstID", scrsAddress) failedWith internalServiceException
+    }
+  }
 }

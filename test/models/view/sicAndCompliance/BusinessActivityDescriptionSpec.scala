@@ -18,7 +18,8 @@ package models.view.sicAndCompliance
 
 import fixtures.VatRegistrationFixture
 import models.api.VatSicAndCompliance
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.view.sicAndCompliance.labour.Workers
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class BusinessActivityDescriptionSpec extends UnitSpec with VatRegistrationFixture {
@@ -50,5 +51,24 @@ class BusinessActivityDescriptionSpec extends UnitSpec with VatRegistrationFixtu
     "Extract an empty BusinessActivityDescription view model from a VatScheme without sicAndCompliance" in {
       ApiModelTransformer[BusinessActivityDescription].toViewModel(vatScheme()) shouldBe None
     }
+  }
+
+  val testView = BusinessActivityDescription("activity")
+
+  "ViewModelFormat" should {
+    val s4LVatSicAndCompliance = S4LVatSicAndCompliance(description = Some(testView))
+
+    "extract description from s4LVatSicAndCompliance" in {
+      BusinessActivityDescription.viewModelFormat.read(s4LVatSicAndCompliance) shouldBe Some(testView)
+    }
+
+    "update empty s4LVatSicAndCompliance with description" in {
+      BusinessActivityDescription.viewModelFormat.update(testView, Option.empty[S4LVatSicAndCompliance]).description shouldBe Some(testView)
+    }
+
+    "update non-empty s4LVatSicAndCompliance with description" in {
+      BusinessActivityDescription.viewModelFormat.update(testView, Some(s4LVatSicAndCompliance)).description shouldBe Some(testView)
+    }
+
   }
 }

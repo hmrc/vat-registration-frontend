@@ -17,7 +17,7 @@
 package models.view.sicAndCompliance.financial
 
 import models.api.{VatScheme, VatSicAndCompliance}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class InvestmentFundManagement(yesNo: Boolean)
@@ -25,6 +25,12 @@ case class InvestmentFundManagement(yesNo: Boolean)
 object InvestmentFundManagement {
 
   implicit val format = Json.format[InvestmentFundManagement]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatSicAndCompliance) => group.investmentFundManagement,
+    updateF = (c: InvestmentFundManagement, g: Option[S4LVatSicAndCompliance]) =>
+      g.getOrElse(S4LVatSicAndCompliance()).copy(investmentFundManagement = Some(c))
+  )
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[InvestmentFundManagement] { vs: VatScheme =>
