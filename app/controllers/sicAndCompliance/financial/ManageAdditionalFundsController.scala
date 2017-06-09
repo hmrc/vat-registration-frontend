@@ -38,7 +38,7 @@ class ManageAdditionalFundsController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.manage_additional_funds(badForm)).pure,
       data => save(data).map(_ =>
-        Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))))
+        Redirect(controllers.sicAndCompliance.routes.ComplianceExitController.exit()))))
 
 }
 

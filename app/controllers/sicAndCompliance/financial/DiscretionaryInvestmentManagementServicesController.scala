@@ -44,7 +44,7 @@ class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPl
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(badForm)).pure,
       data => save(data).map(_ => data.yesNo).ifM(
         vrs.deleteElements(ElementPath.finCompElementPaths.drop(3)).map(_ =>
-          controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()),
+          controllers.sicAndCompliance.routes.ComplianceExitController.exit()),
         controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show().pure
       ).map(Redirect)))
 

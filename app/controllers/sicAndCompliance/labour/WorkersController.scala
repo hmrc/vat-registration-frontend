@@ -41,7 +41,7 @@ class WorkersController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.workers(badForm)).pure,
       goodForm => save(goodForm).map(_ => goodForm.numberOfWorkers >= 8).ifM(
         controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show().pure,
-        controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show().pure)
+        controllers.sicAndCompliance.routes.ComplianceExitController.exit().pure)
         .map(Redirect)))
 
 }

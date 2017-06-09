@@ -78,7 +78,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
 
       submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "leaseVehiclesRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/business-bank-account")
+      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
     }
 
   }
