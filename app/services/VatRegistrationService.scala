@@ -126,22 +126,10 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   }
 
   def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[VatSicAndCompliance] = {
-    def mergeWithS4L(vs: VatScheme) =
-      (s4l[BusinessActivityDescription]() |@|
-        s4l[NotForProfit]() |@|
-        s4l[CompanyProvideWorkers]() |@|
-        s4l[Workers]() |@|
-        s4l[TemporaryContracts]() |@|
-        s4l[SkilledWorkers]() |@|
-        s4l[AdviceOrConsultancy]() |@|
-        s4l[ActAsIntermediary]() |@|
-        s4l[ChargeFees]() |@|
-        s4l[LeaseVehicles]() |@|
-        s4l[AdditionalNonSecuritiesWork]() |@|
-        s4l[DiscretionaryInvestmentManagementServices]() |@|
-        s4l[InvestmentFundManagement]() |@|
-        s4l[ManageAdditionalFunds]())
-        .map(S4LVatSicAndCompliance.apply).map { s4l =>
+    def merge(fresh: Option[S4LVatSicAndCompliance], vs: VatScheme) =
+      fresh.fold(
+        vs.vatSicAndCompliance.getOrElse(throw fail("VatSicAndCompliance"))
+      ) { s4l =>
         update(s4l.description, vs)
           .andThen(update(s4l.notForProfit, vs))
           .andThen(update(s4l.companyProvideWorkers, vs))
@@ -156,13 +144,12 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
           .andThen(update(s4l.discretionaryInvestmentManagementServices, vs))
           .andThen(update(s4l.investmentFundManagement, vs))
           .andThen(update(s4l.manageAdditionalFunds, vs))
-          .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance(""))) //TODO remove the "seeding" with empty
+          .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance("")))
       }
 
     for {
-      vs <- getVatScheme()
-      sicAndCompliance <- mergeWithS4L(vs)
-      response <- vatRegConnector.upsertSicAndCompliance(vs.id, sicAndCompliance)
+      (vs, vsc) <- (getVatScheme() |@| s4l[S4LVatSicAndCompliance]()).tupled
+      response <- vatRegConnector.upsertSicAndCompliance(vs.id, merge(vsc, vs))
     } yield response
   }
 
