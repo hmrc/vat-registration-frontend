@@ -106,15 +106,16 @@ pages.eligibility.haveNino.title                            = Do you have a Nati
 pages.eligibility.haveNino.heading                          = Do you have a National Insurance number?
 
 ## Doing Business Abroad
-pages.eligibility.doingBusinessAbroad.title                 = Will you do any of the following once you''re registered for VAT?
+pages.eligibility.doingBusinessAbroad.title                 = Will the company do any of the following once it''s registered for VAT?
 pages.eligibility.doingBusinessAbroad.heading               = Will you do any of the following once you''re registered for VAT?
 pages.eligibility.doingBusinessAbroad.p1                    = Once you''re registered for VAT, will you:
 pages.eligibility.doingBusinessAbroad.bullet1               = import or export goods to or from other EU countries
-pages.eligibility.doingBusinessAbroad.bullet2               = <a href="https://www.gov.uk/online-and-distance-selling-for-businesses/distance-selling">distance sell</a> goods into the UK from another EU country
-pages.eligibility.doingBusinessAbroad.bullet3               = buy goods from other EU countries and bring them into the UK
-pages.eligibility.doingBusinessAbroad.bullet4               = sell goods outside the UK but not in the UK
-pages.eligibility.doingBusinessAbroad.bullet5               = do business from a head office based outside the UK
-pages.eligibility.doingBusinessAbroad.bullet6               = import or export goods to or from other EU countries
+pages.eligibility.doingBusinessAbroad.bullet2               = import or export goods to or from countries outside the EU
+pages.eligibility.doingBusinessAbroad.bullet3               = <a href="https://www.gov.uk/online-and-distance-selling-for-businesses/distance-selling">distance sell</a> goods into the UK from another EU country
+pages.eligibility.doingBusinessAbroad.bullet4               = buy goods from other EU countries and bring them into the UK
+pages.eligibility.doingBusinessAbroad.bullet5               = sell goods outside the UK but not in the UK
+pages.eligibility.doingBusinessAbroad.bullet6               = sell assets you bought from a country outside the UK and claimed a VAT refund on
+pages.eligibility.doingBusinessAbroad.bullet7               = do business from a head office based outside the UK
 pages.eligibility.doingBusinessAbroad.panel1.title          = What are goods?
 pages.eligibility.doingBusinessAbroad.panel1.p1             = Goods are things you can physically pick up and take away.
 pages.eligibility.doingBusinessAbroad.panel1.p2             = For example:
