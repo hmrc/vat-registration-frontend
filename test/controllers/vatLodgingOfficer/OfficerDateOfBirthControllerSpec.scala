@@ -72,7 +72,7 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
         val dobViewOpt = testCase.dobView
 
         // setup mocks
-        dobViewOpt.fold(save4laterReturnsNothing2[OfficerDateOfBirthView]())(view => save4laterReturns2(view)())
+        dobViewOpt.fold(save4laterReturnsNothing2[OfficerDateOfBirthView]())(view => save4laterReturnsViewModel(view)())
         officerOpt.fold(mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer]))(
           (officer: Officer) => mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Some(officer)))
 

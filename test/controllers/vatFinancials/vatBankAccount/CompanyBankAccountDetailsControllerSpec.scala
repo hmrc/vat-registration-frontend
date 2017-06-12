@@ -44,7 +44,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
   s"GET ${vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show()}" should {
 
     "return HTML when there's a CompanyBankAccountDetails model in S4L" in {
-      save4laterReturns2(validCompanyBankAccountDetails)()
+      save4laterReturnsViewModel(validCompanyBankAccountDetails)()
 
       callAuthorised(Controller.show()) {
         _ includesText "What are your business bank account details?"
@@ -52,7 +52,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
     }
 
     "return HTML when there's invalid sort code stored in S4L" in {
-      save4laterReturns2(validCompanyBankAccountDetails.copy(sortCode = "foo--bar"))()
+      save4laterReturnsViewModel(validCompanyBankAccountDetails.copy(sortCode = "foo--bar"))()
 
       callAuthorised(Controller.show()) {
         _ includesText "What are your business bank account details?"

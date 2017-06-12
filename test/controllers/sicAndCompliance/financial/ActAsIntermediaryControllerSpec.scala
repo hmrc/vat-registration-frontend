@@ -18,6 +18,7 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.financial.ActAsIntermediary
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -37,7 +38,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
   s"GET ${routes.ActAsIntermediaryController.show()}" should {
 
     "return HTML when there's an Act as Intermediary model in S4L" in {
-      save4laterReturns2(ActAsIntermediary(true))()
+      save4laterReturnsViewModel(ActAsIntermediary(true))()
 
       submitAuthorised(ActAsIntermediaryController.show(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> ""
@@ -83,7 +84,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
 
       submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/business-bank-account")
+      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
     }
   }
 

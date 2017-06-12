@@ -36,7 +36,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
   s"GET ${vatFinancials.routes.EstimateZeroRatedSalesController.show()}" should {
 
     "return HTML Estimate Zero Rated Sales page with no data in the form" in {
-      save4laterReturns2(EstimateZeroRatedSales(100L))()
+      save4laterReturnsViewModel(EstimateZeroRatedSales(100L))()
 
       callAuthorised(Controller.show()) {
         _ includesText "Estimated zero-rated sales for the next 12 months"

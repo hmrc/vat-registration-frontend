@@ -21,6 +21,7 @@ import javax.inject.Inject
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.financial.AdviceOrConsultancyForm
 import models.view.sicAndCompliance.financial.AdviceOrConsultancy
+import models.{CulturalCompliancePath, LabourCompliancePath, S4LVatSicAndCompliance}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService}
@@ -40,10 +41,11 @@ class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(badForm)).pure,
-      data => save(data).map(_ => // TODO delete any existing non-financial compliance questions - i.e labour and cultural
-        Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show()))
-    )
-  )
+      data => for {
+        _ <- save(S4LVatSicAndCompliance())
+        _ <- save(data)
+        _ <- vrs.deleteElements(List(CulturalCompliancePath, LabourCompliancePath))
+      } yield Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show())))
 
 }
 

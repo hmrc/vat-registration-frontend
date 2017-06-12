@@ -37,7 +37,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
   s"GET ${routes.InvestmentFundManagementController.show()}" should {
 
     "return HTML when there's a Investment Fund Management model in S4L" in {
-      save4laterReturns2(InvestmentFundManagement(true))()
+      save4laterReturnsViewModel(InvestmentFundManagement(true))()
       submitAuthorised(InvestmentFundManagementController.show(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> ""
       )) {
@@ -94,7 +94,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
       submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "false"
-      ))(_ redirectsTo s"$contextRoot/business-bank-account")
+      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
     }
   }
 }

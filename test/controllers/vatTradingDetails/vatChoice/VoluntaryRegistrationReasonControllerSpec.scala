@@ -33,19 +33,15 @@
 package controllers.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
-class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object TestVoluntaryRegistrationReasonController
     extends VoluntaryRegistrationReasonController(ds)(mockS4LService, mockVatRegistrationService) {
@@ -59,8 +55,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
     "return HTML Voluntary Registration Reason page with no Selection" in {
       val voluntaryRegistrationReason = VoluntaryRegistrationReason("")
 
-      when(mockS4LService.fetchAndGet[VoluntaryRegistrationReason]()(any(), any(), any()))
-        .thenReturn(Future.successful(Some(voluntaryRegistrationReason)))
+      save4laterReturnsViewModel(voluntaryRegistrationReason)()
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.show(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> ""
@@ -70,8 +65,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[VoluntaryRegistrationReason]()(Matchers.eq(S4LKey[VoluntaryRegistrationReason]), any(), any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[VoluntaryRegistrationReason]()
 
       when(mockVatRegistrationService.getVatScheme()(any()))
         .thenReturn(Future.successful(validVatScheme))
@@ -82,8 +76,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockS4LService.fetchAndGet[VoluntaryRegistrationReason]()(Matchers.eq(S4LKey[VoluntaryRegistrationReason]), any(), any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[VoluntaryRegistrationReason]()
 
       when(mockVatRegistrationService.getVatScheme()(any()))
         .thenReturn(Future.successful(emptyVatScheme))
@@ -105,10 +98,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
   s"POST ${routes.VoluntaryRegistrationReasonController.submit()} with Voluntary Registration Reason selected Sells" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistrationReason.sells)))
-
-      when(mockS4LService.save[VoluntaryRegistrationReason](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMap))
+      save4laterExpectsSave[VoluntaryRegistrationReason]()
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> VoluntaryRegistrationReason.SELLS
@@ -119,10 +109,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
   s"POST ${routes.VoluntaryRegistrationReasonController.submit()} with Voluntary Registration Reason selected Intends to sell" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistrationReason.intendsToSell)))
-
-      when(mockS4LService.save[VoluntaryRegistrationReason](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMap))
+      save4laterExpectsSave[VoluntaryRegistrationReason]()
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> VoluntaryRegistrationReason.SELLS
@@ -133,11 +120,8 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
   s"POST ${routes.VoluntaryRegistrationReasonController.submit()} with Voluntary Registration selected No" should {
 
     "redirect to the welcome page" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(VoluntaryRegistrationReason.neither)))
-
       when(mockS4LService.clear()(any())).thenReturn(Future.successful(validHttpResponse))
-      when(mockS4LService.save[VoluntaryRegistrationReason](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMap))
+      save4laterExpectsSave[VoluntaryRegistrationReason]()
       when(mockVatRegistrationService.deleteVatScheme()(any())).thenReturn(Future.successful(()))
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.submit(), fakeRequest.withFormUrlEncodedBody(

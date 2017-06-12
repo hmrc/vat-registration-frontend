@@ -32,13 +32,13 @@ class ApplyEoriController @Inject()(ds: CommonPlayDependencies)
   val form: Form[ApplyEori] = ApplyEoriForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[ApplyEori].fold(form)(form.fill)
+    viewModel[ApplyEori]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatTradingDetails.vatEuTrading.eori_apply(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatTradingDetails.vatEuTrading.eori_apply(badForm)).pure,
-      goodForm => s4l.save(goodForm).map(_ =>
-        Redirect(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show()))))
+      goodForm => save(goodForm).flatMap(_ => vrs.submitTradingDetails().map(_ =>
+        Redirect(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())))))
 
 }

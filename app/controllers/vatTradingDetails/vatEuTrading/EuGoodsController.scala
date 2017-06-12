@@ -33,14 +33,15 @@ class EuGoodsController @Inject()(ds: CommonPlayDependencies)
   val form = EuGoodsForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[EuGoods].fold(form)(form.fill)
+    viewModel[EuGoods]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.vatTradingDetails.vatEuTrading.eu_goods(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatTradingDetails.vatEuTrading.eu_goods(badForm)).pure,
-      goodForm => s4LService.save(goodForm).map(_ => goodForm.yesNo == EuGoods.EU_GOODS_NO).ifM(
-        s4LService.save(ApplyEori(ApplyEori.APPLY_EORI_NO)).map(_ =>
+      goodForm => save(goodForm).map(_ => goodForm.yesNo == EuGoods.EU_GOODS_NO).ifM(
+        save(ApplyEori(ApplyEori.APPLY_EORI_NO)).map(_ =>
+          vrs.submitTradingDetails()).map(_ =>
           controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show()),
         controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show().pure
       ).map(Redirect)))

@@ -16,19 +16,23 @@
 
 package models
 
-import models.view.sicAndCompliance.BusinessActivityDescription
-import models.view.vatTradingDetails.TradingNameView
-import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration}
 import uk.gov.hmrc.play.test.UnitSpec
 
-class S4LKeySpec extends UnitSpec {
+class S4LModelsSpec extends UnitSpec {
 
-  "cacheKey" should {
-    "be generated for each view model" in {
-      S4LKey[StartDateView].key shouldBe "StartDate"
-      S4LKey[TradingNameView].key shouldBe "TradingNameView"
-      S4LKey[VoluntaryRegistration].key shouldBe "VoluntaryRegistration"
-      S4LKey[BusinessActivityDescription].key shouldBe "BusinessActivityDescription"
+  "ViewModelFormat" should {
+    val view = S4LVatSicAndCompliance()
+
+    "extract S4LVatSicAndCompliance from S4LVatSicAndCompliance" in {
+      S4LVatSicAndCompliance.viewModelFormat.read(view) shouldBe Some(view)
+    }
+
+    "update empty S4LVatSicAndCompliance with S4LVatSicAndCompliance" in {
+      S4LVatSicAndCompliance.viewModelFormat.update(view, Option.empty[S4LVatSicAndCompliance]) shouldBe view
+    }
+
+    "update non-empty S4LVatSicAndCompliance with S4LVatSicAndCompliance" in {
+      S4LVatSicAndCompliance.viewModelFormat.update(view, Some(view)) shouldBe view
     }
   }
 

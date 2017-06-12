@@ -17,7 +17,7 @@
 package models.view.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
-import models.ApiModelTransformer
+import models.{ApiModelTransformer, S4LTradingDetails}
 import models.api.{VatChoice, VatScheme}
 import models.view.vatTradingDetails.vatChoice.TaxableTurnover._
 import uk.gov.hmrc.play.test.UnitSpec
@@ -35,14 +35,25 @@ class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
       ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe Some(TaxableTurnover(TAXABLE_NO))
     }
 
-    "convert an invalid VatChoice to empty view model" in {
-//      val vatSchemeVoluntary = VatScheme(validRegId, vatChoice = Some(VatChoice(LocalDate.now(), "GARBAGE")))
-//      ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe None
-    }
-
     "convert a none VatChoice to empty view model" in {
       val vatSchemeVoluntary = VatScheme(validRegId)
       ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe None
+    }
+  }
+
+  "ViewModelFormat" should {
+    val s4LTradingDetails: S4LTradingDetails = S4LTradingDetails(taxableTurnover = Some(validTaxableTurnover))
+
+    "extract taxableTurnover from vatTradingDetails" in {
+      TaxableTurnover.viewModelFormat.read(s4LTradingDetails) shouldBe Some(validTaxableTurnover)
+    }
+
+    "update empty vatContact with taxableTurnover" in {
+      TaxableTurnover.viewModelFormat.update(validTaxableTurnover, Option.empty[S4LTradingDetails]).taxableTurnover shouldBe Some(validTaxableTurnover)
+    }
+
+    "update non-empty vatContact with taxableTurnover" in {
+      TaxableTurnover.viewModelFormat.update(validTaxableTurnover, Some(s4LTradingDetails)).taxableTurnover shouldBe Some(validTaxableTurnover)
     }
 
   }

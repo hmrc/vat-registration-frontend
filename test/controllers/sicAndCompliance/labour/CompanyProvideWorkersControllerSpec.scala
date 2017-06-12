@@ -19,6 +19,7 @@ package controllers.sicAndCompliance.labour
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -38,7 +39,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
   s"GET ${sicAndCompliance.labour.routes.CompanyProvideWorkersController.show()}" should {
 
     "return HTML when there's a Company Provide Workers model in S4L" in {
-      save4laterReturns2(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO))()
+      save4laterReturnsViewModel(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO))()
       submitAuthorised(CompanyProvideWorkersController.show(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> ""
       )) {
@@ -76,8 +77,9 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
   s"POST ${sicAndCompliance.labour.routes.CompanyProvideWorkersController.submit()} with company provide workers Yes selected" should {
 
     "return 303" in {
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      save4laterExpectsSave[S4LVatSicAndCompliance]()
       save4laterExpectsSave[CompanyProvideWorkers]()
-      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_YES
@@ -88,12 +90,13 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
   s"POST ${sicAndCompliance.labour.routes.CompanyProvideWorkersController.submit()} with company provide workers No selected" should {
 
     "return 303" in {
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      save4laterExpectsSave[S4LVatSicAndCompliance]()
       save4laterExpectsSave[CompanyProvideWorkers]()
-      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_NO
-      ))(_ redirectsTo s"$contextRoot/business-bank-account")
+      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
     }
   }
 }

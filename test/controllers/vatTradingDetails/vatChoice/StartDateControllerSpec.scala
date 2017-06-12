@@ -23,23 +23,20 @@ import cats.data.OptionT
 import common.Now
 import fixtures.VatRegistrationFixture
 import forms.vatTradingDetails.vatChoice.StartDateFormFactory
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatTradingDetails.vatChoice.StartDateView
 import org.mockito.Matchers
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DateService
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   val today: LocalDate = LocalDate.of(2017, 3, 21)
 
@@ -61,8 +58,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return HTML when there's a start date in S4L" in {
       val startDate = StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.of(2017, 3, 21)))
 
-      when(mockS4LService.fetchAndGet[StartDateView]()(any(), any(), any()))
-        .thenReturn(Future.successful(Some(startDate)))
+      save4laterReturnsViewModel(startDate)()
 
       callAuthorised(TestStartDateController.show) {
         result =>
@@ -74,9 +70,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[StartDateView]()
-        (Matchers.eq(S4LKey[StartDateView]), any(), any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[StartDateView]()
 
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
@@ -91,9 +85,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockS4LService.fetchAndGet[StartDateView]()
-        (Matchers.eq(S4LKey[StartDateView]), any(), any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[StartDateView]()
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
@@ -133,10 +125,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${routes.StartDateController.submit()} with valid data" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDateView())))
-
-      when(mockS4LService.save[StartDateView](any[StartDateView]())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMap))
+      save4laterExpectsSave[StartDateView]()
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.COMPANY_REGISTRATION_DATE,
@@ -154,10 +143,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${routes.StartDateController.submit()} with valid data BUSINESS_START_DATE" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDateView())))
-
-      when(mockS4LService.save[StartDateView](any[StartDateView]())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMap))
+      save4laterExpectsSave[StartDateView]()
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.BUSINESS_START_DATE
@@ -172,10 +158,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${routes.StartDateController.submit()} with StartDate having a specific date" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(StartDateView())))
-
-      when(mockS4LService.save[StartDateView](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMap))
+      save4laterExpectsSave[StartDateView]()
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.SPECIFIC_DATE,

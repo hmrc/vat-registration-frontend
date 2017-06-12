@@ -16,25 +16,21 @@
 
 package controllers.vatTradingDetails.vatEuTrading
 
-import builders.AuthBuilder
 import controllers.vatTradingDetails
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatTradingDetails.vatEuTrading.EuGoods
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.VatRegistrationService
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
 
 
@@ -49,8 +45,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return HTML when there's a Eu Goods model in S4L" in {
       val euGoods = EuGoods(EuGoods.EU_GOODS_YES)
 
-      when(mockS4LService.fetchAndGet[EuGoods]()(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(euGoods)))
+      save4laterReturnsViewModel(euGoods)()
 
       submitAuthorised(EuGoodsController.show(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> ""
@@ -65,9 +60,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[EuGoods]()
-        (Matchers.eq(S4LKey[EuGoods]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[EuGoods]()
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
@@ -83,9 +76,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    when(mockS4LService.fetchAndGet[EuGoods]()
-      (Matchers.eq(S4LKey[EuGoods]), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(None))
+    save4laterReturnsNothing2[EuGoods]()
 
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
@@ -114,11 +105,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.submit()} with Eu Goods Yes selected" should {
 
     "return 303" in {
-      val returnCacheMapEuGoods = CacheMap("", Map("" -> Json.toJson(EuGoods(EuGoods.EU_GOODS_YES))))
-
-      when(mockS4LService.save[EuGoods]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapEuGoods))
+      save4laterExpectsSave[EuGoods]()
 
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> EuGoods.EU_GOODS_YES
@@ -133,11 +120,8 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.submit()} with Eu Goods No selected" should {
 
     "return 303" in {
-      val returnCacheMapEuGoods = CacheMap("", Map("" -> Json.toJson(EuGoods(EuGoods.EU_GOODS_NO))))
-
-      when(mockS4LService.save[EuGoods]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapEuGoods))
+      save4laterExpectsSave[EuGoods]()
+      when(mockVatRegistrationService.submitTradingDetails()(any())).thenReturn(validVatTradingDetails.pure)
 
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> EuGoods.EU_GOODS_NO
@@ -146,6 +130,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture {
           response redirectsTo s"$contextRoot/your-home-address"
       }
 
+      verify(mockVatRegistrationService).submitTradingDetails()(any())
     }
   }
 }

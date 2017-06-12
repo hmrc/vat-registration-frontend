@@ -19,6 +19,7 @@ package controllers.sicAndCompliance.cultural
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.cultural.NotForProfit
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -39,7 +40,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
   s"GET ${sicAndCompliance.cultural.routes.NotForProfitController.show()}" should {
 
     "return HTML when there's a Not For Profit model in S4L" in {
-      save4laterReturns2(NotForProfit(NotForProfit.NOT_PROFIT_NO))()
+      save4laterReturnsViewModel(NotForProfit(NotForProfit.NOT_PROFIT_NO))()
 
       submitAuthorised(NotForProfitController.show(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> ""
@@ -93,12 +94,13 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
   s"POST ${sicAndCompliance.cultural.routes.NotForProfitController.submit()} with not for profit Yes selected" should {
 
     "return 303" in {
-      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
       save4laterExpectsSave[NotForProfit]()
+      save4laterExpectsSave[S4LVatSicAndCompliance]()
 
       submitAuthorised(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> NotForProfit.NOT_PROFIT_YES
-      ))(_ redirectsTo s"$contextRoot/business-bank-account")
+      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
 
     }
   }
@@ -106,12 +108,13 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
   s"POST ${sicAndCompliance.cultural.routes.NotForProfitController.submit()} with not for profit No selected" should {
 
     "return 303" in {
-      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
       save4laterExpectsSave[NotForProfit]()
+      save4laterExpectsSave[S4LVatSicAndCompliance]()
 
       submitAuthorised(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> NotForProfit.NOT_PROFIT_NO
-      ))(_ redirectsTo s"$contextRoot/business-bank-account")
+      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
 
     }
   }

@@ -44,7 +44,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
   s"GET ${routes.BusinessActivityDescriptionController.show()}" should {
 
     "return HTML Business Activity Description page with no data in the form" in {
-      save4laterReturns2(BusinessActivityDescription(DESCRIPTION))()
+      save4laterReturnsViewModel(BusinessActivityDescription(DESCRIPTION))()
       submitAuthorised(TestController.show(), fakeRequest.withFormUrlEncodedBody(
         "description" -> ""
       ))(_ includesText "Describe what the company does")

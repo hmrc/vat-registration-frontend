@@ -35,7 +35,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
   s"GET ${vatFinancials.routes.EstimateVatTurnoverController.show()}" should {
 
     "return HTML Estimate Vat Turnover page" in {
-      save4laterReturns2(EstimateVatTurnover(100L))()
+      save4laterReturnsViewModel(EstimateVatTurnover(100L))()
 
       callAuthorised(Controller.show()) {
         _ includesText "Estimated VAT taxable turnover for the next 12 months"

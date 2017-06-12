@@ -18,8 +18,8 @@ package models.view.vatTradingDetails.vatChoice
 
 import java.time.LocalDate
 
+import models._
 import models.api.{VatScheme, VatStartDate, VatTradingDetails}
-import models.{ApiModelTransformer, DateModel, ViewModelTransformer}
 import play.api.libs.json.Json
 
 import scala.util.Try
@@ -49,6 +49,12 @@ object StartDateView {
   val validSelection: String => Boolean = Seq(COMPANY_REGISTRATION_DATE, BUSINESS_START_DATE, SPECIFIC_DATE).contains
 
   implicit val format = Json.format[StartDateView]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LTradingDetails) => group.startDate,
+    updateF = (c: StartDateView, g: Option[S4LTradingDetails]) =>
+      g.getOrElse(S4LTradingDetails()).copy(startDate = Some(c))
+  )
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[StartDateView] { vs: VatScheme =>

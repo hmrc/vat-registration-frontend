@@ -39,7 +39,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
   s"GET ${routes.ChargeFeesController.show()}" should {
 
     "return HTML when there's a Charge Fees model in S4L" in {
-      save4laterReturns2(ChargeFees(true))()
+      save4laterReturnsViewModel(ChargeFees(true))()
 
       submitAuthorised(ChargeFeesController.show(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> ""
