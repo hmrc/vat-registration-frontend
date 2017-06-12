@@ -39,6 +39,5 @@ class SkilledWorkersController @Inject()(ds: CommonPlayDependencies)
     SkilledWorkersForm.form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.skilled_workers(badForm)).pure,
       goodForm => save(goodForm).map(_ =>
-        Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))))
-  // TODO delete any existing non-cultural compliance questions
+        Redirect(controllers.sicAndCompliance.routes.ComplianceExitController.exit()))))
 }

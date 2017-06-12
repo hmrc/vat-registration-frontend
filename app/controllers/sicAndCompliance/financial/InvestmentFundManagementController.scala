@@ -43,7 +43,7 @@ class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
       data => save(data).map(_ => data.yesNo).ifM(
         controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show().pure,
         vrs.deleteElements(ElementPath.finCompElementPaths.drop(5)).map(_ =>
-          controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))
+          controllers.sicAndCompliance.routes.ComplianceExitController.exit()))
         .map(Redirect)))
 
 }

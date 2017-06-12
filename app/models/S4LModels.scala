@@ -89,6 +89,11 @@ final case class S4LVatSicAndCompliance
 
 object S4LVatSicAndCompliance {
   implicit val format: OFormat[S4LVatSicAndCompliance] = Json.format[S4LVatSicAndCompliance]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatSicAndCompliance) => Some(group),
+    updateF = (c: S4LVatSicAndCompliance, g: Option[S4LVatSicAndCompliance]) => c
+  )
 }
 
 final case class S4LVatContact
