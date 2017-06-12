@@ -36,15 +36,14 @@ pages.welcome.panel1.p3                                 = Find a list of yearly 
 
 ## Service Criteria Questions (VAT Service Eligibility)
 ## Service Criteria Success
-pages.serviceCriteriaSuccess.title                                     = You''re eligible to register for VAT using this service
+pages.serviceCriteriaSuccess.title                                     = Eligible to register
 pages.serviceCriteriaSuccess.heading                                   = You can register for VAT using this service
 pages.serviceCriteriaSuccess.para1                                     = To register for VAT you''ll need:
-pages.serviceCriteriaSuccess.bullet.details.person                     = details of the person making the application (for example, National Insurance number)
-pages.serviceCriteriaSuccess.bullet.details.company                    = details of what the company does
-pages.serviceCriteriaSuccess.bullet.details.sales                      = the company''s total estimated sales that are subject to VAT (or <a href="https://www.gov.uk/vat-registration/calculate-turnover">''VAT taxable turnover''</a>) for the next 12 months
+pages.serviceCriteriaSuccess.bullet.details.bullet1                    = details of the person making the application (for example, National Insurance number)
+pages.serviceCriteriaSuccess.bullet.details.bullet2                    = estimate of the company''s VAT taxable sales for the next 12 months
 pages.serviceCriteriaSuccess.note.registrationTime                     = This application should take no more than 30 minutes.
 pages.serviceCriteriaSuccess.panels.vatVoluntarily.title               = Can you register voluntarily for VAT?
-pages.serviceCriteriaSuccess.panels.vatVoluntarily.para1               = You can register voluntarily if the company''s VAT taxable turnover is less than £83,000 in the 30 days after it''s registered with Companies House.
+pages.serviceCriteriaSuccess.panels.vatVoluntarily.para1               = You can register voluntarily if the company''s VAT taxable turnover is less than £85,000 in the 30 days after it''s registered with Companies House.
 pages.serviceCriteriaSuccess.panels.vatVoluntarily.para2               = If you''re registered for VAT you:
 pages.serviceCriteriaSuccess.panels.vatVoluntarily.bullet.charge       = must <a href="https://www.gov.uk/vat-businesses/how-vat-works">charge VAT</a> on the goods or services you sell
 pages.serviceCriteriaSuccess.panels.vatVoluntarily.bullet.reclaim      = can <a href="https://www.gov.uk/reclaim-vat">reclaim VAT</a> on your business-related purchases
@@ -137,7 +136,7 @@ pages.eligibility.doingBusinessAbroad.panel3.bullet3        = selling assets you
 pages.eligibility.doAnyApplyToYou.title                     = Do any of the following apply to you or the business?
 pages.eligibility.doAnyApplyToYou.heading                   = Do any of the following apply to you or the business?
 pages.eligibility.doAnyApplyToYou.p1                        = Tell us if:
-pages.eligibility.doAnyApplyToYou.bullet1                   = your taxable sales went over the £83,000 threshold temporarily but have since dropped below the threshold
+pages.eligibility.doAnyApplyToYou.bullet1                   = your taxable sales went over the £85,000 threshold temporarily but have since dropped below the threshold
 pages.eligibility.doAnyApplyToYou.bullet2                   = you changed the legal status of your business when you registered it with Companies House (for example, from sole trader to limited company)
 pages.eligibility.doAnyApplyToYou.bullet3                   = you''ve taken over a VAT-registered business which is operating and making a profit
 pages.eligibility.doAnyApplyToYou.bullet4                   = you''ve been involved with other businesses as a sole trader, partner or director in the last 2 years
