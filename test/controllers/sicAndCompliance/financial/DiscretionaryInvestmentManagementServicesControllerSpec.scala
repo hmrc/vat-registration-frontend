@@ -44,7 +44,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
   s"GET ${routes.DiscretionaryInvestmentManagementServicesController.show()}" should {
 
     "return HTML when there's a DiscretionaryInvestmentManagementServices model in S4L" in {
-      save4laterReturns2(DiscretionaryInvestmentManagementServices(true))()
+      save4laterReturnsViewModel(DiscretionaryInvestmentManagementServices(true))()
 
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.show(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> ""

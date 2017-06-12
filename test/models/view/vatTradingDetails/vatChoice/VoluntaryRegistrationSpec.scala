@@ -17,7 +17,7 @@
 package models.view.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
-import models.ViewModelTransformer
+import models.{S4LTradingDetails, ViewModelTransformer}
 import models.api.{VatChoice, VatTradingDetails}
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -37,25 +37,22 @@ class VoluntaryRegistrationSpec extends UnitSpec with VatRegistrationFixture {
     }
   }
 
-  "apply" should {
-    //    val vatChoiceVoluntary = VatChoice(validStartDate.date.get, NECESSITY_VOLUNTARY)
-    //    val vatChoiceObligatory = VatChoice(validStartDate.date.get, NECESSITY_OBLIGATORY)
-    //    val vatScheme = VatScheme(validRegId)
+  "ViewModelFormat" should {
+    val validVoluntaryRegistration = VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES)
+    val s4LTradingDetails: S4LTradingDetails = S4LTradingDetails(voluntaryRegistration = Some(validVoluntaryRegistration))
 
-    "convert voluntary vatChoice to view model" in {
-      //      val vs = vatScheme.copy(vatChoice = Some(vatChoiceVoluntary))
-      //      ApiModelTransformer[VoluntaryRegistration].toViewModel(vs) shouldBe Some(VoluntaryRegistration(REGISTER_YES))
+    "extract voluntaryRegistration from vatTradingDetails" in {
+      VoluntaryRegistration.viewModelFormat.read(s4LTradingDetails) shouldBe Some(validVoluntaryRegistration)
     }
 
-    "convert obligatory vatChoice to empty view model" in {
-      //      val vs = vatScheme.copy(vatChoice = Some(vatChoiceObligatory))
-      //      ApiModelTransformer[VoluntaryRegistration].toViewModel(vs) shouldBe None
+    "update empty vatContact with voluntaryRegistration" in {
+      VoluntaryRegistration.viewModelFormat.update(validVoluntaryRegistration, Option.empty[S4LTradingDetails]).voluntaryRegistration shouldBe Some(validVoluntaryRegistration)
     }
 
-    "convert none vatChoice to view empty model" in {
-      //      val vs = vatScheme.copy(vatChoice = None)
-      //      ApiModelTransformer[VoluntaryRegistration].toViewModel(vs) shouldBe None
+    "update non-empty vatContact with voluntaryRegistration" in {
+      VoluntaryRegistration.viewModelFormat.update(validVoluntaryRegistration, Some(s4LTradingDetails)).voluntaryRegistration shouldBe Some(validVoluntaryRegistration)
     }
 
   }
+
 }

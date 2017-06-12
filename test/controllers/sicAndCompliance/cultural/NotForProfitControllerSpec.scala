@@ -41,7 +41,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
   s"GET ${sicAndCompliance.cultural.routes.NotForProfitController.show()}" should {
 
     "return HTML when there's a Not For Profit model in S4L" in {
-      save4laterReturns2(NotForProfit(NotForProfit.NOT_PROFIT_NO))()
+      save4laterReturnsViewModel(NotForProfit(NotForProfit.NOT_PROFIT_NO))()
       submitAuthorised(NotForProfitController.show(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> ""
       )) {

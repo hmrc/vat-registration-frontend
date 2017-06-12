@@ -42,8 +42,8 @@ class OfficerContactDetailsController @Inject()(ds: CommonPlayDependencies)
       copyGlobalErrorsToFields("email", "daytimePhone", "mobile")
         .andThen(form => BadRequest(views.html.pages.vatLodgingOfficer.officer_contact_details(form)).pure),
       view => (for {
-        _ <- save(view)
-        optVR <- viewModel2[VoluntaryRegistration].value
+        _ <- save[OfficerContactDetailsView](view)
+        optVR <- viewModel[VoluntaryRegistration]().value
       } yield optVR.fold(true)(_ == VoluntaryRegistration.yes)).ifM(
         ifTrue = vatChoiceRoutes.StartDateController.show().pure,
         ifFalse = vatChoiceRoutes.MandatoryStartDateController.show().pure

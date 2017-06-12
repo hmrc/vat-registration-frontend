@@ -41,7 +41,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
   s"GET ${sicAndCompliance.labour.routes.TemporaryContractsController.show()}" should {
 
     "return HTML when there's a Temporary Contracts model in S4L" in {
-      save4laterReturns2(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO))()
+      save4laterReturnsViewModel(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO))()
 
       submitAuthorised(TemporaryContractsController.show(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> ""

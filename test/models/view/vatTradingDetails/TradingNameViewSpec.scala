@@ -19,7 +19,7 @@ package models.view.vatTradingDetails
 import fixtures.VatRegistrationFixture
 import models.api.{VatScheme, VatTradingDetails}
 import models.view.vatTradingDetails.TradingNameView._
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LTradingDetails, ViewModelTransformer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -50,6 +50,23 @@ class TradingNameViewSpec extends UnitSpec with VatRegistrationFixture with Insi
     "extract a TradingNameView from VatScheme with no VatTradingDetails returns empty trading name" in {
       val vatSchemeEmptyTradingDetails = VatScheme(id = validRegId, tradingDetails = None)
       ApiModelTransformer[TradingNameView].toViewModel(vatSchemeEmptyTradingDetails) shouldBe None
+    }
+
+  }
+
+  "ViewModelFormat" should {
+    val s4LTradingDetails: S4LTradingDetails = S4LTradingDetails(tradingName = Some(validTradingNameView))
+
+    "extract tradingName from vatTradingDetails" in {
+      TradingNameView.viewModelFormat.read(s4LTradingDetails) shouldBe Some(validTradingNameView)
+    }
+
+    "update empty vatContact with tradingName" in {
+      TradingNameView.viewModelFormat.update(validTradingNameView, Option.empty[S4LTradingDetails]).tradingName shouldBe Some(validTradingNameView)
+    }
+
+    "update non-empty vatContact with tradingName" in {
+      TradingNameView.viewModelFormat.update(validTradingNameView, Some(s4LTradingDetails)).tradingName shouldBe Some(validTradingNameView)
     }
 
   }

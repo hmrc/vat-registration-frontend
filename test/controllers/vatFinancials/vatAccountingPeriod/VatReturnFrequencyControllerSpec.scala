@@ -36,7 +36,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
   s"GET ${vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show()}" should {
 
     "return HTML when there's a Vat Return Frequency model in S4L" in {
-      save4laterReturns2(VatReturnFrequency(VatReturnFrequency.MONTHLY))()
+      save4laterReturnsViewModel(VatReturnFrequency(VatReturnFrequency.MONTHLY))()
 
       submitAuthorised(Controller.show(),
         fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> "")) {
@@ -77,11 +77,14 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       save4laterExpectsSave[VatReturnFrequency]()
       save4laterExpectsSave[AccountingPeriod]()
       when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+      when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
         _ redirectsTo s"$contextRoot/check-your-answers"
       }
+
+      verify(mockVatRegistrationService).submitVatFinancials()(any())
     }
 
   }
