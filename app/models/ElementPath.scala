@@ -31,6 +31,8 @@ object ElementPath {
       VatBankAccountPath,
       ZeroRatedTurnoverEstimatePath,
       AccountingPeriodStartPath,
+      CulturalCompliancePath,
+      LabourCompliancePath,
       FinancialCompliancePath,
       FinChargeFeesPath,
       FinAdditionalNonSecuritiesWorkPath,
@@ -71,6 +73,16 @@ case object AccountingPeriodStartPath extends ElementPath {
 }
 
 // $COVERAGE-OFF$
+
+case object CulturalCompliancePath extends ElementPath {
+  override val path = "vatSicAndCompliance.culturalCompliance"
+  override val name = "cultural-compliance"
+}
+
+case object LabourCompliancePath extends ElementPath {
+  override val path = "vatSicAndCompliance.labourCompliance"
+  override val name = "labour-compliance"
+}
 
 case object FinancialCompliancePath extends ElementPath {
   override val path = "vatSicAndCompliance.financialCompliance"

@@ -86,7 +86,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
         "manageAdditionalFundsRadio" -> "true"
       )) {
         response =>
-          response redirectsTo s"$contextRoot/business-bank-account"
+          response redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit"
       }
     }
   }
@@ -99,7 +99,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
         "manageAdditionalFundsRadio" -> "false"
       )) {
         response =>
-          response redirectsTo s"$contextRoot/business-bank-account"
+          response redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit"
       }
     }
   }
