@@ -31,6 +31,7 @@ import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBank
 import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, VatChargeExpectancy, ZeroRatedSales}
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
+import models.view.vatTradingDetails.TradingNameView._
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 
@@ -59,7 +60,7 @@ class TestS4LBuilder {
 
     val tradingName = data.vatTradingDetails.tradingNameChoice.map(_ =>
       TradingName(
-        selection = data.vatTradingDetails.tradingNameChoice.map(_.toBoolean).getOrElse(false),
+        selection = data.vatTradingDetails.tradingNameChoice.fold(false)(_ == TRADING_NAME_YES),
         tradingName = data.vatTradingDetails.tradingName))
 
     val euGoods: Option[String] = data.vatTradingDetails.euGoods
@@ -70,7 +71,7 @@ class TestS4LBuilder {
       startDate = Some(startDate),
       voluntaryRegistration = voluntaryRegistration.map(VoluntaryRegistration(_)),
       voluntaryRegistrationReason = voluntaryRegistrationReason.map(VoluntaryRegistrationReason(_)),
-      tradingName = tradingName.map(t => TradingNameView(t.selection.toString, t.tradingName)),
+      tradingName = tradingName.map(t => TradingNameView(if (t.selection) TRADING_NAME_YES else TRADING_NAME_NO, t.tradingName)),
       euGoods = euGoods.map(EuGoods(_)),
       applyEori = applyEori.map(a => ApplyEori(a.toBoolean))
     )
@@ -183,7 +184,7 @@ class TestS4LBuilder {
 
     val formerName = data.vatLodgingOfficer.formernameChoice.map(_ =>
       FormerName(
-        selection = data.vatLodgingOfficer.formernameChoice.map(_.toBoolean).getOrElse(false),
+        selection = data.vatLodgingOfficer.formernameChoice.exists(_.toBoolean),
         formerName = data.vatLodgingOfficer.formername))
 
     S4LVatLodgingOfficer(
