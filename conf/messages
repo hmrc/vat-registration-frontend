@@ -217,17 +217,17 @@ validation.tradingName.missing                      = Enter a trading name
 validation.tradingNameRadio.missing                 = Tell us if the company trades under any other name
 
 ## Voluntary Registration Page
-pages.voluntary.registration.title                            = Voluntary Registration
+pages.voluntary.registration.title                            = Voluntary registration
 pages.voluntary.registration.heading                          = Do you want to register voluntarily for VAT?
 pages.voluntary.registration.para1                            = Based on your answers, you don''t need to register for VAT right now.
 pages.voluntary.registration.para2                            = You can still register voluntarily if the company will supply VAT taxable goods or services in the UK.
 validation.voluntary.registration.missing                     = Tell us if you want to register voluntarily for VAT
 
 ## Voluntary Registration Reason Page
-pages.voluntary.registration.reason.title                     = Voluntary Registration Reason
+pages.voluntary.registration.reason.title                     = Which one of the following apply to the company?
 pages.voluntary.registration.reason.heading                   = Which one of the following apply to the company?
-pages.voluntary.registration.reason.radio.sells               = The company already sells taxable goods or services
-pages.voluntary.registration.reason.radio.intendsToSell       = The company intends to sell taxable goods or services in the future
+pages.voluntary.registration.reason.radio.sells               = The company already sells VAT taxable goods or services
+pages.voluntary.registration.reason.radio.intendsToSell       = The company intends to sell VAT taxable goods or services in the future
 pages.voluntary.registration.reason.radio.neither             = None of these apply
 pages.voluntary.registration.reason.panels.neither.para       = If none of these apply you won’t be able to register voluntarily for VAT.
 validation.voluntary.registration.reason.missing              = Tell us why you intend to register voluntarily for VAT
