@@ -61,14 +61,6 @@ $(document).ready($(function () {
     }
 }(window.TradingNamePage = window.TradingNamePage || {}, jQuery));
 
-// VoluntaryRegistrationPage module
-(function (VoluntaryRegistrationPage, $, undefined) {
-    VoluntaryRegistrationPage.init = function() {
-        UI.hideShowOnRadioButton("voluntaryRegistrationRadio",
-            { "#voluntaryRegistrationRadio-register_no": "#no_panel" });
-    }
-}(window.VoluntaryRegistrationPage = window.VoluntaryRegistrationPage || {}, jQuery));
-
 // VoluntaryRegistrationReasonPage module
 (function (VoluntaryRegistrationReasonPage, $, undefined) {
     VoluntaryRegistrationReasonPage.init = function() {
