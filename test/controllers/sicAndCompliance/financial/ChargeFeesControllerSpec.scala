@@ -16,26 +16,19 @@
 
 package controllers.sicAndCompliance.financial
 
-import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
-import models.view.sicAndCompliance.financial.ChargeFees
+import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.sicAndCompliance.financial.{AdviceOrConsultancy, ChargeFees}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.VatRegistrationService
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
-
-
+class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object ChargeFeesController extends ChargeFeesController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -46,10 +39,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"GET ${routes.ChargeFeesController.show()}" should {
 
     "return HTML when there's a Charge Fees model in S4L" in {
-      val chargeFees = ChargeFees(true)
-
-      when(mockS4LService.fetchAndGet[ChargeFees]()(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(chargeFees)))
+      save4laterReturnsViewModel(ChargeFees(true))()
 
       submitAuthorised(ChargeFeesController.show(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> ""
@@ -59,12 +49,8 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[ChargeFees]()
-        (Matchers.eq(S4LKey[ChargeFees]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
-        .thenReturn(Future.successful(validVatScheme))
+      save4laterReturnsNothing2[ChargeFees]()
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(ChargeFeesController.show) {
        _ includesText "Does the company charge fees for introducing clients to financial service providers?"
@@ -73,12 +59,8 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    when(mockS4LService.fetchAndGet[ChargeFees]()
-      (Matchers.eq(S4LKey[ChargeFees]), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(None))
-
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-      .thenReturn(Future.successful(emptyVatScheme))
+    save4laterReturnsNothing2[ChargeFees]()
+    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(ChargeFeesController.show) {
      _ includesText "Does the company charge fees for introducing clients to financial service providers?"
@@ -100,38 +82,26 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${routes.ChargeFeesController.submit()} with Charge Fees Yes selected" should {
 
     "return 303" in {
-      val returnCacheMapChargeFees = CacheMap("", Map("" -> Json.toJson(ChargeFees(true))))
-
-      when(mockS4LService.save[ChargeFees]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapChargeFees))
-
+      save4laterExpectsSave[AdviceOrConsultancy]()
       submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> "true"
       )) {
         response =>
           response redirectsTo s"$contextRoot/does-additional-work-when-introducing-client-to-financial-service-provider"
       }
-
     }
   }
 
   s"POST ${routes.ChargeFeesController.submit()} with Charge Fees No selected" should {
 
     "return 303" in {
-      val returnCacheMapChargeFees = CacheMap("", Map("" -> Json.toJson(ChargeFees(false))))
-
-      when(mockS4LService.save[ChargeFees]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapChargeFees))
-
+      save4laterExpectsSave[AdviceOrConsultancy]()
       submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> "false"
       )) {
         response =>
           response redirectsTo s"$contextRoot/does-additional-work-when-introducing-client-to-financial-service-provider"
       }
-
     }
   }
 }

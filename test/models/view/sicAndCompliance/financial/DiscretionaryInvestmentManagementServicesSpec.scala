@@ -18,7 +18,7 @@ package models.view.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatComplianceFinancial, VatSicAndCompliance}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class DiscretionaryInvestmentManagementServicesSpec extends UnitSpec with VatRegistrationFixture {
@@ -68,6 +68,27 @@ class DiscretionaryInvestmentManagementServicesSpec extends UnitSpec with VatReg
         true,
         discretionaryInvestmentManagementServices = Some(false))))))
       ApiModelTransformer[DiscretionaryInvestmentManagementServices].toViewModel(vs) shouldBe Some(DiscretionaryInvestmentManagementServices(false))
+    }
+
+  }
+
+  val testView = DiscretionaryInvestmentManagementServices(true)
+
+  "ViewModelFormat" should {
+    val s4LVatSicAndCompliance = S4LVatSicAndCompliance(discretionaryInvestmentManagementServices = Some(testView))
+
+    "extract discretionaryInvestmentManagementServices from s4LVatSicAndCompliance" in {
+      DiscretionaryInvestmentManagementServices.viewModelFormat.read(s4LVatSicAndCompliance) shouldBe Some(testView)
+    }
+
+    "update empty s4LVatSicAndCompliance with discretionaryInvestmentManagementServices" in {
+      DiscretionaryInvestmentManagementServices.viewModelFormat.update(testView,
+        Option.empty[S4LVatSicAndCompliance]).discretionaryInvestmentManagementServices shouldBe Some(testView)
+    }
+
+    "update non-empty s4LVatSicAndCompliance with discretionaryInvestmentManagementServices" in {
+      DiscretionaryInvestmentManagementServices.viewModelFormat.update(testView,
+        Some(s4LVatSicAndCompliance)).discretionaryInvestmentManagementServices shouldBe Some(testView)
     }
 
   }

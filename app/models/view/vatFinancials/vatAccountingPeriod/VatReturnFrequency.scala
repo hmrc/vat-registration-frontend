@@ -17,7 +17,7 @@
 package models.view.vatFinancials.vatAccountingPeriod
 
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class VatReturnFrequency(frequencyType: String)
@@ -27,9 +27,18 @@ object VatReturnFrequency {
   val MONTHLY = "monthly"
   val QUARTERLY = "quarterly"
 
+  val monthly = VatReturnFrequency(MONTHLY)
+  val quarterly = VatReturnFrequency(QUARTERLY)
+
   val valid = (item: String) => List(MONTHLY, QUARTERLY).contains(item.toLowerCase)
 
   implicit val format = Json.format[VatReturnFrequency]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatFinancials) => group.vatReturnFrequency,
+    updateF = (c: VatReturnFrequency, g: Option[S4LVatFinancials]) =>
+      g.getOrElse(S4LVatFinancials()).copy(vatReturnFrequency = Some(c))
+  )
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>

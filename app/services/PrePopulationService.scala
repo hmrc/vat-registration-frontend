@@ -50,8 +50,6 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
                                     (implicit vrs: VatRegistrationService)
   extends PrePopService with CommonService {
 
-  import cats.instances.future._
-
   private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
   def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionalResponse[LocalDate] =

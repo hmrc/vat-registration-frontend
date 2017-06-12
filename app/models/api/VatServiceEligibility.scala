@@ -16,9 +16,8 @@
 
 package models.api
 
-import models.api.EligibilityQuestion._
-import models.view.vatLodgingOfficer.OfficerDateOfBirthView
 import models._
+import models.api.EligibilityQuestion._
 import play.api.libs.json.{Json, OFormat}
 
 final case class VatServiceEligibility(
@@ -53,13 +52,11 @@ object VatServiceEligibility {
 
   implicit val format: OFormat[VatServiceEligibility] = Json.format
 
-
   implicit val vmReads = ViewModelFormat(
-    readF = (group: VatServiceEligibility) => Some(group),
-    updateF = (c: VatServiceEligibility, g: Option[VatServiceEligibility]) =>
-      g.getOrElse(VatServiceEligibility())
+    readF = (group: S4LVatEligibility) => group.vatEligibility,
+    updateF = (c: VatServiceEligibility, g: Option[S4LVatEligibility]) =>
+      g.getOrElse(S4LVatEligibility()).copy(vatEligibility = Some(c))
   )
-
 
   implicit val modelTransformer = ApiModelTransformer[VatServiceEligibility] { vs: VatScheme =>
     vs.vatServiceEligibility

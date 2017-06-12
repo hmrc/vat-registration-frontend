@@ -17,16 +17,16 @@
 package services
 
 import cats.data.OptionT
+import cats.instances.FutureInstances
 import common.exceptions.DownstreamExceptions._
 import connectors.KeystoreConnector
 import play.api.Logger
 import uk.gov.hmrc.play.http.HeaderCarrier
-import cats.instances.future._
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait CommonService {
+trait CommonService extends FutureInstances {
 
   val keystoreConnector: KeystoreConnector = KeystoreConnector
 

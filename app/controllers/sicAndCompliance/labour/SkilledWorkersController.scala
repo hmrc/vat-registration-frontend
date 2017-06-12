@@ -32,13 +32,12 @@ class SkilledWorkersController @Inject()(ds: CommonPlayDependencies)
   val form = SkilledWorkersForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[SkilledWorkers].fold(form)(form.fill)
+    viewModel[SkilledWorkers]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.labour.skilled_workers(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     SkilledWorkersForm.form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.skilled_workers(badForm)).pure,
-      goodForm => s4LService.save(goodForm).map(_ =>
-        Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))))
-
+      goodForm => save(goodForm).map(_ =>
+        Redirect(controllers.sicAndCompliance.routes.ComplianceExitController.exit()))))
 }

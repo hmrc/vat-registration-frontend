@@ -21,11 +21,8 @@ import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.sicAndCompliance.financial.AdditionalNonSecuritiesWork
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
-
 
 import scala.concurrent.Future
 
@@ -41,7 +38,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
   s"GET ${routes.AdditionalNonSecuritiesWorkController.show()}" should {
 
     "return HTML when there's a Additional Non Securities Work model in S4L" in {
-      save4laterReturns(AdditionalNonSecuritiesWork(true))
+      save4laterReturnsViewModel(AdditionalNonSecuritiesWork(true))()
 
       submitAuthorised(AdditionalNonSecuritiesWorkController.show(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesRadio" -> "")) {
@@ -51,7 +48,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing[AdditionalNonSecuritiesWork]()
+      save4laterReturnsNothing2[AdditionalNonSecuritiesWork]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(AdditionalNonSecuritiesWorkController.show) {
@@ -62,7 +59,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing[AdditionalNonSecuritiesWork]()
+    save4laterReturnsNothing2[AdditionalNonSecuritiesWork]()
     when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
@@ -84,26 +81,20 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
   s"POST ${routes.AdditionalNonSecuritiesWorkController.submit()} with Additional Non Securities Work Yes selected" should {
 
     "return 303" in {
-      val returnCacheMapAdditionalNonSecuritiesWork = CacheMap("", Map("" -> Json.toJson(AdditionalNonSecuritiesWork(true))))
-
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      when(mockS4LService.save[AdditionalNonSecuritiesWork](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMapAdditionalNonSecuritiesWork))
+      save4laterExpectsSave[AdditionalNonSecuritiesWork]()
 
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/business-bank-account")
+      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
     }
   }
 
   s"POST ${routes.AdditionalNonSecuritiesWorkController.submit()} with Additional Non Securities Work No selected" should {
 
     "return 303" in {
-      val returnCacheMapAdditionalNonSecuritiesWork = CacheMap("", Map("" -> Json.toJson(AdditionalNonSecuritiesWork(false))))
-
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      when(mockS4LService.save[AdditionalNonSecuritiesWork](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMapAdditionalNonSecuritiesWork))
+      save4laterExpectsSave[AdditionalNonSecuritiesWork]()
 
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "false"

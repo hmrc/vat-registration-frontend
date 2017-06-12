@@ -18,7 +18,7 @@ package models.view.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatComplianceFinancial, VatSicAndCompliance}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class AdditionalNonSecuritiesWorkSpec extends UnitSpec with VatRegistrationFixture {
@@ -68,6 +68,25 @@ class AdditionalNonSecuritiesWorkSpec extends UnitSpec with VatRegistrationFixtu
                                                                                                         true,
                                                                                                         additionalNonSecuritiesWork = Some(false))))))
       ApiModelTransformer[AdditionalNonSecuritiesWork].toViewModel(vs) shouldBe Some(AdditionalNonSecuritiesWork(false))
+    }
+
+  }
+
+  val testView = AdditionalNonSecuritiesWork(true)
+
+  "ViewModelFormat" should {
+    val s4LVatSicAndCompliance = S4LVatSicAndCompliance(additionalNonSecuritiesWork = Some(testView))
+
+    "extract additionalNonSecuritiesWork from s4LVatSicAndCompliance" in {
+      AdditionalNonSecuritiesWork.viewModelFormat.read(s4LVatSicAndCompliance) shouldBe Some(testView)
+    }
+
+    "update empty s4LVatSicAndCompliance with additionalNonSecuritiesWork" in {
+      AdditionalNonSecuritiesWork.viewModelFormat.update(testView, Option.empty[S4LVatSicAndCompliance]).additionalNonSecuritiesWork shouldBe Some(testView)
+    }
+
+    "update non-empty s4LVatSicAndCompliance with additionalNonSecuritiesWork" in {
+      AdditionalNonSecuritiesWork.viewModelFormat.update(testView, Some(s4LVatSicAndCompliance)).additionalNonSecuritiesWork shouldBe Some(testView)
     }
 
   }
