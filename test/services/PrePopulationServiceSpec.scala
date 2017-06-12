@@ -23,12 +23,11 @@ import cats.data.OptionT
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.{S4LPpob, S4LVatLodgingOfficer}
 import models.api._
 import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
 import models.view.ppob.PpobView
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView}
-import org.mockito.Matchers
+import models.{S4LPpob, S4LVatLodgingOfficer}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
