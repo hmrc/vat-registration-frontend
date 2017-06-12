@@ -32,15 +32,15 @@ class TemporaryContractsController @Inject()(ds: CommonPlayDependencies)
   val form = TemporaryContractsForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[TemporaryContracts].fold(form)(form.fill)
+    viewModel[TemporaryContracts]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.labour.temporary_contracts(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.temporary_contracts(badForm)).pure,
-      goodForm => s4LService.save(goodForm).map(_ => goodForm.yesNo == TemporaryContracts.TEMP_CONTRACTS_YES).ifM(
+      goodForm => save(goodForm).map(_ => goodForm.yesNo == TemporaryContracts.TEMP_CONTRACTS_YES).ifM(
         controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show().pure,
-        controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show().pure)
+        controllers.sicAndCompliance.routes.ComplianceExitController.exit().pure)
         .map(Redirect)))
 
 }

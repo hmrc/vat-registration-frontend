@@ -42,7 +42,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
     reset(mockVatRegistrationService)
 
     "return HTML when there's a previous address question in S4L" in {
-      save4laterReturns2(PreviousAddressView(yesNo = true))()
+      save4laterReturnsViewModel(PreviousAddressView(yesNo = true))()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(TestPreviousAddressController.show) {

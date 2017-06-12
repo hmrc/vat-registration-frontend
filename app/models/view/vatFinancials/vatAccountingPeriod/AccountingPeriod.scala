@@ -17,7 +17,7 @@
 package models.view.vatFinancials.vatAccountingPeriod
 
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.{Json, OFormat}
 
 case class AccountingPeriod(accountingPeriod: String)
@@ -31,6 +31,12 @@ object AccountingPeriod {
   val valid = (item: String) => List(JAN_APR_JUL_OCT, FEB_MAY_AUG_NOV, MAR_JUN_SEP_DEC).contains(item.toUpperCase)
 
   implicit val format: OFormat[AccountingPeriod] = Json.format[AccountingPeriod]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatFinancials) => group.accountingPeriod,
+    updateF = (c: AccountingPeriod, g: Option[S4LVatFinancials]) =>
+      g.getOrElse(S4LVatFinancials()).copy(accountingPeriod = Some(c))
+  )
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>

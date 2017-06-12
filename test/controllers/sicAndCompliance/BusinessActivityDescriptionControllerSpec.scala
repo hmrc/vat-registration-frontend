@@ -17,9 +17,10 @@
 package controllers.sicAndCompliance
 
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.S4LKey
 import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.sicAndCompliance.labour.Workers
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -30,7 +31,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   val DESCRIPTION = "Testing"
 
@@ -43,9 +44,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
   s"GET ${routes.BusinessActivityDescriptionController.show()}" should {
 
     "return HTML Business Activity Description page with no data in the form" in {
-      when(mockS4LService.fetchAndGet[BusinessActivityDescription]()(any(), any(), any()))
-        .thenReturn(Future.successful(Some(BusinessActivityDescription(DESCRIPTION))))
-
+      save4laterReturnsViewModel(BusinessActivityDescription(DESCRIPTION))()
       submitAuthorised(TestController.show(), fakeRequest.withFormUrlEncodedBody(
         "description" -> ""
       ))(_ includesText "Describe what the company does")
@@ -53,12 +52,8 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
 
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[BusinessActivityDescription]()
-        (Matchers.eq(S4LKey[BusinessActivityDescription]), any(), any()))
-        .thenReturn(Future.successful(None))
-
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-        .thenReturn(Future.successful(validVatScheme))
+      save4laterReturnsNothing2[BusinessActivityDescription]()
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestController.show) {
         _ includesText "Describe what the company does"
@@ -66,12 +61,8 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockS4LService.fetchAndGet[BusinessActivityDescription]()
-        (Matchers.eq(S4LKey[BusinessActivityDescription]), any(), any()))
-        .thenReturn(Future.successful(None))
-
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-        .thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsNothing2[BusinessActivityDescription]()
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestController.show) {
         _ includesText "Describe what the company does"
@@ -90,16 +81,10 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
   s"POST ${routes.BusinessActivityDescriptionController.submit()} with a valid business description entered" should {
 
     "return 303" in {
-      val returnCacheMapBusinessActivityDescription = CacheMap("", Map("" -> Json.toJson(BusinessActivityDescription(DESCRIPTION))))
-
-      when(mockS4LService.save[BusinessActivityDescription](any())(any(), any(), any()))
-        .thenReturn(Future.successful(returnCacheMapBusinessActivityDescription))
-
+      save4laterExpectsSave[BusinessActivityDescription]()
       submitAuthorised(TestController.submit(), fakeRequest.withFormUrlEncodedBody("description" -> DESCRIPTION)) {
         _ redirectsTo "/sic-stub"
       }
-
     }
   }
-
 }

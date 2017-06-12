@@ -19,8 +19,8 @@ package services
 import common.exceptions.DownstreamExceptions.RegistrationIdNotFoundException
 import fixtures.{S4LFixture, VatRegistrationFixture}
 import helpers.VatRegSpec
-import models.view.vatTradingDetails.vatChoice.StartDateView
-import models.{S4LKey, ViewModelFormat}
+import models.api.VatServiceEligibility
+import models.{S4LKey, S4LVatEligibility, ViewModelFormat}
 import org.mockito.Matchers.{any, eq => =~=}
 import org.mockito.Mockito._
 import play.api.libs.json.Json
@@ -58,21 +58,21 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
 
   }
 
-  val tstStartDateModel = StartDateView("", None)
+  val testServiceEligibility = VatServiceEligibility()
 
   "S4L Service" should {
 
     "save a form with the correct key" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
       private val cacheMap = CacheMap("s-date", Map.empty)
-      mockS4LSaveForm[StartDateView](cacheMap)
-      service.save[StartDateView](tstStartDateModel) returns cacheMap
+      mockS4LSaveForm[S4LVatEligibility](cacheMap)
+      service.save(S4LVatEligibility(vatEligibility = Some(testServiceEligibility))) returns cacheMap
     }
 
     "fetch a form with the correct key" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
-      mockS4LFetchAndGet[StartDateView](S4LKey[StartDateView].key, Some(tstStartDateModel))
-      service.fetchAndGet[StartDateView]() returns Some(tstStartDateModel)
+      mockS4LFetchAndGet(S4LKey[S4LVatEligibility].key, Some(S4LVatEligibility(vatEligibility = Some(testServiceEligibility))))
+      service.fetchAndGet[S4LVatEligibility]() returns Some(S4LVatEligibility(vatEligibility = Some(testServiceEligibility)))
     }
 
     "clear down S4L data" in new Setup {
@@ -90,7 +90,7 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
 
   }
 
-  "getting a View Model form Save 4 Later" should {
+  "getting a View Model from Save 4 Later" should {
 
     "fail with an exception when registration ID cannot be found in keystore" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", None)

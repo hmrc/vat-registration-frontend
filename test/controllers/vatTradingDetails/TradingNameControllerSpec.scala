@@ -16,25 +16,20 @@
 
 package controllers.vatTradingDetails
 
-import builders.AuthBuilder
 import controllers.vatTradingDetails
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatTradingDetails.TradingNameView
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.VatRegistrationService
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
 
 
@@ -49,8 +44,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return HTML when there's a trading name in S4L" in {
       val tradingName = TradingNameView(TradingNameView.TRADING_NAME_YES, Some("Test Trading Name"))
 
-      when(mockS4LService.fetchAndGet[TradingNameView]()(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(tradingName)))
+      save4laterReturnsViewModel(tradingName)()
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
@@ -65,9 +59,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[TradingNameView]()
-        (Matchers.eq(S4LKey[TradingNameView]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[TradingNameView]()
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
@@ -82,9 +74,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockS4LService.fetchAndGet[TradingNameView]()
-        (Matchers.eq(S4LKey[TradingNameView]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[TradingNameView]()
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
@@ -114,10 +104,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${vatTradingDetails.routes.TradingNameController.submit()} with valid data no trading name" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingNameView(TradingNameView.TRADING_NAME_NO, None))))
-
-      when(mockS4LService.save[TradingNameView](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMap))
+      save4laterExpectsSave[TradingNameView]()
 
       submitAuthorised(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "tradingNameRadio" -> TradingNameView.TRADING_NAME_NO
@@ -133,10 +120,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture {
   s"POST ${vatTradingDetails.routes.TradingNameController.submit()} with valid data with trading name" should {
 
     "return 303" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(TradingNameView(TradingNameView.TRADING_NAME_YES, Some("some name")))))
-
-      when(mockS4LService.save[TradingNameView](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMap))
+      save4laterExpectsSave[TradingNameView]()
 
       submitAuthorised(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "tradingNameRadio" -> TradingNameView.TRADING_NAME_YES,

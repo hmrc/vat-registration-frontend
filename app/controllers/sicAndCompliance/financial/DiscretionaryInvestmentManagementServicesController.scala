@@ -36,15 +36,15 @@ class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPl
   val form: Form[DiscretionaryInvestmentManagementServices] = DiscretionaryInvestmentManagementServicesForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[DiscretionaryInvestmentManagementServices].fold(form)(form.fill)
+    viewModel[DiscretionaryInvestmentManagementServices]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(badForm)).pure,
-      data => s4LService.save(data).map(_ => data.yesNo).ifM(
+      data => save(data).map(_ => data.yesNo).ifM(
         vrs.deleteElements(ElementPath.finCompElementPaths.drop(3)).map(_ =>
-          controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()),
+          controllers.sicAndCompliance.routes.ComplianceExitController.exit()),
         controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show().pure
       ).map(Redirect)))
 

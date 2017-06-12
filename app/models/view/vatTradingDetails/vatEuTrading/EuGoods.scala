@@ -17,7 +17,7 @@
 package models.view.vatTradingDetails.vatEuTrading
 
 import models.api._
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class EuGoods(yesNo: String)
@@ -30,6 +30,12 @@ object EuGoods {
   val valid = (item: String) => List(EU_GOODS_YES, EU_GOODS_NO).contains(item.toUpperCase)
 
   implicit val format = Json.format[EuGoods]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LTradingDetails) => group.euGoods,
+    updateF = (c: EuGoods, g: Option[S4LTradingDetails]) =>
+      g.getOrElse(S4LTradingDetails()).copy(euGoods = Some(c))
+  )
 
   implicit val modelTransformer = ApiModelTransformer[EuGoods] { (vs: VatScheme) =>
     vs.tradingDetails.map(td => EuGoods(if (td.euTrading.selection) EU_GOODS_YES else EU_GOODS_NO))

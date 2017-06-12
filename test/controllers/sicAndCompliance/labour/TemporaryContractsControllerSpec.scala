@@ -16,27 +16,20 @@
 
 package controllers.sicAndCompliance.labour
 
-import builders.AuthBuilder
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.sicAndCompliance.labour.TemporaryContracts
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.VatRegistrationService
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFixture {
-
-
+class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object TemporaryContractsController extends TemporaryContractsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -47,10 +40,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
   s"GET ${sicAndCompliance.labour.routes.TemporaryContractsController.show()}" should {
 
     "return HTML when there's a Temporary Contracts model in S4L" in {
-      val temporaryContracts = TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)
-
-      when(mockS4LService.fetchAndGet[TemporaryContracts]()(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(temporaryContracts)))
+      save4laterReturnsViewModel(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO))()
 
       submitAuthorised(TemporaryContractsController.show(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> ""
@@ -65,12 +55,8 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[TemporaryContracts]()
-        (Matchers.eq(S4LKey[TemporaryContracts]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
-        .thenReturn(Future.successful(validVatScheme))
+      save4laterReturnsNothing2[TemporaryContracts]()
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TemporaryContractsController.show) {
         result =>
@@ -83,12 +69,8 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    when(mockS4LService.fetchAndGet[TemporaryContracts]()
-      (Matchers.eq(S4LKey[TemporaryContracts]), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(None))
-
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-      .thenReturn(Future.successful(emptyVatScheme))
+    save4laterReturnsNothing2[TemporaryContracts]()
+    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(TemporaryContractsController.show) {
       result =>
@@ -107,19 +89,13 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
         result =>
           status(result) mustBe Status.BAD_REQUEST
       }
-
     }
   }
 
   s"POST ${sicAndCompliance.labour.routes.TemporaryContractsController.submit()} with Temporary Contracts Yes selected" should {
 
     "return 303" in {
-      val returnCacheMapTemporaryContracts = CacheMap("", Map("" -> Json.toJson(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES))))
-
-      when(mockS4LService.save[TemporaryContracts]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapTemporaryContracts))
-
+      save4laterExpectsSave[TemporaryContracts]()
       submitAuthorised(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> TemporaryContracts.TEMP_CONTRACTS_YES
       )) {
@@ -127,27 +103,20 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
           status(response) mustBe Status.SEE_OTHER
           redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/provides-skilled-workers"
       }
-
     }
   }
 
   s"POST ${sicAndCompliance.labour.routes.TemporaryContractsController.submit()} with TemporaryContracts No selected" should {
 
     "return 303" in {
-      val returnCacheMapTemporaryContracts = CacheMap("", Map("" -> Json.toJson(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO))))
-
-      when(mockS4LService.save[TemporaryContracts]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapTemporaryContracts))
-
+      save4laterExpectsSave[TemporaryContracts]()
       submitAuthorised(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> TemporaryContracts.TEMP_CONTRACTS_NO
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/business-bank-account"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/tell-us-more-about-the-company/exit"
       }
-
     }
   }
 }

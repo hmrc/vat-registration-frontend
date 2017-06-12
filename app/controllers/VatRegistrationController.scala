@@ -20,6 +20,7 @@ import javax.inject.{Inject, Singleton}
 
 import auth.VatTaxRegime
 import cats.data.OptionT
+import cats.instances.FutureInstances
 import cats.syntax.ApplicativeSyntax
 import config.FrontendAuthConnector
 import models.{ApiModelTransformer, S4LKey, ViewModelFormat}
@@ -36,10 +37,10 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController with I18nSupport with Actions with ApplicativeSyntax {
+abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController
+  with I18nSupport with Actions with ApplicativeSyntax with FutureInstances {
 
   implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
-  implicit val futureInstances = cats.instances.future.catsStdInstancesForFuture
 
   //$COVERAGE-OFF$
   lazy val conf: Configuration = ds.conf
@@ -61,12 +62,6 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
     * @return an AuthenticatedBy action builder that is specific to VatTaxRegime and GGConfidence confidence level
     */
   protected[controllers] def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
-
-
-  protected[controllers] def viewModel2[T: ApiModelTransformer : S4LKey : Format]
-  ()
-  (implicit s4l: S4LService, vrs: RegistrationService, hc: HeaderCarrier): OptionT[Future, T] =
-    OptionT(s4l.fetchAndGet[T]()).orElseF(vrs.getVatScheme() map ApiModelTransformer[T].toViewModel)
 
   protected[controllers] def viewModel[T] = new ViewModelLookupHelper[T]
 

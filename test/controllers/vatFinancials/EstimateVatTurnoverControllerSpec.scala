@@ -16,92 +16,65 @@
 
 package controllers.vatFinancials
 
-import builders.AuthBuilder
 import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.S4LKey
+import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatFinancials.EstimateVatTurnover
-import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import services.VatRegistrationService
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
+class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixture {
-
-
-
-  object TestEstimateVatTurnoverController extends EstimateVatTurnoverController(ds)(mockS4LService, mockVatRegistrationService) {
+  object Controller extends EstimateVatTurnoverController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
   val fakeRequest = FakeRequest(vatFinancials.routes.EstimateVatTurnoverController.show())
 
-  s"POST ${vatFinancials.routes.EstimateVatTurnoverController.show()}" should {
+  s"GET ${vatFinancials.routes.EstimateVatTurnoverController.show()}" should {
 
-    "return HTML Estimate Vat Turnover page with no data in the form" in {
-      when(mockS4LService.fetchAndGet[EstimateVatTurnover]()(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(EstimateVatTurnover(100L))))
+    "return HTML Estimate Vat Turnover page" in {
+      save4laterReturnsViewModel(EstimateVatTurnover(100L))()
 
-      submitAuthorised(
-        TestEstimateVatTurnoverController.show(),
-        fakeRequest.withFormUrlEncodedBody("turnoverEstimate" -> "")
-      )(_ includesText "Estimated VAT taxable turnover for the next 12 months")
+      callAuthorised(Controller.show()) {
+        _ includesText "Estimated VAT taxable turnover for the next 12 months"
+      }
     }
 
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockS4LService.fetchAndGet[EstimateVatTurnover]()(Matchers.eq(S4LKey[EstimateVatTurnover]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[EstimateVatTurnover]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-        .thenReturn(Future.successful(validVatScheme))
-
-      callAuthorised(TestEstimateVatTurnoverController.show) {
+      callAuthorised(Controller.show) {
         _ includesText "Estimated VAT taxable turnover for the next 12 months"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockS4LService.fetchAndGet[EstimateVatTurnover]()(Matchers.eq(S4LKey[EstimateVatTurnover]), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+      save4laterReturnsNothing2[EstimateVatTurnover]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-        .thenReturn(Future.successful(emptyVatScheme))
-
-      callAuthorised(TestEstimateVatTurnoverController.show) {
+      callAuthorised(Controller.show) {
         _ includesText "Estimated VAT taxable turnover for the next 12 months"
       }
     }
   }
 
   s"POST ${vatFinancials.routes.EstimateVatTurnoverController.submit()} with Empty data" should {
-
     "return 400" in {
-      submitAuthorised(
-        TestEstimateVatTurnoverController.submit(),
-        fakeRequest.withFormUrlEncodedBody()
-      )(result => result isA 400)
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
   }
 
   s"POST ${vatFinancials.routes.EstimateVatTurnoverController.submit()} with a valid turnover estimate entered" should {
 
     "return 303" in {
-      val returnCacheMapEstimateVatTurnover = CacheMap("", Map("" -> Json.toJson(EstimateVatTurnover(50000L))))
-
-      when(mockS4LService.save[EstimateVatTurnover](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(returnCacheMapEstimateVatTurnover))
-
-      submitAuthorised(
-        TestEstimateVatTurnoverController.submit(),
-        fakeRequest.withFormUrlEncodedBody("turnoverEstimate" -> "50000")
-      )(_ redirectsTo s"$contextRoot/sell-zero-rated-items-next-12-months")
+      save4laterExpectsSave[EstimateVatTurnover]()
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody("turnoverEstimate" -> "50000")) {
+        _ redirectsTo s"$contextRoot/sell-zero-rated-items-next-12-months"
+      }
     }
   }
 

@@ -47,7 +47,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
     }
 
     "return HTML when there's an answer in S4L" in {
-      save4laterReturns2(validBusinessContactDetails)()
+      save4laterReturnsViewModel(validBusinessContactDetails)()
 
       callAuthorised(TestBusinessContactDetailsController.show) {
         _ includesText "Company contact details"

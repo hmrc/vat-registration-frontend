@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.sicAndCompliance.cultural.NotForProfitForm
-import models.FinancialCompliancePath
+import models.{FinancialCompliancePath, LabourCompliancePath, S4LVatSicAndCompliance}
 import models.view.sicAndCompliance.cultural.NotForProfit
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -32,15 +32,16 @@ class NotForProfitController @Inject()(ds: CommonPlayDependencies)
   val form = NotForProfitForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel2[NotForProfit].fold(form)(form.fill)
+    viewModel[NotForProfit]().fold(form)(form.fill)
       .map(f => Ok(views.html.pages.sicAndCompliance.cultural.not_for_profit(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.cultural.not_for_profit(badForm)).pure,
       data => for {
-        _ <- s4LService.save(data)
-        _ <- vrs.deleteElement(FinancialCompliancePath)
-      } yield Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())))
+        _ <- save(S4LVatSicAndCompliance())
+        _ <- save(data)
+        _ <- vrs.deleteElements(List(FinancialCompliancePath, LabourCompliancePath))
+      } yield Redirect(controllers.sicAndCompliance.routes.ComplianceExitController.exit())))
 
 }

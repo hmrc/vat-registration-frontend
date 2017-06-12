@@ -16,8 +16,8 @@
 
 package models.view.sicAndCompliance
 
+import models._
 import models.api.{VatScheme, VatSicAndCompliance}
-import models.{ApiModelTransformer, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class BusinessActivityDescription(description: String)
@@ -25,6 +25,12 @@ case class BusinessActivityDescription(description: String)
 object BusinessActivityDescription {
 
   implicit val format = Json.format[BusinessActivityDescription]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatSicAndCompliance) => group.description,
+    updateF = (c: BusinessActivityDescription, g: Option[S4LVatSicAndCompliance]) =>
+      g.getOrElse(S4LVatSicAndCompliance()).copy(description = Some(c))
+  )
 
   implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
     vs.vatSicAndCompliance.map(_.businessDescription).collect {

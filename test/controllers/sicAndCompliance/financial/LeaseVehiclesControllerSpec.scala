@@ -21,15 +21,10 @@ import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.sicAndCompliance.financial.LeaseVehicles
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-
-
 class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
-
 
   object LeaseVehiclesController extends LeaseVehiclesController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
@@ -40,7 +35,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
   s"GET ${routes.LeaseVehiclesController.show()}" should {
 
     "return HTML when there's a Lease Vehicles or Equipment - model in S4L" in {
-      save4laterReturns(LeaseVehicles(true))
+      save4laterReturnsViewModel(LeaseVehicles(true))()
 
       callAuthorised(LeaseVehiclesController.show()) {
         _ includesText "Is the company involved in leasing vehicles or equipment to customers?"
@@ -48,7 +43,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing[LeaseVehicles]()
+      save4laterReturnsNothing2[LeaseVehicles]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(LeaseVehiclesController.show) {
@@ -58,7 +53,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing[LeaseVehicles]()
+    save4laterReturnsNothing2[LeaseVehicles]()
     when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(emptyVatScheme.pure)
 
     callAuthorised(LeaseVehiclesController.show) {
@@ -73,19 +68,17 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
         result isA 400
       }
     }
-
   }
 
   s"POST ${routes.LeaseVehiclesController.submit()} with Lease Vehicles or Equipment - Yes selected" should {
 
     "redirects to next screen in the flow" in {
-      val leaseVehicles = CacheMap("", Map("" -> Json.toJson(LeaseVehicles(true))))
+      save4laterExpectsSave[LeaseVehicles]()
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
-      when(mockS4LService.save[LeaseVehicles](any())(any(), any(), any())).thenReturn(leaseVehicles.pure)
 
       submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "leaseVehiclesRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/business-bank-account")
+      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
     }
 
   }
@@ -93,14 +86,12 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
   s"POST ${routes.LeaseVehiclesController.submit()} with Lease Vehicles or Equipment - No selected" should {
 
     "redirects to next screen in the flow" in {
-      val leaseVehicles = CacheMap("", Map("" -> Json.toJson(LeaseVehicles(false))))
+      save4laterExpectsSave[LeaseVehicles]()
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
-      when(mockS4LService.save[LeaseVehicles](any())(any(), any(), any())).thenReturn(leaseVehicles.pure)
 
       submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody("leaseVehiclesRadio" -> "false")) {
         _ redirectsTo s"$contextRoot/provides-investment-fund-management-services"
       }
     }
-
   }
 }
