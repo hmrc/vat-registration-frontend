@@ -16,18 +16,17 @@
 
 package controllers.sicAndCompliance
 
-import javax.inject.Inject
-
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc._
-import services.{S4LService, VatRegistrationService}
+import services.RegistrationService
+import uk.gov.hmrc.play.http.HeaderCarrier
 
-class ComplianceExitController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies, vrs: VatRegistrationService)
+class ComplianceExitController (ds: CommonPlayDependencies, vrs: RegistrationService)
   extends VatRegistrationController(ds) {
 
-  def exit: Action[AnyContent] = authorised(implicit user => implicit request => {
+  def submitAndExit (implicit hc: HeaderCarrier): Call = {
     vrs.submitSicAndCompliance().map(_ => ())
-    Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
-  })
+    controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()
+  }
 
 }

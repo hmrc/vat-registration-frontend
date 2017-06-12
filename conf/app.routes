@@ -89,7 +89,7 @@ POST        /describe-what-company-does                                         
 ## COMPLIANCE INTRODUCTION
 GET         /tell-us-more-about-the-company                                                    controllers.sicAndCompliance.ComplianceIntroductionController.show
 POST        /tell-us-more-about-the-company                                                    controllers.sicAndCompliance.ComplianceIntroductionController.submit
-GET         /tell-us-more-about-the-company/exit                                               controllers.sicAndCompliance.ComplianceExitController.exit
+##GET         /tell-us-more-about-the-company/exit                                               controllers.sicAndCompliance.ComplianceExitController.exit
 
 ## CULTURAL COMPLIANCE QUESTIONS
 GET         /not-for-profit-or-public-body                                                     controllers.sicAndCompliance.cultural.NotForProfitController.show

@@ -57,32 +57,30 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
         _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
       }
     }
-  }
 
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[AdviceOrConsultancy]()
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      save4laterReturnsNothing2[AdviceOrConsultancy]()
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(AdviceOrConsultancyController.show) {
-      _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
+      callAuthorised(AdviceOrConsultancyController.show) {
+        _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
+      }
     }
   }
 
-  s"POST ${routes.AdviceOrConsultancyController.show()} with Empty data" should {
+  s"POST ${routes.AdviceOrConsultancyController.show()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) (result => result isA 400)
     }
-  }
 
-  s"POST ${routes.AdviceOrConsultancyController.submit()} with Advice Or Consultancy Yes selected" should {
+    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+    when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+    save4laterExpectsSave[S4LVatSicAndCompliance]()
+    save4laterExpectsSave[AdviceOrConsultancy]()
 
     "return 303" in {
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      save4laterExpectsSave[S4LVatSicAndCompliance]()
-      save4laterExpectsSave[AdviceOrConsultancy]()
-
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "true"
       )) {
@@ -96,10 +94,6 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.AdviceOrConsultancyController.submit()} with Advice Or Consultancy No selected" should {
 
     "return 303" in {
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      save4laterExpectsSave[AdviceOrConsultancy]()
-      save4laterExpectsSave[S4LVatSicAndCompliance]()
-
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "false"
       )) {

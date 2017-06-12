@@ -56,46 +56,41 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
           " when introducing a client to a financial service provider?"
       }
     }
-  }
 
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[AdditionalNonSecuritiesWork]()
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-      .thenReturn(Future.successful(emptyVatScheme))
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      save4laterReturnsNothing2[AdditionalNonSecuritiesWork]()
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
+        .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(AdditionalNonSecuritiesWorkController.show) {
-      _ includesText "Does the company do additional work (excluding securities) " +
-        "when introducing a client to a financial service provider?"
+      callAuthorised(AdditionalNonSecuritiesWorkController.show) {
+        _ includesText "Does the company do additional work (excluding securities) " +
+          "when introducing a client to a financial service provider?"
+      }
     }
   }
 
-  s"POST ${routes.AdditionalNonSecuritiesWorkController.show()} with Empty data" should {
+  s"POST ${routes.AdditionalNonSecuritiesWorkController.show()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
 
     }
-  }
 
-  s"POST ${routes.AdditionalNonSecuritiesWorkController.submit()} with Additional Non Securities Work Yes selected" should {
+    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+    when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+    save4laterExpectsSave[AdditionalNonSecuritiesWork]()
 
     "return 303" in {
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      save4laterExpectsSave[AdditionalNonSecuritiesWork]()
-
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
+      ))(_ redirectsTo s"$contextRoot/business-bank-account")
     }
   }
 
   s"POST ${routes.AdditionalNonSecuritiesWorkController.submit()} with Additional Non Securities Work No selected" should {
 
     "return 303" in {
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      save4laterExpectsSave[AdditionalNonSecuritiesWork]()
-
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/provides-discretionary-investment-management-services")

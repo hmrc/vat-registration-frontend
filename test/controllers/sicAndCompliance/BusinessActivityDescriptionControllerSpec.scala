@@ -76,9 +76,6 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
       submitAuthorised(TestController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
-  }
-
-  s"POST ${routes.BusinessActivityDescriptionController.submit()} with a valid business description entered" should {
 
     "return 303" in {
       save4laterExpectsSave[BusinessActivityDescription]()

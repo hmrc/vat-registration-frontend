@@ -18,7 +18,8 @@ package controllers.sicAndCompliance.financial
 
 import javax.inject.Inject
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.CommonPlayDependencies
+import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.financial.AdviceOrConsultancyForm
 import models.view.sicAndCompliance.financial.AdviceOrConsultancy
 import models.{CulturalCompliancePath, LabourCompliancePath, S4LVatSicAndCompliance}
@@ -29,7 +30,7 @@ import services.{RegistrationService, S4LService}
 
 class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
                                              (implicit s4LService: S4LService, vrs: RegistrationService)
-  extends VatRegistrationController(ds) {
+  extends ComplianceExitController(ds, vrs) {
 
   val form: Form[AdviceOrConsultancy] = AdviceOrConsultancyForm.form
 

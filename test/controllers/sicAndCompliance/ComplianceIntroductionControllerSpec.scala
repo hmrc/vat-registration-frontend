@@ -50,9 +50,6 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
           result redirectsTo s"$contextRoot/business-bank-account"
       }
     }
-  }
-
-  s"POST ${sicAndCompliance.routes.ComplianceIntroductionController.submit()} with no SIC code selection" should {
 
     "redirect the user to the SIC code selection page" in {
       when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(None))
@@ -61,9 +58,6 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
           result redirectsTo "/sic-stub"
       }
     }
-  }
-
-  s"POST ${sicAndCompliance.routes.ComplianceIntroductionController.submit()} with cultural SIC code selection" should {
 
     "redirect the user to the first question about cultural compliance" in {
       when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(
@@ -74,9 +68,6 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
           result redirectsTo s"$contextRoot/not-for-profit-or-public-body"
       }
     }
-  }
-
-  s"POST ${sicAndCompliance.routes.ComplianceIntroductionController.submit()} with labour SIC code selection" should {
 
     "redirect the user to the first question about labour compliance" in {
       when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(
@@ -87,9 +78,6 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
           result redirectsTo s"$contextRoot/provides-workers-to-other-employers"
       }
     }
-  }
-
-  s"POST ${sicAndCompliance.routes.ComplianceIntroductionController.submit()} with financial SIC code selection" should {
 
     "redirect the user to the first question about financial compliance" in {
       when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(

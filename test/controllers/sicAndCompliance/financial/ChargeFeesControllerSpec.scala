@@ -20,6 +20,7 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.sicAndCompliance.financial.{AdviceOrConsultancy, ChargeFees}
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
@@ -56,33 +57,30 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
        _ includesText "Does the company charge fees for introducing clients to financial service providers?"
       }
     }
-  }
 
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[ChargeFees]()
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      save4laterReturnsNothing2[ChargeFees]()
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(ChargeFeesController.show) {
-     _ includesText "Does the company charge fees for introducing clients to financial service providers?"
+      callAuthorised(ChargeFeesController.show) {
+        _ includesText "Does the company charge fees for introducing clients to financial service providers?"
+      }
     }
   }
 
-  s"POST ${routes.ChargeFeesController.show()} with Empty data" should {
+  s"POST ${routes.ChargeFeesController.show()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
+        result => status(result) mustBe Status.BAD_REQUEST
       }
-
     }
-  }
 
-  s"POST ${routes.ChargeFeesController.submit()} with Charge Fees Yes selected" should {
+    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+    save4laterExpectsSave[AdviceOrConsultancy]()
 
-    "return 303" in {
-      save4laterExpectsSave[AdviceOrConsultancy]()
+    "return 303 with charge fees Yes" in {
       submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> "true"
       )) {
@@ -90,12 +88,8 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
           response redirectsTo s"$contextRoot/does-additional-work-when-introducing-client-to-financial-service-provider"
       }
     }
-  }
 
-  s"POST ${routes.ChargeFeesController.submit()} with Charge Fees No selected" should {
-
-    "return 303" in {
-      save4laterExpectsSave[AdviceOrConsultancy]()
+    "return 303 with charge fees No" in {
       submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> "false"
       )) {

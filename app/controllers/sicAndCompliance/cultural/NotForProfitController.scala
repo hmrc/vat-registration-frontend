@@ -18,16 +18,18 @@ package controllers.sicAndCompliance.cultural
 
 import javax.inject.Inject
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.CommonPlayDependencies
+import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.cultural.NotForProfitForm
-import models.{FinancialCompliancePath, LabourCompliancePath, S4LVatSicAndCompliance}
 import models.view.sicAndCompliance.cultural.NotForProfit
+import models.{FinancialCompliancePath, LabourCompliancePath, S4LVatSicAndCompliance}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
 
 class NotForProfitController @Inject()(ds: CommonPlayDependencies)
-                                      (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+                                      (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends ComplianceExitController(ds, vrs) {
 
   val form = NotForProfitForm.form
 
@@ -42,6 +44,6 @@ class NotForProfitController @Inject()(ds: CommonPlayDependencies)
         _ <- save(S4LVatSicAndCompliance())
         _ <- save(data)
         _ <- vrs.deleteElements(List(FinancialCompliancePath, LabourCompliancePath))
-      } yield Redirect(controllers.sicAndCompliance.routes.ComplianceExitController.exit())))
+      } yield Redirect(submitAndExit)))
 
 }
