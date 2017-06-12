@@ -79,8 +79,8 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
     )
 
     "redirect to next screen when user is eligible to register for VAT using this service" in {
+      when(mockVatRegService.submitVatEligibility()(any())).thenReturn(validServiceEligibility.pure)
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
-
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
         save4laterReturnsViewModel(validServiceEligibility)()
         save4laterExpectsSave[VatServiceEligibility]()
@@ -94,10 +94,10 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
     }
 
     "redirect to next screen when eligible and nothing in s4l or backend" in {
+      when(mockVatRegService.submitVatEligibility()(any())).thenReturn(validServiceEligibility.pure)
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
         save4laterReturnsNothing2[VatServiceEligibility]()
-
         when(mockVatRegService.getVatScheme()(any())).thenReturn(validVatScheme.copy(vatServiceEligibility = None).pure)
         save4laterExpectsSave[VatServiceEligibility]()
 
@@ -113,7 +113,6 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
     "redirect to ineligible screen when user is NOT eligible to register for VAT using this service" in {
       when(mockVatRegService.submitVatEligibility()(any())).thenReturn(validServiceEligibility.pure)
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
-
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
         save4laterReturnsViewModel(validServiceEligibility)()
         save4laterExpectsSave[VatServiceEligibility]()
