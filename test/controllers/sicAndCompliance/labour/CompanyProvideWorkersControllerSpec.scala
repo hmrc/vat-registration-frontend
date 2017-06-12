@@ -39,7 +39,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
   s"GET ${sicAndCompliance.labour.routes.CompanyProvideWorkersController.show()}" should {
 
     "return HTML when there's a Company Provide Workers model in S4L" in {
-      save4laterReturns2(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO))()
+      save4laterReturnsViewModel(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO))()
       submitAuthorised(CompanyProvideWorkersController.show(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> ""
       )) {

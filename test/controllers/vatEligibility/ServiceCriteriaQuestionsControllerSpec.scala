@@ -30,7 +30,7 @@ import services.VatRegistrationService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistrationFixture  with S4LMockSugar {
+class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   val mockVatRegService = mock[VatRegistrationService]
 
@@ -48,7 +48,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
   "GET ServiceCriteriaQuestionsController.show()" should {
 
     "return HTML for relevant page with no data in the form" in {
-      save4laterReturns2[VatServiceEligibility](validServiceEligibility)()
+      save4laterReturnsViewModel[VatServiceEligibility](validServiceEligibility)()
 
       val eligibilityQuestions = Seq[(EligibilityQuestion, String)](
         HaveNinoQuestion -> "Do you have a National Insurance number?",
@@ -67,8 +67,6 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
   "POST ServiceCriteriaQuestionsController.submit()" should {
 
-    val dummyCacheMap = CacheMap("id", Map())
-
     def urlForQuestion(eligibilityQuestion: EligibilityQuestion): String =
       controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(eligibilityQuestion.name).url
 
@@ -84,9 +82,8 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
 
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
-        save4laterReturns2[VatServiceEligibility](validServiceEligibility)()
-        when(mockS4LService.save[VatServiceEligibility](any())(any(), any(), any()))
-          .thenReturn(dummyCacheMap.pure)
+        save4laterReturnsViewModel(validServiceEligibility)()
+        save4laterExpectsSave[VatServiceEligibility]()
 
         submitAuthorised(TestController.submit(currentQuestion.name),
           FakeRequest().withFormUrlEncodedBody(
@@ -98,14 +95,11 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
     "redirect to next screen when eligible and nothing in s4l or backend" in {
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
-
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
         save4laterReturnsNothing2[VatServiceEligibility]()
 
-        when(mockVatRegService.getVatScheme()(any()))
-          .thenReturn(validVatScheme.copy(vatServiceEligibility = None).pure)
-        when(mockS4LService.save[VatServiceEligibility](any())(any(), any(), any()))
-          .thenReturn(dummyCacheMap.pure)
+        when(mockVatRegService.getVatScheme()(any())).thenReturn(validVatScheme.copy(vatServiceEligibility = None).pure)
+        save4laterExpectsSave[VatServiceEligibility]()
 
         submitAuthorised(TestController.submit(currentQuestion.name),
           FakeRequest().withFormUrlEncodedBody(
@@ -117,15 +111,13 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
 
     "redirect to ineligible screen when user is NOT eligible to register for VAT using this service" in {
+      when(mockVatRegService.submitVatEligibility()(any())).thenReturn(validServiceEligibility.pure)
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
 
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
-        save4laterReturns2[VatServiceEligibility](validServiceEligibility)()
-
-        when(mockS4LService.save[VatServiceEligibility](any())(any(), any(), any()))
-          .thenReturn(dummyCacheMap.pure)
-        when(mockKeystoreConnector.cache[String](any(), any())(any(), any()))
-          .thenReturn(dummyCacheMap.pure)
+        save4laterReturnsViewModel(validServiceEligibility)()
+        save4laterExpectsSave[VatServiceEligibility]()
+        when(mockKeystoreConnector.cache[String](any(), any())(any(), any())).thenReturn(CacheMap("id", Map()).pure)
 
         submitAuthorised(TestController.submit(currentQuestion.name),
           FakeRequest().withFormUrlEncodedBody(

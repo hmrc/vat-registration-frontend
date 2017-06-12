@@ -39,7 +39,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
   s"GET ${routes.ApplyEoriController.show()}" should {
 
     "return HTML when there's a Apply Eori model in S4L" in {
-      save4laterReturns2(ApplyEori(ApplyEori.APPLY_EORI_YES))()
+      save4laterReturnsViewModel(ApplyEori(ApplyEori.APPLY_EORI_YES))()
       submitAuthorised(ApplyEoriController.show(), fakeRequest.withFormUrlEncodedBody("applyEoriRadio" -> "")) {
         _ includesText "You need to apply for an Economic Operator Registration and Identification (EORI) number"
       }

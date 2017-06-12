@@ -55,7 +55,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
     "return HTML Voluntary Registration Reason page with no Selection" in {
       val voluntaryRegistrationReason = VoluntaryRegistrationReason("")
 
-      save4laterReturns2(voluntaryRegistrationReason)()
+      save4laterReturnsViewModel(voluntaryRegistrationReason)()
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.show(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> ""

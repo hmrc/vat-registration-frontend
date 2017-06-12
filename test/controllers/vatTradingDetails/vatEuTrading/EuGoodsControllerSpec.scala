@@ -45,7 +45,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "return HTML when there's a Eu Goods model in S4L" in {
       val euGoods = EuGoods(EuGoods.EU_GOODS_YES)
 
-      save4laterReturns2(euGoods)()
+      save4laterReturnsViewModel(euGoods)()
 
       submitAuthorised(EuGoodsController.show(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> ""

@@ -20,7 +20,7 @@ import common.exceptions.DownstreamExceptions.RegistrationIdNotFoundException
 import fixtures.{S4LFixture, VatRegistrationFixture}
 import helpers.VatRegSpec
 import models.api.VatServiceEligibility
-import models.{S4LKey, ViewModelFormat}
+import models.{S4LKey, S4LVatEligibility, ViewModelFormat}
 import org.mockito.Matchers.{any, eq => =~=}
 import org.mockito.Mockito._
 import play.api.libs.json.Json
@@ -65,14 +65,14 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
     "save a form with the correct key" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
       private val cacheMap = CacheMap("s-date", Map.empty)
-      mockS4LSaveForm[VatServiceEligibility](cacheMap)
-      service.save[VatServiceEligibility](testServiceEligibility) returns cacheMap
+      mockS4LSaveForm[S4LVatEligibility](cacheMap)
+      service.save(S4LVatEligibility(vatEligibility = Some(testServiceEligibility))) returns cacheMap
     }
 
     "fetch a form with the correct key" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
-      mockS4LFetchAndGet[VatServiceEligibility](S4LKey[VatServiceEligibility].key, Some(testServiceEligibility))
-      service.fetchAndGet[VatServiceEligibility]() returns Some(testServiceEligibility)
+      mockS4LFetchAndGet(S4LKey[S4LVatEligibility].key, Some(S4LVatEligibility(vatEligibility = Some(testServiceEligibility))))
+      service.fetchAndGet[S4LVatEligibility]() returns Some(S4LVatEligibility(vatEligibility = Some(testServiceEligibility)))
     }
 
     "clear down S4L data" in new Setup {

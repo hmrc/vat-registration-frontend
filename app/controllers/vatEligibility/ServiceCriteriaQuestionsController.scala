@@ -72,7 +72,7 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
       badForm => BadRequest(viewForQuestion(question, badForm)).pure,
       data => for {
         vatEligibility <- viewModel[VatServiceEligibility]().getOrElse(VatServiceEligibility())
-        _ <- s4LService.save(vatEligibility.setAnswer(question, data.answer))
+        _ <- save(vatEligibility.setAnswer(question, data.answer))
         exit = data.answer == question.exitAnswer
         _ <- keystore.cache(INELIGIBILITY_REASON_KEY, question.name) onlyIf exit
         _ <- vrs.submitVatEligibility() onlyIf question == CompanyWillDoAnyOfQuestion

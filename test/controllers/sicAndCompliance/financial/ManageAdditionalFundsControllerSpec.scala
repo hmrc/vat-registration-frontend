@@ -39,7 +39,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
   s"GET ${routes.ManageAdditionalFundsController.show()}" should {
 
     "return HTML when there's a Manage Additional Funds model in S4L" in {
-      save4laterReturns2(ManageAdditionalFunds(true))()
+      save4laterReturnsViewModel(ManageAdditionalFunds(true))()
 
       submitAuthorised(ManageAdditionalFundsController.show(), fakeRequest.withFormUrlEncodedBody(
         "manageAdditionalFundsRadio" -> ""

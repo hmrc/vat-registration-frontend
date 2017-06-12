@@ -18,6 +18,7 @@ package helpers
 
 import builders.AuthBuilder
 import cats.data.OptionT
+import cats.instances.FutureInstances
 import cats.syntax.ApplicativeSyntax
 import controllers.CommonPlayDependencies
 import fixtures.LoginFixture
@@ -37,10 +38,9 @@ import scala.concurrent.Future
 
 class VatRegSpec extends PlaySpec with OneAppPerSuite
   with MockitoSugar with VatMocks with LoginFixture with Inside with Inspectors
-  with ScalaFutures with ApplicativeSyntax with BeforeAndAfterEach {
+  with ScalaFutures with ApplicativeSyntax with FutureInstances with BeforeAndAfterEach {
 
   implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
-  implicit val futureInstances = cats.instances.future.catsStdInstancesForFuture
 
   import play.api.test.Helpers._
 

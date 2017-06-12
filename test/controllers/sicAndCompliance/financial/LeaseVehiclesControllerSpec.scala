@@ -35,7 +35,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
   s"GET ${routes.LeaseVehiclesController.show()}" should {
 
     "return HTML when there's a Lease Vehicles or Equipment - model in S4L" in {
-      save4laterReturns2(LeaseVehicles(true))()
+      save4laterReturnsViewModel(LeaseVehicles(true))()
 
       callAuthorised(LeaseVehiclesController.show()) {
         _ includesText "Is the company involved in leasing vehicles or equipment to customers?"

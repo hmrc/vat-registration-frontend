@@ -38,7 +38,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
   s"GET ${routes.ActAsIntermediaryController.show()}" should {
 
     "return HTML when there's an Act as Intermediary model in S4L" in {
-      save4laterReturns2(ActAsIntermediary(true))()
+      save4laterReturnsViewModel(ActAsIntermediary(true))()
 
       submitAuthorised(ActAsIntermediaryController.show(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> ""

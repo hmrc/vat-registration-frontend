@@ -41,7 +41,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"GET ${routes.AdviceOrConsultancyController.show()}" should {
 
     "return HTML when there's a Advice Or Consultancy model in S4L" in {
-      save4laterReturns2(AdviceOrConsultancy(true))()
+      save4laterReturnsViewModel(AdviceOrConsultancy(true))()
       submitAuthorised(AdviceOrConsultancyController.show(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> ""
       )) {

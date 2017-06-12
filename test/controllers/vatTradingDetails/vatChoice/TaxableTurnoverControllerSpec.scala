@@ -39,7 +39,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
     "return HTML when there's a start date in S4L" in {
       val taxableTurnover = TaxableTurnover(TaxableTurnover.TAXABLE_YES)
 
-      save4laterReturns2(taxableTurnover)()
+      save4laterReturnsViewModel(taxableTurnover)()
 
       submitAuthorised(TestTaxableTurnoverController.show(), fakeRequest.withFormUrlEncodedBody(
         "taxableTurnoverRadio" -> ""

@@ -36,7 +36,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
   s"GET ${vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show()}" should {
 
     "return HTML when there's a Vat Return Frequency model in S4L" in {
-      save4laterReturns2(VatReturnFrequency(VatReturnFrequency.MONTHLY))()
+      save4laterReturnsViewModel(VatReturnFrequency(VatReturnFrequency.MONTHLY))()
 
       submitAuthorised(Controller.show(),
         fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> "")) {

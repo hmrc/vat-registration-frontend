@@ -44,7 +44,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture w
     "return HTML when there's a trading name in S4L" in {
       val tradingName = TradingNameView(TradingNameView.TRADING_NAME_YES, Some("Test Trading Name"))
 
-      save4laterReturns2(tradingName)()
+      save4laterReturnsViewModel(tradingName)()
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
