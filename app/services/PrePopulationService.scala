@@ -27,7 +27,7 @@ import connectors.{OptionalResponse, PPConnector}
 import models.api._
 import models.external.Officer
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerView}
-import models.{ApiModelTransformer, S4LVatLodgingOfficer}
+import models.{ApiModelTransformer, S4LPpob, S4LVatLodgingOfficer}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -39,6 +39,8 @@ trait PrePopService {
   def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionalResponse[LocalDate]
 
   def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]]
+
+  def getPpobAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]]
 
   def getOfficerList()(implicit headerCarrier: HeaderCarrier): Future[Seq[Officer]]
 
@@ -63,10 +65,29 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
   override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]] = {
     import cats.instances.list._
     import cats.syntax.traverse._
+    import ScrsAddress.modelTransformerOfficerHomeAddressView
+
     val addressFromII = iis.getRegisteredOfficeAddress()
     val addressFromBE = OptionT(vrs.getVatScheme() map ApiModelTransformer[ScrsAddress].toViewModel)
     val addressFromS4L = OptionT(s4l.fetchAndGet[S4LVatLodgingOfficer]()).subflatMap { group =>
       group.officerHomeAddress.flatMap(_.address)
+    }
+
+    List(addressFromII, addressFromBE, addressFromS4L).traverse(_.value).map(_.flatten.distinct)
+
+    // TODO merge addresses from PrePop service
+    // TODO order the addresses
+  }
+
+  override def getPpobAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]] = {
+    import cats.instances.list._
+    import cats.syntax.traverse._
+    import ScrsAddress.modelTransformerPpobView
+
+    val addressFromII = iis.getRegisteredOfficeAddress()
+    val addressFromBE = OptionT(vrs.getVatScheme() map ApiModelTransformer[ScrsAddress].toViewModel)
+    val addressFromS4L = OptionT(s4l.fetchAndGet[S4LPpob]()).subflatMap { group =>
+      group.address.flatMap(_.address)
     }
 
     List(addressFromII, addressFromBE, addressFromS4L).traverse(_.value).map(_.flatten.distinct)

@@ -40,6 +40,6 @@ class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies)
         .andThen(form => BadRequest(views.html.pages.vatContact.business_contact_details(form)).pure),
       save(_).flatMap(_ =>
         vrs.submitVatContact().map(_
-        => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())))))
+        => Redirect(controllers.ppob.routes.PpobController.show())))))
 
 }

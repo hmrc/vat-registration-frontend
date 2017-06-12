@@ -30,7 +30,8 @@ import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView, OfficerNinoView}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
-import models.{S4LVatContact, S4LVatLodgingOfficer, VatBankAccountPath, ZeroRatedTurnoverEstimatePath}
+import models._
+import models.view.ppob.PpobView
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -111,6 +112,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
         officerNino = Some(OfficerNinoView("")),
         completionCapacity = Some(CompletionCapacityView(""))
       ))
+      save4laterReturns(S4LPpob(address = Some(PpobView(scrsAddress.id, Some(scrsAddress)))))
 
       when(mockRegConnector.upsertVatChoice(any(), any())(any(), any())).thenReturn(validVatChoice.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
@@ -120,6 +122,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.upsertVatEligibility(any(), any())(any(), any())).thenReturn(validServiceEligibility.pure)
       when(mockRegConnector.upsertVatLodgingOfficer(any(), any())(any(), any())).thenReturn(validLodgingOfficer.pure)
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockRegConnector.upsertPpob(any(), any())(any(), any())).thenReturn(scrsAddress.pure)
 
       service.submitVatScheme() completedSuccessfully
     }
@@ -294,6 +297,13 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturnsNothing[S4LVatLodgingOfficer]()
 
       service.submitVatLodgingOfficer() failedWith classOf[IllegalStateException]
+    }
+
+    "submitPpob should fail if there's not trace of PPOB in neither backend nor S4L" in new Setup {
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+      save4laterReturnsNothing[S4LPpob]()
+
+      service.submitPpob() failedWith classOf[IllegalStateException]
     }
 
   }
