@@ -624,10 +624,13 @@ pages.officerNino.para1                                   = You can find your Na
 validation.officerNino.missing                            = Enter your National Insurance number
 validation.officerNino.invalid                            = Enter a valid National Insurance number
 
-## Officer Complete Capacity
-pages.completionCapacity.title                           = Completion Capacity
+## Officer Completion Capacity
+pages.completionCapacity.title                           = Relationship to the company
 pages.completionCapacity.heading                         = Who is registering the company for VAT?
-pages.completionCapacity.someone.else                    = Someone else
+pages.completionCapacity.p1                              = Only formal officers of the company (directors or secretaries) can use this service.
+pages.completionCapacity.panel.title                     = What if I''m not a company director or secretary?
+pages.completionCapacity.panel.p1                        = If you''re an agent for the company, you''ll need to log in to Government Gateway using your agent ID and <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register for VAT with another HMRC service</a>.
+pages.completionCapacity.panel.p2                        = Otherwise you can''t register your company for VAT. You''ll need to get a director, secretary or agent to do it for you.
 validation.completionCapacity.missing                    = Tell us who is registering the company for VAT
 
 ## Officer Contact Details

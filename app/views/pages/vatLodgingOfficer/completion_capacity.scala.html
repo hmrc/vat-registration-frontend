@@ -17,13 +17,24 @@
           completionCapacityForm
       )
 
+      <p>@messages("pages.completionCapacity.p1")</p>
+
+      <details role="group">
+          <summary role="button" aria-controls="details-content-0" aria-expanded="false">
+              <span class="summary">@messages("pages.completionCapacity.panel.title")</span>
+          </summary>
+          <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
+              <p>@Html(messages("pages.completionCapacity.panel.p1"))</p>
+              <p>@Html(messages("pages.completionCapacity.panel.p2"))</p>
+          </div>
+      </details>
+
       @govHelpers.form(action = controllers.vatLodgingOfficer.routes.CompletionCapacityController.submit()) {
       <div class="form-group" id="completionCapacityRadio">
 
           @govHelpers.inputRadioGroup(
                   field = completionCapacityForm("completionCapacityRadio"),
-                  officerList.map( officer => (officer.name.id, officer.name.asLabel)) :+
-                          ("other" -> messages("pages.completionCapacity.someone.else")),
+                  officerList.map( officer => (officer.name.id, officer.name.asLabel)),
                   '_labelAfter -> true,
                   '_legend -> messages("pages.completionCapacity.heading"),
                   '_legendClass -> "hidden",
