@@ -323,6 +323,14 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       service.submitVatEligibility() returns validServiceEligibility
     }
 
+    "submitVatEligibility should fail if there's not trace of VatEligibility in neither backend nor S4L" in new Setup {
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+      save4laterReturnsNothing[S4LVatEligibility]()
+
+      service.submitVatEligibility() failedWith classOf[IllegalStateException]
+    }
+
+
     "submitVatLodgingOfficer should process the submission even if VatScheme does not contain a VatLodgingOfficer object" in new Setup {
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       service.submitVatLodgingOfficer() returns validLodgingOfficer
