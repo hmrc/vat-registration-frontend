@@ -102,9 +102,6 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
           redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/business-bank-account"
       }
     }
-  }
-
-  s"POST ${sicAndCompliance.labour.routes.SkilledWorkersController.submit()}" should {
 
     "return 303 with company provide Skilled workers No selected" in {
       submitAuthorised(SkilledWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(

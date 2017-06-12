@@ -57,7 +57,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
       }
     }
 
-    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+    "return HTML when there's nothing in S4L and vatScheme contains no data empty vatScheme" in {
       save4laterReturnsNothing2[AdditionalNonSecuritiesWork]()
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
@@ -74,23 +74,19 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
     "return 400 with Empty data" in {
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
-
     }
 
     when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
     when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
     save4laterExpectsSave[AdditionalNonSecuritiesWork]()
 
-    "return 303" in {
+    "return 303 with Additional Non Securities Work Yes selected" in {
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/business-bank-account")
     }
-  }
 
-  s"POST ${routes.AdditionalNonSecuritiesWorkController.submit()} with Additional Non Securities Work No selected" should {
-
-    "return 303" in {
+    "return 303 with Additional Non Securities Work No selected" in {
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/provides-discretionary-investment-management-services")

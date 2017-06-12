@@ -80,27 +80,20 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
     save4laterExpectsSave[S4LVatSicAndCompliance]()
     save4laterExpectsSave[AdviceOrConsultancy]()
 
-    "return 303" in {
+    "return 303 with Advice Or Consultancy Yes selected" in {
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "true"
       )) {
-        response =>
-          response redirectsTo s"$contextRoot/acts-as-intermediary"
+        response => response redirectsTo s"$contextRoot/acts-as-intermediary"
       }
-
     }
-  }
 
-  s"POST ${routes.AdviceOrConsultancyController.submit()} with Advice Or Consultancy No selected" should {
-
-    "return 303" in {
+    "return 303 with Advice Or Consultancy No selected" in {
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "false"
       )) {
-        response =>
-          response redirectsTo s"$contextRoot/acts-as-intermediary"
+        response => response redirectsTo s"$contextRoot/acts-as-intermediary"
       }
-
     }
   }
 }
