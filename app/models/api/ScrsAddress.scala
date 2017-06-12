@@ -18,6 +18,7 @@ package models.api
 
 import cats.Show.show
 import models.api.ScrsAddress.inlineShow.inline
+import models.view.ppob.PpobView
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import models.{ApiModelTransformer => MT}
 import org.apache.commons.lang3.text.WordUtils
@@ -101,7 +102,9 @@ object ScrsAddress {
     implicit val inline = show((a: ScrsAddress) => normalisedSeq(a).mkString(", "))
   }
 
-  implicit def modelTransformer(implicit t: MT[OfficerHomeAddressView]): MT[ScrsAddress] =
+  implicit def modelTransformerOfficerHomeAddressView(implicit t: MT[OfficerHomeAddressView]): MT[ScrsAddress] =
     MT((vatScheme: VatScheme) => t.toViewModel(vatScheme).flatMap(_.address))
 
+  implicit def modelTransformerPpobView(implicit t: MT[PpobView]): MT[ScrsAddress] =
+    MT((vatScheme: VatScheme) => t.toViewModel(vatScheme).flatMap(_.address))
 }

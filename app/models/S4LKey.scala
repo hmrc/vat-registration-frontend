@@ -79,5 +79,6 @@ object S4LKey {
 
   implicit val vatContact: S4LKey[S4LVatContact] = S4LKey("VatContact")
   implicit val vatLodgingOfficer: S4LKey[S4LVatLodgingOfficer] = S4LKey("VatLodgingOfficer")
+  implicit val ppob: S4LKey[S4LPpob] = S4LKey("S4LPpob")
 
 }

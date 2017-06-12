@@ -83,7 +83,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
       submitAuthorised(
         TestBusinessContactDetailsController.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com", "mobile" -> "0123456789")
-      )(_ redirectsTo s"$contextRoot/describe-what-company-does")
+      )(_ redirectsTo s"$contextRoot/where-will-company-carry-out-most-of-its-business-activities")
 
       verify(mockVatRegistrationService).submitVatContact()(any())
     }

@@ -108,7 +108,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
     submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@|
-      submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer map { case _ => () }
+      submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer |@| submitPpob map { case _ => () }
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
 
@@ -252,6 +252,20 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     } yield response
   }
 
+  def submitPpob()(implicit hc: HeaderCarrier): Future[ScrsAddress] = {
+
+    def merge(fresh: Option[S4LPpob], vs: VatScheme): VatScheme =
+      fresh.fold(
+        vs
+      ) { s4l =>
+        s4l.address.fold(vs)(ppobview => vs.copy(ppob = ppobview.address))
+      }
+
+    for {
+      (vs, vlo) <- (getVatScheme() |@| s4l[S4LPpob]()).tupled
+      response <- vatRegConnector.upsertPpob(vs.id, merge(vlo, vs).ppob.getOrElse(throw fail("PPOB is null")))
+    } yield response
+  }
 
 
   private def fail(logicalGroup: String): Exception =
