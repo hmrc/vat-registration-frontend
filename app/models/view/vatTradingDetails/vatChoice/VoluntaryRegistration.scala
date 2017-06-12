@@ -18,7 +18,7 @@ package models.view.vatTradingDetails.vatChoice
 
 import models.api.VatChoice.NECESSITY_VOLUNTARY
 import models.api.{VatChoice, VatScheme, VatTradingDetails}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class VoluntaryRegistration(yesNo: String)
@@ -34,6 +34,12 @@ object VoluntaryRegistration {
   val valid = (item: String) => List(REGISTER_YES, REGISTER_NO).contains(item.toUpperCase)
 
   implicit val format = Json.format[VoluntaryRegistration]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LTradingDetails) => group.voluntaryRegistration,
+    updateF = (c: VoluntaryRegistration, g: Option[S4LTradingDetails]) =>
+      g.getOrElse(S4LTradingDetails()).copy(voluntaryRegistration = Some(c))
+  )
 
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>
     vs.tradingDetails.map(_.vatChoice.necessity).collect {

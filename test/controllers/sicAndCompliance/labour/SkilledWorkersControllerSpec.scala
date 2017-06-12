@@ -41,7 +41,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
   s"GET ${sicAndCompliance.labour.routes.SkilledWorkersController.show()}" should {
 
     "return HTML when there's a Company Provide Skilled Workers model in S4L" in {
-      save4laterReturns2(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO))()
+      save4laterReturnsViewModel(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO))()
 
       submitAuthorised(SkilledWorkersController.show(), fakeRequest.withFormUrlEncodedBody(
         "skilledWorkersRadio" -> ""

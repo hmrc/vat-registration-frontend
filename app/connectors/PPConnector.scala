@@ -23,7 +23,8 @@ import javax.inject.{Inject, Singleton}
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
-import models.ApiModelTransformer
+import models.api.VatTradingDetails
+import models.{ApiModelTransformer, S4LTradingDetails}
 import models.external.{AccountingDetails, CorporationTaxRegistration}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason.INTENDS_TO_SELL
@@ -63,11 +64,11 @@ class PrePopConnector @Inject()(s4l: S4LService, vrs: VatRegistrationService) ex
   override def getCompanyRegistrationDetails(regId: String)
                                             (implicit hc: HeaderCarrier, rds: HttpReads[CorporationTaxRegistration])
   : OptionalResponse[CorporationTaxRegistration] =
-    OptionT(s4l.fetchAndGet[VoluntaryRegistrationReason]()).orElseF(vrs.getVatScheme() map ApiModelTransformer[VoluntaryRegistrationReason].toViewModel).collect {
+    OptionT(s4l.fetchAndGet[S4LTradingDetails]()).subflatMap(_.voluntaryRegistrationReason)
+      .orElseF(vrs.getVatScheme() map ApiModelTransformer[VoluntaryRegistrationReason].toViewModel).collect {
       case VoluntaryRegistrationReason(INTENDS_TO_SELL) => CorporationTaxRegistration(
         Some(AccountingDetails("", Some(LocalDate.now.plusDays(7) format expectedFormat))))
     }
-
 
   //    OptionT(
   //      http.GET[CorporationTaxRegistration](s"$companyRegUrl/company-registration/corporation-tax-registration/$regId/corporation-tax-registration")

@@ -17,7 +17,7 @@
 package models.view.vatTradingDetails
 
 import models.api.{TradingName, VatEuTrading, VatScheme, VatTradingDetails}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.Json
 
 case class TradingNameView(
@@ -33,6 +33,12 @@ object TradingNameView {
   val valid = (item: String) => List(TRADING_NAME_YES, TRADING_NAME_NO).contains(item.toUpperCase)
 
   implicit val format = Json.format[TradingNameView]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LTradingDetails) => group.tradingName,
+    updateF = (c: TradingNameView, g: Option[S4LTradingDetails]) =>
+      g.getOrElse(S4LTradingDetails()).copy(tradingName = Some(c))
+  )
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer { vs: VatScheme =>

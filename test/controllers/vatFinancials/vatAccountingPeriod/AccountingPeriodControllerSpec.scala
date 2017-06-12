@@ -28,7 +28,6 @@ import scala.concurrent.Future
 
 class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-
   object Controller extends AccountingPeriodController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
@@ -38,7 +37,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"GET ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show()}" should {
 
     "return HTML when there's a Accounting Period model in S4L" in {
-      save4laterReturns2(AccountingPeriod(""))()
+      save4laterReturnsViewModel(AccountingPeriod(""))()
 
       submitAuthorised(Controller.show(),
         fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> "")) {
@@ -71,41 +70,21 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     }
   }
 
-  s"POST ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.submit()} with accounting period selected is January, April, July and October" should {
+  s"POST ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.submit()} with any accounting period selected" should {
 
     "return 303" in {
-      save4laterExpectsSave[AccountingPeriod]()
-      submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> AccountingPeriod.JAN_APR_JUL_OCT)) {
-        _ redirectsTo s"$contextRoot/check-your-answers"
-      }
+      forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
+        accountingPeriod =>
+          save4laterExpectsSave[AccountingPeriod]()
+          when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
 
+          submitAuthorised(Controller.submit(),
+            fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
+            _ redirectsTo s"$contextRoot/check-your-answers"
+          }
+      }
     }
   }
 
-  s"POST ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.submit()} with accounting period selected is February, May, August and November" should {
-
-    "return 303" in {
-      save4laterExpectsSave[AccountingPeriod]()
-
-      submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> AccountingPeriod.FEB_MAY_AUG_NOV)) {
-        _ redirectsTo s"$contextRoot/check-your-answers"
-      }
-    }
-
-  }
-
-  s"POST ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.submit()} with accounting period selected is March, June, September and December" should {
-
-    "return 303" in {
-      save4laterExpectsSave[AccountingPeriod]()
-      submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> AccountingPeriod.MAR_JUN_SEP_DEC)) {
-        _ redirectsTo s"$contextRoot/check-your-answers"
-      }
-
-    }
-  }
 
 }

@@ -36,7 +36,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"GET ${vatFinancials.routes.VatChargeExpectancyController.show()}" should {
 
     "return HTML when there's a Vat Charge Expectancy model in S4L" in {
-      save4laterReturns2(VatChargeExpectancy.yes)()
+      save4laterReturnsViewModel(VatChargeExpectancy.yes)()
 
       callAuthorised(Controller.show()) {
         _ includesText "Do you expect to reclaim more VAT than you charge?"

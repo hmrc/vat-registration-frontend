@@ -18,7 +18,7 @@ package models.view.vatTradingDetails.vatEuTrading
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatEuTrading, VatTradingDetails}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LTradingDetails, ViewModelTransformer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -57,5 +57,23 @@ class ApplyEoriSpec extends UnitSpec with VatRegistrationFixture with Inside {
     }
 
   }
+
+  "ViewModelFormat" should {
+    val s4LTradingDetails: S4LTradingDetails = S4LTradingDetails(applyEori = Some(validApplyEori))
+
+    "extract applyEori from vatTradingDetails" in {
+      ApplyEori.viewModelFormat.read(s4LTradingDetails) shouldBe Some(validApplyEori)
+    }
+
+    "update empty vatContact with applyEori" in {
+      ApplyEori.viewModelFormat.update(validApplyEori, Option.empty[S4LTradingDetails]).applyEori shouldBe Some(validApplyEori)
+    }
+
+    "update non-empty vatContact with applyEori" in {
+      ApplyEori.viewModelFormat.update(validApplyEori, Some(s4LTradingDetails)).applyEori shouldBe Some(validApplyEori)
+    }
+
+  }
+  
 }
 

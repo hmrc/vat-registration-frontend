@@ -40,7 +40,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
   s"GET ${sicAndCompliance.labour.routes.WorkersController.show()}" should {
 
     "return HTML when there's a Workers model in S4L" in {
-      save4laterReturns2(Workers(5))()
+      save4laterReturnsViewModel(Workers(5))()
       submitAuthorised(WorkersController.show(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {

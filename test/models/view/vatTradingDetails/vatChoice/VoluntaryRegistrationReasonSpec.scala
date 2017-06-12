@@ -19,7 +19,7 @@ package models.view.vatTradingDetails.vatChoice
 import fixtures.VatRegistrationFixture
 import models.api.VatTradingDetails
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason.{INTENDS_TO_SELL, NEITHER, SELLS}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LTradingDetails, ViewModelTransformer}
 import org.scalatest.{Inspectors, Matchers}
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -84,5 +84,24 @@ class VoluntaryRegistrationReasonSpec extends UnitSpec with Matchers with Inspec
     }
 
   }
+
+  "ViewModelFormat" should {
+    val validVoluntaryRegistrationReason = VoluntaryRegistrationReason(VoluntaryRegistrationReason.INTENDS_TO_SELL)
+    val s4LTradingDetails: S4LTradingDetails = S4LTradingDetails(voluntaryRegistrationReason = Some(validVoluntaryRegistrationReason))
+
+    "extract voluntaryRegistrationReason from vatTradingDetails" in {
+      VoluntaryRegistrationReason.viewModelFormat.read(s4LTradingDetails) shouldBe Some(validVoluntaryRegistrationReason)
+    }
+
+    "update empty vatContact with voluntaryRegistrationReason" in {
+      VoluntaryRegistrationReason.viewModelFormat.update(validVoluntaryRegistrationReason, Option.empty[S4LTradingDetails]).voluntaryRegistrationReason shouldBe Some(validVoluntaryRegistrationReason)
+    }
+
+    "update non-empty vatContact with voluntaryRegistrationReason" in {
+      VoluntaryRegistrationReason.viewModelFormat.update(validVoluntaryRegistrationReason, Some(s4LTradingDetails)).voluntaryRegistrationReason shouldBe Some(validVoluntaryRegistrationReason)
+    }
+
+  }
+
 
 }
