@@ -38,7 +38,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
   s"GET ${routes.AdditionalNonSecuritiesWorkController.show()}" should {
 
     "return HTML when there's a Additional Non Securities Work model in S4L" in {
-      save4laterReturns2(AdditionalNonSecuritiesWork(true))()
+      save4laterReturnsViewModel(AdditionalNonSecuritiesWork(true))()
 
       submitAuthorised(AdditionalNonSecuritiesWorkController.show(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesRadio" -> "")) {
@@ -86,7 +86,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
 
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/business-bank-account")
+      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
     }
   }
 

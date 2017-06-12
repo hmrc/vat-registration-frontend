@@ -18,7 +18,7 @@ package models.view.vatTradingDetails.vatEuTrading
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatEuTrading, VatTradingDetails}
-import models.{ApiModelTransformer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LTradingDetails, ViewModelTransformer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -57,5 +57,23 @@ class EuGoodsSpec extends UnitSpec with VatRegistrationFixture with Inside {
     }
 
   }
+
+  "ViewModelFormat" should {
+    val s4LTradingDetails: S4LTradingDetails = S4LTradingDetails(euGoods = Some(validEuGoods))
+
+    "extract euGoods from vatTradingDetails" in {
+      EuGoods.viewModelFormat.read(s4LTradingDetails) shouldBe Some(validEuGoods)
+    }
+
+    "update empty vatContact with euGoods" in {
+      EuGoods.viewModelFormat.update(validEuGoods, Option.empty[S4LTradingDetails]).euGoods shouldBe Some(validEuGoods)
+    }
+
+    "update non-empty vatContact with euGoods" in {
+      EuGoods.viewModelFormat.update(validEuGoods, Some(s4LTradingDetails)).euGoods shouldBe Some(validEuGoods)
+    }
+
+  }
+  
 }
 

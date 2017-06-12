@@ -16,15 +16,7 @@
 
 package models
 
-import models.api.VatServiceEligibility
-import models.view.sicAndCompliance.BusinessActivityDescription
-import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.financial._
-import models.view.sicAndCompliance.labour.{SkilledWorkers, _}
 import models.view.test.SicStub
-import models.view.vatTradingDetails._
-import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
-import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 
 trait S4LKey[T] {
 
@@ -40,31 +32,10 @@ object S4LKey {
     override val key = k
   }
 
-  implicit val applyeori: S4LKey[ApplyEori] = S4LKey("ApplyEori")
-  implicit val startDateS4LKey: S4LKey[StartDateView] = S4LKey("StartDate")
-  implicit val tradingNameS4LKey: S4LKey[TradingNameView] = S4LKey("TradingNameView")
-  implicit val euGoods: S4LKey[EuGoods] = S4LKey("EuGoods")
-  implicit val voluntaryRegistrationS4LKey: S4LKey[VoluntaryRegistration] = S4LKey("VoluntaryRegistration")
-  implicit val voluntaryRegistrationReasonS4LKey: S4LKey[VoluntaryRegistrationReason] = S4LKey("VoluntaryRegistrationReason")
-  implicit val taxableTurnoverS4LKey: S4LKey[TaxableTurnover] = S4LKey("TaxableTurnover")
-  implicit val businessActivityDescriptionS4LKey: S4LKey[BusinessActivityDescription] = S4LKey("BusinessActivityDescription")
   implicit val sicStub: S4LKey[SicStub] = S4LKey("SicStub")
-  implicit val notForProfit: S4LKey[NotForProfit] = S4LKey("NotForProfit")
-  implicit val companyProvideWorkers: S4LKey[CompanyProvideWorkers] = S4LKey("CompanyProvideWorkers")
-  implicit val workers: S4LKey[Workers] = S4LKey("Workers")
-  implicit val temporaryContracts: S4LKey[TemporaryContracts] = S4LKey("TemporaryContracts")
-  implicit val skilledWorkers: S4LKey[SkilledWorkers] = S4LKey("SkilledWorkers")
-  implicit val adviceOrConsultancy: S4LKey[AdviceOrConsultancy] = S4LKey("AdviceOrConsultancy")
-  implicit val actAsIntermediary: S4LKey[ActAsIntermediary] = S4LKey("ActAsIntermediary")
-  implicit val chargeFees: S4LKey[ChargeFees] = S4LKey("ChargeFees")
-  implicit val investmentFundManagement: S4LKey[InvestmentFundManagement] = S4LKey("InvestmentFundManagement")
-  implicit val additionalNonSecuritiesWork: S4LKey[AdditionalNonSecuritiesWork] = S4LKey("AdditionalNonSecuritiesWork")
-  implicit val leaseVehicles: S4LKey[LeaseVehicles] = S4LKey("LeaseVehicles")
-  implicit val discretionaryInvestmentManagementServices: S4LKey[DiscretionaryInvestmentManagementServices] = S4LKey("DiscretionaryInvestmentManagementServices")
-  implicit val manageAdditionalFunds: S4LKey[ManageAdditionalFunds] = S4LKey("ManageAdditionalFunds")
-  implicit val vatServiceEligibility: S4LKey[VatServiceEligibility] = S4LKey("VatServiceEligibility")
-
+  implicit val vatServiceEligibility: S4LKey[S4LVatEligibility] = S4LKey("VatServiceEligibility")
   implicit val vatContact: S4LKey[S4LVatContact] = S4LKey("VatContact")
+  implicit val tradingDetails: S4LKey[S4LTradingDetails] = S4LKey("VatTradingDetails")
   implicit val vatLodgingOfficer: S4LKey[S4LVatLodgingOfficer] = S4LKey("VatLodgingOfficer")
   implicit val vatFinancials: S4LKey[S4LVatFinancials] = S4LKey("VatFinancials")
   implicit val sicAndCompliance: S4LKey[S4LVatSicAndCompliance] = S4LKey("VatSicAndCompliance")

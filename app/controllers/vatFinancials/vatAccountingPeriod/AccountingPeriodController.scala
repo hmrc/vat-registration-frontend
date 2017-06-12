@@ -38,6 +38,9 @@ class AccountingPeriodController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatFinancials.vatAccountingPeriod.accounting_period(badForm)).pure,
-      data => save(data) map (_ => Redirect(controllers.routes.SummaryController.show()))))
+      data => for {
+        _ <- save(data)
+        _ <- vrs.submitVatFinancials()
+      } yield Redirect(controllers.routes.SummaryController.show())))
 
 }

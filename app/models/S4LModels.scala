@@ -27,7 +27,7 @@ import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatRetur
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
-import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
+import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.libs.json.{Json, OFormat}
 
@@ -50,6 +50,7 @@ object S4LVatFinancials {
 
 final case class S4LTradingDetails
 (
+  taxableTurnover: Option[TaxableTurnover] = None,
   tradingName: Option[TradingNameView] = None,
   startDate: Option[StartDateView] = None,
   voluntaryRegistration: Option[VoluntaryRegistration] = None,
@@ -88,6 +89,11 @@ final case class S4LVatSicAndCompliance
 
 object S4LVatSicAndCompliance {
   implicit val format: OFormat[S4LVatSicAndCompliance] = Json.format[S4LVatSicAndCompliance]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LVatSicAndCompliance) => Some(group),
+    updateF = (c: S4LVatSicAndCompliance, g: Option[S4LVatSicAndCompliance]) => c
+  )
 }
 
 final case class S4LVatContact

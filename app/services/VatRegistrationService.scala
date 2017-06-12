@@ -23,13 +23,6 @@ import connectors.{CompanyRegistrationConnector, VatRegistrationConnector}
 import models._
 import models.api._
 import models.external.CoHoCompanyProfile
-import models.view.sicAndCompliance.BusinessActivityDescription
-import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.financial._
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
-import models.view.vatTradingDetails.TradingNameView
-import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
-import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -75,7 +68,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   private def s4l[T: Format : S4LKey]()(implicit headerCarrier: HeaderCarrier) =
     s4LService.fetchAndGet[T]()
 
-  private def update[C, G](c: Option[C], vs: VatScheme)(implicit vmTransformer: ViewModelTransformer[C, G]): G => G =
+  private def update[C, G](c: Option[C])(implicit vmTransformer: ViewModelTransformer[C, G]): G => G =
     g => c.map(vmTransformer.toApi(_, g)).getOrElse(g)
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
@@ -110,12 +103,12 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       fresh.fold(
         vs.financials.getOrElse(throw fail("VatFinancials"))
       ) { s4l =>
-        update(s4l.estimateVatTurnover, vs)
-          .andThen(update(s4l.zeroRatedTurnoverEstimate, vs))
-          .andThen(update(s4l.vatChargeExpectancy, vs))
-          .andThen(update(s4l.vatReturnFrequency, vs))
-          .andThen(update(s4l.accountingPeriod, vs))
-          .andThen(update(s4l.companyBankAccountDetails, vs))
+        update(s4l.estimateVatTurnover)
+          .andThen(update(s4l.zeroRatedTurnoverEstimate))
+          .andThen(update(s4l.vatChargeExpectancy))
+          .andThen(update(s4l.vatReturnFrequency))
+          .andThen(update(s4l.accountingPeriod))
+          .andThen(update(s4l.companyBankAccountDetails))
           .apply(vs.financials.getOrElse(VatFinancials.empty)) //TODO remove the "seeding" with empty
       }
 
@@ -130,20 +123,20 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       fresh.fold(
         vs.vatSicAndCompliance.getOrElse(throw fail("VatSicAndCompliance"))
       ) { s4l =>
-        update(s4l.description, vs)
-          .andThen(update(s4l.notForProfit, vs))
-          .andThen(update(s4l.companyProvideWorkers, vs))
-          .andThen(update(s4l.workers, vs))
-          .andThen(update(s4l.temporaryContracts, vs))
-          .andThen(update(s4l.skilledWorkers, vs))
-          .andThen(update(s4l.adviceOrConsultancy, vs))
-          .andThen(update(s4l.actAsIntermediary, vs))
-          .andThen(update(s4l.chargeFees, vs))
-          .andThen(update(s4l.leaseVehicles, vs))
-          .andThen(update(s4l.additionalNonSecuritiesWork, vs))
-          .andThen(update(s4l.discretionaryInvestmentManagementServices, vs))
-          .andThen(update(s4l.investmentFundManagement, vs))
-          .andThen(update(s4l.manageAdditionalFunds, vs))
+        update(s4l.description)
+          .andThen(update(s4l.notForProfit))
+          .andThen(update(s4l.companyProvideWorkers))
+          .andThen(update(s4l.workers))
+          .andThen(update(s4l.temporaryContracts))
+          .andThen(update(s4l.skilledWorkers))
+          .andThen(update(s4l.adviceOrConsultancy))
+          .andThen(update(s4l.actAsIntermediary))
+          .andThen(update(s4l.chargeFees))
+          .andThen(update(s4l.leaseVehicles))
+          .andThen(update(s4l.additionalNonSecuritiesWork))
+          .andThen(update(s4l.discretionaryInvestmentManagementServices))
+          .andThen(update(s4l.investmentFundManagement))
+          .andThen(update(s4l.manageAdditionalFunds))
           .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance("")))
       }
 
@@ -154,27 +147,22 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   }
 
   def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
-    def mergeWithS4L(vs: VatScheme) =
-      (s4l[TradingNameView]() |@|
-        s4l[StartDateView]() |@|
-        s4l[VoluntaryRegistration]() |@|
-        s4l[VoluntaryRegistrationReason]() |@|
-        s4l[EuGoods]() |@|
-        s4l[ApplyEori]())
-        .map(S4LTradingDetails.apply).map { s4l =>
-        update(s4l.voluntaryRegistration, vs)
-          .andThen(update(s4l.tradingName, vs))
-          .andThen(update(s4l.startDate, vs))
-          .andThen(update(s4l.voluntaryRegistrationReason, vs))
-          .andThen(update(s4l.euGoods, vs))
-          .andThen(update(s4l.applyEori, vs))
+    def merge(fresh: Option[S4LTradingDetails], vs: VatScheme): VatTradingDetails =
+      fresh.fold(
+        vs.tradingDetails.getOrElse(throw fail("VatTradingDetails"))
+      ) { s4l =>
+        update(s4l.voluntaryRegistration)
+          .andThen(update(s4l.tradingName))
+          .andThen(update(s4l.startDate))
+          .andThen(update(s4l.voluntaryRegistrationReason))
+          .andThen(update(s4l.euGoods))
+          .andThen(update(s4l.applyEori))
           .apply(vs.tradingDetails.getOrElse(VatTradingDetails.empty)) //TODO remove the "seeding" with empty
       }
 
     for {
-      vs <- getVatScheme()
-      vatTradingDetails <- mergeWithS4L(vs)
-      response <- vatRegConnector.upsertVatTradingDetails(vs.id, vatTradingDetails)
+      (vs, vlo) <- (getVatScheme() |@| s4l[S4LTradingDetails]()).tupled
+      response <- vatRegConnector.upsertVatTradingDetails(vs.id, merge(vlo, vs))
     } yield response
   }
 
@@ -183,7 +171,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       fresh.fold(
         vs.vatContact.getOrElse(throw fail("VatContact"))
       ) { s4l =>
-        update(s4l.businessContactDetails, vs)
+        update(s4l.businessContactDetails)
           .apply(vs.vatContact.getOrElse(VatContact.empty)) //TODO remove the "seeding" with empty
       }
 
@@ -194,16 +182,17 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   }
 
   def submitVatEligibility()(implicit hc: HeaderCarrier): Future[VatServiceEligibility] = {
-    def mergeWithS4L(vs: VatScheme) =
-      s4l[VatServiceEligibility]().map(S4LVatEligibility.apply).map { s4l =>
-        update(s4l.vatEligibility, vs)
+    def merge(fresh: Option[S4LVatEligibility], vs: VatScheme): VatServiceEligibility =
+      fresh.fold(
+        vs.vatServiceEligibility.getOrElse(throw fail("VatServiceEligibility"))
+      ) { s4l =>
+        update(s4l.vatEligibility)
           .apply(vs.vatServiceEligibility.getOrElse(VatServiceEligibility())) //TODO remove the "seeding" with empty
       }
 
     for {
-      vs <- getVatScheme()
-      vatServiceEligibility <- mergeWithS4L(vs)
-      response <- vatRegConnector.upsertVatEligibility(vs.id, vatServiceEligibility)
+      (vs, ve) <- (getVatScheme() |@| s4l[S4LVatEligibility]()).tupled
+      response <- vatRegConnector.upsertVatEligibility(vs.id, merge(ve, vs))
     } yield response
   }
 
@@ -212,13 +201,13 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       fresh.fold(
         vs.lodgingOfficer.getOrElse(throw fail("VatLodgingOfficer"))
       ) { s4l =>
-        update(s4l.officerHomeAddress, vs)
-          .andThen(update(s4l.officerDateOfBirth, vs))
-          .andThen(update(s4l.officerNino, vs))
-          .andThen(update(s4l.completionCapacity, vs))
-          .andThen(update(s4l.officerContactDetails, vs))
-          .andThen(update(s4l.formerName, vs))
-          .andThen(update(s4l.previousAddress, vs))
+        update(s4l.officerHomeAddress)
+          .andThen(update(s4l.officerDateOfBirth))
+          .andThen(update(s4l.officerNino))
+          .andThen(update(s4l.completionCapacity))
+          .andThen(update(s4l.officerContactDetails))
+          .andThen(update(s4l.formerName))
+          .andThen(update(s4l.previousAddress))
           .apply(vs.lodgingOfficer.getOrElse(VatLodgingOfficer.empty)) //TODO remove the "seeding" with empty
       }
 

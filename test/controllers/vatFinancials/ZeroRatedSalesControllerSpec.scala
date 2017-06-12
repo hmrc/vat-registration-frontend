@@ -35,7 +35,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
   s"GET ${vatFinancials.routes.ZeroRatedSalesController.show()}" should {
 
     "return HTML when there's a Zero Rated Sales model in S4L" in {
-      save4laterReturns2(ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_YES))()
+      save4laterReturnsViewModel(ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_YES))()
 
       submitAuthorised(Controller.show(), fakeRequest.withFormUrlEncodedBody("zeroRatedSalesRadio" -> "")) {
         _ includesText "Do you expect to make any zero-rated sales?"

@@ -40,7 +40,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
   s"GET ${sicAndCompliance.labour.routes.SkilledWorkersController.show()}" should {
 
     "return HTML when there's a Company Provide Skilled Workers model in S4L" in {
-      save4laterReturns2(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO))()
+      save4laterReturnsViewModel(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO))()
 
       submitAuthorised(SkilledWorkersController.show(), fakeRequest.withFormUrlEncodedBody(
         "skilledWorkersRadio" -> ""
@@ -100,7 +100,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/business-bank-account"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/tell-us-more-about-the-company/exit"
       }
     }
   }
@@ -114,7 +114,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/business-bank-account"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/tell-us-more-about-the-company/exit"
       }
     }
   }

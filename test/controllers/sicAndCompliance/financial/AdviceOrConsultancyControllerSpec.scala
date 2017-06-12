@@ -18,8 +18,10 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.financial.AdviceOrConsultancy
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -39,7 +41,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"GET ${routes.AdviceOrConsultancyController.show()}" should {
 
     "return HTML when there's a Advice Or Consultancy model in S4L" in {
-      save4laterReturns2(AdviceOrConsultancy(true))()
+      save4laterReturnsViewModel(AdviceOrConsultancy(true))()
       submitAuthorised(AdviceOrConsultancyController.show(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> ""
       )) {
@@ -77,7 +79,10 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.AdviceOrConsultancyController.submit()} with Advice Or Consultancy Yes selected" should {
 
     "return 303" in {
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      save4laterExpectsSave[S4LVatSicAndCompliance]()
       save4laterExpectsSave[AdviceOrConsultancy]()
+
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "true"
       )) {
@@ -91,7 +96,10 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
   s"POST ${routes.AdviceOrConsultancyController.submit()} with Advice Or Consultancy No selected" should {
 
     "return 303" in {
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
       save4laterExpectsSave[AdviceOrConsultancy]()
+      save4laterExpectsSave[S4LVatSicAndCompliance]()
+
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "false"
       )) {

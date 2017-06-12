@@ -50,7 +50,7 @@ trait S4LMockSugar {
 
   def save4laterReturnsNothing2[T] = new S4LFetchHelper[T](Option.empty[T])
 
-  def save4laterReturns2[T](t: T) = new S4LFetchHelper[T](Some(t))
+  def save4laterReturnsViewModel[T](t: T) = new S4LFetchHelper[T](Some(t))
 
 
   final class S4LSaveHelper[T] {

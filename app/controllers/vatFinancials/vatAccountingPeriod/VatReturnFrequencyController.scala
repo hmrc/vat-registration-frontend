@@ -41,7 +41,10 @@ class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatFinancials.vatAccountingPeriod.vat_return_frequency(badForm)).pure,
       view => save(view).map(_ => view.frequencyType == MONTHLY).ifM(
-        vrs.deleteElement(AccountingPeriodStartPath).map(_ => controllers.routes.SummaryController.show()),
+        for {
+          _ <- vrs.deleteElement(AccountingPeriodStartPath)
+          _ <- vrs.submitVatFinancials()
+        } yield controllers.routes.SummaryController.show(),
         controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show().pure)
         .map(Redirect)))
 
