@@ -20,7 +20,7 @@ import controllers.vatLodgingOfficer
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.api.ScrsAddress
-import models.view.vatLodgingOfficer.{OfficerHomeAddressView, PreviousAddressView}
+import models.view.vatLodgingOfficer.PreviousAddressView
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._

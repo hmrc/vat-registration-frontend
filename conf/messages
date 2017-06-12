@@ -673,3 +673,10 @@ validation.formerName.selected.invalid                   = Enter a valid name
 pages.previousAddressQuestion.title                      = Have you lived at your current address for 3 years or more?
 pages.previousAddressQuestion.heading                    = Have you lived at your current address for 3 years or more?
 validation.previousAddressQuestion.missing               = Tell us if you''ve lived at your current address for 3 years or more
+
+
+## Officer Home Address Page
+pages.ppob.title                           = Where will the company carry out most of its business activities?
+pages.ppob.heading                         = Where will the company carry out most of its business activities?
+pages.ppob.different.address               = A different address
+validation.ppob.missing                    = Tell us where you''ll carry out most of your business activities
