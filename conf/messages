@@ -244,10 +244,9 @@ pages.voluntary.registration.reason.panels.neither.para       = If none of these
 validation.voluntary.registration.reason.missing              = Tell us why you intend to register voluntarily for VAT
 
 ## Taxable Turnover Page
-pages.taxable.turnover.title                            = Taxable Turnover
-pages.taxable.turnover.heading                          = Do you expect the company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered with Companies House?
-pages.taxable.turnover.what.is.turnover.title           = What is ''VAT taxable turnover''?
-pages.taxable.turnover.what.is.turnover.para1           = VAT taxable turnover is the total value of everything you sell that isn''t <a href="https://www.gov.uk/vat-businesses/when-not-to-charge-vatexempt">exempt from VAT</a>.
+pages.taxable.turnover.title                            = Do you expect the company''s VAT taxable turnover to be more than £85,000 in the 30 days after it''s registered with Companies House?
+pages.taxable.turnover.heading                          = Do you expect the company''s VAT taxable turnover to be more than £85,000 in the 30 days after it''s registered with Companies House?
+pages.taxable.turnover.p1                               = You must register immediately if you expect the company''s VAT taxable sales to be over £85,000 in the 30 days after it''s registered with Companies House.
 validation.taxable.turnover.missing                     = Tell us if you expect the company''s turnover to be more than £83,000 in the 30 days after it''s registered
 
 ## Mandatory Start Date Confirmation page
