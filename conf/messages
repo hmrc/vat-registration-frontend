@@ -631,8 +631,7 @@ validation.officerDOB.range.below                        = Date of birth must be
 pages.officerNino.title                                   = Director''s National Insurance
 pages.officerNino.heading                                 = What is your National Insurance number?
 pages.officerNino.hint                                    = For example, QQ 12 34 56 C
-pages.officerNino.advice.title                            = Where to find your National Insurance number
-pages.officerNino.advice.para1                            = You can find your National Insurance number on your National Insurance card, benefit letter, payslip or P60.
+pages.officerNino.para1                                   = You can find your National Insurance number on your National Insurance card, benefit letter, payslip or P60.
 validation.officerNino.missing                            = Enter your National Insurance number
 validation.officerNino.invalid                            = Enter a valid National Insurance number
 
