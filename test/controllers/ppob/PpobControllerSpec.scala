@@ -93,8 +93,7 @@ class PpobControllerSpec extends VatRegSpec
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("ppobRadio" -> address.id)
       )(_ redirectsTo s"$contextRoot/describe-what-company-does")
-      //verify(mockVatRegistrationService).submitPpob()(any())
-
+      verify(mockVatRegistrationService).submitPpob()(any())
     }
 
   }
@@ -110,8 +109,7 @@ class PpobControllerSpec extends VatRegSpec
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("ppobRadio" -> address.id)
       )(_ redirectsTo s"$contextRoot/describe-what-company-does")
-      //verify(mockVatRegistrationService).submitPpob()(any())
-
+      verify(mockVatRegistrationService).submitPpob()(any())
     }
 
   }
