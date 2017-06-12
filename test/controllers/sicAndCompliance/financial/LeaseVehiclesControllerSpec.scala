@@ -24,6 +24,8 @@ import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.http.HeaderCarrier
 
+import scala.concurrent.Future
+
 class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object LeaseVehiclesController extends LeaseVehiclesController(ds)(mockS4LService, mockVatRegistrationService) {
@@ -50,42 +52,36 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
         _ includesText "Is the company involved in leasing vehicles or equipment to customers?"
       }
     }
-  }
 
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[LeaseVehicles]()
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(emptyVatScheme.pure)
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      save4laterReturnsNothing2[LeaseVehicles]()
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(emptyVatScheme.pure)
 
-    callAuthorised(LeaseVehiclesController.show) {
-      _ includesText "Is the company involved in leasing vehicles or equipment to customers?"
-    }
-  }
-
-  s"POST ${routes.LeaseVehiclesController.show()} with Empty data" should {
-
-    "return 400" in {
-      submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody()) { result =>
-        result isA 400
+      callAuthorised(LeaseVehiclesController.show) {
+        _ includesText "Is the company involved in leasing vehicles or equipment to customers?"
       }
     }
   }
 
-  s"POST ${routes.LeaseVehiclesController.submit()} with Lease Vehicles or Equipment - Yes selected" should {
+  s"POST ${routes.LeaseVehiclesController.show()}" should {
 
-    "redirects to next screen in the flow" in {
-      save4laterExpectsSave[LeaseVehicles]()
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
-
-      submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "leaseVehiclesRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
+    "return 400 with Empty data" in {
+      submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody()) { result =>
+        result isA 400
+      }
     }
 
-  }
+    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+    when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
+    save4laterExpectsSave[LeaseVehicles]()
 
-  s"POST ${routes.LeaseVehiclesController.submit()} with Lease Vehicles or Equipment - No selected" should {
+    "redirects to next screen in the flow -  with Lease Vehicles or Equipment - Yes selected" in {
+      submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody(
+        "leaseVehiclesRadio" -> "true"
+      ))(_ redirectsTo s"$contextRoot/business-bank-account")
+    }
 
-    "redirects to next screen in the flow" in {
+    "redirects to next screen in the flow -  with Lease Vehicles or Equipment - No selected" in {
       save4laterExpectsSave[LeaseVehicles]()
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 

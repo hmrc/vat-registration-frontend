@@ -64,49 +64,43 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
           contentAsString(result) must include("How many workers does the company provide at any one time?")
       }
     }
-  }
 
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[Workers]()
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      save4laterReturnsNothing2[Workers]()
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(WorkersController.show) {
-      result =>
-        status(result) mustBe OK
-        contentType(result) mustBe Some("text/html")
-        charset(result) mustBe Some("utf-8")
-        contentAsString(result) must include("How many workers does the company provide at any one time?")
-    }
-  }
-
-  s"POST ${sicAndCompliance.labour.routes.WorkersController.submit()} with Empty data" should {
-
-    "return 400" in {
-      submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
-      )) {
+      callAuthorised(WorkersController.show) {
         result =>
-          status(result) mustBe Status.BAD_REQUEST
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("How many workers does the company provide at any one time?")
       }
     }
   }
 
-  s"POST ${sicAndCompliance.labour.routes.WorkersController.submit()} with less than 8 workers entered" should {
+  s"POST ${sicAndCompliance.labour.routes.WorkersController.submit()}" should {
 
-    "return 303" in {
-      save4laterExpectsSave[Workers]()
+    "return 400 with Empty data" in {
+      submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
+      )) {
+        result => status(result) mustBe Status.BAD_REQUEST
+      }
+    }
+
+    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+    save4laterExpectsSave[Workers]()
+
+    "return 303 with less than 8 workers entered" in {
       submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
         result =>
-          result redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit"
+          result redirectsTo s"$contextRoot/business-bank-account"
       }
     }
-  }
 
-  s"POST ${sicAndCompliance.labour.routes.WorkersController.submit()} with 8 or more workers entered" should {
-
-    "return 303" in {
-      save4laterExpectsSave[Workers]()
+    "return 303 with 8 or more workers entered" in {
       submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "8"
       )) {

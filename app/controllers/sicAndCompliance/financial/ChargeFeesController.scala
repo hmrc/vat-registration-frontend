@@ -18,7 +18,8 @@ package controllers.sicAndCompliance.financial
 
 import javax.inject.Inject
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.CommonPlayDependencies
+import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.financial.ChargeFeesForm
 import models.view.sicAndCompliance.financial.ChargeFees
 import play.api.data.Form
@@ -27,7 +28,9 @@ import services.{RegistrationService, S4LService}
 
 
 class ChargeFeesController @Inject()(ds: CommonPlayDependencies)
-                                    (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
+                                    (implicit s4LService: S4LService, vrs: RegistrationService)
+  extends ComplianceExitController(ds, vrs) {
+
   val form: Form[ChargeFees] = ChargeFeesForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>

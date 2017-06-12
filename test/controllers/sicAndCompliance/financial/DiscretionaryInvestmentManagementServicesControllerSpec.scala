@@ -61,44 +61,35 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
         _ includesText "Does the company provide discretionary investment management services, or introduce clients to companies who do?"
       }
     }
-  }
 
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[DiscretionaryInvestmentManagementServices]()
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      save4laterReturnsNothing2[DiscretionaryInvestmentManagementServices]()
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(DiscretionaryInvestmentManagementServicesController.show) {
-      _ includesText "Does the company provide discretionary investment management services, or introduce clients to companies who do?"
+      callAuthorised(DiscretionaryInvestmentManagementServicesController.show) {
+        _ includesText "Does the company provide discretionary investment management services, or introduce clients to companies who do?"
+      }
     }
   }
 
-  s"POST ${routes.DiscretionaryInvestmentManagementServicesController.show()} with Empty data" should {
+  s"POST ${routes.DiscretionaryInvestmentManagementServicesController.show()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
-
     }
-  }
 
-  s"POST ${routes.DiscretionaryInvestmentManagementServicesController.submit()} with Provide Discretionary Investment Management Services Yes selected" should {
+    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+    when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+    save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
 
-    "return 303" in {
-      save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-
+    "return 303 with Provide Discretionary Investment Management Services Yes selected" in {
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
+      ))(_ redirectsTo s"$contextRoot/business-bank-account")
     }
-  }
 
-  s"POST ${routes.ChargeFeesController.submit()} with Provide Discretionary Investment Management Services No selected" should {
-
-    "return 303" in {
-      save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-
+    "return 303 with Provide Discretionary Investment Management Services No selected" in {
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/involved-in-leasing-vehicles-or-equipment")

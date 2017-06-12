@@ -18,14 +18,16 @@ package controllers.sicAndCompliance.labour
 
 import javax.inject.Inject
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.CommonPlayDependencies
+import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.labour.TemporaryContractsForm
 import models.view.sicAndCompliance.labour.TemporaryContracts
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
 class TemporaryContractsController @Inject()(ds: CommonPlayDependencies)
-                                            (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+                                            (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends ComplianceExitController(ds, vrs) {
 
   import cats.syntax.flatMap._
 
@@ -39,8 +41,7 @@ class TemporaryContractsController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.temporary_contracts(badForm)).pure,
       goodForm => save(goodForm).map(_ => goodForm.yesNo == TemporaryContracts.TEMP_CONTRACTS_YES).ifM(
-        controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show().pure,
-        controllers.sicAndCompliance.routes.ComplianceExitController.exit().pure)
-        .map(Redirect)))
+        ifTrue = controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show().pure,
+        ifFalse = submitAndExit.pure).map(Redirect)))
 
 }

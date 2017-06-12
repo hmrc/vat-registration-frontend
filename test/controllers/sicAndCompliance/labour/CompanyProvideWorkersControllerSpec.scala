@@ -55,48 +55,39 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
         _ includesText "Does the company provide workers to other employers?"
       }
     }
-  }
 
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[CompanyProvideWorkers]()
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      save4laterReturnsNothing2[CompanyProvideWorkers]()
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(CompanyProvideWorkersController.show) {
-      _ includesText "Does the company provide workers to other employers?"
+      callAuthorised(CompanyProvideWorkersController.show) {
+        _ includesText "Does the company provide workers to other employers?"
+      }
     }
   }
 
-  s"POST ${sicAndCompliance.labour.routes.CompanyProvideWorkersController.submit()} with Empty data" should {
+  s"POST ${sicAndCompliance.labour.routes.CompanyProvideWorkersController.submit()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
-  }
 
-  s"POST ${sicAndCompliance.labour.routes.CompanyProvideWorkersController.submit()} with company provide workers Yes selected" should {
+    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+    when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+    save4laterExpectsSave[S4LVatSicAndCompliance]()
+    save4laterExpectsSave[CompanyProvideWorkers]()
 
-    "return 303" in {
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      save4laterExpectsSave[S4LVatSicAndCompliance]()
-      save4laterExpectsSave[CompanyProvideWorkers]()
-
+    "return 303 with company provide workers Yes selected" in {
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_YES
       ))(_ redirectsTo s"$contextRoot/how-many-workers-does-company-provide-at-one-time")
     }
-  }
 
-  s"POST ${sicAndCompliance.labour.routes.CompanyProvideWorkersController.submit()} with company provide workers No selected" should {
-
-    "return 303" in {
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      save4laterExpectsSave[S4LVatSicAndCompliance]()
-      save4laterExpectsSave[CompanyProvideWorkers]()
-
+    "return 303 with company provide workers No selected" in {
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_NO
-      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
+      ))(_ redirectsTo s"$contextRoot/business-bank-account")
     }
   }
 }

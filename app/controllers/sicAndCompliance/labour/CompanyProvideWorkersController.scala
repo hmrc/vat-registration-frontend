@@ -18,7 +18,8 @@ package controllers.sicAndCompliance.labour
 
 import javax.inject.Inject
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.CommonPlayDependencies
+import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.labour.CompanyProvideWorkersForm
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import models.{CulturalCompliancePath, FinancialCompliancePath, S4LVatSicAndCompliance}
@@ -28,7 +29,7 @@ import services.{S4LService, VatRegistrationService}
 
 class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
                                                (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) {
+  extends ComplianceExitController(ds, vrs) {
 
   val form = CompanyProvideWorkersForm.form
 
@@ -46,8 +47,7 @@ class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
           route =
             if (CompanyProvideWorkers.PROVIDE_WORKERS_YES == data.yesNo) {
               controllers.sicAndCompliance.labour.routes.WorkersController.show()
-            } else {
-              controllers.sicAndCompliance.routes.ComplianceExitController.exit() }
+            } else { submitAndExit }
         } yield Redirect(route)))
 
 }

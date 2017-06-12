@@ -56,44 +56,36 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
         _ includesText "Does the company act as an intermediary?"
       }
     }
-  }
 
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[ActAsIntermediary]()
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      save4laterReturnsNothing2[ActAsIntermediary]()
 
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(ActAsIntermediaryController.show) {
-      _ includesText "Does the company act as an intermediary?"
+      callAuthorised(ActAsIntermediaryController.show) {
+        _ includesText "Does the company act as an intermediary?"
+      }
     }
   }
 
-  s"POST ${routes.ActAsIntermediaryController.show()} with Empty data" should {
+  s"POST ${routes.ActAsIntermediaryController.show()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
-  }
 
-  s"POST ${routes.ActAsIntermediaryController.submit()} with Act As Intermediary Yes selected" should {
+    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+    when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+    save4laterExpectsSave[ActAsIntermediary]()
 
-    "return 303" in {
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      save4laterExpectsSave[ActAsIntermediary]()
-
+    "return 303 with Act As Intermediary Yes selected" in {
       submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
+      ))(_ redirectsTo s"$contextRoot/business-bank-account")
     }
-  }
 
-  s"POST ${routes.ActAsIntermediaryController.submit()} with Act As Intermediary No selected" should {
-
-    "return 303" in {
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      save4laterExpectsSave[ActAsIntermediary]()
-
+    "return 303 with Act As Intermediary No selected" in {
       submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/charges-fees-for-introducing-clients-to-financial-service-providers")
