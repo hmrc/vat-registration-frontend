@@ -58,7 +58,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
     "return HTML when there's a start date in S4L" in {
       val startDate = StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.of(2017, 3, 21)))
 
-      save4laterReturns2(startDate)()
+      save4laterReturnsViewModel(startDate)()
 
       callAuthorised(TestStartDateController.show) {
         result =>

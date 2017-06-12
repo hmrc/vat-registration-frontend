@@ -35,7 +35,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
   s"GET ${vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()}" should {
 
     "return HTML when there's a Company Bank Account model in S4L" in {
-      save4laterReturns2(CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES))()
+      save4laterReturnsViewModel(CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES))()
 
       submitAuthorised(Controller.show(),
         fakeRequest.withFormUrlEncodedBody("companyBankAccountRadio" -> "")) {

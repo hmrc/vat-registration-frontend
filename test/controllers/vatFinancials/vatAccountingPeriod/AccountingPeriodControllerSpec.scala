@@ -37,7 +37,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"GET ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show()}" should {
 
     "return HTML when there's a Accounting Period model in S4L" in {
-      save4laterReturns2(AccountingPeriod(""))()
+      save4laterReturnsViewModel(AccountingPeriod(""))()
 
       submitAuthorised(Controller.show(),
         fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> "")) {

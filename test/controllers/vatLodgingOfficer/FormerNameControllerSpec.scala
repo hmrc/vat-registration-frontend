@@ -37,7 +37,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     reset(mockVatRegistrationService)
 
     "return HTML when there's a former name in S4L" in {
-      save4laterReturns2(FormerNameView(yesNo = true, formerName = Some("Smooth Handler")))()
+      save4laterReturnsViewModel(FormerNameView(yesNo = true, formerName = Some("Smooth Handler")))()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(TestFormerNameController.show) {

@@ -45,7 +45,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
       tradingDetails <- s4LService.fetchAndGet[S4LTradingDetails]()
       vatContact <- s4LService.fetchAndGet[S4LVatContact]()
       vatLodgingOfficer <- s4LService.fetchAndGet[S4LVatLodgingOfficer]()
-      eligibility <- s4LService.fetchAndGet[VatServiceEligibility]()
+      eligibility <- s4LService.fetchAndGet[S4LVatEligibility]()
 
       testSetup = TestSetup(
         VatChoiceTestSetup(
@@ -100,11 +100,11 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
           financialInvestmentFundManagement = vatSicAndCompliance.flatMap(_.investmentFundManagement.map(_.yesNo.toString)),
           financialManageAdditionalFunds = vatSicAndCompliance.flatMap(_.manageAdditionalFunds.map(_.yesNo.toString))),
         VatServiceEligibilityTestSetup(
-          haveNino = eligibility.map(_.haveNino.getOrElse("").toString),
-          doingBusinessAbroad = eligibility.map(_.doingBusinessAbroad.getOrElse("").toString),
-          doAnyApplyToYou = eligibility.map(_.doAnyApplyToYou.getOrElse("").toString),
-          applyingForAnyOf = eligibility.map(_.applyingForAnyOf.getOrElse("").toString),
-          companyWillDoAnyOf = eligibility.map(_.companyWillDoAnyOf.getOrElse("").toString)),
+          haveNino = eligibility.flatMap(_.vatEligibility).map(_.haveNino.getOrElse("").toString),
+          doingBusinessAbroad = eligibility.flatMap(_.vatEligibility).map(_.doingBusinessAbroad.getOrElse("").toString),
+          doAnyApplyToYou = eligibility.flatMap(_.vatEligibility).map(_.doAnyApplyToYou.getOrElse("").toString),
+          applyingForAnyOf = eligibility.flatMap(_.vatEligibility).map(_.applyingForAnyOf.getOrElse("").toString),
+          companyWillDoAnyOf = eligibility.flatMap(_.vatEligibility).map(_.companyWillDoAnyOf.getOrElse("").toString)),
         officerHomeAddress = OfficerHomeAddressTestSetup(
           line1 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).map(_.line1),
           line2 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).map(_.line2),
@@ -160,11 +160,11 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
             _ <- s4LService.save(s4LBuilder.vatSicAndComplianceFromData(data))
 
             _ <- saveToS4Later(data.vatServiceEligibility.haveNino, data, { x =>
-              VatServiceEligibility(x.vatServiceEligibility.haveNino.map(_.toBoolean),
+              S4LVatEligibility(Some(VatServiceEligibility(x.vatServiceEligibility.haveNino.map(_.toBoolean),
                 x.vatServiceEligibility.doingBusinessAbroad.map(_.toBoolean),
                 x.vatServiceEligibility.doAnyApplyToYou.map(_.toBoolean),
                 x.vatServiceEligibility.applyingForAnyOf.map(_.toBoolean),
-                x.vatServiceEligibility.companyWillDoAnyOf.map(_.toBoolean))
+                x.vatServiceEligibility.companyWillDoAnyOf.map(_.toBoolean))))
             })
 
             _ <- s4LService.save(s4LBuilder.vatFinancialsFromData(data))

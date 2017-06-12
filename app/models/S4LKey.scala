@@ -16,15 +16,7 @@
 
 package models
 
-import models.api.VatServiceEligibility
-import models.view.sicAndCompliance.BusinessActivityDescription
-import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.financial._
-import models.view.sicAndCompliance.labour.{SkilledWorkers, _}
 import models.view.test.SicStub
-import models.view.vatTradingDetails._
-import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
-import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 
 trait S4LKey[T] {
 
@@ -41,7 +33,7 @@ object S4LKey {
   }
 
   implicit val sicStub: S4LKey[SicStub] = S4LKey("SicStub")
-  implicit val vatServiceEligibility: S4LKey[VatServiceEligibility] = S4LKey("VatServiceEligibility")
+  implicit val vatServiceEligibility: S4LKey[S4LVatEligibility] = S4LKey("VatServiceEligibility")
   implicit val vatContact: S4LKey[S4LVatContact] = S4LKey("VatContact")
   implicit val tradingDetails: S4LKey[S4LTradingDetails] = S4LKey("VatTradingDetails")
   implicit val vatLodgingOfficer: S4LKey[S4LVatLodgingOfficer] = S4LKey("VatLodgingOfficer")
