@@ -43,7 +43,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[LeaseVehicles]()
+      save4laterReturnsNoViewModel[LeaseVehicles]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(LeaseVehiclesController.show) {
@@ -53,7 +53,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[LeaseVehicles]()
+    save4laterReturnsNoViewModel[LeaseVehicles]()
     when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(emptyVatScheme.pure)
 
     callAuthorised(LeaseVehiclesController.show) {

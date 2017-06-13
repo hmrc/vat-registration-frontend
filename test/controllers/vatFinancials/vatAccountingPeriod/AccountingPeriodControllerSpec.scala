@@ -46,7 +46,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     }
 
     "return HTML when there's nothing in S4L and vatScheme contain data" in {
-      save4laterReturnsNothing2[AccountingPeriod]()
+      save4laterReturnsNoViewModel[AccountingPeriod]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(Controller.show) {
@@ -55,7 +55,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     }
 
     "return HTML when there's nothing in S4L and vatScheme contain no data" in {
-      save4laterReturnsNothing2[AccountingPeriod]()
+      save4laterReturnsNoViewModel[AccountingPeriod]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(Controller.show) {

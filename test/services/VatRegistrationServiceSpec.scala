@@ -178,7 +178,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
     "return a success response when VatTradingDetails is submitted and no Trading Name is found in S4L" in new Setup {
       mockFetchRegId(validRegId)
-      save4laterReturnsNothing2[TradingNameView]()
+      save4laterReturnsNoViewModel[TradingNameView]()
       save4laterReturnsViewModel(validEuGoods)()
       save4laterReturnsViewModel(validApplyEori)()
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
@@ -214,8 +214,8 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "return a success response when SicAndCompliance is submitted and no Business Activity Description is found in S4L" in new Setup {
       mockFetchRegId(validRegId)
 
-      save4laterReturnsNothing2[BusinessActivityDescription]()
-      save4laterReturnsNothing2[CompanyProvideWorkers]()
+      save4laterReturnsNoViewModel[BusinessActivityDescription]()
+      save4laterReturnsNoViewModel[CompanyProvideWorkers]()
       save4laterReturnsViewModel(validSkilledWorkers)()
 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)

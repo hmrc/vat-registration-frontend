@@ -48,7 +48,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[AdditionalNonSecuritiesWork]()
+      save4laterReturnsNoViewModel[AdditionalNonSecuritiesWork]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(AdditionalNonSecuritiesWorkController.show) {
@@ -59,7 +59,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[AdditionalNonSecuritiesWork]()
+    save4laterReturnsNoViewModel[AdditionalNonSecuritiesWork]()
     when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 

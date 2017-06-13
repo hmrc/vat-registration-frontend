@@ -49,7 +49,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[ChargeFees]()
+      save4laterReturnsNoViewModel[ChargeFees]()
       when(mockVatRegistrationService.getVatScheme()(Matchers.any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(ChargeFeesController.show) {
@@ -59,7 +59,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[ChargeFees]()
+    save4laterReturnsNoViewModel[ChargeFees]()
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(ChargeFeesController.show) {

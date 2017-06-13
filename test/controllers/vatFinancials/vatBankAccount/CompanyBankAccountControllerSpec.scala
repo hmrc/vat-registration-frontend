@@ -39,26 +39,26 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
 
       submitAuthorised(Controller.show(),
         fakeRequest.withFormUrlEncodedBody("companyBankAccountRadio" -> "")) {
-        _ includesText "Do you have a bank account set up in the name of your company?"
+        _ includesText "Is there a bank account set up in the name of the company?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[CompanyBankAccount]()
+      save4laterReturnsNoViewModel[CompanyBankAccount]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(Controller.show) {
-        _ includesText "Do you have a bank account set up in the name of your company?"
+        _ includesText "Is there a bank account set up in the name of the company?"
       }
     }
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[CompanyBankAccount]()
+    save4laterReturnsNoViewModel[CompanyBankAccount]()
     when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
     callAuthorised(Controller.show) {
-      _ includesText "Do you have a bank account set up in the name of your company?"
+      _ includesText "Is there a bank account set up in the name of the company?"
     }
   }
 

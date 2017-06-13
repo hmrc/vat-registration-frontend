@@ -44,7 +44,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[EstimateZeroRatedSales]()
+      save4laterReturnsNoViewModel[EstimateZeroRatedSales]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(Controller.show) {
@@ -53,7 +53,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[EstimateZeroRatedSales]()
+      save4laterReturnsNoViewModel[EstimateZeroRatedSales]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {
