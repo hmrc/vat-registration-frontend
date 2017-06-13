@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package models
+package models.view.test
 
-final case class AddressLookupJourneyId(id: String)
+import play.api.libs.json.Json
 
-object AddressLookupJourneyId {
-  implicit val homeAddressJourneyId = AddressLookupJourneyId("vatreg1")
-  implicit val previousAddressId = AddressLookupJourneyId("vatreg2")
-  implicit val ppobVatReg = AddressLookupJourneyId("vatreg_ppob")
+
+case class VatPpobSetup(
+                                        line1: Option[String],
+                                        line2: Option[String],
+                                        line3: Option[String],
+                                        line4: Option[String],
+                                        postcode: Option[String] = None,
+                                        country: Option[String] = None
+                                      )
+
+
+object VatPpobSetup {
+  implicit val format = Json.format[VatPpobSetup]
 }
