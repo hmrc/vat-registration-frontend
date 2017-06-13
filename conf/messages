@@ -432,6 +432,12 @@ pages.summary.companyProvidingFinancial.involved.in.leasing.vehicles.or.equipmen
 pages.summary.companyProvidingFinancial.provides.investment.fund.management                     = Provide investment fund management services
 pages.summary.companyProvidingFinancial.manages.funds.not.included.in.this.list                 = Manage any funds that are not included in this list
 
+
+## Summary Page Cultural Compliance section
+pages.summary.culturalCompliance.sectionHeading            = Organisation type
+pages.summary.culturalCompliance.notForProfitOrganisation  = Not-for-profit organisation or public body
+
+
 ## Error Pages
 errorPages.title                        = Something went wrong
 errorPages.restart.heading              = Sorry, we''re having technical issues.
