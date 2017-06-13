@@ -81,7 +81,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
 
     "return 303 with company provide workers Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterReturnsNothing2[BusinessActivityDescription]()
       save4laterExpectsSave[S4LVatSicAndCompliance]()
@@ -93,7 +93,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
 
     "return 303 with company provide workers No selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
       save4laterExpectsSave[S4LVatSicAndCompliance]()
