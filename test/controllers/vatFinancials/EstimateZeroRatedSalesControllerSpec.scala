@@ -39,7 +39,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
       save4laterReturnsViewModel(EstimateZeroRatedSales(100L))()
 
       callAuthorised(Controller.show()) {
-        _ includesText "Estimated zero-rated sales for the next 12 months"
+        _ includesText "How much will the company take in sales of zero-rated goods and services over the next 12 months?"
       }
     }
 
@@ -48,7 +48,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(Controller.show) {
-        _ includesText "Estimated zero-rated sales for the next 12 months"
+        _ includesText "How much will the company take in sales of zero-rated goods and services over the next 12 months?"
       }
     }
 
@@ -57,7 +57,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {
-        _ includesText "Estimated zero-rated sales for the next 12 months"
+        _ includesText "How much will the company take in sales of zero-rated goods and services over the next 12 months?"
       }
     }
 
