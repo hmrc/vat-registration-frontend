@@ -93,7 +93,7 @@ trait VatRegistrationFixture {
 
   val validSicAndCompliance = VatSicAndCompliance(
     businessDescription = businessActivityDescription,
-    culturalCompliance = None,
+    culturalCompliance = Some(VatComplianceCultural(notForProfit = false)),
     labourCompliance = None,
     financialCompliance = None
   )
@@ -187,6 +187,7 @@ trait VatRegistrationFixture {
 
   val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
     id = validRegId,
+    vatSicAndCompliance = Some(validSicAndCompliance),
     financials = Some(
       VatFinancials(
         bankAccount = None,
@@ -202,7 +203,8 @@ trait VatRegistrationFixture {
     tradingDetails = Some(validVatTradingDetails),
     financials = Some(validVatFinancials),
     vatContact = Some(validVatContact),
-    lodgingOfficer = Some(validLodgingOfficer)
+    lodgingOfficer = Some(validLodgingOfficer),
+    vatSicAndCompliance = Some(validSicAndCompliance)
   )
 
   val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")

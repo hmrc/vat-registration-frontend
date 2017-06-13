@@ -32,7 +32,7 @@ class SummaryCulturalComplianceSectionBuilderSpec extends VatRegSpec with VatReg
         val builder = SummaryCulturalComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.notForProfitRow mustBe
           SummaryRow(
-            "CulturalCompliance.provides.advice.or.consultancy",
+            "culturalCompliance.notForProfitOrganisation",
             "app.common.yes",
             Some(controllers.sicAndCompliance.cultural.routes.NotForProfitController.show())
           )
@@ -43,8 +43,8 @@ class SummaryCulturalComplianceSectionBuilderSpec extends VatRegSpec with VatReg
         val builder = SummaryCulturalComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.notForProfitRow mustBe
           SummaryRow(
-            "CulturalCompliance.provides.advice.or.consultancy",
-            "app.common.yes",
+            "culturalCompliance.notForProfitOrganisation",
+            "app.common.no",
             Some(controllers.sicAndCompliance.cultural.routes.NotForProfitController.show())
           )
       }
@@ -57,8 +57,8 @@ class SummaryCulturalComplianceSectionBuilderSpec extends VatRegSpec with VatReg
 
       "a valid summary section" in {
         val builder = SummaryCulturalComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
-        builder.section.id mustBe "CulturalCompliance"
-        builder.section.rows.length mustEqual 8
+        builder.section.id mustBe "culturalCompliance"
+        builder.section.rows.length mustEqual 1
       }
     }
 
