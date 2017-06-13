@@ -94,8 +94,8 @@ pages.completionCapacityEnd.p2                           = If you''re neither of
 
 ## validation messages for all service eligibility questions
 
-validation.eligibility.haveNino.missing                     = Tell us if you have a national insurance number
-validation.eligibility.doingBusinessAbroad.missing          = Tell us if you will do any of the following once you''re registered for VAT
+validation.eligibility.haveNino.missing                     = Tell us if you have a National Insurance number
+validation.eligibility.doingBusinessAbroad.missing          = Tell us if you''ll do any of the following once you're registered for VAT
 validation.eligibility.doAnyApplyToYou.missing              = Tell us if any of the following apply to you or your business
 validation.eligibility.applyingForAnyOf.missing             = Tell us if you''ll apply for any of the following
 validation.eligibility.companyWillDoAnyOf.missing           = Tell us if you''ll do any of the following
@@ -236,7 +236,7 @@ validation.voluntary.registration.reason.missing              = Tell us why you 
 pages.taxable.turnover.title                            = Do you expect the company''s VAT taxable turnover to be more than £85,000 in the 30 days after it''s registered with Companies House?
 pages.taxable.turnover.heading                          = Do you expect the company''s VAT taxable turnover to be more than £85,000 in the 30 days after it''s registered with Companies House?
 pages.taxable.turnover.p1                               = You must register immediately if you expect the company''s VAT taxable sales to be over £85,000 in the 30 days after it''s registered with Companies House.
-validation.taxable.turnover.missing                     = Tell us if you expect the company''s turnover to be more than £83,000 in the 30 days after it''s registered
+validation.taxable.turnover.missing                     = Tell us if you expect the company''s turnover to be more than £85,000 in the 30 days after it''s registered
 
 ## Mandatory Start Date Confirmation page
 pages.start.date.confirmation.title                          = Start Date Confirmation page
@@ -625,7 +625,7 @@ validation.officerNino.missing                            = Enter your National 
 validation.officerNino.invalid                            = Enter a valid National Insurance number
 
 ## Officer Completion Capacity
-pages.completionCapacity.title                           = Relationship to the company
+pages.completionCapacity.title                           = Who is registering the company for VAT?
 pages.completionCapacity.heading                         = Who is registering the company for VAT?
 pages.completionCapacity.p1                              = Only formal officers of the company (directors or secretaries) can use this service.
 pages.completionCapacity.panel.title                     = What if I''m not a company director or secretary?
