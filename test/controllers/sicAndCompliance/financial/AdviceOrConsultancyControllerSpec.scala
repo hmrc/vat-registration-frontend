@@ -81,7 +81,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return 303 with Advice Or Consultancy Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterReturnsNothing2[BusinessActivityDescription]()
       save4laterExpectsSave[S4LVatSicAndCompliance]()
@@ -96,7 +96,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return 303 with Advice Or Consultancy No selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterReturnsNothing2[BusinessActivityDescription]()
       save4laterExpectsSave[S4LVatSicAndCompliance]()
