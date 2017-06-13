@@ -95,7 +95,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "return 303 with not for profit Yes selected" in {
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
@@ -108,7 +108,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "return 303 with not for profit No selected" in {
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
