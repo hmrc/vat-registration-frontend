@@ -16,7 +16,8 @@
 
 package models
 
-import models.api.VatServiceEligibility
+import models.api.{ScrsAddress, VatServiceEligibility}
+import models.view.ppob.PpobView
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
@@ -127,4 +128,13 @@ final case class S4LVatLodgingOfficer
 
 object S4LVatLodgingOfficer {
   implicit val format: OFormat[S4LVatLodgingOfficer] = Json.format[S4LVatLodgingOfficer]
+}
+
+final case class S4LPpob
+(
+  address: Option[PpobView] = None
+)
+
+object S4LPpob {
+  implicit val format: OFormat[S4LPpob] = Json.format[S4LPpob]
 }

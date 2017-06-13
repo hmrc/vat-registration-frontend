@@ -167,6 +167,11 @@ POST        /current-address-three-years-or-more                                
 GET         /current-address-three-years-or-more/changePreviousAddress                         controllers.vatLodgingOfficer.PreviousAddressController.changeAddress
 GET         /current-address-three-years-or-more/acceptFromTxm                                 controllers.vatLodgingOfficer.PreviousAddressController.acceptFromTxm(id: String ?= "")
 
+## PPOB ADDRESS
+GET         /where-will-company-carry-out-most-of-its-business-activities                         controllers.ppob.PpobController.show
+POST        /where-will-company-carry-out-most-of-its-business-activities                         controllers.ppob.PpobController.submit
+GET         /where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm           controllers.ppob.PpobController.acceptFromTxm(id: String ?= "")
+
 ## FEEDBACK
 GET         /feedback                                                                          controllers.feedback.FeedbackController.show
 

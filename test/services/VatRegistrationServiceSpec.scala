@@ -25,6 +25,7 @@ import helpers.{S4LMockSugar, VatRegSpec}
 import models._
 import models.api._
 import models.external.CoHoCompanyProfile
+import models.view.ppob.PpobView
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
@@ -118,6 +119,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
         officerNino = Some(OfficerNinoView("")),
         completionCapacity = Some(CompletionCapacityView(""))
       ))
+      save4laterReturns(S4LPpob(address = Some(PpobView(scrsAddress.id, Some(scrsAddress)))))
 
       save4laterReturns(S4LVatFinancials(
         estimateVatTurnover = Some(validEstimateVatTurnover),
@@ -137,6 +139,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.upsertVatEligibility(any(), any())(any(), any())).thenReturn(validServiceEligibility.pure)
       when(mockRegConnector.upsertVatLodgingOfficer(any(), any())(any(), any())).thenReturn(validLodgingOfficer.pure)
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockRegConnector.upsertPpob(any(), any())(any(), any())).thenReturn(scrsAddress.pure)
 
       service.submitVatScheme() completedSuccessfully
     }
@@ -342,6 +345,14 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       service.submitVatLodgingOfficer() failedWith classOf[IllegalStateException]
     }
+
+    "submitPpob should fail if there's not trace of PPOB in neither backend nor S4L" in new Setup {
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+      save4laterReturnsNothing[S4LPpob]()
+
+      service.submitPpob() failedWith classOf[IllegalStateException]
+    }
+
 
     "submitSicAndCompliance should fail if VatSicAndCompliance not in backend and S4L" in new Setup {
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)

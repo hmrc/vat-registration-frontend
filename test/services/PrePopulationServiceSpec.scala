@@ -23,10 +23,11 @@ import cats.data.OptionT
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LVatLodgingOfficer
 import models.api._
 import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
+import models.view.ppob.PpobView
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView}
+import models.{S4LPpob, S4LVatLodgingOfficer}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
@@ -99,6 +100,41 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
       save4laterReturnsNothing[S4LVatLodgingOfficer]()
 
       service.getOfficerAddressList() returns Seq()
+    }
+  }
+
+  "getPpobAddressList" must {
+    val emptyVatScheme = VatScheme("123")
+    val scsrAddress = ScrsAddress("premises address_line_1", "address_line_2 po_box", Some("locality"), Some("region"), Some("postal_code"), Some("country"))
+
+    "be non-empty when companyProfile, addressDB and addressS4L are present" in new Setup {
+      val ppobView = PpobView(scsrAddress.id, Some(scsrAddress))
+
+      when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(scsrAddress))
+      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
+      save4laterReturns(S4LPpob(address = Some(ppobView)))
+
+      service.getPpobAddressList() returns Seq(scsrAddress)
+    }
+
+    "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
+      val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
+      val vatSchemeWithAddress = VatScheme("123").copy(ppob = Some(scsrAddress))
+
+      when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
+      when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(address))
+      save4laterReturnsNothing[S4LPpob]()
+
+      service.getPpobAddressList() returns Seq(address, scsrAddress)
+    }
+
+    "be empty if a companyProfile is not present and addressDB and addressS4L are not present" in new Setup {
+
+      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
+      when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.none[Future, ScrsAddress])
+      save4laterReturnsNothing[S4LPpob]()
+
+      service.getPpobAddressList() returns Seq()
     }
   }
 

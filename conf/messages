@@ -15,41 +15,35 @@ error.unknown                           = Invalid input
 validation.numeric                      = Enter a numeric value
 
 ## Welcome Page
-pages.welcome.title                                     = Before you register for VAT
-pages.welcome.heading                                   = Before you register for VAT
-pages.welcome.heading.register                          = To register for VAT you''ll need:
-pages.welcome.bullet.details.person                     = details of the person making the application (for example, National Insurance number)
-pages.welcome.bullet.details.company                    = details of what the company does
-pages.welcome.bullet.details.sales                      = the company''s total estimated sales that are subject to VAT (or <a href="https://www.gov.uk/vat-registration/calculate-turnover">''VAT taxable turnover''</a>) for the next 12 months
-pages.welcome.note.registrationTime                     = This application should take no more than 30 minutes.
-pages.welcome.panels.vatNeeded.title                    = Do you need to register for VAT?
-pages.welcome.panels.vatNeeded.para1                    = You need to register for VAT if you expect the company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered with Companies House.
-pages.welcome.panels.vatVoluntarily.title               = Can you register voluntarily for VAT?
-pages.welcome.panels.vatVoluntarily.para1               = You can register voluntarily if the company''s VAT taxable turnover is less than £83,000 in the 30 days after it''s registered with Companies House.
-pages.welcome.panels.vatVoluntarily.para2               = If you''re registered for VAT you:
-pages.welcome.panels.vatVoluntarily.bullet.charge       = must <a href="https://www.gov.uk/vat-businesses/how-vat-works">charge VAT</a> on the goods or services you sell
-pages.welcome.panels.vatVoluntarily.bullet.reclaim      = can <a href="https://www.gov.uk/reclaim-vat">reclaim VAT</a> on your business-related purchases
-pages.welcome.panels.vatVoluntarily.bullet.invoices     = must send VAT invoices to VAT-registered customers
-pages.welcome.panels.vatVoluntarily.para3               = Smaller companies that are registered for VAT can appear larger and more established to customers. However, charging VAT on goods and services may put off customers who aren''t VAT registered and can''t reclaim VAT.
-pages.welcome.panels.vatVoluntarily.para4               = You can apply to cancel your VAT registration at any time if it turns out to be the wrong decision.
-pages.welcome.panels.vatResponsibilities.title          = What are your VAT responsibilities?
-pages.welcome.panels.vatResponsibilities.para1          = From the date you''re registered for VAT you must:
-pages.welcome.panels.vatResponsibilities.bullet.charge  = charge the <a href="https://www.gov.uk/vat-businesses/when-to-charge-vat">right amount of VAT</a>
-pages.welcome.panels.vatResponsibilities.bullet.pay     = pay any VAT due to HMRC
-pages.welcome.panels.vatResponsibilities.bullet.submit  = submit VAT Returns
-pages.welcome.panels.vatResponsibilities.bullet.records = keep VAT records and a VAT account
+pages.welcome.title                                     = Before you start
+pages.welcome.heading                                   = Register for VAT
+pages.welcome.p1                                        = Use this service if:
+pages.welcome.bullet1                                   = in any 12-month period the company''s VAT taxable turnover was more than the VAT registration threshold
+pages.welcome.bullet2                                   = in any 30-day period you thought the company''s VAT taxable turnover would be more than the VAT registration threshold
+pages.welcome.bullet3                                   = in the next 30 days you expect VAT taxable turnover to be more than the current VAT registration threshold
+pages.welcome.p2                                        = If you don''t meet these criteria, you can register voluntarily so long as your company sells or intends to sell VAT taxable goods or services. You''ll be able to reclaim VAT on any business-related purchases.
+pages.welcome.button.start                              = Start now
+pages.welcome.p3                                        = Before you start you''ll need:
+pages.welcome.bullet4                                   = to be a company director or secretary
+pages.welcome.bullet5                                   = personal information we can use to identify you (for example, details from a UK passport, a P60 or payslips)
+pages.welcome.bullet6                                   = your National Insurance number
+pages.welcome.bullet7                                   = estimates of the company''s total VAT taxable sales for the next 12 months
+pages.welcome.p4                                        = Your answers should reflect your current business details. You''ll need to tell HM Revenue and Customs (HMRC) about any changes to your business in the future.
+pages.welcome.panel1.title                              = What is ''VAT taxable turnover'' and the ''VAT registration threshold''?
+pages.welcome.panel1.p1                                 = You can register voluntarily if the company''s VAT taxable turnover is less than £83,000 in the 30 days after it''s registered with Companies House.
+pages.welcome.panel1.p2                                 = The VAT registration threshold for the current tax year is £85,000. It''s the amount of <a href="https://www.gov.uk/vat-registration/calculate-turnover">VAT taxable sales</a> you can make before you have to register for VAT.
+pages.welcome.panel1.p3                                 = Find a list of yearly <a href="https://www.gov.uk/government/publications/vat-notice-7001-should-i-be-registered-for-vat/vat-notice-7001-supplement--2#registration-limits-taxable-supplies">VAT registration thresholds</a>.
 
 ## Service Criteria Questions (VAT Service Eligibility)
 ## Service Criteria Success
-pages.serviceCriteriaSuccess.title                                     = You''re eligible to register for VAT using this service
+pages.serviceCriteriaSuccess.title                                     = Eligible to register
 pages.serviceCriteriaSuccess.heading                                   = You can register for VAT using this service
 pages.serviceCriteriaSuccess.para1                                     = To register for VAT you''ll need:
-pages.serviceCriteriaSuccess.bullet.details.person                     = details of the person making the application (for example, National Insurance number)
-pages.serviceCriteriaSuccess.bullet.details.company                    = details of what the company does
-pages.serviceCriteriaSuccess.bullet.details.sales                      = the company''s total estimated sales that are subject to VAT (or <a href="https://www.gov.uk/vat-registration/calculate-turnover">''VAT taxable turnover''</a>) for the next 12 months
+pages.serviceCriteriaSuccess.bullet.details.bullet1                    = details of the person making the application (for example, National Insurance number)
+pages.serviceCriteriaSuccess.bullet.details.bullet2                    = estimate of the company''s VAT taxable sales for the next 12 months
 pages.serviceCriteriaSuccess.note.registrationTime                     = This application should take no more than 30 minutes.
 pages.serviceCriteriaSuccess.panels.vatVoluntarily.title               = Can you register voluntarily for VAT?
-pages.serviceCriteriaSuccess.panels.vatVoluntarily.para1               = You can register voluntarily if the company''s VAT taxable turnover is less than £83,000 in the 30 days after it''s registered with Companies House.
+pages.serviceCriteriaSuccess.panels.vatVoluntarily.para1               = You can register voluntarily if the company''s VAT taxable turnover is less than £85,000 in the 30 days after it''s registered with Companies House.
 pages.serviceCriteriaSuccess.panels.vatVoluntarily.para2               = If you''re registered for VAT you:
 pages.serviceCriteriaSuccess.panels.vatVoluntarily.bullet.charge       = must <a href="https://www.gov.uk/vat-businesses/how-vat-works">charge VAT</a> on the goods or services you sell
 pages.serviceCriteriaSuccess.panels.vatVoluntarily.bullet.reclaim      = can <a href="https://www.gov.uk/reclaim-vat">reclaim VAT</a> on your business-related purchases
@@ -111,15 +105,16 @@ pages.eligibility.haveNino.title                            = Do you have a Nati
 pages.eligibility.haveNino.heading                          = Do you have a National Insurance number?
 
 ## Doing Business Abroad
-pages.eligibility.doingBusinessAbroad.title                 = Will you do any of the following once you''re registered for VAT?
+pages.eligibility.doingBusinessAbroad.title                 = Will the company do any of the following once it''s registered for VAT?
 pages.eligibility.doingBusinessAbroad.heading               = Will you do any of the following once you''re registered for VAT?
 pages.eligibility.doingBusinessAbroad.p1                    = Once you''re registered for VAT, will you:
 pages.eligibility.doingBusinessAbroad.bullet1               = import or export goods to or from other EU countries
-pages.eligibility.doingBusinessAbroad.bullet2               = <a href="https://www.gov.uk/online-and-distance-selling-for-businesses/distance-selling">distance sell</a> goods into the UK from another EU country
-pages.eligibility.doingBusinessAbroad.bullet3               = buy goods from other EU countries and bring them into the UK
-pages.eligibility.doingBusinessAbroad.bullet4               = sell goods outside the UK but not in the UK
-pages.eligibility.doingBusinessAbroad.bullet5               = do business from a head office based outside the UK
-pages.eligibility.doingBusinessAbroad.bullet6               = import or export goods to or from other EU countries
+pages.eligibility.doingBusinessAbroad.bullet2               = import or export goods to or from countries outside the EU
+pages.eligibility.doingBusinessAbroad.bullet3               = <a href="https://www.gov.uk/online-and-distance-selling-for-businesses/distance-selling">distance sell</a> goods into the UK from another EU country
+pages.eligibility.doingBusinessAbroad.bullet4               = buy goods from other EU countries and bring them into the UK
+pages.eligibility.doingBusinessAbroad.bullet5               = sell goods outside the UK but not in the UK
+pages.eligibility.doingBusinessAbroad.bullet6               = sell assets you bought from a country outside the UK and claimed a VAT refund on
+pages.eligibility.doingBusinessAbroad.bullet7               = do business from a head office based outside the UK
 pages.eligibility.doingBusinessAbroad.panel1.title          = What are goods?
 pages.eligibility.doingBusinessAbroad.panel1.p1             = Goods are things you can physically pick up and take away.
 pages.eligibility.doingBusinessAbroad.panel1.p2             = For example:
@@ -141,7 +136,7 @@ pages.eligibility.doingBusinessAbroad.panel3.bullet3        = selling assets you
 pages.eligibility.doAnyApplyToYou.title                     = Do any of the following apply to you or the business?
 pages.eligibility.doAnyApplyToYou.heading                   = Do any of the following apply to you or the business?
 pages.eligibility.doAnyApplyToYou.p1                        = Tell us if:
-pages.eligibility.doAnyApplyToYou.bullet1                   = your taxable sales went over the £83,000 threshold temporarily but have since dropped below the threshold
+pages.eligibility.doAnyApplyToYou.bullet1                   = your taxable sales went over the £85,000 threshold temporarily but have since dropped below the threshold
 pages.eligibility.doAnyApplyToYou.bullet2                   = you changed the legal status of your business when you registered it with Companies House (for example, from sole trader to limited company)
 pages.eligibility.doAnyApplyToYou.bullet3                   = you''ve taken over a VAT-registered business which is operating and making a profit
 pages.eligibility.doAnyApplyToYou.bullet4                   = you''ve been involved with other businesses as a sole trader, partner or director in the last 2 years
@@ -673,3 +668,10 @@ validation.formerName.selected.invalid                   = Enter a valid name
 pages.previousAddressQuestion.title                      = Have you lived at your current address for 3 years or more?
 pages.previousAddressQuestion.heading                    = Have you lived at your current address for 3 years or more?
 validation.previousAddressQuestion.missing               = Tell us if you''ve lived at your current address for 3 years or more
+
+
+## Officer Home Address Page
+pages.ppob.title                           = Where will the company carry out most of its business activities?
+pages.ppob.heading                         = Where will the company carry out most of its business activities?
+pages.ppob.different.address               = A different address
+validation.ppob.missing                    = Tell us where you''ll carry out most of your business activities
