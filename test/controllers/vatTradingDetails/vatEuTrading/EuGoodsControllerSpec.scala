@@ -55,7 +55,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Do you import or export goods from or to countries outside the EU?")
+          contentAsString(result) must include("Will the company trade VAT taxable goods or services with countries outside the EU?")
       }
     }
 
@@ -70,7 +70,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Do you import or export goods from or to countries outside the EU?")
+          contentAsString(result) must include("Will the company trade VAT taxable goods or services with countries outside the EU?")
       }
     }
   }
@@ -86,7 +86,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
         status(result) mustBe OK
         contentType(result) mustBe Some("text/html")
         charset(result) mustBe Some("utf-8")
-        contentAsString(result) must include("Do you import or export goods from or to countries outside the EU?")
+        contentAsString(result) must include("Will the company trade VAT taxable goods or services with countries outside the EU?")
     }
   }
 

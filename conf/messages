@@ -565,7 +565,8 @@ validation.applyEori.missing                   = Tell us if you want to apply fo
 
 ## EU Goods
 pages.euGoods.title                         = Importing and exporting goods
-pages.euGoods.heading                       = Do you import or export goods from or to countries outside the EU?
+pages.euGoods.heading                       = Will the company trade VAT taxable goods or services with countries outside the EU?
+pages.euGoods.p1                            = This includes imports from and exports to non-EU countries.
 validation.euGoods.missing                  = Tell us if you import or export goods from or to countries outside the EU
 
 ## Business Contact Details Page
