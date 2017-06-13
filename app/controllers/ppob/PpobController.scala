@@ -37,7 +37,7 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
   extends VatRegistrationController(ds) with CommonService {
 
   import cats.syntax.flatMap._
-  import models.AddressLookupJourneyId.homeAddressJourneyId
+  import models.AddressLookupJourneyId.ppobVatReg
 
   private val form = PpobForm.form
   private val addressListKey = "PpobAddressList"
