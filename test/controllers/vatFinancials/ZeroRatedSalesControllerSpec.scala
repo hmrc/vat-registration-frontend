@@ -38,7 +38,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       save4laterReturnsViewModel(ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_YES))()
 
       submitAuthorised(Controller.show(), fakeRequest.withFormUrlEncodedBody("zeroRatedSalesRadio" -> "")) {
-        _ includesText "Do you expect to make any zero-rated sales?"
+        _ includesText "Will the company sell any zero-rated goods or services in the next 12 months?"
       }
     }
 
@@ -47,7 +47,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(Controller.show) {
-        _ includesText "Do you expect to make any zero-rated sales?"
+        _ includesText "Will the company sell any zero-rated goods or services in the next 12 months?"
       }
     }
 
@@ -56,7 +56,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {
-        _ includesText "Do you expect to make any zero-rated sales?"
+        _ includesText "Will the company sell any zero-rated goods or services in the next 12 months?"
       }
     }
 
