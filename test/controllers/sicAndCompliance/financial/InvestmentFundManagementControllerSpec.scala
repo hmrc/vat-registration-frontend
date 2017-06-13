@@ -80,7 +80,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
     "return 303 with Investment Fund Management Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterReturnsNothing2[BusinessActivityDescription]()
       save4laterExpectsSave[InvestmentFundManagement]()
@@ -92,7 +92,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
     "return 303 with Investment Fund Management No selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
       save4laterExpectsSave[InvestmentFundManagement]()
