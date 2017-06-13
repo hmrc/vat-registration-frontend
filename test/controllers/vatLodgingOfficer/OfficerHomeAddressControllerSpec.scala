@@ -57,7 +57,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
       val vatScheme = validVatScheme.copy(lodgingOfficer =
         Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director",
                         officerName, formerName, currentOrPreviousAddress, validOfficerContactDetails)))
-      save4laterReturnsNothing2[OfficerHomeAddressView]()
+      save4laterReturnsNoViewModel[OfficerHomeAddressView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
       callAuthorised(Controller.show()) {
         _ includesText "What is your home address"
@@ -66,7 +66,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       val vatScheme = validVatScheme.copy(lodgingOfficer = None)
-      save4laterReturnsNothing2[OfficerHomeAddressView]()
+      save4laterReturnsNoViewModel[OfficerHomeAddressView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
       callAuthorised(Controller.show()) {
         _ includesText "What is your home address"

@@ -49,7 +49,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[ManageAdditionalFunds]()
+      save4laterReturnsNoViewModel[ManageAdditionalFunds]()
       when(mockVatRegistrationService.getVatScheme()(Matchers.any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(ManageAdditionalFundsController.show) {
@@ -59,7 +59,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[ManageAdditionalFunds]()
+    save4laterReturnsNoViewModel[ManageAdditionalFunds]()
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(ManageAdditionalFundsController.show) {

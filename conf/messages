@@ -187,7 +187,7 @@ pages.eligibility.companyWillDoAnyOf.bullet3                 = buy, sell or rent
 
 
 ## Start Date Page
-pages.startDate.title                                 = Start Date
+pages.startDate.title                                 = What do you want your VAT start date to be?
 pages.startDate.heading                               = What do you want your VAT start date to be?
 pages.startDate.para1                                 = You can choose the date the company becomes VAT registered when you register voluntarily.
 pages.startDate.radio.whenRegistered                  = The date the company is registered with Companies House
@@ -260,18 +260,14 @@ pages.start.date.confirmation.warning                        = You may get a pen
 
 ## Estimate Vat Turnover Page
 pages.estimate.vat.turnover.title                           = Estimate value of sales
-pages.estimate.vat.turnover.heading                         = Estimate the company''s VAT taxable turnover 
-pages.estimate.vat.turnover.para1                           = Estimate the total value of the products or services you expect to sell in the next 12 months that are subject to VAT. This is called your <a href="https://www.gov.uk/vat-registration/calculate-turnover">VAT taxable turnover</a>.
-pages.estimate.vat.turnover.info                            = You won''t be penalised if your estimate isn''t exact.
-pages.estimate.vat.turnover.form.label                      = Estimated VAT taxable turnover for the next 12 months
-pages.estimate.vat.turnover.include.title                   = What should I include in my estimate?
-pages.estimate.vat.turnover.include.para1                   = Add together the total value of your UK sales that aren''t <a href="https://www.gov.uk/vat-businesses/when-not-to-charge-vat">exempt from VAT</a>, including:
+pages.estimate.vat.turnover.heading                         = What will the company''s VAT taxable turnover be during the next 12 months?
+pages.estimate.vat.turnover.info                            = You must give a realistic estimate, but you won''t get a penalty if your estimate isn''t exact.
+pages.estimate.vat.turnover.include.title                   = What should I include?
 pages.estimate.vat.turnover.include.bullet1                 = goods you hired or loaned to customers
 pages.estimate.vat.turnover.include.bullet2                 = business goods used for personal reasons
-pages.estimate.vat.turnover.include.bullet3                 = goods you <a href="https://www.gov.uk/guidance/vat-part-exchanges-barters-and-set-offs">bartered, part-exchanged</a> or gave as gifts
-pages.estimate.vat.turnover.include.bullet4                 = services you received from businesses in other countries that you had to <a href="https://www.gov.uk/government/publications/vat-notice-735-vat-reverse-charge-on-specified-goods-and-services/vat-notice-735-vat-reverse-charge-on-specified-goods-and-services">''reverse charge''</a>
-pages.estimate.vat.turnover.include.bullet5                 = <a href="https://www.gov.uk/government/publications/vat-notice-708-buildings-and-construction">building work over £100,000</a> your business did for itself
-pages.estimate.vat.turnover.include.para2                   = Include any <a href="https://www.gov.uk/vat-businesses/vat-rates">zero-rated items</a> - only exclude VAT-exempt sales, and goods or services you supply outside of the UK.
+pages.estimate.vat.turnover.include.bullet3                 = goods you bartered, part-exchanged or gave as gifts
+pages.estimate.vat.turnover.include.bullet4                 = building work over £100,000 that your company did for itself
+pages.estimate.vat.turnover.include.para1                   = Find out more about <a href="https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services">VAT rates on different goods and services</a>.
 validation.estimate.vat.turnover.low                        = Enter a positive estimate
 validation.estimate.vat.turnover.high                       = Enter an estimate which is less than 1,000,000,000,000,000
 validation.estimate.vat.turnover.missing                    = Estimate the company''s VAT taxable turnover for the next 12 months
@@ -382,7 +378,7 @@ pages.summary.directorDetails.mobile                   = Mobile number
 
 
 ##Business Activity Description
-pages.business.activity.description.title                     = Business Activity Description
+pages.business.activity.description.title                     = Describe the business
 pages.business.activity.description.heading                   = Describe what the company does
 pages.business.activity.description.para1                     = Tell us about the type of goods or services the company sells.
 pages.business.activity.description.hint                      = For example, cleaning services
@@ -418,7 +414,7 @@ pages.summary.taxableSales.zeroRatedSalesValue                = Estimated zero-r
 pages.summary.directorAddresses.sectionHeading                = Director addresses
 pages.summary.directorAddresses.homeAddress                   = Home address
 pages.summary.directorAddresses.currentAddressThreeYears      = Lived at current address for more than 3 years
-pages.summary.directorAddresses.previousAddress               = Previous address        
+pages.summary.directorAddresses.previousAddress               = Previous address
 
 ## Summary Page Doing Business Abroad
 pages.summary.doingBusinessAbroad.sectionHeading              = Doing business abroad
@@ -453,8 +449,8 @@ errorPages.restart.heading              = Sorry, we''re having technical issues.
 errorPages.restart.p1                   = You can try again by <a href="{0}" >restarting</a> your VAT registration.
 
 ## Company Bank Account
-pages.company.bank.account.title                = Company Bank Account
-pages.company.bank.account.heading              = Do you have a bank account set up in the name of your company?
+pages.company.bank.account.title                = Is there a bank account set up in the name of the company?
+pages.company.bank.account.heading              = Is there a bank account set up in the name of the company?
 validation.company.bank.account.missing  = Tell us if you have a bank account set up in the name of the company
 
 ## Bank Details page
@@ -590,7 +586,7 @@ pages.businessContactDetails.para1                           = We may need to ge
 pages.businessContactDetails.para2                           = You need to provide a contact email address.
 pages.businessContactDetails.para3                           = You need to provide at least one of the following contact numbers.
 pages.businessContactDetails.emailAddress.label              = Email address
-pages.businessContactDetails.daytimePhone.label              = Daytime phone number
+pages.businessContactDetails.daytimePhone.label              = Phone number
 pages.businessContactDetails.mobile.label                    = Mobile number
 pages.businessContactDetails.website.label                   = Website address (optional)
 validation.businessContactDetails.email.missing              = Enter an email address
@@ -611,7 +607,7 @@ pages.summary.serviceCriteria.applyingForAnyOf          = Applying For Any Of
 
 
 ## Officer Home Address Page
-pages.officerHomeAddress.title                           = Director residential address 
+pages.officerHomeAddress.title                           = Director residential address
 pages.officerHomeAddress.heading                         = What is your home address?
 pages.officerHomeAddress.different.address               = A different address
 validation.officerHomeAddress.missing                    = Tell us your home address

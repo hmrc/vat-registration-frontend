@@ -18,13 +18,16 @@
       @govHelpers.form(action = controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.submit()) {
           <div class="form-group">
               <fieldset>
-
+                  <style>
+                      textarea { height: 5em }
+                      label.form-hint p { margin-bottom: 0 }
+                  </style>
                   @govHelpers.textArea(
                           businessActivityDescriptionForm("description"),
                           '_divClass -> "form-group",
-                          '_inputClass -> "form-control",
-                          '_info -> messages("pages.business.activity.description.hint"),
-                          '_labelClass -> "form-hint"
+                          '_labelClass -> "form-hint",
+                          '_inputClass -> "form-control fill-width",
+                          '_info -> messages("pages.business.activity.description.hint")
               )
 
               </fieldset>

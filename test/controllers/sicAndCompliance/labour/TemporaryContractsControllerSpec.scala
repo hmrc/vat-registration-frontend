@@ -55,7 +55,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[TemporaryContracts]()
+      save4laterReturnsNoViewModel[TemporaryContracts]()
       when(mockVatRegistrationService.getVatScheme()(Matchers.any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TemporaryContractsController.show) {
@@ -69,7 +69,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[TemporaryContracts]()
+    save4laterReturnsNoViewModel[TemporaryContracts]()
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(TemporaryContractsController.show) {

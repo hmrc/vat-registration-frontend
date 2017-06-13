@@ -60,7 +60,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[EuGoods]()
+      save4laterReturnsNoViewModel[EuGoods]()
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
@@ -76,7 +76,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[EuGoods]()
+    save4laterReturnsNoViewModel[EuGoods]()
 
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))

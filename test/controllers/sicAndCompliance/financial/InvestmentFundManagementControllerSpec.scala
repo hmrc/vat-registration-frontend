@@ -46,7 +46,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[InvestmentFundManagement]()
+      save4laterReturnsNoViewModel[InvestmentFundManagement]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(InvestmentFundManagementController.show) {
@@ -56,7 +56,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[InvestmentFundManagement]()
+    save4laterReturnsNoViewModel[InvestmentFundManagement]()
     when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
     callAuthorised(InvestmentFundManagementController.show) {
