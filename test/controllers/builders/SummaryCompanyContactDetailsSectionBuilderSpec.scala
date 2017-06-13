@@ -18,7 +18,7 @@ package controllers.builders
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{VatContact, VatDigitalContact}
+import models.api.{ScrsAddress, VatContact, VatDigitalContact}
 import models.view.SummaryRow
 
 class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
@@ -67,6 +67,19 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
         answerMessageKey = "http://website.com",
         changeLink = Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
       )
+    }
+
+
+    "a real Ppob value should be returned expected test value for Ppob" in {
+      import cats.syntax.show._
+      import ScrsAddress.htmlShow._
+      val builder = SummaryCompanyContactDetailsSectionBuilder(Some(vatContact), Some(scrsAddress))
+      builder.ppobRow mustBe
+        SummaryRow(
+          "companyContactDetails.ppob",
+          scrsAddress.show,
+          Some(controllers.ppob.routes.PpobController.show())
+        )
     }
 
     "summary section shows and hides rows" in {

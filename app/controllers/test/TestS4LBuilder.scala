@@ -20,6 +20,7 @@ import java.time.LocalDate
 
 import models._
 import models.api._
+import models.view.ppob.PpobView
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
@@ -137,6 +138,18 @@ class TestS4LBuilder {
         data.vatContact.website))
 
     S4LVatContact(businessContactDetails = businessContactDetails)
+  }
+
+  def vatPpobFormData(data: TestSetup): S4LPpob = {
+    val address: Option[ScrsAddress] = data.ppob.line1.map(_ =>
+      ScrsAddress(
+        line1 = data.ppob.line1.getOrElse(""),
+        line2 = data.ppob.line2.getOrElse(""),
+        line3 = data.ppob.line3,
+        line4 = data.ppob.line4,
+        postcode = data.ppob.postcode,
+        country = data.ppob.country))
+    S4LPpob(Some(PpobView(address.map(_.id).getOrElse(""), address)))
   }
 
   def vatLodgingOfficerFromData(data: TestSetup): S4LVatLodgingOfficer = {
