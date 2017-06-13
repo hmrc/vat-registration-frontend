@@ -35,7 +35,7 @@ class ComplianceIntroductionController @Inject()(s4LService: S4LService, ds: Com
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     OptionT(s4LService.fetchAndGet[SicStub]()).map(ss => ComplianceQuestions(ss.sicCodes))
-      .fold( controllers.test.routes.SicStubController.show()) {
+      .fold(controllers.test.routes.SicStubController.show()) {
         complianceQuestions =>
           Logger.info(s"User needs to answer a series of $complianceQuestions")
           complianceQuestions.firstQuestion

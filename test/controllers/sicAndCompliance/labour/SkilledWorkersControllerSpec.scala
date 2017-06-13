@@ -99,6 +99,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
     "return 303 with company provide Skilled workers Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
       save4laterExpectsSave[SkilledWorkers]()
 
@@ -114,6 +115,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
     "return 303 with company provide Skilled workers No selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
       save4laterExpectsSave[SkilledWorkers]()
 
