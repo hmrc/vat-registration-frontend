@@ -20,13 +20,13 @@ import play.api.libs.json.Json
 
 
 case class VatPpobSetup(
-                                        line1: Option[String],
-                                        line2: Option[String],
-                                        line3: Option[String],
-                                        line4: Option[String],
-                                        postcode: Option[String] = None,
-                                        country: Option[String] = None
-                                      )
+                        line1: Option[String],
+                        line2: Option[String],
+                        line3: Option[String],
+                        line4: Option[String],
+                        postcode: Option[String] = None,
+                        country: Option[String] = None
+                      )
 
 
 object VatPpobSetup {

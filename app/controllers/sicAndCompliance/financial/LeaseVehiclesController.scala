@@ -43,8 +43,7 @@ class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.lease_vehicles(badForm)).pure,
-      data
-      => save(data).map(_ => data.yesNo).ifM(
+      data => save(data).map(_ => data.yesNo).ifM(
         ifTrue = submitAndExit(ElementPath.finCompElementPaths.drop(4)),
         ifFalse = controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show().pure)
         .map(Redirect)))
