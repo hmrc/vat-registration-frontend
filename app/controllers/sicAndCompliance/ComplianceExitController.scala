@@ -17,7 +17,7 @@
 package controllers.sicAndCompliance
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import models.S4LVatSicAndCompliance
+import models.{ElementPath, S4LVatSicAndCompliance}
 import models.view.sicAndCompliance.BusinessActivityDescription
 import play.api.mvc._
 import services.{RegistrationService, S4LService}
@@ -28,8 +28,11 @@ import scala.concurrent.Future
 class ComplianceExitController (ds: CommonPlayDependencies)(implicit vrs: RegistrationService, s4LService: S4LService)
   extends VatRegistrationController(ds) {
 
-  def submitAndExit(implicit hc: HeaderCarrier): Future[Call] =
-    vrs.submitSicAndCompliance().map(_ => controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+  def submitAndExit(elements: List[ElementPath])(implicit hc: HeaderCarrier): Future[Call] =
+    for {
+      _ <- vrs.deleteElements(elements)
+      _ <- vrs.submitSicAndCompliance()
+    } yield controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()
 
 
   def clearComplianceContainer(implicit hc: HeaderCarrier): Future[S4LVatSicAndCompliance] =

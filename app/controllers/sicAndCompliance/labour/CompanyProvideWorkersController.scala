@@ -21,7 +21,7 @@ import javax.inject.Inject
 import controllers.CommonPlayDependencies
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.labour.CompanyProvideWorkersForm
-import models.{CulturalCompliancePath, FinancialCompliancePath}
+import models.{CulturalCompliancePath, ElementPath, FinancialCompliancePath}
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -44,11 +44,12 @@ class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
         clearCompliance <- clearComplianceContainer
         _ <- save(clearCompliance)
         _ <- save(data)
+        _ <- vrs.deleteElements(ElementPath.labCompElementPaths)
         _ <- vrs.deleteElements(List(CulturalCompliancePath, FinancialCompliancePath))
         route =
           if (CompanyProvideWorkers.PROVIDE_WORKERS_YES == data.yesNo) {
             controllers.sicAndCompliance.labour.routes.WorkersController.show().pure
-          } else { submitAndExit }
+          } else { submitAndExit(ElementPath.labCompElementPaths.drop(1)) }
         call <- route
       } yield Redirect(call)))
 

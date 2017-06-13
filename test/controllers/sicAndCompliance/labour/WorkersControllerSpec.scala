@@ -97,6 +97,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "return 303 with less than 8 workers entered" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
       save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
       save4laterExpectsSave[Workers]()
 
