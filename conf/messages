@@ -396,6 +396,7 @@ pages.summary.companyContactDetails.email                       = Business email
 pages.summary.companyContactDetails.daytimePhone                = Business daytime phone number
 pages.summary.companyContactDetails.mobile                      = Business mobile number
 pages.summary.companyContactDetails.website                     = Business website address
+pages.summary.companyContactDetails.ppob                        = Main place of business
 
 ## Summary Page Business Activities
 pages.summary.businessActivities.sectionHeading                = Business activities

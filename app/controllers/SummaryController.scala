@@ -49,7 +49,7 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
       SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer).section,
       SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer).section,
       SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
-      SummaryCompanyContactDetailsSectionBuilder(vs.vatContact).section,
+      SummaryCompanyContactDetailsSectionBuilder(vs.vatContact, vs.ppob).section,
       SummaryBusinessActivitiesSectionBuilder(vs.vatSicAndCompliance).section,
       SummaryBusinessBankDetailsSectionBuilder(vs.financials).section,
       SummaryTaxableSalesSectionBuilder(vs.financials).section,
