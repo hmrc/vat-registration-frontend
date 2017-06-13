@@ -18,7 +18,8 @@ package controllers.sicAndCompliance.financial
 
 import javax.inject.Inject
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.CommonPlayDependencies
+import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.financial.AdditionalNonSecuritiesWorkForm
 import models.ElementPath
 import models.view.sicAndCompliance.financial.AdditionalNonSecuritiesWork
@@ -27,7 +28,8 @@ import services.{RegistrationService, S4LService}
 
 
 class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies)
-                                                     (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
+                                                     (implicit s4LService: S4LService, vrs: RegistrationService)
+  extends ComplianceExitController(ds) {
 
   val form = AdditionalNonSecuritiesWorkForm.form
 
@@ -41,8 +43,7 @@ class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(badForm)).pure,
       data => save(data).map(_ => data.yesNo).ifM(
-        ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths.drop(2)).map(_ =>
-          controllers.sicAndCompliance.routes.ComplianceExitController.exit()),
+        ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths.drop(2)).flatMap(_ => submitAndExit),
         ifFalse = controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show().pure
       ).map(Redirect)))
 

@@ -18,7 +18,8 @@ package controllers.sicAndCompliance.financial
 
 import javax.inject.Inject
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.CommonPlayDependencies
+import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.financial.InvestmentFundManagementForm
 import models.ElementPath
 import models.view.sicAndCompliance.financial.InvestmentFundManagement
@@ -27,7 +28,8 @@ import services.{RegistrationService, S4LService}
 
 
 class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
-                                                  (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
+                                                  (implicit s4LService: S4LService, vrs: RegistrationService)
+  extends ComplianceExitController(ds) {
 
   val form = InvestmentFundManagementForm.form
 
@@ -41,9 +43,7 @@ class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.investment_fund_management(badForm)).pure,
       data => save(data).map(_ => data.yesNo).ifM(
-        controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show().pure,
-        vrs.deleteElements(ElementPath.finCompElementPaths.drop(5)).map(_ =>
-          controllers.sicAndCompliance.routes.ComplianceExitController.exit()))
-        .map(Redirect)))
+        ifTrue = controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show().pure,
+        ifFalse = vrs.deleteElements(ElementPath.finCompElementPaths.drop(5)).flatMap(_ => submitAndExit)).map(Redirect)))
 
 }
