@@ -54,7 +54,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[AdditionalNonSecuritiesWork]()
+      save4laterReturnsNoViewModel[AdditionalNonSecuritiesWork]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(AdditionalNonSecuritiesWorkController.show) {
@@ -63,10 +63,10 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
       }
     }
 
-    "return HTML when there's nothing in S4L and vatScheme contains no data empty vatScheme" in {
-      save4laterReturnsNothing2[AdditionalNonSecuritiesWork]()
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-        .thenReturn(Future.successful(emptyVatScheme))
+  "return HTML when there's nothing in S4L and vatScheme contains no dataempty vatScheme" in {
+    save4laterReturnsNoViewModel[AdditionalNonSecuritiesWork]()
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
+      .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(AdditionalNonSecuritiesWorkController.show) {
         _ includesText "Does the company do additional work (excluding securities) " +
@@ -99,7 +99,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterExpectsSave[AdditionalNonSecuritiesWork]()
-      save4laterReturnsNothing2[BusinessActivityDescription]()
+      save4laterReturnsNoViewModel[BusinessActivityDescription]()
 
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "false"

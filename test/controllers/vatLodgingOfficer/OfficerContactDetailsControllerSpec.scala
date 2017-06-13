@@ -35,7 +35,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
   s"GET ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show()}" should {
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[OfficerContactDetailsView]()
+      save4laterReturnsNoViewModel[OfficerContactDetailsView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(Controller.show()) {
@@ -53,7 +53,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[OfficerContactDetailsView]()
+      save4laterReturnsNoViewModel[OfficerContactDetailsView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {
@@ -102,7 +102,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
 
     "return 303" in {
       save4laterExpectsSave[OfficerContactDetailsView]()
-      save4laterReturnsNothing2[VoluntaryRegistration]()
+      save4laterReturnsNoViewModel[VoluntaryRegistration]()
 
       submitAuthorised(
         Controller.submit(),

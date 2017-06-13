@@ -97,7 +97,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
       when(mockVatRegService.submitVatEligibility()(any())).thenReturn(validServiceEligibility.pure)
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
-        save4laterReturnsNothing2[VatServiceEligibility]()
+        save4laterReturnsNoViewModel[VatServiceEligibility]()
         when(mockVatRegService.getVatScheme()(any())).thenReturn(validVatScheme.copy(vatServiceEligibility = None).pure)
         save4laterExpectsSave[VatServiceEligibility]()
 
