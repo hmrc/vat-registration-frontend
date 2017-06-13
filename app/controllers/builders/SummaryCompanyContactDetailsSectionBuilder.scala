@@ -18,12 +18,16 @@ package controllers.builders
 
 import models.api._
 import models.view.{SummaryRow, SummarySection}
+import cats.syntax.show._
+import ScrsAddress.htmlShow._
 
 case class SummaryCompanyContactDetailsSectionBuilder
 (
-  vatContact: Option[VatContact] = None
+  vatContact: Option[VatContact] = None,
+  ppob: Option[ScrsAddress] = None
 )
   extends SummarySectionBuilder {
+
 
   val businessEmailRow: SummaryRow = SummaryRow(
     "companyContactDetails.email",
@@ -51,6 +55,12 @@ case class SummaryCompanyContactDetailsSectionBuilder
     Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
   )
 
+  val ppobRow: SummaryRow = SummaryRow(
+    "companyContactDetails.ppob",
+    ppob.fold("")(_.show),
+    Some(controllers.ppob.routes.PpobController.show())
+  )
+
 
   val section: SummarySection = SummarySection(
     id = "companyContactDetails",
@@ -58,7 +68,8 @@ case class SummaryCompanyContactDetailsSectionBuilder
       (businessEmailRow, true),
       (businessDaytimePhoneNumberRow, vatContact.exists(_.digitalContact.tel.isDefined)),
       (businessMobilePhoneNumberRow, vatContact.exists(_.digitalContact.mobile.isDefined)),
-      (businessWebsiteRow, vatContact.exists(_.website.isDefined))
+      (businessWebsiteRow, vatContact.exists(_.website.isDefined)),
+      (ppobRow, ppob.isDefined)
     )
   )
 }
