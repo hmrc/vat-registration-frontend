@@ -21,5 +21,5 @@ final case class AddressLookupJourneyId(id: String)
 object AddressLookupJourneyId {
   implicit val homeAddressJourneyId = AddressLookupJourneyId("vatreg1")
   implicit val previousAddressId = AddressLookupJourneyId("vatreg2")
-
+  implicit val ppobVatReg = AddressLookupJourneyId("vatreg_ppob")
 }
