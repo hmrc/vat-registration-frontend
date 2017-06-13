@@ -203,8 +203,8 @@ pages.startDate.panels.specificDate.inputField.year   = Year
 validation.startDate.choice.missing                   = Tell us when you want your VAT start date to be
 validation.startDate.range.below                      = Date must be more than 2 working days in the future
 validation.startDate.range.above                      = Date must be within the next 3 months
-validation.startDate.invalid                          = Enter a valid start date
-validation.startDate.missing                          = Enter a start date
+validation.startDate.invalid                          = Enter a valid date
+validation.startDate.missing                          = Enter a date
 
 
 
@@ -594,7 +594,7 @@ validation.businessContactDetails.email.invalid              = Enter a valid ema
 validation.businessContactDetails.mobile.missing             = Enter at least one phone number
 validation.businessContactDetails.mobile.invalid             = Enter a valid mobile phone number
 validation.businessContactDetails.daytimePhone.missing       = Enter at least one phone number
-validation.businessContactDetails.daytimePhone.invalid       = Enter a valid daytime phone number
+validation.businessContactDetails.daytimePhone.invalid       = Enter a valid phone number
 
 ## Summary Service Criteria
 pages.summary.serviceCriteria.sectionHeading            = Service criteria questions
