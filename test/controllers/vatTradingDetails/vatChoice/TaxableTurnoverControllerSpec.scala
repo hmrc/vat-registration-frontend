@@ -44,7 +44,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
       submitAuthorised(TestTaxableTurnoverController.show(), fakeRequest.withFormUrlEncodedBody(
         "taxableTurnoverRadio" -> ""
       )) {
-        _ includesText "VAT taxable turnover to be more than £83,000"
+        _ includesText "VAT taxable turnover to be more than £85,000"
       }
     }
 
@@ -55,7 +55,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestTaxableTurnoverController.show) {
-        _ includesText "VAT taxable turnover to be more than £83,000"
+        _ includesText "VAT taxable turnover to be more than £85,000"
       }
     }
 
@@ -67,7 +67,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestTaxableTurnoverController.show) {
-        _ includesText "VAT taxable turnover to be more than £83,000"
+        _ includesText "VAT taxable turnover to be more than £85,000"
       }
     }
   }
