@@ -18,6 +18,7 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial.ManageAdditionalFunds
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -33,6 +34,11 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
 
   object ManageAdditionalFundsController extends ManageAdditionalFundsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+  }
+
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
   }
 
   val fakeRequest = FakeRequest(routes.ManageAdditionalFundsController.show())
@@ -77,10 +83,12 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
       }
     }
 
-    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-    save4laterExpectsSave[ManageAdditionalFunds]()
-
     "return 303 with Manage Additional Funds Yes selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterExpectsSave[ManageAdditionalFunds]()
+
       submitAuthorised(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "manageAdditionalFundsRadio" -> "true"
       )) {
@@ -89,6 +97,11 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
     }
 
     "return 303 with Manage Additional Funds No selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterExpectsSave[ManageAdditionalFunds]()
+
       submitAuthorised(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "manageAdditionalFundsRadio" -> "false"
       )) {

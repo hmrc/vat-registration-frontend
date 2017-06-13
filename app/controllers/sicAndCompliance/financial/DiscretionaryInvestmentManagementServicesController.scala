@@ -30,7 +30,7 @@ import services.{RegistrationService, S4LService}
 
 class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPlayDependencies)
                                                                    (implicit s4LService: S4LService, vrs: RegistrationService)
-  extends ComplianceExitController(ds, vrs) {
+  extends ComplianceExitController(ds) {
 
   import cats.syntax.flatMap._
 
@@ -44,7 +44,7 @@ class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPl
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(badForm)).pure,
       data => save(data).map(_ => data.yesNo).ifM(
-        ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths.drop(3)).map(_ => submitAndExit),
+        ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths.drop(3)).flatMap(_ => submitAndExit),
         ifFalse = controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show().pure
       ).map(Redirect)))
 

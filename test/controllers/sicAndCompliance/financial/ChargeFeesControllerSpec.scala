@@ -35,6 +35,11 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     override val authConnector = mockAuthConnector
   }
 
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
+  }
+
   val fakeRequest = FakeRequest(routes.ChargeFeesController.show())
 
   s"GET ${routes.ChargeFeesController.show()}" should {
@@ -77,10 +82,10 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
       }
     }
 
-    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-    save4laterExpectsSave[AdviceOrConsultancy]()
-
     "return 303 with charge fees Yes" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      save4laterExpectsSave[AdviceOrConsultancy]()
+
       submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> "true"
       )) {
@@ -90,6 +95,9 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     }
 
     "return 303 with charge fees No" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      save4laterExpectsSave[AdviceOrConsultancy]()
+
       submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> "false"
       )) {

@@ -28,7 +28,7 @@ import services.{S4LService, VatRegistrationService}
 
 class SkilledWorkersController @Inject()(ds: CommonPlayDependencies)
                                         (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends ComplianceExitController(ds, vrs) {
+  extends ComplianceExitController(ds) {
 
   val form = SkilledWorkersForm.form
 
@@ -39,6 +39,6 @@ class SkilledWorkersController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     SkilledWorkersForm.form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.skilled_workers(badForm)).pure,
-      goodForm => save(goodForm).map(_ => Redirect(submitAndExit))))
+      goodForm => save(goodForm).flatMap(_ => submitAndExit).map(Redirect)))
 
 }

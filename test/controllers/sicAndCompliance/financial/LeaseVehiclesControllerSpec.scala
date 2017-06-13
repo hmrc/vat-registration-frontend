@@ -18,6 +18,7 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial.LeaseVehicles
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -32,6 +33,10 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
     override val authConnector = mockAuthConnector
   }
 
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
+  }
   val fakeRequest = FakeRequest(routes.LeaseVehiclesController.show())
 
   s"GET ${routes.LeaseVehiclesController.show()}" should {
@@ -71,19 +76,24 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
       }
     }
 
-    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-    when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
-    save4laterExpectsSave[LeaseVehicles]()
-
     "redirects to next screen in the flow -  with Lease Vehicles or Equipment - Yes selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterExpectsSave[LeaseVehicles]()
+
       submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "leaseVehiclesRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/business-bank-account")
     }
 
     "redirects to next screen in the flow -  with Lease Vehicles or Equipment - No selected" in {
-      save4laterExpectsSave[LeaseVehicles]()
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsNothing2[BusinessActivityDescription]()
+      save4laterExpectsSave[LeaseVehicles]()
 
       submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody("leaseVehiclesRadio" -> "false")) {
         _ redirectsTo s"$contextRoot/provides-investment-fund-management-services"

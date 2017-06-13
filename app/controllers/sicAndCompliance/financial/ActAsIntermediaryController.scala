@@ -30,7 +30,7 @@ import services.{RegistrationService, S4LService}
 
 class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
                                            (implicit s4LService: S4LService, vrs: RegistrationService)
-  extends ComplianceExitController(ds, vrs) {
+  extends ComplianceExitController(ds) {
 
   import cats.syntax.flatMap._
 
@@ -44,7 +44,7 @@ class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.act_as_intermediary(badForm)).pure,
       data => save(data).map(_ => data.yesNo).ifM(
-        ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths).map(_ => submitAndExit),
+        ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths).flatMap(_ => submitAndExit),
         ifFalse = controllers.sicAndCompliance.financial.routes.ChargeFeesController.show().pure).map(Redirect)))
 
 }

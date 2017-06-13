@@ -28,7 +28,7 @@ import services.{S4LService, VatRegistrationService}
 
 class WorkersController @Inject()(ds: CommonPlayDependencies)
                                  (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends ComplianceExitController(ds, vrs) {
+  extends ComplianceExitController(ds) {
 
   import cats.syntax.flatMap._
 
@@ -43,6 +43,6 @@ class WorkersController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.workers(badForm)).pure,
       goodForm => save(goodForm).map(_ => goodForm.numberOfWorkers >= 8).ifM(
         ifTrue = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show().pure,
-        ifFalse = submitAndExit.pure).map(Redirect)))
+        ifFalse = submitAndExit).map(Redirect)))
 
 }
