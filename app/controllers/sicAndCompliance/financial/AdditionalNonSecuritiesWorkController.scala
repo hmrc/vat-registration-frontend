@@ -43,7 +43,7 @@ class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(badForm)).pure,
       data => save(data).map(_ => data.yesNo).ifM(
-        ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths.drop(2)).flatMap(_ => submitAndExit),
+        ifTrue = submitAndExit(ElementPath.finCompElementPaths.drop(2)),
         ifFalse = controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show().pure
       ).map(Redirect)))
 

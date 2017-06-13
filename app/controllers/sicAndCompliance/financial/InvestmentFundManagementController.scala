@@ -44,6 +44,7 @@ class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.investment_fund_management(badForm)).pure,
       data => save(data).map(_ => data.yesNo).ifM(
         ifTrue = controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show().pure,
-        ifFalse = vrs.deleteElements(ElementPath.finCompElementPaths.drop(5)).flatMap(_ => submitAndExit)).map(Redirect)))
+        ifFalse = submitAndExit(ElementPath.finCompElementPaths.drop(5))
+      ).map(Redirect)))
 
 }

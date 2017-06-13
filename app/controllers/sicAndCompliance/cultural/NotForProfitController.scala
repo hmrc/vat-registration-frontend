@@ -44,8 +44,7 @@ class NotForProfitController @Inject()(ds: CommonPlayDependencies)
         clearCompliance <- clearComplianceContainer
         _ <- save(clearCompliance)
         _ <- save(data)
-        _ <- vrs.deleteElements(List(FinancialCompliancePath, LabourCompliancePath))
-        call <- submitAndExit
+        call <- submitAndExit(List(FinancialCompliancePath, LabourCompliancePath))
       } yield Redirect(call)))
 
 }
