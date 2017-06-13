@@ -18,6 +18,7 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial.InvestmentFundManagement
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -32,6 +33,10 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
     override val authConnector = mockAuthConnector
   }
 
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
+  }
   val fakeRequest = FakeRequest(routes.InvestmentFundManagementController.show())
 
   s"GET ${routes.InvestmentFundManagementController.show()}" should {
@@ -53,48 +58,48 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
         _ includesText "Does the company provide investment fund management services?"
       }
     }
-  }
 
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[InvestmentFundManagement]()
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      save4laterReturnsNothing2[InvestmentFundManagement]()
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(InvestmentFundManagementController.show) {
-      _ includesText "Does the company provide investment fund management services?"
+      callAuthorised(InvestmentFundManagementController.show) {
+        _ includesText "Does the company provide investment fund management services?"
+      }
     }
   }
 
-  s"POST ${routes.InvestmentFundManagementController.show()} with Empty data" should {
+  s"POST ${routes.InvestmentFundManagementController.show()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       submitAuthorised(InvestmentFundManagementController.submit(),
         fakeRequest.withFormUrlEncodedBody("bogus" -> "nonsense")) { result =>
         result isA 400
       }
     }
-  }
 
-  s"POST ${routes.InvestmentFundManagementController.submit()} with Investment Fund Management Yes selected" should {
-
-    "return 303" in {
-      save4laterExpectsSave[InvestmentFundManagement]()
+    "return 303 with Investment Fund Management Yes selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsNothing2[BusinessActivityDescription]()
+      save4laterExpectsSave[InvestmentFundManagement]()
 
       submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/manages-funds-not-included-in-this-list")
     }
-  }
 
-  s"POST ${routes.InvestmentFundManagementController.submit()} with Investment Fund Management No selected" should {
-
-    "return 303" in {
-      save4laterExpectsSave[InvestmentFundManagement]()
+    "return 303 with Investment Fund Management No selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterExpectsSave[InvestmentFundManagement]()
 
       submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "false"
-      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
+      ))(_ redirectsTo s"$contextRoot/business-bank-account")
     }
   }
 }

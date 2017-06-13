@@ -18,6 +18,7 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial.AdditionalNonSecuritiesWork
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -34,6 +35,11 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
   }
 
   val fakeRequest = FakeRequest(routes.AdditionalNonSecuritiesWorkController.show())
+
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
+  }
 
   s"GET ${routes.AdditionalNonSecuritiesWorkController.show()}" should {
 
@@ -56,45 +62,44 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
           " when introducing a client to a financial service provider?"
       }
     }
-  }
 
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[AdditionalNonSecuritiesWork]()
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
-      .thenReturn(Future.successful(emptyVatScheme))
+    "return HTML when there's nothing in S4L and vatScheme contains no data empty vatScheme" in {
+      save4laterReturnsNothing2[AdditionalNonSecuritiesWork]()
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
+        .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(AdditionalNonSecuritiesWorkController.show) {
-      _ includesText "Does the company do additional work (excluding securities) " +
-        "when introducing a client to a financial service provider?"
+      callAuthorised(AdditionalNonSecuritiesWorkController.show) {
+        _ includesText "Does the company do additional work (excluding securities) " +
+          "when introducing a client to a financial service provider?"
+      }
     }
   }
 
-  s"POST ${routes.AdditionalNonSecuritiesWorkController.show()} with Empty data" should {
+  s"POST ${routes.AdditionalNonSecuritiesWorkController.show()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
-
     }
-  }
 
-  s"POST ${routes.AdditionalNonSecuritiesWorkController.submit()} with Additional Non Securities Work Yes selected" should {
-
-    "return 303" in {
+    "return 303 with Additional Non Securities Work Yes selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterExpectsSave[AdditionalNonSecuritiesWork]()
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
 
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
+      ))(_ redirectsTo s"$contextRoot/business-bank-account")
     }
-  }
 
-  s"POST ${routes.AdditionalNonSecuritiesWorkController.submit()} with Additional Non Securities Work No selected" should {
-
-    "return 303" in {
+    "return 303 with Additional Non Securities Work No selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterExpectsSave[AdditionalNonSecuritiesWork]()
+      save4laterReturnsNothing2[BusinessActivityDescription]()
 
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "false"

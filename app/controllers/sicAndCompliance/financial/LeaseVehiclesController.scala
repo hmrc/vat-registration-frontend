@@ -18,7 +18,8 @@ package controllers.sicAndCompliance.financial
 
 import javax.inject.Inject
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.CommonPlayDependencies
+import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.financial.LeaseVehiclesForm
 import models.ElementPath
 import models.view.sicAndCompliance.financial.LeaseVehicles
@@ -28,7 +29,8 @@ import services.{RegistrationService, S4LService}
 
 
 class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
-                                       (implicit s4LService: S4LService, vrs: RegistrationService) extends VatRegistrationController(ds) {
+                                       (implicit s4LService: S4LService, vrs: RegistrationService)
+  extends ComplianceExitController(ds) {
 
   import cats.syntax.flatMap._
 
@@ -42,8 +44,7 @@ class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.lease_vehicles(badForm)).pure,
       goodForm => save(goodForm).map(_ => goodForm.yesNo).ifM(
-        ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths.drop(4)).map(_ =>
-          controllers.sicAndCompliance.routes.ComplianceExitController.exit()),
+        ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths.drop(4)).flatMap(_ => submitAndExit),
         ifFalse = controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show().pure)
         .map(Redirect)))
 
