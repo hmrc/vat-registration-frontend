@@ -21,6 +21,7 @@ import javax.inject.Inject
 import controllers.CommonPlayDependencies
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.labour.TemporaryContractsForm
+import models.ElementPath
 import models.view.sicAndCompliance.labour.TemporaryContracts
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -40,8 +41,9 @@ class TemporaryContractsController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.temporary_contracts(badForm)).pure,
-      goodForm => save(goodForm).map(_ => goodForm.yesNo == TemporaryContracts.TEMP_CONTRACTS_YES).ifM(
+      data => save(data).map(_ => data.yesNo == TemporaryContracts.TEMP_CONTRACTS_YES).ifM(
         ifTrue = controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show().pure,
-        ifFalse = submitAndExit).map(Redirect)))
+        ifFalse = vrs.deleteElements(ElementPath.labCompElementPaths.drop(2)).flatMap(_ => submitAndExit)
+        ).map(Redirect)))
 
 }

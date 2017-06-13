@@ -21,6 +21,7 @@ import javax.inject.Inject
 import controllers.CommonPlayDependencies
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.labour.WorkersForm
+import models.ElementPath
 import models.view.sicAndCompliance.labour.Workers
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -41,8 +42,9 @@ class WorkersController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.workers(badForm)).pure,
-      goodForm => save(goodForm).map(_ => goodForm.numberOfWorkers >= 8).ifM(
+      data => save(data).map(_ => data.numberOfWorkers >= 8).ifM(
         ifTrue = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show().pure,
-        ifFalse = submitAndExit).map(Redirect)))
+        ifFalse = vrs.deleteElements(ElementPath.labCompElementPaths.drop(1)).flatMap(_ => submitAndExit)
+      ).map(Redirect)))
 
 }
