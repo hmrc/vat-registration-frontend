@@ -53,7 +53,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[DiscretionaryInvestmentManagementServices]()
+      save4laterReturnsNoViewModel[DiscretionaryInvestmentManagementServices]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(DiscretionaryInvestmentManagementServicesController.show) {
@@ -61,9 +61,9 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
       }
     }
 
-    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[DiscretionaryInvestmentManagementServices]()
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+    save4laterReturnsNoViewModel[DiscretionaryInvestmentManagementServices]()
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(DiscretionaryInvestmentManagementServicesController.show) {
         _ includesText "Does the company provide discretionary investment management services, or introduce clients to companies who do?"
@@ -94,7 +94,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsNothing2[BusinessActivityDescription]()
+      save4laterReturnsNoViewModel[BusinessActivityDescription]()
       save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
 
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(

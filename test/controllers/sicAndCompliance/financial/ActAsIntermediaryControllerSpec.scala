@@ -18,7 +18,7 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.view.sicAndCompliance.BusinessActivityDescription
+import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.financial.ActAsIntermediary
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -35,11 +35,6 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
 
   val fakeRequest = FakeRequest(routes.ActAsIntermediaryController.show())
 
-  override def beforeEach() {
-    reset(mockVatRegistrationService)
-    reset(mockS4LService)
-  }
-
   s"GET ${routes.ActAsIntermediaryController.show()}" should {
 
     "return HTML when there's an Act as Intermediary model in S4L" in {
@@ -53,7 +48,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[ActAsIntermediary]()
+      save4laterReturnsNoViewModel[ActAsIntermediary]()
 
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
 
@@ -61,42 +56,42 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
         _ includesText "Does the company act as an intermediary?"
       }
     }
+  }
 
-    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[ActAsIntermediary]()
+  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+    save4laterReturnsNoViewModel[ActAsIntermediary]()
 
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(ActAsIntermediaryController.show) {
-        _ includesText "Does the company act as an intermediary?"
-      }
+    callAuthorised(ActAsIntermediaryController.show) {
+      _ includesText "Does the company act as an intermediary?"
     }
   }
 
-  s"POST ${routes.ActAsIntermediaryController.show()}" should {
+  s"POST ${routes.ActAsIntermediaryController.show()} with Empty data" should {
 
-    "return 400 with Empty data" in {
+    "return 400" in {
       submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
+  }
 
-    "return 303 with Act As Intermediary Yes selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+  s"POST ${routes.ActAsIntermediaryController.submit()} with Act As Intermediary Yes selected" should {
+
+    "return 303" in {
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
       save4laterExpectsSave[ActAsIntermediary]()
 
       submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/business-bank-account")
+      ))(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit")
     }
+  }
 
-    "return 303 with Act As Intermediary No selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+  s"POST ${routes.ActAsIntermediaryController.submit()} with Act As Intermediary No selected" should {
+
+    "return 303" in {
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsNothing2[BusinessActivityDescription]()
       save4laterExpectsSave[ActAsIntermediary]()
 
       submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(

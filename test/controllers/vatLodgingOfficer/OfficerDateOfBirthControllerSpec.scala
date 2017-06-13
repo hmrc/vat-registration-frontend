@@ -72,7 +72,7 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
         val dobViewOpt = testCase.dobView
 
         // setup mocks
-        dobViewOpt.fold(save4laterReturnsNothing2[OfficerDateOfBirthView]())(view => save4laterReturnsViewModel(view)())
+        dobViewOpt.fold(save4laterReturnsNoViewModel[OfficerDateOfBirthView]())(view => save4laterReturnsViewModel(view)())
         officerOpt.fold(mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer]))(
           (officer: Officer) => mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Some(officer)))
 
@@ -89,7 +89,7 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return HTML and form populated" in {
       val vatScheme = validVatScheme.copy(lodgingOfficer = Some(validLodgingOfficer))
-      save4laterReturnsNothing2[OfficerDateOfBirthView]()
+      save4laterReturnsNoViewModel[OfficerDateOfBirthView]()
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
 
@@ -100,7 +100,7 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return HTML with empty form" in {
       val emptyVatScheme = VatScheme("0")
-      save4laterReturnsNothing2[OfficerDateOfBirthView]()
+      save4laterReturnsNoViewModel[OfficerDateOfBirthView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
 

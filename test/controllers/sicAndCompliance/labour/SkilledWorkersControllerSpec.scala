@@ -61,7 +61,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[SkilledWorkers]()
+      save4laterReturnsNoViewModel[SkilledWorkers]()
       when(mockVatRegistrationService.getVatScheme()(Matchers.any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(SkilledWorkersController.show) {
@@ -73,9 +73,9 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
       }
     }
 
-    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[SkilledWorkers]()
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+    save4laterReturnsNoViewModel[SkilledWorkers]()
+    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(SkilledWorkersController.show) {
         result =>

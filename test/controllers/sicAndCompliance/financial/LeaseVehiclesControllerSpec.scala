@@ -50,7 +50,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[LeaseVehicles]()
+      save4laterReturnsNoViewModel[LeaseVehicles]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(LeaseVehiclesController.show) {
@@ -58,9 +58,9 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
       }
     }
 
-    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[LeaseVehicles]()
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(emptyVatScheme.pure)
+  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+    save4laterReturnsNoViewModel[LeaseVehicles]()
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(LeaseVehiclesController.show) {
         _ includesText "Is the company involved in leasing vehicles or equipment to customers?"
@@ -92,7 +92,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsNothing2[BusinessActivityDescription]()
+      save4laterReturnsNoViewModel[BusinessActivityDescription]()
       save4laterExpectsSave[LeaseVehicles]()
 
       submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody("leaseVehiclesRadio" -> "false")) {

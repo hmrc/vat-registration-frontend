@@ -46,7 +46,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[FormerNameView]()
+      save4laterReturnsNoViewModel[FormerNameView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(TestFormerNameController.show) {
@@ -55,7 +55,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[FormerNameView]()
+      save4laterReturnsNoViewModel[FormerNameView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(TestFormerNameController.show) {
