@@ -30,7 +30,7 @@ import services.{RegistrationService, S4LService}
 
 class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
                                              (implicit s4LService: S4LService, vrs: RegistrationService)
-  extends ComplianceExitController(ds, vrs) {
+  extends ComplianceExitController(ds) {
 
   val form: Form[AdviceOrConsultancy] = AdviceOrConsultancyForm.form
 
@@ -43,7 +43,8 @@ class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(badForm)).pure,
       data => for {
-        _ <- save(S4LVatSicAndCompliance())
+        clearCompliance <- clearComplianceContainer
+        _ <- save(clearCompliance)
         _ <- save(data)
         _ <- vrs.deleteElements(List(CulturalCompliancePath, LabourCompliancePath))
       } yield Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show())))

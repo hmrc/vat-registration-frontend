@@ -18,6 +18,7 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial.InvestmentFundManagement
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -32,6 +33,10 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
     override val authConnector = mockAuthConnector
   }
 
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
+  }
   val fakeRequest = FakeRequest(routes.InvestmentFundManagementController.show())
 
   s"GET ${routes.InvestmentFundManagementController.show()}" should {
@@ -73,19 +78,24 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
       }
     }
 
-    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-    when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-    save4laterExpectsSave[InvestmentFundManagement]()
-
     "return 303 with Investment Fund Management Yes selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsNothing2[BusinessActivityDescription]()
+      save4laterExpectsSave[InvestmentFundManagement]()
+
       submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/manages-funds-not-included-in-this-list")
     }
 
     "return 303 with Investment Fund Management No selected" in {
-      save4laterExpectsSave[InvestmentFundManagement]()
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterExpectsSave[InvestmentFundManagement]()
 
       submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "false"

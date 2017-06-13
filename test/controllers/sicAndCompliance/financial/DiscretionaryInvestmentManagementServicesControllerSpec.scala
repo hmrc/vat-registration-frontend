@@ -16,18 +16,13 @@
 
 package controllers.sicAndCompliance.financial
 
-import builders.AuthBuilder
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LKey
-import models.view.sicAndCompliance.financial.{AdviceOrConsultancy, ChargeFees, DiscretionaryInvestmentManagementServices}
-import org.mockito.Matchers
+import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.sicAndCompliance.financial.DiscretionaryInvestmentManagementServices
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import services.VatRegistrationService
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
@@ -39,6 +34,10 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
     override val authConnector = mockAuthConnector
   }
 
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
+  }
   val fakeRequest = FakeRequest(routes.DiscretionaryInvestmentManagementServicesController.show())
 
   s"GET ${routes.DiscretionaryInvestmentManagementServicesController.show()}" should {
@@ -79,17 +78,25 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
       ))(result => result isA 400)
     }
 
-    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-    when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-    save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
-
     "return 303 with Provide Discretionary Investment Management Services Yes selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
+
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/business-bank-account")
     }
 
     "return 303 with Provide Discretionary Investment Management Services No selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsNothing2[BusinessActivityDescription]()
+      save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
+
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/involved-in-leasing-vehicles-or-equipment")

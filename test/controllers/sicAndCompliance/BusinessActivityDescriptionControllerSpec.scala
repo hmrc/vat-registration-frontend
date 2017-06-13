@@ -39,6 +39,11 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
     override val authConnector = mockAuthConnector
   }
 
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
+  }
+
   val fakeRequest = FakeRequest(routes.BusinessActivityDescriptionController.show())
 
   s"GET ${routes.BusinessActivityDescriptionController.show()}" should {

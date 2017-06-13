@@ -18,6 +18,7 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial.AdditionalNonSecuritiesWork
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -34,6 +35,11 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
   }
 
   val fakeRequest = FakeRequest(routes.AdditionalNonSecuritiesWorkController.show())
+
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
+  }
 
   s"GET ${routes.AdditionalNonSecuritiesWorkController.show()}" should {
 
@@ -76,17 +82,25 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
       ))(result => result isA 400)
     }
 
-    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-    when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-    save4laterExpectsSave[AdditionalNonSecuritiesWork]()
-
     "return 303 with Additional Non Securities Work Yes selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterExpectsSave[AdditionalNonSecuritiesWork]()
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/business-bank-account")
     }
 
     "return 303 with Additional Non Securities Work No selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterExpectsSave[AdditionalNonSecuritiesWork]()
+      save4laterReturnsNothing2[BusinessActivityDescription]()
+
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/provides-discretionary-investment-management-services")

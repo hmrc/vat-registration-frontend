@@ -18,7 +18,7 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LVatSicAndCompliance
+import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial.ActAsIntermediary
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -34,6 +34,11 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
   }
 
   val fakeRequest = FakeRequest(routes.ActAsIntermediaryController.show())
+
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
+  }
 
   s"GET ${routes.ActAsIntermediaryController.show()}" should {
 
@@ -75,17 +80,25 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
       ))(result => result isA 400)
     }
 
-    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-    when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
-    save4laterExpectsSave[ActAsIntermediary]()
-
     "return 303 with Act As Intermediary Yes selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterExpectsSave[ActAsIntermediary]()
+
       submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/business-bank-account")
     }
 
     "return 303 with Act As Intermediary No selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsNothing2[BusinessActivityDescription]()
+      save4laterExpectsSave[ActAsIntermediary]()
+
       submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/charges-fees-for-introducing-clients-to-financial-service-providers")

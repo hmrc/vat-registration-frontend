@@ -19,6 +19,7 @@ package controllers.sicAndCompliance.labour
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.labour.TemporaryContracts
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -34,6 +35,11 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
 
   object TemporaryContractsController extends TemporaryContractsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+  }
+
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
   }
 
   val fakeRequest = FakeRequest(sicAndCompliance.labour.routes.TemporaryContractsController.show())
@@ -91,10 +97,12 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
       }
     }
 
-    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-    save4laterExpectsSave[TemporaryContracts]()
-
     "return 303 with TemporaryContracts Yes selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsNothing2[BusinessActivityDescription]()
+      save4laterExpectsSave[TemporaryContracts]()
+
       submitAuthorised(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> TemporaryContracts.TEMP_CONTRACTS_YES
       )) {
@@ -105,6 +113,11 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return 303 with TemporaryContracts No selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterExpectsSave[TemporaryContracts]()
+
       submitAuthorised(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> TemporaryContracts.TEMP_CONTRACTS_NO
       )) {

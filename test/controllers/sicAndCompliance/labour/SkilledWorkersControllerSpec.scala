@@ -19,6 +19,7 @@ package controllers.sicAndCompliance.labour
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.labour.SkilledWorkers
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -34,6 +35,11 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
   object SkilledWorkersController extends SkilledWorkersController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+  }
+
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
   }
 
   val fakeRequest = FakeRequest(sicAndCompliance.labour.routes.SkilledWorkersController.show())
@@ -90,10 +96,12 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
       }
     }
 
-    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-    save4laterExpectsSave[SkilledWorkers]()
-
     "return 303 with company provide Skilled workers Yes selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterExpectsSave[SkilledWorkers]()
+
       submitAuthorised(SkilledWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "skilledWorkersRadio" -> SkilledWorkers.SKILLED_WORKERS_YES
       )) {
@@ -104,6 +112,11 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "return 303 with company provide Skilled workers No selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterExpectsSave[SkilledWorkers]()
+
       submitAuthorised(SkilledWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "skilledWorkersRadio" -> SkilledWorkers.SKILLED_WORKERS_NO
       )) {

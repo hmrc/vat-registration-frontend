@@ -29,7 +29,7 @@ import services.{RegistrationService, S4LService}
 
 class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies)
                                                      (implicit s4LService: S4LService, vrs: RegistrationService)
-  extends ComplianceExitController(ds, vrs) {
+  extends ComplianceExitController(ds) {
 
   val form = AdditionalNonSecuritiesWorkForm.form
 
@@ -43,7 +43,7 @@ class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(badForm)).pure,
       data => save(data).map(_ => data.yesNo).ifM(
-        ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths.drop(2)).map(_ => submitAndExit),
+        ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths.drop(2)).flatMap(_ => submitAndExit),
         ifFalse = controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show().pure
       ).map(Redirect)))
 

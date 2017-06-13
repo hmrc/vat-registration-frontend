@@ -19,6 +19,7 @@ package controllers.sicAndCompliance.labour
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.labour.Workers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -33,6 +34,11 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
 
   object WorkersController extends WorkersController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+  }
+
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
   }
 
   val fakeRequest = FakeRequest(sicAndCompliance.labour.routes.WorkersController.show())
@@ -88,10 +94,12 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
       }
     }
 
-    when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-    save4laterExpectsSave[Workers]()
-
     "return 303 with less than 8 workers entered" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterExpectsSave[Workers]()
+
       submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
@@ -101,6 +109,11 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     }
 
     "return 303 with 8 or more workers entered" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsNothing2[BusinessActivityDescription]()
+      save4laterExpectsSave[Workers]()
+
       submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "8"
       )) {
