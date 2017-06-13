@@ -44,7 +44,7 @@ class WorkersController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.workers(badForm)).pure,
       data => save(data).map(_ => data.numberOfWorkers >= 8).ifM(
         ifTrue = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show().pure,
-        ifFalse = vrs.deleteElements(ElementPath.labCompElementPaths.drop(1)).flatMap(_ => submitAndExit)
+        ifFalse = submitAndExit(ElementPath.labCompElementPaths.drop(2))
       ).map(Redirect)))
 
 }

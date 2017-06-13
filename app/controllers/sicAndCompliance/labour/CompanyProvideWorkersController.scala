@@ -49,7 +49,7 @@ class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
         route =
           if (CompanyProvideWorkers.PROVIDE_WORKERS_YES == data.yesNo) {
             controllers.sicAndCompliance.labour.routes.WorkersController.show().pure
-          } else { submitAndExit }
+          } else { submitAndExit(ElementPath.labCompElementPaths.drop(1)) }
         call <- route
       } yield Redirect(call)))
 

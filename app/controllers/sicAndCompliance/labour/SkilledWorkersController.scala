@@ -39,6 +39,6 @@ class SkilledWorkersController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     SkilledWorkersForm.form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.skilled_workers(badForm)).pure,
-      goodForm => save(goodForm).flatMap(_ => submitAndExit).map(Redirect)))
+      data => save(data).flatMap(_ => submitAndExit(List())).map(Redirect)))
 
 }
