@@ -231,8 +231,8 @@ pages.voluntary.registration.reason.panels.neither.para       = If none of these
 validation.voluntary.registration.reason.missing              = Tell us why you intend to register voluntarily for VAT
 
 ## Taxable Turnover Page
-pages.taxable.turnover.title                            = Do you expect the company''s VAT taxable turnover to be more than £85,000 in the 30 days after it''s registered with Companies House?
-pages.taxable.turnover.heading                          = Do you expect the company''s VAT taxable turnover to be more than £85,000 in the 30 days after it''s registered with Companies House?
+pages.taxable.turnover.title                            = Do you expect the company to make VAT taxable sales of more than £85,000 in the 30 days after it''s registered with Companies House?
+pages.taxable.turnover.heading                          = Do you expect the company to make VAT taxable sales of more than £85,000 in the 30 days after it''s registered with Companies House?
 pages.taxable.turnover.p1                               = You must register immediately if you expect the company''s VAT taxable sales to be over £85,000 in the 30 days after it''s registered with Companies House.
 validation.taxable.turnover.missing                     = Tell us if you expect the company''s turnover to be more than £85,000 in the 30 days after it''s registered
 
@@ -277,17 +277,18 @@ pages.zero.rated.sales.examples.p3                          = Find out about <a 
 validation.zero.rated.sales.missing                         = Tell us if you expect to sell any zero-rated items in the next 12 months
 
 ## Estimate Zero-Rated Sales Page
-pages.estimate.zero.rated.sales.title                       = Estimate value of zero-rated sales
-pages.estimate.zero.rated.sales.heading                     = Estimate the value of your sales that are charged at 0% VAT
-pages.estimate.zero.rated.sales.para1                       = Some goods and services are subject to VAT but the <a href="https://www.gov.uk/vat-rates">rate of VAT</a> you charge your customers is 0%. This rate of VAT is called the ''zero rate''.
-pages.estimate.zero.rated.sales.info                        = You won''t be penalised if your estimate isn''t exact.
-pages.estimate.zero.rated.sales.form.label                  = Estimated zero-rated sales for the next 12 months
-pages.estimate.zero.rated.sales.include.title               = Examples of zero-rated goods
-pages.estimate.zero.rated.sales.include.para1               = Zero-rated goods include:
-pages.estimate.zero.rated.sales.include.bullet1             = books and newspapers
-pages.estimate.zero.rated.sales.include.bullet2             = children''s clothes and shoes
-pages.estimate.zero.rated.sales.include.bullet3             = motorcycle helmets
-pages.estimate.zero.rated.sales.include.para2               = Find out about <a href="https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services">VAT rates on different goods and services</a>.
+pages.estimate.zero.rated.sales.title                       = Estimate the value of the company''s zero-rated sales for the next 12 months
+pages.estimate.zero.rated.sales.heading                     = How much will the company take in sales of zero-rated goods and services over the next 12 months?
+pages.estimate.zero.rated.sales.p1                          = You must give a realistic estimate, but you won''t get a penalty if your estimate isn''t exact.
+pages.estimate.zero.rated.sales.include.title               = What are zero-rated goods and services?
+pages.estimate.zero.rated.sales.include.para1               = Zero-rated goods and services are VAT taxable but the VAT rate on them is 0%.
+pages.estimate.zero.rated.sales.include.para2               = They include:
+pages.estimate.zero.rated.sales.include.bullet1             = most food and drink (but not things like alcoholic drinks, confectionary, crisps and savoury snacks, hot food, sports drinks, hot takeaways, ice cream, soft drinks and mineral water)
+pages.estimate.zero.rated.sales.include.bullet2             = books and newspapers
+pages.estimate.zero.rated.sales.include.bullet3             = printing services for brochures, leaflets or pamphlets
+pages.estimate.zero.rated.sales.include.bullet4             = children''s clothes and shoes
+pages.estimate.zero.rated.sales.include.bullet5             = most goods you export to non-EU countries
+pages.estimate.zero.rated.sales.include.para3               = Find out about <a href="https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services">VAT rates on different goods and services</a>.
 validation.estimate.zero.rated.sales.low                    = Enter a positive estimate
 validation.estimate.zero.rated.sales.high                   = Enter an estimate which is less than 1,000,000,000,000,000
 validation.estimate.zero.rated.sales.missing                = Estimate the value of the company''s zero-rated sales for the next 12 months
