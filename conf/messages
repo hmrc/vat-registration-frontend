@@ -95,7 +95,7 @@ pages.completionCapacityEnd.p2                           = If you''re neither of
 ## validation messages for all service eligibility questions
 
 validation.eligibility.haveNino.missing                     = Tell us if you have a National Insurance number
-validation.eligibility.doingBusinessAbroad.missing          = Tell us if you''ll do any of the following once you're registered for VAT
+validation.eligibility.doingBusinessAbroad.missing          = Tell us if you''ll do any of the following once you''re registered for VAT
 validation.eligibility.doAnyApplyToYou.missing              = Tell us if any of the following apply to you or your business
 validation.eligibility.applyingForAnyOf.missing             = Tell us if you''ll apply for any of the following
 validation.eligibility.companyWillDoAnyOf.missing           = Tell us if you''ll do any of the following
