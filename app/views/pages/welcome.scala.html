@@ -3,73 +3,54 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 
 @main_template(title = messages("pages.welcome.title")) {
+    <div class="grid-row">
+        <div class="column-one-third">
 
+            <header class="page-header">
+                <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.welcome.heading")</h1>
+            </header>
 
-<div class="grid-row">
-    <div class="column-one-third">
+            <p>@messages("pages.welcome.p1")</p>
 
-        <header class="page-header">
-            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.welcome.heading")</h1>
-        </header>
-
-        <h2 class="heading-medium" id="subHeading">@messages("pages.welcome.heading.register")</h2>
-
-        <div class="form-group">
-            <ul class="list list-bullet">
-                <li>@messages("pages.welcome.bullet.details.person")</li>
-                <li>@messages("pages.welcome.bullet.details.company")</li>
-                <li>@Html(messages("pages.welcome.bullet.details.sales"))</li>
-            </ul>
-        </div>
-
-        <p>@messages("pages.welcome.note.registrationTime")</p>
-
-        @form(action = controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show("haveNino")) {
             <div class="form-group">
-                <button class="button-get-started" role="button" id="save-and-continue">@messages("app.common.continue")</button>
+                <ul class="list list-bullet">
+                    <li>@messages("pages.welcome.bullet1")</li>
+                    <li>@messages("pages.welcome.bullet2")</li>
+                    <li>@Html(messages("pages.welcome.bullet3"))</li>
+                </ul>
             </div>
-        }
 
-        <div class="form-group">
-            <details role="group">
-                <summary role="button" aria-controls="details-content-0" aria-expanded="false">
-                    <span class="summary">@messages("pages.welcome.panels.vatNeeded.title")</span>
-                </summary>
-                <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
-                    <p>@messages("pages.welcome.panels.vatNeeded.para1")</p>
-                </div>
-            </details>
+            <div class="form-group">
+                <details role="group">
+                    <summary role="button" aria-controls="details-content-0" aria-expanded="false">
+                        <span class="summary">@messages("pages.welcome.panel1.title")</span>
+                    </summary>
+                    <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
+                        <p>@Html(messages("pages.welcome.panel1.p1"))</p>
+                        <p>@Html(messages("pages.welcome.panel1.p2"))</p>
+                        <p>@Html(messages("pages.welcome.panel1.p3"))</p>
+                    </div>
+                </details>
 
-            <details role="group">
-                <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">@messages("pages.welcome.panels.vatVoluntarily.title")</span></summary>
-                <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
-                    <p>@messages("pages.welcome.panels.vatVoluntarily.para1")</p>
-                    <p>@messages("pages.welcome.panels.vatVoluntarily.para2")</p>
+                @form(action = controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show("haveNino")) {
+                    <div class="form-group">
+                        <button class="button-get-started" role="button" id="start">@messages("pages.welcome.button.start")</button>
+                    </div>
+                }
+
+                <p>@messages("pages.welcome.p3")</p>
+                <div class="form-group">
                     <ul class="list list-bullet">
-                        <li>@Html(messages("pages.welcome.panels.vatVoluntarily.bullet.charge"))</li>
-                        <li>@Html(messages("pages.welcome.panels.vatVoluntarily.bullet.reclaim"))</li>
-                        <li>@messages("pages.welcome.panels.vatVoluntarily.bullet.invoices")</li>
-                    </ul>
-                    <p>@messages("pages.welcome.panels.vatVoluntarily.para3")</p>
-                    <p>@messages("pages.welcome.panels.vatVoluntarily.para4")</p>
-                </div>
-            </details>
-
-            <details role="group">
-                <summary role="button" aria-controls="details-content-2" aria-expanded="false"><span class="summary">@messages("pages.welcome.panels.vatResponsibilities.title")</span></summary>
-                <div class="panel panel-indent" id="details-content-2" aria-hidden="true">
-                    <p>@messages("pages.welcome.panels.vatResponsibilities.para1")</p>
-                    <ul class="list list-bullet">
-                        <li>@Html(messages("pages.welcome.panels.vatResponsibilities.bullet.charge"))</li>
-                        <li>@messages("pages.welcome.panels.vatResponsibilities.bullet.pay")</li>
-                        <li>@messages("pages.welcome.panels.vatResponsibilities.bullet.submit")</li>
-                        <li>@messages("pages.welcome.panels.vatResponsibilities.bullet.records")</li>
+                        <li>@messages("pages.welcome.bullet4")</li>
+                        <li>@messages("pages.welcome.bullet5")</li>
+                        <li>@messages("pages.welcome.bullet6")</li>
+                        <li>@messages("pages.welcome.bullet7")</li>
                     </ul>
                 </div>
-            </details>
+                <p>@messages("pages.welcome.p4")</p>
+            </div>
+
         </div>
 
     </div>
-
-</div>
 }

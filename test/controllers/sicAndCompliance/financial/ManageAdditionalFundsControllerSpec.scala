@@ -18,8 +18,10 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial.ManageAdditionalFunds
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
@@ -32,6 +34,11 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
 
   object ManageAdditionalFundsController extends ManageAdditionalFundsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+  }
+
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
   }
 
   val fakeRequest = FakeRequest(routes.ManageAdditionalFundsController.show())
@@ -56,50 +63,49 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
        _ includesText "Does the company manage any funds that are not included in this list?"
       }
     }
-  }
 
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[ManageAdditionalFunds]()
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      save4laterReturnsNothing2[ManageAdditionalFunds]()
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(ManageAdditionalFundsController.show) {
-     _ includesText "Does the company manage any funds that are not included in this list?"
-    }
-  }
-
-  s"POST ${routes.ManageAdditionalFundsController.show()} with Empty data" should {
-
-    "return 400" in {
-      submitAuthorised(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
-      )) {
-        result =>
-          status(result) mustBe Status.BAD_REQUEST
+      callAuthorised(ManageAdditionalFundsController.show) {
+        _ includesText "Does the company manage any funds that are not included in this list?"
       }
     }
   }
 
-  s"POST ${routes.ManageAdditionalFundsController.submit()} with Manage Additional Funds Yes selected" should {
+  s"POST ${routes.ManageAdditionalFundsController.show()}" should {
 
-    "return 303" in {
+    "return 400 with Empty data" in {
+      submitAuthorised(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
+      )) {
+        result => status(result) mustBe Status.BAD_REQUEST
+      }
+    }
+
+    "return 303 with Manage Additional Funds Yes selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
       save4laterExpectsSave[ManageAdditionalFunds]()
+
       submitAuthorised(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "manageAdditionalFundsRadio" -> "true"
       )) {
-        response =>
-          response redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit"
+        response => response redirectsTo s"$contextRoot/business-bank-account"
       }
     }
-  }
 
-  s"POST ${routes.ManageAdditionalFundsController.submit()} with Manage Additional Funds No selected" should {
-
-    "return 303" in {
+    "return 303 with Manage Additional Funds No selected" in {
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
       save4laterExpectsSave[ManageAdditionalFunds]()
+
       submitAuthorised(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "manageAdditionalFundsRadio" -> "false"
       )) {
-        response =>
-          response redirectsTo s"$contextRoot/tell-us-more-about-the-company/exit"
+        response => response redirectsTo s"$contextRoot/business-bank-account"
       }
     }
   }

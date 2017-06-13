@@ -16,18 +16,24 @@
 
 package controllers.sicAndCompliance
 
-import javax.inject.Inject
-
 import controllers.{CommonPlayDependencies, VatRegistrationController}
+import models.S4LVatSicAndCompliance
+import models.view.sicAndCompliance.BusinessActivityDescription
 import play.api.mvc._
-import services.{S4LService, VatRegistrationService}
+import services.{RegistrationService, S4LService}
+import uk.gov.hmrc.play.http.HeaderCarrier
 
-class ComplianceExitController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies, vrs: VatRegistrationService)
+import scala.concurrent.Future
+
+class ComplianceExitController (ds: CommonPlayDependencies)(implicit vrs: RegistrationService, s4LService: S4LService)
   extends VatRegistrationController(ds) {
 
-  def exit: Action[AnyContent] = authorised(implicit user => implicit request => {
-    vrs.submitSicAndCompliance().map(_ => ())
-    Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
-  })
+  def submitAndExit(implicit hc: HeaderCarrier): Future[Call] =
+    vrs.submitSicAndCompliance().map(_ => controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+
+
+  def clearComplianceContainer(implicit hc: HeaderCarrier): Future[S4LVatSicAndCompliance] =
+    viewModel[BusinessActivityDescription]().
+      fold(S4LVatSicAndCompliance())(bad => S4LVatSicAndCompliance(description = Some(bad)))
 
 }
