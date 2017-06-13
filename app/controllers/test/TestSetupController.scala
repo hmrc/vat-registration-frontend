@@ -46,7 +46,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
       vatContact <- s4LService.fetchAndGet[S4LVatContact]()
       vatLodgingOfficer <- s4LService.fetchAndGet[S4LVatLodgingOfficer]()
       eligibility <- s4LService.fetchAndGet[S4LVatEligibility]()
-
+      ppob <- s4LService.fetchAndGet[S4LPpob]()
       testSetup = TestSetup(
         VatChoiceTestSetup(
           taxableTurnoverChoice = tradingDetails.flatMap(_.taxableTurnover).map(_.yesNo),
@@ -63,6 +63,13 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
           euGoods = tradingDetails.flatMap(_.euGoods).map(_.yesNo),
           applyEori = tradingDetails.flatMap(_.applyEori).map(_.yesNo.toString)
         ),
+        VatPpobSetup(
+          line1 = ppob.flatMap(_.address).flatMap(_.address).map(_.line1),
+          line2 = ppob.flatMap(_.address).flatMap(_.address).map(_.line2),
+          line3 = ppob.flatMap(_.address).flatMap(_.address).flatMap(_.line3),
+          line4 = ppob.flatMap(_.address).flatMap(_.address).flatMap(_.line4),
+          postcode = ppob.flatMap(_.address).flatMap(_.address).flatMap(_.postcode),
+          country = ppob.flatMap(_.address).flatMap(_.address).flatMap(_.country)),
         VatContactTestSetup(
           email = vatContact.flatMap(_.businessContactDetails).map(_.email),
           daytimePhone = vatContact.flatMap(_.businessContactDetails).flatMap(_.daytimePhone),
@@ -170,6 +177,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
             _ <- s4LService.save(s4LBuilder.vatFinancialsFromData(data))
             _ <- s4LService.save(s4LBuilder.tradingDetailsFromData(data))
             _ <- s4LService.save(s4LBuilder.vatContactFromData(data))
+            _ <- s4LService.save(s4LBuilder.vatPpobFormData(data))
 
             vatLodgingOfficer = s4LBuilder.vatLodgingOfficerFromData(data)
             _ <- s4LService.save(vatLodgingOfficer)

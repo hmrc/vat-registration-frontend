@@ -44,7 +44,7 @@ class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPl
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(badForm)).pure,
       data => save(data).map(_ => data.yesNo).ifM(
-        ifTrue = vrs.deleteElements(ElementPath.finCompElementPaths.drop(3)).flatMap(_ => submitAndExit),
+        ifTrue = submitAndExit(ElementPath.finCompElementPaths.drop(3)),
         ifFalse = controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show().pure
       ).map(Redirect)))
 
