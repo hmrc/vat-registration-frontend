@@ -16,10 +16,10 @@
 
 package controllers.builders
 
+import cats.syntax.show._
+import models.api.ScrsAddress.htmlShow._
 import models.api._
 import models.view.{SummaryRow, SummarySection}
-import cats.syntax.show._
-import ScrsAddress.htmlShow._
 
 case class SummaryCompanyContactDetailsSectionBuilder
 (
@@ -28,42 +28,42 @@ case class SummaryCompanyContactDetailsSectionBuilder
 )
   extends SummarySectionBuilder {
 
+  override val sectionId: String = "companyContactDetails"
 
   val businessEmailRow: SummaryRow = SummaryRow(
-    "companyContactDetails.email",
+    s"$sectionId.email",
     vatContact.fold("")(_.digitalContact.email),
     Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
   )
 
-
   val businessDaytimePhoneNumberRow: SummaryRow = SummaryRow(
-    "companyContactDetails.daytimePhone",
+    s"$sectionId.daytimePhone",
     vatContact.flatMap(_.digitalContact.tel).getOrElse(""),
     Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
   )
 
   val businessMobilePhoneNumberRow: SummaryRow = SummaryRow(
-    "companyContactDetails.mobile",
+    s"$sectionId.mobile",
     vatContact.flatMap(_.digitalContact.mobile).getOrElse(""),
     Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
   )
 
 
   val businessWebsiteRow: SummaryRow = SummaryRow(
-    "companyContactDetails.website",
+    s"$sectionId.website",
     vatContact.flatMap(_.website).getOrElse(""),
     Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
   )
 
   val ppobRow: SummaryRow = SummaryRow(
-    "companyContactDetails.ppob",
+    s"$sectionId.ppob",
     ppob.fold("")(_.show),
     Some(controllers.ppob.routes.PpobController.show())
   )
 
 
   val section: SummarySection = SummarySection(
-    id = "companyContactDetails",
+    sectionId,
     Seq(
       (businessEmailRow, true),
       (businessDaytimePhoneNumberRow, vatContact.exists(_.digitalContact.tel.isDefined)),

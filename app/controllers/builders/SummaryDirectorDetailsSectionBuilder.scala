@@ -22,52 +22,54 @@ import models.view.{SummaryRow, SummarySection}
 case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLodgingOfficer] = None)
   extends SummarySectionBuilder {
 
+  override val sectionId: String = "directorDetails"
+
   val completionCapacity: SummaryRow = SummaryRow(
-    "directorDetails.completionCapacity",
+    s"$sectionId.completionCapacity",
     vatLodgingOfficer.map(_.name.asLabel).getOrElse(""),
     Some(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
   )
 
   val formerName: SummaryRow = SummaryRow(
-    "directorDetails.formerName",
+    s"$sectionId.formerName",
     vatLodgingOfficer.map(_.formerName.selection).collect {
       case true => vatLodgingOfficer.flatMap(_.formerName.formerName).getOrElse("")
-    }.getOrElse("pages.summary.directorDetails.noFormerName"),
+    }.getOrElse(s"pages.summary.$sectionId.noFormerName"),
     Some(controllers.vatLodgingOfficer.routes.FormerNameController.show())
   )
 
   val dob: SummaryRow = SummaryRow(
-    "directorDetails.dob",
+    s"$sectionId.dob",
     vatLodgingOfficer.map(_.dob.format(presentationFormatter)).getOrElse(""),
     Some(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
   )
 
   val nino: SummaryRow = SummaryRow(
-    "directorDetails.nino",
+    s"$sectionId.nino",
     vatLodgingOfficer.map(_.nino).getOrElse(""),
     Some(controllers.vatLodgingOfficer.routes.OfficerNinoController.show())
   )
 
   val email: SummaryRow = SummaryRow(
-    "directorDetails.email",
+    s"$sectionId.email",
     vatLodgingOfficer.flatMap(_.contact.email).getOrElse(""),
     Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
   )
 
   val daytimePhone: SummaryRow = SummaryRow(
-    "directorDetails.daytimePhone",
+    s"$sectionId.daytimePhone",
     vatLodgingOfficer.flatMap(_.contact.tel).getOrElse(""),
     Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
   )
 
   val mobile: SummaryRow = SummaryRow(
-    "directorDetails.mobile",
+    s"$sectionId.mobile",
     vatLodgingOfficer.flatMap(_.contact.mobile).getOrElse(""),
     Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
   )
 
   val section: SummarySection = SummarySection(
-    id = "directorDetails",
+    sectionId,
     Seq(
       (completionCapacity, true),
       (formerName, true),

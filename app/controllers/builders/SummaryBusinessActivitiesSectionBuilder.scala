@@ -25,15 +25,19 @@ case class SummaryBusinessActivitiesSectionBuilder
   vatSicAndCompliance: Option[VatSicAndCompliance] = None
 )
   extends SummarySectionBuilder {
+
+
+  override val sectionId: String = "businessActivities"
+
   val companyBusinessDescriptionRow: SummaryRow = SummaryRow(
-    "businessActivities.businessDescription",
+    s"$sectionId.businessDescription",
     vatSicAndCompliance.collect {
       case VatSicAndCompliance(description, _, _, _) if StringUtils.isNotBlank(description) => description
     }.getOrElse("app.common.no"),
     Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
   )
   val section: SummarySection = SummarySection(
-    id = "businessActivities",
+    sectionId,
     Seq(
       (companyBusinessDescriptionRow, true)
     )

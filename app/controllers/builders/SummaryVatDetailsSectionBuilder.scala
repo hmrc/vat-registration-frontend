@@ -16,8 +16,6 @@
 
 package controllers.builders
 
-import java.time.format.DateTimeFormatter
-
 import models.api.VatChoice.NECESSITY_VOLUNTARY
 import models.api.{VatChoice, VatStartDate, VatTradingDetails}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
@@ -26,23 +24,25 @@ import models.view.{SummaryRow, SummarySection}
 case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingDetails] = None)
   extends SummarySectionBuilder {
 
+  override val sectionId: String = "vatDetails"
+
   private val voluntaryRegistration = vatTradingDetails.exists(_.registeringVoluntarily)
 
   val taxableTurnoverRow: SummaryRow = SummaryRow(
-    "vatDetails.taxableTurnover",
+    s"$sectionId.taxableTurnover",
     s"app.common.${if (voluntaryRegistration) "no" else "yes"}",
     Some(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())
   )
 
   val necessityRow: SummaryRow = SummaryRow(
-    "vatDetails.necessity",
+    s"$sectionId.necessity",
     s"app.common.${if (voluntaryRegistration) "yes" else "no"}",
     if (voluntaryRegistration) Some(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show()) else None
   )
 
   val voluntaryReasonRow: SummaryRow = SummaryRow(
-    "vatDetails.voluntaryRegistrationReason",
-    vatTradingDetails.flatMap(_.vatChoice.reason).collect{
+    s"$sectionId.voluntaryRegistrationReason",
+    vatTradingDetails.flatMap(_.vatChoice.reason).collect {
       case VoluntaryRegistrationReason.SELLS => "pages.voluntary.registration.reason.radio.sells"
       case VoluntaryRegistrationReason.INTENDS_TO_SELL => "pages.voluntary.registration.reason.radio.intendsToSell"
     }.getOrElse("app.common.no"),
@@ -50,21 +50,22 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
   )
 
   val startDateRow: SummaryRow = SummaryRow(
-    "vatDetails.startDate",
+    s"$sectionId.startDate",
     vatTradingDetails.map(_.vatChoice).collect {
       case VatChoice(NECESSITY_VOLUNTARY, VatStartDate(_, Some(date)), _) => date.format(presentationFormatter)
-    }.getOrElse("pages.summary.vatDetails.mandatoryStartDate"),
+    }.getOrElse(s"pages.summary.$sectionId.mandatoryStartDate"),
     if (voluntaryRegistration) Some(controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()) else None
   )
 
   val tradingNameRow: SummaryRow = SummaryRow(
-    "vatDetails.tradingName",
+    s"$sectionId.tradingName",
     vatTradingDetails.flatMap(_.tradingName.tradingName).getOrElse("app.common.no"),
     Some(controllers.vatTradingDetails.routes.TradingNameController.show())
   )
 
   val section: SummarySection =
-    SummarySection(id = "vatDetails",
+    SummarySection(
+      sectionId,
       rows = Seq(
         (taxableTurnoverRow, true),
         (necessityRow, voluntaryRegistration),

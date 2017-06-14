@@ -50,8 +50,8 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
       vs.vatSicAndCompliance.flatMap(_.labourCompliance)
     ).flatten.map {
       case c: VatComplianceCultural => SummaryCulturalComplianceSectionBuilder(vs.vatSicAndCompliance).section
-      case c: VatComplianceFinancial => SummaryCompanyProvidingFinancialSectionBuilder(vs.vatSicAndCompliance).section
-      case c: VatComplianceLabour => ??? //TODO  //SummaryCompanyProvidingFinancialSectionBuilder(vs.vatSicAndCompliance).section
+      case c: VatComplianceFinancial => SummaryFinancialComplianceSectionBuilder(vs.vatSicAndCompliance).section
+      case c: VatComplianceLabour => SummaryLabourComplianceSectionBuilder(vs.vatSicAndCompliance).section
     }.headOption.getOrElse(throw new IllegalStateException("Can't build compliance section of the summary page - expected answers for one of the sets of questions"))
 
   def registrationToSummary(vs: VatScheme): Summary =
@@ -62,8 +62,8 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
       SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
       SummaryCompanyContactDetailsSectionBuilder(vs.vatContact, vs.ppob).section,
       SummaryBusinessActivitiesSectionBuilder(vs.vatSicAndCompliance).section,
-      SummaryBusinessBankDetailsSectionBuilder(vs.financials).section,
       complianceSection(vs),
+      SummaryBusinessBankDetailsSectionBuilder(vs.financials).section,
       SummaryTaxableSalesSectionBuilder(vs.financials).section,
       SummaryAnnualAccountingSchemeSectionBuilder(vs.financials).section,
       SummaryServiceEligibilitySectionBuilder(vs.vatServiceEligibility).section
