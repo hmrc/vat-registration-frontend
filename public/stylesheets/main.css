@@ -71,3 +71,7 @@ td {
 .form-field--error {
 	box-sizing: initial;
 }
+
+.fill-width {
+	width: 95%
+}

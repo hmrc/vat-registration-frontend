@@ -41,26 +41,26 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
     "return HTML when there's a Apply Eori model in S4L" in {
       save4laterReturnsViewModel(ApplyEori(ApplyEori.APPLY_EORI_YES))()
       submitAuthorised(ApplyEoriController.show(), fakeRequest.withFormUrlEncodedBody("applyEoriRadio" -> "")) {
-        _ includesText "You need to apply for an Economic Operator Registration and Identification (EORI) number"
+        _ includesText "You need an Economic Operator Registration and Identification (EORI) number"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[ApplyEori]()
+      save4laterReturnsNoViewModel[ApplyEori]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(ApplyEoriController.show) {
-        _ includesText "You need to apply for an Economic Operator Registration and Identification (EORI) number"
+        _ includesText "You need an Economic Operator Registration and Identification (EORI) number"
       }
     }
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[ApplyEori]()
+    save4laterReturnsNoViewModel[ApplyEori]()
     when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
     callAuthorised(ApplyEoriController.show) {
-      _ includesText "You need to apply for an Economic Operator Registration and Identification (EORI) number"
+      _ includesText "You need an Economic Operator Registration and Identification (EORI) number"
     }
   }
 

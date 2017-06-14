@@ -14,6 +14,8 @@
           taxableTurnoverForm
       )
 
+      <p>@messages("pages.taxable.turnover.p1")</p>
+
       @govHelpers.form(action = controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.submit()) {
       <div class="form-group">
         <fieldset class="inline">
@@ -30,17 +32,6 @@
         </fieldset>
        
       </div>
-          <div class="form-group">
-              <details role="group">
-                  <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
-                  @messages("pages.taxable.turnover.what.is.turnover.title")
-                  </span></summary>
-                  <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
-                      <p> @Html(Messages("pages.taxable.turnover.what.is.turnover.para1"))</p>
-
-                  </div>
-              </details>
-          </div>
       <div class="form-group">
         <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
       </div>

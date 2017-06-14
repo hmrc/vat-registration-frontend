@@ -55,7 +55,7 @@ class PpobControllerSpec extends VatRegSpec
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       val vatScheme = validVatScheme.copy(ppob = Some(address))
-      save4laterReturnsNothing2[PpobView]()
+      save4laterReturnsNoViewModel[PpobView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
       callAuthorised(Controller.show()) {
         _ includesText "Where will the company carry out most of its business activities"
@@ -64,7 +64,7 @@ class PpobControllerSpec extends VatRegSpec
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       val vatScheme = validVatScheme.copy(ppob = None)
-      save4laterReturnsNothing2[PpobView]()
+      save4laterReturnsNoViewModel[PpobView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
       callAuthorised(Controller.show()) {
         _ includesText "Where will the company carry out most of its business activities"

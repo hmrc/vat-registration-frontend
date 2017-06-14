@@ -55,12 +55,12 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Do you import or export goods from or to countries outside the EU?")
+          contentAsString(result) must include("Will the company trade VAT taxable goods or services with countries outside the EU?")
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[EuGoods]()
+      save4laterReturnsNoViewModel[EuGoods]()
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
         .thenReturn(Future.successful(validVatScheme))
@@ -70,13 +70,13 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Do you import or export goods from or to countries outside the EU?")
+          contentAsString(result) must include("Will the company trade VAT taxable goods or services with countries outside the EU?")
       }
     }
   }
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNothing2[EuGoods]()
+    save4laterReturnsNoViewModel[EuGoods]()
 
     when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
@@ -86,7 +86,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
         status(result) mustBe OK
         contentType(result) mustBe Some("text/html")
         charset(result) mustBe Some("utf-8")
-        contentAsString(result) must include("Do you import or export goods from or to countries outside the EU?")
+        contentAsString(result) must include("Will the company trade VAT taxable goods or services with countries outside the EU?")
     }
   }
 

@@ -38,26 +38,26 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       save4laterReturnsViewModel(EstimateVatTurnover(100L))()
 
       callAuthorised(Controller.show()) {
-        _ includesText "Estimated VAT taxable turnover for the next 12 months"
+        _ includesText "What will the company&#x27;s VAT taxable turnover be during the next 12 months?"
       }
     }
 
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[EstimateVatTurnover]()
+      save4laterReturnsNoViewModel[EstimateVatTurnover]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(Controller.show) {
-        _ includesText "Estimated VAT taxable turnover for the next 12 months"
+        _ includesText "What will the company&#x27;s VAT taxable turnover be during the next 12 months?"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[EstimateVatTurnover]()
+      save4laterReturnsNoViewModel[EstimateVatTurnover]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {
-        _ includesText "Estimated VAT taxable turnover for the next 12 months"
+        _ includesText "What will the company&#x27;s VAT taxable turnover be during the next 12 months?"
       }
     }
   }

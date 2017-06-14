@@ -37,7 +37,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
   s"GET ${controllers.vatContact.routes.BusinessContactDetailsController.show()}" should {
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[BusinessContactDetails]()
+      save4laterReturnsNoViewModel[BusinessContactDetails]()
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
@@ -55,7 +55,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[BusinessContactDetails]()
+      save4laterReturnsNoViewModel[BusinessContactDetails]()
 
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))

@@ -44,7 +44,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[VatChargeExpectancy]()
+      save4laterReturnsNoViewModel[VatChargeExpectancy]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(Controller.show) {
@@ -53,7 +53,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[VatChargeExpectancy]()
+      save4laterReturnsNoViewModel[VatChargeExpectancy]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {
