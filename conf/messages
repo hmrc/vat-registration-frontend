@@ -336,12 +336,12 @@ pages.application.submission.confirmation.button                    = Your busin
 
 ## Summary Page VAT details
 pages.summary.vatDetails.sectionHeading                 = VAT details
-pages.summary.vatDetails.taxableTurnover                = Will earn more than £83,000 in the next 30 days
+pages.summary.vatDetails.taxableTurnover                = VAT taxable sales over £85,000 in the 30 days after company is registered
 pages.summary.vatDetails.necessity                      = Register voluntarily
 pages.summary.vatDetails.voluntaryRegistrationReason    = Voluntary registration reason
 pages.summary.vatDetails.startDate                      = VAT start date
 pages.summary.vatDetails.mandatoryStartDate             = The date the company is registered with Companies House
-pages.summary.vatDetails.tradingName                    = Other Trading name
+pages.summary.vatDetails.tradingName                    = Other trading name
 
 ## Summary Page Director contact details
 pages.summary.directorContactDetails.sectionHeading    = Director contact details
@@ -394,9 +394,9 @@ pages.summary.bankDetails.companyBankAccount.number          = Account number
 pages.summary.bankDetails.companyBankAccount.sortCode        = Sort code
 
 ## Summary Page Taxable Sales
-pages.summary.taxableSales.sectionHeading                     = Taxable sales
-pages.summary.taxableSales.estimatedSalesValue                = Estimated taxable sales
-pages.summary.taxableSales.zeroRatedSales                     = Will make zero-rated sales
+pages.summary.taxableSales.sectionHeading                     = VAT taxable sales
+pages.summary.taxableSales.estimatedSalesValue                = Estimated VAT taxable sales
+pages.summary.taxableSales.zeroRatedSales                     = Will sell zero-rated goods or services
 pages.summary.taxableSales.zeroRatedSalesValue                = Estimated zero-rated sales
 
 ## Summary Page Director Addresses
@@ -407,7 +407,7 @@ pages.summary.directorAddresses.previousAddress               = Previous address
 
 ## Summary Page Doing Business Abroad
 pages.summary.doingBusinessAbroad.sectionHeading              = Doing business abroad
-pages.summary.doingBusinessAbroad.eori.euGoods                = Trades goods or services with countries outside the EU
+pages.summary.doingBusinessAbroad.eori.euGoods                = Trades VAT taxable goods with countries outside the EU
 pages.summary.doingBusinessAbroad.eori                        = Applied for EORI number
 
 ## Summary Page Annual Accounting Scheme
