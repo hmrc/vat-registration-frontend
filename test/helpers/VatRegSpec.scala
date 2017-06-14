@@ -23,6 +23,7 @@ import cats.syntax.ApplicativeSyntax
 import controllers.CommonPlayDependencies
 import fixtures.LoginFixture
 import mocks.VatMocks
+import org.mockito.Mockito.reset
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.time.{Millis, Seconds, Span}
@@ -47,6 +48,11 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
   implicit val hc = HeaderCarrier()
 
   override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Seconds), interval = Span(50, Millis))
+
+  override def beforeEach() {
+    reset(mockVatRegistrationService)
+    reset(mockS4LService)
+  }
 
   // Placeholder for custom configuration
   // Use this if you want to configure the app
