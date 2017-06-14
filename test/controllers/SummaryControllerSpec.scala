@@ -70,14 +70,14 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   "Calling summary to show the summary page" should {
     "return HTML with a valid summary view" in {
-      when(mockVatRegistrationService.submitVatScheme()(any())).thenReturn(Future.successful(()))
-      when(mockS4LService.clear()(any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockVatRegistrationService.submitVatScheme()(any())).thenReturn(().pure)
+      when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)
 
       callAuthorised(TestSummaryController.show)(_ includesText "Check your answers")
     }
 
     "getRegistrationSummary maps a valid VatScheme object to a Summary object" in {
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
       TestSummaryController2.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)
     }
 
