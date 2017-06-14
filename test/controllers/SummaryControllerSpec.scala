@@ -44,7 +44,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.submitVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(()))
       when(mockS4LService.clear()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(validHttpResponse))
 
-      callAuthorised(TestSummaryController.show)(_ includesText "Check your answers")
+      callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
     "getRegistrationSummary maps a valid VatScheme object to a Summary object" in {
