@@ -20,10 +20,18 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.config.ServicesConfig
 
-class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) with ServicesConfig {
+
+  lazy val compRegFEURL = getConfString("company-registration-frontend.www.url", "")
+  lazy val compRegFEURI = getConfString("company-registration-frontend.www.uri", "")
 
   def postSignIn: Action[AnyContent] = authorised(implicit user => implicit request =>
     Redirect(controllers.routes.WelcomeController.start()))
+
+  def signOut: Action[AnyContent] = authorised { implicit user => implicit request =>
+    Redirect(s"$compRegFEURL$compRegFEURI/questionnaire").withNewSession
+  }
 
 }
