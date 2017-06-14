@@ -35,11 +35,6 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
     override val authConnector = mockAuthConnector
   }
 
-  override def beforeEach() {
-    reset(mockVatRegistrationService)
-    reset(mockS4LService)
-  }
-
   val fakeRequest = FakeRequest(sicAndCompliance.labour.routes.CompanyProvideWorkersController.show())
 
   s"GET ${sicAndCompliance.labour.routes.CompanyProvideWorkersController.show()}" should {

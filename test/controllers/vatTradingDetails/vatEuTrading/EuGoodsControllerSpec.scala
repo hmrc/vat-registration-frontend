@@ -32,8 +32,6 @@ import scala.concurrent.Future
 
 class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-
-
   object EuGoodsController extends EuGoodsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }

@@ -36,11 +36,6 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     override val authConnector = mockAuthConnector
   }
 
-  override def beforeEach() {
-    reset(mockVatRegistrationService)
-    reset(mockS4LService)
-  }
-
   val fakeRequest = FakeRequest(sicAndCompliance.labour.routes.WorkersController.show())
 
   s"GET ${sicAndCompliance.labour.routes.WorkersController.show()}" should {

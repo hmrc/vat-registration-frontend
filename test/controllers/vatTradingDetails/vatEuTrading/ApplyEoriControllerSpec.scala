@@ -31,11 +31,6 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
   val fakeRequest = FakeRequest(routes.ApplyEoriController.show())
 
-  override def beforeEach() {
-    reset(mockVatRegistrationService)
-    reset(mockS4LService)
-  }
-
   s"GET ${routes.ApplyEoriController.show()}" should {
 
     "return HTML when there's a Apply Eori model in S4L" in {
