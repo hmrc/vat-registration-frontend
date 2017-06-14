@@ -62,6 +62,6 @@ case class SummaryLabourComplianceSectionBuilder
       (temporaryContractsRow, labourCompliance.flatMap(_.temporaryContracts).isDefined),
       (skilledWorkersRow, labourCompliance.flatMap(_.skilledWorkers).isDefined)
     ),
-    vatSicAndCompliance.map(_.labourCompliance.isDefined)
+    vatSicAndCompliance.flatMap(_.labourCompliance).isDefined
   )
 }

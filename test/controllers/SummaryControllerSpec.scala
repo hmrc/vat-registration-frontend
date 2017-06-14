@@ -61,9 +61,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
     "No compliance questions have been answered by user" in {
       val vs = VatScheme("ID", vatSicAndCompliance = None)
-      assertThrows[IllegalStateException] {
-        TestSummaryController.complianceSection(vs)
-      }
+      TestSummaryController.complianceSection(vs).display mustBe false
     }
 
   }
