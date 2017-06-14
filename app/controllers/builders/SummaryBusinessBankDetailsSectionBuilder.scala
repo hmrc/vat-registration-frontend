@@ -18,7 +18,6 @@ package controllers.builders
 
 import common.StringMasking._
 import models.api._
-import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 import models.view.{SummaryRow, SummarySection}
 
 case class SummaryBusinessBankDetailsSectionBuilder
@@ -27,34 +26,35 @@ case class SummaryBusinessBankDetailsSectionBuilder
 )
   extends SummarySectionBuilder {
 
+  override val sectionId: String = "bankDetails"
 
   val companyBankAccountRow: SummaryRow = SummaryRow(
-    "bankDetails.companyBankAccount",
+    s"$sectionId.companyBankAccount",
     vatFinancials.flatMap(_.bankAccount).fold("app.common.no")(_ => "app.common.yes"),
     Some(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
   )
 
   val companyBankAccountNameRow: SummaryRow = SummaryRow(
-    "bankDetails.companyBankAccount.name",
+    s"$sectionId.companyBankAccount.name",
     vatFinancials.flatMap(_.bankAccount).fold("app.common.no")(_.accountName),
     Some(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show())
   )
 
   val companyBankAccountNumberRow: SummaryRow = SummaryRow(
-    "bankDetails.companyBankAccount.number",
+    s"$sectionId.companyBankAccount.number",
     vatFinancials.flatMap(_.bankAccount).fold("app.common.no")(_.accountNumber.mask(4)),
     Some(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show())
   )
 
   val companyBankAccountSortCodeRow: SummaryRow = SummaryRow(
-    "bankDetails.companyBankAccount.sortCode",
+    s"$sectionId.companyBankAccount.sortCode",
     vatFinancials.flatMap(_.bankAccount).fold("app.common.no")(_.accountSortCode),
     Some(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show())
   )
 
 
   val section: SummarySection = SummarySection(
-    id = "bankDetails",
+    sectionId,
     Seq(
       (companyBankAccountRow, true),
       (companyBankAccountNameRow, vatFinancials.flatMap(_.bankAccount).isDefined),
