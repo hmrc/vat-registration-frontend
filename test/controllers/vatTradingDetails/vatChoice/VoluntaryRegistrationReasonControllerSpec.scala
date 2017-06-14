@@ -65,7 +65,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[VoluntaryRegistrationReason]()
+      save4laterReturnsNoViewModel[VoluntaryRegistrationReason]()
 
       when(mockVatRegistrationService.getVatScheme()(any()))
         .thenReturn(Future.successful(validVatScheme))
@@ -76,7 +76,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[VoluntaryRegistrationReason]()
+      save4laterReturnsNoViewModel[VoluntaryRegistrationReason]()
 
       when(mockVatRegistrationService.getVatScheme()(any()))
         .thenReturn(Future.successful(emptyVatScheme))

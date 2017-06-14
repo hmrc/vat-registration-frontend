@@ -45,7 +45,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[VatReturnFrequency]()
+      save4laterReturnsNoViewModel[VatReturnFrequency]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(Controller.show) {
@@ -54,7 +54,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[VatReturnFrequency]()
+      save4laterReturnsNoViewModel[VatReturnFrequency]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {

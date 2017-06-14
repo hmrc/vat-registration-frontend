@@ -16,22 +16,24 @@
 
 package controllers.builders
 
-import java.time.format.DateTimeFormatter
-
+import models.api._
 import models.view.{SummaryRow, SummarySection}
-import play.api.mvc.Call
 
-trait SummarySectionBuilder {
+case class SummaryCulturalComplianceSectionBuilder(vatSicAndCompliance: Option[VatSicAndCompliance] = None)
+  extends SummarySectionBuilder {
 
-  val sectionId: String
-  val section: SummarySection
-  val presentationFormatter = DateTimeFormatter.ofPattern("d MMMM y")
+  override val sectionId: String = "culturalCompliance"
 
-  protected def yesNoRow(rowId: String, yesNo: Option[Boolean], changeLinkUrl: Call) =
-    SummaryRow(
-      s"$sectionId.$rowId",
-      if (yesNo.contains(true)) "app.common.yes" else "app.common.no",
-      Some(changeLinkUrl)
-    )
+  private val culturalCompliance = vatSicAndCompliance.flatMap(_.culturalCompliance)
+
+  val notForProfitRow: SummaryRow = yesNoRow(
+    "notForProfitOrganisation",
+    culturalCompliance.map(_.notForProfit),
+    controllers.sicAndCompliance.cultural.routes.NotForProfitController.show())
+
+  val section: SummarySection = SummarySection(
+    sectionId,
+    Seq((notForProfitRow, true))
+  )
 
 }

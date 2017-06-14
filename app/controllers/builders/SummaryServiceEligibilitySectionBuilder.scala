@@ -26,48 +26,40 @@ case class SummaryServiceEligibilitySectionBuilder
 )
   extends SummarySectionBuilder {
 
-   val haveNinoRow: SummaryRow = SummaryRow(
-    "serviceCriteria.nino",
-     vatServiceEligibility.flatMap( _.haveNino).collect {
-      case true => "app.common.yes"
-    }.getOrElse("app.common.no"),
-    Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(HaveNinoQuestion.name))
+  override val sectionId: String = "serviceCriteria"
+
+  val haveNinoRow: SummaryRow = yesNoRow(
+    "nino",
+    vatServiceEligibility.flatMap(_.haveNino),
+    controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(HaveNinoQuestion.name)
   )
 
-  val doingBusinessAbroadRow: SummaryRow = SummaryRow(
-    "serviceCriteria.businessAbroad",
-    vatServiceEligibility.flatMap( _.doingBusinessAbroad).collect {
-    case true => "app.common.yes"
-    }.getOrElse("app.common.no"),
-    Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoingBusinessAbroadQuestion.name))
+  val doingBusinessAbroadRow: SummaryRow = yesNoRow(
+    "businessAbroad",
+    vatServiceEligibility.flatMap(_.doingBusinessAbroad),
+    controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoingBusinessAbroadQuestion.name)
   )
 
-  val doAnyApplyToYouRow: SummaryRow = SummaryRow(
-    "serviceCriteria.doAnyApplyToYou",
-    vatServiceEligibility.flatMap( _.doAnyApplyToYou).collect {
-      case true => "app.common.yes"
-    }.getOrElse("app.common.no"),
-    Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoAnyApplyToYouQuestion.name))
+  val doAnyApplyToYouRow: SummaryRow = yesNoRow(
+    "doAnyApplyToYou",
+    vatServiceEligibility.flatMap(_.doAnyApplyToYou),
+    controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoAnyApplyToYouQuestion.name)
   )
 
-  val applyingForAnyOfRow: SummaryRow = SummaryRow(
-    "serviceCriteria.applyingForAnyOf",
-    vatServiceEligibility.flatMap( _.applyingForAnyOf).collect {
-      case true => "app.common.yes"
-    }.getOrElse("app.common.no"),
-    Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(ApplyingForAnyOfQuestion.name))
+  val applyingForAnyOfRow: SummaryRow = yesNoRow(
+    "applyingForAnyOf",
+    vatServiceEligibility.flatMap(_.applyingForAnyOf),
+    controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(ApplyingForAnyOfQuestion.name)
   )
 
-  val companyWillDoAnyOfRow: SummaryRow = SummaryRow(
-    "serviceCriteria.companyWillDoAnyOf",
-    vatServiceEligibility.flatMap( _.companyWillDoAnyOf).collect {
-      case true => "app.common.yes"
-    }.getOrElse("app.common.no"),
-    Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(CompanyWillDoAnyOfQuestion.name))
+  val companyWillDoAnyOfRow: SummaryRow = yesNoRow(
+    "companyWillDoAnyOf",
+    vatServiceEligibility.flatMap(_.companyWillDoAnyOf),
+    controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(CompanyWillDoAnyOfQuestion.name)
   )
 
-   val section: SummarySection = SummarySection(
-    id = "serviceCriteria",
+  val section: SummarySection = SummarySection(
+    sectionId,
     Seq(
       (haveNinoRow, vatServiceEligibility.exists(_.haveNino.isDefined)),
       (doingBusinessAbroadRow, vatServiceEligibility.exists(_.doingBusinessAbroad.isDefined)),
@@ -75,6 +67,6 @@ case class SummaryServiceEligibilitySectionBuilder
       (applyingForAnyOfRow, vatServiceEligibility.exists(_.applyingForAnyOf.isDefined)),
       (companyWillDoAnyOfRow, vatServiceEligibility.exists(_.companyWillDoAnyOf.isDefined))
     ),
-     Some(vatServiceEligibility.isDefined)
+    Some(vatServiceEligibility.isDefined)
   )
 }

@@ -44,30 +44,30 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
       submitAuthorised(TestTaxableTurnoverController.show(), fakeRequest.withFormUrlEncodedBody(
         "taxableTurnoverRadio" -> ""
       )) {
-        _ includesText "VAT taxable turnover to be more than £83,000"
+        _ includesText "VAT taxable sales of more than £85,000 in the 30 days"
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[TaxableTurnover]()
+      save4laterReturnsNoViewModel[TaxableTurnover]()
 
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestTaxableTurnoverController.show) {
-        _ includesText "VAT taxable turnover to be more than £83,000"
+        _ includesText "VAT taxable sales of more than £85,000 in the 30 days"
       }
     }
 
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[TaxableTurnover]()
+      save4laterReturnsNoViewModel[TaxableTurnover]()
 
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestTaxableTurnoverController.show) {
-        _ includesText "VAT taxable turnover to be more than £83,000"
+        _ includesText "VAT taxable sales of more than £85,000 in the 30 days"
       }
     }
   }

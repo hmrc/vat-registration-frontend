@@ -62,7 +62,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[TemporaryContracts]()
+      save4laterReturnsNoViewModel[TemporaryContracts]()
       when(mockVatRegistrationService.getVatScheme()(Matchers.any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TemporaryContractsController.show) {
@@ -74,9 +74,9 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
       }
     }
 
-    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[TemporaryContracts]()
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+    save4laterReturnsNoViewModel[TemporaryContracts]()
+    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TemporaryContractsController.show) {
         result =>
@@ -100,7 +100,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
     "return 303 with TemporaryContracts Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsNothing2[BusinessActivityDescription]()
+      save4laterReturnsNoViewModel[BusinessActivityDescription]()
       save4laterExpectsSave[TemporaryContracts]()
 
       submitAuthorised(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
