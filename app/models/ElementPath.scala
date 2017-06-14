@@ -93,22 +93,22 @@ case object LabourCompliancePath extends ElementPath {
 }
 
 case object LabProvidesWorkersPath extends ElementPath {
-  override val path = "vatSicAndCompliance.labour"
+  override val path = "vatSicAndCompliance.labourCompliance.labour"
   override val name = "labour-labour"
 }
 
 case object LabWorkersPath extends ElementPath {
-  override val path = "vatSicAndCompliance.workers"
+  override val path = "vatSicAndCompliance.labourCompliance.workers"
   override val name = "labour-workers"
 }
 
 case object LabTempContractsPath extends ElementPath {
-  override val path = "vatSicAndCompliance.temporaryContracts"
+  override val path = "vatSicAndCompliance.labourCompliance.temporaryContracts"
   override val name = "labour-temporaryContracts"
 }
 
 case object LabSkilledWorkersPath extends ElementPath {
-  override val path = "vatSicAndCompliance.skilledWorkers"
+  override val path = "vatSicAndCompliance.labourCompliance.skilledWorkers"
   override val name = "labour-skilledWorkers"
 }
 
