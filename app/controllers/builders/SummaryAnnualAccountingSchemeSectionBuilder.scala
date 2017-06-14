@@ -26,26 +26,28 @@ case class SummaryAnnualAccountingSchemeSectionBuilder
 )
   extends SummarySectionBuilder {
 
+  override val sectionId: String = "annualAccountingScheme"
+
   val vatChargeExpectancyRow: SummaryRow = SummaryRow(
-    "annualAccountingScheme.reclaimMoreVat",
-    vatFinancials.filter(_.reclaimVatOnMostReturns).fold("pages.summary.annualAccountingScheme.reclaimMoreVat.no") {
-      _ => "pages.summary.annualAccountingScheme.reclaimMoreVat.yes"
+    s"$sectionId.reclaimMoreVat",
+    vatFinancials.filter(_.reclaimVatOnMostReturns).fold(s"pages.summary.$sectionId.reclaimMoreVat.no") {
+      _ => s"pages.summary.$sectionId.reclaimMoreVat.yes"
     },
     Some(controllers.vatFinancials.routes.VatChargeExpectancyController.show())
   )
 
   val accountingPeriodRow: SummaryRow = SummaryRow(
-    "annualAccountingScheme.accountingPeriod",
+    s"$sectionId.accountingPeriod",
     vatFinancials.map(_.accountingPeriods).collect {
-      case VatAccountingPeriod(VatReturnFrequency.MONTHLY, _) => "pages.summary.annualAccountingScheme.accountingPeriod.monthly"
+      case VatAccountingPeriod(VatReturnFrequency.MONTHLY, _) => s"pages.summary.$sectionId.accountingPeriod.monthly"
       case VatAccountingPeriod(VatReturnFrequency.QUARTERLY, Some(period)) =>
-        s"pages.summary.annualAccountingScheme.accountingPeriod.${period.substring(0, 3)}"
+        s"pages.summary.$sectionId.accountingPeriod.${period.substring(0, 3)}"
     }.getOrElse(""),
     Some(controllers.vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show())
   )
 
   val section: SummarySection = SummarySection(
-    id = "annualAccountingScheme",
+    sectionId,
     Seq(
       (vatChargeExpectancyRow, true),
       (accountingPeriodRow, true)

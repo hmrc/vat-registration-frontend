@@ -22,18 +22,18 @@ import models.view.{SummaryRow, SummarySection}
 case class SummaryCulturalComplianceSectionBuilder(vatSicAndCompliance: Option[VatSicAndCompliance] = None)
   extends SummarySectionBuilder {
 
-  val notForProfitRow: SummaryRow = SummaryRow(
-    "culturalCompliance.notForProfitOrganisation",
-    vatSicAndCompliance.flatMap(_.culturalCompliance).map(_.notForProfit).collect {
-      case true => "app.common.yes"
-    }.getOrElse("app.common.no"),
-    Some(controllers.sicAndCompliance.cultural.routes.NotForProfitController.show())
-  )
+  override val sectionId: String = "culturalCompliance"
+
+  private val culturalCompliance = vatSicAndCompliance.flatMap(_.culturalCompliance)
+
+  val notForProfitRow: SummaryRow = yesNoRow(
+    "notForProfitOrganisation",
+    culturalCompliance.map(_.notForProfit),
+    controllers.sicAndCompliance.cultural.routes.NotForProfitController.show())
 
   val section: SummarySection = SummarySection(
-    id = "culturalCompliance",
-    Seq((notForProfitRow, true)),
-    vatSicAndCompliance.map(_.culturalCompliance.isDefined)
+    sectionId,
+    Seq((notForProfitRow, true))
   )
 
 }

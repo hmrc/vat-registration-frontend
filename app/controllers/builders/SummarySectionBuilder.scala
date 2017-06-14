@@ -18,11 +18,20 @@ package controllers.builders
 
 import java.time.format.DateTimeFormatter
 
-import models.view.SummarySection
+import models.view.{SummaryRow, SummarySection}
+import play.api.mvc.Call
 
 trait SummarySectionBuilder {
 
+  val sectionId: String
   val section: SummarySection
   val presentationFormatter = DateTimeFormatter.ofPattern("d MMMM y")
+
+  protected def yesNoRow(rowId: String, yesNo: Option[Boolean], changeLinkUrl: Call) =
+    SummaryRow(
+      s"$sectionId.$rowId",
+      if (yesNo.contains(true)) "app.common.yes" else "app.common.no",
+      Some(changeLinkUrl)
+    )
 
 }

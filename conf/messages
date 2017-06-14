@@ -421,21 +421,28 @@ pages.summary.annualAccountingScheme.accountingPeriod.jan               = Januar
 pages.summary.annualAccountingScheme.accountingPeriod.feb               = February, May, August and November
 pages.summary.annualAccountingScheme.accountingPeriod.mar               = March, June, September and December
 
-## Summary Page Company Providing Financial
-pages.summary.companyProvidingFinancial.sectionHeading                                          = Providing financial services
-pages.summary.companyProvidingFinancial.provides.advice.or.consultancy                          = Provide ''advice only'' or consultancy services
-pages.summary.companyProvidingFinancial.acts.as.intermediary                                    = Act as an intermediary
-pages.summary.companyProvidingFinancial.charges.fees                                            = Charge fees for introducing clients to financial service providers
-pages.summary.companyProvidingFinancial.does.additional.work.when.introducing.client            = Additional work when introducing a client to a financial service provider
-pages.summary.companyProvidingFinancial.provides.discretionary.investment.management            = Provide discretionary investment management services
-pages.summary.companyProvidingFinancial.involved.in.leasing.vehicles.or.equipment               = Involved in leasing vehicles or equipment to customers
-pages.summary.companyProvidingFinancial.provides.investment.fund.management                     = Provide investment fund management services
-pages.summary.companyProvidingFinancial.manages.funds.not.included.in.this.list                 = Manage any funds that are not included in this list
+## Summary Page Financial Compliance
+pages.summary.companyProvidingFinancial.sectionHeading                                 = Providing financial services
+pages.summary.companyProvidingFinancial.provides.advice.or.consultancy                 = Provide ''advice only'' or consultancy services
+pages.summary.companyProvidingFinancial.acts.as.intermediary                           = Act as an intermediary
+pages.summary.companyProvidingFinancial.charges.fees                                   = Charge fees for introducing clients to financial service providers
+pages.summary.companyProvidingFinancial.does.additional.work.when.introducing.client   = Additional work when introducing a client to a financial service provider
+pages.summary.companyProvidingFinancial.provides.discretionary.investment.management   = Provide discretionary investment management services
+pages.summary.companyProvidingFinancial.involved.in.leasing.vehicles.or.equipment      = Involved in leasing vehicles or equipment to customers
+pages.summary.companyProvidingFinancial.provides.investment.fund.management            = Provide investment fund management services
+pages.summary.companyProvidingFinancial.manages.funds.not.included.in.this.list        = Manage any funds that are not included in this list
 
+
+## Summary Page Labour Compliance
+pages.summary.labourCompliance.sectionHeading                 = Providing workers to other employers
+pages.summary.labourCompliance.providesWorkers                = Providing workers to other employers
+pages.summary.labourCompliance.numberOfWorkers                = Number of workers the company provides at any one time
+pages.summary.labourCompliance.workersOnTemporaryContracts    = Provides workers on temporary contracts
+pages.summary.labourCompliance.providesSkilledWorkers         = Provides skilled workers
 
 ## Summary Page Cultural Compliance section
-pages.summary.culturalCompliance.sectionHeading            = Organisation type
-pages.summary.culturalCompliance.notForProfitOrganisation  = Not-for-profit organisation or public body
+pages.summary.culturalCompliance.sectionHeading               = Organisation type
+pages.summary.culturalCompliance.notForProfitOrganisation     = Not-for-profit organisation or public body
 
 
 ## Error Pages

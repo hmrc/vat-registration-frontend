@@ -25,25 +25,25 @@ case class SummaryDirectorAddressesSectionBuilder
 )
   extends SummarySectionBuilder {
 
-  import cats.syntax.show._
+  override val sectionId: String = "directorAddresses"
+
   import ScrsAddress.htmlShow._
+  import cats.syntax.show._
 
   val homeAddress: SummaryRow = SummaryRow(
-    "directorAddresses.homeAddress",
+    s"$sectionId.homeAddress",
     vatLodgingOfficer.map(_.currentAddress.show).getOrElse(""),
     Some(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())
   )
 
-  val currentAddressThreeYears: SummaryRow = SummaryRow(
-    "directorAddresses.currentAddressThreeYears",
-    vatLodgingOfficer.map(_.currentOrPreviousAddress.currentAddressThreeYears).collect {
-      case true => "app.common.yes"
-    }.getOrElse("app.common.no"),
-    Some(controllers.vatLodgingOfficer.routes.PreviousAddressController.show())
+  val currentAddressThreeYears: SummaryRow = yesNoRow(
+    "currentAddressThreeYears",
+    vatLodgingOfficer.map(_.currentOrPreviousAddress.currentAddressThreeYears),
+    controllers.vatLodgingOfficer.routes.PreviousAddressController.show()
   )
 
   val previousAddress: SummaryRow = SummaryRow(
-    "directorAddresses.previousAddress",
+    s"$sectionId.previousAddress",
     vatLodgingOfficer.map(_.currentOrPreviousAddress.previousAddress).collect {
       case Some(address) => address.show
     }.getOrElse(""),
@@ -51,7 +51,7 @@ case class SummaryDirectorAddressesSectionBuilder
   )
 
   val section: SummarySection = SummarySection(
-    id = "directorAddresses",
+    sectionId,
     Seq(
       (homeAddress, true),
       (currentAddressThreeYears, true),
