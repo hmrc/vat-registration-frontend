@@ -210,7 +210,9 @@ trait VatRegistrationFixture {
   val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
 
   val validBusinessActivityDescription = BusinessActivityDescription(businessActivityDescription)
-  val validVatCulturalCompliance = VatComplianceCultural(true)
+  val validVatCulturalCompliance = VatComplianceCultural(notForProfit = true)
+  val validVatLabourCompliance = VatComplianceLabour(labour = false)
+  val validVatFinancialCompliance = VatComplianceFinancial(adviceOrConsultancyOnly = false, actAsIntermediary = false)
 
   //Cultural Compliance Questions
   val validNotForProfit = NotForProfit(NotForProfit.NOT_PROFIT_NO)

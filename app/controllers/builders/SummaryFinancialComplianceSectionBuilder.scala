@@ -25,7 +25,7 @@ case class SummaryFinancialComplianceSectionBuilder
 )
   extends SummarySectionBuilder {
 
-  override val sectionId: String = "companyProvidingFinancial"
+  override val sectionId: String = "financialCompliance"
 
   val financialCompliance = vatSicAndCompliance.flatMap(_.financialCompliance)
 

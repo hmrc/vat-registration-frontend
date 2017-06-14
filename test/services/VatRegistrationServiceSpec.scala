@@ -223,6 +223,17 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       service.submitSicAndCompliance() returns validSicAndCompliance
     }
+
+
+    "return a success response when SicAndCompliance is submitted for the first time" in new Setup {
+      mockFetchRegId(validRegId)
+
+      save4laterReturnsViewModel(validSkilledWorkers)()
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.copy(vatSicAndCompliance = None).pure)
+      when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any())).thenReturn(validSicAndCompliance.pure)
+
+      service.submitSicAndCompliance() returns validSicAndCompliance
+    }
   }
 
   "Calling submitEligibility" should {

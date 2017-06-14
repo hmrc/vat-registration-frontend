@@ -27,34 +27,30 @@ case class SummaryLabourComplianceSectionBuilder
 
   val sectionId = "labourCompliance"
 
-  val providingWorkersRow: SummaryRow = SummaryRow(
-    s"$sectionId.providesWorkers",
-    vatSicAndCompliance.flatMap(_.labourCompliance.map(_.labour)).collect {
-      case true => "app.common.yes"
-    }.getOrElse("app.common.no"),
-    Some(controllers.sicAndCompliance.labour.routes.CompanyProvideWorkersController.show())
+  val labourCompliance = vatSicAndCompliance.flatMap(_.labourCompliance)
+
+  val providingWorkersRow: SummaryRow = yesNoRow(
+    "providesWorkers",
+    labourCompliance.map(_.labour),
+    controllers.sicAndCompliance.labour.routes.CompanyProvideWorkersController.show()
   )
 
   val numberOfWorkersRow: SummaryRow = SummaryRow(
     s"$sectionId.numberOfWorkers",
-    vatSicAndCompliance.flatMap(_.labourCompliance).flatMap(_.workers).getOrElse(0).toString,
+    labourCompliance.flatMap(_.workers).getOrElse(0).toString,
     Some(controllers.sicAndCompliance.labour.routes.WorkersController.show())
   )
 
-  val temporaryContractsRow: SummaryRow = SummaryRow(
-    s"$sectionId.providesWorkers",
-    vatSicAndCompliance.flatMap(_.labourCompliance.flatMap(_.temporaryContracts)).collect {
-      case true => "app.common.yes"
-    }.getOrElse("app.common.no"),
-    Some(controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show())
+  val temporaryContractsRow: SummaryRow = yesNoRow(
+    "workersOnTemporaryContracts",
+    labourCompliance.flatMap(_.temporaryContracts),
+    controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show()
   )
 
-  val skilledWorkersRow: SummaryRow = SummaryRow(
-    s"$sectionId.providesWorkers",
-    vatSicAndCompliance.flatMap(_.labourCompliance.flatMap(_.skilledWorkers)).collect {
-      case true => "app.common.yes"
-    }.getOrElse("app.common.no"),
-    Some(controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show())
+  val skilledWorkersRow: SummaryRow = yesNoRow(
+    "providesSkilledWorkers",
+    labourCompliance.flatMap(_.skilledWorkers),
+    controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show()
   )
 
 
@@ -62,9 +58,9 @@ case class SummaryLabourComplianceSectionBuilder
     sectionId,
     Seq(
       (providingWorkersRow, true),
-      (numberOfWorkersRow, vatSicAndCompliance.flatMap(_.labourCompliance).flatMap(_.workers).exists(_ > 0)),
-      (temporaryContractsRow, vatSicAndCompliance.flatMap(_.labourCompliance).flatMap(_.temporaryContracts).isDefined),
-      (skilledWorkersRow, vatSicAndCompliance.flatMap(_.labourCompliance).flatMap(_.skilledWorkers).isDefined)
+      (numberOfWorkersRow, labourCompliance.flatMap(_.workers).exists(_ > 0)),
+      (temporaryContractsRow, labourCompliance.flatMap(_.temporaryContracts).isDefined),
+      (skilledWorkersRow, labourCompliance.flatMap(_.skilledWorkers).isDefined)
     ),
     vatSicAndCompliance.map(_.labourCompliance.isDefined)
   )
