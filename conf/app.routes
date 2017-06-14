@@ -179,6 +179,9 @@ GET         /feedback                                                           
 GET         /check-your-answers                                                                controllers.SummaryController.show
 
 ## CALLBACKS FROM OTHER SERVICES
+## SIGN OUT
+GET         /sign-out                                                                          controllers.callbacks.SignInOutController.signOut
+
 ## POST SIGN IN
 GET         /post-sign-in                                                                      controllers.callbacks.SignInOutController.postSignIn
 
