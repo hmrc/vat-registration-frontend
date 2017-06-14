@@ -44,7 +44,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder()
         builder.provideAdviceRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.provides.advice.or.consultancy",
+            "financialCompliance.provides.advice.or.consultancy",
             "app.common.no",
             Some(controllers.sicAndCompliance.financial.routes.AdviceOrConsultancyController.show())
           )
@@ -56,7 +56,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.provideAdviceRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.provides.advice.or.consultancy",
+            "financialCompliance.provides.advice.or.consultancy",
             "app.common.yes",
             Some(controllers.sicAndCompliance.financial.routes.AdviceOrConsultancyController.show())
           )
@@ -70,7 +70,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder()
         builder.actAsIntermediaryRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.acts.as.intermediary",
+            "financialCompliance.acts.as.intermediary",
             "app.common.no",
             Some(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show())
           )
@@ -82,7 +82,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.actAsIntermediaryRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.acts.as.intermediary",
+            "financialCompliance.acts.as.intermediary",
             "app.common.yes",
             Some(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show())
           )
@@ -96,7 +96,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder()
         builder.chargesFeesRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.charges.fees",
+            "financialCompliance.charges.fees",
             "app.common.no",
             Some(controllers.sicAndCompliance.financial.routes.ChargeFeesController.show())
           )
@@ -108,7 +108,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.chargesFeesRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.charges.fees",
+            "financialCompliance.charges.fees",
             "app.common.yes",
             Some(controllers.sicAndCompliance.financial.routes.ChargeFeesController.show())
           )
@@ -121,7 +121,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder()
         builder.additionalWorkRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.does.additional.work.when.introducing.client",
+            "financialCompliance.does.additional.work.when.introducing.client",
             "app.common.no",
             Some(controllers.sicAndCompliance.financial.routes.AdditionalNonSecuritiesWorkController.show())
           )
@@ -133,7 +133,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.additionalWorkRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.does.additional.work.when.introducing.client",
+            "financialCompliance.does.additional.work.when.introducing.client",
             "app.common.yes",
             Some(controllers.sicAndCompliance.financial.routes.AdditionalNonSecuritiesWorkController.show())
           )
@@ -147,7 +147,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder()
         builder.provideDiscretionaryInvestmentRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.provides.discretionary.investment.management",
+            "financialCompliance.provides.discretionary.investment.management",
             "app.common.no",
             Some(controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show())
           )
@@ -159,7 +159,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.provideDiscretionaryInvestmentRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.provides.discretionary.investment.management",
+            "financialCompliance.provides.discretionary.investment.management",
             "app.common.yes",
             Some(controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show())
           )
@@ -172,7 +172,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder()
         builder.leasingVehicleRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.involved.in.leasing.vehicles.or.equipment",
+            "financialCompliance.involved.in.leasing.vehicles.or.equipment",
             "app.common.no",
             Some(controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show())
           )
@@ -184,7 +184,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.leasingVehicleRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.involved.in.leasing.vehicles.or.equipment",
+            "financialCompliance.involved.in.leasing.vehicles.or.equipment",
             "app.common.yes",
             Some(controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show())
           )
@@ -197,7 +197,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder()
         builder.investmentFundManagementRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.provides.investment.fund.management",
+            "financialCompliance.provides.investment.fund.management",
             "app.common.no",
             Some(controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show())
           )
@@ -209,7 +209,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.investmentFundManagementRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.provides.investment.fund.management",
+            "financialCompliance.provides.investment.fund.management",
             "app.common.yes",
             Some(controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show())
           )
@@ -222,7 +222,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder()
         builder.manageAdditionalFundsRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.manages.funds.not.included.in.this.list",
+            "financialCompliance.manages.funds.not.included.in.this.list",
             "app.common.no",
             Some(controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show())
           )
@@ -234,7 +234,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.manageAdditionalFundsRow mustBe
           SummaryRow(
-            "companyProvidingFinancial.manages.funds.not.included.in.this.list",
+            "financialCompliance.manages.funds.not.included.in.this.list",
             "app.common.yes",
             Some(controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show())
           )
@@ -248,7 +248,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
 
       "a valid summary section" in {
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
-        builder.section.id mustBe "companyProvidingFinancial"
+        builder.section.id mustBe "financialCompliance"
         builder.section.rows.length mustEqual 8
       }
     }
