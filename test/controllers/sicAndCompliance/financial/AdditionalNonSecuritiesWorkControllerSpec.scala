@@ -36,11 +36,6 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
 
   val fakeRequest = FakeRequest(routes.AdditionalNonSecuritiesWorkController.show())
 
-  override def beforeEach() {
-    reset(mockVatRegistrationService)
-    reset(mockS4LService)
-  }
-
   s"GET ${routes.AdditionalNonSecuritiesWorkController.show()}" should {
 
     "return HTML when there's a Additional Non Securities Work model in S4L" in {

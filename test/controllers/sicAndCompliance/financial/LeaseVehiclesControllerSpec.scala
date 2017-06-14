@@ -33,10 +33,6 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
     override val authConnector = mockAuthConnector
   }
 
-  override def beforeEach() {
-    reset(mockVatRegistrationService)
-    reset(mockS4LService)
-  }
   val fakeRequest = FakeRequest(routes.LeaseVehiclesController.show())
 
   s"GET ${routes.LeaseVehiclesController.show()}" should {

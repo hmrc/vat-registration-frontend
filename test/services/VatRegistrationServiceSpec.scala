@@ -313,7 +313,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       service.submitVatEligibility() failedWith classOf[IllegalStateException]
     }
-    
+
     "submitVatLodgingOfficer should process the submission even if VatScheme does not contain a VatLodgingOfficer object" in new Setup {
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       save4laterReturns(S4LVatLodgingOfficer(

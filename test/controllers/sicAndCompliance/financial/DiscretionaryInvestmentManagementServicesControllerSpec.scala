@@ -34,10 +34,6 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
     override val authConnector = mockAuthConnector
   }
 
-  override def beforeEach() {
-    reset(mockVatRegistrationService)
-    reset(mockS4LService)
-  }
   val fakeRequest = FakeRequest(routes.DiscretionaryInvestmentManagementServicesController.show())
 
   s"GET ${routes.DiscretionaryInvestmentManagementServicesController.show()}" should {

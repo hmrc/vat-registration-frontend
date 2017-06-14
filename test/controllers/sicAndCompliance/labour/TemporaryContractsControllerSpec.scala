@@ -37,11 +37,6 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
     override val authConnector = mockAuthConnector
   }
 
-  override def beforeEach() {
-    reset(mockVatRegistrationService)
-    reset(mockS4LService)
-  }
-
   val fakeRequest = FakeRequest(sicAndCompliance.labour.routes.TemporaryContractsController.show())
 
   s"GET ${sicAndCompliance.labour.routes.TemporaryContractsController.show()}" should {
