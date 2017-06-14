@@ -67,6 +67,6 @@ case class SummaryServiceEligibilitySectionBuilder
       (applyingForAnyOfRow, vatServiceEligibility.exists(_.applyingForAnyOf.isDefined)),
       (companyWillDoAnyOfRow, vatServiceEligibility.exists(_.companyWillDoAnyOf.isDefined))
     ),
-    Some(vatServiceEligibility.isDefined)
+    vatServiceEligibility.isDefined
   )
 }
