@@ -30,7 +30,7 @@ pages.welcome.bullet6                                   = your National Insuranc
 pages.welcome.bullet7                                   = estimates of the company''s total VAT taxable sales for the next 12 months
 pages.welcome.p4                                        = Your answers should reflect your current business details. You''ll need to tell HM Revenue and Customs (HMRC) about any changes to your business in the future.
 pages.welcome.panel1.title                              = What is ''VAT taxable turnover'' and the ''VAT registration threshold''?
-pages.welcome.panel1.p1                                 = You can register voluntarily if the company''s VAT taxable turnover is less than £83,000 in the 30 days after it''s registered with Companies House.
+pages.welcome.panel1.p1                                 = VAT taxable turnover is the total value of everything you sell that isn''t exempt from VAT.
 pages.welcome.panel1.p2                                 = The VAT registration threshold for the current tax year is £85,000. It''s the amount of <a href="https://www.gov.uk/vat-registration/calculate-turnover">VAT taxable sales</a> you can make before you have to register for VAT.
 pages.welcome.panel1.p3                                 = Find a list of yearly <a href="https://www.gov.uk/government/publications/vat-notice-7001-should-i-be-registered-for-vat/vat-notice-7001-supplement--2#registration-limits-taxable-supplies">VAT registration thresholds</a>.
 
@@ -76,7 +76,7 @@ pages.serviceCriteriaFailure.doAnyApplyToYou.bullet1    = you changed the legal 
 pages.serviceCriteriaFailure.doAnyApplyToYou.bullet2    = you''ve taken over a VAT-registered business which is operating and making a profit
 pages.serviceCriteriaFailure.doAnyApplyToYou.bullet3    = you want to register a VAT group
 pages.serviceCriteriaFailure.doAnyApplyToYou.bullet4    = you''ve been involved with other businesses in the last 2 years
-pages.serviceCriteriaFailure.doAnyApplyToYou.p1         = If your VAT taxable turnover went over the £83,000 threshold temporarily but has since dropped below the threshold, you need to <a href="https://www.gov.uk/government/publications/vat-application-for-registration-vat1">register using form VAT1</a>.
+pages.serviceCriteriaFailure.doAnyApplyToYou.p1         = If your VAT taxable turnover went over the £85,000 threshold temporarily but has since dropped below the threshold, you need to <a href="https://www.gov.uk/government/publications/vat-application-for-registration-vat1">register using form VAT1</a>.
 
 pages.serviceCriteriaFailure.applyingForAnyOf.bullet1    = the company is applying for the Annual Accounting Scheme
 pages.serviceCriteriaFailure.applyingForAnyOf.bullet2    = the company is applying for an exemption from VAT registration
@@ -169,8 +169,8 @@ pages.eligibility.applyingForAnyOf.panel2.bullet3           = make a final payme
 pages.eligibility.applyingForAnyOf.panel2.bullet4           = apply for a refund - if you''ve overpaid your VAT bill
 
 pages.eligibility.applyingForAnyOf.panel3.title             = What is a registration exception?
-pages.eligibility.applyingForAnyOf.panel3.p1                = You can apply for a registration exception if the company''s turnover went over the VAT registration threshold temporarily.
-pages.eligibility.applyingForAnyOf.panel3.p2                = You''ll need to tell HMRC why you believe your turnover won''t go over the de-registration threshold of £81,000 in the next 12 months.
+pages.eligibility.applyingForAnyOf.panel3.p1                = You can apply for a registration exception if the company''s turnover went over £85,000 temporarily.
+pages.eligibility.applyingForAnyOf.panel3.p2                = You''ll need to tell HMRC why you believe your turnover won''t go over the de-registration threshold of £83,000 in the next 12 months.
 
 pages.eligibility.applyingForAnyOf.panel4.title             = What is an exemption from VAT registration?
 pages.eligibility.applyingForAnyOf.panel4.p1                = You can apply for an exemption from VAT registration if you sell mainly or only zero-rated items. If you''re exempted from VAT registration you won''t be able to reclaim any VAT.
@@ -240,7 +240,7 @@ validation.taxable.turnover.missing                     = Tell us if you expect 
 pages.start.date.confirmation.title                          = Start Date Confirmation page
 pages.start.date.confirmation.heading                        = Your VAT start date
 pages.start.date.confirmation.para1                          = Your VAT start date will be the same as your company registration date. You can''t be registered for VAT before the company has been set up.
-pages.start.date.confirmation.para2                          = You must apply to register if you expect your VAT taxable turnover to go over the £83,000 threshold within the next 30 days.
+pages.start.date.confirmation.para2                          = You must apply to register if you expect your VAT taxable turnover to go over the £85,000 threshold within the next 30 days.
 pages.start.date.confirmation.para3                          = If you register late, you must pay what you owe from the date you should''ve registered.
 pages.start.date.confirmation.warning                        = You may get a penalty depending on how much you owe and how late your registration is.
 
@@ -316,7 +316,7 @@ validation.accounting.period.missing                        = Tell us when you w
 
 ## Summary Page
 pages.summary.title                                         = Summary
-pages.summary.heading                                       = Check your answers
+pages.summary.heading                                       = Check and confirm your answers
 
 ## Application Submission Confirmation page
 pages.application.submission.confirmation.title                     = Application Submitted
