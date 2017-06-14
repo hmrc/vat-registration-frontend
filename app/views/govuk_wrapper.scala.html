@@ -9,74 +9,77 @@
         serviceInfoContent: Html = HtmlFormat.empty,
         pageScripts: Option[Html] = None)(implicit request: Request[_], messages: Messages)
 
-    @import layouts.{govuk_template => hmrcGovUkTemplate}
-    @import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
-    @import views.html.helpers.phaseBanner
+@import layouts.{govuk_template => hmrcGovUkTemplate}
+@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
+@import views.html.helpers.phaseBanner
 
-    @head = {
-    @uiLayouts.head(
-        linkElem = None,
-        headScripts = None)
-        <meta name="format-detection" content="telephone=no" />
-        <link rel="stylesheet" href="@routes.Assets.at("stylesheets/main.css")">
-    }
+@head = {
+@uiLayouts.head(
+    linkElem = None,
+    headScripts = None)
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/main.css")">
+}
 
-    @headerNavLinks = {
-        <li><a id="homeNavHref" href="http://www.google.com"
-        data-journey-click="primary-navigation:Click:Home">Home</a></li>
-    }
+@headerNavLinks = {
+    <li>
+        <a id="signOutNavHref" href="@controllers.callbacks.routes.SignInOutController.signOut()" data-journey-click="primary-navigation:Click:SignOut">
+            Sign out</a>
+    </li>
+}
 
-    @insideHeader = {
-    @uiLayouts.header_nav(
-        navTitle = Some(messages("app.title")),
-        navTitleLink = None,
-        showBetaLink = false,
-        navLinks = Some(headerNavLinks))
-    }
+@insideHeader = {
+@uiLayouts.header_nav(
+    navTitle = Some(messages("app.title")),
+    navTitleLink = None,
+    showBetaLink = false,
+    navLinks = Some(headerNavLinks))
+}
 
-    @afterHeader = {}
-
-
-
-    @scriptElement = {
-        <script type="text/javascript" src='@routes.Assets.at("javascripts/main.js")'></script>
-    }
-
-    @scripts = {
-    @scriptElement
-    @pageScripts
-    }
+@afterHeader = {}
 
 
-    @bodyEnd = {
-    @uiLayouts.footer(
-        analyticsToken = Some(appConfig.analyticsToken),
-        analyticsHost = appConfig.analyticsHost,
-        ssoUrl = None,
-        scriptElem = Some(scripts),
-        gaCalls = None)
-    }
+@scriptElement = {
+    <script type="text/javascript" src='@routes.Assets.at("javascripts/main.js")'></script>
+}
 
-    @footerTop = {}
-    @footerLinks = {}
+@scripts = {
+@scriptElement
+@pageScripts
+}
 
-    @serviceInfo = {
-    @uiLayouts.serviceInfo(
-        betaBanner = phaseBanner("ALPHA"),
-        includeGridWrapper = false,
-        serviceInfoContent = Some(serviceInfoContent))
-    }
 
-    @getHelpForm = @{uiHelpers.reportAProblemLink(appConfig.reportAProblemPartialUrl, appConfig.reportAProblemNonJSUrl)}
+@bodyEnd = {
+@uiLayouts.footer(
+    analyticsToken = Some(appConfig.analyticsToken),
+    analyticsHost = appConfig.analyticsHost,
+    ssoUrl = None,
+    scriptElem = Some(scripts),
+    gaCalls = None)
+}
 
-    @content = {
-    @uiLayouts.main_content(
-        article = mainContent,
-        mainClass = mainClass,
-        mainDataAttributes = mainDataAttributes,
-        serviceInfo = serviceInfo,
-        getHelpForm = getHelpForm,
-        sidebar = sidebar)
-    }
+@footerTop = {}
+@footerLinks = {}
 
-    @hmrcGovUkTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(uiLayouts.footer_links()), true)(content)
+@serviceInfo = {
+@uiLayouts.serviceInfo(
+    betaBanner = phaseBanner("ALPHA"),
+    includeGridWrapper = false,
+    serviceInfoContent = Some(serviceInfoContent))
+}
+
+@getHelpForm = @{
+    uiHelpers.reportAProblemLink(appConfig.reportAProblemPartialUrl, appConfig.reportAProblemNonJSUrl)
+}
+
+@content = {
+@uiLayouts.main_content(
+    article = mainContent,
+    mainClass = mainClass,
+    mainDataAttributes = mainDataAttributes,
+    serviceInfo = serviceInfo,
+    getHelpForm = getHelpForm,
+    sidebar = sidebar)
+}
+
+@hmrcGovUkTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(uiLayouts.footer_links()), true)(content)
