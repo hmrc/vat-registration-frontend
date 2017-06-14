@@ -31,14 +31,12 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
                                  (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = authorised.async { implicit user =>
-    implicit request =>
-      for {
-        _ <- vrs.submitVatScheme()
-        summary <- getRegistrationSummary()
-        _ <- s4LService.clear()
-      } yield Ok(views.html.pages.summary(summary))
-  }
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    for {
+      _ <- vrs.submitVatScheme()
+      summary <- getRegistrationSummary()
+      _ <- s4LService.clear()
+    } yield Ok(views.html.pages.summary(summary)))
 
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
     vrs.getVatScheme().map(registrationToSummary)
@@ -52,7 +50,7 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
       case c: VatComplianceCultural => SummaryCulturalComplianceSectionBuilder(vs.vatSicAndCompliance).section
       case c: VatComplianceFinancial => SummaryFinancialComplianceSectionBuilder(vs.vatSicAndCompliance).section
       case c: VatComplianceLabour => SummaryLabourComplianceSectionBuilder(vs.vatSicAndCompliance).section
-    }.headOption.getOrElse(throw new IllegalStateException("Can't build compliance section of the summary page - expected answers for one of the sets of questions"))
+    }.headOption.getOrElse(SummarySection(id = "none", rows = Seq(), display = false))
 
   def registrationToSummary(vs: VatScheme): Summary =
     Summary(Seq(
