@@ -56,7 +56,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[ManageAdditionalFunds]()
+      save4laterReturnsNoViewModel[ManageAdditionalFunds]()
       when(mockVatRegistrationService.getVatScheme()(Matchers.any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(ManageAdditionalFundsController.show) {
@@ -64,9 +64,9 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
       }
     }
 
-    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[ManageAdditionalFunds]()
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+    save4laterReturnsNoViewModel[ManageAdditionalFunds]()
+    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(ManageAdditionalFundsController.show) {
         _ includesText "Does the company manage any funds that are not included in this list?"

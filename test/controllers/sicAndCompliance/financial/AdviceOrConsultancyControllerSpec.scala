@@ -54,7 +54,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[AdviceOrConsultancy]()
+      save4laterReturnsNoViewModel[AdviceOrConsultancy]()
       when(mockVatRegistrationService.getVatScheme()(Matchers.any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(AdviceOrConsultancyController.show) {
@@ -62,9 +62,9 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
       }
     }
 
-    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[AdviceOrConsultancy]()
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+    save4laterReturnsNoViewModel[AdviceOrConsultancy]()
+    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(AdviceOrConsultancyController.show) {
         _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
@@ -83,7 +83,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsNothing2[BusinessActivityDescription]()
+      save4laterReturnsNoViewModel[BusinessActivityDescription]()
       save4laterExpectsSave[S4LVatSicAndCompliance]()
       save4laterExpectsSave[AdviceOrConsultancy]()
 
@@ -98,7 +98,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsNothing2[BusinessActivityDescription]()
+      save4laterReturnsNoViewModel[BusinessActivityDescription]()
       save4laterExpectsSave[S4LVatSicAndCompliance]()
       save4laterExpectsSave[AdviceOrConsultancy]()
 

@@ -16,6 +16,25 @@
 
       <p>@Html(Messages("pages.zero.rated.sales.para1"))</p>
 
+      <div class="form-group">
+          <details role="group">
+              <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
+              @Html(messages("pages.zero.rated.sales.examples.title"))
+              </span></summary>
+              <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
+                  <p>@messages("pages.zero.rated.sales.examples.p1")</p>
+                  <p>@messages("pages.zero.rated.sales.examples.p2")</p>
+                  <ul class="list list-bullet">
+                      <li>@Html(Messages("pages.zero.rated.sales.examples.bullet1"))</li>
+                      <li>@Html(Messages("pages.zero.rated.sales.examples.bullet2"))</li>
+                      <li>@Html(Messages("pages.zero.rated.sales.examples.bullet3"))</li>
+                      <li>@Html(Messages("pages.zero.rated.sales.examples.bullet4"))</li>
+                  </ul>
+                  <p>@Html(Messages("pages.zero.rated.sales.examples.p3"))</p>
+              </div>
+          </details>
+      </div>
+
       @govHelpers.form(action = controllers.vatFinancials.routes.ZeroRatedSalesController.submit()) {
       <div class="form-group">
         <fieldset class="inline">
@@ -32,23 +51,7 @@
         </fieldset>
        
       </div>
-          <div class="form-group">
-              <details role="group">
-                  <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
-                  @Html(messages("pages.zero.rated.sales.examples.title"))
-                  </span></summary>
-                  <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
-                      <p>@Html(Messages("pages.zero.rated.sales.examples.para1"))</p>
-                      <ul class="list list-bullet">
-                          <li>@Html(Messages("pages.zero.rated.sales.examples.bullet1"))</li>
-                          <li>@Html(Messages("pages.zero.rated.sales.examples.bullet2"))</li>
-                          <li>@Html(Messages("pages.zero.rated.sales.examples.bullet3"))</li>
-                          <li>@Html(Messages("pages.zero.rated.sales.examples.bullet4"))</li>
-                      </ul>
-                      <p>@Html(Messages("pages.zero.rated.sales.examples.para2"))</p>
-                  </div>
-              </details>
-          </div>
+
       <div class="form-group">
         <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
       </div>

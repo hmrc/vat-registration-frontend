@@ -13,57 +13,49 @@
       <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.estimate.vat.turnover.heading")</h1>
 
       @errorSummary(
-          Messages("app.common.errorSummaryLabel"),
+          messages("app.common.errorSummaryLabel"),
           estimateVatTurnoverForm,
           Seq("turnoverEstimate")
       )
 
-      <p>@Html(Messages("pages.estimate.vat.turnover.para1"))</p>
-
-      <div class="notice form-group">
-          <i class="icon icon-important">
-              <span class="visuallyhidden">Warning</span>
-          </i>
-          <strong class="bold-small">@messages("pages.estimate.vat.turnover.info")</strong>
+      <div class="form-group">
+          <div class="panel indent">
+              <p>@messages("pages.estimate.vat.turnover.info")</p>
+          </div>
       </div>
+
+      <details role="group">
+          <summary role="button" aria-controls="details-content-1" aria-expanded="false">
+              <span class="summary">
+                @Html(messages("pages.estimate.vat.turnover.include.title"))
+              </span>
+          </summary>
+          <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
+              <ul class="list list-bullet">
+                  <li>@Html(messages("pages.estimate.vat.turnover.include.bullet1"))</li>
+                  <li>@Html(messages("pages.estimate.vat.turnover.include.bullet2"))</li>
+                  <li>@Html(messages("pages.estimate.vat.turnover.include.bullet3"))</li>
+                  <li>@Html(messages("pages.estimate.vat.turnover.include.bullet4"))</li>
+              </ul>
+              <p>@Html(messages("pages.estimate.vat.turnover.include.para1"))</p>
+          </div>
+      </details>
 
       @govHelpers.form(action = controllers.vatFinancials.routes.EstimateVatTurnoverController.submit()) {
           <div class="form-group @fieldSetClasses">
               <fieldset>
-
                   @estimateVatTurnoverForm.errors.find(_.args.contains("turnoverEstimate")).map { error =>
-                      @govHelpers.errorInline("turnoverEstimate", Messages(error.message))
+                      @govHelpers.errorInline("turnoverEstimate", messages(error.message))
                   }
 
-
-                  <label class="form-label">@messages("pages.estimate.vat.turnover.form.label")</label>
-                      @govHelpers.input(
-                          estimateVatTurnoverForm("turnoverEstimate"),
-                          '_divClass -> "form-group",
-                          '_inputClass -> "form-control",
-                          '_label -> Messages("app.common.gbp.symbol"),
-                          '_labelClass -> "form-label"
-                      )
-
-
+                  @govHelpers.input(
+                      estimateVatTurnoverForm("turnoverEstimate"),
+                      '_divClass -> "form-group",
+                      '_inputClass -> "form-control",
+                      '_label -> messages("app.common.gbp.symbol"),
+                      '_labelClass -> "form-label"
+                  )
               </fieldset>
-
-              <details role="group">
-                  <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
-                  @Html(messages("pages.estimate.vat.turnover.include.title"))
-                  </span></summary>
-                  <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
-                      <p>@Html(Messages("pages.estimate.vat.turnover.include.para1"))</p>
-                      <ul class="list list-bullet">
-                          <li>@Html(Messages("pages.estimate.vat.turnover.include.bullet1"))</li>
-                          <li>@Html(Messages("pages.estimate.vat.turnover.include.bullet2"))</li>
-                          <li>@Html(Messages("pages.estimate.vat.turnover.include.bullet3"))</li>
-                          <li>@Html(Messages("pages.estimate.vat.turnover.include.bullet4"))</li>
-                          <li>@Html(Messages("pages.estimate.vat.turnover.include.bullet5"))</li>
-                      </ul>
-                      <p>@Html(Messages("pages.estimate.vat.turnover.include.para2"))</p>
-                  </div>
-              </details>
           </div>
 
           <div class="form-group">
