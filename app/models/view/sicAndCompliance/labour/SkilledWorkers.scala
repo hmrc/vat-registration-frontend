@@ -38,14 +38,15 @@ object SkilledWorkers {
   )
 
   implicit val modelTransformer = ApiModelTransformer[SkilledWorkers] { (vs: VatScheme) =>
-    vs.vatSicAndCompliance.flatMap(_.labourCompliance).map { labourCompliance =>
-      SkilledWorkers(if (labourCompliance.labour) SKILLED_WORKERS_YES else SKILLED_WORKERS_NO)
-    }
+    for {
+      vsc <- vs.vatSicAndCompliance
+      lc <- vsc.labourCompliance
+      sw <- lc.skilledWorkers
+    } yield SkilledWorkers(if (sw) SKILLED_WORKERS_YES else SKILLED_WORKERS_NO)
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: SkilledWorkers, g: VatSicAndCompliance) =>
     g.copy(labourCompliance = g.labourCompliance.map(_.copy(skilledWorkers = Some(c.yesNo == SKILLED_WORKERS_YES))))
-
   }
 
 }
