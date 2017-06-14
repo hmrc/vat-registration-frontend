@@ -43,6 +43,17 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
     vrs.getVatScheme().map(registrationToSummary)
 
+  def complianceSection(vs: VatScheme): SummarySection =
+    List(
+      vs.vatSicAndCompliance.flatMap(_.culturalCompliance),
+      vs.vatSicAndCompliance.flatMap(_.financialCompliance),
+      vs.vatSicAndCompliance.flatMap(_.labourCompliance)
+    ).flatten.map {
+      case c: VatComplianceCultural => SummaryCulturalComplianceSectionBuilder(vs.vatSicAndCompliance).section
+      case c: VatComplianceFinancial => SummaryFinancialComplianceSectionBuilder(vs.vatSicAndCompliance).section
+      case c: VatComplianceLabour => SummaryLabourComplianceSectionBuilder(vs.vatSicAndCompliance).section
+    }.headOption.getOrElse(throw new IllegalStateException("Can't build compliance section of the summary page - expected answers for one of the sets of questions"))
+
   def registrationToSummary(vs: VatScheme): Summary =
     Summary(Seq(
       SummaryVatDetailsSectionBuilder(vs.tradingDetails).section,
@@ -51,11 +62,11 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
       SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
       SummaryCompanyContactDetailsSectionBuilder(vs.vatContact, vs.ppob).section,
       SummaryBusinessActivitiesSectionBuilder(vs.vatSicAndCompliance).section,
+      complianceSection(vs),
       SummaryBusinessBankDetailsSectionBuilder(vs.financials).section,
       SummaryTaxableSalesSectionBuilder(vs.financials).section,
       SummaryAnnualAccountingSchemeSectionBuilder(vs.financials).section,
-      SummaryCompanyProvidingFinancialSectionBuilder( vs.vatSicAndCompliance).section,
-      SummaryServiceEligibilitySectionBuilder( vs.vatServiceEligibility).section
+      SummaryServiceEligibilitySectionBuilder(vs.vatServiceEligibility).section
     ))
 
 }

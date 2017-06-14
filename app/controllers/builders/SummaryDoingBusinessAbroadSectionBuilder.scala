@@ -25,8 +25,10 @@ case class SummaryDoingBusinessAbroadSectionBuilder
 )
   extends SummarySectionBuilder {
 
+  override val sectionId: String = "doingBusinessAbroad"
+
   val euGoodsRow: SummaryRow = SummaryRow(
-    "doingBusinessAbroad.eori.euGoods",
+    s"$sectionId.eori.euGoods",
     vatTradingDetails.map(_.euTrading.selection).collect {
       case true => "app.common.yes"
     }.getOrElse("app.common.no"),
@@ -34,7 +36,7 @@ case class SummaryDoingBusinessAbroadSectionBuilder
   )
 
   val applyEoriRow: SummaryRow = SummaryRow(
-    "doingBusinessAbroad.eori",
+    s"$sectionId.eori",
     vatTradingDetails.flatMap(_.euTrading.eoriApplication).collect {
       case true => "app.common.yes"
     }.getOrElse("app.common.no"),
@@ -42,7 +44,7 @@ case class SummaryDoingBusinessAbroadSectionBuilder
   )
 
   val section: SummarySection = SummarySection(
-    id = "doingBusinessAbroad",
+    sectionId,
     Seq(
       (euGoodsRow, true),
       (applyEoriRow, vatTradingDetails.exists(_.euTrading.selection))
