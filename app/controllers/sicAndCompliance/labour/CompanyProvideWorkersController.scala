@@ -44,7 +44,6 @@ class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
         clearCompliance <- clearComplianceContainer
         _ <- save(clearCompliance)
         _ <- save(data)
-        _ <- vrs.deleteElements(ElementPath.labCompElementPaths)
         _ <- vrs.deleteElements(List(CulturalCompliancePath, FinancialCompliancePath))
         route =
           if (CompanyProvideWorkers.PROVIDE_WORKERS_YES == data.yesNo) {
