@@ -30,7 +30,7 @@ pages.welcome.bullet6                                   = your National Insuranc
 pages.welcome.bullet7                                   = estimates of the company''s total VAT taxable sales for the next 12 months
 pages.welcome.p4                                        = Your answers should reflect your current business details. You''ll need to tell HM Revenue and Customs (HMRC) about any changes to your business in the future.
 pages.welcome.panel1.title                              = What is ''VAT taxable turnover'' and the ''VAT registration threshold''?
-pages.welcome.panel1.p1                                 = You can register voluntarily if the company''s VAT taxable turnover is less than £83,000 in the 30 days after it''s registered with Companies House.
+pages.welcome.panel1.p1                                 = VAT taxable turnover is the total value of everything you sell that isn''t exempt from VAT.
 pages.welcome.panel1.p2                                 = The VAT registration threshold for the current tax year is £85,000. It''s the amount of <a href="https://www.gov.uk/vat-registration/calculate-turnover">VAT taxable sales</a> you can make before you have to register for VAT.
 pages.welcome.panel1.p3                                 = Find a list of yearly <a href="https://www.gov.uk/government/publications/vat-notice-7001-should-i-be-registered-for-vat/vat-notice-7001-supplement--2#registration-limits-taxable-supplies">VAT registration thresholds</a>.
 
@@ -76,7 +76,7 @@ pages.serviceCriteriaFailure.doAnyApplyToYou.bullet1    = you changed the legal 
 pages.serviceCriteriaFailure.doAnyApplyToYou.bullet2    = you''ve taken over a VAT-registered business which is operating and making a profit
 pages.serviceCriteriaFailure.doAnyApplyToYou.bullet3    = you want to register a VAT group
 pages.serviceCriteriaFailure.doAnyApplyToYou.bullet4    = you''ve been involved with other businesses in the last 2 years
-pages.serviceCriteriaFailure.doAnyApplyToYou.p1         = If your VAT taxable turnover went over the £83,000 threshold temporarily but has since dropped below the threshold, you need to <a href="https://www.gov.uk/government/publications/vat-application-for-registration-vat1">register using form VAT1</a>.
+pages.serviceCriteriaFailure.doAnyApplyToYou.p1         = If your VAT taxable turnover went over the £85,000 threshold temporarily but has since dropped below the threshold, you need to <a href="https://www.gov.uk/government/publications/vat-application-for-registration-vat1">register using form VAT1</a>.
 
 pages.serviceCriteriaFailure.applyingForAnyOf.bullet1    = the company is applying for the Annual Accounting Scheme
 pages.serviceCriteriaFailure.applyingForAnyOf.bullet2    = the company is applying for an exemption from VAT registration
@@ -88,14 +88,12 @@ pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet1    = hires out boats or 
 pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet2    = owns one or more racehorses
 pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet3    = buys, sells or rents out land or property
 
-
 pages.completionCapacityEnd.p1                           = We''re only accepting VAT registrations from company directors or secretaries at the moment.
 pages.completionCapacityEnd.p2                           = If you''re neither of these (for example, you''re an accountant) you can register using HMRC''s existing service once you''ve received a company registration number from Companies House.
 
-## validation messages for all service eligibility questions
-
-validation.eligibility.haveNino.missing                     = Tell us if you have a national insurance number
-validation.eligibility.doingBusinessAbroad.missing          = Tell us if you will do any of the following once you''re registered for VAT
+## Service Eligibility Questions Validation
+validation.eligibility.haveNino.missing                     = Tell us if you have a National Insurance number
+validation.eligibility.doingBusinessAbroad.missing          = Tell us if you''ll do any of the following once you''re registered for VAT
 validation.eligibility.doAnyApplyToYou.missing              = Tell us if any of the following apply to you or your business
 validation.eligibility.applyingForAnyOf.missing             = Tell us if you''ll apply for any of the following
 validation.eligibility.companyWillDoAnyOf.missing           = Tell us if you''ll do any of the following
@@ -171,8 +169,8 @@ pages.eligibility.applyingForAnyOf.panel2.bullet3           = make a final payme
 pages.eligibility.applyingForAnyOf.panel2.bullet4           = apply for a refund - if you''ve overpaid your VAT bill
 
 pages.eligibility.applyingForAnyOf.panel3.title             = What is a registration exception?
-pages.eligibility.applyingForAnyOf.panel3.p1                = You can apply for a registration exception if the company''s turnover went over the VAT registration threshold temporarily.
-pages.eligibility.applyingForAnyOf.panel3.p2                = You''ll need to tell HMRC why you believe your turnover won''t go over the de-registration threshold of £81,000 in the next 12 months.
+pages.eligibility.applyingForAnyOf.panel3.p1                = You can apply for a registration exception if the company''s turnover went over £85,000 temporarily.
+pages.eligibility.applyingForAnyOf.panel3.p2                = You''ll need to tell HMRC why you believe your turnover won''t go over the de-registration threshold of £83,000 in the next 12 months.
 
 pages.eligibility.applyingForAnyOf.panel4.title             = What is an exemption from VAT registration?
 pages.eligibility.applyingForAnyOf.panel4.p1                = You can apply for an exemption from VAT registration if you sell mainly or only zero-rated items. If you''re exempted from VAT registration you won''t be able to reclaim any VAT.
@@ -187,7 +185,7 @@ pages.eligibility.companyWillDoAnyOf.bullet3                 = buy, sell or rent
 
 
 ## Start Date Page
-pages.startDate.title                                 = Start Date
+pages.startDate.title                                 = What do you want your VAT start date to be?
 pages.startDate.heading                               = What do you want your VAT start date to be?
 pages.startDate.para1                                 = You can choose the date the company becomes VAT registered when you register voluntarily.
 pages.startDate.radio.whenRegistered                  = The date the company is registered with Companies House
@@ -203,8 +201,8 @@ pages.startDate.panels.specificDate.inputField.year   = Year
 validation.startDate.choice.missing                   = Tell us when you want your VAT start date to be
 validation.startDate.range.below                      = Date must be more than 2 working days in the future
 validation.startDate.range.above                      = Date must be within the next 3 months
-validation.startDate.invalid                          = Enter a valid start date
-validation.startDate.missing                          = Enter a start date
+validation.startDate.invalid                          = Enter a valid date
+validation.startDate.missing                          = Enter a date
 
 
 
@@ -217,90 +215,76 @@ validation.tradingName.missing                      = Enter a trading name
 validation.tradingNameRadio.missing                 = Tell us if the company trades under any other name
 
 ## Voluntary Registration Page
-pages.voluntary.registration.title                            = Voluntary Registration
+pages.voluntary.registration.title                            = Voluntary registration
 pages.voluntary.registration.heading                          = Do you want to register voluntarily for VAT?
-pages.voluntary.registration.para1                            = Based on the answers you provided, you don’t need to register for VAT right now.
-pages.voluntary.registration.para2                            = But you can register voluntarily if:
-pages.voluntary.registration.bullet1                          = the company''s taxable turnover will be less than £83,000 within the next 30 days
-pages.voluntary.registration.bullet2                          = the company sells or intends to sell goods or services that aren''t exempt from VAT
-pages.voluntary.registration.vatVoluntarily.title             = Find out more about voluntary VAT registration
-pages.voluntary.registration.vatVoluntarily.para1             = If you''re registered for VAT you:
-pages.voluntary.registration.vatVoluntarily.bullet.charge     = must <a href="https://www.gov.uk/vat-businesses/how-vat-works">charge VAT</a> on the goods or services you sell
-pages.voluntary.registration.vatVoluntarily.bullet.reclaim    = can <a href="https://www.gov.uk/reclaim-vat">reclaim VAT</a> on your business-related purchases
-pages.voluntary.registration.vatVoluntarily.para2             = VAT-registered companies can appear larger and more established to customers. However, customers that aren''t VAT registered (and can''t reclaim VAT) may be put off by your company''s increased prices.
-pages.voluntary.registration.vatVoluntarily.para3             = You can cancel your VAT registration at any time if it turns out to be the wrong decision.
-pages.voluntary.registration.panels.no.para1                  = You must register for VAT if:
-pages.voluntary.registration.panels.no.bullet1                = at the end of any month, the value of your company''s taxable sales in the previous 12 months or less is over the £83,000 registration threshold
-pages.voluntary.registration.panels.no.bullet2                = you expect the value of your company''s taxable sales in the next 30-day period alone to go over the £83,000 registration threshold
+pages.voluntary.registration.para1                            = Based on your answers, you don''t need to register for VAT right now.
+pages.voluntary.registration.para2                            = You can still register voluntarily if the company will supply VAT taxable goods or services in the UK.
 validation.voluntary.registration.missing                     = Tell us if you want to register voluntarily for VAT
 
 ## Voluntary Registration Reason Page
-pages.voluntary.registration.reason.title                     = Voluntary Registration Reason
+pages.voluntary.registration.reason.title                     = Which one of the following apply to the company?
 pages.voluntary.registration.reason.heading                   = Which one of the following apply to the company?
-pages.voluntary.registration.reason.radio.sells               = The company already sells taxable goods or services
-pages.voluntary.registration.reason.radio.intendsToSell       = The company intends to sell taxable goods or services in the future
+pages.voluntary.registration.reason.radio.sells               = The company already sells VAT taxable goods or services
+pages.voluntary.registration.reason.radio.intendsToSell       = The company intends to sell VAT taxable goods or services in the future
 pages.voluntary.registration.reason.radio.neither             = None of these apply
 pages.voluntary.registration.reason.panels.neither.para       = If none of these apply you won’t be able to register voluntarily for VAT.
 validation.voluntary.registration.reason.missing              = Tell us why you intend to register voluntarily for VAT
 
 ## Taxable Turnover Page
-pages.taxable.turnover.title                            = Taxable Turnover
-pages.taxable.turnover.heading                          = Do you expect the company''s VAT taxable turnover to be more than £83,000 in the 30 days after it''s registered with Companies House?
-pages.taxable.turnover.what.is.turnover.title           = What is ''VAT taxable turnover''?
-pages.taxable.turnover.what.is.turnover.para1           = VAT taxable turnover is the total value of everything you sell that isn''t <a href="https://www.gov.uk/vat-businesses/when-not-to-charge-vatexempt">exempt from VAT</a>.
-validation.taxable.turnover.missing                     = Tell us if you expect the company''s turnover to be more than £83,000 in the 30 days after it''s registered
+pages.taxable.turnover.title                            = Do you expect the company to make VAT taxable sales of more than £85,000 in the 30 days after it''s registered with Companies House?
+pages.taxable.turnover.heading                          = Do you expect the company to make VAT taxable sales of more than £85,000 in the 30 days after it''s registered with Companies House?
+pages.taxable.turnover.p1                               = You must register immediately if you expect the company''s VAT taxable sales to be over £85,000 in the 30 days after it''s registered with Companies House.
+validation.taxable.turnover.missing                     = Tell us if you expect the company''s turnover to be more than £85,000 in the 30 days after it''s registered
 
 ## Mandatory Start Date Confirmation page
 pages.start.date.confirmation.title                          = Start Date Confirmation page
 pages.start.date.confirmation.heading                        = Your VAT start date
 pages.start.date.confirmation.para1                          = Your VAT start date will be the same as your company registration date. You can''t be registered for VAT before the company has been set up.
-pages.start.date.confirmation.para2                          = You must apply to register if you expect your VAT taxable turnover to go over the £83,000 threshold within the next 30 days.
+pages.start.date.confirmation.para2                          = You must apply to register if you expect your VAT taxable turnover to go over the £85,000 threshold within the next 30 days.
 pages.start.date.confirmation.para3                          = If you register late, you must pay what you owe from the date you should''ve registered.
 pages.start.date.confirmation.warning                        = You may get a penalty depending on how much you owe and how late your registration is.
 
 ## Estimate Vat Turnover Page
 pages.estimate.vat.turnover.title                           = Estimate value of sales
-pages.estimate.vat.turnover.heading                         = Estimate the company''s VAT taxable turnover 
-pages.estimate.vat.turnover.para1                           = Estimate the total value of the products or services you expect to sell in the next 12 months that are subject to VAT. This is called your <a href="https://www.gov.uk/vat-registration/calculate-turnover">VAT taxable turnover</a>.
-pages.estimate.vat.turnover.info                            = You won''t be penalised if your estimate isn''t exact.
-pages.estimate.vat.turnover.form.label                      = Estimated VAT taxable turnover for the next 12 months
-pages.estimate.vat.turnover.include.title                   = What should I include in my estimate?
-pages.estimate.vat.turnover.include.para1                   = Add together the total value of your UK sales that aren''t <a href="https://www.gov.uk/vat-businesses/when-not-to-charge-vat">exempt from VAT</a>, including:
+pages.estimate.vat.turnover.heading                         = What will the company''s VAT taxable turnover be during the next 12 months?
+pages.estimate.vat.turnover.info                            = You must give a realistic estimate, but you won''t get a penalty if your estimate isn''t exact.
+pages.estimate.vat.turnover.include.title                   = What should I include?
 pages.estimate.vat.turnover.include.bullet1                 = goods you hired or loaned to customers
 pages.estimate.vat.turnover.include.bullet2                 = business goods used for personal reasons
-pages.estimate.vat.turnover.include.bullet3                 = goods you <a href="https://www.gov.uk/guidance/vat-part-exchanges-barters-and-set-offs">bartered, part-exchanged</a> or gave as gifts
-pages.estimate.vat.turnover.include.bullet4                 = services you received from businesses in other countries that you had to <a href="https://www.gov.uk/government/publications/vat-notice-735-vat-reverse-charge-on-specified-goods-and-services/vat-notice-735-vat-reverse-charge-on-specified-goods-and-services">''reverse charge''</a>
-pages.estimate.vat.turnover.include.bullet5                 = <a href="https://www.gov.uk/government/publications/vat-notice-708-buildings-and-construction">building work over £100,000</a> your business did for itself
-pages.estimate.vat.turnover.include.para2                   = Include any <a href="https://www.gov.uk/vat-businesses/vat-rates">zero-rated items</a> - only exclude VAT-exempt sales, and goods or services you supply outside of the UK.
+pages.estimate.vat.turnover.include.bullet3                 = goods you bartered, part-exchanged or gave as gifts
+pages.estimate.vat.turnover.include.bullet4                 = building work over £100,000 that your company did for itself
+pages.estimate.vat.turnover.include.para1                   = Find out more about <a href="https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services">VAT rates on different goods and services</a>.
 validation.estimate.vat.turnover.low                        = Enter a positive estimate
 validation.estimate.vat.turnover.high                       = Enter an estimate which is less than 1,000,000,000,000,000
 validation.estimate.vat.turnover.missing                    = Estimate the company''s VAT taxable turnover for the next 12 months
 
 ## Zero Rated Sales Page
 pages.zero.rated.sales.title                                = Zero-Rated sales
-pages.zero.rated.sales.heading                              = Do you expect to make any zero-rated sales?
+pages.zero.rated.sales.heading                              = Will the company sell any zero-rated goods or services in the next 12 months?
 pages.zero.rated.sales.para1                                = ''Zero-rated'' goods and services are subject to VAT but the rate you''ll charge your customers will be at 0%.
-pages.zero.rated.sales.examples.title                       = Examples of zero-rated items
-pages.zero.rated.sales.examples.para1                       = Zero-rated items include:
-pages.zero.rated.sales.examples.bullet1                     = most food and drink
-pages.zero.rated.sales.examples.bullet2                     = books and newspapers
-pages.zero.rated.sales.examples.bullet3                     = children''s clothes and shoes
-pages.zero.rated.sales.examples.bullet4                     = motorcycle helmets
-pages.zero.rated.sales.examples.para2                       = Find out about <a href="https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services">VAT rates on different goods and services</a>.
+pages.zero.rated.sales.examples.title                       = Examples of zero-rated goods or services
+pages.zero.rated.sales.examples.p1                          = Most food and drink is zero-rated but some items are standard-rated, including alcoholic drinks, confectionery, crisps and savoury snacks, hot food, sports drinks, hot takeaways, ice cream, soft drinks and mineral water.
+pages.zero.rated.sales.examples.p2                          = Other zero-rated items include:
+pages.zero.rated.sales.examples.bullet1                     = books and newspapers
+pages.zero.rated.sales.examples.bullet2                     = children''s clothes and shoes
+pages.zero.rated.sales.examples.bullet3                     = motorcycle helmets
+pages.zero.rated.sales.examples.bullet4                     = most goods you export to non-EU countries
+pages.zero.rated.sales.examples.p3                          = Find out about <a href="https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services">VAT rates on different goods and services</a>.
 validation.zero.rated.sales.missing                         = Tell us if you expect to sell any zero-rated items in the next 12 months
 
 ## Estimate Zero-Rated Sales Page
-pages.estimate.zero.rated.sales.title                       = Estimate value of zero-rated sales
-pages.estimate.zero.rated.sales.heading                     = Estimate the value of your sales that are charged at 0% VAT
-pages.estimate.zero.rated.sales.para1                       = Some goods and services are subject to VAT but the <a href="https://www.gov.uk/vat-rates">rate of VAT</a> you charge your customers is 0%. This rate of VAT is called the ''zero rate''.
-pages.estimate.zero.rated.sales.info                        = You won''t be penalised if your estimate isn''t exact.
-pages.estimate.zero.rated.sales.form.label                  = Estimated zero-rated sales for the next 12 months
-pages.estimate.zero.rated.sales.include.title               = Examples of zero-rated goods
-pages.estimate.zero.rated.sales.include.para1               = Zero-rated goods include:
-pages.estimate.zero.rated.sales.include.bullet1             = books and newspapers
-pages.estimate.zero.rated.sales.include.bullet2             = children''s clothes and shoes
-pages.estimate.zero.rated.sales.include.bullet3             = motorcycle helmets
-pages.estimate.zero.rated.sales.include.para2               = Find out about <a href="https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services">VAT rates on different goods and services</a>.
+pages.estimate.zero.rated.sales.title                       = Estimate the value of the company''s zero-rated sales for the next 12 months
+pages.estimate.zero.rated.sales.heading                     = How much will the company take in sales of zero-rated goods and services over the next 12 months?
+pages.estimate.zero.rated.sales.p1                          = You must give a realistic estimate, but you won''t get a penalty if your estimate isn''t exact.
+pages.estimate.zero.rated.sales.include.title               = What are zero-rated goods and services?
+pages.estimate.zero.rated.sales.include.para1               = Zero-rated goods and services are VAT taxable but the VAT rate on them is 0%.
+pages.estimate.zero.rated.sales.include.para2               = They include:
+pages.estimate.zero.rated.sales.include.bullet1             = most food and drink (but not things like alcoholic drinks, confectionary, crisps and savoury snacks, hot food, sports drinks, hot takeaways, ice cream, soft drinks and mineral water)
+pages.estimate.zero.rated.sales.include.bullet2             = books and newspapers
+pages.estimate.zero.rated.sales.include.bullet3             = printing services for brochures, leaflets or pamphlets
+pages.estimate.zero.rated.sales.include.bullet4             = children''s clothes and shoes
+pages.estimate.zero.rated.sales.include.bullet5             = most goods you export to non-EU countries
+pages.estimate.zero.rated.sales.include.para3               = Find out about <a href="https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services">VAT rates on different goods and services</a>.
 validation.estimate.zero.rated.sales.low                    = Enter a positive estimate
 validation.estimate.zero.rated.sales.high                   = Enter an estimate which is less than 1,000,000,000,000,000
 validation.estimate.zero.rated.sales.missing                = Estimate the value of the company''s zero-rated sales for the next 12 months
@@ -332,7 +316,7 @@ validation.accounting.period.missing                        = Tell us when you w
 
 ## Summary Page
 pages.summary.title                                         = Summary
-pages.summary.heading                                       = Check your answers
+pages.summary.heading                                       = Check and confirm your answers
 
 ## Application Submission Confirmation page
 pages.application.submission.confirmation.title                     = Application Submitted
@@ -352,12 +336,12 @@ pages.application.submission.confirmation.button                    = Your busin
 
 ## Summary Page VAT details
 pages.summary.vatDetails.sectionHeading                 = VAT details
-pages.summary.vatDetails.taxableTurnover                = Will earn more than £83,000 in the next 30 days
+pages.summary.vatDetails.taxableTurnover                = VAT taxable sales over £85,000 in the 30 days after company is registered
 pages.summary.vatDetails.necessity                      = Register voluntarily
 pages.summary.vatDetails.voluntaryRegistrationReason    = Voluntary registration reason
 pages.summary.vatDetails.startDate                      = VAT start date
 pages.summary.vatDetails.mandatoryStartDate             = The date the company is registered with Companies House
-pages.summary.vatDetails.tradingName                    = Other Trading name
+pages.summary.vatDetails.tradingName                    = Other trading name
 
 ## Summary Page Director contact details
 pages.summary.directorContactDetails.sectionHeading    = Director contact details
@@ -382,7 +366,7 @@ pages.summary.directorDetails.mobile                   = Mobile number
 
 
 ##Business Activity Description
-pages.business.activity.description.title                     = Business Activity Description
+pages.business.activity.description.title                     = Describe the business
 pages.business.activity.description.heading                   = Describe what the company does
 pages.business.activity.description.para1                     = Tell us about the type of goods or services the company sells.
 pages.business.activity.description.hint                      = For example, cleaning services
@@ -410,20 +394,20 @@ pages.summary.bankDetails.companyBankAccount.number          = Account number
 pages.summary.bankDetails.companyBankAccount.sortCode        = Sort code
 
 ## Summary Page Taxable Sales
-pages.summary.taxableSales.sectionHeading                     = Taxable sales
-pages.summary.taxableSales.estimatedSalesValue                = Estimated taxable sales
-pages.summary.taxableSales.zeroRatedSales                     = Will make zero-rated sales
+pages.summary.taxableSales.sectionHeading                     = VAT taxable sales
+pages.summary.taxableSales.estimatedSalesValue                = Estimated VAT taxable sales
+pages.summary.taxableSales.zeroRatedSales                     = Will sell zero-rated goods or services
 pages.summary.taxableSales.zeroRatedSalesValue                = Estimated zero-rated sales
 
 ## Summary Page Director Addresses
 pages.summary.directorAddresses.sectionHeading                = Director addresses
 pages.summary.directorAddresses.homeAddress                   = Home address
 pages.summary.directorAddresses.currentAddressThreeYears      = Lived at current address for more than 3 years
-pages.summary.directorAddresses.previousAddress               = Previous address        
+pages.summary.directorAddresses.previousAddress               = Previous address
 
 ## Summary Page Doing Business Abroad
 pages.summary.doingBusinessAbroad.sectionHeading              = Doing business abroad
-pages.summary.doingBusinessAbroad.eori.euGoods                = Trades goods or services with countries outside the EU
+pages.summary.doingBusinessAbroad.eori.euGoods                = Trades VAT taxable goods with countries outside the EU
 pages.summary.doingBusinessAbroad.eori                        = Applied for EORI number
 
 ## Summary Page Annual Accounting Scheme
@@ -437,16 +421,29 @@ pages.summary.annualAccountingScheme.accountingPeriod.jan               = Januar
 pages.summary.annualAccountingScheme.accountingPeriod.feb               = February, May, August and November
 pages.summary.annualAccountingScheme.accountingPeriod.mar               = March, June, September and December
 
-## Summary Page Company Providing Financial
-pages.summary.companyProvidingFinancial.sectionHeading                                          = Providing financial services
-pages.summary.companyProvidingFinancial.provides.advice.or.consultancy                          = Provide ''advice only'' or consultancy services
-pages.summary.companyProvidingFinancial.acts.as.intermediary                                    = Act as an intermediary
-pages.summary.companyProvidingFinancial.charges.fees                                            = Charge fees for introducing clients to financial service providers
-pages.summary.companyProvidingFinancial.does.additional.work.when.introducing.client            = Additional work when introducing a client to a financial service provider
-pages.summary.companyProvidingFinancial.provides.discretionary.investment.management            = Provide discretionary investment management services
-pages.summary.companyProvidingFinancial.involved.in.leasing.vehicles.or.equipment               = Involved in leasing vehicles or equipment to customers
-pages.summary.companyProvidingFinancial.provides.investment.fund.management                     = Provide investment fund management services
-pages.summary.companyProvidingFinancial.manages.funds.not.included.in.this.list                 = Manage any funds that are not included in this list
+## Summary Page Financial Compliance
+pages.summary.financialCompliance.sectionHeading                                 = Providing financial services
+pages.summary.financialCompliance.provides.advice.or.consultancy                 = Provide ''advice only'' or consultancy services
+pages.summary.financialCompliance.acts.as.intermediary                           = Act as an intermediary
+pages.summary.financialCompliance.charges.fees                                   = Charge fees for introducing clients to financial service providers
+pages.summary.financialCompliance.does.additional.work.when.introducing.client   = Additional work when introducing a client to a financial service provider
+pages.summary.financialCompliance.provides.discretionary.investment.management   = Provide discretionary investment management services
+pages.summary.financialCompliance.involved.in.leasing.vehicles.or.equipment      = Involved in leasing vehicles or equipment to customers
+pages.summary.financialCompliance.provides.investment.fund.management            = Provide investment fund management services
+pages.summary.financialCompliance.manages.funds.not.included.in.this.list        = Manage any funds that are not included in this list
+
+
+## Summary Page Labour Compliance
+pages.summary.labourCompliance.sectionHeading                 = Providing workers to other employers
+pages.summary.labourCompliance.providesWorkers                = Providing workers to other employers
+pages.summary.labourCompliance.numberOfWorkers                = Number of workers the company provides at any one time
+pages.summary.labourCompliance.workersOnTemporaryContracts    = Provides workers on temporary contracts
+pages.summary.labourCompliance.providesSkilledWorkers         = Provides skilled workers
+
+## Summary Page Cultural Compliance section
+pages.summary.culturalCompliance.sectionHeading               = Organisation type
+pages.summary.culturalCompliance.notForProfitOrganisation     = Not-for-profit organisation or public body
+
 
 ## Error Pages
 errorPages.title                        = Something went wrong
@@ -454,8 +451,8 @@ errorPages.restart.heading              = Sorry, we''re having technical issues.
 errorPages.restart.p1                   = You can try again by <a href="{0}" >restarting</a> your VAT registration.
 
 ## Company Bank Account
-pages.company.bank.account.title                = Company Bank Account
-pages.company.bank.account.heading              = Do you have a bank account set up in the name of your company?
+pages.company.bank.account.title                = Is there a bank account set up in the name of the company?
+pages.company.bank.account.heading              = Is there a bank account set up in the name of the company?
 validation.company.bank.account.missing  = Tell us if you have a bank account set up in the name of the company
 
 ## Bank Details page
@@ -567,21 +564,19 @@ pages.financialCompliance.manageAdditionalFunds.bullet10         = Closed-ended 
 validation.manageAdditionalFunds.missing                         = Tell us if the company manages any funds that are not included in this list
 
 ## EORI Apply
-pages.applyEori.title                          = You need to apply for an Economic Operator Registration and Identification (EORI) number
-pages.applyEori.heading                        = You need to apply for an Economic Operator Registration and Identification (EORI) number
-pages.applyEori.para1                          = You need an EORI number to trade goods with countries outside the EU.
-pages.applyEori.para2                          = You can apply for an EORI number now as part of your company''s VAT registration, or you can <a href="https://online.hmrc.gov.uk/shortforms/form/EORIVAT">apply at a later date</a>.
-pages.applyEori.heading.h3                     = Do you want to apply for an EORI number now?
-pages.applyEori.number.yes                     = Yes, I want to apply for an EORI number now
-pages.applyEori.number.no                      = No, I''ll apply for an EORI number later
-pages.applyEori.summary                        = After you''ve applied
-pages.applyEori.summary.para1                  = You''ll get your EORI number by email, usually within 3 working days.
-pages.applyEori.summary.para2                  = Give the number to your courier or freight forwarder. They''ll use it when making customs declarations on your behalf.
+pages.applyEori.title                          = Economic operator registration
+pages.applyEori.heading                        = You need an Economic Operator Registration and Identification (EORI) number
+pages.applyEori.para1                          = You''ll need this to trade VAT taxable goods with countries outside the EU.
+pages.applyEori.para2                          = We can send you an EORI number by email, usually within 3 working days.
+pages.applyEori.h3                             = Do you want to apply for one now?
+pages.applyEori.number.yes                     = Yes - send me one now
+pages.applyEori.number.no                      = No - I''ll get one later
 validation.applyEori.missing                   = Tell us if you want to apply for an Economic Operator Registration and Identification (EORI) number
 
 ## EU Goods
 pages.euGoods.title                         = Importing and exporting goods
-pages.euGoods.heading                       = Do you import or export goods from or to countries outside the EU?
+pages.euGoods.heading                       = Will the company trade VAT taxable goods or services with countries outside the EU?
+pages.euGoods.p1                            = This includes imports from and exports to non-EU countries.
 validation.euGoods.missing                  = Tell us if you import or export goods from or to countries outside the EU
 
 ## Business Contact Details Page
@@ -591,7 +586,7 @@ pages.businessContactDetails.para1                           = We may need to ge
 pages.businessContactDetails.para2                           = You need to provide a contact email address.
 pages.businessContactDetails.para3                           = You need to provide at least one of the following contact numbers.
 pages.businessContactDetails.emailAddress.label              = Email address
-pages.businessContactDetails.daytimePhone.label              = Daytime phone number
+pages.businessContactDetails.daytimePhone.label              = Phone number
 pages.businessContactDetails.mobile.label                    = Mobile number
 pages.businessContactDetails.website.label                   = Website address (optional)
 validation.businessContactDetails.email.missing              = Enter an email address
@@ -599,7 +594,7 @@ validation.businessContactDetails.email.invalid              = Enter a valid ema
 validation.businessContactDetails.mobile.missing             = Enter at least one phone number
 validation.businessContactDetails.mobile.invalid             = Enter a valid mobile phone number
 validation.businessContactDetails.daytimePhone.missing       = Enter at least one phone number
-validation.businessContactDetails.daytimePhone.invalid       = Enter a valid daytime phone number
+validation.businessContactDetails.daytimePhone.invalid       = Enter a valid phone number
 
 ## Summary Service Criteria
 pages.summary.serviceCriteria.sectionHeading            = Service criteria questions
@@ -612,7 +607,7 @@ pages.summary.serviceCriteria.applyingForAnyOf          = Applying For Any Of
 
 
 ## Officer Home Address Page
-pages.officerHomeAddress.title                           = Director residential address 
+pages.officerHomeAddress.title                           = Director residential address
 pages.officerHomeAddress.heading                         = What is your home address?
 pages.officerHomeAddress.different.address               = A different address
 validation.officerHomeAddress.missing                    = Tell us your home address
@@ -633,15 +628,17 @@ validation.officerDOB.range.below                        = Date of birth must be
 pages.officerNino.title                                   = Director''s National Insurance
 pages.officerNino.heading                                 = What is your National Insurance number?
 pages.officerNino.hint                                    = For example, QQ 12 34 56 C
-pages.officerNino.advice.title                            = Where to find your National Insurance number
-pages.officerNino.advice.para1                            = You can find your National Insurance number on your National Insurance card, benefit letter, payslip or P60.
+pages.officerNino.para1                                   = You can find your National Insurance number on your National Insurance card, benefit letter, payslip or P60.
 validation.officerNino.missing                            = Enter your National Insurance number
 validation.officerNino.invalid                            = Enter a valid National Insurance number
 
-## Officer Complete Capacity
-pages.completionCapacity.title                           = Completion Capacity
+## Officer Completion Capacity
+pages.completionCapacity.title                           = Who is registering the company for VAT?
 pages.completionCapacity.heading                         = Who is registering the company for VAT?
-pages.completionCapacity.someone.else                    = Someone else
+pages.completionCapacity.p1                              = Only formal officers of the company (directors or secretaries) can use this service.
+pages.completionCapacity.panel.title                     = What if I''m not a company director or secretary?
+pages.completionCapacity.panel.p1                        = If you''re an agent for the company, you''ll need to log in to Government Gateway using your agent ID and <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register for VAT with another HMRC service</a>.
+pages.completionCapacity.panel.p2                        = Otherwise you can''t register your company for VAT. You''ll need to get a director, secretary or agent to do it for you. <a href="">Go to your company registration overview.</a>
 validation.completionCapacity.missing                    = Tell us who is registering the company for VAT
 
 ## Officer Contact Details

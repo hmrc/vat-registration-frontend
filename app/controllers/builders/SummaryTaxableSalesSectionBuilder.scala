@@ -17,7 +17,6 @@
 package controllers.builders
 
 import models.api._
-import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 import models.view.{SummaryRow, SummarySection}
 
 case class SummaryTaxableSalesSectionBuilder
@@ -26,26 +25,29 @@ case class SummaryTaxableSalesSectionBuilder
 )
   extends SummarySectionBuilder {
 
+  override val sectionId: String = "taxableSales"
+
+
   val estimatedSalesValueRow: SummaryRow = SummaryRow(
-    "taxableSales.estimatedSalesValue",
+    s"$sectionId.estimatedSalesValue",
     s"£${vatFinancials.map(_.turnoverEstimate.toString).getOrElse("0")}",
     Some(controllers.vatFinancials.routes.EstimateVatTurnoverController.show())
   )
 
-  val zeroRatedSalesRow: SummaryRow = SummaryRow(
-    "taxableSales.zeroRatedSales",
-    vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).fold("app.common.no")(_ => "app.common.yes"),
-    Some(controllers.vatFinancials.routes.ZeroRatedSalesController.show())
+  val zeroRatedSalesRow: SummaryRow = yesNoRow(
+    "zeroRatedSales",
+    vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).map(_ > 0),
+    controllers.vatFinancials.routes.ZeroRatedSalesController.show()
   )
 
   val estimatedZeroRatedSalesRow: SummaryRow = SummaryRow(
-    "taxableSales.zeroRatedSalesValue",
+    s"$sectionId.zeroRatedSalesValue",
     s"£${vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).fold("")(_.toString)}",
     Some(controllers.vatFinancials.routes.EstimateZeroRatedSalesController.show())
   )
 
   val section: SummarySection = SummarySection(
-    id = "taxableSales",
+    sectionId,
     Seq(
       (estimatedSalesValueRow, true),
       (zeroRatedSalesRow, true),

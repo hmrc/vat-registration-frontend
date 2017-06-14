@@ -59,7 +59,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNothing2[Workers]()
+      save4laterReturnsNoViewModel[Workers]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(WorkersController.show) {
@@ -71,9 +71,9 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
       }
     }
 
-    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNothing2[Workers]()
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+    save4laterReturnsNoViewModel[Workers]()
+    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(WorkersController.show) {
         result =>
@@ -112,7 +112,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "return 303 with 8 or more workers entered" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsNothing2[BusinessActivityDescription]()
+      save4laterReturnsNoViewModel[BusinessActivityDescription]()
       save4laterExpectsSave[Workers]()
 
       submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(

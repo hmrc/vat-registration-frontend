@@ -1,85 +1,44 @@
 @import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
-@(voluntaryRegistrationForm:  Form[VoluntaryRegistration])(implicit request: Request[_], messages: Messages)
+@(voluntaryRegistrationForm: Form[VoluntaryRegistration])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
 
 @main_template(title = messages("pages.voluntary.registration.title")) {
 
-  <div class="column-one-third">
+    <div class="column-one-third">
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.voluntary.registration.heading")</h1>
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.voluntary.registration.heading")</h1>
 
-      @errorSummary(
-          Messages("app.common.errorSummaryLabel"),
-          voluntaryRegistrationForm
-      )
+        @errorSummary(
+            Messages("app.common.errorSummaryLabel"),
+            voluntaryRegistrationForm
+        )
 
-      <p>@Html(Messages("pages.voluntary.registration.para1"))</p>
-      <p>@Html(Messages("pages.voluntary.registration.para2"))</p>
+        <p>@messages("pages.voluntary.registration.para1")</p>
+        <p>@messages("pages.voluntary.registration.para2")</p>
 
-      <ul class="list list-bullet">
-          <li>@messages("pages.voluntary.registration.bullet1")</li>
-          <li>@messages("pages.voluntary.registration.bullet2")</li>
-      </ul>
+        @govHelpers.form(action = controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.submit()) {
+            <div class="form-group">
+                <fieldset class="inline">
+                    <span id="voluntaryRegistrationRadio"/>
+                    @govHelpers.inputRadioGroup(
+                        field = voluntaryRegistrationForm("voluntaryRegistrationRadio"),
+                        Seq(
+                            VoluntaryRegistration.REGISTER_YES -> Messages("app.common.yes"),
+                            VoluntaryRegistration.REGISTER_NO -> Messages("app.common.no")
+                        ),
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label"
+                    )
+                </fieldset>
+            </div>
 
-      @govHelpers.form(action = controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.submit()) {
-      <div class="form-group">
-        <fieldset class="inline">
-            <span id="voluntaryRegistrationRadio"/>
-            @govHelpers.inputRadioGroup(
-                field = voluntaryRegistrationForm("voluntaryRegistrationRadio"),
-                Seq(
-                  VoluntaryRegistration.REGISTER_YES -> Messages("app.common.yes"),
-                  VoluntaryRegistration.REGISTER_NO -> Messages("app.common.no")
-                ),
-                '_labelAfter -> true,
-                '_labelClass -> "block-label"
-            )
-        </fieldset>
+            <div class="form-group">
+                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+            </div>
 
-
-          <div class="panel panel-indent hidden" id="no_panel">
-              <p>@messages("pages.voluntary.registration.panels.no.para1")</p>
-              <ul class="list list-bullet">
-                  <li>@messages("pages.voluntary.registration.panels.no.bullet1")</li>
-                  <li>@messages("pages.voluntary.registration.panels.no.bullet2")</li>
-              </ul>
-
-          </div>
-
-      </div>
-
-
-          <div class="form-group">
-              <details role="group">
-                  <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
-                  @messages("pages.voluntary.registration.vatVoluntarily.title")
-                  </span></summary>
-                  <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
-                      <p> @messages("pages.voluntary.registration.vatVoluntarily.para1")</p>
-
-                      <ul class="list list-bullet">
-                          <li>@Html(Messages("pages.voluntary.registration.vatVoluntarily.bullet.charge"))</li>
-                          <li>@Html(Messages("pages.voluntary.registration.vatVoluntarily.bullet.reclaim"))</li>
-                      </ul>
-
-                      <p>@messages("pages.voluntary.registration.vatVoluntarily.para2")</p>
-                      <p>@messages("pages.voluntary.registration.vatVoluntarily.para3")</p>
-                  </div>
-              </details>
-          </div>
-      <div class="form-group">
-        <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-      </div>
-
-      }
+        }
 
     </div>
 
 }
-
-<script type="text/javascript">
-        $(document).ready($(function () {
-            VoluntaryRegistrationPage.init()
-        }));
-</script>
