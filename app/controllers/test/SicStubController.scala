@@ -18,24 +18,22 @@ package controllers.test
 
 import javax.inject.Inject
 
-import connectors.{KeystoreConnector, VatRegistrationConnector}
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.CommonPlayDependencies
+import controllers.sicAndCompliance.ComplianceExitController
 import forms.test.SicStubForm
+import models.ElementPath.allCompliancePaths
+import models._
 import models.view.test.SicStub
-import models.{ComplianceQuestions, NoComplianceQuestions}
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, S4LService}
+import services.{S4LService, VatRegistrationService}
 
-import scala.concurrent.Future
+class SicStubController @Inject()(ds: CommonPlayDependencies)
+                                 (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends ComplianceExitController(ds) {
 
-class SicStubController @Inject()(s4LService: S4LService, vatRegistrationConnector: VatRegistrationConnector,
-                                  ds: CommonPlayDependencies) extends VatRegistrationController(ds) with CommonService {
-
-  def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request => {
-
+  def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request =>
     for {
       sicCodes <- s4LService.fetchAndGet[SicStub]()
-
       sicStub = SicStub(
         sicCodes.map(_.sicCode1.getOrElse("")),
         sicCodes.map(_.sicCode2.getOrElse("")),
@@ -43,25 +41,16 @@ class SicStubController @Inject()(s4LService: S4LService, vatRegistrationConnect
         sicCodes.map(_.sicCode4.getOrElse(""))
       )
       form = SicStubForm.form.fill(sicStub)
-    } yield Ok(views.html.pages.test.sic_stub(form))
-  })
+    } yield Ok(views.html.pages.test.sic_stub(form)))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     SicStubForm.form.bindFromRequest().fold(
-      badForm => {
-        Future.successful(BadRequest(views.html.pages.test.sic_stub(badForm)))
-      }, {
-        data: SicStub => {
-          s4LService.save[SicStub](data) map { _ =>
-            ComplianceQuestions(data.sicCodes) match {
-              case NoComplianceQuestions =>
-                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
-              case _ =>
-                Redirect(controllers.sicAndCompliance.routes.ComplianceIntroductionController.show())
-            }
-          }
+      badForm => BadRequest(views.html.pages.test.sic_stub(badForm)).pure,
+      data => s4LService.save[SicStub](data).flatMap(_ =>
+        ComplianceQuestions(data.sicCodes) match {
+          case NoComplianceQuestions => submitAndExit(List(CulturalCompliancePath, FinancialCompliancePath, LabourCompliancePath))
+          case _ => controllers.sicAndCompliance.routes.ComplianceIntroductionController.show().pure
         }
-      })
-  })
+      ).map(Redirect)))
 
 }

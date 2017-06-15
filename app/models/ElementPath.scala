@@ -62,6 +62,7 @@ object ElementPath {
   val labCompElementPaths: List[ElementPath] =
     List(LabProvidesWorkersPath, LabWorkersPath, LabTempContractsPath, LabSkilledWorkersPath)
 
+  val allCompliancePaths = List(CulturalCompliancePath, FinancialCompliancePath, LabourCompliancePath)
   // $COVERAGE-ON$
 }
 
