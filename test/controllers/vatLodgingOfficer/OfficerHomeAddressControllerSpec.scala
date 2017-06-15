@@ -43,11 +43,6 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
 
   val address = ScrsAddress(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
 
-  override def beforeEach() {
-    reset(mockVatRegistrationService)
-    reset(mockS4LService)
-  }
-
   s"GET ${routes.OfficerHomeAddressController.show()}" should {
 
     when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)

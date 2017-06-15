@@ -22,24 +22,17 @@ import cats.data.OptionT
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import models.ComplianceQuestions
 import models.view.test.SicStub
-import play.api.Logger
 import play.api.mvc._
 import services.S4LService
 
 class ComplianceIntroductionController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies)
   extends VatRegistrationController(ds) {
 
-  def show: Action[AnyContent] = authorised(implicit user => implicit request => {
-    Ok(views.html.pages.sicAndCompliance.compliance_introduction())
-  })
+  def show: Action[AnyContent] = authorised(implicit user => implicit request =>
+    Ok(views.html.pages.sicAndCompliance.compliance_introduction()))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     OptionT(s4LService.fetchAndGet[SicStub]()).map(ss => ComplianceQuestions(ss.sicCodes))
-      .fold(controllers.test.routes.SicStubController.show()) {
-        complianceQuestions =>
-          Logger.info(s"User needs to answer a series of $complianceQuestions")
-          complianceQuestions.firstQuestion
-      }.map(Redirect)
-  })
+      .fold(controllers.test.routes.SicStubController.show())(_.firstQuestion).map(Redirect))
 
 }

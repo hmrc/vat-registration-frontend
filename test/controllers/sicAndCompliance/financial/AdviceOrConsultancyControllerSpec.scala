@@ -35,11 +35,6 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
     override val authConnector = mockAuthConnector
   }
 
-  override def beforeEach() {
-    reset(mockVatRegistrationService)
-    reset(mockS4LService)
-  }
-
   val fakeRequest = FakeRequest(routes.AdviceOrConsultancyController.show())
 
   s"GET ${routes.AdviceOrConsultancyController.show()}" should {

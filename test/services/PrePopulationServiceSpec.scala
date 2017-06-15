@@ -48,7 +48,6 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
       mockFetchRegId()
     }
-
   }
 
   "CT Active Date" must {
@@ -148,6 +147,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "be non-empty when OfficerList is present and nothing in S4L" in new Setup {
 
+      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
       when(mockIIService.getOfficerList()).thenReturn(Seq(officer).pure)
       save4laterReturnsNothing[S4LVatLodgingOfficer]
 
@@ -197,6 +197,4 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
     }
 
  }
-
-
 }

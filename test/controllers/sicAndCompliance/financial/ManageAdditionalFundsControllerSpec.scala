@@ -36,11 +36,6 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
     override val authConnector = mockAuthConnector
   }
 
-  override def beforeEach() {
-    reset(mockVatRegistrationService)
-    reset(mockS4LService)
-  }
-
   val fakeRequest = FakeRequest(routes.ManageAdditionalFundsController.show())
 
   s"GET ${routes.ManageAdditionalFundsController.show()}" should {
