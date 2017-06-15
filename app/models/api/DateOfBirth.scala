@@ -18,24 +18,33 @@ package models.api
 
 import java.time.LocalDate
 
+import models.StringToNumberReaders._
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
 
-import models.StringToNumberReaders._
+import scala.language.implicitConversions
+
 case class DateOfBirth(day: Int, month: Int, year: Int)
 
 object DateOfBirth {
+
   implicit def toLocalDate(dob: DateOfBirth): LocalDate = LocalDate.of(dob.year, dob.month, dob.day)
 
+  def apply(localDate: LocalDate): DateOfBirth = DateOfBirth(
+    day = localDate.getDayOfMonth,
+    month = localDate.getMonthValue,
+    year = localDate.getYear
+  )
+
   // TODO remove once no longer required
-  val empty = DateOfBirth(1,1,1967)
+  val empty = DateOfBirth(1, 1, 1967)
 
   implicit val formatter = (
-    (__ \ "day").format((__).readStringifiedInt) and
-      (__ \ "month").format((__).readStringifiedInt) and
-      (__ \ "year").format((__).readStringifiedInt)
-    )(DateOfBirth.apply _, unlift(DateOfBirth.unapply _))
+    (__ \ "day").format(__.readStringifiedInt) and
+      (__ \ "month").format(__.readStringifiedInt) and
+      (__ \ "year").format(__.readStringifiedInt)
+    ) (DateOfBirth.apply, unlift(DateOfBirth.unapply))
 
 
 }
