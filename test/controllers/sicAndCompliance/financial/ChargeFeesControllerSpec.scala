@@ -35,11 +35,6 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     override val authConnector = mockAuthConnector
   }
 
-  override def beforeEach() {
-    reset(mockVatRegistrationService)
-    reset(mockS4LService)
-  }
-
   val fakeRequest = FakeRequest(routes.ChargeFeesController.show())
 
   s"GET ${routes.ChargeFeesController.show()}" should {

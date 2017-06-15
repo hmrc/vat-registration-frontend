@@ -35,11 +35,6 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
 
   val fakeRequest = FakeRequest(routes.ActAsIntermediaryController.show())
 
-  override def beforeEach() {
-    reset(mockVatRegistrationService)
-    reset(mockS4LService)
-  }
-
   s"GET ${routes.ActAsIntermediaryController.show()}" should {
 
     "return HTML when there's an Act as Intermediary model in S4L" in {

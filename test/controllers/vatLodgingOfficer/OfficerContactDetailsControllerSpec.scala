@@ -97,10 +97,11 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
     }
   }
 
-
-  s"POST ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.submit()} with valid Officer Contact Details entered and no Voluntary Reg present" should {
+  s"POST ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.submit()}" +
+    " with valid Officer Contact Details entered and no Voluntary Reg present" should {
 
     "return 303" in {
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
       save4laterExpectsSave[OfficerContactDetailsView]()
       save4laterReturnsNoViewModel[VoluntaryRegistration]()
 

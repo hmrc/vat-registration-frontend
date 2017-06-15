@@ -31,11 +31,6 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
     override val authConnector = mockAuthConnector
   }
 
-  override def beforeEach() {
-    reset(mockVatRegistrationService)
-    reset(mockS4LService)
-  }
-
   s"GET ${sicAndCompliance.routes.ComplianceIntroductionController.show()}" should {
 
     "display the introduction page to a set of compliance questions" in {
