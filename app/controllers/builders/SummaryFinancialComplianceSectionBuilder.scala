@@ -89,6 +89,6 @@ case class SummaryFinancialComplianceSectionBuilder
       (investmentFundManagementRow, vatSicAndCompliance.exists(_.financialCompliance.flatMap(_.investmentFundManagementServices).isDefined)),
       (manageAdditionalFundsRow, vatSicAndCompliance.exists(_.financialCompliance.flatMap(_.manageFundsAdditional).isDefined))
     ),
-    vatSicAndCompliance.map(_.financialCompliance.isDefined)
+    vatSicAndCompliance.flatMap(_.financialCompliance).isDefined
   )
 }

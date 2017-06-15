@@ -24,7 +24,7 @@ case class SummarySection(
                            id: String,
                            //Tuple2[SummaryRow, Boolean] -> row -> boolean indicating whether to render the row or not
                            rows: Seq[Tuple2[SummaryRow, Boolean]],
-                           display: Option[Boolean] = Some(true)
+                           display: Boolean = true
                          )
 
 case class SummaryRow(
