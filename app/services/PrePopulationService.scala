@@ -22,12 +22,15 @@ import javax.inject.Inject
 
 import cats.data.OptionT
 import cats.data.OptionT.fromOption
+import cats.instances.ListInstances
+import cats.syntax.TraverseSyntax
 import com.google.inject.ImplementedBy
 import connectors.{OptionalResponse, PPConnector}
 import models.api._
 import models.external.Officer
-import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerView}
-import models.{ApiModelTransformer, S4LPpob, S4LVatLodgingOfficer}
+import models.view.vatLodgingOfficer.OfficerView
+import models.{ApiModelTransformer, S4LKey, S4LPpob, S4LVatLodgingOfficer}
+import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -36,91 +39,63 @@ import scala.concurrent.Future
 @ImplementedBy(classOf[PrePopulationService])
 trait PrePopService {
 
-  def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionalResponse[LocalDate]
+  def getCTActiveDate()(implicit hc: HeaderCarrier): OptionalResponse[LocalDate]
 
-  def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]]
+  def getOfficerAddressList()(implicit hc: HeaderCarrier): Future[Seq[ScrsAddress]]
 
-  def getPpobAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]]
+  def getPpobAddressList()(implicit hc: HeaderCarrier): Future[Seq[ScrsAddress]]
 
-  def getOfficerList()(implicit headerCarrier: HeaderCarrier): Future[Seq[Officer]]
+  def getOfficerList()(implicit hc: HeaderCarrier): Future[Seq[Officer]]
 
 }
 
 class PrePopulationService @Inject()(ppConnector: PPConnector, iis: IncorporationInformationService, s4l: S4LService)
                                     (implicit vrs: VatRegistrationService)
-  extends PrePopService with CommonService {
+  extends PrePopService with CommonService with TraverseSyntax with ListInstances {
 
   private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-  def getCTActiveDate()(implicit headerCarrier: HeaderCarrier): OptionalResponse[LocalDate] =
+  def getCTActiveDate()(implicit hc: HeaderCarrier): OptionalResponse[LocalDate] =
     for {
       regId <- OptionT.liftF(fetchRegistrationId)
       ctReg <- ppConnector.getCompanyRegistrationDetails(regId)
-      accountingDetails <- fromOption(ctReg.accountingDetails)
-      dateString <- fromOption(accountingDetails.activeDate)
+      accountingDetails <- fromOption[Future](ctReg.accountingDetails)
+      dateString <- fromOption[Future](accountingDetails.activeDate)
     } yield LocalDate.parse(dateString, formatter)
 
-  override def getOfficerAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]] = {
-    import cats.instances.list._
-    import cats.syntax.traverse._
+  private def getAddresses[T: S4LKey : Format]
+  (s4lExtractor: T => Option[ScrsAddress])
+  (implicit mt: ApiModelTransformer[ScrsAddress], hc: HeaderCarrier): Future[Seq[ScrsAddress]] =
+    List(
+      iis.getRegisteredOfficeAddress(),
+      OptionT(vrs.getVatScheme() map mt.toViewModel),
+      OptionT(s4l.fetchAndGet[T]()).subflatMap(s4lExtractor)
+    ).traverse(_.value).map(_.flatten.distinct)
+
+  override def getOfficerAddressList()(implicit hc: HeaderCarrier): Future[Seq[ScrsAddress]] = {
     import ScrsAddress.modelTransformerOfficerHomeAddressView
-
-    val addressFromII = iis.getRegisteredOfficeAddress()
-    val addressFromBE = OptionT(vrs.getVatScheme() map ApiModelTransformer[ScrsAddress].toViewModel)
-    val addressFromS4L = OptionT(s4l.fetchAndGet[S4LVatLodgingOfficer]()).subflatMap { group =>
-      group.officerHomeAddress.flatMap(_.address)
-    }
-
-    List(addressFromII, addressFromBE, addressFromS4L).traverse(_.value).map(_.flatten.distinct)
-
-    // TODO merge addresses from PrePop service
-    // TODO order the addresses
+    getAddresses((_: S4LVatLodgingOfficer).officerHomeAddress.flatMap(_.address))
   }
 
-  override def getPpobAddressList()(implicit headerCarrier: HeaderCarrier): Future[Seq[ScrsAddress]] = {
-    import cats.instances.list._
-    import cats.syntax.traverse._
+  override def getPpobAddressList()(implicit hc: HeaderCarrier): Future[Seq[ScrsAddress]] = {
     import ScrsAddress.modelTransformerPpobView
-
-    val addressFromII = iis.getRegisteredOfficeAddress()
-    val addressFromBE = OptionT(vrs.getVatScheme() map ApiModelTransformer[ScrsAddress].toViewModel)
-    val addressFromS4L = OptionT(s4l.fetchAndGet[S4LPpob]()).subflatMap { group =>
-      group.address.flatMap(_.address)
-    }
-
-    List(addressFromII, addressFromBE, addressFromS4L).traverse(_.value).map(_.flatten.distinct)
-
-    // TODO merge addresses from PrePop service
-    // TODO order the addresses
+    getAddresses((_: S4LPpob).address.flatMap(_.address))
   }
 
-  override def getOfficerList()(implicit headerCarrier: HeaderCarrier): Future[Seq[Officer]] = {
+  override def getOfficerList()(implicit hc: HeaderCarrier): Future[Seq[Officer]] = {
     val officerListFromII = iis.getOfficerList()
-    val officerFromS4L = OptionT(s4l.fetchAndGet[S4LVatLodgingOfficer]())
-      .subflatMap(group =>
-        group.completionCapacity.flatMap(ccv =>
-          ccv.completionCapacity.map(cc =>
-            Officer(name = cc.name,
-                    role = cc.role,
-                    dateOfBirth = group.officerDateOfBirth.map(dobView =>
-                                    DateOfBirth(day = dobView.dob.getDayOfMonth,
-                                                month = dobView.dob.getMonthValue,
-                                                year = dobView.dob.getYear))))))
+    val officerFromS4L = OptionT(s4l.fetchAndGet[S4LVatLodgingOfficer]()).subflatMap(s4l =>
+      for {
+        completionCapacityView <- s4l.completionCapacity
+        cc <- completionCapacityView.completionCapacity
+      } yield Officer(cc.name, cc.role, s4l.officerDateOfBirth.map(_.dob).map(DateOfBirth.apply)))
+    val officerFromBE = OptionT(vrs.getVatScheme() map ApiModelTransformer[OfficerView].toViewModel).map(_.officer)
 
-    // BE
-    val officerFromBE: OptionT[Future, Officer] =
-      OptionT(vrs.getVatScheme() map
-          ApiModelTransformer[OfficerView].toViewModel).map(_.officer)
-
-
-    val s4lFutureList = officerFromS4L.fold(Seq.empty[Officer])(Seq(_))
-    val beFutureList = officerFromBE.fold(Seq.empty[Officer])(Seq(_))
     for {
-      listFromII <- officerListFromII
-      officerS4l <- s4lFutureList
-      officerBE <- beFutureList
-    } yield (listFromII ++ officerS4l ++ officerBE).distinct
-
+      ii <- officerListFromII
+      s4l <- officerFromS4L.value
+      be <- officerFromBE.value
+    } yield (ii.map(Option.apply) :+ s4l :+ be).flatten.distinct
   }
 
 }
