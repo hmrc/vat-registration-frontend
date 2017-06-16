@@ -18,6 +18,8 @@ package mocks
 
 import connectors._
 import org.mockito.Mockito
+import org.mockito.Mockito.reset
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import services._
 import uk.gov.hmrc.http.cache.client.SessionCache
@@ -29,7 +31,8 @@ trait VatMocks
     with KeystoreMock
     with WSHTTPMock {
 
-  this: MockitoSugar =>
+  this: MockitoSugar
+  =>
   implicit lazy val mockAuthConnector = mock[AuthConnector]
   implicit lazy val mockSessionCache = mock[SessionCache]
   implicit lazy val mockAudit = mock[Audit]
@@ -42,4 +45,6 @@ trait VatMocks
   implicit lazy val mockIIConnector = Mockito.mock(classOf[IncorporationInformationConnector])
   implicit lazy val mockVatRegistrationService = Mockito.mock(classOf[VatRegistrationService])
   implicit lazy val mockAddressLookupConnector = Mockito.mock(classOf[AddressLookupConnect])
+  implicit lazy val mockDateService = mock[DateService]
+
 }

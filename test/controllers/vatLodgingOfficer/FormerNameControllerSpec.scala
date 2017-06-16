@@ -34,8 +34,6 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
   s"GET ${vatLodgingOfficer.routes.FormerNameController.show()}" should {
 
-    reset(mockVatRegistrationService)
-
     "return HTML when there's a former name in S4L" in {
       save4laterReturnsViewModel(FormerNameView(yesNo = true, formerName = Some("Smooth Handler")))()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
@@ -64,20 +62,17 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     }
   }
 
-  s"POST ${vatLodgingOfficer.routes.FormerNameController.submit()} with Empty data" should {
+  s"POST ${vatLodgingOfficer.routes.FormerNameController.submit()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       submitAuthorised(TestFormerNameController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result => result isA 400
       }
 
     }
-  }
 
-  s"POST ${vatLodgingOfficer.routes.FormerNameController.submit()} with valid data no former name" should {
-
-    "return 303" in {
+    "return 303 with valid data no former name" in {
       save4laterExpectsSave[FormerNameView]()
 
       submitAuthorised(TestFormerNameController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -87,11 +82,8 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
       }
 
     }
-  }
 
-  s"POST ${vatLodgingOfficer.routes.FormerNameController.submit()} with valid data with former name" should {
-
-    "return 303" in {
+    "return 303 with valid data with former name" in {
       save4laterExpectsSave[FormerNameView]()
       submitAuthorised(TestFormerNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "formerNameRadio" -> "true",
@@ -99,8 +91,6 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
       )) {
         _ redirectsTo s"$contextRoot/your-date-of-birth"
       }
-
     }
   }
-
 }

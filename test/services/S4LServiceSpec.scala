@@ -30,9 +30,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixture {
 
   private final case class TestView(property: String)
-
   private final case class TestGroup(testView: Option[TestView] = None)
-
 
   private object TestView {
     implicit val fmt = Json.format[TestView]
@@ -54,8 +52,6 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
     }
 
     val key = TestGroup.s4lKey.key
-    reset(mockS4LConnector)
-
   }
 
   val testServiceEligibility = VatServiceEligibility()
@@ -87,7 +83,6 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
       mockS4LFetchAll(Some(cacheMap))
       service.fetchAll() returns Some(cacheMap)
     }
-
   }
 
   "getting a View Model from Save 4 Later" should {
@@ -117,14 +112,12 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
         .thenReturn(Some(TestGroup(testView = Some(TestView("test")))).pure)
       service.getViewModel[TestView, TestGroup]() returnsSome TestView("test")
     }
-
   }
 
   "updating a View Model in Save 4 Later" should {
 
     val cacheMap = CacheMap("id", Map())
     val testView = TestView("test")
-
 
     "fail with an exception when registration ID cannot be found in keystore" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", None)
@@ -160,10 +153,6 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
         service.updateViewModel[TestView, TestGroup](testView) returns cacheMap
         verify(mockS4LConnector).save(validRegId, key, TestGroup(Some(testView)))
       }
-
     }
-
   }
-
-
 }
