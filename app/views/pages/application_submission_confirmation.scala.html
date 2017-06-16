@@ -1,6 +1,6 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import models.api.VatFinancials
-@(vatFinancials: VatFinancials)(implicit request: Request[_], messages: Messages)
+@(refNo: String, vatFinancials: Option[VatFinancials])(implicit request: Request[_], messages: Messages)
 
 @pageScripts = {
     <script type="text/javascript" src='@routes.Assets.at("javascripts/VatGAEvent.js")'></script>
@@ -14,7 +14,7 @@
             <div class="transaction-banner--complete">
                 <h1 id="heading-application-submitted" class="transaction-banner__heading white--color">@messages("pages.application.submission.confirmation.heading")</h1>
                 <p class="white--color">@messages("pages.application.submission.confirmation.reference.number")</p>
-                <p class="white--color"><strong class="heading-medium">000-032597</strong></p>
+                <p class="white--color"><strong class="heading-medium">@refNo</strong></p>
             </div>
 
 
@@ -48,8 +48,11 @@
     </div>
 
 
-    @if(vatFinancials.accountingPeriods.periodStart.isDefined){
-        <div class="hidden"><span id="vatAccountPeriod">@vatFinancials.accountingPeriods.periodStart.get</span> </div>
+    @***
+    * "vatAccountPeriod" ID must not change as there's GA scripts looking for this hidden element
+    ***@
+    @for(vf <- vatFinancials; periodStart <- vf.accountingPeriods.periodStart){
+        <div class="hidden"><span id="vatAccountPeriod">@periodStart</span> </div>
     }
 
 }
