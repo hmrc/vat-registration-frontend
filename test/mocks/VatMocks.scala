@@ -31,8 +31,7 @@ trait VatMocks
     with KeystoreMock
     with WSHTTPMock {
 
-  this: MockitoSugar
-  =>
+  this: MockitoSugar =>
   implicit lazy val mockAuthConnector = mock[AuthConnector]
   implicit lazy val mockSessionCache = mock[SessionCache]
   implicit lazy val mockAudit = mock[Audit]
