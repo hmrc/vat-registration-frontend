@@ -39,8 +39,6 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
   s"GET ${vatLodgingOfficer.routes.PreviousAddressController.show()}" should {
 
-    reset(mockVatRegistrationService)
-
     "return HTML when there's a previous address question in S4L" in {
       save4laterReturnsViewModel(PreviousAddressView(yesNo = true))()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
@@ -69,20 +67,16 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
     }
   }
 
-  s"POST ${vatLodgingOfficer.routes.PreviousAddressController.submit()} with Empty data" should {
+  s"POST ${vatLodgingOfficer.routes.PreviousAddressController.submit()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       submitAuthorised(TestPreviousAddressController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result => result isA 400
       }
-
     }
-  }
 
-  s"POST ${vatLodgingOfficer.routes.PreviousAddressController.submit()} with previous address question no selected" should {
-
-    "redirect the user to TxM address capture page" in {
+    "return 303 redirect the user to TxM address capture page" in {
       when(mockAddressLookupConnector.getOnRampUrl(any[Call])(any(), any())).thenReturn(Call("GET", "TxM").pure)
 
       submitAuthorised(TestPreviousAddressController.submit(),
@@ -90,11 +84,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
       )(_ redirectsTo "TxM")
     }
 
-  }
-
-  s"POST ${vatLodgingOfficer.routes.PreviousAddressController.submit()} with previous address question yes selected" should {
-
-    "return 303" in {
+    "return 303 with previous address question yes selected" in {
       save4laterExpectsSave[PreviousAddressView]()
       when(mockVatRegistrationService.submitVatLodgingOfficer()(any())).thenReturn(validLodgingOfficer.pure)
       submitAuthorised(TestPreviousAddressController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -127,6 +117,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
     "save an address and redirect to next page" in {
       save4laterExpectsSave[PreviousAddressView]()
       when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
+      when(mockAddressLookupConnector.getOnRampUrl(any[Call])(any(), any())).thenReturn(Call("GET", "TxM").pure)
       callAuthorised(TestPreviousAddressController.changeAddress()) {
         (_ redirectsTo "TxM")
       }

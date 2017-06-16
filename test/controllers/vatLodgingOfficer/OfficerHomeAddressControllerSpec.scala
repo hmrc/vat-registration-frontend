@@ -23,7 +23,7 @@ import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer}
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{reset, verify, when}
+import org.mockito.Mockito.{verify, when}
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 
@@ -45,15 +45,16 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
 
   s"GET ${routes.OfficerHomeAddressController.show()}" should {
 
-    when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
-    mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", dummyCacheMap)
-
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       val vatScheme = validVatScheme.copy(lodgingOfficer =
         Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director",
                         officerName, formerName, currentOrPreviousAddress, validOfficerContactDetails)))
+
       save4laterReturnsNoViewModel[OfficerHomeAddressView]()
+      mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", dummyCacheMap)
+      when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
+
       callAuthorised(Controller.show()) {
         _ includesText "What is your home address"
       }
@@ -61,8 +62,12 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       val vatScheme = validVatScheme.copy(lodgingOfficer = None)
+
       save4laterReturnsNoViewModel[OfficerHomeAddressView]()
+      mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", dummyCacheMap)
+      when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
+
       callAuthorised(Controller.show()) {
         _ includesText "What is your home address"
       }

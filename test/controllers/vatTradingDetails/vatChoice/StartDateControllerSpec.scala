@@ -31,7 +31,6 @@ import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.DateService
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
@@ -39,10 +38,6 @@ import scala.concurrent.Future
 class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   val today: LocalDate = LocalDate.of(2017, 3, 21)
-
-  val mockDateService = mock[DateService]
-  when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
-  when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
   val startDateFormFactory = new StartDateFormFactory(mockDateService, Now[LocalDate](today))
 
@@ -59,6 +54,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       val startDate = StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.of(2017, 3, 21)))
 
       save4laterReturnsViewModel(startDate)()
+      when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
       callAuthorised(TestStartDateController.show) {
         result =>
@@ -74,6 +70,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
+      when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
       callAuthorised(TestStartDateController.show) {
         result =>
@@ -89,6 +86,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
+      when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
       callAuthorised(TestStartDateController.show) {
         result =>
@@ -100,7 +98,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
     }
   }
 
-  s"POST ${routes.StartDateController.submit()} with Empty data" should {
+  s"POST ${routes.StartDateController.submit()}" should {
 
     "return 400 when no data posted" in {
       submitAuthorised(
@@ -120,12 +118,10 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
         status(_) mustBe Status.BAD_REQUEST
       }
     }
-  }
 
-  s"POST ${routes.StartDateController.submit()} with valid data" should {
-
-    "return 303" in {
+    "return 303 with valid data" in {
       save4laterExpectsSave[StartDateView]()
+      when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.COMPANY_REGISTRATION_DATE,
@@ -138,12 +134,10 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
           redirectLocation(result).getOrElse("") mustBe s"$contextRoot/trading-name"
       }
     }
-  }
 
-  s"POST ${routes.StartDateController.submit()} with valid data BUSINESS_START_DATE" should {
-
-    "return 303" in {
+    "return 303 with valid data BUSINESS_START_DATE" in {
       save4laterExpectsSave[StartDateView]()
+      when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.BUSINESS_START_DATE
@@ -153,12 +147,11 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
           redirectLocation(result).getOrElse("") mustBe s"$contextRoot/trading-name"
       }
     }
-  }
 
-  s"POST ${routes.StartDateController.submit()} with StartDate having a specific date" should {
-
-    "return 303" in {
+    "return 303 with StartDate having a specific date" in {
       save4laterExpectsSave[StartDateView]()
+      when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.SPECIFIC_DATE,
