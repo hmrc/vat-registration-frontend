@@ -80,6 +80,12 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
+  "Calling getAckRef" should {
+    "return a Acknowldegement Referenc when it can be retrieved from the microservice" in new Setup {
+      connector.getAckRef("tstID") returnsSome "Fake Ref No"
+    }
+  }
+
   "Calling deleteVatScheme" should {
     "return a successful outcome given an existing registration" in new Setup {
       mockHttpDELETE[Boolean]("tst-url", true)
