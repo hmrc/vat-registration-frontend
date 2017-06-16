@@ -19,7 +19,7 @@ package services
 import javax.inject.Inject
 
 import com.google.inject.ImplementedBy
-import connectors.{CompanyRegistrationConnector, VatRegistrationConnector}
+import connectors.{CompanyRegistrationConnector, OptionalResponse, VatRegistrationConnector}
 import models._
 import models.api._
 import models.external.CoHoCompanyProfile
@@ -34,13 +34,11 @@ trait RegistrationService {
 
   def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit]
 
-  def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit]
-
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme]
 
-  def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Unit]
+  def getAckRef(regId:String)(implicit hc: HeaderCarrier): OptionalResponse[String]
 
-  def deleteElements(elementPath: List[ElementPath])(implicit hc: HeaderCarrier): Future[Unit]
+  def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit]
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials]
 
@@ -53,6 +51,10 @@ trait RegistrationService {
   def submitVatEligibility()(implicit hc: HeaderCarrier): Future[VatServiceEligibility]
 
   def submitVatLodgingOfficer()(implicit hc: HeaderCarrier): Future[VatLodgingOfficer]
+
+  def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Unit]
+
+  def deleteElements(elementPath: List[ElementPath])(implicit hc: HeaderCarrier): Future[Unit]
 
 }
 
@@ -73,6 +75,9 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
     fetchRegistrationId.flatMap(vatRegConnector.getRegistration)
+
+  def getAckRef(regId:String)(implicit hc: HeaderCarrier): OptionalResponse[String] =
+    vatRegConnector.getAckRef(regId)
 
   def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
     fetchRegistrationId.flatMap(vatRegConnector.deleteVatScheme)
