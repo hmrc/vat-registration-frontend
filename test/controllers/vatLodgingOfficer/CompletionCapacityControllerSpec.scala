@@ -40,12 +40,12 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
 
   s"GET ${routes.CompletionCapacityController.show()}" should {
 
-    when(mockPPService.getOfficerList()(any())).thenReturn(Seq(officer).pure)
-    mockKeystoreCache[Seq[Officer]]("OfficerList", dummyCacheMap)
-
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNoViewModel[CompletionCapacityView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
+      when(mockPPService.getOfficerList()(any())).thenReturn(Seq(officer).pure)
+      mockKeystoreCache[Seq[Officer]]("OfficerList", dummyCacheMap)
+      save4laterReturnsNoViewModel[CompletionCapacityView]()
+
       callAuthorised(Controller.show()) {
         _ includesText "Who is registering the company for VAT?"
       }
@@ -53,8 +53,12 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       val vatScheme = validVatScheme.copy(lodgingOfficer = None)
-      save4laterReturnsNoViewModel[CompletionCapacityView]()
+
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
+      when(mockPPService.getOfficerList()(any())).thenReturn(Seq(officer).pure)
+      mockKeystoreCache[Seq[Officer]]("OfficerList", dummyCacheMap)
+      save4laterReturnsNoViewModel[CompletionCapacityView]()
+
       callAuthorised(Controller.show()) {
         _ includesText "Who is registering the company for VAT?"
       }
