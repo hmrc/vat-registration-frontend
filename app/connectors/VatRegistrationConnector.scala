@@ -18,6 +18,8 @@ package connectors
 
 import javax.inject.Singleton
 
+import cats.data.OptionT
+import cats.instances.FutureInstances
 import com.google.inject.ImplementedBy
 import config.WSHttp
 import models.ElementPath
@@ -38,7 +40,7 @@ class VatRegistrationConnector extends RegistrationConnector with ServicesConfig
 }
 
 @ImplementedBy(classOf[VatRegistrationConnector])
-trait RegistrationConnector {
+trait RegistrationConnector extends FutureInstances {
   self =>
 
   val vatRegUrl: String
@@ -57,6 +59,8 @@ trait RegistrationConnector {
       case e: Exception => throw logResponse(e, className, "getRegistration")
     }
   }
+
+  def getAckRef(regId: String)(implicit hc: HeaderCarrier): OptionalResponse[String] = OptionT.some("Fake Ref No")
 
   def upsertVatChoice(regId: String, vatChoice: VatChoice)(implicit hc: HeaderCarrier, rds: HttpReads[VatChoice]): Future[VatChoice] = {
     http.PATCH[VatChoice, VatChoice](s"$vatRegUrl/vatreg/$regId/vat-choice", vatChoice) recover {
@@ -93,21 +97,21 @@ trait RegistrationConnector {
   }
 
   def upsertVatLodgingOfficer(regId: String, vatLodgingOfficer: VatLodgingOfficer)
-                      (implicit hc: HeaderCarrier, rds: HttpReads[VatLodgingOfficer]): Future[VatLodgingOfficer] = {
+                             (implicit hc: HeaderCarrier, rds: HttpReads[VatLodgingOfficer]): Future[VatLodgingOfficer] = {
     http.PATCH[VatLodgingOfficer, VatLodgingOfficer](s"$vatRegUrl/vatreg/$regId/lodging-officer", vatLodgingOfficer) recover {
       case e: Exception => throw logResponse(e, className, "upsertVatLodgingOfficer")
     }
   }
 
   def upsertVatEligibility(regId: String, vatServiceEligibility: VatServiceEligibility)
-                      (implicit hc: HeaderCarrier, rds: HttpReads[VatServiceEligibility]): Future[VatServiceEligibility] = {
+                          (implicit hc: HeaderCarrier, rds: HttpReads[VatServiceEligibility]): Future[VatServiceEligibility] = {
     http.PATCH[VatServiceEligibility, VatServiceEligibility](s"$vatRegUrl/vatreg/$regId/service-eligibility", vatServiceEligibility) recover {
       case e: Exception => throw logResponse(e, className, "upsertVatEligibility")
     }
   }
 
   def upsertPpob(regId: String, address: ScrsAddress)
-                          (implicit hc: HeaderCarrier, rds: HttpReads[ScrsAddress]): Future[ScrsAddress] = {
+                (implicit hc: HeaderCarrier, rds: HttpReads[ScrsAddress]): Future[ScrsAddress] = {
     http.PATCH[ScrsAddress, ScrsAddress](s"$vatRegUrl/vatreg/$regId/ppob", address) recover {
       case e: Exception => throw logResponse(e, className, "upsertPpob")
     }
@@ -118,14 +122,14 @@ trait RegistrationConnector {
                      (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Unit] = {
     http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-scheme") recover {
       case e: Exception => throw logResponse(e, className, "deleteVatScheme")
-    } map ( _ => ())
+    } map (_ => ())
   }
 
   def deleteElement(elementPath: ElementPath)(regId: String)
                    (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Unit] = {
     http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete/${elementPath.name}") recover {
       case e: Exception => throw logResponse(e, className, "deleteElement")
-    } map ( _ => ())
+    } map (_ => ())
   }
 
 }
