@@ -19,16 +19,17 @@ package controllers
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.VatRegistrationService
-
 import scala.concurrent.Future
+import cats.data.OptionT
 
 class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  object TestApplicationSubmissionController extends ApplicationSubmissionController(ds)(mockS4LService, mockVatRegistrationService) {
+  object Controller extends ApplicationSubmissionController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
@@ -38,29 +39,21 @@ class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistratio
 
     "display the submission confirmation page to the user" in {
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
-        .thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getAckRef(Matchers.eq(validVatScheme.id))(any())).thenReturn(OptionT.some("testAckRef"))
 
-      callAuthorised(TestApplicationSubmissionController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Application submitted")
+      callAuthorised(Controller.show) {
+        _ includesText "Application submitted"
       }
     }
 
-    "display the submission confirmation page to the user when VatFinancials is empty" in {
+    "should fail to complete if no ackRef number can be retrieved for current registration" in {
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
-        .thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getAckRef(Matchers.eq(emptyVatScheme.id))(any())).thenReturn(OptionT.none[Future,String])
 
-      callAuthorised(TestApplicationSubmissionController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Application submitted")
+      callAuthorised(Controller.show) {
+        _ isA 500
       }
     }
   }

@@ -60,18 +60,16 @@ trait RegistrationService {
 
 class VatRegistrationService @Inject()(s4LService: S4LService,
                                        vatRegConnector: VatRegistrationConnector,
-                                       companyRegistrationConnector: CompanyRegistrationConnector)
+                                       compRegConnector: CompanyRegistrationConnector)
   extends RegistrationService with CommonService {
 
-  import cats.syntax.applicative._
-  import cats.syntax.cartesian._
-  import cats.syntax.foldable._
+  import cats.syntax.all._
 
-  private def s4l[T: Format : S4LKey]()(implicit headerCarrier: HeaderCarrier) =
+  private def s4l[T: Format : S4LKey]()(implicit hc: HeaderCarrier) =
     s4LService.fetchAndGet[T]()
 
-  private def update[C, G](c: Option[C])(implicit vmTransformer: ViewModelTransformer[C, G]): G => G =
-    g => c.map(vmTransformer.toApi(_, g)).getOrElse(g)
+  private def update[C, G](c: Option[C])(implicit t: ViewModelTransformer[C, G]): G => G =
+    g => c.map(t.toApi(_, g)).getOrElse(g)
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
     fetchRegistrationId.flatMap(vatRegConnector.getRegistration)
@@ -95,7 +93,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     for {
       vatScheme <- vatRegConnector.createNewRegistration()
       _ <- keystoreConnector.cache[String]("RegistrationId", vatScheme.id)
-      optCompProfile <- companyRegistrationConnector.getCompanyRegistrationDetails(vatScheme.id).value
+      optCompProfile <- compRegConnector.getCompanyRegistrationDetails(vatScheme.id).value
       _ <- optCompProfile.map(keystoreConnector.cache[CoHoCompanyProfile]("CompanyProfile", _)).pure
     } yield ()
 

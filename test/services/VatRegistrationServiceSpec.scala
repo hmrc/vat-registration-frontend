@@ -72,6 +72,17 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     }
   }
 
+  "Calling getAckRef" should {
+    "retrieve Acknowledgement Reference (id) from the backend" in new Setup {
+      when(mockRegConnector.getAckRef(Matchers.eq(validRegId))(any())).thenReturn(OptionT.some("testRefNo"))
+      service.getAckRef(validRegId) returnsSome "testRefNo"
+    }
+    "retrieve no Acknowledgement Reference if there's none in the backend" in new Setup {
+      when(mockRegConnector.getAckRef(Matchers.eq(validRegId))(any())).thenReturn(OptionT.none[Future, String])
+      service.getAckRef(validRegId) returnsNone
+    }
+  }
+
   "Calling submitVatScheme" should {
     "return a success response when the VatScheme is upserted" in new Setup {
       mockFetchRegId(validRegId)
