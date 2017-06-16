@@ -51,7 +51,21 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
 
   override def beforeEach() {
     reset(mockVatRegistrationService)
+    reset(mockS4LConnector)
     reset(mockS4LService)
+    reset(mockKeystoreConnector)
+    reset(mockAuthConnector)
+    reset(mockSessionCache)
+    reset(mockAudit)
+    reset(mockVatRegistrationService)
+    reset(mockRegConnector)
+    reset(mockCompanyRegConnector)
+    reset(mockPPConnector)
+    reset(mockPPService)
+    reset(mockDateService)
+    reset(mockIIConnector)
+    reset(mockIIService)
+    reset(mockAddressLookupConnector)
   }
 
   // Placeholder for custom configuration
