@@ -23,7 +23,7 @@ import models.api.ScrsAddress
 import models.view.ppob.PpobView
 import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{reset, verify, when}
+import org.mockito.Mockito.{verify, when}
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 
@@ -45,13 +45,14 @@ class PpobControllerSpec extends VatRegSpec
 
   s"GET ${routes.PpobController.show()}" should {
 
-    when(mockPPService.getPpobAddressList()(any())).thenReturn(Seq(address).pure)
-    mockKeystoreCache[Seq[ScrsAddress]]("PpobAddressList", dummyCacheMap)
-
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       val vatScheme = validVatScheme.copy(ppob = Some(address))
+
+      mockKeystoreCache[Seq[ScrsAddress]]("PpobAddressList", dummyCacheMap)
       save4laterReturnsNoViewModel[PpobView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
+      when(mockPPService.getPpobAddressList()(any())).thenReturn(Seq(address).pure)
+
       callAuthorised(Controller.show()) {
         _ includesText "Where will the company carry out most of its business activities"
       }
@@ -59,8 +60,12 @@ class PpobControllerSpec extends VatRegSpec
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       val vatScheme = validVatScheme.copy(ppob = None)
+
+      mockKeystoreCache[Seq[ScrsAddress]]("PpobAddressList", dummyCacheMap)
       save4laterReturnsNoViewModel[PpobView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
+      when(mockPPService.getPpobAddressList()(any())).thenReturn(Seq(address).pure)
+
       callAuthorised(Controller.show()) {
         _ includesText "Where will the company carry out most of its business activities"
       }
