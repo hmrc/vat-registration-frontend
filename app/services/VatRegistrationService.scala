@@ -19,7 +19,7 @@ package services
 import javax.inject.Inject
 
 import com.google.inject.ImplementedBy
-import connectors.{CompanyRegistrationConnector, VatRegistrationConnector}
+import connectors.{CompanyRegistrationConnector, OptionalResponse, VatRegistrationConnector}
 import models._
 import models.api._
 import models.external.CoHoCompanyProfile
@@ -34,13 +34,11 @@ trait RegistrationService {
 
   def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit]
 
-  def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit]
-
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme]
 
-  def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Unit]
+  def getAckRef(regId:String)(implicit hc: HeaderCarrier): OptionalResponse[String]
 
-  def deleteElements(elementPath: List[ElementPath])(implicit hc: HeaderCarrier): Future[Unit]
+  def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit]
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials]
 
@@ -54,25 +52,30 @@ trait RegistrationService {
 
   def submitVatLodgingOfficer()(implicit hc: HeaderCarrier): Future[VatLodgingOfficer]
 
+  def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Unit]
+
+  def deleteElements(elementPath: List[ElementPath])(implicit hc: HeaderCarrier): Future[Unit]
+
 }
 
 class VatRegistrationService @Inject()(s4LService: S4LService,
                                        vatRegConnector: VatRegistrationConnector,
-                                       companyRegistrationConnector: CompanyRegistrationConnector)
+                                       compRegConnector: CompanyRegistrationConnector)
   extends RegistrationService with CommonService {
 
-  import cats.syntax.applicative._
-  import cats.syntax.cartesian._
-  import cats.syntax.foldable._
+  import cats.syntax.all._
 
-  private def s4l[T: Format : S4LKey]()(implicit headerCarrier: HeaderCarrier) =
+  private def s4l[T: Format : S4LKey]()(implicit hc: HeaderCarrier) =
     s4LService.fetchAndGet[T]()
 
-  private def update[C, G](c: Option[C])(implicit vmTransformer: ViewModelTransformer[C, G]): G => G =
-    g => c.map(vmTransformer.toApi(_, g)).getOrElse(g)
+  private def update[C, G](c: Option[C])(implicit t: ViewModelTransformer[C, G]): G => G =
+    g => c.map(t.toApi(_, g)).getOrElse(g)
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
     fetchRegistrationId.flatMap(vatRegConnector.getRegistration)
+
+  def getAckRef(regId:String)(implicit hc: HeaderCarrier): OptionalResponse[String] =
+    vatRegConnector.getAckRef(regId)
 
   def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
     fetchRegistrationId.flatMap(vatRegConnector.deleteVatScheme)
@@ -90,7 +93,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     for {
       vatScheme <- vatRegConnector.createNewRegistration()
       _ <- keystoreConnector.cache[String]("RegistrationId", vatScheme.id)
-      optCompProfile <- companyRegistrationConnector.getCompanyRegistrationDetails(vatScheme.id).value
+      optCompProfile <- compRegConnector.getCompanyRegistrationDetails(vatScheme.id).value
       _ <- optCompProfile.map(keystoreConnector.cache[CoHoCompanyProfile]("CompanyProfile", _)).pure
     } yield ()
 
