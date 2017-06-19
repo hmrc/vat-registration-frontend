@@ -17,9 +17,6 @@
 package mocks
 
 import connectors._
-import org.mockito.Mockito
-import org.mockito.Mockito.reset
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import services._
 import uk.gov.hmrc.http.cache.client.SessionCache
@@ -38,12 +35,12 @@ trait VatMocks
   implicit lazy val mockS4LService = mock[S4LService]
   implicit lazy val mockRegConnector = mock[VatRegistrationConnector]
   implicit lazy val mockCompanyRegConnector = mock[CompanyRegistrationConnector]
-  implicit lazy val mockPPConnector = Mockito.mock(classOf[PPConnector])
-  implicit lazy val mockPPService = Mockito.mock(classOf[PrePopulationService])
-  implicit lazy val mockIIService = Mockito.mock(classOf[IncorporationInformationService])
-  implicit lazy val mockIIConnector = Mockito.mock(classOf[IncorporationInformationConnector])
-  implicit lazy val mockVatRegistrationService = Mockito.mock(classOf[VatRegistrationService])
-  implicit lazy val mockAddressLookupConnector = Mockito.mock(classOf[AddressLookupConnect])
+  implicit lazy val mockPPConnector = mock[PPConnector]
+  implicit lazy val mockPPService = mock[PrePopulationService]
+  implicit lazy val mockIIService = mock[IncorporationInformationService]
+  implicit lazy val mockIIConnector = mock[IncorporationInformationConnector]
+  implicit lazy val mockVatRegistrationService = mock[VatRegistrationService]
+  implicit lazy val mockAddressLookupConnector = mock[AddressLookupConnect]
   implicit lazy val mockDateService = mock[DateService]
 
 }
