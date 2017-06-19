@@ -66,6 +66,7 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
     reset(mockIIConnector)
     reset(mockIIService)
     reset(mockAddressLookupConnector)
+    reset(mockWSHttp)
   }
 
   // Placeholder for custom configuration
