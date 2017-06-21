@@ -107,7 +107,7 @@ class BusinessContactDetailsFormSpec extends UnitSpec {
       }
 
       "blank email is provided" in {
-        val data = Map("email" -> Seq(""), "daytimePhone" -> Seq(DAYTIME_PHONE))
+        val data = Map("email" -> Seq(""), "mobile" -> Seq(MOBILE))
         val form = testForm.bindFromRequest(data)
         form shouldHaveErrors Seq("email" -> "validation.businessContactDetails.email.missing")
       }

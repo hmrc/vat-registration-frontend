@@ -592,6 +592,7 @@ pages.businessContactDetails.mobile.label                    = Mobile number
 pages.businessContactDetails.website.label                   = Website address (optional)
 validation.businessContactDetails.email.missing              = Enter an email address
 validation.businessContactDetails.email.invalid              = Enter a valid email address
+validation.businessContactDetails.email.maxlen               = Email address must not exceed 70 characters
 validation.businessContactDetails.mobile.missing             = Enter at least one phone number
 validation.businessContactDetails.mobile.invalid             = Enter a valid mobile phone number
 validation.businessContactDetails.daytimePhone.missing       = Enter at least one phone number
@@ -653,6 +654,7 @@ validation.officerContact.missing                        = Enter at least one co
 validation.officerContactDetails.mobile.invalid          = Enter a valid mobile phone number
 validation.officerContactDetails.daytimePhone.invalid    = Enter a valid daytime phone number
 validation.officerContactDetails.email.invalid           = Enter a valid email address
+validation.officerContactDetails.email.maxlen            = Email address must not exceed 70 characters
 
 ## Former Name
 pages.formerName.title                                   = Director''s Name
