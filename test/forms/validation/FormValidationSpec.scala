@@ -78,6 +78,22 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
     }
   }
 
+  "maxLenText" must {
+    val constraint = FormValidation.maxLenText(20)("errorCode")
+
+    "accept an empty string as Valid" in {
+      constraint("") shouldBe Valid
+    }
+
+    "accept a short string as Valid" in {
+      constraint("short string") shouldBe Valid
+    }
+
+    "reject long string" in {
+      constraint("long long long long string") shouldBe Invalid("validation.errorCode.maxlen")
+    }
+  }
+
   "taxEstimateTextToLong" must {
     "return MinValue when input converts to value less than zero" in {
       FormValidation.taxEstimateTextToLong("-1") shouldBe Long.MinValue
@@ -89,6 +105,16 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
     "return value when input converts to value between 0 and 1e15" in {
       FormValidation.taxEstimateTextToLong("1000") shouldBe 1000
+    }
+  }
+
+  "removeSpaces" must {
+    "leave an empty string unchanged " in {
+      FormValidation.removeSpaces("") shouldBe ""
+    }
+
+    "remove all spaces from a non-empty string" in {
+      FormValidation.removeSpaces("  a  b  c  ") shouldBe "abc"
     }
   }
 
