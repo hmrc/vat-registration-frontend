@@ -23,7 +23,7 @@ import play.api.data.Forms.mapping
 
 object AnnualCostsInclusiveForm {
 
-  val RADIO_INCLUSIVE: String = "annualCostsInclusive"
+  val RADIO_INCLUSIVE: String = "annualCostsInclusiveRadio"
 
   val form = Form(
     mapping(

@@ -16,21 +16,19 @@
 
 package models.view.frs
 
-import models.api.{FlatRateScheme, VatScheme, VatTradingDetails}
 import models._
-import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
-import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason.{INTENDS_TO_SELL, SELLS, intendsToSell, sells}
+import models.api.{FlatRateScheme, VatScheme}
 import play.api.libs.json.Json
 
 case class AnnualCostsInclusiveView(selection: String)
 
 object AnnualCostsInclusiveView {
 
-  val YES = "YES"
-  val NO_NEXT_TWELVE_MONTHS = "NO_NEXT_TWELVE_MONTHS"
-  val NO = "NO"
+  val YES = "yes"
+  val YES_WITHIN_12_MONTHS = "yesWithin12months"
+  val NO = "no"
 
-  val valid: (String) => Boolean = List(YES, NO_NEXT_TWELVE_MONTHS, NO).contains
+  val valid: (String) => Boolean = List(YES, YES_WITHIN_12_MONTHS, NO).contains
 
   implicit val format = Json.format[AnnualCostsInclusiveView]
 
@@ -41,11 +39,15 @@ object AnnualCostsInclusiveView {
   )
 
   implicit val modelTransformer = ApiModelTransformer[AnnualCostsInclusiveView] { vs: VatScheme =>
-    None
+    vs.flatRateScheme.map(_.lessThan1000pounds).collect {
+      case YES => AnnualCostsInclusiveView(YES)
+      case YES_WITHIN_12_MONTHS => AnnualCostsInclusiveView(YES_WITHIN_12_MONTHS)
+      case NO => AnnualCostsInclusiveView(NO)
+    }
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: AnnualCostsInclusiveView, g: FlatRateScheme) =>
-    g
+    g.copy(lessThan1000pounds = c.selection)
   }
 
 }

@@ -40,12 +40,12 @@
       @govHelpers.form(action = controllers.frs.routes.AnnualCostsInclusiveController.submit()) {
       <div class="form-group">
         <fieldset class="block">
-            <span id="annualCostsInclusive"/>
+            <span id="annualCostsInclusiveRadio"/>
             @govHelpers.inputRadioGroup(
                 field = annualCostsInclusiveForm("annualCostsInclusiveRadio"),
                 Seq(
                   AnnualCostsInclusiveView.YES -> messages("app.common.yes"),
-                  AnnualCostsInclusiveView.NO_NEXT_TWELVE_MONTHS -> messages("pages.frs.costsInclusive.radio2"),
+                  AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS -> messages("pages.frs.costsInclusive.radio2"),
                   AnnualCostsInclusiveView.NO -> messages("pages.frs.costsInclusive.radio3")
                 ),
                 '_labelAfter -> true,
