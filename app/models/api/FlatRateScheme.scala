@@ -21,8 +21,7 @@ import play.api.libs.json.{Json, OFormat}
 case class FlatRateScheme
 (
   joinFrs: Boolean,
-  lessThan1000pounds: String,
-  dummy: String = "" //TODO REMOVE
+  lessThan1000pounds: String
 )
 
 object FlatRateScheme {
