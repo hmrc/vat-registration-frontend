@@ -18,8 +18,10 @@ package controllers.frs
 
 import javax.inject.Inject
 
+import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
+import models.view.frs.JoinFrsView
 import models.view.vatTradingDetails.vatEuTrading.EuGoods
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
@@ -27,7 +29,8 @@ import services.{S4LService, VatRegistrationService}
 
 
 class JoinFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOrNoFormFactory)
-                                 (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+                                 (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with FlatMapSyntax {
 
   def yesNoForm(): Form[YesOrNoAnswer] = formFactory.form("joinFrs")("frs.join")
 
@@ -37,14 +40,16 @@ class JoinFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOr
       .map(f => Ok(views.html.pages.frs.frs_join(f)))
   })
 
-  //  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-  //    form.bindFromRequest().fold(
-  //      badForm => BadRequest(views.html.pages.vatTradingDetails.vatEuTrading.eu_goods(badForm)).pure,
-  //      goodForm => save(goodForm).map(_ => goodForm.yesNo == EuGoods.EU_GOODS_NO).ifM(
-  //        save(ApplyEori(ApplyEori.APPLY_EORI_NO)).map(_ =>
-  //          vrs.submitTradingDetails()).map(_ =>
-  //          controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show()),
-  //        controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show().pure
-  //      ).map(Redirect)))
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    yesNoForm().bindFromRequest().fold(
+      badForm => BadRequest(views.html.pages.frs.frs_join(badForm)).pure,
+      goodForm => save(JoinFrsView(goodForm.answer)).map(_ =>
+        if (goodForm.answer) {
+          //TODO redirect to next screen when ready
+          controllers.frs.routes.JoinFrsController.show()
+        } else {
+          //TODO where is this supposed to go?
+          controllers.frs.routes.JoinFrsController.show()
+        }).map(Redirect)))
 
 }
