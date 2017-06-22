@@ -198,3 +198,7 @@ GET         /you-cant-register-for-vat-with-this-service                        
 ##Are you interested in FRS Page
 GET         /join-flat-rate-scheme                                                              controllers.frs.JoinFrsController.show
 POST        /join-flat-rate-scheme                                                              controllers.frs.JoinFrsController.submit
+
+##Do you spend less than £1000 a year Page
+GET         /spends-less-including-vat-on-goods                                                 controllers.frs.AnnualCostsInclusiveController.show
+POST        /spends-less-including-vat-on-goods                                                 controllers.frs.AnnualCostsInclusiveController.submit
