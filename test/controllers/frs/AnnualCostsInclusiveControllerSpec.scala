@@ -99,7 +99,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
   }
 
-  s"POST ${routes.AnnualCostsInclusiveController.submit()} withAnnual Costs Inclusive selected No" should {
+  s"POST ${routes.AnnualCostsInclusiveController.submit()} with Annual Costs Inclusive selected No" should {
 
     "redirect to the welcome page" in {
       when(mockS4LService.clear()(any())).thenReturn(Future.successful(validHttpResponse))
