@@ -39,7 +39,7 @@ object AnnualCostsInclusiveView {
   )
 
   implicit val modelTransformer = ApiModelTransformer[AnnualCostsInclusiveView] { vs: VatScheme =>
-    vs.flatRateScheme.map(_.lessThan1000pounds).collect {
+    vs.flatRateScheme.map(_.annualCostsInclusive).collect {
       case YES => AnnualCostsInclusiveView(YES)
       case YES_WITHIN_12_MONTHS => AnnualCostsInclusiveView(YES_WITHIN_12_MONTHS)
       case NO => AnnualCostsInclusiveView(NO)
@@ -47,7 +47,7 @@ object AnnualCostsInclusiveView {
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: AnnualCostsInclusiveView, g: FlatRateScheme) =>
-    g.copy(lessThan1000pounds = c.selection)
+    g.copy(annualCostsInclusive = c.selection)
   }
 
 }
