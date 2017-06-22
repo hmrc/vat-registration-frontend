@@ -19,6 +19,7 @@ package controllers.vatFinancials.vatAccountingPeriod
 import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -75,6 +76,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     "return 303" in {
       forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
         accountingPeriod =>
+          save4laterReturnsViewModel(EstimateVatTurnover(200000L))() //above the 150k threshold
           save4laterExpectsSave[AccountingPeriod]()
           when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
 

@@ -20,6 +20,7 @@ import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
 import forms.vatFinancials.vatAccountingPeriod.VatReturnFrequencyForm
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -74,8 +75,10 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Monthly" should {
 
     "return 303" in {
+      save4laterReturnsViewModel(EstimateVatTurnover(200000L))() //above the 150k threshold
       save4laterExpectsSave[VatReturnFrequency]()
       save4laterExpectsSave[AccountingPeriod]()
+
       when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
 
