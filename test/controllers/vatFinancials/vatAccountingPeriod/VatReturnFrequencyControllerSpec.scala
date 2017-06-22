@@ -74,22 +74,62 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
   s"POST ${vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Monthly" should {
 
-    "return 303" in {
-      save4laterReturnsViewModel(EstimateVatTurnover(200000L))() //above the 150k threshold
-      save4laterExpectsSave[VatReturnFrequency]()
-      save4laterExpectsSave[AccountingPeriod]()
+    "redirect to summary page" when {
 
-      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
-      when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+      "taxable turnover above the FRS threshold of 150k" in {
+        save4laterReturnsViewModel(EstimateVatTurnover(200000L))() //above the 150k threshold
+        save4laterExpectsSave[VatReturnFrequency]()
+        save4laterExpectsSave[AccountingPeriod]()
 
-      submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
-        _ redirectsTo s"$contextRoot/check-your-answers"
+        when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+        when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+
+        submitAuthorised(Controller.submit(),
+          fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
+          _ redirectsTo s"$contextRoot/check-your-answers"
+        }
+
+        verify(mockVatRegistrationService).submitVatFinancials()(any())
       }
 
-      verify(mockVatRegistrationService).submitVatFinancials()(any())
     }
 
+    "redirect to start of FRS Flow" when {
+
+      "estimated vat turnover less than 150k" in {
+        save4laterReturnsViewModel(EstimateVatTurnover(100000L))() //below the 150k threshold
+        save4laterExpectsSave[VatReturnFrequency]()
+        save4laterExpectsSave[AccountingPeriod]()
+
+        when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+        when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+
+        submitAuthorised(Controller.submit(),
+          fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
+          _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
+        }
+
+        verify(mockVatRegistrationService).submitVatFinancials()(any())
+      }
+
+      "estimated vat turnover can't be determined" in {
+        save4laterExpectsSave[VatReturnFrequency]()
+        save4laterExpectsSave[AccountingPeriod]()
+        when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+        save4laterReturnsNoViewModel[EstimateVatTurnover]()
+
+        when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+        when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+
+        submitAuthorised(Controller.submit(),
+          fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
+          _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
+        }
+
+        verify(mockVatRegistrationService).submitVatFinancials()(any())
+      }
+
+    }
   }
 
   s"POST ${vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Quarterly" should {
@@ -103,7 +143,6 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
         _ redirectsTo s"$contextRoot/vat-return-periods-end"
       }
     }
-    
   }
 
 }
