@@ -46,6 +46,10 @@ private[forms] object FormValidation {
     if (StringUtils.isNotBlank(input)) Valid else Invalid(s"validation.$e.missing")
   }
 
+  def maxLenText(maxlen: Integer)(implicit e: ErrorCode): Constraint[String] = Constraint { input: String =>
+    if (StringUtils.length(input) > maxlen) Invalid(s"validation.$e.maxlen") else Valid
+  }
+
   def mandatoryNumericText()(implicit e: ErrorCode): Constraint[String] = Constraint {
     val NumericText = """[0-9]+""".r
     (input: String) =>
@@ -70,6 +74,8 @@ private[forms] object FormValidation {
 
   val taxEstimateTextToLong = textToLong(0, 1000000000000000L) _
   val numberOfWorkersToInt = textToInt(1, 99999) _
+
+  def removeSpaces(text: String) = StringUtils.remove(text, ' ')
 
   private def textToInt(min: Int, max: Int)(s: String): Int = {
     // assumes input string will be numeric
@@ -121,7 +127,6 @@ private[forms] object FormValidation {
         case _ => Invalid(s"validation.$e.missing")
       }
   }
-
 
 
   /* overrides Play's implicit stringFormatter and handles missing options (e.g. no radio button selected) */

@@ -47,7 +47,13 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
     }
 
     "return HTML when there's an answer in S4L" in {
-      save4laterReturnsViewModel(validBusinessContactDetails)()
+      val businessContactDetails = BusinessContactDetails(
+        email = "test@foo.com",
+        daytimePhone = Some("123"),
+        mobile = Some("123"),
+        website = None)
+
+      save4laterReturnsViewModel(businessContactDetails)()
 
       callAuthorised(TestBusinessContactDetailsController.show) {
         _ includesText "Company contact details"
@@ -66,23 +72,23 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
     }
   }
 
-  s"POST ${controllers.vatContact.routes.BusinessContactDetailsController.submit()} with Empty data" should {
+  s"POST ${controllers.vatContact.routes.BusinessContactDetailsController.submit()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       submitAuthorised(TestBusinessContactDetailsController.submit(), fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
     }
-  }
 
-  s"POST ${controllers.vatContact.routes.BusinessContactDetailsController.submit()} with a valid business contact entered" should {
-
-    "return 303" in {
+    "return 303 with a valid business contact entered" in {
       save4laterExpectsSave[BusinessContactDetails]()
       when(mockVatRegistrationService.submitVatContact()(any())).thenReturn(validVatContact.pure)
 
       submitAuthorised(
         TestBusinessContactDetailsController.submit(),
-        fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com", "mobile" -> "0123456789")
+        fakeRequest.withFormUrlEncodedBody(
+          "email" -> "some@email.com",
+          "daytimePhone" -> "0123456789",
+          "mobile" -> "0123456789")
       )(_ redirectsTo s"$contextRoot/where-will-company-carry-out-most-of-its-business-activities")
 
       verify(mockVatRegistrationService).submitVatContact()(any())
