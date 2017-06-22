@@ -22,7 +22,6 @@ import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import models.view.frs.JoinFrsView
-import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -31,16 +30,14 @@ class JoinFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOr
                                  (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with FlatMapSyntax {
 
-  def yesNoForm(): Form[YesOrNoAnswer] = formFactory.form("joinFrs")("frs.join")
+  val form = formFactory.form("joinFrs")("frs.join")
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    val form = yesNoForm()
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel[JoinFrsView]().map(vm => YesOrNoAnswer(vm.selection)).fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.frs.frs_join(f)))
-  })
+      .map(f => Ok(views.html.pages.frs.frs_join(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    yesNoForm().bindFromRequest().fold(
+    form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.frs.frs_join(badForm)).pure,
       goodForm => save(JoinFrsView(goodForm.answer)).map(_ =>
         Redirect(if (goodForm.answer) {

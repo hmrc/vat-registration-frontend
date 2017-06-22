@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package utils
+package models
 
 import org.scalatest.Inspectors
 import play.api.libs.json.{JsArray, JsString, JsSuccess}

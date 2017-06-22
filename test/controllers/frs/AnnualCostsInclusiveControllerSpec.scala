@@ -27,7 +27,7 @@ import scala.concurrent.Future
 
 class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object TestAnnualCostsInclusiveController
+  object Controller
     extends AnnualCostsInclusiveController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
@@ -41,9 +41,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
       save4laterReturnsViewModel(annualCostsInclusiveView)()
 
-      submitAuthorised(TestAnnualCostsInclusiveController.show(), fakeRequest.withFormUrlEncodedBody(
-        "annualCostsInclusiveRadio" -> ""
-      )) {
+      callAuthorised(Controller.show()) {
         _ includesText "Do you spend less than £1,000 a year (including VAT) on business goods?"
       }
     }
@@ -54,7 +52,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
       when(mockVatRegistrationService.getVatScheme()(any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      callAuthorised(TestAnnualCostsInclusiveController.show) {
+      callAuthorised(Controller.show) {
         _ includesText "Do you spend less than £1,000 a year (including VAT) on business goods?"
       }
     }
@@ -65,7 +63,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
       when(mockVatRegistrationService.getVatScheme()(any()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      callAuthorised(TestAnnualCostsInclusiveController.show) {
+      callAuthorised(Controller.show) {
         _ includesText "Do you spend less than £1,000 a year (including VAT) on business goods?"
       }
     }
@@ -74,7 +72,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
   s"POST ${routes.AnnualCostsInclusiveController.submit()} with Empty data" should {
 
     "return 400" in {
-      submitAuthorised(TestAnnualCostsInclusiveController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
   }
@@ -84,7 +82,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     "return 303" in {
       save4laterExpectsSave[AnnualCostsInclusiveView]()
 
-      submitAuthorised(TestAnnualCostsInclusiveController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES
       ))(_ redirectsTo s"$contextRoot/who-is-registering-the-company-for-vat")
     }
@@ -95,20 +93,20 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     "return 303" in {
       save4laterExpectsSave[AnnualCostsInclusiveView]()
 
-      submitAuthorised(TestAnnualCostsInclusiveController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS
       ))(_ redirectsTo s"$contextRoot/who-is-registering-the-company-for-vat")
     }
   }
 
-  s"POST ${routes.AnnualCostsInclusiveController.submit()} with Voluntary Registration selected No" should {
+  s"POST ${routes.AnnualCostsInclusiveController.submit()} withAnnual Costs Inclusive selected No" should {
 
     "redirect to the welcome page" in {
       when(mockS4LService.clear()(any())).thenReturn(Future.successful(validHttpResponse))
       save4laterExpectsSave[AnnualCostsInclusiveView]()
       when(mockVatRegistrationService.deleteVatScheme()(any())).thenReturn(Future.successful(()))
 
-      submitAuthorised(TestAnnualCostsInclusiveController.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.NO
       ))(_ redirectsTo contextRoot)
     }
