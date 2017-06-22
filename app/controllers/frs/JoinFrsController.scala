@@ -22,7 +22,6 @@ import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import models.view.frs.JoinFrsView
-import models.view.vatTradingDetails.vatEuTrading.EuGoods
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -36,7 +35,7 @@ class JoinFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOr
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     val form = yesNoForm()
-    viewModel[EuGoods]().map(vm => YesOrNoAnswer(vm.yesNo == "true")).fold(form)(form.fill)
+    viewModel[JoinFrsView]().map(vm => YesOrNoAnswer(vm.selection)).fold(form)(form.fill)
       .map(f => Ok(views.html.pages.frs.frs_join(f)))
   })
 
@@ -44,12 +43,10 @@ class JoinFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOr
     yesNoForm().bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.frs.frs_join(badForm)).pure,
       goodForm => save(JoinFrsView(goodForm.answer)).map(_ =>
-        if (goodForm.answer) {
-          //TODO redirect to next screen when ready
-          controllers.frs.routes.JoinFrsController.show()
+        Redirect(if (goodForm.answer) {
+          controllers.frs.routes.AnnualCostsInclusiveController.show()
         } else {
-          //TODO where is this supposed to go?
-          controllers.frs.routes.JoinFrsController.show()
-        }).map(Redirect)))
+          controllers.routes.SummaryController.show()
+        }))))
 
 }
