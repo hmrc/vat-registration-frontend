@@ -191,3 +191,9 @@ GET         /submission-confirmation                                            
 ## CAN OR CAN'T REGISTER
 GET         /you-can-register-for-vat-with-this-service                                        controllers.TwirlViewController.renderViewAuthorised(viewName="eligibility-success")
 GET         /you-cant-register-for-vat-with-this-service                                       controllers.vatEligibility.ServiceCriteriaQuestionsController.ineligible()
+
+
+## FRS FLOW
+##
+##Are you interested in FRS Page
+GET         /join-flat-rate-scheme                                                              controllers.frs.JoinFrsController.show

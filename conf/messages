@@ -674,3 +674,20 @@ pages.ppob.title                           = Where will the company carry out mo
 pages.ppob.heading                         = Where will the company carry out most of its business activities?
 pages.ppob.different.address               = A different address
 validation.ppob.missing                    = Tell us where you''ll carry out most of your business activities
+
+
+## FRS FLOW
+#
+#Are you interested in FRS Page
+pages.frs.join.title                            = Do you want to join the Flat Rate Scheme?
+pages.frs.join.heading                          = Do you want to join the Flat Rate Scheme?
+pages.frs.join.subheading1                      = Companies on the Flat Rate Scheme:
+pages.frs.join.list1.bullet1                    = pay a fixed rate of VAT (based on their business type), which is lower than the standard 20% VAT rate
+pages.frs.join.list1.bullet2                    = keep the difference between what they charge customers and what they pay to HMRC
+pages.frs.join.subheading2                      = You can join the Flat Rate Scheme if:
+pages.frs.join.list2.bullet1                    = your company is registered for VAT
+pages.frs.join.list2.bullet2                    = you don''t expect your VAT taxable turnover to be more than £150,000 (excluding VAT) over the next 12 months
+pages.frs.join.para1                            = For companies in their first year of VAT registration, the VAT flat rate is reduced by 1%.
+pages.frs.join.para2                            = You don''t have to decide now. Find out more about <a href="https://www.gov.uk/government/publications/vat-application-to-join-the-flat-rate-scheme-vat600frs">VAT Flat Rate Scheme</a>.
+validation.frs.join.missing                     = Tell us if you want to join the Flat Rate Scheme
+

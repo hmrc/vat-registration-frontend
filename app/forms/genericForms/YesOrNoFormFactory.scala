@@ -16,22 +16,19 @@
 
 package forms.genericForms
 
-import forms.FormValidation.textMapping
-import models.RadioOptions
+import forms.FormValidation.ErrorCode
 import play.api.data.Form
 import play.api.data.Forms._
 
-//currently not in use, awaiting wider-scope refactoring of our forms
-// $COVERAGE-OFF$
+final case class YesOrNoAnswer(answer: Boolean)
 
-class RadioOptionsFormFactory {
+final class YesOrNoFormFactory {
 
-  def form(option: String): Form[RadioOptions] = {
-    val OPTION: String = s"${option}Radio"
+  def form(name: String)(implicit errorCode: ErrorCode): Form[YesOrNoAnswer] = {
+    val OPTION: String = s"${name}Radio"
     Form(mapping(
-      OPTION -> textMapping()(s".$option")
-    )(RadioOptions(OPTION, _))(radioOptions => Some(radioOptions.value)))
+      OPTION -> forms.FormValidation.missingBooleanFieldMapping()
+    )(YesOrNoAnswer.apply)(YesOrNoAnswer.unapply))
   }
-}
 
-// $COVERAGE-ON$
+}
