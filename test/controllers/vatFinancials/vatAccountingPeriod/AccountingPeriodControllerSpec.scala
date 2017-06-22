@@ -73,20 +73,52 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
 
   s"POST ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.submit()} with any accounting period selected" should {
 
-    "return 303" in {
-      forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
-        accountingPeriod =>
-          save4laterReturnsViewModel(EstimateVatTurnover(200000L))() //above the 150k threshold
-          save4laterExpectsSave[AccountingPeriod]()
-          when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+    "redirect to summary page" when {
+      "estimated vat turnover greater than 150k" in {
+        forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
+          accountingPeriod =>
+            save4laterReturnsViewModel(EstimateVatTurnover(200000L))() //above the 150k threshold
+            save4laterExpectsSave[AccountingPeriod]()
+            when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
 
-          submitAuthorised(Controller.submit(),
-            fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
-            _ redirectsTo s"$contextRoot/check-your-answers"
-          }
+            submitAuthorised(Controller.submit(),
+              fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
+              _ redirectsTo s"$contextRoot/check-your-answers"
+            }
+        }
       }
     }
+
+    "redirect to start of FRS Flow" when {
+      "estimated vat turnover less than 150k" in {
+        forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
+          accountingPeriod =>
+            save4laterReturnsViewModel(EstimateVatTurnover(100000L))() //below the 150k threshold
+            save4laterExpectsSave[AccountingPeriod]()
+            when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+
+            submitAuthorised(Controller.submit(),
+              fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
+              _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
+            }
+        }
+      }
+
+      "estimated vat turnover can't be determined" in {
+        forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
+          accountingPeriod =>
+            save4laterExpectsSave[AccountingPeriod]()
+            when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+            when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+            save4laterReturnsNoViewModel[EstimateVatTurnover]()
+
+            submitAuthorised(Controller.submit(),
+              fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
+              _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
+            }
+        }
+      }
+
+    }
   }
-
-
 }
