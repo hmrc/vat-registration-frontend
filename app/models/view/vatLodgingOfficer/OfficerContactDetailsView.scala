@@ -34,7 +34,6 @@ object OfficerContactDetailsView {
 
   implicit val format: OFormat[OfficerContactDetailsView] = Json.format[OfficerContactDetailsView]
 
-
   implicit val viewModelFormat = ViewModelFormat(
     readF = (group: S4LVatLodgingOfficer) => group.officerContactDetails,
     updateF = (c: OfficerContactDetailsView, g: Option[S4LVatLodgingOfficer]) =>

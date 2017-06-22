@@ -81,8 +81,22 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   }
 
   "Calling getAckRef" should {
-    "return a Acknowldegement Referenc when it can be retrieved from the microservice" in new Setup {
+    "return a Acknowldegement Reference when it can be retrieved from the microservice" in new Setup {
+      mockHttpGET[Option[String]]("tst-url", Some("Fake Ref No"))
       connector.getAckRef("tstID") returnsSome "Fake Ref No"
+    }
+
+    "fail when a Forbidden response is returned by the microservice" in new Setup {
+      mockHttpFailedGET[Option[String]]("tst-url", forbidden)
+      connector.getAckRef("tstID") failedWith forbidden
+    }
+    "fail when a Not Found response is returned by the microservice" in new Setup {
+      mockHttpFailedGET[Option[String]]("tst-url", notFound)
+      connector.getAckRef("not_found_tstID") failedWith notFound
+    }
+    "fail when an Internal Server Error response is returned by the microservice" in new Setup {
+      mockHttpFailedGET[Option[String]]("test-url", internalServiceException)
+      connector.getAckRef("tstID") failedWith internalServiceException
     }
   }
 
