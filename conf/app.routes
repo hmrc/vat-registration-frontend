@@ -197,3 +197,4 @@ GET         /you-cant-register-for-vat-with-this-service                        
 ##
 ##Are you interested in FRS Page
 GET         /join-flat-rate-scheme                                                              controllers.frs.JoinFrsController.show
+POST        /join-flat-rate-scheme                                                              controllers.frs.JoinFrsController.submit

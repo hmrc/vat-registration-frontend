@@ -16,7 +16,8 @@
 
 package models
 
-import models.api.{ScrsAddress, VatServiceEligibility}
+import models.api.VatServiceEligibility
+import models.view.frs.JoinFrsView
 import models.view.ppob.PpobView
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
@@ -137,4 +138,13 @@ final case class S4LPpob
 
 object S4LPpob {
   implicit val format: OFormat[S4LPpob] = Json.format[S4LPpob]
+}
+
+final case class S4LFlatRateScheme
+(
+  joinFrs: Option[JoinFrsView] = None
+)
+
+object S4LFlatRateScheme {
+  implicit val format: OFormat[S4LFlatRateScheme] = Json.format[S4LFlatRateScheme]
 }

@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package forms.genericForms
+package models.api
 
-import forms.FormValidation.{ErrorCode, missingBooleanFieldMapping}
-import play.api.data.Form
-import play.api.data.Forms._
+import play.api.libs.json.{Json, OFormat}
 
-final case class YesOrNoAnswer(answer: Boolean)
+case class FlatRateScheme
+(
+  joinFrs: Boolean,
+  dummy: String = "" //TODO REMOVE
+)
 
-final class YesOrNoFormFactory {
-
-  def form(name: String)(implicit errorCode: ErrorCode): Form[YesOrNoAnswer] = {
-    val OPTION: String = s"${name}Radio"
-    Form(mapping(
-      OPTION -> missingBooleanFieldMapping()
-    )(YesOrNoAnswer.apply)(YesOrNoAnswer.unapply))
-  }
-
+object FlatRateScheme {
+  implicit val format: OFormat[FlatRateScheme] = Json.format[FlatRateScheme]
 }

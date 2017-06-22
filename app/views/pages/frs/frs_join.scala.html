@@ -15,22 +15,22 @@
         )
 
         <h3>@messages("pages.frs.join.subheading1")</h3>
-        <ul>
+        <ul class="list list-bullet">
             <li>@messages("pages.frs.join.list1.bullet1")</li>
             <li>@messages("pages.frs.join.list1.bullet2")</li>
         </ul>
 
         <h3>@messages("pages.frs.join.subheading2")</h3>
-        <ul>
+        <ul class="list list-bullet">
             <li>@messages("pages.frs.join.list2.bullet1")</li>
             <li>@messages("pages.frs.join.list2.bullet2")</li>
         </ul>
 
 
-        <p>@messages("pages.frs.join.para1")</p>
-        <p>@messages("pages.frs.join.para2")</p>
+        <p>@Html(messages("pages.frs.join.para1"))</p>
+        <p>@Html(messages("pages.frs.join.para2"))</p>
 
-        @govHelpers.form(action = controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.submit()) {
+        @govHelpers.form(action = controllers.frs.routes.JoinFrsController.submit()) {
             <div class="form-group">
                 <fieldset class="inline">
                     <span id="joinFrsRadio"></span>
@@ -38,7 +38,7 @@
                         field = joinFrsForm("joinFrsRadio"),
                         Seq(
                             "true" -> Messages("app.common.yes"),
-                            "falase" -> Messages("app.common.no")
+                            "false" -> Messages("app.common.no")
                         ),
                         '_labelAfter -> true,
                         '_labelClass -> "block-label"
