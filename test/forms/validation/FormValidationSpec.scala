@@ -79,18 +79,23 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
   }
 
   "maxLenText" must {
-    val constraint = FormValidation.maxLenText(20)("errorCode")
+    val maxlen = 70
+    val constraint = FormValidation.maxLenText(maxlen)("errorCode")
 
     "accept an empty string as Valid" in {
       constraint("") shouldBe Valid
     }
 
-    "accept a short string as Valid" in {
-      constraint("short string") shouldBe Valid
+    "accept maxLen string as Valid" in {
+      constraint("c" * maxlen) shouldBe Valid
+    }
+
+    "reject maxLen+1 string" in {
+      constraint("c" * (maxlen + 1)) shouldBe Invalid("validation.errorCode.maxlen")
     }
 
     "reject long string" in {
-      constraint("long long long long string") shouldBe Invalid("validation.errorCode.maxlen")
+      constraint("long " * maxlen) shouldBe Invalid("validation.errorCode.maxlen")
     }
   }
 
