@@ -17,7 +17,7 @@
 package models
 
 import models.api.VatServiceEligibility
-import models.view.frs.{AnnualCostsInclusiveView, JoinFrsView}
+import models.view.frs.{AnnualCostsInclusiveView, JoinFrsView, RegisterForFrsView}
 import models.view.ppob.PpobView
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
@@ -143,7 +143,8 @@ object S4LPpob {
 final case class S4LFlatRateScheme
 (
   joinFrs: Option[JoinFrsView] = None,
-  annualCostsInclusive: Option[AnnualCostsInclusiveView] = None
+  annualCostsInclusive: Option[AnnualCostsInclusiveView] = None,
+  registerForFrs: Option[RegisterForFrsView] = None
 )
 
 object S4LFlatRateScheme {

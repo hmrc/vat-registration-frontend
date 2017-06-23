@@ -21,7 +21,8 @@ import play.api.libs.json.{Json, OFormat}
 case class FlatRateScheme
 (
   joinFrs: Boolean,
-  annualCostsInclusive: String
+  annualCostsInclusive: String,
+  registerForFrs: Boolean
 )
 
 object FlatRateScheme {

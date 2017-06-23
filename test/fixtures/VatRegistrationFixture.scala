@@ -101,7 +101,8 @@ trait VatRegistrationFixture {
 
   val validFlatRateScheme = FlatRateScheme(
     joinFrs = true,
-    annualCostsInclusive = AnnualCostsInclusiveView.YES
+    annualCostsInclusive = AnnualCostsInclusiveView.YES,
+    registerForFrs = true
   )
 
   val validDob = DateOfBirth(12, 11, 1973)
