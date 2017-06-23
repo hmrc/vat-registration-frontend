@@ -16,15 +16,16 @@
 
 package models.api
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-case class FlatRateScheme
-(
-  joinFrs: Boolean,
-  annualCostsInclusive: String,
-  registerForFrs: Boolean
-)
+case class AnnualCostsLimited(lessThan: Option[Int] = None,
+                              answer: Option[String] = None)
 
-object FlatRateScheme {
-  implicit val format: OFormat[FlatRateScheme] = Json.format[FlatRateScheme]
+object AnnualCostsLimited {
+
+    implicit val format = (
+    (__ \ "lessThan").formatNullable[Int] and
+      (__ \ "answer").formatNullable[String]
+    ) (AnnualCostsLimited.apply, unlift(AnnualCostsLimited.unapply))
 }
