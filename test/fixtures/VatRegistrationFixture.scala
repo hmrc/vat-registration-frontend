@@ -99,9 +99,9 @@ trait VatRegistrationFixture {
     financialCompliance = None
   )
 
-  val validFlatRateScheme = FlatRateScheme(
-    joinFrs = true,
-    annualCostsInclusive = AnnualCostsInclusiveView.YES
+  val validFlatRateScheme = VatFlatRateSchemeAnswers(
+    joinFrs = Some(true),
+    annualCostsInclusive = Some(AnnualCostsInclusiveView.YES)
   )
 
   val validDob = DateOfBirth(12, 11, 1973)
@@ -211,7 +211,7 @@ trait VatRegistrationFixture {
     vatContact = Some(validVatContact),
     lodgingOfficer = Some(validLodgingOfficer),
     vatSicAndCompliance = Some(validSicAndCompliance),
-    flatRateScheme = Some(validFlatRateScheme)
+    vatFlatRateSchemeAnswers = Some(validFlatRateScheme)
   )
 
   val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")

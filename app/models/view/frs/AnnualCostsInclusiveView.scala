@@ -17,7 +17,7 @@
 package models.view.frs
 
 import models._
-import models.api.{FlatRateScheme, VatScheme}
+import models.api.{VatFlatRateSchemeAnswers, VatScheme}
 import play.api.libs.json.Json
 
 case class AnnualCostsInclusiveView(selection: String)
@@ -39,15 +39,15 @@ object AnnualCostsInclusiveView {
   )
 
   implicit val modelTransformer = ApiModelTransformer[AnnualCostsInclusiveView] { vs: VatScheme =>
-    vs.flatRateScheme.map(_.annualCostsInclusive).collect {
+    vs.vatFlatRateSchemeAnswers.flatMap(_.annualCostsInclusive).collect {
       case YES => AnnualCostsInclusiveView(YES)
       case YES_WITHIN_12_MONTHS => AnnualCostsInclusiveView(YES_WITHIN_12_MONTHS)
       case NO => AnnualCostsInclusiveView(NO)
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: AnnualCostsInclusiveView, g: FlatRateScheme) =>
-    g.copy(annualCostsInclusive = c.selection)
+  implicit val viewModelTransformer = ViewModelTransformer { (c: AnnualCostsInclusiveView, g: VatFlatRateSchemeAnswers) =>
+    g.copy(annualCostsInclusive = Some(c.selection))
   }
 
 }
