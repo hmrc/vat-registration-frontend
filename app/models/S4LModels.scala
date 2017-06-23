@@ -140,12 +140,12 @@ object S4LPpob {
   implicit val format: OFormat[S4LPpob] = Json.format[S4LPpob]
 }
 
-final case class S4LFlatRateScheme
+final case class S4LFlatRateSchemeAnswers
 (
   joinFrs: Option[JoinFrsView] = None,
   annualCostsInclusive: Option[AnnualCostsInclusiveView] = None
 )
 
-object S4LFlatRateScheme {
-  implicit val format: OFormat[S4LFlatRateScheme] = Json.format[S4LFlatRateScheme]
+object S4LFlatRateSchemeAnswers {
+  implicit val format: OFormat[S4LFlatRateSchemeAnswers] = Json.format[S4LFlatRateSchemeAnswers]
 }
