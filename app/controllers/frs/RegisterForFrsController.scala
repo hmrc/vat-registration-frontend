@@ -41,7 +41,7 @@ class RegisterForFrsController @Inject()(ds: CommonPlayDependencies, formFactory
       badForm => BadRequest(views.html.pages.frs.frs_register_for(badForm)).pure,
       registerForFrs => save(RegisterForFrsView(registerForFrs.answer)).map(_ =>
         Redirect(if (registerForFrs.answer) {
-          controllers.frs.routes.AnnualCostsInclusiveController.show() //TODO change to next screen - FRS start date
+          controllers.routes.SummaryController.show() //TODO change to next screen - FRS start date
         } else {
           controllers.routes.SummaryController.show()
         }))))

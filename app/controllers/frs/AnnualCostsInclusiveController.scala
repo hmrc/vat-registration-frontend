@@ -26,9 +26,8 @@ import services.{S4LService, VatRegistrationService}
 
 
 class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
-                                              (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
-
-  import cats.syntax.flatMap._
+                                              (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) {
 
   val form = AnnualCostsInclusiveForm.form
 
@@ -39,9 +38,11 @@ class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.frs.annual_costs_inclusive(badForm)).pure,
-      goodForm => (goodForm.selection == AnnualCostsInclusiveView.NO).pure.ifM(
-        s4LService.clear().flatMap(_ => vrs.deleteVatScheme()).map(_ => controllers.routes.WelcomeController.show()),
-        save(goodForm).map(_ => controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
-      ).map(Redirect)))
+      goodForm => save(goodForm).map(_ =>
+        Redirect(if (goodForm.selection == AnnualCostsInclusiveView.NO) {
+          controllers.frs.routes.RegisterForFrsController.show()
+        } else {
+          controllers.routes.SummaryController.show()
+        }))))
 
 }
