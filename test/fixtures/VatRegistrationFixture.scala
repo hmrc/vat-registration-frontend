@@ -99,7 +99,7 @@ trait VatRegistrationFixture {
     financialCompliance = None
   )
 
-  val validFlatRateScheme = VatFlatRateSchemeAnswers(
+  val validFlatRateSchemeAnswers = VatFlatRateSchemeAnswers(
     joinFrs = Some(true),
     annualCostsInclusive = Some(AnnualCostsInclusiveView.YES)
   )
@@ -183,12 +183,14 @@ trait VatRegistrationFixture {
                  id: String = validRegId,
                  vatTradingDetails: Option[VatTradingDetails] = None,
                  sicAndCompliance: Option[VatSicAndCompliance] = None,
-                 contact: Option[VatContact] = None
+                 contact: Option[VatContact] = None,
+                 vatFlatRateSchemeAnswers: Option[VatFlatRateSchemeAnswers] = None
                ): VatScheme = VatScheme(
     id = id,
     tradingDetails = vatTradingDetails,
     vatSicAndCompliance = sicAndCompliance,
-    vatContact = contact
+    vatContact = contact,
+    vatFlatRateSchemeAnswers = vatFlatRateSchemeAnswers
   )
 
   val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
@@ -211,7 +213,7 @@ trait VatRegistrationFixture {
     vatContact = Some(validVatContact),
     lodgingOfficer = Some(validLodgingOfficer),
     vatSicAndCompliance = Some(validSicAndCompliance),
-    vatFlatRateSchemeAnswers = Some(validFlatRateScheme)
+    vatFlatRateSchemeAnswers = Some(validFlatRateSchemeAnswers)
   )
 
   val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
