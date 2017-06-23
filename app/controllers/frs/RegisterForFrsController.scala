@@ -21,27 +21,27 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
-import models.view.frs.JoinFrsView
+import models.view.frs.RegisterForFrsView
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
 
-class JoinFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOrNoFormFactory)
-                                 (implicit s4LService: S4LService, vrs: VatRegistrationService)
+class RegisterForFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOrNoFormFactory)
+                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with FlatMapSyntax {
 
-  val form = formFactory.form("joinFrs")("frs.join")
+  val form = formFactory.form("registerForFrs")("frs.registerFor")
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[JoinFrsView]().map(vm => YesOrNoAnswer(vm.selection)).fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.frs.frs_join(f))))
+    viewModel[RegisterForFrsView]().map(vm => YesOrNoAnswer(vm.selection)).fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.frs.frs_register_for(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.frs.frs_join(badForm)).pure,
-      joinFrs => save(JoinFrsView(joinFrs.answer)).map(_ =>
-        Redirect(if (joinFrs.answer) {
-          controllers.frs.routes.AnnualCostsInclusiveController.show()
+      badForm => BadRequest(views.html.pages.frs.frs_register_for(badForm)).pure,
+      registerForFrs => save(RegisterForFrsView(registerForFrs.answer)).map(_ =>
+        Redirect(if (registerForFrs.answer) {
+          controllers.frs.routes.AnnualCostsInclusiveController.show() //TODO change to next screen - FRS start date
         } else {
           controllers.routes.SummaryController.show()
         }))))

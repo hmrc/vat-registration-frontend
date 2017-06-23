@@ -713,3 +713,9 @@ pages.frs.costsInclusive.panel.bullet9                    = capital items, for e
 pages.frs.costsInclusive.panel.bullet10                   = services - that is, anything not classified as "goods"
 validation.frs.costsInclusive.missing                     = Tell us if you spend less than £1,000 a year (including VAT) on business goods
 
+#Do you want to register for FRS Page
+pages.frs.registerFor.title                            = Your flat rate scheme
+pages.frs.registerFor.heading                          = Your flat rate
+pages.frs.registerFor.panel1.para                      = You can add a 1% discount to this rate in your first year as a VAT-registered business.
+pages.frs.registerFor.subheading1                      = Do you want to use this rate?
+validation.frs.registerFor.missing                     = Tell us if you want to use this rate

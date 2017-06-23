@@ -24,7 +24,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class JoinFrsViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
-  val testFlatRateScheme = FlatRateScheme(joinFrs = true, AnnualCostsInclusiveView.YES)
+  val testFlatRateScheme = FlatRateScheme(joinFrs = true, AnnualCostsInclusiveView.YES, registerForFrs = true)
 
   "apiModelTransformer" should {
 
