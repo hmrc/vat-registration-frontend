@@ -104,6 +104,13 @@ trait RegistrationConnector extends FutureInstances {
       case e: Exception => throw logResponse(e, className, "upsertVatEligibility")
     }
 
+  def updateFrsAnswers(regId: String, vatFlatRateSchemeAnswers: VatFlatRateSchemeAnswers)
+                          (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateSchemeAnswers]): Future[VatFlatRateSchemeAnswers] =
+    http.PATCH[VatFlatRateSchemeAnswers, VatFlatRateSchemeAnswers](s"$vatRegUrl/vatreg/$regId/frs-answers", vatFlatRateSchemeAnswers) recover {
+      case e: Exception => throw logResponse(e, className, "vatFlatRateSchemeAnswers")
+    }
+
+
   def upsertPpob(regId: String, address: ScrsAddress)
                 (implicit hc: HeaderCarrier, rds: HttpReads[ScrsAddress]): Future[ScrsAddress] =
     http.PATCH[ScrsAddress, ScrsAddress](s"$vatRegUrl/vatreg/$regId/ppob", address) recover {

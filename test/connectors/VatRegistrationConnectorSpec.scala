@@ -245,6 +245,27 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
+  "Calling updateFrsAnswers" should {
+
+
+    "return the correct VatResponse when the microservice completes and returns a VatFlatRateSchemeAnswers model" in new Setup {
+      mockHttpPATCH[VatFlatRateSchemeAnswers, VatFlatRateSchemeAnswers]("tst-url", validVatFlatRateSchemeAnswers)
+      connector.updateFrsAnswers("tstID", validVatFlatRateSchemeAnswers) returns validVatFlatRateSchemeAnswers
+    }
+    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[VatFlatRateSchemeAnswers, VatFlatRateSchemeAnswers]("tst-url", forbidden)
+      connector.updateFrsAnswers("tstID", validVatFlatRateSchemeAnswers) failedWith forbidden
+    }
+    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
+      mockHttpFailedPATCH[VatFlatRateSchemeAnswers, VatFlatRateSchemeAnswers]("tst-url", notFound)
+      connector.updateFrsAnswers("tstID", validVatFlatRateSchemeAnswers) failedWith notFound
+    }
+    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[VatFlatRateSchemeAnswers, VatFlatRateSchemeAnswers]("tst-url", internalServiceException)
+      connector.updateFrsAnswers("tstID", validVatFlatRateSchemeAnswers) failedWith internalServiceException
+    }
+  }
+
   "Calling upsertLodgingOfficer" should {
 
     val vatLodgingOfficer = validLodgingOfficer

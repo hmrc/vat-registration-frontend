@@ -238,5 +238,10 @@ trait VatRegistrationFixture {
   val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
 
   val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
-
+  val validVatFlatRateSchemeAnswers = VatFlatRateSchemeAnswers(
+    joinFrs = Some(true),
+    annualCostsInclusive = Some("yesWithin12months"),
+    annualCostsLimited = Some(AnnualCostsLimited(Some(1000), Some("yesWithin12months"))),
+    doYouWantToUseThisRate = Some(false),
+    whenDoYouWantToJoinFrs=  Some("registrationDate"))
 }
