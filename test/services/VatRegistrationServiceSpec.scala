@@ -25,6 +25,7 @@ import helpers.{S4LMockSugar, VatRegSpec}
 import models._
 import models.api._
 import models.external.CoHoCompanyProfile
+import models.view.frs.{AnnualCostsInclusiveView, JoinFrsView, RegisterForFrsView}
 import models.view.ppob.PpobView
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
@@ -127,7 +128,13 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
         officerNino = Some(OfficerNinoView("")),
         completionCapacity = Some(CompletionCapacityView(""))
       ))
+
       save4laterReturns(S4LPpob(address = Some(PpobView(scrsAddress.id, Some(scrsAddress)))))
+
+      save4laterReturns(S4LFlatRateSchemeAnswers(
+        joinFrs = Some(JoinFrsView(true)),
+        annualCostsInclusive = Some(AnnualCostsInclusiveView("yes")),
+        registerForFrs = Some(RegisterForFrsView(true))))
 
       save4laterReturns(S4LVatFinancials(
         estimateVatTurnover = Some(validEstimateVatTurnover),
@@ -148,6 +155,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.upsertVatLodgingOfficer(any(), any())(any(), any())).thenReturn(validLodgingOfficer.pure)
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
       when(mockRegConnector.upsertPpob(any(), any())(any(), any())).thenReturn(scrsAddress.pure)
+      when(mockRegConnector.upsertVatFrsAnswers(any(), any())(any(), any())).thenReturn(validVatFrsAnswers.pure)
 
       service.submitVatScheme() completedSuccessfully
     }

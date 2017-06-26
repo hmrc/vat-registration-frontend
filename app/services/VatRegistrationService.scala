@@ -99,7 +99,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
     submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@|
-      submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer |@| submitPpob map { case _ => () }
+      submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer |@|
+      submitFrsAnswers() |@| submitPpob map { case _ => () }
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
     def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =
@@ -217,6 +218,23 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     for {
       (vs, vlo) <- (getVatScheme() |@| s4l[S4LVatLodgingOfficer]()).tupled
       response <- vatRegConnector.upsertVatLodgingOfficer(vs.id, merge(vlo, vs))
+    } yield response
+  }
+
+  def submitFrsAnswers()(implicit hc: HeaderCarrier): Future[VatFlatRateSchemeAnswers] = {
+    def merge(fresh: Option[S4LFlatRateSchemeAnswers], vs: VatScheme): VatFlatRateSchemeAnswers =
+      fresh.fold(
+        vs.vatFlatRateSchemeAnswers.getOrElse(throw fail("VatFlatRateSchemeAnswers"))
+      ) { s4l =>
+        update(s4l.annualCostsInclusive)
+          .andThen(update(s4l.joinFrs))
+          .andThen(update(s4l.registerForFrs))
+          .apply(vs.vatFlatRateSchemeAnswers.getOrElse(VatFlatRateSchemeAnswers()))
+      }
+
+    for {
+      (vs, frsa) <- (getVatScheme() |@| s4l[S4LFlatRateSchemeAnswers]()).tupled
+      response <- vatRegConnector.upsertVatFrsAnswers(vs.id, merge(frsa, vs))
     } yield response
   }
 
