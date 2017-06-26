@@ -18,29 +18,30 @@ package controllers.frs
 
 import javax.inject.Inject
 
+import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.frs.AnnualCostsInclusiveForm
-import models.view.frs.AnnualCostsInclusiveView
+import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
+import models.view.frs.RegisterForFrsView
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
 
-class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
-                                              (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) {
+class RegisterForFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOrNoFormFactory)
+                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with FlatMapSyntax {
 
-  val form = AnnualCostsInclusiveForm.form
+  val form = formFactory.form("registerForFrs")("frs.registerFor")
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[AnnualCostsInclusiveView]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.frs.annual_costs_inclusive(f))))
+    viewModel[RegisterForFrsView]().map(vm => YesOrNoAnswer(vm.selection)).fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.frs.frs_register_for(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.frs.annual_costs_inclusive(badForm)).pure,
-      goodForm => save(goodForm).map(_ =>
-        Redirect(if (goodForm.selection == AnnualCostsInclusiveView.NO) {
-          controllers.frs.routes.RegisterForFrsController.show()
+      badForm => BadRequest(views.html.pages.frs.frs_register_for(badForm)).pure,
+      registerForFrs => save(RegisterForFrsView(registerForFrs.answer)).map(_ =>
+        Redirect(if (registerForFrs.answer) {
+          controllers.routes.SummaryController.show() //TODO change to next screen - FRS start date
         } else {
           controllers.routes.SummaryController.show()
         }))))

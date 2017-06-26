@@ -34,16 +34,23 @@ class AnnualCostsLimitedController @Inject()(ds: CommonPlayDependencies)
   val form = AnnualCostsLimitedForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    val estimateVatTurnover = viewModel[EstimateVatTurnover]().map(_.vatTurnoverEstimate * 0.02)
-    viewModel[AnnualCostsLimitedView]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.frs.annual_costs_limited(f, ))))
+    for {
+      estimateVatTurnover <- viewModel[EstimateVatTurnover]().fold(0L)(turnover => (turnover.vatTurnoverEstimate * 0.02).toLong)
+      annualCostsLimitedForm <- viewModel[AnnualCostsLimitedView]().fold(form)(form.fill)
+    } yield Ok(views.html.pages.frs.annual_costs_limited(annualCostsLimitedForm, estimateVatTurnover))
+  )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.frs.annual_costs_limited(badForm)).pure,
-      goodForm => (goodForm.selection == AnnualCostsLimitedView.NO).pure.ifM(
-        s4LService.clear().flatMap(_ => vrs.deleteVatScheme()).map(_ => controllers.routes.WelcomeController.show()),
-        save(goodForm).map(_ => controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
+      form.bindFromRequest().fold(
+            badForm => {
+              for {
+                estimateVatTurnover <- viewModel[EstimateVatTurnover]().fold(0L)(turnover => (turnover.vatTurnoverEstimate * 0.02).toLong)
+              } yield BadRequest(views.html.pages.frs.annual_costs_limited(badForm, estimateVatTurnover))
+            }
+        ,
+            goodForm => (goodForm.selection == AnnualCostsLimitedView.NO).pure.ifM(
+              s4LService.clear().flatMap(_ => vrs.deleteVatScheme()).map(_ => controllers.routes.WelcomeController.show()),
+              save(goodForm).map(_ => controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
       ).map(Redirect)))
 
 }

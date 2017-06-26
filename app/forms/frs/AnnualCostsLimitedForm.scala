@@ -16,20 +16,22 @@
 
 package forms.frs
 
-import forms.FormValidation.textMapping
+import forms.FormValidation.textMappingWithMessageArgs
 import models.view.frs.AnnualCostsLimitedView
 import play.api.data.Form
-import play.api.data.Forms.mapping
+import play.api.data.Forms.{mapping, optional, text}
 
 object AnnualCostsLimitedForm {
 
-  val RADIO_INCLUSIVE: String = "annualCostsLimitedRadio"
+  val RADIO_COSTS_LIMITED: String = "annualCostsLimitedRadio"
+  val HIDDEN_TURNOVER: String = "hiddenTurnover"
 
   val form = Form(
     mapping(
-      RADIO_INCLUSIVE -> textMapping()("frs.costsLimited")
+      HIDDEN_TURNOVER -> optional(text),
+      RADIO_COSTS_LIMITED -> textMappingWithMessageArgs()(Seq(HIDDEN_TURNOVER))("frs.costsLimited")
         .verifying(AnnualCostsLimitedView.valid)
-    )(AnnualCostsLimitedView.apply)(AnnualCostsLimitedView.unapply)
+    )((HIDDEN_TURNOVER, RADIO_COSTS_LIMITED) => AnnualCostsLimitedView(RADIO_COSTS_LIMITED))
+     ((view : AnnualCostsLimitedView) => Some(None, view.selection ) )
   )
-
 }

@@ -39,8 +39,8 @@ class JoinFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOr
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.frs.frs_join(badForm)).pure,
-      goodForm => save(JoinFrsView(goodForm.answer)).map(_ =>
-        Redirect(if (goodForm.answer) {
+      joinFrs => save(JoinFrsView(joinFrs.answer)).map(_ =>
+        Redirect(if (joinFrs.answer) {
           controllers.frs.routes.AnnualCostsInclusiveController.show()
         } else {
           controllers.routes.SummaryController.show()
