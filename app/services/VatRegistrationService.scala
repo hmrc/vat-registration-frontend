@@ -191,7 +191,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
         vs.vatServiceEligibility.getOrElse(throw fail("VatServiceEligibility"))
       ) { s4l =>
         update(s4l.vatEligibility)
-          .apply(vs.vatServiceEligibility.getOrElse(VatServiceEligibility())) //TODO remove the "seeding" with empty
+          .apply(vs.vatServiceEligibility.getOrElse(VatServiceEligibility()))
       }
 
     for {
