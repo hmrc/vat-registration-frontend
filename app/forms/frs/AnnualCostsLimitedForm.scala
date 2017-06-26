@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package models.api
+package forms.frs
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import forms.FormValidation.textMapping
+import models.view.frs.AnnualCostsLimitedView
+import play.api.data.Form
+import play.api.data.Forms.mapping
 
-case class AnnualCostsLimited(lessThan: Option[Int] = None,
-                              answer: Option[String] = None)
+object AnnualCostsLimitedForm {
 
-object AnnualCostsLimited {
+  val RADIO_INCLUSIVE: String = "annualCostsLimitedRadio"
 
-    implicit val format = (
-    (__ \ "lessThan").formatNullable[Int] and
-      (__ \ "answer").formatNullable[String]
-    ) (AnnualCostsLimited.apply, unlift(AnnualCostsLimited.unapply))
+  val form = Form(
+    mapping(
+      RADIO_INCLUSIVE -> textMapping()("frs.costsLimited")
+        .verifying(AnnualCostsLimitedView.valid)
+    )(AnnualCostsLimitedView.apply)(AnnualCostsLimitedView.unapply)
+  )
+
 }
