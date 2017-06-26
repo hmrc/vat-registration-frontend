@@ -29,7 +29,8 @@ case class TestSetup(
                       vatServiceEligibility: VatServiceEligibilityTestSetup,
                       officerHomeAddress: OfficerHomeAddressTestSetup,
                       officerPreviousAddress: OfficerPreviousAddressTestSetup,
-                      vatLodgingOfficer: VatLodgingOfficerTestSetup
+                      vatLodgingOfficer: VatLodgingOfficerTestSetup,
+                      vatFlatRateSchemeAnswers: VatFlatRateSchemeAnswersTestSetup
                     )
 
 

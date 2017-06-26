@@ -1,5 +1,5 @@
 @import models.view.frs.AnnualCostsLimitedView
-@(annualCostsInclusiveForm:  Form[AnnualCostsLimitedView])(implicit request: Request[_], messages: Messages)
+@(annualCostsInclusiveForm:  Form[AnnualCostsLimitedView], estimateVatTurnover : Long)(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
 
@@ -8,7 +8,8 @@
   <div class="column-two-thirds">
 
       <h1 class="form-title heading-xlarge" id="pageHeading">
-      @messages("pages.frs.costsLimited.heading1")
+          @messages("pages.frs.costsLimited.heading1")
+          @estimateVatTurnover
           @messages("pages.frs.costsLimited.heading2")
 
       </h1>
@@ -55,6 +56,8 @@
                 '_labelAfter -> true,
                 '_labelClass -> "block-label"
             )
+            <input type="hidden" name="hiddenTurnover" value="@estimateVatTurnover" id="hiddenTurnover" class="hidden" />
+
         </fieldset>
       </div>
 

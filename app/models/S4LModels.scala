@@ -16,6 +16,8 @@
 
 package models
 
+import models.api.VatServiceEligibility
+import models.view.frs.{AnnualCostsInclusiveView, JoinFrsView, RegisterForFrsView}
 import models.api.{AnnualCostsLimited, VatServiceEligibility}
 import models.view.frs.{AnnualCostsInclusiveView, AnnualCostsLimitedView, JoinFrsView}
 import models.view.ppob.PpobView
@@ -140,13 +142,13 @@ object S4LPpob {
   implicit val format: OFormat[S4LPpob] = Json.format[S4LPpob]
 }
 
-final case class S4LFlatRateScheme
+final case class S4LFlatRateSchemeAnswers
 (
   joinFrs: Option[JoinFrsView] = None,
   annualCostsInclusive: Option[AnnualCostsInclusiveView] = None,
   annualCostsLimited: Option[AnnualCostsLimitedView] = None
 )
 
-object S4LFlatRateScheme {
-  implicit val format: OFormat[S4LFlatRateScheme] = Json.format[S4LFlatRateScheme]
+object S4LFlatRateSchemeAnswers {
+  implicit val format: OFormat[S4LFlatRateSchemeAnswers] = Json.format[S4LFlatRateSchemeAnswers]
 }

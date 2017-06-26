@@ -203,6 +203,10 @@ POST        /join-flat-rate-scheme                                              
 GET         /spends-less-including-vat-on-goods                                                 controllers.frs.AnnualCostsInclusiveController.show
 POST        /spends-less-including-vat-on-goods                                                 controllers.frs.AnnualCostsInclusiveController.submit
 
-##Do you spend less than 2%  a year Page
-GET         /spends-less-including-vat-on-goods                                                 controllers.frs.AnnualCostsLimitedController.show
-POST        /spends-less-including-vat-on-goods                                                 controllers.frs.AnnualCostsLimitedController.submit
+## Do you want to register for FRS page
+GET         /your-flat-rate                                                                     controllers.frs.RegisterForFrsController.show
+POST        /your-flat-rate                                                                     controllers.frs.RegisterForFrsController.submit
+
+##Do you spend less than 2% of turnover a year Page
+GET         /spends-less-than-two-percent-of-turnover-a-year-on-goods                           controllers.frs.AnnualCostsLimitedController.show
+POST        /spends-less-than-two-percent-of-turnover-a-year-on-goods                           controllers.frs.AnnualCostsLimitedController.submit
