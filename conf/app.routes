@@ -206,3 +206,7 @@ POST        /spends-less-including-vat-on-goods            controllers.frs.Annua
 ## Do you want to register for FRS page
 GET         /your-flat-rate                                controllers.frs.RegisterForFrsController.show
 POST        /your-flat-rate                                controllers.frs.RegisterForFrsController.submit
+
+## When do you want to join the Flat Rate Scheme?
+GET         /flat-rate-scheme-join-date	                   controllers.frs.FrsStartDateController.show
+POST        /flat-rate-scheme-join-date	                   controllers.frs.FrsStartDateController.submit
