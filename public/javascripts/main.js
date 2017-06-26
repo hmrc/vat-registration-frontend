@@ -142,6 +142,16 @@ $(document).ready($(function () {
     }
 }(window.FormerNamePage = window.FormerNamePage || {}, jQuery));
 
+// FrsStartDatePage module
+(function (FrsStartDatePage, $, undefined) {
+    FrsStartDatePage.init = function() {
+        UI.hideShowOnRadioButton("frsStartDateRadio",
+            { "#frsStartDateRadio-different_date": "#different_date_panel" });
+        var numericInputs = ["frsStartDate\\.day", "frsStartDate\\.month", "frsStartDate\\.year"];
+        UI.preventNonNumericInput(numericInputs);
+    }
+}(window.FrsStartDatePage = window.FrsStartDatePage || {}, jQuery));
+
 /*
  example of multiple hide/show areas
  UI.hideShowOnRadioButton("startDate",
