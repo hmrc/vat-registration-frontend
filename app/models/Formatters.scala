@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package utils
+package models
 
 import java.text.Normalizer
 

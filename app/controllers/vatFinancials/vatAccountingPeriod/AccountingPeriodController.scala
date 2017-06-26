@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.vatAccountingPeriod.AccountingPeriodForm
+import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -28,6 +29,8 @@ import services.{S4LService, VatRegistrationService}
 class AccountingPeriodController @Inject()(ds: CommonPlayDependencies)
                                           (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
+
+  val joinThreshold: Long = conf.getLong("thresholds.frs.joinThreshold").get
 
   val form = AccountingPeriodForm.form
 
@@ -41,6 +44,11 @@ class AccountingPeriodController @Inject()(ds: CommonPlayDependencies)
       data => for {
         _ <- save(data)
         _ <- vrs.submitVatFinancials()
-      } yield Redirect(controllers.routes.SummaryController.show())))
+        turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
+      } yield Redirect(if (turnover > joinThreshold) {
+        controllers.routes.SummaryController.show()
+      } else {
+        controllers.frs.routes.JoinFrsController.show()
+      })))
 
 }
