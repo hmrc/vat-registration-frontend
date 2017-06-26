@@ -739,4 +739,4 @@ pages.frs.costsLimited.panel.bullet7                    = goods you will resell 
 pages.frs.costsLimited.panel.bullet8                    = training and memberships
 pages.frs.costsLimited.panel.bullet9                    = capital items, for example office equipment, laptops, mobile phones and tablets
 pages.frs.costsLimited.panel.bullet10                   = services - that is, anything not classified as "goods"
-validation.frs.costsLimited.missing                     = Tell us if you spend less than £1,000 a year (including VAT) on business goods
+validation.frs.costsLimited.missing                     = Tell us if you spend less than {0} a year (including VAT) on business goods

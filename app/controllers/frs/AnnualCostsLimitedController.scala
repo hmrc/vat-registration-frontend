@@ -35,9 +35,7 @@ class AnnualCostsLimitedController @Inject()(ds: CommonPlayDependencies)
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
-      estimateVatTurnover <- viewModel[EstimateVatTurnover]().fold(0L)(
-        turnover =>
-          (turnover.vatTurnoverEstimate * 0.02).toLong)
+      estimateVatTurnover <- viewModel[EstimateVatTurnover]().fold(0L)(turnover => (turnover.vatTurnoverEstimate * 0.02).toLong)
       annualCostsLimitedForm <- viewModel[AnnualCostsLimitedView]().fold(form)(form.fill)
     } yield Ok(views.html.pages.frs.annual_costs_limited(annualCostsLimitedForm, estimateVatTurnover))
   )
