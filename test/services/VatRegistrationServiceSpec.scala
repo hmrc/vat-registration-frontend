@@ -345,6 +345,24 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       service.submitVatLodgingOfficer() failedWith classOf[IllegalStateException]
     }
 
+    "submitFrsAnswers should process the submission even if VatScheme does not contain VatFrsAnswers" in new Setup {
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockRegConnector.upsertVatFrsAnswers(any(), any())(any(), any())).thenReturn(validFlatRateSchemeAnswers.pure)
+      save4laterReturns(S4LFlatRateSchemeAnswers(
+        joinFrs = Some(JoinFrsView(true)),
+        annualCostsInclusive = Some(AnnualCostsInclusiveView("yes")),
+        registerForFrs = Some(RegisterForFrsView(true))
+      ))
+      service.submitFrsAnswers() returns validFlatRateSchemeAnswers
+    }
+
+    "submitFrsAnswers should fail if there's no VatFlatRateSchemeAnswers in backend or S4L" in new Setup {
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+      save4laterReturnsNothing[S4LFlatRateSchemeAnswers]()
+
+      service.submitFrsAnswers() failedWith classOf[IllegalStateException]
+    }
+
     "submitPpob should fail if there's not trace of PPOB in neither backend nor S4L" in new Setup {
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       save4laterReturnsNothing[S4LPpob]()
