@@ -18,12 +18,11 @@ package models.api
 
 import cats.Show
 import cats.Show.show
+import models.Formatters
 import models.api.Name.inlineShow.inline
-
 import org.apache.commons.lang3.text.WordUtils
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import utils.Formatters
 
 case class Name(
                  forename: Option[String],
