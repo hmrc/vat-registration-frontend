@@ -202,3 +202,7 @@ POST        /join-flat-rate-scheme                                              
 ##Do you spend less than £1000 a year Page
 GET         /spends-less-including-vat-on-goods                                                 controllers.frs.AnnualCostsInclusiveController.show
 POST        /spends-less-including-vat-on-goods                                                 controllers.frs.AnnualCostsInclusiveController.submit
+
+##Do you spend less than 2%  a year Page
+GET         /spends-less-including-vat-on-goods                                                 controllers.frs.AnnualCostsLimitedController.show
+POST        /spends-less-including-vat-on-goods                                                 controllers.frs.AnnualCostsLimitedController.submit

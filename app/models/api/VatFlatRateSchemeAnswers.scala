@@ -21,7 +21,7 @@ import play.api.libs.json._
 
 case class VatFlatRateSchemeAnswers(joinFrs: Option[Boolean] = None,
                                     annualCostsInclusive: Option[String] = None,
-                                    annualCostsLimited: Option[AnnualCostsLimited] = None,
+                                    annualCostsLimited: Option[String] = None,
                                     doYouWantToUseThisRate: Option[Boolean] = None,
                                     whenDoYouWantToJoinFrs: Option[String] = None)
 
@@ -30,7 +30,7 @@ object VatFlatRateSchemeAnswers {
   implicit val format = (
     (__ \ "joinFrs").formatNullable[Boolean] and
       (__ \ "annualCostsInclusive").formatNullable[String] and
-      (__ \ "annualCostsLimited").formatNullable[AnnualCostsLimited] and
+      (__ \ "annualCostsLimited").formatNullable[String] and
       (__ \ "doYouWantToUseThisRate").formatNullable[Boolean] and
       (__ \ "whenDoYouWantToJoinFrs").formatNullable[String]
     ) (VatFlatRateSchemeAnswers.apply, unlift(VatFlatRateSchemeAnswers.unapply))
