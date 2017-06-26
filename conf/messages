@@ -722,7 +722,7 @@ validation.frs.registerFor.missing                     = Tell us if you want to 
 
 #Do you spend less than 2% of your turn over Page
 pages.frs.costsLimited.title                            = Do you spend less than 2% of turnover a year including VAT on goods for the business?
-pages.frs.costsLimited.heading1                         = Do you spend less than 
+pages.frs.costsLimited.heading1                         = Do you spend less than £
 pages.frs.costsLimited.heading2                         =  a year (including VAT) on business goods?
 pages.frs.costsLimited.p1                               = Business goods are physical items that you use exclusively for your business. They include gas and electricity and software on a disc.
 pages.frs.costsLimited.radio2                           = No - but I will over the next 12 months

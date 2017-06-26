@@ -35,7 +35,9 @@ class AnnualCostsLimitedController @Inject()(ds: CommonPlayDependencies)
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
-      estimateVatTurnover <- viewModel[EstimateVatTurnover]().fold(0L)(turnover => (turnover.vatTurnoverEstimate * 0.02).toLong)
+      estimateVatTurnover <- viewModel[EstimateVatTurnover]().fold(0L)(
+        turnover =>
+          (turnover.vatTurnoverEstimate * 0.02).toLong)
       annualCostsLimitedForm <- viewModel[AnnualCostsLimitedView]().fold(form)(form.fill)
     } yield Ok(views.html.pages.frs.annual_costs_limited(annualCostsLimitedForm, estimateVatTurnover))
   )
@@ -48,9 +50,12 @@ class AnnualCostsLimitedController @Inject()(ds: CommonPlayDependencies)
               } yield BadRequest(views.html.pages.frs.annual_costs_limited(badForm, estimateVatTurnover))
             }
         ,
-            goodForm => (goodForm.selection == AnnualCostsLimitedView.NO).pure.ifM(
-              s4LService.clear().flatMap(_ => vrs.deleteVatScheme()).map(_ => controllers.routes.WelcomeController.show()),
-              save(goodForm).map(_ => controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
-      ).map(Redirect)))
+            goodForm => save(goodForm).map(_ =>
+                  Redirect(if (goodForm.selection == AnnualCostsLimitedView.NO) {
+                    controllers.frs.routes.RegisterForFrsController.show()
+                  } else {
+                    controllers.frs.routes.RegisterForFrsController.show()
+                  })))
+  )
 
 }
