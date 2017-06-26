@@ -27,11 +27,16 @@ trait SummarySectionBuilder {
   val section: SummarySection
   val presentationFormatter = DateTimeFormatter.ofPattern("d MMMM y")
 
-  protected def yesNoRow(rowId: String, yesNo: Option[Boolean], changeLinkUrl: Call) =
+  protected[controllers]
+  def yesNoRow
+  (rowId: String, yesNo: Option[Boolean], changeLink: Call, trueKey: String = "app.common.yes", falseKey: String = "app.common.no") =
     SummaryRow(
       s"$sectionId.$rowId",
-      if (yesNo.contains(true)) "app.common.yes" else "app.common.no",
-      Some(changeLinkUrl)
+      if (yesNo.contains(true)) trueKey else falseKey,
+      Some(changeLink)
     )
+
+  protected[controllers] def appliedRow(rowId: String, yesNo: Option[Boolean], changeLinkUrl: Call) =
+    yesNoRow(rowId, yesNo, changeLinkUrl, "app.common.applied", "app.common.not.applied")
 
 }
