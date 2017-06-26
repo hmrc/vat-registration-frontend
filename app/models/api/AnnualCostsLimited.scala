@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-package models
+package models.api
 
-case class RadioOptions(option: String, value: String)
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
+case class AnnualCostsLimited(lessThan: Option[Int] = None,
+                              answer: Option[String] = None)
 
+object AnnualCostsLimited {
 
-
+    implicit val format = (
+    (__ \ "lessThan").formatNullable[Int] and
+      (__ \ "answer").formatNullable[String]
+    ) (AnnualCostsLimited.apply, unlift(AnnualCostsLimited.unapply))
+}

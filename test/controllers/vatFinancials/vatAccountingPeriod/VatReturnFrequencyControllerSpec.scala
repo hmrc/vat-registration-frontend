@@ -20,6 +20,7 @@ import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
 import forms.vatFinancials.vatAccountingPeriod.VatReturnFrequencyForm
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -73,20 +74,62 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
   s"POST ${vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Monthly" should {
 
-    "return 303" in {
-      save4laterExpectsSave[VatReturnFrequency]()
-      save4laterExpectsSave[AccountingPeriod]()
-      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
-      when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+    "redirect to summary page" when {
 
-      submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
-        _ redirectsTo s"$contextRoot/check-your-answers"
+      "taxable turnover above the FRS threshold of 150k" in {
+        save4laterReturnsViewModel(EstimateVatTurnover(200000L))() //above the 150k threshold
+        save4laterExpectsSave[VatReturnFrequency]()
+        save4laterExpectsSave[AccountingPeriod]()
+
+        when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+        when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+
+        submitAuthorised(Controller.submit(),
+          fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
+          _ redirectsTo s"$contextRoot/check-your-answers"
+        }
+
+        verify(mockVatRegistrationService).submitVatFinancials()(any())
       }
 
-      verify(mockVatRegistrationService).submitVatFinancials()(any())
     }
 
+    "redirect to start of FRS Flow" when {
+
+      "estimated vat turnover less than 150k" in {
+        save4laterReturnsViewModel(EstimateVatTurnover(100000L))() //below the 150k threshold
+        save4laterExpectsSave[VatReturnFrequency]()
+        save4laterExpectsSave[AccountingPeriod]()
+
+        when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+        when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+
+        submitAuthorised(Controller.submit(),
+          fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
+          _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
+        }
+
+        verify(mockVatRegistrationService).submitVatFinancials()(any())
+      }
+
+      "estimated vat turnover can't be determined" in {
+        save4laterExpectsSave[VatReturnFrequency]()
+        save4laterExpectsSave[AccountingPeriod]()
+        when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+        save4laterReturnsNoViewModel[EstimateVatTurnover]()
+
+        when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+        when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+
+        submitAuthorised(Controller.submit(),
+          fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
+          _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
+        }
+
+        verify(mockVatRegistrationService).submitVatFinancials()(any())
+      }
+
+    }
   }
 
   s"POST ${vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Quarterly" should {
@@ -100,7 +143,6 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
         _ redirectsTo s"$contextRoot/vat-return-periods-end"
       }
     }
-    
   }
 
 }

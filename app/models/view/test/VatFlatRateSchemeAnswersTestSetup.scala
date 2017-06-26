@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package forms.genericForms
+package models.view.test
 
-import forms.FormValidation.textMapping
-import models.RadioOptions
-import play.api.data.Form
-import play.api.data.Forms._
+import play.api.libs.json.Json
 
-//currently not in use, awaiting wider-scope refactoring of our forms
-// $COVERAGE-OFF$
+case class VatFlatRateSchemeAnswersTestSetup(joinFrs: Option[String],
+                                             annualCostsInclusive: Option[String])
 
-class RadioOptionsFormFactory {
-
-  def form(option: String): Form[RadioOptions] = {
-    val OPTION: String = s"${option}Radio"
-    Form(mapping(
-      OPTION -> textMapping()(s".$option")
-    )(RadioOptions(OPTION, _))(radioOptions => Some(radioOptions.value)))
-  }
+object VatFlatRateSchemeAnswersTestSetup {
+  implicit val format = Json.format[VatFlatRateSchemeAnswersTestSetup]
 }
 
-// $COVERAGE-ON$
+
+
+
+
+
+
+
+
+
+

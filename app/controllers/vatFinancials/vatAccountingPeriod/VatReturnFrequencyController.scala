@@ -22,14 +22,17 @@ import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.vatAccountingPeriod.VatReturnFrequencyForm
 import models.AccountingPeriodStartPath
+import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.MONTHLY
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
 class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
-                                            (implicit s4LService: S4LService, vrs: VatRegistrationService)
+                                            (implicit s4l: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with FlatMapSyntax {
+
+  val joinThreshold: Long = conf.getLong("thresholds.frs.joinThreshold").get
 
   val form = VatReturnFrequencyForm.form
 
@@ -41,11 +44,16 @@ class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatFinancials.vatAccountingPeriod.vat_return_frequency(badForm)).pure,
       view => save(view).map(_ => view.frequencyType == MONTHLY).ifM(
-        for {
+        ifTrue = for {
           _ <- vrs.deleteElement(AccountingPeriodStartPath)
           _ <- vrs.submitVatFinancials()
-        } yield controllers.routes.SummaryController.show(),
-        controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show().pure)
+          turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
+        } yield if (turnover > joinThreshold) {
+          controllers.routes.SummaryController.show()
+        } else {
+          controllers.frs.routes.JoinFrsController.show()
+        },
+        ifFalse = controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show().pure)
         .map(Redirect)))
 
 }

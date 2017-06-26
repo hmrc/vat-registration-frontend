@@ -148,7 +148,7 @@ private[forms] object FormValidation {
 
 
   def missingBooleanFieldMapping()(implicit e: ErrorCode): Mapping[Boolean] =
-    FieldMapping[Boolean]()(booleanFormat)
+    FieldMapping[Boolean]()(booleanFormat())
 
   object BankAccount {
 

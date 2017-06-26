@@ -1,0 +1,57 @@
+@import forms.genericForms.YesOrNoAnswer
+@(joinFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.frs.join.title")) {
+
+    <div class="column-two-thirds">
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.frs.join.heading")</h1>
+
+        @errorSummary(
+            Messages("app.common.errorSummaryLabel"),
+            joinFrsForm
+        )
+
+        <h3>@messages("pages.frs.join.subheading1")</h3>
+        <ul class="list list-bullet">
+            <li>@messages("pages.frs.join.list1.bullet1")</li>
+            <li>@messages("pages.frs.join.list1.bullet2")</li>
+        </ul>
+
+        <h3>@messages("pages.frs.join.subheading2")</h3>
+        <ul class="list list-bullet">
+            <li>@messages("pages.frs.join.list2.bullet1")</li>
+            <li>@messages("pages.frs.join.list2.bullet2")</li>
+        </ul>
+
+
+        <p>@Html(messages("pages.frs.join.para1"))</p>
+        <p>@Html(messages("pages.frs.join.para2"))</p>
+
+        @govHelpers.form(action = controllers.frs.routes.JoinFrsController.submit()) {
+            <div class="form-group">
+                <fieldset class="inline">
+                    <span id="joinFrsRadio"></span>
+                    @govHelpers.inputRadioGroup(
+                        field = joinFrsForm("joinFrsRadio"),
+                        Seq(
+                            "true" -> Messages("app.common.yes"),
+                            "false" -> Messages("app.common.no")
+                        ),
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label"
+                    )
+                </fieldset>
+            </div>
+
+            <div class="form-group">
+                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+            </div>
+
+        }
+
+    </div>
+
+}
