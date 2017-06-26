@@ -84,7 +84,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES
-      ))(_ redirectsTo s"$contextRoot/check-your-answers")
+      ))(_ redirectsTo s"$contextRoot/your-flat-rate")
     }
   }
 
@@ -95,7 +95,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS
-      ))(_ redirectsTo s"$contextRoot/check-your-answers")
+      ))(_ redirectsTo s"$contextRoot/your-flat-rate")
     }
   }
 
@@ -108,7 +108,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.NO
-      ))(_ redirectsTo s"$contextRoot/your-flat-rate")
+      ))(_ redirectsTo s"$contextRoot/check-your-answers")
     }
   }
 

@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import models.api.{VatComplianceCultural, _}
 import models.external.{CoHoCompanyProfile, Officer}
-import models.view.frs.AnnualCostsInclusiveView
+import models.view.frs.{AnnualCostsInclusiveView, JoinFrsView, RegisterForFrsView}
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
@@ -117,6 +117,7 @@ trait VatRegistrationFixture {
   val formerName = FormerName(selection = true, formerName = Some("Bubbly Bobbings"))
   val currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(ScrsAddress("", "")))
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
+  val validVatFrsAnswers = VatFlatRateSchemeAnswers(joinFrs = Some(true), annualCostsInclusive = Some("yes"), doYouWantToUseThisRate = Some(true))
 
   val validLodgingOfficer = VatLodgingOfficer(
     ScrsAddress("", ""),
