@@ -222,19 +222,19 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   }
 
   def submitFrsAnswers()(implicit hc: HeaderCarrier): Future[VatFlatRateScheme] = {
-    def merge(fresh: Option[S4LFlatRateSchemeAnswers], vs: VatScheme): VatFlatRateScheme =
+    def merge(fresh: Option[S4LFlatRateScheme], vs: VatScheme): VatFlatRateScheme =
       fresh.fold(
-        vs.vatFlatRateSchemeAnswers.getOrElse(throw fail("VatFlatRateSchemeAnswers"))
+        vs.vatFlatRateScheme.getOrElse(throw fail("VatFlatRateSchemeAnswers"))
       ) { s4l =>
         update(s4l.annualCostsInclusive)
           .andThen(update(s4l.joinFrs))
           .andThen(update(s4l.registerForFrs))
-          .apply(vs.vatFlatRateSchemeAnswers.getOrElse(VatFlatRateScheme()))
+          .apply(vs.vatFlatRateScheme.getOrElse(VatFlatRateScheme()))
       }
 
     for {
-      (vs, frsa) <- (getVatScheme() |@| s4l[S4LFlatRateSchemeAnswers]()).tupled
-      response <- vatRegConnector.upsertVatFrsAnswers(vs.id, merge(frsa, vs))
+      (vs, frsa) <- (getVatScheme() |@| s4l[S4LFlatRateScheme]()).tupled
+      response <- vatRegConnector.upsertVatFlatRateScheme(vs.id, merge(frsa, vs))
     } yield response
   }
 
