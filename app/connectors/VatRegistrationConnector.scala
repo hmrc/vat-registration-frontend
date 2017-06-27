@@ -98,9 +98,9 @@ trait RegistrationConnector extends FutureInstances {
       case e: Exception => throw logResponse(e, className, "upsertVatLodgingOfficer")
     }
 
-  def upsertVatFrsAnswers(regId: String, vatFrsAnswers: VatFlatRateScheme)
-                         (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] =
-    http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/frs-answers", vatFrsAnswers) recover {
+  def upsertVatFlatRateScheme(regId: String, vatFrs: VatFlatRateScheme)
+                             (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] =
+    http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", vatFrs) recover {
       case e: Exception => throw logResponse(e, className, "upsertVatFrsAnswers")
     }
 
@@ -110,10 +110,10 @@ trait RegistrationConnector extends FutureInstances {
       case e: Exception => throw logResponse(e, className, "upsertVatEligibility")
     }
 
-  def updateFrsAnswers(regId: String, vatFlatRateSchemeAnswers: VatFlatRateScheme)
-                          (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] =
-    http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/frs-answers", vatFlatRateSchemeAnswers) recover {
-      case e: Exception => throw logResponse(e, className, "vatFlatRateSchemeAnswers")
+  def updateVatFlatRateScheme(regId: String, vatFlatRateScheme: VatFlatRateScheme)
+                             (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] =
+    http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", vatFlatRateScheme) recover {
+      case e: Exception => throw logResponse(e, className, "vatFlatRateScheme")
     }
 
 

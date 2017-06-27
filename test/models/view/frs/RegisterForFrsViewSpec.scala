@@ -18,7 +18,7 @@ package models.view.frs
 
 import fixtures.VatRegistrationFixture
 import models.api._
-import models.{ApiModelTransformer, S4LFlatRateSchemeAnswers, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LFlatRateScheme, ViewModelTransformer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -29,7 +29,7 @@ class RegisterForFrsViewSpec extends UnitSpec with VatRegistrationFixture with I
   "apiModelTransformer" should {
 
     "convert VatScheme with FlatRateScheme details into a RegisterForFrsView" in {
-      val vs = vatScheme().copy(vatFlatRateSchemeAnswers = Some(testFlatRateScheme))
+      val vs = vatScheme().copy(vatFlatRateScheme = Some(testFlatRateScheme))
 
       ApiModelTransformer[RegisterForFrsView].toViewModel(vs) shouldBe Some(RegisterForFrsView(true))
     }
@@ -53,14 +53,14 @@ class RegisterForFrsViewSpec extends UnitSpec with VatRegistrationFixture with I
 
 
     "ViewModelFormat" should {
-      val s4LFlatRateScheme: S4LFlatRateSchemeAnswers = S4LFlatRateSchemeAnswers(registerForFrs = Some(RegisterForFrsView(true)))
+      val s4LFlatRateScheme: S4LFlatRateScheme = S4LFlatRateScheme(registerForFrs = Some(RegisterForFrsView(true)))
 
       "extract RegisterForFrsView from lodgingOfficer" in {
         RegisterForFrsView.viewModelFormat.read(s4LFlatRateScheme) shouldBe Some(RegisterForFrsView(true))
       }
 
       "update empty lodgingOfficer with RegisterForFrsView" in {
-        RegisterForFrsView.viewModelFormat.update(RegisterForFrsView(true), Option.empty[S4LFlatRateSchemeAnswers])
+        RegisterForFrsView.viewModelFormat.update(RegisterForFrsView(true), Option.empty[S4LFlatRateScheme])
             .registerForFrs shouldBe Some(RegisterForFrsView(true))
       }
 

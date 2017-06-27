@@ -18,13 +18,13 @@ package models.view.test
 
 import play.api.libs.json.Json
 
-case class VatFlatRateSchemeAnswersTestSetup(joinFrs: Option[String],
-                                             annualCostsInclusive: Option[String],
-                                             annualCostsLimited: Option[String],
-                                             registerForFrs: Option[String])
+case class VatFlatRateSchemeTestSetup(joinFrs: Option[String],
+                                      annualCostsInclusive: Option[String],
+                                      annualCostsLimited: Option[String],
+                                      registerForFrs: Option[String])
 
-object VatFlatRateSchemeAnswersTestSetup {
-  implicit val format = Json.format[VatFlatRateSchemeAnswersTestSetup]
+object VatFlatRateSchemeTestSetup {
+  implicit val format = Json.format[VatFlatRateSchemeTestSetup]
 }
 
 

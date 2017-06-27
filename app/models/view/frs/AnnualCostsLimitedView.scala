@@ -33,13 +33,13 @@ object AnnualCostsLimitedView {
   implicit val format = Json.format[AnnualCostsLimitedView]
 
   implicit val viewModelFormat = ViewModelFormat(
-    readF = (group: S4LFlatRateSchemeAnswers) => group.annualCostsLimited,
-    updateF = (c: AnnualCostsLimitedView, g: Option[S4LFlatRateSchemeAnswers]) =>
-      g.getOrElse(S4LFlatRateSchemeAnswers()).copy(annualCostsLimited = Some(c))
+    readF = (group: S4LFlatRateScheme) => group.annualCostsLimited,
+    updateF = (c: AnnualCostsLimitedView, g: Option[S4LFlatRateScheme]) =>
+      g.getOrElse(S4LFlatRateScheme()).copy(annualCostsLimited = Some(c))
   )
 
   implicit val modelTransformer = ApiModelTransformer[AnnualCostsLimitedView] { vs: VatScheme =>
-    vs.vatFlatRateSchemeAnswers.flatMap(_.annualCostsInclusive).collect {
+    vs.vatFlatRateScheme.flatMap(_.annualCostsInclusive).collect {
       case YES => AnnualCostsLimitedView(YES)
       case YES_WITHIN_12_MONTHS => AnnualCostsLimitedView(YES_WITHIN_12_MONTHS)
       case NO => AnnualCostsLimitedView(NO)
