@@ -39,7 +39,8 @@ class FrsStartDateFormFactory @Inject()(dateService: DateService, today: Now[Loc
 
   def form(vatRegistrationDate: Option[LocalDate] = None): Form[FrsStartDateView] = {
 
-    val minDate: LocalDate = vatRegistrationDate.getOrElse(LocalDate.now())
+    val minDate: LocalDate = vatRegistrationDate.getOrElse(dateService.addWorkingDays(today(), 2))
+
     implicit val specificErrorCode: String = "frs.startDate"
 
     Form(
