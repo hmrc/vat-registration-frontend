@@ -42,7 +42,7 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
         callAuthorised(Controller.show()) {
-          _ includesText "Your flat rate"
+          _ includesText "You can use the 16.5% flat rate"
         }
       }
 
@@ -51,7 +51,7 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
         callAuthorised(Controller.show) {
-          _ includesText "Your flat rate"
+          _ includesText "You can use the 16.5% flat rate"
         }
       }
 
@@ -60,7 +60,7 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
         callAuthorised(Controller.show) {
-          _ includesText "Your flat rate"
+          _ includesText "You can use the 16.5% flat rate"
         }
       }
 
