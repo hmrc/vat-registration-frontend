@@ -30,7 +30,7 @@ case class SummaryFrsSectionBuilder
 
   val joinFrsRow: SummaryRow = yesNoRow(
     "joinFrs",
-    frsAnswers.flatMap(_.joinFrs),
+    frsAnswers.map(_.joinFrs),
     controllers.frs.routes.JoinFrsController.show()
   )
 
@@ -70,7 +70,7 @@ case class SummaryFrsSectionBuilder
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
-      (joinFrsRow, frsAnswers.flatMap(_.joinFrs).isDefined),
+      (joinFrsRow, frsAnswers.map(_.joinFrs).isDefined),
       (costsInclusiveRow, frsAnswers.flatMap(_.annualCostsInclusive).isDefined),
       (costsLimimtedRow, frsAnswers.flatMap(_.annualCostsLimited).isDefined),
       (useThisRateRow, frsAnswers.flatMap(_.doYouWantToUseThisRate).isDefined),

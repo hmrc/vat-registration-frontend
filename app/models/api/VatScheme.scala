@@ -30,7 +30,6 @@ case class VatScheme(
                       vatServiceEligibility: Option[VatServiceEligibility] = None,
                       ppob: Option[ScrsAddress] = None,
                       vatFlatRateScheme: Option[VatFlatRateScheme] = None
-
                     )
 
 object VatScheme {

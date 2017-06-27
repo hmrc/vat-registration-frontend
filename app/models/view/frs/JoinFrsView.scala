@@ -32,10 +32,10 @@ object JoinFrsView {
   )
 
   implicit val modelTransformer = ApiModelTransformer[JoinFrsView] { (vs: VatScheme) =>
-    vs.vatFlatRateScheme.flatMap(_.joinFrs).map(JoinFrsView(_))
+    vs.vatFlatRateScheme.map(_.joinFrs).map(JoinFrsView(_))
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: JoinFrsView, g: VatFlatRateScheme) =>
-    g.copy(joinFrs = Some(c.selection))
+    g.copy(joinFrs = c.selection)
   }
 }
