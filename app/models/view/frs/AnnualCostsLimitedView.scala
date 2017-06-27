@@ -17,7 +17,7 @@
 package models.view.frs
 
 import models._
-import models.api.{VatFlatRateSchemeAnswers, VatScheme}
+import models.api.{VatFlatRateScheme, VatScheme}
 import play.api.libs.json.Json
 
 case class AnnualCostsLimitedView(selection: String)
@@ -46,7 +46,7 @@ object AnnualCostsLimitedView {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: AnnualCostsLimitedView, g: VatFlatRateSchemeAnswers) =>
+  implicit val viewModelTransformer = ViewModelTransformer { (c: AnnualCostsLimitedView, g: VatFlatRateScheme) =>
     g.copy(annualCostsLimited = Some(c.selection))
   }
 

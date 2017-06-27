@@ -24,7 +24,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class JoinFrsViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
-  val testFlatRateScheme = VatFlatRateSchemeAnswers(joinFrs = Some(true), Some(AnnualCostsInclusiveView.YES))
+  val testFlatRateScheme = VatFlatRateScheme(joinFrs = Some(true), Some(AnnualCostsInclusiveView.YES))
 
   "apiModelTransformer" should {
 
@@ -43,10 +43,10 @@ class JoinFrsViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
     "viewModelTransformer" should {
       "update logical group given a component" in {
-        val initialAnswers: VatFlatRateSchemeAnswers = VatFlatRateSchemeAnswers(joinFrs = Some(false))
-        val updatedAnswers: VatFlatRateSchemeAnswers = VatFlatRateSchemeAnswers(joinFrs = Some(true))
+        val initialAnswers: VatFlatRateScheme = VatFlatRateScheme(joinFrs = Some(false))
+        val updatedAnswers: VatFlatRateScheme = VatFlatRateScheme(joinFrs = Some(true))
 
-        ViewModelTransformer[JoinFrsView, VatFlatRateSchemeAnswers]
+        ViewModelTransformer[JoinFrsView, VatFlatRateScheme]
             .toApi(JoinFrsView(true) , initialAnswers) shouldBe updatedAnswers
       }
     }
