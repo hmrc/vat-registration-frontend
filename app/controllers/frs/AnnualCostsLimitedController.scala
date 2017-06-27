@@ -18,6 +18,7 @@ package controllers.frs
 
 import javax.inject.Inject
 
+import cats.data.OptionT
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.frs.AnnualCostsLimitedFormFactory
 import models.view.frs.AnnualCostsLimitedView
@@ -41,29 +42,26 @@ class AnnualCostsLimitedController @Inject()(ds: CommonPlayDependencies)
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
-    val annualCostsLimitedForm = viewModel[EstimateVatTurnover]().
-      fold(defaultForm) (turnover => AnnualCostsLimitedFormFactory.form(Seq((turnover.vatTurnoverEstimate * 0.02).toLong)))
-
-      annualCostsLimitedForm.flatMap(
-          form =>
-            form.bindFromRequest().
-              fold(
-                    badForm => {
-                      for {
-                        estimateVatTurnover <- viewModel[EstimateVatTurnover]().fold(0L)(turnover => (turnover.vatTurnoverEstimate * 0.02).toLong)
-                      } yield BadRequest(views.html.pages.frs.annual_costs_limited(badForm, estimateVatTurnover))
-                    }
-                    ,
-                    goodForm => save(goodForm).map(_ =>
-                      Redirect(if (goodForm.selection == AnnualCostsLimitedView.NO) {
-                        controllers.frs.routes.RegisterForFrsController.show()
-                      } else {
-                        controllers.frs.routes.RegisterForFrsController.show()
-                      })
-                    )
-                )
+    val estimatedTurnover = viewModel[EstimateVatTurnover]().fold(0L) (turnover => (turnover.vatTurnoverEstimate * 0.02).toLong)
+    estimatedTurnover.map(turnover => AnnualCostsLimitedFormFactory.form(Seq(turnover))).flatMap(
+      form =>
+        form.bindFromRequest().
+          fold(
+            badForm => {
+                   estimatedTurnover.map( turnover =>  BadRequest(views.html.pages.frs.annual_costs_limited(badForm, turnover))
+              )
+            }
+            ,
+            goodForm => save(goodForm).map(_ =>
+              Redirect(if (goodForm.selection == AnnualCostsLimitedView.NO) {
+                controllers.frs.routes.RegisterForFrsController.show()
+              } else {
+                controllers.frs.routes.RegisterForFrsController.show()
+              })
             )
-        }
-)
+          )
+    )
+  }
+  )
 
 }
