@@ -41,7 +41,7 @@ class FrsStartDateFormFactory @Inject()(dateService: DateService, today: Now[Loc
 
     val minDate: LocalDate = dateService.addWorkingDays(today(), 2)
     val maxDate: LocalDate = today().plusMonths(3)
-    implicit val specificErrorCode: String = "frsStartDate"
+    implicit val specificErrorCode: String = "frs.startDate"
 
     Form(
       mapping(

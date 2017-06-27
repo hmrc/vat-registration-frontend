@@ -731,5 +731,5 @@ pages.frs.startDate.day                                   = Day
 pages.frs.startDate.month                                 = Month
 pages.frs.startDate.year                                  = Year
 validation.frs.startDate.choice.missing                   = Tell us when you want to join the Flat Rate Scheme
-validation.frs.differentStartDate.missing                 = Enter the date you want to join the Flat Rate Scheme
+validation.frs.startDate.missing                 = Enter the date you want to join the Flat Rate Scheme
 
