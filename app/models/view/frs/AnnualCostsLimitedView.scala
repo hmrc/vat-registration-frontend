@@ -39,7 +39,7 @@ object AnnualCostsLimitedView {
   )
 
   implicit val modelTransformer = ApiModelTransformer[AnnualCostsLimitedView] { vs: VatScheme =>
-    vs.vatFlatRateSchemeAnswers.flatMap(_.annualCostsInclusive).collect {
+    vs.vatFlatRateSchemeAnswers.flatMap(_.annualCostsLimited).collect {
       case YES => AnnualCostsLimitedView(YES)
       case YES_WITHIN_12_MONTHS => AnnualCostsLimitedView(YES_WITHIN_12_MONTHS)
       case NO => AnnualCostsLimitedView(NO)
