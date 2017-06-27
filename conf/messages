@@ -716,7 +716,7 @@ validation.frs.costsInclusive.missing                     = Tell us if you spend
 #Do you want to register for FRS Page
 pages.frs.registerFor.title                            = Use the 16.5% flat rate
 pages.frs.registerFor.heading                          = You can use the 16.5% flat rate
-pages.frs.registerFor.p                                = This is because you don’’t spend enough (including VAT) on business goods.
+pages.frs.registerFor.p                                = This is because you don''t spend enough (including VAT) on business goods.
 pages.frs.registerFor.panel1.para                      = You can add a 1% discount to this rate in your first year as a VAT-registered business.
 pages.frs.registerFor.subheading1                      = Do you want to use this rate?
 validation.frs.registerFor.missing                     = Tell us if you want to use this rate
