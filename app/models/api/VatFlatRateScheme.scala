@@ -16,23 +16,14 @@
 
 package models.api
 
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatFlatRateScheme(joinFrs: Option[Boolean] = None,
+case class VatFlatRateScheme(joinFrs: Boolean = false,
                              annualCostsInclusive: Option[String] = None,
                              annualCostsLimited: Option[String] = None,
                              doYouWantToUseThisRate: Option[Boolean] = None,
                              whenDoYouWantToJoinFrs: Option[String] = None)
 
 object VatFlatRateScheme {
-
-  implicit val format = (
-    (__ \ "joinFrs").formatNullable[Boolean] and
-      (__ \ "annualCostsInclusive").formatNullable[String] and
-      (__ \ "annualCostsLimited").formatNullable[String] and
-      (__ \ "doYouWantToUseThisRate").formatNullable[Boolean] and
-      (__ \ "whenDoYouWantToJoinFrs").formatNullable[String]
-    ) (VatFlatRateScheme.apply, unlift(VatFlatRateScheme.unapply))
-
+  implicit val format: OFormat[VatFlatRateScheme] = Json.format[VatFlatRateScheme]
 }

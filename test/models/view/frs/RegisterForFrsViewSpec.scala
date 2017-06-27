@@ -41,33 +41,33 @@ class RegisterForFrsViewSpec extends UnitSpec with VatRegistrationFixture with I
 
   }
 
-    "viewModelTransformer" should {
-      "update logical group given a component" in {
-        val initialAnswers: VatFlatRateScheme = VatFlatRateScheme(doYouWantToUseThisRate = Some(false))
-        val updatedAnswers: VatFlatRateScheme = VatFlatRateScheme(doYouWantToUseThisRate = Some(true))
+  "viewModelTransformer" should {
+    "update logical group given a component" in {
+      val initialAnswers: VatFlatRateScheme = VatFlatRateScheme(doYouWantToUseThisRate = Some(false))
+      val updatedAnswers: VatFlatRateScheme = VatFlatRateScheme(doYouWantToUseThisRate = Some(true))
 
-        ViewModelTransformer[RegisterForFrsView, VatFlatRateScheme]
-            .toApi(RegisterForFrsView(true) , initialAnswers) shouldBe updatedAnswers
-      }
+      ViewModelTransformer[RegisterForFrsView, VatFlatRateScheme]
+        .toApi(RegisterForFrsView(true), initialAnswers) shouldBe updatedAnswers
+    }
+  }
+
+
+  "ViewModelFormat" should {
+    val s4LFlatRateScheme: S4LFlatRateScheme = S4LFlatRateScheme(registerForFrs = Some(RegisterForFrsView(true)))
+
+    "extract RegisterForFrsView from lodgingOfficer" in {
+      RegisterForFrsView.viewModelFormat.read(s4LFlatRateScheme) shouldBe Some(RegisterForFrsView(true))
     }
 
-
-    "ViewModelFormat" should {
-      val s4LFlatRateScheme: S4LFlatRateScheme = S4LFlatRateScheme(registerForFrs = Some(RegisterForFrsView(true)))
-
-      "extract RegisterForFrsView from lodgingOfficer" in {
-        RegisterForFrsView.viewModelFormat.read(s4LFlatRateScheme) shouldBe Some(RegisterForFrsView(true))
-      }
-
-      "update empty lodgingOfficer with RegisterForFrsView" in {
-        RegisterForFrsView.viewModelFormat.update(RegisterForFrsView(true), Option.empty[S4LFlatRateScheme])
-            .registerForFrs shouldBe Some(RegisterForFrsView(true))
-      }
-
-      "update non-empty lodgingOfficer with RegisterForFrsView" in {
-        RegisterForFrsView.viewModelFormat.update(RegisterForFrsView(false), Some(s4LFlatRateScheme))
-            .registerForFrs shouldBe Some(RegisterForFrsView(false))
-      }
+    "update empty lodgingOfficer with RegisterForFrsView" in {
+      RegisterForFrsView.viewModelFormat.update(RegisterForFrsView(true), Option.empty[S4LFlatRateScheme])
+        .registerForFrs shouldBe Some(RegisterForFrsView(true))
     }
+
+    "update non-empty lodgingOfficer with RegisterForFrsView" in {
+      RegisterForFrsView.viewModelFormat.update(RegisterForFrsView(false), Some(s4LFlatRateScheme))
+        .registerForFrs shouldBe Some(RegisterForFrsView(false))
+    }
+  }
 
 }
