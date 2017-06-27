@@ -37,9 +37,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
   s"GET ${routes.AnnualCostsInclusiveController.show()}" should {
 
     "return HTML Annual Costs Inclusive page with no Selection" in {
-      val annualCostsInclusiveView = AnnualCostsInclusiveView("")
-
-      save4laterReturnsViewModel(annualCostsInclusiveView)()
+      save4laterReturnsViewModel(AnnualCostsInclusiveView(""))()
 
       callAuthorised(Controller.show()) {
         _ includesText "Do you spend less than £1,000 a year (including VAT) on business goods?"
@@ -69,39 +67,30 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
   }
 
-  s"POST ${routes.AnnualCostsInclusiveController.submit()} with Empty data" should {
+  s"POST ${routes.AnnualCostsInclusiveController.submit()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
-  }
 
-  s"POST ${routes.AnnualCostsInclusiveController.submit()} with Annual Costs Inclusive selected Yes" should {
-
-    "return 303" in {
+    "return 303 with Annual Costs Inclusive selected Yes" in {
       save4laterExpectsSave[AnnualCostsInclusiveView]()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES
       ))(_ redirectsTo s"$contextRoot/spends-less-than-two-percent-of-turnover-a-year-on-goods")
     }
-  }
 
-  s"POST ${routes.AnnualCostsInclusiveController.submit()} with Annual Costs Inclusive selected No - but within 12 months" should {
-
-    "return 303" in {
+    "return 303 with Annual Costs Inclusive selected No - but within 12 months" in {
       save4laterExpectsSave[AnnualCostsInclusiveView]()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS
       ))(_ redirectsTo s"$contextRoot/spends-less-than-two-percent-of-turnover-a-year-on-goods")
     }
-  }
 
-  s"POST ${routes.AnnualCostsInclusiveController.submit()} with Annual Costs Inclusive selected No" should {
-
-    "redirect to the welcome page" in {
+    "redirect to the welcome page with Annual Costs Inclusive selected No" in {
       when(mockS4LService.clear()(any())).thenReturn(Future.successful(validHttpResponse))
       save4laterExpectsSave[AnnualCostsInclusiveView]()
       when(mockVatRegistrationService.deleteVatScheme()(any())).thenReturn(Future.successful(()))

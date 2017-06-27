@@ -17,8 +17,8 @@
 package models.view.frs
 
 import fixtures.VatRegistrationFixture
-import models.api.VatFlatRateSchemeAnswers
-import models.{ApiModelTransformer, S4LFlatRateSchemeAnswers, ViewModelTransformer}
+import models.api.VatFlatRateScheme
+import models.{ApiModelTransformer, S4LFlatRateScheme, ViewModelTransformer}
 import org.scalatest.{Inspectors, Matchers}
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -28,15 +28,15 @@ class AnnualCostsLimitedSpec extends UnitSpec with Matchers with Inspectors with
 
   "ViewModelTransformer" should {
 
-    "update VatFlatRateSchemeAnswers with new AnnualCostsLimitedView (answer YES)" in {
-      val transformed = ViewModelTransformer[AnnualCostsLimitedView, VatFlatRateSchemeAnswers]
-        .toApi(AnnualCostsLimitedView(AnnualCostsLimitedView.YES), VatFlatRateSchemeAnswers(annualCostsLimited = Some(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS)))
+    "update VatFlatRateScheme with new AnnualCostsLimitedView (answer YES)" in {
+      val transformed = ViewModelTransformer[AnnualCostsLimitedView, VatFlatRateScheme]
+        .toApi(AnnualCostsLimitedView(AnnualCostsLimitedView.YES), VatFlatRateScheme(annualCostsLimited = Some(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS)))
       transformed.annualCostsLimited shouldBe Some(AnnualCostsLimitedView.YES)
     }
 
-    "update VatFlatRateSchemeAnswers with new AnnualCostsLimitedView (answer NO)" in {
-      val transformed = ViewModelTransformer[AnnualCostsLimitedView, VatFlatRateSchemeAnswers]
-        .toApi(AnnualCostsLimitedView(AnnualCostsLimitedView.NO), VatFlatRateSchemeAnswers(annualCostsLimited = Some(AnnualCostsLimitedView.YES)))
+    "update VatFlatRateScheme with new AnnualCostsLimitedView (answer NO)" in {
+      val transformed = ViewModelTransformer[AnnualCostsLimitedView, VatFlatRateScheme]
+        .toApi(AnnualCostsLimitedView(AnnualCostsLimitedView.NO), VatFlatRateScheme(annualCostsLimited = Some(AnnualCostsLimitedView.YES)))
       transformed.annualCostsLimited shouldBe Some(AnnualCostsLimitedView.NO)
     }
 
@@ -46,25 +46,25 @@ class AnnualCostsLimitedSpec extends UnitSpec with Matchers with Inspectors with
 
     "produce empty view model from an empty annual costs limited" in {
       val vm = ApiModelTransformer[AnnualCostsLimitedView]
-        .toViewModel(vatScheme(vatFlatRateSchemeAnswers = None))
+        .toViewModel(vatScheme(vatFlatRateScheme = None))
       vm shouldBe None
     }
 
     "produce a view model from a vatScheme with annual costs limited (answer YES)" in {
       val vm = ApiModelTransformer[AnnualCostsLimitedView]
-        .toViewModel(vatScheme(vatFlatRateSchemeAnswers = Some(VatFlatRateSchemeAnswers(annualCostsLimited = Some(AnnualCostsLimitedView.YES)))))
+        .toViewModel(vatScheme(vatFlatRateScheme = Some(VatFlatRateScheme(annualCostsLimited = Some(AnnualCostsLimitedView.YES)))))
       vm shouldBe Some(AnnualCostsLimitedView(AnnualCostsLimitedView.YES))
     }
 
     "produce a view model from a vatScheme with annual costs limited (answer NO)" in {
       val vm = ApiModelTransformer[AnnualCostsLimitedView]
-        .toViewModel(vatScheme(vatFlatRateSchemeAnswers = Some(VatFlatRateSchemeAnswers(annualCostsLimited = Some(AnnualCostsLimitedView.NO)))))
+        .toViewModel(vatScheme(vatFlatRateScheme = Some(VatFlatRateScheme(annualCostsLimited = Some(AnnualCostsLimitedView.NO)))))
       vm shouldBe Some(AnnualCostsLimitedView(AnnualCostsLimitedView.NO))
     }
 
     "produce a view model from a vatScheme with annual costs limited (answer YES within 12 months)" in {
       val vm = ApiModelTransformer[AnnualCostsLimitedView]
-        .toViewModel(vatScheme(vatFlatRateSchemeAnswers = Some(VatFlatRateSchemeAnswers(annualCostsLimited = Some(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS)))))
+        .toViewModel(vatScheme(vatFlatRateScheme = Some(VatFlatRateScheme(annualCostsLimited = Some(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS)))))
       vm shouldBe Some(AnnualCostsLimitedView(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS))
     }
 
@@ -92,17 +92,17 @@ class AnnualCostsLimitedSpec extends UnitSpec with Matchers with Inspectors with
 
   "ViewModelFormat" should {
     val validAnnualCostsLimitedView = AnnualCostsLimitedView(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS)
-    val s4LTradingDetails: S4LFlatRateSchemeAnswers = S4LFlatRateSchemeAnswers(annualCostsLimited = Some(validAnnualCostsLimitedView))
+    val s4LTradingDetails: S4LFlatRateScheme = S4LFlatRateScheme(annualCostsLimited = Some(validAnnualCostsLimitedView))
 
     "extract annualCostsLimited from vatTradingDetails" in {
       AnnualCostsLimitedView.viewModelFormat.read(s4LTradingDetails) shouldBe Some(validAnnualCostsLimitedView)
     }
 
-    "update empty vatFlatRateSchemeAnswers with annualCostsLimited" in {
-      AnnualCostsLimitedView.viewModelFormat.update(validAnnualCostsLimitedView, Option.empty[S4LFlatRateSchemeAnswers]).annualCostsLimited shouldBe Some(validAnnualCostsLimitedView)
+    "update empty vatFlatRateScheme with annualCostsLimited" in {
+      AnnualCostsLimitedView.viewModelFormat.update(validAnnualCostsLimitedView, Option.empty[S4LFlatRateScheme]).annualCostsLimited shouldBe Some(validAnnualCostsLimitedView)
     }
 
-    "update non-empty vatFlatRateSchemeAnswers with annualCostsLimited" in {
+    "update non-empty vatFlatRateScheme with annualCostsLimited" in {
       AnnualCostsLimitedView.viewModelFormat.update(validAnnualCostsLimitedView, Some(s4LTradingDetails)).annualCostsLimited shouldBe Some(validAnnualCostsLimitedView)
     }
 

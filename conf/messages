@@ -739,4 +739,21 @@ pages.frs.costsLimited.panel.bullet7                    = goods you will resell 
 pages.frs.costsLimited.panel.bullet8                    = training and memberships
 pages.frs.costsLimited.panel.bullet9                    = capital items, for example office equipment, laptops, mobile phones and tablets
 pages.frs.costsLimited.panel.bullet10                   = services - that is, anything not classified as "goods"
-validation.frs.costsLimited.missing                     = Tell us if you spend less than £{0} a year (including VAT) on business goods
+validation.frs.costsLimited.missing                     = Tell us if you spend less than {0} a year (including VAT) on business goods
+
+
+## FRS SUMMARY SECTiON
+pages.summary.frs.sectionHeading                        = Flat Rate Scheme
+pages.summary.frs.joinFrs                               = Applied
+pages.summary.frs.costsInclusive                        = Company sales for the next 12 months exempt from VAT
+pages.summary.frs.costsInclusive.lessThan1k             = less than £1,000 a year including VAT on business goods
+pages.summary.frs.costsInclusive.futureLessThan1k       = will be less than £1,000 a year including VAT on business goods
+pages.summary.frs.costsInclusive.moreThan1k             = £1,000 or more
+pages.summary.frs.costsLimited.lessThan2percent         = less than 2% a year including VAT
+pages.summary.frs.costsLimited.futureLessThan2percent   = will be less than 2% a year includung VAT
+pages.summary.frs.costsLimited.moreThan2percent         = 2% or more
+pages.summary.frs.costsLimited                          = Company sales LIMITED for the next 12 months exempt from VAT
+pages.summary.frs.registerForFrs                        = Do you want to use this rate
+pages.summary.frs.businessSector                        = Business sector
+pages.summary.frs.flatRate                              = Your flat rate (%)
+pages.summary.frs.startDate                             = Start date

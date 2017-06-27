@@ -131,7 +131,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       save4laterReturns(S4LPpob(address = Some(PpobView(scrsAddress.id, Some(scrsAddress)))))
 
-      save4laterReturns(S4LFlatRateSchemeAnswers(
+      save4laterReturns(S4LFlatRateScheme(
         joinFrs = Some(JoinFrsView(true)),
         annualCostsInclusive = Some(AnnualCostsInclusiveView("yes")),
         registerForFrs = Some(RegisterForFrsView(true))))
@@ -155,7 +155,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.upsertVatLodgingOfficer(any(), any())(any(), any())).thenReturn(validLodgingOfficer.pure)
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
       when(mockRegConnector.upsertPpob(any(), any())(any(), any())).thenReturn(scrsAddress.pure)
-      when(mockRegConnector.upsertVatFrsAnswers(any(), any())(any(), any())).thenReturn(validVatFrsAnswers.pure)
+      when(mockRegConnector.upsertVatFlatRateScheme(any(), any())(any(), any())).thenReturn(validVatFlatRateScheme.pure)
 
       service.submitVatScheme() completedSuccessfully
     }
@@ -347,18 +347,18 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
     "submitFrsAnswers should process the submission even if VatScheme does not contain VatFrsAnswers" in new Setup {
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-      when(mockRegConnector.upsertVatFrsAnswers(any(), any())(any(), any())).thenReturn(validFlatRateSchemeAnswers.pure)
-      save4laterReturns(S4LFlatRateSchemeAnswers(
+      when(mockRegConnector.upsertVatFlatRateScheme(any(), any())(any(), any())).thenReturn(validVatFlatRateScheme.pure)
+      save4laterReturns(S4LFlatRateScheme(
         joinFrs = Some(JoinFrsView(true)),
         annualCostsInclusive = Some(AnnualCostsInclusiveView("yes")),
         registerForFrs = Some(RegisterForFrsView(true))
       ))
-      service.submitFrsAnswers() returns validFlatRateSchemeAnswers
+      service.submitFrsAnswers() returns validVatFlatRateScheme
     }
 
     "submitFrsAnswers should fail if there's no VatFlatRateSchemeAnswers in backend or S4L" in new Setup {
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-      save4laterReturnsNothing[S4LFlatRateSchemeAnswers]()
+      save4laterReturnsNothing[S4LFlatRateScheme]()
 
       service.submitFrsAnswers() failedWith classOf[IllegalStateException]
     }

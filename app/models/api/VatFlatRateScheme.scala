@@ -14,26 +14,16 @@
  * limitations under the License.
  */
 
-package models.view.test
+package models.api
 
-import play.api.libs.json.Json
+import play.api.libs.json._
 
-case class VatFlatRateSchemeAnswersTestSetup(joinFrs: Option[String],
-                                             annualCostsInclusive: Option[String],
-                                             annualCostsLimited: Option[String],
-                                             registerForFrs: Option[String])
+case class VatFlatRateScheme(joinFrs: Boolean = false,
+                             annualCostsInclusive: Option[String] = None,
+                             annualCostsLimited: Option[String] = None,
+                             doYouWantToUseThisRate: Option[Boolean] = None,
+                             whenDoYouWantToJoinFrs: Option[String] = None)
 
-object VatFlatRateSchemeAnswersTestSetup {
-  implicit val format = Json.format[VatFlatRateSchemeAnswersTestSetup]
+object VatFlatRateScheme {
+  implicit val format: OFormat[VatFlatRateScheme] = Json.format[VatFlatRateScheme]
 }
-
-
-
-
-
-
-
-
-
-
-
