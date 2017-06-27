@@ -134,7 +134,9 @@ object TestSetupForm {
 
   val flatRateSchemeAnswersMapping = mapping(
     "joinFrs" -> optional(text),
-    "annualCostsInclusive" -> optional(text)
+    "annualCostsInclusive" -> optional(text),
+    "annualCostsLimited" -> optional(text),
+    "registerForFrs" -> optional(text)
   )(VatFlatRateSchemeAnswersTestSetup.apply)(VatFlatRateSchemeAnswersTestSetup.unapply)
 
   val form = Form(mapping(
