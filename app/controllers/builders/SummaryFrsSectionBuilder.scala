@@ -22,7 +22,7 @@ import models.view.{SummaryRow, SummarySection}
 
 case class SummaryFrsSectionBuilder
 (
-  frsAnswers: Option[VatFlatRateSchemeAnswers] = None
+  frsAnswers: Option[VatFlatRateScheme] = None
 )
   extends SummarySectionBuilder {
 
@@ -46,8 +46,12 @@ case class SummaryFrsSectionBuilder
 
   val costsLimimtedRow: SummaryRow = SummaryRow(
     s"$sectionId.costsLimited",
-    frsAnswers.flatMap(_.annualCostsLimited).flatMap(_.answer).getOrElse(""),
-    Some(controllers.frs.routes.AnnualCostsInclusiveController.show()) //TODO fix once screen is reddy
+    frsAnswers.flatMap(_.annualCostsLimited).collect {
+      case AnnualCostsInclusiveView.YES => "pages.summary.frs.costsLimited.lessThan2percent"
+      case AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS => "pages.summary.frs.costsLimited.futureLessThan2percent"
+      case AnnualCostsInclusiveView.NO => "pages.summary.frs.costsLimited.moreThan2percent"
+    }.getOrElse(""),
+    Some(controllers.frs.routes.AnnualCostsLimitedController.show())
   )
 
   val useThisRateRow: SummaryRow = yesNoRow(
@@ -68,7 +72,7 @@ case class SummaryFrsSectionBuilder
     Seq(
       (joinFrsRow, frsAnswers.flatMap(_.joinFrs).isDefined),
       (costsInclusiveRow, frsAnswers.flatMap(_.annualCostsInclusive).isDefined),
-      (costsLimimtedRow, frsAnswers.flatMap(_.annualCostsLimited).flatMap(_.answer).isDefined),
+      (costsLimimtedRow, frsAnswers.flatMap(_.annualCostsLimited).isDefined),
       (useThisRateRow, frsAnswers.flatMap(_.doYouWantToUseThisRate).isDefined),
       (startDateRow, frsAnswers.flatMap(_.whenDoYouWantToJoinFrs).isDefined)
     )
