@@ -132,7 +132,9 @@ private[forms] object FormValidation {
   /* overrides Play's implicit stringFormatter and handles missing options (e.g. no radio button selected) */
   private def stringFormat(suffix: String)(args: Seq[Any] = Seq())(implicit e: ErrorCode): Formatter[String] = new Formatter[String] {
 
-    def bind(key: String, data: Map[String, String]) = data.get(key).toRight(Seq(FormError(key, s"validation.$e.$suffix", args)))
+    def bind(key: String, data: Map[String, String]) = data.get(key).toRight(
+      Seq(FormError(key, s"validation.$e.$suffix", args))
+    )
 
     def unbind(key: String, value: String) = Map(key -> value)
   }
