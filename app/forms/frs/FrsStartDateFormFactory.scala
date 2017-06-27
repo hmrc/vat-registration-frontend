@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 import common.Now
 import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
-import forms.FormValidation.{inRange, textMapping}
+import forms.FormValidation.{onOrAfter, textMapping}
 import models.DateModel
 import models.view.frs.FrsStartDateView
 import play.api.data.Form
@@ -40,7 +40,6 @@ class FrsStartDateFormFactory @Inject()(dateService: DateService, today: Now[Loc
   def form(vatRegistrationDate: Option[LocalDate] = None): Form[FrsStartDateView] = {
 
     val minDate: LocalDate = vatRegistrationDate.getOrElse(LocalDate.now())
-    val maxDate: LocalDate = today().plusMonths(3)
     implicit val specificErrorCode: String = "frs.startDate"
 
     Form(
@@ -53,7 +52,7 @@ class FrsStartDateFormFactory @Inject()(dateService: DateService, today: Now[Loc
             "month" -> text,
             "year" -> text
           )(DateModel.apply)(DateModel.unapply).verifying(
-            nonEmptyDateModel(validDateModel(inRange(minDate, maxDate))))
+            nonEmptyDateModel(validDateModel(onOrAfter(minDate))))
         )
       )(FrsStartDateView.bind)(FrsStartDateView.unbind)
     )

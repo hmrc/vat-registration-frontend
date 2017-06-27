@@ -72,6 +72,15 @@ private[forms] object FormValidation {
       }
     }
 
+  def onOrAfter[T](minValue: T)(implicit ordering: Ordering[T], e: ErrorCode): Constraint[T] =
+    Constraint[T] { (t: T) =>
+      Logger.info(s"Checking constraint for value $t on or after [$minValue]")
+      (ordering.compare(t, minValue).signum) match {
+        case (1, -1) | (0, _) | (_, 0) => Valid
+        case (-1, _) => Invalid(ValidationError(s"validation.$e.range.below", minValue))
+      }
+    }
+
   val taxEstimateTextToLong = textToLong(0, 1000000000000000L) _
   val numberOfWorkersToInt = textToInt(1, 99999) _
 
