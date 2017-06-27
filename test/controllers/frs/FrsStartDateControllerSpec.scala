@@ -39,7 +39,8 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
 
   val frsStartDateFormFactory = new FrsStartDateFormFactory(mockDateService, Now[LocalDate](today))
 
-  object FrsTestStartDateController extends FrsStartDateController(frsStartDateFormFactory, mockDateService, ds)(mockS4LService, mockVatRegistrationService) {
+  object FrsTestStartDateController extends FrsStartDateController(frsStartDateFormFactory, ds)(mockS4LService, mockVatRegistrationService) {
+    implicit val fixedToday = Now[LocalDate](today)
     override val authConnector = mockAuthConnector
   }
 
@@ -83,6 +84,8 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
   s"POST ${routes.FrsStartDateController.submit()}" should {
 
     "return 400 when no data posted" in {
+      save4laterReturnsViewModel(validStartDateView)()
+
       submitAuthorised(
         FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody()) {
         status(_) mustBe Status.BAD_REQUEST
@@ -90,6 +93,8 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "return 400 when partial data is posted" in {
+      save4laterReturnsViewModel(validStartDateView)()
+
       submitAuthorised(
         FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
           "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
@@ -102,6 +107,7 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "return 303 with VAT Registration Date selected" in {
+      save4laterReturnsViewModel(validStartDateView)()
       save4laterExpectsSave[FrsStartDateView]()
 
       submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
