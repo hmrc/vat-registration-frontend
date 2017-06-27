@@ -16,28 +16,28 @@
 
 package controllers.frs
 
+import java.time.LocalDate
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.frs.FrsStartDateFormFactory
 import models.view.frs.FrsStartDateView
-import play.api.data.Form
+import models.view.vatTradingDetails.vatChoice.StartDateView
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
 class FrsStartDateController @Inject()(frsStartDateFormFactory: FrsStartDateFormFactory, ds: CommonPlayDependencies)
                                       (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
-  val form: Form[FrsStartDateView] = frsStartDateFormFactory.form()
-
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel[FrsStartDateView]().getOrElse(FrsStartDateView())
-      .map(f => Ok(views.html.pages.frs.frs_start_date(form.fill(f)))))
+      .map(f => Ok(views.html.pages.frs.frs_start_date(frsStartDateFormFactory.form().fill(f)))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    frsStartDateFormFactory.form().bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.frs.frs_start_date(badForm)).pure,
-      goodForm => save(goodForm).map(_ =>
-        Redirect(controllers.vatTradingDetails.routes.TradingNameController.show()))))
+    viewModel[StartDateView]().getOrElse(StartDateView()).flatMap(a =>
+      frsStartDateFormFactory.form(Some(a.date.getOrElse(LocalDate.now))).bindFromRequest().fold(
+        badForm => BadRequest(views.html.pages.frs.frs_start_date(badForm)).pure,
+        goodForm => save(goodForm).map(_ =>
+          Redirect(controllers.vatTradingDetails.routes.TradingNameController.show())))))
 
 }

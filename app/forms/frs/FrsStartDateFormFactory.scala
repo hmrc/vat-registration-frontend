@@ -37,9 +37,9 @@ class FrsStartDateFormFactory @Inject()(dateService: DateService, today: Now[Loc
 
   val RADIO_INPUT_NAME = "frsStartDateRadio"
 
-  def form(): Form[FrsStartDateView] = {
+  def form(vatRegistrationDate: Option[LocalDate] = None): Form[FrsStartDateView] = {
 
-    val minDate: LocalDate = dateService.addWorkingDays(today(), 2)
+    val minDate: LocalDate = vatRegistrationDate.getOrElse(LocalDate.now())
     val maxDate: LocalDate = today().plusMonths(3)
     implicit val specificErrorCode: String = "frs.startDate"
 

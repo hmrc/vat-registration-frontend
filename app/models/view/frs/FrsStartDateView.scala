@@ -57,7 +57,7 @@ object FrsStartDateView {
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: FrsStartDateView, g: VatTradingDetails) =>
-   g
+    g
   }
 
 }
