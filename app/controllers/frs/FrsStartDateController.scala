@@ -37,7 +37,7 @@ class FrsStartDateController @Inject()(frsStartDateFormFactory: FrsStartDateForm
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     frsStartDateFormFactory.form().bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.frs.frs_start_date(badForm)).pure,
-      goodForm => save(goodForm)).map(_ =>
-        Redirect(controllers.vatTradingDetails.routes.TradingNameController.show())))
+      goodForm => save(goodForm).map(_ =>
+        Redirect(controllers.vatTradingDetails.routes.TradingNameController.show()))))
 
 }
