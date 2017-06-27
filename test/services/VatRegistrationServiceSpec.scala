@@ -155,7 +155,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.upsertVatLodgingOfficer(any(), any())(any(), any())).thenReturn(validLodgingOfficer.pure)
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
       when(mockRegConnector.upsertPpob(any(), any())(any(), any())).thenReturn(scrsAddress.pure)
-      when(mockRegConnector.upsertVatFrsAnswers(any(), any())(any(), any())).thenReturn(validVatFrsAnswers.pure)
+      when(mockRegConnector.upsertVatFrsAnswers(any(), any())(any(), any())).thenReturn(validVatFlatRateScheme.pure)
 
       service.submitVatScheme() completedSuccessfully
     }

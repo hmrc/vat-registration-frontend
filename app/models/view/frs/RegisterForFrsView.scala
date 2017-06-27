@@ -16,7 +16,7 @@
 
 package models.view.frs
 
-import models.api.{VatFlatRateSchemeAnswers, VatScheme}
+import models.api.{VatFlatRateScheme, VatScheme}
 import models.{ApiModelTransformer, S4LFlatRateSchemeAnswers, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.Json
 
@@ -36,7 +36,7 @@ object RegisterForFrsView {
     vs.vatFlatRateSchemeAnswers.flatMap(answers => answers.doYouWantToUseThisRate.map(RegisterForFrsView.apply))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: RegisterForFrsView, g: VatFlatRateSchemeAnswers) =>
+  implicit val viewModelTransformer = ViewModelTransformer { (c: RegisterForFrsView, g: VatFlatRateScheme) =>
     g.copy(doYouWantToUseThisRate = Some(c.selection))
   }
 }

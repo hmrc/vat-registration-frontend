@@ -17,7 +17,7 @@
 package models.view.frs
 
 import models._
-import models.api.{VatFlatRateSchemeAnswers, VatScheme}
+import models.api.{VatFlatRateScheme, VatScheme}
 import play.api.libs.json.Json
 
 final case class JoinFrsView(selection: Boolean)
@@ -35,7 +35,7 @@ object JoinFrsView {
     vs.vatFlatRateSchemeAnswers.flatMap(_.joinFrs).map(JoinFrsView(_))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: JoinFrsView, g: VatFlatRateSchemeAnswers) =>
+  implicit val viewModelTransformer = ViewModelTransformer { (c: JoinFrsView, g: VatFlatRateScheme) =>
     g.copy(joinFrs = Some(c.selection))
   }
 }

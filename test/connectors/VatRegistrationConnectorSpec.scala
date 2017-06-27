@@ -249,20 +249,20 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
 
     "return the correct VatResponse when the microservice completes and returns a VatFlatRateSchemeAnswers model" in new Setup {
-      mockHttpPATCH[VatFlatRateSchemeAnswers, VatFlatRateSchemeAnswers]("tst-url", validVatFlatRateSchemeAnswers)
-      connector.updateFrsAnswers("tstID", validVatFlatRateSchemeAnswers) returns validVatFlatRateSchemeAnswers
+      mockHttpPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", validVatFlatRateScheme)
+      connector.updateFrsAnswers("tstID", validVatFlatRateScheme) returns validVatFlatRateScheme
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatFlatRateSchemeAnswers, VatFlatRateSchemeAnswers]("tst-url", forbidden)
-      connector.updateFrsAnswers("tstID", validVatFlatRateSchemeAnswers) failedWith forbidden
+      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", forbidden)
+      connector.updateFrsAnswers("tstID", validVatFlatRateScheme) failedWith forbidden
     }
     "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[VatFlatRateSchemeAnswers, VatFlatRateSchemeAnswers]("tst-url", notFound)
-      connector.updateFrsAnswers("tstID", validVatFlatRateSchemeAnswers) failedWith notFound
+      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", notFound)
+      connector.updateFrsAnswers("tstID", validVatFlatRateScheme) failedWith notFound
     }
     "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatFlatRateSchemeAnswers, VatFlatRateSchemeAnswers]("tst-url", internalServiceException)
-      connector.updateFrsAnswers("tstID", validVatFlatRateSchemeAnswers) failedWith internalServiceException
+      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", internalServiceException)
+      connector.updateFrsAnswers("tstID", validVatFlatRateScheme) failedWith internalServiceException
     }
   }
 
@@ -311,19 +311,19 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   "Calling upsertVatFrsAnswers" should {
 
     "return the correct VatResponse when the microservice completes and returns a VatFrsAnswers model" in new Setup {
-      mockHttpPATCH[VatFlatRateSchemeAnswers, VatFlatRateSchemeAnswers]("tst-url", validFlatRateSchemeAnswers)
+      mockHttpPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", validFlatRateSchemeAnswers)
       connector.upsertVatFrsAnswers("tstID", validFlatRateSchemeAnswers) returns validFlatRateSchemeAnswers
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatFlatRateSchemeAnswers, VatFlatRateSchemeAnswers]("tst-url", forbidden)
+      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", forbidden)
       connector.upsertVatFrsAnswers("tstID", validFlatRateSchemeAnswers) failedWith forbidden
     }
     "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[VatFlatRateSchemeAnswers, VatFlatRateSchemeAnswers]("tst-url", notFound)
+      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", notFound)
       connector.upsertVatFrsAnswers("tstID", validFlatRateSchemeAnswers) failedWith notFound
     }
     "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatFlatRateSchemeAnswers, VatFlatRateSchemeAnswers]("tst-url", internalServiceException)
+      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", internalServiceException)
       connector.upsertVatFrsAnswers("tstID", validFlatRateSchemeAnswers) failedWith internalServiceException
     }
   }

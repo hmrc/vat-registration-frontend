@@ -99,7 +99,7 @@ trait VatRegistrationFixture {
     financialCompliance = None
   )
 
-  val validFlatRateSchemeAnswers = VatFlatRateSchemeAnswers(
+  val validFlatRateSchemeAnswers = VatFlatRateScheme(
     joinFrs = Some(true),
     annualCostsInclusive = Some(AnnualCostsInclusiveView.YES)
   )
@@ -117,7 +117,6 @@ trait VatRegistrationFixture {
   val formerName = FormerName(selection = true, formerName = Some("Bubbly Bobbings"))
   val currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(ScrsAddress("", "")))
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
-  val validVatFrsAnswers = VatFlatRateSchemeAnswers(joinFrs = Some(true), annualCostsInclusive = Some("yes"), doYouWantToUseThisRate = Some(true))
 
   val validLodgingOfficer = VatLodgingOfficer(
     ScrsAddress("", ""),
@@ -185,7 +184,7 @@ trait VatRegistrationFixture {
                  vatTradingDetails: Option[VatTradingDetails] = None,
                  sicAndCompliance: Option[VatSicAndCompliance] = None,
                  contact: Option[VatContact] = None,
-                 vatFlatRateSchemeAnswers: Option[VatFlatRateSchemeAnswers] = None
+                 vatFlatRateSchemeAnswers: Option[VatFlatRateScheme] = None
                ): VatScheme = VatScheme(
     id = id,
     tradingDetails = vatTradingDetails,
@@ -241,10 +240,13 @@ trait VatRegistrationFixture {
   val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
 
   val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
-  val validVatFlatRateSchemeAnswers = VatFlatRateSchemeAnswers(
+  val validVatFlatRateScheme = VatFlatRateScheme(
     joinFrs = Some(true),
     annualCostsInclusive = Some("yesWithin12months"),
     annualCostsLimited = Some("yesWithin12months"),
     doYouWantToUseThisRate = Some(false),
     whenDoYouWantToJoinFrs=  Some("registrationDate"))
+
+//  val validVatFrs = VatFlatRateScheme(joinFrs = Some(true), annualCostsInclusive = Some("yes"), doYouWantToUseThisRate = Some(true))
+
 }

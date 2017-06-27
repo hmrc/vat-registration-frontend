@@ -17,7 +17,7 @@
 package models.view.frs
 
 import fixtures.VatRegistrationFixture
-import models.api.VatFlatRateSchemeAnswers
+import models.api.VatFlatRateScheme
 import models.{ApiModelTransformer, S4LFlatRateSchemeAnswers, ViewModelTransformer}
 import org.scalatest.{Inspectors, Matchers}
 import uk.gov.hmrc.play.test.UnitSpec
@@ -29,14 +29,14 @@ class AnnualCostsInclusiveSpec extends UnitSpec with Matchers with Inspectors wi
   "ViewModelTransformer" should {
 
     "update VatFlatRateSchemeAnswers with new AnnualCostsInclusiveView (answer YES)" in {
-      val transformed = ViewModelTransformer[AnnualCostsInclusiveView, VatFlatRateSchemeAnswers]
-        .toApi(AnnualCostsInclusiveView(AnnualCostsInclusiveView.YES), VatFlatRateSchemeAnswers(annualCostsInclusive = Some(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS)))
+      val transformed = ViewModelTransformer[AnnualCostsInclusiveView, VatFlatRateScheme]
+        .toApi(AnnualCostsInclusiveView(AnnualCostsInclusiveView.YES), VatFlatRateScheme(annualCostsInclusive = Some(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS)))
       transformed.annualCostsInclusive shouldBe Some(AnnualCostsInclusiveView.YES)
     }
 
     "update VatFlatRateSchemeAnswers with new AnnualCostsInclusiveView (answer NO)" in {
-      val transformed = ViewModelTransformer[AnnualCostsInclusiveView, VatFlatRateSchemeAnswers]
-        .toApi(AnnualCostsInclusiveView(AnnualCostsInclusiveView.NO), VatFlatRateSchemeAnswers(annualCostsInclusive = Some(AnnualCostsInclusiveView.YES)))
+      val transformed = ViewModelTransformer[AnnualCostsInclusiveView, VatFlatRateScheme]
+        .toApi(AnnualCostsInclusiveView(AnnualCostsInclusiveView.NO), VatFlatRateScheme(annualCostsInclusive = Some(AnnualCostsInclusiveView.YES)))
       transformed.annualCostsInclusive shouldBe Some(AnnualCostsInclusiveView.NO)
     }
 
@@ -52,19 +52,19 @@ class AnnualCostsInclusiveSpec extends UnitSpec with Matchers with Inspectors wi
 
     "produce a view model from a vatScheme with annual costs inclusive (answer YES)" in {
       val vm = ApiModelTransformer[AnnualCostsInclusiveView]
-        .toViewModel(vatScheme(vatFlatRateSchemeAnswers = Some(VatFlatRateSchemeAnswers(annualCostsInclusive = Some(AnnualCostsInclusiveView.YES)))))
+        .toViewModel(vatScheme(vatFlatRateSchemeAnswers = Some(VatFlatRateScheme(annualCostsInclusive = Some(AnnualCostsInclusiveView.YES)))))
       vm shouldBe Some(AnnualCostsInclusiveView(AnnualCostsInclusiveView.YES))
     }
 
     "produce a view model from a vatScheme with annual costs inclusive (answer NO)" in {
       val vm = ApiModelTransformer[AnnualCostsInclusiveView]
-        .toViewModel(vatScheme(vatFlatRateSchemeAnswers = Some(VatFlatRateSchemeAnswers(annualCostsInclusive = Some(AnnualCostsInclusiveView.NO)))))
+        .toViewModel(vatScheme(vatFlatRateSchemeAnswers = Some(VatFlatRateScheme(annualCostsInclusive = Some(AnnualCostsInclusiveView.NO)))))
       vm shouldBe Some(AnnualCostsInclusiveView(AnnualCostsInclusiveView.NO))
     }
 
     "produce a view model from a vatScheme with annual costs inclusive (answer YES within 12 months)" in {
       val vm = ApiModelTransformer[AnnualCostsInclusiveView]
-        .toViewModel(vatScheme(vatFlatRateSchemeAnswers = Some(VatFlatRateSchemeAnswers(annualCostsInclusive = Some(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS)))))
+        .toViewModel(vatScheme(vatFlatRateSchemeAnswers = Some(VatFlatRateScheme(annualCostsInclusive = Some(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS)))))
       vm shouldBe Some(AnnualCostsInclusiveView(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS))
     }
 
