@@ -146,7 +146,9 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
         ),
         vatFlatRateSchemeAnswers = VatFlatRateSchemeAnswersTestSetup(
           joinFrs = frsAnswers.flatMap(_.joinFrs).map(_.selection.toString),
-          annualCostsInclusive = frsAnswers.flatMap(_.annualCostsInclusive).map(_.selection)
+          annualCostsInclusive = frsAnswers.flatMap(_.annualCostsInclusive).map(_.selection),
+          annualCostsLimited = frsAnswers.flatMap(_.annualCostsLimited).map(_.selection),
+          registerForFrs = frsAnswers.flatMap(_.registerForFrs).map(_.selection.toString)
         )
       )
       form = TestSetupForm.form.fill(testSetup)

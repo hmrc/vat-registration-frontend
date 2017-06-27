@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import models._
 import models.api._
-import models.view.frs.{AnnualCostsInclusiveView, JoinFrsView}
+import models.view.frs.{AnnualCostsInclusiveView, AnnualCostsLimitedView, JoinFrsView, RegisterForFrsView}
 import models.view.ppob.PpobView
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
@@ -216,10 +216,14 @@ class TestS4LBuilder {
 
     val joinFrs: Option[String] = data.vatFlatRateSchemeAnswers.joinFrs
     val annualCostsInclusive: Option[String] = data.vatFlatRateSchemeAnswers.annualCostsInclusive
+    val annualCostsLimited: Option[String] = data.vatFlatRateSchemeAnswers.annualCostsLimited
+    val registerForFrs: Option[String] = data.vatFlatRateSchemeAnswers.registerForFrs
 
     S4LFlatRateSchemeAnswers(
       joinFrs = joinFrs.map(a => JoinFrsView(a.toBoolean)),
-      annualCostsInclusive = annualCostsInclusive.map(AnnualCostsInclusiveView(_))
+      annualCostsInclusive = annualCostsInclusive.map(AnnualCostsInclusiveView(_)),
+      annualCostsLimited = annualCostsLimited.map(AnnualCostsLimitedView(_)),
+      registerForFrs = registerForFrs.map(a => RegisterForFrsView(a.toBoolean))
     )
 
   }
