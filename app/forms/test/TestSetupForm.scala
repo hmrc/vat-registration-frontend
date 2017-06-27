@@ -132,12 +132,12 @@ object TestSetupForm {
     "country" -> optional(text)
   )(OfficerPreviousAddressTestSetup.apply)(OfficerPreviousAddressTestSetup.unapply)
 
-  val flatRateSchemeAnswersMapping = mapping(
+  val flatRateSchemeMapping = mapping(
     "joinFrs" -> optional(text),
     "annualCostsInclusive" -> optional(text),
     "annualCostsLimited" -> optional(text),
     "registerForFrs" -> optional(text)
-  )(VatFlatRateSchemeAnswersTestSetup.apply)(VatFlatRateSchemeAnswersTestSetup.unapply)
+  )(VatFlatRateSchemeTestSetup.apply)(VatFlatRateSchemeTestSetup.unapply)
 
   val form = Form(mapping(
     "vatChoice" -> vatChoiceTestSetupMapping,
@@ -150,7 +150,7 @@ object TestSetupForm {
     "officerHomeAddress" -> officeHomeAddressMapping,
     "officerPreviousAddress" -> officePreviousAddressMapping,
     "vatLodgingOfficer" -> vatLodgingOfficerTestSetup,
-    "vatFlatRateSchemeAnswers" -> flatRateSchemeAnswersMapping
+    "vatFlatRateScheme" -> flatRateSchemeMapping
   )(TestSetup.apply)(TestSetup.unapply))
 
 }

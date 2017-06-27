@@ -29,8 +29,7 @@ case class VatScheme(
                       vatContact: Option[VatContact] = None,
                       vatServiceEligibility: Option[VatServiceEligibility] = None,
                       ppob: Option[ScrsAddress] = None,
-                      vatFlatRateSchemeAnswers: Option[VatFlatRateSchemeAnswers] = None
-
+                      vatFlatRateScheme: Option[VatFlatRateScheme] = None
                     )
 
 object VatScheme {
@@ -44,7 +43,7 @@ object VatScheme {
       (__ \ "vatContact").formatNullable[VatContact] and
       (__ \ "vatEligibility").formatNullable[VatServiceEligibility] and
       (__ \ "ppob").formatNullable[ScrsAddress] and
-      (__ \ "vatFlatRateSchemeAnswers").formatNullable[VatFlatRateSchemeAnswers]
+      (__ \ "vatFlatRateScheme").formatNullable[VatFlatRateScheme]
 
     ) (VatScheme.apply, unlift(VatScheme.unapply))
 

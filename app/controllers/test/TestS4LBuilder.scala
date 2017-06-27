@@ -212,14 +212,14 @@ class TestS4LBuilder {
     )
   }
 
-  def vatFrsAnswersFromData(data: TestSetup): S4LFlatRateSchemeAnswers = {
+  def vatFrsFromData(data: TestSetup): S4LFlatRateScheme = {
 
-    val joinFrs: Option[String] = data.vatFlatRateSchemeAnswers.joinFrs
-    val annualCostsInclusive: Option[String] = data.vatFlatRateSchemeAnswers.annualCostsInclusive
-    val annualCostsLimited: Option[String] = data.vatFlatRateSchemeAnswers.annualCostsLimited
-    val registerForFrs: Option[String] = data.vatFlatRateSchemeAnswers.registerForFrs
+    val joinFrs: Option[String] = data.vatFlatRateScheme.joinFrs
+    val annualCostsInclusive: Option[String] = data.vatFlatRateScheme.annualCostsInclusive
+    val annualCostsLimited: Option[String] = data.vatFlatRateScheme.annualCostsLimited
+    val registerForFrs: Option[String] = data.vatFlatRateScheme.registerForFrs
 
-    S4LFlatRateSchemeAnswers(
+    S4LFlatRateScheme(
       joinFrs = joinFrs.map(a => JoinFrsView(a.toBoolean)),
       annualCostsInclusive = annualCostsInclusive.map(AnnualCostsInclusiveView(_)),
       annualCostsLimited = annualCostsLimited.map(AnnualCostsLimitedView(_)),
