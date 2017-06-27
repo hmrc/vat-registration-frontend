@@ -24,21 +24,17 @@ import play.api.libs.json.Json
 
 import scala.util.Try
 
-case class FrsStartDateView(dateType: String = "", date: Option[LocalDate] = None, ctActiveDate: Option[LocalDate] = None) {
-
-  def withCtActiveDateOption(d: LocalDate): FrsStartDateView = this.copy(ctActiveDate = Some(d))
-
-}
+case class FrsStartDateView(dateType: String = "", date: Option[LocalDate] = None)
 
 object FrsStartDateView {
 
   def bind(dateType: String, dateModel: Option[DateModel]): FrsStartDateView =
     FrsStartDateView(dateType, dateModel.flatMap(_.toLocalDate))
 
-  def unbind(startDate: FrsStartDateView): Option[(String, Option[DateModel])] =
+  def unbind(frsStartDate: FrsStartDateView): Option[(String, Option[DateModel])] =
     Try {
-      startDate.date.fold((startDate.dateType, Option.empty[DateModel])) {
-        d => (startDate.dateType, Some(DateModel.fromLocalDate(d)))
+      frsStartDate.date.fold((frsStartDate.dateType, Option.empty[DateModel])) {
+        d => (frsStartDate.dateType, Some(DateModel.fromLocalDate(d)))
       }
     }.toOption
 
