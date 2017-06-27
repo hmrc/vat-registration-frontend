@@ -76,8 +76,8 @@ private[forms] object FormValidation {
     Constraint[T] { (t: T) =>
       Logger.info(s"Checking constraint for value $t on or after [$minValue]")
       (ordering.compare(t, minValue).signum) match {
-        case (1, -1) | (0, _) | (_, 0) => Valid
-        case (-1, _) => Invalid(ValidationError(s"validation.$e.range.below", minValue))
+        case (1) | (0) => Valid
+        case (-1) => Invalid(ValidationError(s"validation.$e.range.below", minValue))
       }
     }
 
