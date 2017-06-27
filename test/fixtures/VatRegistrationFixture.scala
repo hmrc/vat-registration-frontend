@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import models.api.{VatComplianceCultural, _}
 import models.external.{CoHoCompanyProfile, Officer}
-import models.view.frs.{AnnualCostsInclusiveView, AnnualCostsLimitedView, JoinFrsView, RegisterForFrsView}
+import models.view.frs.{AnnualCostsInclusiveView, AnnualCostsLimitedView}
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
@@ -226,7 +226,7 @@ trait VatRegistrationFixture {
 
   val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
   val validVatFlatRateScheme = VatFlatRateScheme(
-    joinFrs = Some(true),
+    joinFrs = true,
     annualCostsInclusive = Some(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS),
     annualCostsLimited = Some(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS),
     doYouWantToUseThisRate = Some(false)
