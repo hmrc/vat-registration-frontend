@@ -19,19 +19,15 @@ package forms.frs
 import forms.FormValidation.textMappingWithMessageArgs
 import models.view.frs.AnnualCostsLimitedView
 import play.api.data.Form
-import play.api.data.Forms.{mapping, optional, text}
+import play.api.data.Forms.mapping
 
-object AnnualCostsLimitedForm {
+object AnnualCostsLimitedFormFactory {
+  val RADIO_COST_LIMITED: String = "annualCostsLimitedRadio"
 
-  val RADIO_COSTS_LIMITED: String = "annualCostsLimitedRadio"
-  val HIDDEN_TURNOVER: String = "hiddenTurnover"
+  def form(msgArgs: Seq[Any] = Seq()): Form[AnnualCostsLimitedView] = {
+    Form(mapping(
+      RADIO_COST_LIMITED -> textMappingWithMessageArgs()(msgArgs)("frs.costsLimited").verifying(AnnualCostsLimitedView.valid)
+    )(AnnualCostsLimitedView.apply)(AnnualCostsLimitedView.unapply))
+  }
 
-  val form = Form(
-    mapping(
-      HIDDEN_TURNOVER -> optional(text),
-      RADIO_COSTS_LIMITED -> textMappingWithMessageArgs()(Seq(HIDDEN_TURNOVER))("frs.costsLimited")
-        .verifying(AnnualCostsLimitedView.valid)
-    )((HIDDEN_TURNOVER, RADIO_COSTS_LIMITED) => AnnualCostsLimitedView(RADIO_COSTS_LIMITED))
-     ((view : AnnualCostsLimitedView) => Some(None, view.selection ) )
-  )
 }
