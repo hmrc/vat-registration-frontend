@@ -39,11 +39,9 @@ class RegisterForFrsController @Inject()(ds: CommonPlayDependencies, formFactory
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.frs.frs_register_for(badForm)).pure,
-      registerForFrs => save(RegisterForFrsView(registerForFrs.answer)).map(_ =>
-        Redirect(if (registerForFrs.answer) {
-          controllers.routes.SummaryController.show() //TODO change to next screen - FRS start date
-        } else {
-          controllers.routes.SummaryController.show()
-        }))))
+      registerForFrs => save(RegisterForFrsView(registerForFrs.answer)).map(_ => registerForFrs.answer).ifM(
+        controllers.routes.SummaryController.show().pure, //TODO change to next screen - FRS start date
+        vrs.submitFrsAnswers().map(_ => controllers.routes.SummaryController.show())
+      ).map(Redirect)))
 
 }

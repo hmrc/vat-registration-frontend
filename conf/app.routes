@@ -196,17 +196,20 @@ GET         /you-cant-register-for-vat-with-this-service                        
 ## FRS FLOW
 ##
 ##Are you interested in FRS Page
-GET         /join-flat-rate-scheme                         controllers.frs.JoinFrsController.show
-POST        /join-flat-rate-scheme                         controllers.frs.JoinFrsController.submit
+GET         /join-flat-rate-scheme                                                              controllers.frs.JoinFrsController.show
+POST        /join-flat-rate-scheme                                                              controllers.frs.JoinFrsController.submit
 
 ##Do you spend less than £1000 a year Page
-GET         /spends-less-including-vat-on-goods            controllers.frs.AnnualCostsInclusiveController.show
-POST        /spends-less-including-vat-on-goods            controllers.frs.AnnualCostsInclusiveController.submit
+GET         /spends-less-including-vat-on-goods                                                 controllers.frs.AnnualCostsInclusiveController.show
+POST        /spends-less-including-vat-on-goods                                                 controllers.frs.AnnualCostsInclusiveController.submit
 
 ## Do you want to register for FRS page
-GET         /your-flat-rate                                controllers.frs.RegisterForFrsController.show
-POST        /your-flat-rate                                controllers.frs.RegisterForFrsController.submit
+GET         /your-flat-rate                                                                     controllers.frs.RegisterForFrsController.show
+POST        /your-flat-rate                                                                     controllers.frs.RegisterForFrsController.submit
 
 ## When do you want to join the Flat Rate Scheme?
 GET         /flat-rate-scheme-join-date	                   controllers.frs.FrsStartDateController.show
 POST        /flat-rate-scheme-join-date	                   controllers.frs.FrsStartDateController.submit
+##Do you spend less than 2% of turnover a year Page
+GET         /spends-less-than-two-percent-of-turnover-a-year-on-goods                           controllers.frs.AnnualCostsLimitedController.show
+POST        /spends-less-than-two-percent-of-turnover-a-year-on-goods                           controllers.frs.AnnualCostsLimitedController.submit

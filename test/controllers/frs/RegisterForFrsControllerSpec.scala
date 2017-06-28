@@ -19,6 +19,7 @@ package controllers.frs
 import fixtures.VatRegistrationFixture
 import forms.genericForms.YesOrNoFormFactory
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.api.VatFlatRateScheme
 import models.view.frs.RegisterForFrsView
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -42,7 +43,7 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
         callAuthorised(Controller.show()) {
-          _ includesText "Your flat rate"
+          _ includesText "You can use the 16.5% flat rate"
         }
       }
 
@@ -51,7 +52,7 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
         callAuthorised(Controller.show) {
-          _ includesText "Your flat rate"
+          _ includesText "You can use the 16.5% flat rate"
         }
       }
 
@@ -60,7 +61,7 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
         callAuthorised(Controller.show) {
-          _ includesText "Your flat rate"
+          _ includesText "You can use the 16.5% flat rate"
         }
       }
 
@@ -92,11 +93,13 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
     "redirect to the welcome page" in {
       when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)
       save4laterExpectsSave[RegisterForFrsView]()
-      when(mockVatRegistrationService.deleteVatScheme()(any())).thenReturn(().pure)
+      when(mockVatRegistrationService.submitFrsAnswers()(any())).thenReturn(VatFlatRateScheme(false).pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "registerForFrsRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/check-your-answers")
+
+      verify(mockVatRegistrationService).submitFrsAnswers()(any())
     }
   }
 
