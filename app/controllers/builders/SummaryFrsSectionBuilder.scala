@@ -22,7 +22,7 @@ import models.view.{SummaryRow, SummarySection}
 
 case class SummaryFrsSectionBuilder
 (
-  frsAnswers: Option[VatFlatRateScheme] = None
+  vatFrs: Option[VatFlatRateScheme] = None
 )
   extends SummarySectionBuilder {
 
@@ -30,13 +30,13 @@ case class SummaryFrsSectionBuilder
 
   val joinFrsRow: SummaryRow = yesNoRow(
     "joinFrs",
-    frsAnswers.map(_.joinFrs),
+    vatFrs.map(_.joinFrs),
     controllers.frs.routes.JoinFrsController.show()
   )
 
   val costsInclusiveRow: SummaryRow = SummaryRow(
     s"$sectionId.costsInclusive",
-    frsAnswers.flatMap(_.annualCostsInclusive).collect {
+    vatFrs.flatMap(_.annualCostsInclusive).collect {
       case AnnualCostsInclusiveView.YES => "pages.summary.frs.costsInclusive.lessThan1k"
       case AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS => "pages.summary.frs.costsInclusive.futureLessThan1k"
       case AnnualCostsInclusiveView.NO => "pages.summary.frs.costsInclusive.moreThan1k"
@@ -46,7 +46,7 @@ case class SummaryFrsSectionBuilder
 
   val costsLimimtedRow: SummaryRow = SummaryRow(
     s"$sectionId.costsLimited",
-    frsAnswers.flatMap(_.annualCostsLimited).collect {
+    vatFrs.flatMap(_.annualCostsLimited).collect {
       case AnnualCostsLimitedView.YES => "pages.summary.frs.costsLimited.lessThan2percent"
       case AnnualCostsLimitedView.YES_WITHIN_12_MONTHS => "pages.summary.frs.costsLimited.futureLessThan2percent"
       case AnnualCostsLimitedView.NO => "pages.summary.frs.costsLimited.moreThan2percent"
@@ -56,13 +56,13 @@ case class SummaryFrsSectionBuilder
 
   val useThisRateRow: SummaryRow = yesNoRow(
     "registerForFrs",
-    frsAnswers.flatMap(_.doYouWantToUseThisRate),
+    vatFrs.flatMap(_.doYouWantToUseThisRate),
     controllers.frs.routes.RegisterForFrsController.show()
   )
 
   val startDateRow: SummaryRow = SummaryRow(
     s"$sectionId.costsLimited",
-    frsAnswers.flatMap(_.whenDoYouWantToJoinFrs).getOrElse(""),
+    vatFrs.flatMap(_.whenDoYouWantToJoinFrs).getOrElse(""),
     Some(controllers.frs.routes.AnnualCostsInclusiveController.show()) //TODO fix once screen is done
   )
 
@@ -70,11 +70,11 @@ case class SummaryFrsSectionBuilder
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
-      (joinFrsRow, frsAnswers.map(_.joinFrs).isDefined),
-      (costsInclusiveRow, frsAnswers.flatMap(_.annualCostsInclusive).isDefined),
-      (costsLimimtedRow, frsAnswers.flatMap(_.annualCostsLimited).isDefined),
-      (useThisRateRow, frsAnswers.flatMap(_.doYouWantToUseThisRate).isDefined),
-      (startDateRow, frsAnswers.flatMap(_.whenDoYouWantToJoinFrs).isDefined)
+      (joinFrsRow, vatFrs.map(_.joinFrs).isDefined),
+      (costsInclusiveRow, vatFrs.flatMap(_.annualCostsInclusive).isDefined),
+      (costsLimimtedRow, vatFrs.flatMap(_.annualCostsLimited).isDefined),
+      (useThisRateRow, vatFrs.flatMap(_.doYouWantToUseThisRate).isDefined),
+      (startDateRow, vatFrs.flatMap(_.whenDoYouWantToJoinFrs).isDefined)
     )
   )
 

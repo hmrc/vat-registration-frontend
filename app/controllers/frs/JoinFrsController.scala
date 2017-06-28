@@ -41,7 +41,7 @@ class JoinFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOr
       badForm => BadRequest(views.html.pages.frs.frs_join(badForm)).pure,
       joinFrs => save(JoinFrsView(joinFrs.answer)).map(_ => joinFrs.answer).ifM(
         controllers.frs.routes.AnnualCostsInclusiveController.show().pure,
-        vrs.submitFrsAnswers().map(_ => controllers.routes.SummaryController.show())
+        vrs.submitVatFlatRateScheme().map(_ => controllers.routes.SummaryController.show())
       ).map(Redirect)))
 
 }

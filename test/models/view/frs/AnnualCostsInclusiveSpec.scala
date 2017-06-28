@@ -98,11 +98,11 @@ class AnnualCostsInclusiveSpec extends UnitSpec with Matchers with Inspectors wi
       AnnualCostsInclusiveView.viewModelFormat.read(s4LTradingDetails) shouldBe Some(validAnnualCostsInclusiveView)
     }
 
-    "update empty vatFlatRateSchemeAnswers with annualCostsInclusive" in {
+    "update empty vatFlatRateScheme with annualCostsInclusive" in {
       AnnualCostsInclusiveView.viewModelFormat.update(validAnnualCostsInclusiveView, Option.empty[S4LFlatRateScheme]).annualCostsInclusive shouldBe Some(validAnnualCostsInclusiveView)
     }
 
-    "update non-empty vatFlatRateSchemeAnswers with annualCostsInclusive" in {
+    "update non-empty vatFlatRateScheme with annualCostsInclusive" in {
       AnnualCostsInclusiveView.viewModelFormat.update(validAnnualCostsInclusiveView, Some(s4LTradingDetails)).annualCostsInclusive shouldBe Some(validAnnualCostsInclusiveView)
     }
 

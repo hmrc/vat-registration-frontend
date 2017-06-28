@@ -104,7 +104,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
     submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@|
       submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer |@|
-      submitFrsAnswers() |@| submitPpob map { case _ => () }
+      submitVatFlatRateScheme() |@| submitPpob map { case _ => () }
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
     def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =
@@ -225,10 +225,10 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     } yield response
   }
 
-  def submitFrsAnswers()(implicit hc: HeaderCarrier): Future[VatFlatRateScheme] = {
+  def submitVatFlatRateScheme()(implicit hc: HeaderCarrier): Future[VatFlatRateScheme] = {
     def merge(fresh: Option[S4LFlatRateScheme], vs: VatScheme): VatFlatRateScheme =
       fresh.fold(
-        vs.vatFlatRateScheme.getOrElse(throw fail("VatFlatRateSchemeAnswers"))
+        vs.vatFlatRateScheme.getOrElse(throw fail("VatFlatRateScheme"))
       ) { s4l =>
         update(s4l.annualCostsInclusive)
           .andThen(update(s4l.joinFrs))
