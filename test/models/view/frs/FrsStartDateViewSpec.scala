@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import fixtures.VatRegistrationFixture
 import models.view.frs.FrsStartDateView
-import models.{DateModel, S4LFlatRateSchemeAnswers}
+import models.{DateModel, S4LFlatRateScheme}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -61,14 +61,14 @@ class FrsStartDateViewSpec extends UnitSpec with VatRegistrationFixture with Ins
 
   "ViewModelFormat" should {
     val validFrsStartDateView = FrsStartDateView(FrsStartDateView.VAT_REGISTRATION_DATE)
-    val s4LFlatRateScheme: S4LFlatRateSchemeAnswers = S4LFlatRateSchemeAnswers(frsStartDate = Some(validFrsStartDateView))
+    val s4LFlatRateScheme: S4LFlatRateScheme = S4LFlatRateScheme(frsStartDate = Some(validFrsStartDateView))
 
     "extract startDate from vatTradingDetails" in {
       FrsStartDateView.viewModelFormat.read(s4LFlatRateScheme) shouldBe Some(validFrsStartDateView)
     }
 
     "update empty vatContact with startDate" in {
-      FrsStartDateView.viewModelFormat.update(validFrsStartDateView, Option.empty[S4LFlatRateSchemeAnswers]).frsStartDate shouldBe Some(validFrsStartDateView)
+      FrsStartDateView.viewModelFormat.update(validFrsStartDateView, Option.empty[S4LFlatRateScheme]).frsStartDate shouldBe Some(validFrsStartDateView)
     }
 
     "update non-empty vatContact with startDate" in {
