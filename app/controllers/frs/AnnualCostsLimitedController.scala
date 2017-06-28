@@ -18,50 +18,34 @@ package controllers.frs
 
 import javax.inject.Inject
 
-import cats.data.OptionT
+import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.frs.AnnualCostsLimitedFormFactory
 import models.view.frs.AnnualCostsLimitedView
-import models.view.vatFinancials.EstimateVatTurnover
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
 
 class AnnualCostsLimitedController @Inject()(ds: CommonPlayDependencies)
-                                            (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+                                            (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with FlatMapSyntax {
 
   val defaultForm = AnnualCostsLimitedFormFactory.form()
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
 
+  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
-      estimateVatTurnover <- viewModel[EstimateVatTurnover]().fold(0L)(turnover => (turnover.vatTurnoverEstimate * 0.02).toLong)
+      estimateVatTurnover <- vrs.getFlatRateSchemeThreshold()
       annualCostsLimitedForm <- viewModel[AnnualCostsLimitedView]().fold(defaultForm)(defaultForm.fill)
     } yield Ok(views.html.pages.frs.annual_costs_limited(annualCostsLimitedForm, estimateVatTurnover))
-  }
   )
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-
-    val estimatedTurnover = viewModel[EstimateVatTurnover]().fold(0L) (turnover => (turnover.vatTurnoverEstimate * 0.02).toLong)
-    estimatedTurnover.map(turnover => AnnualCostsLimitedFormFactory.form(Seq(turnover))).flatMap(
-      form =>
-        form.bindFromRequest().
-          fold(
-            badForm => {
-                   estimatedTurnover.map( turnover =>  BadRequest(views.html.pages.frs.annual_costs_limited(badForm, turnover))
-              )
-            }
-            ,
-            goodForm => save(goodForm).map(_ =>
-              Redirect(if (goodForm.selection == AnnualCostsLimitedView.NO) {
-                controllers.frs.routes.RegisterForFrsController.show()
-              } else {
-                controllers.frs.routes.RegisterForFrsController.show()
-              })
-            )
-          )
-    )
-  }
-  )
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    vrs.getFlatRateSchemeThreshold().flatMap(turnover =>
+      AnnualCostsLimitedFormFactory.form(Seq(turnover)).bindFromRequest().fold(
+        badForm => BadRequest(views.html.pages.frs.annual_costs_limited(badForm, turnover)).pure,
+        view => save(view).map(_ => view.selection == AnnualCostsLimitedView.NO).ifM(
+          ifTrue = controllers.frs.routes.RegisterForFrsController.show().pure, //TODO go to CONFIRM BUSINESS SECTOR screen
+          ifFalse = controllers.frs.routes.RegisterForFrsController.show().pure
+        ).map(Redirect))))
 
 }
