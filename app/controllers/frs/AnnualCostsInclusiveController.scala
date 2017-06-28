@@ -40,9 +40,9 @@ class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.frs.annual_costs_inclusive(badForm)).pure,
       goodForm => save(goodForm).map(_ =>
         Redirect(if (goodForm.selection == AnnualCostsInclusiveView.NO) {
-          controllers.routes.SummaryController.show()
-        } else {
           controllers.frs.routes.AnnualCostsLimitedController.show()
+        } else {
+          controllers.routes.SummaryController.show()
         }))))
 
 }
