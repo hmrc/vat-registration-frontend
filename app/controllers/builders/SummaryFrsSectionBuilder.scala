@@ -17,7 +17,7 @@
 package controllers.builders
 
 import models.api._
-import models.view.frs.AnnualCostsInclusiveView
+import models.view.frs.{AnnualCostsInclusiveView, AnnualCostsLimitedView}
 import models.view.{SummaryRow, SummarySection}
 
 case class SummaryFrsSectionBuilder
@@ -47,9 +47,9 @@ case class SummaryFrsSectionBuilder
   val costsLimimtedRow: SummaryRow = SummaryRow(
     s"$sectionId.costsLimited",
     frsAnswers.flatMap(_.annualCostsLimited).collect {
-      case AnnualCostsInclusiveView.YES => "pages.summary.frs.costsLimited.lessThan2percent"
-      case AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS => "pages.summary.frs.costsLimited.futureLessThan2percent"
-      case AnnualCostsInclusiveView.NO => "pages.summary.frs.costsLimited.moreThan2percent"
+      case AnnualCostsLimitedView.YES => "pages.summary.frs.costsLimited.lessThan2percent"
+      case AnnualCostsLimitedView.YES_WITHIN_12_MONTHS => "pages.summary.frs.costsLimited.futureLessThan2percent"
+      case AnnualCostsLimitedView.NO => "pages.summary.frs.costsLimited.moreThan2percent"
     }.getOrElse(""),
     Some(controllers.frs.routes.AnnualCostsLimitedController.show())
   )
