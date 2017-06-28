@@ -18,17 +18,19 @@ package controllers.vatFinancials.vatAccountingPeriod
 
 import javax.inject.Inject
 
+import controllers.vatFinancials.EstimateVatTurnover.lastKnownValueKey
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.vatAccountingPeriod.AccountingPeriodForm
+import models.VatFlatRateSchemePath
 import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, VatRegistrationService}
 
 
 class AccountingPeriodController @Inject()(ds: CommonPlayDependencies)
                                           (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) {
+  extends VatRegistrationController(ds)  with CommonService {
 
   val joinThreshold: Long = conf.getLong("thresholds.frs.joinThreshold").get
 
@@ -42,9 +44,11 @@ class AccountingPeriodController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatFinancials.vatAccountingPeriod.accounting_period(badForm)).pure,
       data => for {
+        originalTurnover <- keystoreConnector.fetchAndGet[Long](lastKnownValueKey)
         _ <- save(data)
         _ <- vrs.submitVatFinancials()
         turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
+        _ <- vrs.conditionalDeleteElement(VatFlatRateSchemePath, originalTurnover.getOrElse(0) != turnover)
       } yield Redirect(if (turnover > joinThreshold) {
         controllers.routes.SummaryController.show()
       } else {
