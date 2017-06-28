@@ -23,6 +23,7 @@ import connectors.{CompanyRegistrationConnector, OptionalResponse, VatRegistrati
 import models._
 import models.api._
 import models.external.CoHoCompanyProfile
+import models.view.vatFinancials.EstimateVatTurnover
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -36,7 +37,7 @@ trait RegistrationService {
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme]
 
-  def getAckRef(regId:String)(implicit hc: HeaderCarrier): OptionalResponse[String]
+  def getAckRef(regId: String)(implicit hc: HeaderCarrier): OptionalResponse[String]
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit]
 
@@ -66,6 +67,11 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
 
   import cats.syntax.all._
 
+  def getFlatRateSchemeThreshold()(implicit hc: HeaderCarrier): Future[Long] =
+    s4LService.getViewModel[EstimateVatTurnover, S4LVatFinancials]()
+      .orElseF(getVatScheme() map ApiModelTransformer[EstimateVatTurnover].toViewModel)
+      .map(_.vatTurnoverEstimate).fold(0L)(estimate => Math.round(estimate * 0.02))
+
   private def s4l[T: Format : S4LKey]()(implicit hc: HeaderCarrier) =
     s4LService.fetchAndGet[T]()
 
@@ -75,7 +81,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
     fetchRegistrationId.flatMap(vatRegConnector.getRegistration)
 
-  def getAckRef(regId:String)(implicit hc: HeaderCarrier): OptionalResponse[String] =
+  def getAckRef(regId: String)(implicit hc: HeaderCarrier): OptionalResponse[String] =
     vatRegConnector.getAckRef(regId)
 
   def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
