@@ -17,12 +17,12 @@
 package controllers.frs
 
 import java.time.LocalDate
+
 import common.Now
 import fixtures.VatRegistrationFixture
 import forms.frs.FrsStartDateFormFactory
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.frs.FrsStartDateView
-import models.view.vatTradingDetails.vatChoice.StartDateView
 import org.mockito.Matchers
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -84,8 +84,6 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
   s"POST ${routes.FrsStartDateController.submit()}" should {
 
     "return 400 when no data posted" in {
-      save4laterReturnsViewModel(validStartDateView)()
-
       submitAuthorised(
         FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody()) {
         status(_) mustBe Status.BAD_REQUEST
@@ -93,8 +91,6 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "return 400 when partial data is posted" in {
-      save4laterReturnsViewModel(validStartDateView)()
-
       submitAuthorised(
         FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
           "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
@@ -106,8 +102,7 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
       }
     }
 
-    "return 400 with Different Date selected and date that is before vat registration date entered" in {
-      save4laterReturnsViewModel(validStartDateView)()
+    "return 400 with Different Date selected and date that is less than 2 working days in the future" in {
       save4laterExpectsSave[FrsStartDateView]()
 
       submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -120,35 +115,7 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
       }
     }
 
-    "return 303 with Different Date selected and a valid date entered" in {
-      val vatStartDate = StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.of(2017, 3, 21)))
-
-      save4laterReturnsViewModel(vatStartDate)()
-      save4laterExpectsSave[FrsStartDateView]()
-
-      submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
-        "frsStartDate.day" -> "21",
-        "frsStartDate.month" -> "3",
-        "frsStartDateDate.year" -> "2017"
-      )) {
-        _ redirectsTo s"$contextRoot/trading-name"
-      }
-    }
-
     "return 303 with VAT Registration Date selected" in {
-      save4laterReturnsViewModel(validStartDateView)()
-      save4laterExpectsSave[FrsStartDateView]()
-
-      submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "frsStartDateRadio" -> FrsStartDateView.VAT_REGISTRATION_DATE
-      )) {
-        _ redirectsTo s"$contextRoot/trading-name"
-      }
-    }
-
-    "return 303 with VAT Registration Date selected and there is an empty vat start date" in {
-      save4laterReturnsNoViewModel[StartDateView]()
       save4laterExpectsSave[FrsStartDateView]()
 
       submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(

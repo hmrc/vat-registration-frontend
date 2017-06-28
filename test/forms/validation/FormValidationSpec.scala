@@ -367,4 +367,21 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
   }
 
+  "onOrAfter validation" must {
+
+    implicit val e:ErrorCode = "test"
+    val constraint = FormValidation.onOrAfter[Int](0)
+
+    "accept values above the minimum" in {
+      forAll(Seq(0, 1, 2, 3, 50, 98, 99, 100))(constraint(_) shouldBe Valid)
+    }
+
+    "reject values below the minimum" in {
+      forAll(Seq(Int.MinValue, -1))(in => inside(constraint(in)) {
+        case Invalid(err :: _) => err.message shouldBe "validation.test.range.below"
+      })
+    }
+
+  }
+
 }
