@@ -42,7 +42,7 @@ class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
         Redirect(if (goodForm.selection == AnnualCostsInclusiveView.NO) {
           controllers.frs.routes.AnnualCostsLimitedController.show()
         } else {
-          controllers.routes.SummaryController.show()
+          controllers.frs.routes.RegisterForFrsController.show()
         }))))
 
 }

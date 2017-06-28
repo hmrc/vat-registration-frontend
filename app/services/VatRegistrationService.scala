@@ -233,6 +233,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
         update(s4l.annualCostsInclusive)
           .andThen(update(s4l.joinFrs))
           .andThen(update(s4l.annualCostsInclusive))
+          .andThen(update(s4l.annualCostsLimited))
           .andThen(update(s4l.registerForFrs))
           .apply(vs.vatFlatRateScheme.getOrElse(VatFlatRateScheme()))
       }
