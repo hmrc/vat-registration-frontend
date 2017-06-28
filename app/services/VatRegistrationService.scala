@@ -63,6 +63,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
                                        compRegConnector: CompanyRegistrationConnector)
   extends RegistrationService with CommonService {
 
+
   import cats.syntax.all._
 
   private def s4l[T: Format : S4LKey]()(implicit hc: HeaderCarrier) =
@@ -88,6 +89,9 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     elementPaths traverse_ deleteElement
   }
 
+  def conditionalDeleteElement(elementPath: ElementPath, cond: Boolean)(implicit hc: HeaderCarrier): Future[Unit] = {
+    if (cond) deleteElement(elementPath) else ().pure
+  }
 
   def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit] =
     for {

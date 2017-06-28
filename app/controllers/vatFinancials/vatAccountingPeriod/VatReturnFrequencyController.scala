@@ -19,18 +19,19 @@ package controllers.vatFinancials.vatAccountingPeriod
 import javax.inject.Inject
 
 import cats.syntax.FlatMapSyntax
+import controllers.vatFinancials.EstimateVatTurnover.lastKnownValueKey
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.vatAccountingPeriod.VatReturnFrequencyForm
-import models.AccountingPeriodStartPath
+import models.{AccountingPeriodStartPath, VatFlatRateSchemePath}
 import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.MONTHLY
 import play.api.mvc._
-import services.{S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, VatRegistrationService}
 
 class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with FlatMapSyntax {
+  extends VatRegistrationController(ds) with CommonService with FlatMapSyntax {
 
   val joinThreshold: Long = conf.getLong("thresholds.frs.joinThreshold").get
 
@@ -45,9 +46,11 @@ class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.vatFinancials.vatAccountingPeriod.vat_return_frequency(badForm)).pure,
       view => save(view).map(_ => view.frequencyType == MONTHLY).ifM(
         ifTrue = for {
+          originalTurnover <- keystoreConnector.fetchAndGet[Long](lastKnownValueKey)
           _ <- vrs.deleteElement(AccountingPeriodStartPath)
           _ <- vrs.submitVatFinancials()
           turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
+          _ <- vrs.conditionalDeleteElement(VatFlatRateSchemePath, originalTurnover.getOrElse(0) != turnover)
         } yield if (turnover > joinThreshold) {
           controllers.routes.SummaryController.show()
         } else {
