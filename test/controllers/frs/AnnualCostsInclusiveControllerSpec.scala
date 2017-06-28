@@ -79,7 +79,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES
-      ))(_ redirectsTo s"$contextRoot/your-flat-rate")
+      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
     }
 
     "return 303 with Annual Costs Inclusive selected No - but within 12 months" in {
@@ -87,7 +87,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS
-      ))(_ redirectsTo s"$contextRoot/your-flat-rate")
+      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
     }
 
     "redirect to the welcome page with Annual Costs Inclusive selected No" in {
