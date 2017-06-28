@@ -99,7 +99,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsLimitedRadio" -> AnnualCostsLimitedView.YES
-      ))(_ redirectsTo s"$contextRoot/your-flat-rate")
+      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
     }
   }
 
@@ -111,7 +111,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsLimitedRadio" -> AnnualCostsLimitedView.YES_WITHIN_12_MONTHS
-      ))(_ redirectsTo s"$contextRoot/your-flat-rate")
+      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
     }
   }
 
@@ -124,7 +124,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsLimitedRadio" -> AnnualCostsLimitedView.NO
-      ))(_ redirectsTo s"$contextRoot/your-flat-rate")
+      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
     }
   }
 
@@ -138,7 +138,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsLimitedRadio" -> AnnualCostsLimitedView.NO
-      ))(_ redirectsTo s"$contextRoot/your-flat-rate")
+      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
     }
   }
 }
