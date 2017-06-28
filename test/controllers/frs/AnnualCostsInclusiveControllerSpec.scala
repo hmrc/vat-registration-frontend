@@ -79,7 +79,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES
-      ))(_ redirectsTo s"$contextRoot/spends-less-than-two-percent-of-turnover-a-year-on-goods")
+      ))(_ redirectsTo s"$contextRoot/check-your-answers")
     }
 
     "return 303 with Annual Costs Inclusive selected No - but within 12 months" in {
@@ -87,7 +87,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS
-      ))(_ redirectsTo s"$contextRoot/spends-less-than-two-percent-of-turnover-a-year-on-goods")
+      ))(_ redirectsTo s"$contextRoot/check-your-answers")
     }
 
     "redirect to the welcome page with Annual Costs Inclusive selected No" in {
@@ -97,7 +97,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.NO
-      ))(_ redirectsTo s"$contextRoot/check-your-answers")
+      ))(_ redirectsTo s"$contextRoot/spends-less-than-two-percent-of-turnover-a-year-on-goods")
     }
   }
 
