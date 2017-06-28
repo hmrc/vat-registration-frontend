@@ -84,7 +84,7 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "registerForFrsRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/check-your-answers")
+      ))(_ redirectsTo s"$contextRoot/flat-rate-scheme-join-date")
     }
   }
 
