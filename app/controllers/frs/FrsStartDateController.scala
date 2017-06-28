@@ -16,16 +16,13 @@
 
 package controllers.frs
 
-import java.time.LocalDate
 import javax.inject.Inject
 
-import common.Now
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.frs.FrsStartDateFormFactory
 import models.view.frs.FrsStartDateView
-import models.view.vatTradingDetails.vatChoice.StartDateView
 import play.api.mvc._
-import services.{DateService, S4LService, VatRegistrationService}
+import services.{S4LService, VatRegistrationService}
 
 class FrsStartDateController @Inject()(frsStartDateFormFactory: FrsStartDateFormFactory, ds: CommonPlayDependencies)
                                       (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
@@ -37,7 +34,8 @@ class FrsStartDateController @Inject()(frsStartDateFormFactory: FrsStartDateForm
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
       frsStartDateFormFactory.form().bindFromRequest().fold(
         badForm => BadRequest(views.html.pages.frs.frs_start_date(badForm)).pure,
-        goodForm => save(goodForm).map(_ =>
+        goodForm =>
+          save(goodForm).map(_ =>
           Redirect(controllers.vatTradingDetails.routes.TradingNameController.show()))))
 
 }

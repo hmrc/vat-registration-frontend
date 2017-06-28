@@ -19,7 +19,8 @@ package models.view.frs
 import java.time.LocalDate
 
 import models._
-import models.api.{VatScheme, VatTradingDetails}
+import models.api.{VatFlatRateScheme, VatScheme, VatStartDate, VatTradingDetails}
+import models.view.vatTradingDetails.vatChoice.StartDateView
 import play.api.libs.json.Json
 
 import scala.util.Try
@@ -53,11 +54,13 @@ object FrsStartDateView {
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[FrsStartDateView] { vs: VatScheme =>
-    None
+    vs.vatFlatRateScheme.collect{
+      case VatFlatRateScheme(_, _, _, _, Some(dateType), d@_) => FrsStartDateView(dateType, d)
+    }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: FrsStartDateView, g: VatTradingDetails) =>
-    g
+  implicit val viewModelTransformer = ViewModelTransformer { (c: FrsStartDateView, g: VatFlatRateScheme) =>
+    g.copy(whenDoYouWantToJoinFrs = Some(c.dateType), startDate = c.date)
   }
 
 }

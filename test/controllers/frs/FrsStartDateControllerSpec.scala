@@ -16,7 +16,9 @@
 
 package controllers.frs
 
+
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit.DAYS
 
 import common.Now
 import fixtures.VatRegistrationFixture
@@ -35,9 +37,9 @@ import scala.concurrent.Future
 
 class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  val today: LocalDate = LocalDate.now
-
+  val today: LocalDate = LocalDate.of(2017, 3, 21)
   val frsStartDateFormFactory = new FrsStartDateFormFactory(mockDateService, Now[LocalDate](today))
+  implicit val localDateOrdering = frsStartDateFormFactory.LocalDateOrdering
 
   object FrsTestStartDateController extends FrsStartDateController(frsStartDateFormFactory, ds)(mockS4LService, mockVatRegistrationService) {
     implicit val fixedToday = Now[LocalDate](today)
@@ -123,6 +125,24 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
       )) {
         _ redirectsTo s"$contextRoot/trading-name"
       }
+    }
+
+    "return 303 with Different Date entered" in {
+
+      val minDate: LocalDate = today.plusDays(30)
+      save4laterExpectsSave[FrsStartDateView]()
+      when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
+
+      submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
+        "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
+        "frsStartDate.day" -> minDate.getDayOfMonth.toString,
+        "frsStartDate.month" -> minDate.getMonthValue.toString,
+        "frsStartDate.year" -> minDate.getYear.toString
+
+      )) {
+        _ redirectsTo s"$contextRoot/trading-name"
+      }
+
     }
 
   }
