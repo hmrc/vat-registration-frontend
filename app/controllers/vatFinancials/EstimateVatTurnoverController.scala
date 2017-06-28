@@ -40,12 +40,12 @@ class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.vatFinancials.estimate_vat_turnover(badForm)).pure,
       view => for {
         originalTurnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
-        _ <- keystoreConnector.cache[Long](EstimateVatTurnover.lastKnownValueKey, originalTurnover)
+        _ <- keystoreConnector.cache[Long](EstimateVatTurnoverKey.lastKnownValueKey, originalTurnover)
         _ <- save(view)
       } yield (Redirect(controllers.vatFinancials.routes.ZeroRatedSalesController.show()))))
 
 }
 
-object EstimateVatTurnover {
+object EstimateVatTurnoverKey {
   val lastKnownValueKey = "lastKnownEstimatedVatTurnover"
 }

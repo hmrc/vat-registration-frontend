@@ -93,13 +93,13 @@ class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "redirect to the welcome page" in {
       when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)
       save4laterExpectsSave[JoinFrsView]()
-      when(mockVatRegistrationService.submitFrsAnswers()(any())).thenReturn(VatFlatRateScheme(false).pure)
+      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(false).pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "joinFrsRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/check-your-answers")
 
-      verify(mockVatRegistrationService).submitFrsAnswers()(any())
+      verify(mockVatRegistrationService).submitVatFlatRateScheme()(any())
     }
   }
 

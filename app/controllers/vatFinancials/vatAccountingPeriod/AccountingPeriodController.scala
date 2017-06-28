@@ -18,7 +18,7 @@ package controllers.vatFinancials.vatAccountingPeriod
 
 import javax.inject.Inject
 
-import controllers.vatFinancials.EstimateVatTurnover.lastKnownValueKey
+import controllers.vatFinancials.EstimateVatTurnoverKey.lastKnownValueKey
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.vatAccountingPeriod.AccountingPeriodForm
 import models.VatFlatRateSchemePath
