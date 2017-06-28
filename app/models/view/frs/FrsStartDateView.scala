@@ -19,7 +19,7 @@ package models.view.frs
 import java.time.LocalDate
 
 import models._
-import models.api.{VatScheme, VatStartDate, VatTradingDetails}
+import models.api.{VatScheme, VatTradingDetails}
 import play.api.libs.json.Json
 
 import scala.util.Try
@@ -46,9 +46,9 @@ object FrsStartDateView {
   implicit val format = Json.format[FrsStartDateView]
 
   implicit val viewModelFormat = ViewModelFormat(
-    readF = (group: S4LFlatRateSchemeAnswers) => group.frsStartDate,
-    updateF = (c: FrsStartDateView, g: Option[S4LFlatRateSchemeAnswers]) =>
-      g.getOrElse(S4LFlatRateSchemeAnswers()).copy(frsStartDate = Some(c))
+    readF = (group: S4LFlatRateScheme) => group.frsStartDate,
+    updateF = (c: FrsStartDateView, g: Option[S4LFlatRateScheme]) =>
+      g.getOrElse(S4LFlatRateScheme()).copy(frsStartDate = Some(c))
   )
 
   // Returns a view model for a specific part of a given VatScheme API model
