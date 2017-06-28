@@ -81,6 +81,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
     "return 303 with no valid turnover estimate entered" in {
       save4laterReturnsNoViewModel[EstimateVatTurnover]()
       save4laterExpectsSave[EstimateVatTurnover]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
       mockKeystoreCache[Long](EstimateVatTurnoverKey.lastKnownValueKey, dummyCacheMap)
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody("turnoverEstimate" -> "50000")) {
         _ redirectsTo s"$contextRoot/sell-zero-rated-items-next-12-months"
