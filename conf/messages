@@ -721,20 +721,6 @@ pages.frs.registerFor.panel1.para                         = You can add a 1% dis
 pages.frs.registerFor.subheading1                         = Do you want to use this rate?
 validation.frs.registerFor.missing                        = Tell us if you want to use this rate
 
-#WHen do you want to join the Flat Rate Scheme?
-pages.frs.startDate.title                                 = When do you want to join the Flat Rate Scheme?
-pages.frs.startDate.heading                               = When do you want to join the Flat Rate Scheme?
-pages.frs.startDate.radio1                                = The same date I''m registered for VAT
-pages.frs.startDate.radio2                                = On a different date
-pages.frs.startDate.para1                                 = This must be more than 2 working days in the future.
-pages.frs.startDate.hint1                                 = For example, 26 8 2018
-pages.frs.startDate.day                                   = Day
-pages.frs.startDate.month                                 = Month
-pages.frs.startDate.year                                  = Year
-validation.frs.startDate.choice.missing                   = Tell us when you want to join the Flat Rate Scheme
-validation.frs.startDate.missing                          = Enter the date you want to join the Flat Rate Scheme
-validation.frs.startDate.range.below                      = Enter a date that is more than 2 working days in the future
-
 #Do you spend less than 2% of your turn over Page
 pages.frs.costsLimited.title                            = Do you spend less than 2% of turnover a year including VAT on goods for the business?
 pages.frs.costsLimited.heading1                         = Do you spend less than £
@@ -756,8 +742,21 @@ pages.frs.costsLimited.panel.bullet9                    = capital items, for exa
 pages.frs.costsLimited.panel.bullet10                   = services - that is, anything not classified as "goods"
 validation.frs.costsLimited.missing                     = Tell us if you spend less than {0} a year (including VAT) on business goods
 
+#When do you want to join the Flat Rate Scheme?
+pages.frs.startDate.title                                 = When do you want to join the Flat Rate Scheme?
+pages.frs.startDate.heading                               = When do you want to join the Flat Rate Scheme?
+pages.frs.startDate.radio1                                = The same date I''m registered for VAT
+pages.frs.startDate.radio2                                = On a different date
+pages.frs.startDate.para1                                 = This must be more than 2 working days in the future.
+pages.frs.startDate.hint1                                 = For example, 26 8 2018
+pages.frs.startDate.day                                   = Day
+pages.frs.startDate.month                                 = Month
+pages.frs.startDate.year                                  = Year
+validation.frs.startDate.choice.missing                   = Tell us when you want to join the Flat Rate Scheme
+validation.frs.startDate.missing                          = Enter the date you want to join the Flat Rate Scheme
+validation.frs.startDate.range.below                      = Enter a date that is more than 2 working days in the future
 
-## FRS SUMMARY SECTiON
+## FRS SUMMARY SECTION
 pages.summary.frs.sectionHeading                        = Flat Rate Scheme
 pages.summary.frs.joinFrs                               = Applied
 pages.summary.frs.costsInclusive                        = Company sales for the next 12 months exempt from VAT
