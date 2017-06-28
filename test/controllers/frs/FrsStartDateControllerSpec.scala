@@ -106,6 +106,36 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
       }
     }
 
+    "return 400 with Different Date selected and date that is before vat registration date entered" in {
+      save4laterReturnsViewModel(validStartDateView)()
+      save4laterExpectsSave[FrsStartDateView]()
+
+      submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
+        "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
+        "frsStartDate.day" -> "20",
+        "frsStartDate.month" -> "3",
+        "frsStartDateDate.year" -> "2017"
+      )) {
+        status(_) mustBe Status.BAD_REQUEST
+      }
+    }
+
+    "return 303 with Different Date selected and a valid date entered" in {
+      val vatStartDate = StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.of(2017, 3, 21)))
+
+      save4laterReturnsViewModel(vatStartDate)()
+      save4laterExpectsSave[FrsStartDateView]()
+
+      submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
+        "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
+        "frsStartDate.day" -> "21",
+        "frsStartDate.month" -> "3",
+        "frsStartDateDate.year" -> "2017"
+      )) {
+        _ redirectsTo s"$contextRoot/trading-name"
+      }
+    }
+
     "return 303 with VAT Registration Date selected" in {
       save4laterReturnsViewModel(validStartDateView)()
       save4laterExpectsSave[FrsStartDateView]()
@@ -117,6 +147,16 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
       }
     }
 
+    "return 303 with VAT Registration Date selected and there is an empty vat start date" in {
+      save4laterReturnsNoViewModel[StartDateView]()
+      save4laterExpectsSave[FrsStartDateView]()
+
+      submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
+        "frsStartDateRadio" -> FrsStartDateView.VAT_REGISTRATION_DATE
+      )) {
+        _ redirectsTo s"$contextRoot/trading-name"
+      }
+    }
 
   }
 }
