@@ -99,7 +99,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
     submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@|
-      submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer |@| submitPpob map { case _ => () }
+      submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer |@|
+      submitFrsAnswers() |@| submitPpob map { case _ => () }
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
     def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =
@@ -190,7 +191,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
         vs.vatServiceEligibility.getOrElse(throw fail("VatServiceEligibility"))
       ) { s4l =>
         update(s4l.vatEligibility)
-          .apply(vs.vatServiceEligibility.getOrElse(VatServiceEligibility())) //TODO remove the "seeding" with empty
+          .apply(vs.vatServiceEligibility.getOrElse(VatServiceEligibility()))
       }
 
     for {
@@ -217,6 +218,24 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     for {
       (vs, vlo) <- (getVatScheme() |@| s4l[S4LVatLodgingOfficer]()).tupled
       response <- vatRegConnector.upsertVatLodgingOfficer(vs.id, merge(vlo, vs))
+    } yield response
+  }
+
+  def submitFrsAnswers()(implicit hc: HeaderCarrier): Future[VatFlatRateScheme] = {
+    def merge(fresh: Option[S4LFlatRateScheme], vs: VatScheme): VatFlatRateScheme =
+      fresh.fold(
+        vs.vatFlatRateScheme.getOrElse(throw fail("VatFlatRateSchemeAnswers"))
+      ) { s4l =>
+        update(s4l.annualCostsInclusive)
+          .andThen(update(s4l.joinFrs))
+          .andThen(update(s4l.annualCostsInclusive))
+          .andThen(update(s4l.registerForFrs))
+          .apply(vs.vatFlatRateScheme.getOrElse(VatFlatRateScheme()))
+      }
+
+    for {
+      (vs, frsa) <- (getVatScheme() |@| s4l[S4LFlatRateScheme]()).tupled
+      response <- vatRegConnector.upsertVatFlatRateScheme(vs.id, merge(frsa, vs))
     } yield response
   }
 
