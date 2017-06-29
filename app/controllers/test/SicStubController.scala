@@ -21,15 +21,15 @@ import javax.inject.Inject
 import controllers.CommonPlayDependencies
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.test.SicStubForm
-import models.ElementPath.allCompliancePaths
+import models.ModelKeys.SIC_CODES_KEY
 import models._
 import models.view.test.SicStub
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, VatRegistrationService}
 
 class SicStubController @Inject()(ds: CommonPlayDependencies)
                                  (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends ComplianceExitController(ds) {
+  extends ComplianceExitController(ds) with CommonService {
 
   def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request =>
     for {
@@ -48,8 +48,12 @@ class SicStubController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.test.sic_stub(badForm)).pure,
       data => s4LService.save[SicStub](data).flatMap(_ =>
         ComplianceQuestions(data.sicCodes) match {
-          case NoComplianceQuestions => submitAndExit(List(CulturalCompliancePath, FinancialCompliancePath, LabourCompliancePath))
-          case _ => controllers.sicAndCompliance.routes.ComplianceIntroductionController.show().pure
+          case NoComplianceQuestions =>
+            keystoreConnector.cache(SIC_CODES_KEY, data.fullSicCodes).flatMap(_ =>
+              submitAndExit(List(CulturalCompliancePath, FinancialCompliancePath, LabourCompliancePath)))
+          case _ =>
+            keystoreConnector.cache(SIC_CODES_KEY, data.fullSicCodes).flatMap(_ =>
+              controllers.sicAndCompliance.routes.ComplianceIntroductionController.show().pure)
         }
       ).map(Redirect)))
 

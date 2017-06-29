@@ -473,6 +473,11 @@ validation.companyBankAccount.sortCode.missing = Enter a sort code
 validation.companyBankAccount.sortCode.invalid = Enter a valid sort code
 
 ## Compliance - Tell us more about your company page
+pages.mainBusinessActivity.heading                        = Which business activity is the company''s main source of income?
+pages.mainBusinessActivity.title                          = Which business activity is the company''s main source of income?
+pages.mainBusinessActivity.para1                          = This business activity will be on your VAT certificate.
+
+## Compliance - Tell us more about your company page
 pages.compliance.introduction.title                          = Compliance questions
 pages.compliance.introduction.heading                        = Tell us more about your company
 pages.compliance.introduction.para1                          = So we can understand what your company does, we''re going to ask you a few questions about your business activities.
