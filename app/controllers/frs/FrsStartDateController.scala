@@ -35,7 +35,8 @@ class FrsStartDateController @Inject()(frsStartDateFormFactory: FrsStartDateForm
       frsStartDateFormFactory.form().bindFromRequest().fold(
         badForm => BadRequest(views.html.pages.frs.frs_start_date(badForm)).pure,
         goodForm =>
-          save(goodForm).map(_ =>
-          Redirect(controllers.vatTradingDetails.routes.TradingNameController.show()))))
-
+          save(goodForm).flatMap(_ =>
+            vrs.submitVatFlatRateScheme().map(_ => Redirect(controllers.routes.SummaryController.show()))            )
+  )
+  )
 }
