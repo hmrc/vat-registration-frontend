@@ -164,11 +164,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
       save4laterReturns(S4LPpob(address = Some(PpobView(scrsAddress.id, Some(scrsAddress)))))
 
-      save4laterReturns(S4LFlatRateScheme(
-        joinFrs = Some(JoinFrsView(true)),
-        annualCostsInclusive = Some(AnnualCostsInclusiveView("yes")),
-        registerForFrs = Some(RegisterForFrsView(true))))
-
       save4laterReturns(S4LVatFinancials(
         estimateVatTurnover = Some(validEstimateVatTurnover),
         zeroRatedTurnover = Some(ZeroRatedSales.yes),
@@ -188,7 +183,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.upsertVatLodgingOfficer(any(), any())(any(), any())).thenReturn(validLodgingOfficer.pure)
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
       when(mockRegConnector.upsertPpob(any(), any())(any(), any())).thenReturn(scrsAddress.pure)
-      when(mockRegConnector.upsertVatFlatRateScheme(any(), any())(any(), any())).thenReturn(validVatFlatRateScheme.pure)
 
       service.submitVatScheme() completedSuccessfully
     }

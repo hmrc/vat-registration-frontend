@@ -91,7 +91,6 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
 
     "redirect to the welcome page with Annual Costs Inclusive selected No" in {
-      when(mockS4LService.clear()(any())).thenReturn(Future.successful(validHttpResponse))
       save4laterExpectsSave[AnnualCostsInclusiveView]()
       when(mockVatRegistrationService.deleteVatScheme()(any())).thenReturn(Future.successful(()))
 
