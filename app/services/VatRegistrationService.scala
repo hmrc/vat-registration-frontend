@@ -110,7 +110,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
     submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@|
       submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer |@|
-      submitVatFlatRateScheme() |@| submitPpob map { case _ => () }
+      submitPpob map { case _ => () }
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
     def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =
