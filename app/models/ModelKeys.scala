@@ -23,5 +23,6 @@ object ModelKeys {
 
   implicit val OFFICER_LIST_KEY = "OfficerList"
   implicit val REGISTERING_OFFICER_KEY = "RegisteringOfficer"
+  implicit val SIC_CODES_KEY = "SicCodes"
 
 }
