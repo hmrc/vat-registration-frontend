@@ -472,10 +472,11 @@ validation.companyBankAccount.number.invalid = Enter a valid business account nu
 validation.companyBankAccount.sortCode.missing = Enter a sort code
 validation.companyBankAccount.sortCode.invalid = Enter a valid sort code
 
-## Compliance - Tell us more about your company page
+## Main Business Activity
 pages.mainBusinessActivity.heading                        = Which business activity is the company''s main source of income?
 pages.mainBusinessActivity.title                          = Which business activity is the company''s main source of income?
 pages.mainBusinessActivity.para1                          = This business activity will be on your VAT certificate.
+validation.mainBusinessActivity.missing                   = Tell us the company's main source of income
 
 ## Compliance - Tell us more about your company page
 pages.compliance.introduction.title                          = Compliance questions
