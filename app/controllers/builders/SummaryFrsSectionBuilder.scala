@@ -60,7 +60,7 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[VatFlatRateScheme] = None)
   val startDateRow: SummaryRow = SummaryRow(
     s"$sectionId.costsLimited",
     vatFrs.flatMap(_.whenDoYouWantToJoinFrs).getOrElse(""),
-    Some(controllers.frs.routes.AnnualCostsInclusiveController.show()) //TODO fix once screen is done
+    Some(controllers.frs.routes.FrsStartDateController.show()) //TODO fix once screen is done
   )
 
 
