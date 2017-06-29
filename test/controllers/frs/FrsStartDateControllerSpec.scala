@@ -24,7 +24,9 @@ import common.Now
 import fixtures.VatRegistrationFixture
 import forms.frs.FrsStartDateFormFactory
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.api.VatFlatRateScheme
 import models.view.frs.FrsStartDateView
+import models.view.vatTradingDetails.vatChoice.StartDateView
 import org.mockito.Matchers
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -86,6 +88,8 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
   s"POST ${routes.FrsStartDateController.submit()}" should {
 
     "return 400 when no data posted" in {
+      save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
+
       submitAuthorised(
         FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody()) {
         status(_) mustBe Status.BAD_REQUEST
@@ -93,6 +97,8 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "return 400 when partial data is posted" in {
+      save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
+
       submitAuthorised(
         FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
           "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
@@ -106,6 +112,7 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
 
     "return 400 with Different Date selected and date that is less than 2 working days in the future" in {
       save4laterExpectsSave[FrsStartDateView]()
+      save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
 
       submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
@@ -119,19 +126,25 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
 
     "return 303 with VAT Registration Date selected" in {
       save4laterExpectsSave[FrsStartDateView]()
+      save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
+
+      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(true).pure)
 
       submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "frsStartDateRadio" -> FrsStartDateView.VAT_REGISTRATION_DATE
       )) {
-        _ redirectsTo s"$contextRoot/trading-name"
+        _ redirectsTo s"$contextRoot/check-your-answers"
       }
     }
 
     "return 303 with Different Date entered" in {
 
       val minDate: LocalDate = today.plusDays(30)
-      save4laterExpectsSave[FrsStartDateView]()
+
+      save4laterReturnsViewModel(FrsStartDateView(FrsStartDateView.DIFFERENT_DATE, Some(LocalDate.now)))()
+
       when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
+      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(true).pure)
 
       submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
@@ -140,7 +153,23 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
         "frsStartDate.year" -> minDate.getYear.toString
 
       )) {
-        _ redirectsTo s"$contextRoot/trading-name"
+        _ redirectsTo s"$contextRoot/check-your-answers"
+      }
+
+    }
+
+    "return 303 with Vat Registration Date entered" in {
+      val minDate: LocalDate = today.plusDays(30)
+      save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
+      save4laterExpectsSave[FrsStartDateView]()
+      when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
+      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(true).pure)
+
+      submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
+        "frsStartDateRadio" -> FrsStartDateView.VAT_REGISTRATION_DATE
+
+      )) {
+        _ redirectsTo s"$contextRoot/check-your-answers"
       }
 
     }

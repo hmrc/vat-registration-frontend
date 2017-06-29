@@ -16,16 +16,24 @@
 
 package controllers.frs
 
+import java.time.LocalDate
 import javax.inject.Inject
 
+import cats.syntax.FlatMapSyntax
+import cats.data.OptionT
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.frs.FrsStartDateFormFactory
-import models.view.frs.FrsStartDateView
+import models.view.frs.{AnnualCostsLimitedView, FrsStartDateView}
+import models.view.vatTradingDetails.vatChoice.StartDateView
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
+import uk.gov.hmrc.play.http.HeaderCarrier
+
+import scala.concurrent.Future
 
 class FrsStartDateController @Inject()(frsStartDateFormFactory: FrsStartDateFormFactory, ds: CommonPlayDependencies)
-                                      (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+                                      (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with FlatMapSyntax {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel[FrsStartDateView]().getOrElse(FrsStartDateView())
@@ -34,9 +42,27 @@ class FrsStartDateController @Inject()(frsStartDateFormFactory: FrsStartDateForm
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
       frsStartDateFormFactory.form().bindFromRequest().fold(
         badForm => BadRequest(views.html.pages.frs.frs_start_date(badForm)).pure,
-        goodForm =>
-          save(goodForm).flatMap(_ =>
-            vrs.submitVatFlatRateScheme().map(_ => Redirect(controllers.routes.SummaryController.show()))            )
+        goodForm => {
+          if(goodForm.dateType == FrsStartDateView.VAT_REGISTRATION_DATE){
+
+            val updateVatStartDate = setVatRegistrationDateToForm(goodForm)
+            updateVatStartDate.flatMap(frsStartDateView => saveForm(frsStartDateView))
+
+          }else{
+            saveForm(goodForm)
+          }
+        }
   )
   )
+
+  private def setVatRegistrationDateToForm(goodForm: FrsStartDateView)(implicit  headerCarrier: HeaderCarrier)
+  : Future[FrsStartDateView]= {
+    OptionT.liftF(viewModel[StartDateView]().getOrElse(StartDateView()).map(_.date))
+      .fold(goodForm)(vatStartDate => goodForm.copy(date = vatStartDate))
+  }
+
+  private def saveForm(frsStartDateView: FrsStartDateView)(implicit  headerCarrier: HeaderCarrier)= {
+    save(frsStartDateView).flatMap(_ =>
+      vrs.submitVatFlatRateScheme().map(_ => Redirect(controllers.routes.SummaryController.show())))
+  }
 }

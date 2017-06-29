@@ -78,7 +78,6 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return 303 with RegisterFor Flat Rate Scheme selected Yes" in {
       save4laterExpectsSave[RegisterForFrsView]()
-      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(true).pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "registerForFrsRadio" -> "true"
