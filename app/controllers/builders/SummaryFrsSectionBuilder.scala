@@ -20,10 +20,7 @@ import models.api._
 import models.view.frs.{AnnualCostsInclusiveView, AnnualCostsLimitedView}
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryFrsSectionBuilder
-(
-  vatFrs: Option[VatFlatRateScheme] = None
-)
+case class SummaryFrsSectionBuilder(vatFrs: Option[VatFlatRateScheme] = None)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "frs"
@@ -44,7 +41,7 @@ case class SummaryFrsSectionBuilder
     Some(controllers.frs.routes.AnnualCostsInclusiveController.show())
   )
 
-  val costsLimimtedRow: SummaryRow = SummaryRow(
+  val costsLimitedRow: SummaryRow = SummaryRow(
     s"$sectionId.costsLimited",
     vatFrs.flatMap(_.annualCostsLimited).collect {
       case AnnualCostsLimitedView.YES => "pages.summary.frs.costsLimited.lessThan2percent"
@@ -72,10 +69,11 @@ case class SummaryFrsSectionBuilder
     Seq(
       (joinFrsRow, vatFrs.map(_.joinFrs).isDefined),
       (costsInclusiveRow, vatFrs.flatMap(_.annualCostsInclusive).isDefined),
-      (costsLimimtedRow, vatFrs.flatMap(_.annualCostsLimited).isDefined),
+      (costsLimitedRow, vatFrs.flatMap(_.annualCostsLimited).isDefined),
       (useThisRateRow, vatFrs.flatMap(_.doYouWantToUseThisRate).isDefined),
       (startDateRow, vatFrs.flatMap(_.whenDoYouWantToJoinFrs).isDefined)
-    )
+    ),
+    vatFrs.isDefined
   )
 
 }
