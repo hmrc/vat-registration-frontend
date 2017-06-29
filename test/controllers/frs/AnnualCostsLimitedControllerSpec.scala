@@ -81,9 +81,9 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
     }
   }
 
-  s"POST ${routes.AnnualCostsLimitedController.submit()} with Empty data" should {
+  s"POST ${routes.AnnualCostsLimitedController.submit()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any())).thenReturn(twoPercent.pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -91,9 +91,9 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
     }
   }
 
-  s"POST ${routes.AnnualCostsLimitedController.submit()} with Annual Costs Limited selected Yes" should {
+  s"POST ${routes.AnnualCostsLimitedController.submit()}" should {
 
-    "return 303" in {
+    "return 303 with Annual Costs Limited selected Yes" in {
       save4laterExpectsSave[AnnualCostsLimitedView]()
       when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any())).thenReturn(twoPercent.pure)
 
@@ -101,11 +101,8 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
         "annualCostsLimitedRadio" -> AnnualCostsLimitedView.YES
       ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
     }
-  }
 
-  s"POST ${routes.AnnualCostsLimitedController.submit()} with Annual Costs Limited selected No - but within 12 months" should {
-
-    "return 303" in {
+    "return 303 with Annual Costs Limited selected No - but within 12 months" in {
       save4laterExpectsSave[AnnualCostsLimitedView]()
       when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any())).thenReturn(twoPercent.pure)
 
@@ -113,12 +110,8 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
         "annualCostsLimitedRadio" -> AnnualCostsLimitedView.YES_WITHIN_12_MONTHS
       ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
     }
-  }
 
-  s"POST ${routes.AnnualCostsLimitedController.submit()} with Annual Costs Limited selected No" should {
-
-    "redirect to the welcome page" in {
-      when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)
+    "redirect to the welcome page with Annual Costs Limited selected No" in {
       save4laterExpectsSave[AnnualCostsLimitedView]()
       when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any())).thenReturn(twoPercent.pure)
 
@@ -126,12 +119,8 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
         "annualCostsLimitedRadio" -> AnnualCostsLimitedView.NO
       ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
     }
-  }
 
-  s"POST ${routes.AnnualCostsLimitedController.submit()} with Annual Costs Limited selected No and EstimateVatTurnover is Null in S4l and Database" should {
-
-    "redirect to the welcome page" in {
-      when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)
+    "redirect to the welcome page with Annual Costs Limited selected No and EstimateVatTurnover is Null in S4l and Database" in {
       save4laterExpectsSave[AnnualCostsLimitedView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
       when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any())).thenReturn(twoPercent.pure)

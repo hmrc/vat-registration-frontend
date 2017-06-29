@@ -40,8 +40,10 @@ class RegisterForFrsController @Inject()(ds: CommonPlayDependencies, formFactory
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.frs.frs_register_for(badForm)).pure,
       registerForFrs => save(RegisterForFrsView(registerForFrs.answer)).map(_ => registerForFrs.answer).ifM(
-        controllers.routes.SummaryController.show().pure, //TODO change to next screen - FRS start date
-        vrs.submitVatFlatRateScheme().map(_ => controllers.routes.SummaryController.show())
+        // TODO for the 'ifTrue' case:
+        // TODO change next screen to 'FRS start date' *and* remove persistence
+        ifTrue = vrs.submitVatFlatRateScheme().map(_ => controllers.routes.SummaryController.show()),
+        ifFalse = vrs.submitVatFlatRateScheme().map(_ => controllers.routes.SummaryController.show())
       ).map(Redirect)))
 
 }

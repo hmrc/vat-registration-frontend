@@ -69,29 +69,23 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
   }
 
-  s"POST ${routes.RegisterForFrsController.submit()} with Empty data" should {
+  s"POST ${routes.RegisterForFrsController.submit()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
-  }
 
-  s"POST ${routes.RegisterForFrsController.submit()} with RegisterFor Flat Rate Scheme selected Yes" should {
-
-    "return 303" in {
+    "return 303 with RegisterFor Flat Rate Scheme selected Yes" in {
       save4laterExpectsSave[RegisterForFrsView]()
+      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(true).pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "registerForFrsRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/check-your-answers")
     }
-  }
 
-  s"POST ${routes.RegisterForFrsController.submit()} with RegisterFor Flat Rate Scheme selected No" should {
-
-    "redirect to the welcome page" in {
-      when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)
+    "redirect to the welcome page with RegisterFor Flat Rate Scheme selected No" in {
       save4laterExpectsSave[RegisterForFrsView]()
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(false).pure)
 
