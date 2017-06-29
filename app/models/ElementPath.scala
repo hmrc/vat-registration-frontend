@@ -43,7 +43,8 @@ object ElementPath {
       LabProvidesWorkersPath,
       LabWorkersPath,
       LabTempContractsPath,
-      LabSkilledWorkersPath
+      LabSkilledWorkersPath,
+      VatFlatRateSchemePath
     ).map(ep => (ep.name, ep)).toMap
 
     override def writes(e: ElementPath): JsValue = JsString(e.name)
@@ -146,6 +147,11 @@ case object FinInvestmentFundManagementServicesPath extends ElementPath {
 case object FinManageFundsAdditionalPath extends ElementPath {
   override val path = "vatSicAndCompliance.financialCompliance.manageFundsAdditional"
   override val name = "fc-manage-funds-additional"
+}
+
+case object VatFlatRateSchemePath extends ElementPath {
+  override val path = "vatFlatRateScheme"
+  override val name = "vat-flat-rate-scheme"
 }
 
 // $COVERAGE-ON$

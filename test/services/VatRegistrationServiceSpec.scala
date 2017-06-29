@@ -25,13 +25,13 @@ import helpers.{S4LMockSugar, VatRegSpec}
 import models._
 import models.api._
 import models.external.CoHoCompanyProfile
-import models.view.frs.{AnnualCostsInclusiveView, JoinFrsView, RegisterForFrsView}
+import models.view.frs.{AnnualCostsInclusiveView, AnnualCostsLimitedView, JoinFrsView, RegisterForFrsView}
 import models.view.ppob.PpobView
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
-import models.view.vatFinancials.ZeroRatedSales
+import models.view.vatFinancials.{EstimateVatTurnover, ZeroRatedSales}
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
 import org.mockito.Matchers
@@ -86,6 +86,39 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "retrieve no Acknowledgement Reference if there's none in the backend" in new Setup {
       when(mockRegConnector.getAckRef(Matchers.eq(validRegId))(any())).thenReturn(OptionT.none[Future, String])
       service.getAckRef(validRegId) returnsNone
+    }
+  }
+
+  "Calling getFlatRateSchemeThreshold" should {
+    "return 0 if no EstimateVatTurnover can be found anywhere" in new Setup {
+      when(mockS4LService.getViewModel[EstimateVatTurnover, S4LVatFinancials]()(any(), any(), any(), any())).thenReturn(OptionT.none[Future, EstimateVatTurnover])
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+
+      service.getFlatRateSchemeThreshold() returns 0L
+    }
+
+
+    "return 1000 if EstimateVatTurnover in the backend is 50'000" in new Setup {
+      when(mockS4LService.getViewModel[EstimateVatTurnover, S4LVatFinancials]()(any(), any(), any(), any())).thenReturn(OptionT.none[Future, EstimateVatTurnover])
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
+
+      service.getFlatRateSchemeThreshold() returns 1000L
+    }
+
+
+    "return correct number (2% rounded to nearest pound if EstimateVatTurnover is in Save 4 Later" in new Setup {
+      forAll(Seq[(Int, Double)](
+        1000 -> 20,
+        100 -> 2,
+        49 -> 1,
+        12324 -> 246, // 246.48 rounded down
+        12325 -> 247 // 246.5 rounded up
+      )) {
+        case (estimate, expectedFlatRateThreshold) =>
+          when(mockS4LService.getViewModel[EstimateVatTurnover, S4LVatFinancials]()(any(), any(), any(), any()))
+            .thenReturn(OptionT.some(EstimateVatTurnover(estimate)))
+          service.getFlatRateSchemeThreshold() returns expectedFlatRateThreshold
+      }
     }
   }
 
@@ -239,6 +272,25 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     }
   }
 
+  "Calling conditionalDeleteElement" should {
+
+    "deleteElement when cond is true" in new Setup {
+      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
+
+      service.conditionalDeleteElement(VatBankAccountPath, true) completedSuccessfully
+
+      verify(mockRegConnector, times(1)).deleteElement(any())(any())(any(), any())
+    }
+
+    "not deleteElement when cond is false" in new Setup {
+      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+      service.conditionalDeleteElement(VatBankAccountPath, false) completedSuccessfully
+
+      verify(mockRegConnector, times(0)).deleteElement(any())(any())(any(), any())
+    }
+  }
+
   "Calling deleteElements with items" should {
     "return a success response when successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
@@ -345,22 +397,23 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       service.submitVatLodgingOfficer() failedWith classOf[IllegalStateException]
     }
 
-    "submitFrsAnswers should process the submission even if VatScheme does not contain VatFrsAnswers" in new Setup {
+    "submitVatFlatRateScheme should process the submission even if VatScheme does not contain VatFlatRateScheme" in new Setup {
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       when(mockRegConnector.upsertVatFlatRateScheme(any(), any())(any(), any())).thenReturn(validVatFlatRateScheme.pure)
       save4laterReturns(S4LFlatRateScheme(
         joinFrs = Some(JoinFrsView(true)),
         annualCostsInclusive = Some(AnnualCostsInclusiveView("yes")),
+        annualCostsLimited = Some(AnnualCostsLimitedView("yes")),
         registerForFrs = Some(RegisterForFrsView(true))
       ))
-      service.submitFrsAnswers() returns validVatFlatRateScheme
+      service.submitVatFlatRateScheme() returns validVatFlatRateScheme
     }
 
-    "submitFrsAnswers should fail if there's no VatFlatRateSchemeAnswers in backend or S4L" in new Setup {
+    "submitVatFlatRateScheme should fail if there's no VatFlatRateScheme in backend or S4L" in new Setup {
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       save4laterReturnsNothing[S4LFlatRateScheme]()
 
-      service.submitFrsAnswers() failedWith classOf[IllegalStateException]
+      service.submitVatFlatRateScheme() failedWith classOf[IllegalStateException]
     }
 
     "submitPpob should fail if there's not trace of PPOB in neither backend nor S4L" in new Setup {
