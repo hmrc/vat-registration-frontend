@@ -41,7 +41,7 @@ class RegisterForFrsController @Inject()(ds: CommonPlayDependencies, formFactory
       badForm => BadRequest(views.html.pages.frs.frs_register_for(badForm)).pure,
       registerForFrs => save(RegisterForFrsView(registerForFrs.answer)).map(_ => registerForFrs.answer).ifM(
         controllers.frs.routes.FrsStartDateController.show().pure,
-        vrs.submitFrsAnswers().map(_ => controllers.routes.SummaryController.show())
+        vrs.submitVatFlatRateScheme().map(_ => controllers.routes.SummaryController.show())
       ).map(Redirect)))
 
 }

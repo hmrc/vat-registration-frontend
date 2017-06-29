@@ -51,7 +51,6 @@ class JoinFrsViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
     }
   }
 
-
   "ViewModelFormat" should {
     val s4LFlatRateScheme: S4LFlatRateScheme = S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)))
 
