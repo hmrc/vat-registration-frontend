@@ -33,8 +33,7 @@ class RegisterForFrsController @Inject()(ds: CommonPlayDependencies, formFactory
   val form = formFactory.form("registerForFrs")("frs.registerFor")
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[RegisterForFrsView]().map(vm => YesOrNoAnswer(vm.selection)).fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.frs.frs_register_for(f))))
+    Ok(views.html.pages.frs.frs_register_for(form)).pure)
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(

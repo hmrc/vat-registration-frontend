@@ -20,7 +20,8 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.frs.AnnualCostsInclusiveForm
-import models.view.frs.AnnualCostsInclusiveView
+import models.view.frs.{AnnualCostsInclusiveView, JoinFrsView}
+import models.{S4LFlatRateScheme, VatFrsAnnualCostsLimitedPath, VatFrsUseThisRate}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -38,11 +39,17 @@ class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.frs.annual_costs_inclusive(badForm)).pure,
-      goodForm => save(goodForm).map(_ =>
-        Redirect(if (goodForm.selection == AnnualCostsInclusiveView.NO) {
-          controllers.frs.routes.AnnualCostsLimitedController.show()
+      view => for {
+        _ <- save(view)
+        route = if (view.selection == AnnualCostsInclusiveView.NO) {
+          controllers.frs.routes.AnnualCostsLimitedController.show().pure
         } else {
-          controllers.frs.routes.RegisterForFrsController.show()
-        }))))
+          for {
+            _ <- save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true))))
+            _ <- vrs.deleteElements(List(VatFrsAnnualCostsLimitedPath, VatFrsUseThisRate))
+          } yield controllers.frs.routes.RegisterForFrsController.show()
+        }
+        call <- route
+      } yield (Redirect(call))))
 
 }

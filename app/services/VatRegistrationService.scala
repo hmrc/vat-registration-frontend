@@ -236,8 +236,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       fresh.fold(
         vs.vatFlatRateScheme.getOrElse(throw fail("VatFlatRateScheme"))
       ) { s4l =>
-        update(s4l.annualCostsInclusive)
-          .andThen(update(s4l.joinFrs))
+        update(s4l.joinFrs)
           .andThen(update(s4l.annualCostsInclusive))
           .andThen(update(s4l.annualCostsLimited))
           .andThen(update(s4l.registerForFrs))

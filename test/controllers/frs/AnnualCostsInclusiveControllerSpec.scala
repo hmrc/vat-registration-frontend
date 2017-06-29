@@ -76,6 +76,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
     "return 303 with Annual Costs Inclusive selected Yes" in {
       save4laterExpectsSave[AnnualCostsInclusiveView]()
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES
@@ -84,15 +85,15 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
     "return 303 with Annual Costs Inclusive selected No - but within 12 months" in {
       save4laterExpectsSave[AnnualCostsInclusiveView]()
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS
       ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
     }
 
-    "redirect to the welcome page with Annual Costs Inclusive selected No" in {
+    "return 303  with Annual Costs Inclusive selected No" in {
       save4laterExpectsSave[AnnualCostsInclusiveView]()
-      when(mockVatRegistrationService.deleteVatScheme()(any())).thenReturn(Future.successful(()))
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.NO
