@@ -69,29 +69,22 @@ class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
 
   }
 
-  s"POST ${routes.JoinFrsController.submit()} with Empty data" should {
+  s"POST ${routes.JoinFrsController.submit()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
-  }
 
-  s"POST ${routes.JoinFrsController.submit()} with Join Flat Rate Scheme selected Yes" should {
-
-    "return 303" in {
+    "return 303 with Join Flat Rate Scheme selected Yes" in {
       save4laterExpectsSave[JoinFrsView]()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "joinFrsRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/spends-less-including-vat-on-goods")
     }
-  }
 
-  s"POST ${routes.JoinFrsController.submit()} with Join Flat Rate Scheme selected No" should {
-
-    "redirect to the welcome page" in {
-      when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)
+    "redirect to the welcome page with Join Flat Rate Scheme selected No" in {
       save4laterExpectsSave[JoinFrsView]()
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(false).pure)
 
