@@ -45,8 +45,11 @@ class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.frs.annual_costs_inclusive(badForm)).pure,
       view => for {
         _ <- save(view)
-        route = if (view.selection == AnnualCostsInclusiveView.NO) {
-          controllers.frs.routes.AnnualCostsLimitedController.show().pure
+        route = if (view.selection == NO) {
+          vrs.getFlatRateSchemeThreshold().map {
+            case n if n > PREVIOUS_QUESTION_THRESHOLD => controllers.frs.routes.AnnualCostsLimitedController.show()
+            case _ => controllers.frs.routes.RegisterForFrsController.show() //TODO redirect to "Confirm business sector" screen
+          }
         } else {
           for {
             _ <- save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true))))
@@ -56,15 +59,5 @@ class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
         call <- route
       } yield (Redirect(call))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.frs.annual_costs_inclusive(badForm)).pure,
-      goodForm => save(goodForm).map(_ => goodForm.selection == NO).ifM(
-        ifTrue = vrs.getFlatRateSchemeThreshold().map {
-          case n if n > PREVIOUS_QUESTION_THRESHOLD => controllers.frs.routes.AnnualCostsLimitedController.show()
-          case _ => controllers.frs.routes.RegisterForFrsController.show() //TODO redirect to "Confirm business sector" screen
-        },
-        ifFalse = controllers.frs.routes.RegisterForFrsController.show().pure
-      ).map(Redirect)))
 }
 

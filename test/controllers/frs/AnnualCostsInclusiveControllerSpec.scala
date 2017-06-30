@@ -25,12 +25,12 @@ import play.api.test.FakeRequest
 
 class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
+  val fakeRequest = FakeRequest(routes.AnnualCostsInclusiveController.show())
+
   object Controller
     extends AnnualCostsInclusiveController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
-
-  val fakeRequest = FakeRequest(routes.AnnualCostsInclusiveController.show())
 
   s"GET ${routes.AnnualCostsInclusiveController.show()}" should {
 
@@ -86,7 +86,6 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
       ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
     }
 
-    "return 303  with Annual Costs Inclusive selected No" in {
     "skip next question if 2% of estimated taxable turnover <= 1K and NO answered" in {
       save4laterExpectsSave[AnnualCostsInclusiveView]()
       when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any())).thenReturn(500L.pure)
