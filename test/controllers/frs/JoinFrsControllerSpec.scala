@@ -19,6 +19,7 @@ package controllers.frs
 import fixtures.VatRegistrationFixture
 import forms.genericForms.YesOrNoFormFactory
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.S4LFlatRateScheme
 import models.api.VatFlatRateScheme
 import models.view.frs.JoinFrsView
 import org.mockito.Matchers.any
@@ -85,7 +86,6 @@ class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     }
 
     "return 303 with Join Flat Rate Scheme selected No" in {
-      save4laterExpectsSave[JoinFrsView]()
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(false).pure)
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
