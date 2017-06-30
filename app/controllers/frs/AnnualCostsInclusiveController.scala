@@ -21,7 +21,6 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.frs.AnnualCostsInclusiveForm
-import models.view.frs.AnnualCostsInclusiveView
 import models.view.frs.AnnualCostsInclusiveView.NO
 import models.view.frs.{AnnualCostsInclusiveView, JoinFrsView}
 import models.{S4LFlatRateScheme, VatFrsAnnualCostsLimitedPath, VatFrsUseThisRate}
@@ -43,22 +42,18 @@ class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.frs.annual_costs_inclusive(badForm)).pure,
-      view => for {
-        _ <- save(view)
-        route = if (view.selection == NO) {
+      view => (if (view.selection == NO) {
+        save(view).flatMap(_ =>
           vrs.getFlatRateSchemeThreshold().map {
             case n if n > PREVIOUS_QUESTION_THRESHOLD => controllers.frs.routes.AnnualCostsLimitedController.show()
             case _ => controllers.frs.routes.RegisterForFrsController.show() //TODO redirect to "Confirm business sector" screen
-          }
-        } else {
-          for {
-            _ <- save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true))))
-            _ <- save(view)
-            _ <- vrs.deleteElements(List(VatFrsAnnualCostsLimitedPath, VatFrsUseThisRate))
-          } yield controllers.frs.routes.RegisterForFrsController.show()
-        }
-        call <- route
-      } yield (Redirect(call))))
+          })
+      } else {
+        for {
+          _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)), annualCostsInclusive = Some(view)))
+          _ <- vrs.deleteElements(List(VatFrsAnnualCostsLimitedPath, VatFrsUseThisRate))
+        } yield controllers.frs.routes.RegisterForFrsController.show()
+      }).map(Redirect)))
 
 }
 
