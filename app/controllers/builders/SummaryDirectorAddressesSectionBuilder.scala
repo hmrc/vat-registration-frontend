@@ -19,7 +19,10 @@ package controllers.builders
 import models.api._
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryDirectorAddressesSectionBuilder(vatLodgingOfficer: Option[VatLodgingOfficer] = None)
+case class SummaryDirectorAddressesSectionBuilder
+(
+  vatLodgingOfficer: Option[VatLodgingOfficer] = None
+)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "directorAddresses"

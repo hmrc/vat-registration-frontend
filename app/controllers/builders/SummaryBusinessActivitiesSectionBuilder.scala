@@ -20,7 +20,10 @@ import models.api._
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 
-case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[VatSicAndCompliance] = None)
+case class SummaryBusinessActivitiesSectionBuilder
+(
+  vatSicAndCompliance: Option[VatSicAndCompliance] = None
+)
   extends SummarySectionBuilder {
 
 

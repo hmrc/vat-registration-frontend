@@ -47,7 +47,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
       vatLodgingOfficer <- s4LService.fetchAndGet[S4LVatLodgingOfficer]()
       eligibility <- s4LService.fetchAndGet[S4LVatEligibility]()
       ppob <- s4LService.fetchAndGet[S4LPpob]()
-      frs <- s4LService.fetchAndGet[S4LFlatRateScheme]()
+      frsAnswers <- s4LService.fetchAndGet[S4LFlatRateSchemeAnswers]()
 
       testSetup = TestSetup(
         VatChoiceTestSetup(
@@ -144,11 +144,9 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
           formernameChoice = vatLodgingOfficer.flatMap(_.formerName).map(_.yesNo.toString),
           formername = vatLodgingOfficer.flatMap(_.formerName).flatMap(_.formerName)
         ),
-        vatFlatRateScheme = VatFlatRateSchemeTestSetup(
-          joinFrs = frs.flatMap(_.joinFrs).map(_.selection.toString),
-          annualCostsInclusive = frs.flatMap(_.annualCostsInclusive).map(_.selection),
-          annualCostsLimited = frs.flatMap(_.annualCostsLimited).map(_.selection),
-          registerForFrs = frs.flatMap(_.registerForFrs).map(_.selection.toString)
+        vatFlatRateSchemeAnswers = VatFlatRateSchemeAnswersTestSetup(
+          joinFrs = frsAnswers.flatMap(_.joinFrs).map(_.selection.toString),
+          annualCostsInclusive = frsAnswers.flatMap(_.annualCostsInclusive).map(_.selection)
         )
       )
       form = TestSetupForm.form.fill(testSetup)
@@ -190,7 +188,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
             vatLodgingOfficer = s4LBuilder.vatLodgingOfficerFromData(data)
             _ <- s4LService.save(vatLodgingOfficer)
 
-            _ <- s4LService.save(s4LBuilder.vatFrsFromData(data))
+            _ <- s4LService.save(s4LBuilder.vatFrsAnswersFromData(data))
 
             // Keystore hack for Officer DOB page
             officer = vatLodgingOfficer.completionCapacity.

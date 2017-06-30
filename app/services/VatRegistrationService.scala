@@ -23,7 +23,6 @@ import connectors.{CompanyRegistrationConnector, OptionalResponse, VatRegistrati
 import models._
 import models.api._
 import models.external.CoHoCompanyProfile
-import models.view.vatFinancials.EstimateVatTurnover
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -37,7 +36,7 @@ trait RegistrationService {
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme]
 
-  def getAckRef(regId: String)(implicit hc: HeaderCarrier): OptionalResponse[String]
+  def getAckRef(regId:String)(implicit hc: HeaderCarrier): OptionalResponse[String]
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit]
 
@@ -64,13 +63,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
                                        compRegConnector: CompanyRegistrationConnector)
   extends RegistrationService with CommonService {
 
-
   import cats.syntax.all._
-
-  def getFlatRateSchemeThreshold()(implicit hc: HeaderCarrier): Future[Long] =
-    s4LService.getViewModel[EstimateVatTurnover, S4LVatFinancials]()
-      .orElseF(getVatScheme() map ApiModelTransformer[EstimateVatTurnover].toViewModel)
-      .map(_.vatTurnoverEstimate).fold(0L)(estimate => Math.round(estimate * 0.02))
 
   private def s4l[T: Format : S4LKey]()(implicit hc: HeaderCarrier) =
     s4LService.fetchAndGet[T]()
@@ -81,7 +74,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
     fetchRegistrationId.flatMap(vatRegConnector.getRegistration)
 
-  def getAckRef(regId: String)(implicit hc: HeaderCarrier): OptionalResponse[String] =
+  def getAckRef(regId:String)(implicit hc: HeaderCarrier): OptionalResponse[String] =
     vatRegConnector.getAckRef(regId)
 
   def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
@@ -95,9 +88,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     elementPaths traverse_ deleteElement
   }
 
-  def conditionalDeleteElement(elementPath: ElementPath, cond: Boolean)(implicit hc: HeaderCarrier): Future[Unit] = {
-    if (cond) deleteElement(elementPath) else ().pure
-  }
 
   def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit] =
     for {
@@ -109,8 +99,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
 
   def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
     submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@|
-      submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer |@|
-      submitPpob map { case _ => () }
+      submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer |@| submitPpob map { case _ => () }
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
     def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =
@@ -201,7 +190,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
         vs.vatServiceEligibility.getOrElse(throw fail("VatServiceEligibility"))
       ) { s4l =>
         update(s4l.vatEligibility)
-          .apply(vs.vatServiceEligibility.getOrElse(VatServiceEligibility()))
+          .apply(vs.vatServiceEligibility.getOrElse(VatServiceEligibility())) //TODO remove the "seeding" with empty
       }
 
     for {
@@ -228,24 +217,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     for {
       (vs, vlo) <- (getVatScheme() |@| s4l[S4LVatLodgingOfficer]()).tupled
       response <- vatRegConnector.upsertVatLodgingOfficer(vs.id, merge(vlo, vs))
-    } yield response
-  }
-
-  def submitVatFlatRateScheme()(implicit hc: HeaderCarrier): Future[VatFlatRateScheme] = {
-    def merge(fresh: Option[S4LFlatRateScheme], vs: VatScheme): VatFlatRateScheme =
-      fresh.fold(
-        vs.vatFlatRateScheme.getOrElse(throw fail("VatFlatRateScheme"))
-      ) { s4l =>
-        update(s4l.joinFrs)
-          .andThen(update(s4l.annualCostsInclusive))
-          .andThen(update(s4l.annualCostsLimited))
-          .andThen(update(s4l.registerForFrs))
-          .apply(vs.vatFlatRateScheme.getOrElse(VatFlatRateScheme()))
-      }
-
-    for {
-      (vs, frsa) <- (getVatScheme() |@| s4l[S4LFlatRateScheme]()).tupled
-      response <- vatRegConnector.upsertVatFlatRateScheme(vs.id, merge(frsa, vs))
     } yield response
   }
 

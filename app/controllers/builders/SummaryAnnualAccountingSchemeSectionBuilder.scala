@@ -20,7 +20,10 @@ import models.api._
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryAnnualAccountingSchemeSectionBuilder(vatFinancials: Option[VatFinancials] = None)
+case class SummaryAnnualAccountingSchemeSectionBuilder
+(
+  vatFinancials: Option[VatFinancials] = None
+)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "annualAccountingScheme"

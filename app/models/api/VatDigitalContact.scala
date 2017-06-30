@@ -16,13 +16,18 @@
 
 package models.api
 
+import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class VatDigitalContact(email: String, tel: Option[String] = None, mobile: Option[String] = None)
 
 object VatDigitalContact {
 
-  implicit val format: OFormat[VatDigitalContact] = Json.format[VatDigitalContact]
+  implicit val format: OFormat[VatDigitalContact] = (
+    (__ \ "email").format[String] and
+      (__ \ "tel").formatNullable[String] and
+      (__ \ "mobile").formatNullable[String]
+    ) (VatDigitalContact.apply, unlift(VatDigitalContact.unapply))
 
   val empty = VatDigitalContact("", None, None)
 
