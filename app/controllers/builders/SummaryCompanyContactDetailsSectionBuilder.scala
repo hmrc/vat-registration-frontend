@@ -21,8 +21,11 @@ import models.api.ScrsAddress.htmlShow._
 import models.api._
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryCompanyContactDetailsSectionBuilder(vatContact: Option[VatContact] = None,
-                                                       ppob: Option[ScrsAddress] = None)
+case class SummaryCompanyContactDetailsSectionBuilder
+(
+  vatContact: Option[VatContact] = None,
+  ppob: Option[ScrsAddress] = None
+)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "companyContactDetails"

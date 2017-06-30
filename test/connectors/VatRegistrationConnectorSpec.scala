@@ -245,27 +245,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  "Calling updateVatFlatRateScheme" should {
-
-
-    "return the correct VatResponse when the microservice completes and returns a VatFlatRateScheme model" in new Setup {
-      mockHttpPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", validVatFlatRateScheme)
-      connector.updateVatFlatRateScheme("tstID", validVatFlatRateScheme) returns validVatFlatRateScheme
-    }
-    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", forbidden)
-      connector.updateVatFlatRateScheme("tstID", validVatFlatRateScheme) failedWith forbidden
-    }
-    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", notFound)
-      connector.updateVatFlatRateScheme("tstID", validVatFlatRateScheme) failedWith notFound
-    }
-    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", internalServiceException)
-      connector.updateVatFlatRateScheme("tstID", validVatFlatRateScheme) failedWith internalServiceException
-    }
-  }
-
   "Calling upsertLodgingOfficer" should {
 
     val vatLodgingOfficer = validLodgingOfficer
@@ -305,26 +284,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH[ScrsAddress, ScrsAddress]("tst-url", internalServiceException)
       connector.upsertPpob("tstID", scrsAddress) failedWith internalServiceException
-    }
-  }
-
-  "Calling upsertVatFrsAnswers" should {
-
-    "return the correct VatResponse when the microservice completes and returns a VatFrsAnswers model" in new Setup {
-      mockHttpPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", validVatFlatRateScheme)
-      connector.upsertVatFlatRateScheme("tstID", validVatFlatRateScheme) returns validVatFlatRateScheme
-    }
-    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", forbidden)
-      connector.upsertVatFlatRateScheme("tstID", validVatFlatRateScheme) failedWith forbidden
-    }
-    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", notFound)
-      connector.upsertVatFlatRateScheme("tstID", validVatFlatRateScheme) failedWith notFound
-    }
-    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", internalServiceException)
-      connector.upsertVatFlatRateScheme("tstID", validVatFlatRateScheme) failedWith internalServiceException
     }
   }
 }

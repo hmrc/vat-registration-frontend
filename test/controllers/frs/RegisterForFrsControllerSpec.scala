@@ -19,7 +19,6 @@ package controllers.frs
 import fixtures.VatRegistrationFixture
 import forms.genericForms.YesOrNoFormFactory
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.api.VatFlatRateScheme
 import models.view.frs.RegisterForFrsView
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -43,7 +42,7 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
         callAuthorised(Controller.show()) {
-          _ includesText "You can use the 16.5% flat rate"
+          _ includesText "Your flat rate"
         }
       }
 
@@ -52,7 +51,7 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
         callAuthorised(Controller.show) {
-          _ includesText "You can use the 16.5% flat rate"
+          _ includesText "Your flat rate"
         }
       }
 
@@ -61,7 +60,7 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
         callAuthorised(Controller.show) {
-          _ includesText "You can use the 16.5% flat rate"
+          _ includesText "Your flat rate"
         }
       }
 
@@ -69,31 +68,35 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
   }
 
-  s"POST ${routes.RegisterForFrsController.submit()}" should {
+  s"POST ${routes.RegisterForFrsController.submit()} with Empty data" should {
 
-    "return 400 with Empty data" in {
+    "return 400" in {
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
+  }
 
-    "return 303 with RegisterFor Flat Rate Scheme selected Yes" in {
+  s"POST ${routes.RegisterForFrsController.submit()} with RegisterFor Flat Rate Scheme selected Yes" should {
+
+    "return 303" in {
       save4laterExpectsSave[RegisterForFrsView]()
-      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(true).pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "registerForFrsRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/check-your-answers")
     }
+  }
 
-    "redirect to the welcome page with RegisterFor Flat Rate Scheme selected No" in {
+  s"POST ${routes.RegisterForFrsController.submit()} with RegisterFor Flat Rate Scheme selected No" should {
+
+    "redirect to the welcome page" in {
+      when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)
       save4laterExpectsSave[RegisterForFrsView]()
-      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(false).pure)
+      when(mockVatRegistrationService.deleteVatScheme()(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "registerForFrsRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/check-your-answers")
-
-      verify(mockVatRegistrationService).submitVatFlatRateScheme()(any())
     }
   }
 

@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import models.api.{VatComplianceCultural, _}
 import models.external.{CoHoCompanyProfile, Officer}
-import models.view.frs.{AnnualCostsInclusiveView, AnnualCostsLimitedView, JoinFrsView, RegisterForFrsView}
+import models.view.frs.AnnualCostsInclusiveView
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
@@ -97,6 +97,11 @@ trait VatRegistrationFixture {
     culturalCompliance = Some(VatComplianceCultural(notForProfit = false)),
     labourCompliance = None,
     financialCompliance = None
+  )
+
+  val validFlatRateSchemeAnswers = VatFlatRateSchemeAnswers(
+    joinFrs = Some(true),
+    annualCostsInclusive = Some(AnnualCostsInclusiveView.YES)
   )
 
   val validDob = DateOfBirth(12, 11, 1973)
@@ -179,13 +184,13 @@ trait VatRegistrationFixture {
                  vatTradingDetails: Option[VatTradingDetails] = None,
                  sicAndCompliance: Option[VatSicAndCompliance] = None,
                  contact: Option[VatContact] = None,
-                 vatFlatRateScheme: Option[VatFlatRateScheme] = None
+                 vatFlatRateSchemeAnswers: Option[VatFlatRateSchemeAnswers] = None
                ): VatScheme = VatScheme(
     id = id,
     tradingDetails = vatTradingDetails,
     vatSicAndCompliance = sicAndCompliance,
     vatContact = contact,
-    vatFlatRateScheme = vatFlatRateScheme
+    vatFlatRateSchemeAnswers = vatFlatRateSchemeAnswers
   )
 
   val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
@@ -199,6 +204,16 @@ trait VatRegistrationFixture {
         reclaimVatOnMostReturns = false,
         accountingPeriods = VatAccountingPeriod(VatReturnFrequency.MONTHLY))
     )
+  )
+
+  val validVatScheme = VatScheme(
+    id = validRegId,
+    tradingDetails = Some(validVatTradingDetails),
+    financials = Some(validVatFinancials),
+    vatContact = Some(validVatContact),
+    lodgingOfficer = Some(validLodgingOfficer),
+    vatSicAndCompliance = Some(validSicAndCompliance),
+    vatFlatRateSchemeAnswers = Some(validFlatRateSchemeAnswers)
   )
 
   val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
@@ -225,21 +240,5 @@ trait VatRegistrationFixture {
   val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
 
   val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
-  val validVatFlatRateScheme = VatFlatRateScheme(
-    joinFrs = true,
-    annualCostsInclusive = Some(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS),
-    annualCostsLimited = Some(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS),
-    doYouWantToUseThisRate = Some(false)
-  )
-
-  val validVatScheme = VatScheme(
-    id = validRegId,
-    tradingDetails = Some(validVatTradingDetails),
-    financials = Some(validVatFinancials),
-    vatContact = Some(validVatContact),
-    lodgingOfficer = Some(validLodgingOfficer),
-    vatSicAndCompliance = Some(validSicAndCompliance),
-    vatFlatRateScheme = Some(validVatFlatRateScheme)
-  )
 
 }

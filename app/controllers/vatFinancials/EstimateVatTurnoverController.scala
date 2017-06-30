@@ -22,12 +22,12 @@ import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.EstimateVatTurnoverForm
 import models.view.vatFinancials.EstimateVatTurnover
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, S4LService, VatRegistrationService}
+import services.{S4LService, VatRegistrationService}
 
 
 class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
                                              (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with CommonService {
+  extends VatRegistrationController(ds) {
 
   val form = EstimateVatTurnoverForm.form
 
@@ -38,14 +38,6 @@ class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     EstimateVatTurnoverForm.form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatFinancials.estimate_vat_turnover(badForm)).pure,
-      view => for {
-        originalTurnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
-        _ <- keystoreConnector.cache[Long](EstimateVatTurnoverKey.lastKnownValueKey, originalTurnover)
-        _ <- save(view)
-      } yield (Redirect(controllers.vatFinancials.routes.ZeroRatedSalesController.show()))))
+      view => save(view).map(_ => Redirect(controllers.vatFinancials.routes.ZeroRatedSalesController.show()))))
 
-}
-
-object EstimateVatTurnoverKey {
-  val lastKnownValueKey = "lastKnownEstimatedVatTurnover"
 }

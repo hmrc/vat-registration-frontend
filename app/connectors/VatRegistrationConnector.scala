@@ -98,24 +98,11 @@ trait RegistrationConnector extends FutureInstances {
       case e: Exception => throw logResponse(e, className, "upsertVatLodgingOfficer")
     }
 
-  def upsertVatFlatRateScheme(regId: String, vatFrs: VatFlatRateScheme)
-                             (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] =
-    http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", vatFrs) recover {
-      case e: Exception => throw logResponse(e, className, "upsertVatFrsAnswers")
-    }
-
   def upsertVatEligibility(regId: String, vatServiceEligibility: VatServiceEligibility)
                           (implicit hc: HeaderCarrier, rds: HttpReads[VatServiceEligibility]): Future[VatServiceEligibility] =
     http.PATCH[VatServiceEligibility, VatServiceEligibility](s"$vatRegUrl/vatreg/$regId/service-eligibility", vatServiceEligibility) recover {
       case e: Exception => throw logResponse(e, className, "upsertVatEligibility")
     }
-
-  def updateVatFlatRateScheme(regId: String, vatFlatRateScheme: VatFlatRateScheme)
-                             (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] =
-    http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", vatFlatRateScheme) recover {
-      case e: Exception => throw logResponse(e, className, "vatFlatRateScheme")
-    }
-
 
   def upsertPpob(regId: String, address: ScrsAddress)
                 (implicit hc: HeaderCarrier, rds: HttpReads[ScrsAddress]): Future[ScrsAddress] =

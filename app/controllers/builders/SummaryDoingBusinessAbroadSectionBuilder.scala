@@ -19,7 +19,10 @@ package controllers.builders
 import models.api._
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryDoingBusinessAbroadSectionBuilder(vatTradingDetails: Option[VatTradingDetails] = None)
+case class SummaryDoingBusinessAbroadSectionBuilder
+(
+  vatTradingDetails: Option[VatTradingDetails] = None
+)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "doingBusinessAbroad"

@@ -130,11 +130,9 @@ private[forms] object FormValidation {
 
 
   /* overrides Play's implicit stringFormatter and handles missing options (e.g. no radio button selected) */
-  private def stringFormat(suffix: String)(args: Seq[Any] = Seq())(implicit e: ErrorCode): Formatter[String] = new Formatter[String] {
+  private def stringFormat(suffix: String)(implicit e: ErrorCode): Formatter[String] = new Formatter[String] {
 
-    def bind(key: String, data: Map[String, String]) = data.get(key).toRight(
-      Seq(FormError(key, s"validation.$e.$suffix", args))
-    )
+    def bind(key: String, data: Map[String, String]) = data.get(key).toRight(Seq(FormError(key, s"validation.$e.$suffix", Nil)))
 
     def unbind(key: String, value: String) = Map(key -> value)
   }
@@ -146,9 +144,7 @@ private[forms] object FormValidation {
     def unbind(key: String, value: Boolean) = Map(key -> value.toString)
   }
 
-  def textMapping()(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat("missing")(Seq()))
-
-  def textMappingWithMessageArgs()(args: Seq[Any] = Seq())(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat("missing")(args))
+  def textMapping()(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat("missing"))
 
 
   def missingBooleanFieldMapping()(implicit e: ErrorCode): Mapping[Boolean] =

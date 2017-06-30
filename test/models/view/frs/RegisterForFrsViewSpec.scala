@@ -18,18 +18,18 @@ package models.view.frs
 
 import fixtures.VatRegistrationFixture
 import models.api._
-import models.{ApiModelTransformer, S4LFlatRateScheme, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LFlatRateSchemeAnswers, ViewModelTransformer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
 class RegisterForFrsViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
-  val testFlatRateScheme = VatFlatRateScheme(doYouWantToUseThisRate = Some(true))
+  val testFlatRateScheme = VatFlatRateSchemeAnswers(doYouWantToUseThisRate = Some(true))
 
   "apiModelTransformer" should {
 
     "convert VatScheme with FlatRateScheme details into a RegisterForFrsView" in {
-      val vs = vatScheme().copy(vatFlatRateScheme = Some(testFlatRateScheme))
+      val vs = vatScheme().copy(vatFlatRateSchemeAnswers = Some(testFlatRateScheme))
 
       ApiModelTransformer[RegisterForFrsView].toViewModel(vs) shouldBe Some(RegisterForFrsView(true))
     }
@@ -41,33 +41,33 @@ class RegisterForFrsViewSpec extends UnitSpec with VatRegistrationFixture with I
 
   }
 
-  "viewModelTransformer" should {
-    "update logical group given a component" in {
-      val initialAnswers: VatFlatRateScheme = VatFlatRateScheme(doYouWantToUseThisRate = Some(false))
-      val updatedAnswers: VatFlatRateScheme = VatFlatRateScheme(doYouWantToUseThisRate = Some(true))
+    "viewModelTransformer" should {
+      "update logical group given a component" in {
+        val initialAnswers: VatFlatRateSchemeAnswers = VatFlatRateSchemeAnswers(doYouWantToUseThisRate = Some(false))
+        val updatedAnswers: VatFlatRateSchemeAnswers = VatFlatRateSchemeAnswers(doYouWantToUseThisRate = Some(true))
 
-      ViewModelTransformer[RegisterForFrsView, VatFlatRateScheme]
-        .toApi(RegisterForFrsView(true), initialAnswers) shouldBe updatedAnswers
-    }
-  }
-
-
-  "ViewModelFormat" should {
-    val s4LFlatRateScheme: S4LFlatRateScheme = S4LFlatRateScheme(registerForFrs = Some(RegisterForFrsView(true)))
-
-    "extract RegisterForFrsView from lodgingOfficer" in {
-      RegisterForFrsView.viewModelFormat.read(s4LFlatRateScheme) shouldBe Some(RegisterForFrsView(true))
+        ViewModelTransformer[RegisterForFrsView, VatFlatRateSchemeAnswers]
+            .toApi(RegisterForFrsView(true) , initialAnswers) shouldBe updatedAnswers
+      }
     }
 
-    "update empty lodgingOfficer with RegisterForFrsView" in {
-      RegisterForFrsView.viewModelFormat.update(RegisterForFrsView(true), Option.empty[S4LFlatRateScheme])
-        .registerForFrs shouldBe Some(RegisterForFrsView(true))
-    }
 
-    "update non-empty lodgingOfficer with RegisterForFrsView" in {
-      RegisterForFrsView.viewModelFormat.update(RegisterForFrsView(false), Some(s4LFlatRateScheme))
-        .registerForFrs shouldBe Some(RegisterForFrsView(false))
+    "ViewModelFormat" should {
+      val s4LFlatRateScheme: S4LFlatRateSchemeAnswers = S4LFlatRateSchemeAnswers(registerForFrs = Some(RegisterForFrsView(true)))
+
+      "extract RegisterForFrsView from lodgingOfficer" in {
+        RegisterForFrsView.viewModelFormat.read(s4LFlatRateScheme) shouldBe Some(RegisterForFrsView(true))
+      }
+
+      "update empty lodgingOfficer with RegisterForFrsView" in {
+        RegisterForFrsView.viewModelFormat.update(RegisterForFrsView(true), Option.empty[S4LFlatRateSchemeAnswers])
+            .registerForFrs shouldBe Some(RegisterForFrsView(true))
+      }
+
+      "update non-empty lodgingOfficer with RegisterForFrsView" in {
+        RegisterForFrsView.viewModelFormat.update(RegisterForFrsView(false), Some(s4LFlatRateScheme))
+            .registerForFrs shouldBe Some(RegisterForFrsView(false))
+      }
     }
-  }
 
 }
