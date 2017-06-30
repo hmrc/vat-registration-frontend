@@ -16,8 +16,8 @@
 
 package models.view.frs
 
-import models.api.{VatFlatRateSchemeAnswers, VatScheme}
-import models.{ApiModelTransformer, S4LFlatRateSchemeAnswers, ViewModelFormat, ViewModelTransformer}
+import models.api.{VatFlatRateScheme, VatScheme}
+import models.{ApiModelTransformer, S4LFlatRateScheme, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.Json
 
 final case class RegisterForFrsView(selection: Boolean)
@@ -27,16 +27,16 @@ object RegisterForFrsView {
   implicit val format = Json.format[RegisterForFrsView]
 
   implicit val viewModelFormat = ViewModelFormat(
-    readF = (group: S4LFlatRateSchemeAnswers) => group.registerForFrs,
-    updateF = (c: RegisterForFrsView, g: Option[S4LFlatRateSchemeAnswers]) =>
-      g.getOrElse(S4LFlatRateSchemeAnswers()).copy(registerForFrs = Some(c))
+    readF = (group: S4LFlatRateScheme) => group.registerForFrs,
+    updateF = (c: RegisterForFrsView, g: Option[S4LFlatRateScheme]) =>
+      g.getOrElse(S4LFlatRateScheme()).copy(registerForFrs = Some(c))
   )
 
   implicit val modelTransformer = ApiModelTransformer[RegisterForFrsView] { (vs: VatScheme) =>
-    vs.vatFlatRateSchemeAnswers.flatMap(answers => answers.doYouWantToUseThisRate.map(RegisterForFrsView.apply))
+    vs.vatFlatRateScheme.flatMap(answers => answers.doYouWantToUseThisRate.map(RegisterForFrsView.apply))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: RegisterForFrsView, g: VatFlatRateSchemeAnswers) =>
+  implicit val viewModelTransformer = ViewModelTransformer { (c: RegisterForFrsView, g: VatFlatRateScheme) =>
     g.copy(doYouWantToUseThisRate = Some(c.selection))
   }
 }
