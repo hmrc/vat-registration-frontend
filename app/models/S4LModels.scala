@@ -151,4 +151,9 @@ final case class S4LFlatRateScheme
 
 object S4LFlatRateScheme {
   implicit val format: OFormat[S4LFlatRateScheme] = Json.format[S4LFlatRateScheme]
+
+  implicit val viewModelFormat = ViewModelFormat(
+    readF = (group: S4LFlatRateScheme) => Some(group),
+    updateF = (c: S4LFlatRateScheme, g: Option[S4LFlatRateScheme]) => c
+  )
 }
