@@ -34,9 +34,9 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[VatFlatRateScheme] = None)
   val costsInclusiveRow: SummaryRow = SummaryRow(
     s"$sectionId.costsInclusive",
     vatFrs.flatMap(_.annualCostsInclusive).collect {
-      case AnnualCostsInclusiveView.YES => "pages.summary.frs.costsInclusive.lessThan1k"
-      case AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS => "pages.summary.frs.costsInclusive.futureLessThan1k"
-      case AnnualCostsInclusiveView.NO => "pages.summary.frs.costsInclusive.moreThan1k"
+      case AnnualCostsInclusiveView.YES => "app.common.yes"
+      case AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS => "pages.summary.frs.yes12Months"
+      case AnnualCostsInclusiveView.NO => "pages.summary.frs.no"
     }.getOrElse(""),
     Some(controllers.frs.routes.AnnualCostsInclusiveController.show())
   )
@@ -44,9 +44,9 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[VatFlatRateScheme] = None)
   val costsLimitedRow: SummaryRow = SummaryRow(
     s"$sectionId.costsLimited",
     vatFrs.flatMap(_.annualCostsLimited).collect {
-      case AnnualCostsLimitedView.YES => "pages.summary.frs.costsLimited.lessThan2percent"
-      case AnnualCostsLimitedView.YES_WITHIN_12_MONTHS => "pages.summary.frs.costsLimited.futureLessThan2percent"
-      case AnnualCostsLimitedView.NO => "pages.summary.frs.costsLimited.moreThan2percent"
+      case AnnualCostsLimitedView.YES => "app.common.yes"
+      case AnnualCostsLimitedView.YES_WITHIN_12_MONTHS => "pages.summary.frs.yes12Months"
+      case AnnualCostsLimitedView.NO => "pages.summary.frs.no"
     }.getOrElse(""),
     Some(controllers.frs.routes.AnnualCostsLimitedController.show())
   )
