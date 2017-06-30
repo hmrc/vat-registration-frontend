@@ -20,10 +20,7 @@ import models.api.EligibilityQuestion._
 import models.api._
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryServiceEligibilitySectionBuilder
-(
-  vatServiceEligibility: Option[VatServiceEligibility] = None
-)
+case class SummaryServiceEligibilitySectionBuilder(vatServiceEligibility: Option[VatServiceEligibility] = None)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "serviceCriteria"
