@@ -84,9 +84,10 @@ class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
       ))(_ redirectsTo s"$contextRoot/spends-less-including-vat-on-goods")
     }
 
-    "redirect to the welcome page with Join Flat Rate Scheme selected No" in {
+    "return 303 with Join Flat Rate Scheme selected No" in {
       save4laterExpectsSave[JoinFrsView]()
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(false).pure)
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "joinFrsRadio" -> "false"
