@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
-package models.api
+package models.view.test
 
-import play.api.libs.json._
+import play.api.libs.json.Json
 
-case class VatDigitalContact(email: String, tel: Option[String] = None, mobile: Option[String] = None)
+case class VatFlatRateSchemeTestSetup(joinFrs: Option[String],
+                                      annualCostsInclusive: Option[String],
+                                      annualCostsLimited: Option[String],
+                                      registerForFrs: Option[String])
 
-object VatDigitalContact {
-
-  implicit val format: OFormat[VatDigitalContact] = Json.format[VatDigitalContact]
-
-  val empty = VatDigitalContact("", None, None)
-
+object VatFlatRateSchemeTestSetup {
+  implicit val format = Json.format[VatFlatRateSchemeTestSetup]
 }
+
+
+
+
+
+
+
+
+
+
+

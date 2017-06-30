@@ -23,23 +23,19 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 
-import scala.concurrent.Future
-
 class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+
+  val fakeRequest = FakeRequest(routes.AnnualCostsInclusiveController.show())
 
   object Controller
     extends AnnualCostsInclusiveController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
   }
 
-  val fakeRequest = FakeRequest(routes.AnnualCostsInclusiveController.show())
-
   s"GET ${routes.AnnualCostsInclusiveController.show()}" should {
 
     "return HTML Annual Costs Inclusive page with no Selection" in {
-      val annualCostsInclusiveView = AnnualCostsInclusiveView("")
-
-      save4laterReturnsViewModel(annualCostsInclusiveView)()
+      save4laterReturnsViewModel(AnnualCostsInclusiveView(""))()
 
       callAuthorised(Controller.show()) {
         _ includesText "Do you spend less than £1,000 a year (including VAT) on business goods?"
@@ -48,9 +44,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[AnnualCostsInclusiveView]()
-
-      when(mockVatRegistrationService.getVatScheme()(any()))
-        .thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(Controller.show) {
         _ includesText "Do you spend less than £1,000 a year (including VAT) on business goods?"
@@ -59,9 +53,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[AnnualCostsInclusiveView]()
-
-      when(mockVatRegistrationService.getVatScheme()(any()))
-        .thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {
         _ includesText "Do you spend less than £1,000 a year (including VAT) on business goods?"
@@ -69,46 +61,47 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
   }
 
-  s"POST ${routes.AnnualCostsInclusiveController.submit()} with Empty data" should {
+  s"POST ${routes.AnnualCostsInclusiveController.submit()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
-  }
 
-  s"POST ${routes.AnnualCostsInclusiveController.submit()} with Annual Costs Inclusive selected Yes" should {
-
-    "return 303" in {
+    "return 303 with Annual Costs Inclusive selected Yes" in {
       save4laterExpectsSave[AnnualCostsInclusiveView]()
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES
-      ))(_ redirectsTo s"$contextRoot/check-your-answers")
+      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
     }
-  }
 
-  s"POST ${routes.AnnualCostsInclusiveController.submit()} with Annual Costs Inclusive selected No - but within 12 months" should {
-
-    "return 303" in {
+    "return 303 with Annual Costs Inclusive selected No - but within 12 months" in {
       save4laterExpectsSave[AnnualCostsInclusiveView]()
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS
-      ))(_ redirectsTo s"$contextRoot/check-your-answers")
+      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
     }
-  }
 
-  s"POST ${routes.AnnualCostsInclusiveController.submit()} with Annual Costs Inclusive selected No" should {
-
-    "redirect to the welcome page" in {
-      when(mockS4LService.clear()(any())).thenReturn(Future.successful(validHttpResponse))
+    "skip next question if 2% of estimated taxable turnover <= 1K and NO answered" in {
       save4laterExpectsSave[AnnualCostsInclusiveView]()
-      when(mockVatRegistrationService.deleteVatScheme()(any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any())).thenReturn(500L.pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.NO
-      ))(_ redirectsTo s"$contextRoot/your-flat-rate")
+      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
+    }
+
+    "redirect to next question if 2% of estimated taxable turnover > 1K and NO answered" in {
+      save4laterExpectsSave[AnnualCostsInclusiveView]()
+      when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any())).thenReturn(1500L.pure)
+
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
+        "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.NO
+      ))(_ redirectsTo s"$contextRoot/spends-less-than-two-percent-of-turnover-a-year-on-goods")
     }
   }
 
