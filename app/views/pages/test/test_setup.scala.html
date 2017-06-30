@@ -126,9 +126,11 @@
             <p>@govHelpers.input(testSetupForm("ppob.postcode"), '_label -> "Post code")</p>
             <p>@govHelpers.input(testSetupForm("ppob.country"), '_label -> "Country")</p>
 
-            <b>FRS ANSWERS</b>
-            <p>@govHelpers.input(testSetupForm("vatFlatRateSchemeAnswers.joinFrs"), '_label -> "Join FRS (true or false)") </p>
-            <p>@govHelpers.input(testSetupForm("vatFlatRateSchemeAnswers.annualCostsInclusive"), '_label -> "Annual costs inclusive (yes or yesWithin12months or no)")</p>
+            <b>VAT FRS</b>
+            <p>@govHelpers.input(testSetupForm("vatFlatRateScheme.joinFrs"), '_label -> "Join FRS (true or false)") </p>
+            <p>@govHelpers.input(testSetupForm("vatFlatRateScheme.annualCostsInclusive"), '_label -> "Annual costs inclusive (yes or yesWithin12months or no)")</p>
+            <p>@govHelpers.input(testSetupForm("vatFlatRateScheme.annualCostsLimited"), '_label -> "Annual costs limited (yes or yesWithin12months or no)")</p>
+            <p>@govHelpers.input(testSetupForm("vatFlatRateScheme.registerForFrs"), '_label -> "Register for FRS (true or false)") </p>
 
         </fieldset>
 
