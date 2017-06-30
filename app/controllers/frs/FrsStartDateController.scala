@@ -16,14 +16,12 @@
 
 package controllers.frs
 
-import java.time.LocalDate
 import javax.inject.Inject
 
 import cats.syntax.FlatMapSyntax
-import cats.data.OptionT
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.frs.FrsStartDateFormFactory
-import models.view.frs.{AnnualCostsLimitedView, FrsStartDateView}
+import models.view.frs.FrsStartDateView
 import models.view.vatTradingDetails.vatChoice.StartDateView
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
@@ -55,14 +53,14 @@ class FrsStartDateController @Inject()(frsStartDateFormFactory: FrsStartDateForm
   )
   )
 
-  private def setVatRegistrationDateToForm(goodForm: FrsStartDateView)(implicit  headerCarrier: HeaderCarrier)
-  : Future[FrsStartDateView]= {
-    OptionT.liftF(viewModel[StartDateView]().getOrElse(StartDateView()).map(_.date))
-      .fold(goodForm)(vatStartDate => goodForm.copy(date = vatStartDate))
+  private def setVatRegistrationDateToForm(goodForm: FrsStartDateView)
+                                          (implicit  headerCarrier: HeaderCarrier)  : Future[FrsStartDateView]= {
+    viewModel[StartDateView]().fold(goodForm)(startDateView => goodForm.copy(date = startDateView.date))
   }
 
   private def saveForm(frsStartDateView: FrsStartDateView)(implicit  headerCarrier: HeaderCarrier)= {
     save(frsStartDateView).flatMap(_ =>
-      vrs.submitVatFlatRateScheme().map(_ => Redirect(controllers.routes.SummaryController.show())))
+      vrs.submitVatFlatRateScheme().map(_ =>
+        Redirect(controllers.routes.SummaryController.show())))
   }
 }
