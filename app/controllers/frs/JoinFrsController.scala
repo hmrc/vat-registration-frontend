@@ -21,6 +21,7 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
+import models._
 import models.view.frs.JoinFrsView
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
@@ -39,9 +40,20 @@ class JoinFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOr
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.frs.frs_join(badForm)).pure,
-      joinFrs => save(JoinFrsView(joinFrs.answer)).map(_ => joinFrs.answer).ifM(
-        controllers.frs.routes.AnnualCostsInclusiveController.show().pure,
-        vrs.submitVatFlatRateScheme().map(_ => controllers.routes.SummaryController.show())
-      ).map(Redirect)))
+      joinFrs => for {
+        _ <- save(JoinFrsView(joinFrs.answer))
+        route = if (joinFrs.answer) {
+          controllers.frs.routes.AnnualCostsInclusiveController.show().pure
+        } else {
+          for {
+            _ <- save(S4LFlatRateScheme())
+            _ <- save(JoinFrsView(joinFrs.answer))
+            _ <- vrs.submitVatFlatRateScheme()
+            _ <- vrs.deleteElements(List(VatFrsAnnualCostsInclusivePath, VatFrsAnnualCostsLimitedPath, VatFrsUseThisRate))
+          } yield controllers.routes.SummaryController.show()
+        }
+        call <- route
+      } yield (Redirect(call))))
 
 }
+

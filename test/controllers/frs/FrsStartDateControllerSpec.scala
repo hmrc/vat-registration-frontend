@@ -140,7 +140,7 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
     "return 303 with Different Date entered" in {
 
       val minDate: LocalDate = today.plusDays(30)
-
+      save4laterExpectsSave[FrsStartDateView]()
       save4laterReturnsViewModel(FrsStartDateView(FrsStartDateView.DIFFERENT_DATE, Some(LocalDate.now)))()
 
       when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
@@ -158,12 +158,26 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
 
     }
 
-    "return 303 with Vat Registration Date entered" in {
+    "return 303 with Vat Registration Date selected" in {
       val minDate: LocalDate = today.plusDays(30)
       save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
       save4laterExpectsSave[FrsStartDateView]()
-      when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(true).pure)
+
+      submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
+        "frsStartDateRadio" -> FrsStartDateView.VAT_REGISTRATION_DATE
+
+      )) {
+        _ redirectsTo s"$contextRoot/check-your-answers"
+      }
+
+    }
+
+    "return 303 with Vat Choice Start Date is Null " in {
+      save4laterExpectsSave[FrsStartDateView]()
+      save4laterReturnsNoViewModel[StartDateView]()
+      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(true).pure)
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "frsStartDateRadio" -> FrsStartDateView.VAT_REGISTRATION_DATE
