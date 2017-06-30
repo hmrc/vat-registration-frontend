@@ -16,9 +16,7 @@
 
 package controllers.vatFinancials.vatAccountingPeriod
 
-import connectors.KeystoreConnector
 import controllers.vatFinancials
-import controllers.vatFinancials.EstimateVatTurnoverKey
 import fixtures.VatRegistrationFixture
 import forms.vatFinancials.vatAccountingPeriod.VatReturnFrequencyForm
 import helpers.{S4LMockSugar, VatRegSpec}
@@ -32,7 +30,6 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
   object Controller extends VatReturnFrequencyController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show())
@@ -86,8 +83,6 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
         when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
         when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
-        when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
-        mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
 
         submitAuthorised(Controller.submit(),
           fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
@@ -108,8 +103,6 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
         when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
         when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
-        when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
-        mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
 
         submitAuthorised(Controller.submit(),
           fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
@@ -127,8 +120,6 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
         when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
         when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
-        when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
-        mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
 
         submitAuthorised(Controller.submit(),
           fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {

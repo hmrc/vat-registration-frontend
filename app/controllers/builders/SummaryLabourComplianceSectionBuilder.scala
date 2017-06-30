@@ -19,7 +19,10 @@ package controllers.builders
 import models.api._
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryLabourComplianceSectionBuilder(vatSicAndCompliance: Option[VatSicAndCompliance] = None)
+case class SummaryLabourComplianceSectionBuilder
+(
+  vatSicAndCompliance: Option[VatSicAndCompliance] = None
+)
   extends SummarySectionBuilder {
 
   val sectionId = "labourCompliance"

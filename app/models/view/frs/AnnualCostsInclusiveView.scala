@@ -17,7 +17,7 @@
 package models.view.frs
 
 import models._
-import models.api.{VatFlatRateScheme, VatScheme}
+import models.api.{VatFlatRateSchemeAnswers, VatScheme}
 import play.api.libs.json.Json
 
 case class AnnualCostsInclusiveView(selection: String)
@@ -33,20 +33,20 @@ object AnnualCostsInclusiveView {
   implicit val format = Json.format[AnnualCostsInclusiveView]
 
   implicit val viewModelFormat = ViewModelFormat(
-    readF = (group: S4LFlatRateScheme) => group.annualCostsInclusive,
-    updateF = (c: AnnualCostsInclusiveView, g: Option[S4LFlatRateScheme]) =>
-      g.getOrElse(S4LFlatRateScheme()).copy(annualCostsInclusive = Some(c))
+    readF = (group: S4LFlatRateSchemeAnswers) => group.annualCostsInclusive,
+    updateF = (c: AnnualCostsInclusiveView, g: Option[S4LFlatRateSchemeAnswers]) =>
+      g.getOrElse(S4LFlatRateSchemeAnswers()).copy(annualCostsInclusive = Some(c))
   )
 
   implicit val modelTransformer = ApiModelTransformer[AnnualCostsInclusiveView] { vs: VatScheme =>
-    vs.vatFlatRateScheme.flatMap(_.annualCostsInclusive).collect {
+    vs.vatFlatRateSchemeAnswers.flatMap(_.annualCostsInclusive).collect {
       case YES => AnnualCostsInclusiveView(YES)
       case YES_WITHIN_12_MONTHS => AnnualCostsInclusiveView(YES_WITHIN_12_MONTHS)
       case NO => AnnualCostsInclusiveView(NO)
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: AnnualCostsInclusiveView, g: VatFlatRateScheme) =>
+  implicit val viewModelTransformer = ViewModelTransformer { (c: AnnualCostsInclusiveView, g: VatFlatRateSchemeAnswers) =>
     g.copy(annualCostsInclusive = Some(c.selection))
   }
 

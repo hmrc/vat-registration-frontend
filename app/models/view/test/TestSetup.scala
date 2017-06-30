@@ -30,7 +30,7 @@ case class TestSetup(
                       officerHomeAddress: OfficerHomeAddressTestSetup,
                       officerPreviousAddress: OfficerPreviousAddressTestSetup,
                       vatLodgingOfficer: VatLodgingOfficerTestSetup,
-                      vatFlatRateScheme: VatFlatRateSchemeTestSetup
+                      vatFlatRateSchemeAnswers: VatFlatRateSchemeAnswersTestSetup
                     )
 
 
