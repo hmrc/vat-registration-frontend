@@ -19,8 +19,6 @@ package controllers.frs
 import fixtures.VatRegistrationFixture
 import forms.genericForms.YesOrNoFormFactory
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LFlatRateScheme
-import models.api.VatFlatRateScheme
 import models.view.frs.JoinFrsView
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -70,30 +68,35 @@ class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
 
   }
 
-  s"POST ${routes.JoinFrsController.submit()}" should {
+  s"POST ${routes.JoinFrsController.submit()} with Empty data" should {
 
-    "return 400 with Empty data" in {
+    "return 400" in {
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
+  }
 
-    "return 303 with Join Flat Rate Scheme selected Yes" in {
+  s"POST ${routes.JoinFrsController.submit()} with Join Flat Rate Scheme selected Yes" should {
+
+    "return 303" in {
       save4laterExpectsSave[JoinFrsView]()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "joinFrsRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/spends-less-including-vat-on-goods")
     }
+  }
 
-    "return 303 with Join Flat Rate Scheme selected No" in {
-      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(false).pure)
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
+  s"POST ${routes.JoinFrsController.submit()} with Join Flat Rate Scheme selected No" should {
+
+    "redirect to the welcome page" in {
+      when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)
+      save4laterExpectsSave[JoinFrsView]()
+      when(mockVatRegistrationService.deleteVatScheme()(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "joinFrsRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/check-your-answers")
-
-      verify(mockVatRegistrationService).submitVatFlatRateScheme()(any())
     }
   }
 

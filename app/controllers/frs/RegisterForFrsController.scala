@@ -33,16 +33,17 @@ class RegisterForFrsController @Inject()(ds: CommonPlayDependencies, formFactory
   val form = formFactory.form("registerForFrs")("frs.registerFor")
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    Ok(views.html.pages.frs.frs_register_for(form)).pure)
+    viewModel[RegisterForFrsView]().map(vm => YesOrNoAnswer(vm.selection)).fold(form)(form.fill)
+      .map(f => Ok(views.html.pages.frs.frs_register_for(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.frs.frs_register_for(badForm)).pure,
-      registerForFrs => save(RegisterForFrsView(registerForFrs.answer)).map(_ => registerForFrs.answer).ifM(
-        // TODO for the 'ifTrue' case:
-        // TODO change next screen to 'FRS start date' *and* remove persistence
-        ifTrue = vrs.submitVatFlatRateScheme().map(_ => controllers.routes.SummaryController.show()),
-        ifFalse = vrs.submitVatFlatRateScheme().map(_ => controllers.routes.SummaryController.show())
-      ).map(Redirect)))
+      registerForFrs => save(RegisterForFrsView(registerForFrs.answer)).map(_ =>
+        Redirect(if (registerForFrs.answer) {
+          controllers.routes.SummaryController.show() //TODO change to next screen - FRS start date
+        } else {
+          controllers.routes.SummaryController.show()
+        }))))
 
 }

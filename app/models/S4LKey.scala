@@ -40,6 +40,6 @@ object S4LKey {
   implicit val ppob: S4LKey[S4LPpob] = S4LKey("Ppob")
   implicit val vatFinancials: S4LKey[S4LVatFinancials] = S4LKey("VatFinancials")
   implicit val sicAndCompliance: S4LKey[S4LVatSicAndCompliance] = S4LKey("VatSicAndCompliance")
-  implicit val vatFlatRateScheme: S4LKey[S4LFlatRateScheme] = S4LKey("VatFlatRateScheme")
+  implicit val flatRateSchemeAnswers: S4LKey[S4LFlatRateSchemeAnswers] = S4LKey("FlatRateSchemeAnswers")
 
 }

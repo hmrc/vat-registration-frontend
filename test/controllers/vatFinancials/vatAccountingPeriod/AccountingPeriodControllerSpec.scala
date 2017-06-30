@@ -16,9 +16,7 @@
 
 package controllers.vatFinancials.vatAccountingPeriod
 
-import connectors.KeystoreConnector
 import controllers.vatFinancials
-import controllers.vatFinancials.EstimateVatTurnoverKey
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatFinancials.EstimateVatTurnover
@@ -33,7 +31,6 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
 
   object Controller extends AccountingPeriodController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show())
@@ -75,6 +72,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   }
 
   s"POST ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.submit()} with any accounting period selected" should {
+
     "redirect to summary page" when {
       "estimated vat turnover greater than 150k" in {
         forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
@@ -82,8 +80,6 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
             save4laterReturnsViewModel(EstimateVatTurnover(200000L))() //above the 150k threshold
             save4laterExpectsSave[AccountingPeriod]()
             when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
-            when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
-            mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
 
             submitAuthorised(Controller.submit(),
               fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
@@ -100,8 +96,6 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
             save4laterReturnsViewModel(EstimateVatTurnover(100000L))() //below the 150k threshold
             save4laterExpectsSave[AccountingPeriod]()
             when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
-            when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
-            mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
 
             submitAuthorised(Controller.submit(),
               fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
@@ -117,8 +111,6 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
             when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
             when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
             save4laterReturnsNoViewModel[EstimateVatTurnover]()
-            when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
-            mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
 
             submitAuthorised(Controller.submit(),
               fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {

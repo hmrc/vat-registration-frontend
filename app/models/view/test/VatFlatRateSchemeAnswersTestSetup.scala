@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-package forms.frs
+package models.view.test
 
-import forms.FormValidation.textMappingWithMessageArgs
-import models.view.frs.AnnualCostsLimitedView
-import play.api.data.Form
-import play.api.data.Forms.mapping
+import play.api.libs.json.Json
 
-object AnnualCostsLimitedFormFactory {
-  val RADIO_COST_LIMITED: String = "annualCostsLimitedRadio"
+case class VatFlatRateSchemeAnswersTestSetup(joinFrs: Option[String],
+                                             annualCostsInclusive: Option[String])
 
-  def form(msgArgs: Seq[Any] = Seq()): Form[AnnualCostsLimitedView] = {
-    Form(mapping(
-      RADIO_COST_LIMITED -> textMappingWithMessageArgs()(msgArgs)("frs.costsLimited").verifying(AnnualCostsLimitedView.valid)
-    )(AnnualCostsLimitedView.apply)(AnnualCostsLimitedView.unapply))
-  }
-
+object VatFlatRateSchemeAnswersTestSetup {
+  implicit val format = Json.format[VatFlatRateSchemeAnswersTestSetup]
 }
+
+
+
+
+
+
+
+
+
+
+
