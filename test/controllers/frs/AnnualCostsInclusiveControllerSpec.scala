@@ -69,7 +69,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
 
     "return 303 with Annual Costs Inclusive selected Yes" in {
-      save4laterExpectsSave[AnnualCostsInclusiveView]()
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -78,7 +78,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
 
     "return 303 with Annual Costs Inclusive selected No - but within 12 months" in {
-      save4laterExpectsSave[AnnualCostsInclusiveView]()
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
