@@ -17,7 +17,7 @@
 package models.view.frs
 
 import models._
-import models.api.{VatFlatRateSchemeAnswers, VatScheme}
+import models.api.{VatFlatRateScheme, VatScheme}
 import play.api.libs.json.Json
 
 final case class JoinFrsView(selection: Boolean)
@@ -26,16 +26,16 @@ object JoinFrsView {
   implicit val format = Json.format[JoinFrsView]
 
   implicit val viewModelFormat = ViewModelFormat(
-    readF = (group: S4LFlatRateSchemeAnswers) => group.joinFrs,
-    updateF = (c: JoinFrsView, g: Option[S4LFlatRateSchemeAnswers]) =>
-      g.getOrElse(S4LFlatRateSchemeAnswers()).copy(joinFrs = Some(c))
+    readF = (group: S4LFlatRateScheme) => group.joinFrs,
+    updateF = (c: JoinFrsView, g: Option[S4LFlatRateScheme]) =>
+      g.getOrElse(S4LFlatRateScheme()).copy(joinFrs = Some(c))
   )
 
   implicit val modelTransformer = ApiModelTransformer[JoinFrsView] { (vs: VatScheme) =>
-    vs.vatFlatRateSchemeAnswers.flatMap(_.joinFrs).map(JoinFrsView(_))
+    vs.vatFlatRateScheme.map(_.joinFrs).map(JoinFrsView(_))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: JoinFrsView, g: VatFlatRateSchemeAnswers) =>
-    g.copy(joinFrs = Some(c.selection))
+  implicit val viewModelTransformer = ViewModelTransformer { (c: JoinFrsView, g: VatFlatRateScheme) =>
+    g.copy(joinFrs = c.selection)
   }
 }

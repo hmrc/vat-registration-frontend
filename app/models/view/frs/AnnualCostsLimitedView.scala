@@ -20,9 +20,9 @@ import models._
 import models.api.{VatFlatRateScheme, VatScheme}
 import play.api.libs.json.Json
 
-case class AnnualCostsInclusiveView(selection: String)
+case class AnnualCostsLimitedView(selection: String)
 
-object AnnualCostsInclusiveView {
+object AnnualCostsLimitedView {
 
   val YES = "yes"
   val YES_WITHIN_12_MONTHS = "yesWithin12months"
@@ -30,24 +30,24 @@ object AnnualCostsInclusiveView {
 
   val valid: (String) => Boolean = List(YES, YES_WITHIN_12_MONTHS, NO).contains
 
-  implicit val format = Json.format[AnnualCostsInclusiveView]
+  implicit val format = Json.format[AnnualCostsLimitedView]
 
   implicit val viewModelFormat = ViewModelFormat(
-    readF = (group: S4LFlatRateScheme) => group.annualCostsInclusive,
-    updateF = (c: AnnualCostsInclusiveView, g: Option[S4LFlatRateScheme]) =>
-      g.getOrElse(S4LFlatRateScheme()).copy(annualCostsInclusive = Some(c))
+    readF = (group: S4LFlatRateScheme) => group.annualCostsLimited,
+    updateF = (c: AnnualCostsLimitedView, g: Option[S4LFlatRateScheme]) =>
+      g.getOrElse(S4LFlatRateScheme()).copy(annualCostsLimited = Some(c))
   )
 
-  implicit val modelTransformer = ApiModelTransformer[AnnualCostsInclusiveView] { vs: VatScheme =>
-    vs.vatFlatRateScheme.flatMap(_.annualCostsInclusive).collect {
-      case YES => AnnualCostsInclusiveView(YES)
-      case YES_WITHIN_12_MONTHS => AnnualCostsInclusiveView(YES_WITHIN_12_MONTHS)
-      case NO => AnnualCostsInclusiveView(NO)
+  implicit val modelTransformer = ApiModelTransformer[AnnualCostsLimitedView] { vs: VatScheme =>
+    vs.vatFlatRateScheme.flatMap(_.annualCostsLimited).collect {
+      case YES => AnnualCostsLimitedView(YES)
+      case YES_WITHIN_12_MONTHS => AnnualCostsLimitedView(YES_WITHIN_12_MONTHS)
+      case NO => AnnualCostsLimitedView(NO)
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: AnnualCostsInclusiveView, g: VatFlatRateScheme) =>
-    g.copy(annualCostsInclusive = Some(c.selection))
+  implicit val viewModelTransformer = ViewModelTransformer { (c: AnnualCostsLimitedView, g: VatFlatRateScheme) =>
+    g.copy(annualCostsLimited = Some(c.selection))
   }
 
 }

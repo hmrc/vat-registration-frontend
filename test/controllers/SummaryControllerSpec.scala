@@ -80,11 +80,11 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "registrationToSummary maps a valid VatScheme object to a Summary object" in {
-      TestSummaryController.registrationToSummary(validVatScheme).sections.length mustEqual 11
+      TestSummaryController.registrationToSummary(validVatScheme).sections.length mustEqual 12
     }
 
     "registrationToSummary maps a valid empty VatScheme object to a Summary object" in {
-      TestSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency).sections.length mustEqual 11
+      TestSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency).sections.length mustEqual 12
     }
 
   }

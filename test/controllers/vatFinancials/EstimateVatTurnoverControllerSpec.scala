@@ -16,6 +16,7 @@
 
 package controllers.vatFinancials
 
+import connectors.KeystoreConnector
 import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
@@ -28,6 +29,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
 
   object Controller extends EstimateVatTurnoverController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(vatFinancials.routes.EstimateVatTurnoverController.show())
@@ -62,20 +64,30 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
     }
   }
 
-  s"POST ${vatFinancials.routes.EstimateVatTurnoverController.submit()} with Empty data" should {
-    "return 400" in {
+  s"POST ${vatFinancials.routes.EstimateVatTurnoverController.submit()}" should {
+    "return 400 with Empty data" in {
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
-  }
 
-  s"POST ${vatFinancials.routes.EstimateVatTurnoverController.submit()} with a valid turnover estimate entered" should {
-
-    "return 303" in {
+    "return 303 with a valid turnover estimate entered" in {
+      save4laterReturnsViewModel(EstimateVatTurnover(0L))()
       save4laterExpectsSave[EstimateVatTurnover]()
+      mockKeystoreCache[Long](EstimateVatTurnoverKey.lastKnownValueKey, dummyCacheMap)
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody("turnoverEstimate" -> "50000")) {
         _ redirectsTo s"$contextRoot/sell-zero-rated-items-next-12-months"
       }
     }
+
+    "return 303 with no valid turnover estimate entered" in {
+      save4laterReturnsNoViewModel[EstimateVatTurnover]()
+      save4laterExpectsSave[EstimateVatTurnover]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+      mockKeystoreCache[Long](EstimateVatTurnoverKey.lastKnownValueKey, dummyCacheMap)
+      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody("turnoverEstimate" -> "50000")) {
+        _ redirectsTo s"$contextRoot/sell-zero-rated-items-next-12-months"
+      }
+    }
+
   }
 
 }
