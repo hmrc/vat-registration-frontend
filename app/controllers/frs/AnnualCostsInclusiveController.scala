@@ -53,6 +53,7 @@ class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
         } else {
           for {
             _ <- save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true))))
+            _ <- save(view)
             _ <- vrs.deleteElements(List(VatFrsAnnualCostsLimitedPath, VatFrsUseThisRate))
           } yield controllers.frs.routes.RegisterForFrsController.show()
         }
