@@ -20,8 +20,9 @@ import javax.inject.Inject
 
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
+import forms.genericForms.YesOrNoFormFactory
 import models.view.frs.RegisterForFrsView
+import models.{S4LFlatRateScheme, VatFrsStartDate, VatFrsWhenToJoin}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -38,9 +39,30 @@ class RegisterForFrsController @Inject()(ds: CommonPlayDependencies, formFactory
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.frs.frs_register_for(badForm)).pure,
-      registerForFrs => save(RegisterForFrsView(registerForFrs.answer)).map(_ => registerForFrs.answer).ifM(
-        ifTrue = controllers.frs.routes.FrsStartDateController.show().pure,
-        ifFalse = vrs.submitVatFlatRateScheme().map(_ => controllers.routes.SummaryController.show())
-      ).map(Redirect)))
+      view => (if (view.answer) {
+        save(RegisterForFrsView(view.answer)).map(_ => controllers.frs.routes.FrsStartDateController.show())
+      } else {
+        for {
+          _ <- save(RegisterForFrsView(view.answer)) // this ensures S4LFlatRateScheme is present in S4L
+          frs <- s4LService.fetchAndGet[S4LFlatRateScheme]()
+          _ <- s4LService.save(frs.getOrElse(S4LFlatRateScheme()).copy(frsStartDate = None))
+          _ <- vrs.submitVatFlatRateScheme()
+          _ <- vrs.deleteElements(List(VatFrsWhenToJoin, VatFrsStartDate))
+        } yield controllers.routes.SummaryController.show()
+      }).map(Redirect)))
 
+  //  def submit2: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+  //    form.bindFromRequest().fold(
+  //      badForm => BadRequest(views.html.pages.frs.frs_register_for(badForm)).pure,
+  //      view =>
+  //        save(RegisterForFrsView(view.answer)).map(_ => view.answer.pure.ifM(
+  //          ifTrue = controllers.frs.routes.FrsStartDateController.show().pure,
+  //          ifFalse = for {
+  //            frs <- s4LService.fetchAndGet[S4LFlatRateScheme]()
+  //            _ <- s4LService.save(frs.getOrElse(S4LFlatRateScheme()).copy(frsStartDate = None))
+  //            _ <- vrs.submitVatFlatRateScheme()
+  //            _ <- vrs.deleteElements(List(VatFrsWhenToJoin, VatFrsStartDate))
+  //          } yield controllers.routes.SummaryController.show()
+  //        )).map(Redirect)))
 }
+
