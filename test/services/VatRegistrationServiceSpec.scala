@@ -25,7 +25,7 @@ import helpers.{S4LMockSugar, VatRegSpec}
 import models._
 import models.api._
 import models.external.CoHoCompanyProfile
-import models.view.frs.{AnnualCostsInclusiveView, AnnualCostsLimitedView, JoinFrsView, RegisterForFrsView}
+import models.view.frs._
 import models.view.ppob.PpobView
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
@@ -398,7 +398,8 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
         joinFrs = Some(JoinFrsView(true)),
         annualCostsInclusive = Some(AnnualCostsInclusiveView("yes")),
         annualCostsLimited = Some(AnnualCostsLimitedView("yes")),
-        registerForFrs = Some(RegisterForFrsView(true))
+        registerForFrs = Some(RegisterForFrsView(true)),
+        frsStartDate = Some(FrsStartDateView(FrsStartDateView.VAT_REGISTRATION_DATE))
       ))
       service.submitVatFlatRateScheme() returns validVatFlatRateScheme
     }
