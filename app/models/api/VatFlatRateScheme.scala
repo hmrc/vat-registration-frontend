@@ -16,13 +16,16 @@
 
 package models.api
 
+import java.time.LocalDate
+
 import play.api.libs.json._
 
 case class VatFlatRateScheme(joinFrs: Boolean = false,
                              annualCostsInclusive: Option[String] = None,
                              annualCostsLimited: Option[String] = None,
                              doYouWantToUseThisRate: Option[Boolean] = None,
-                             whenDoYouWantToJoinFrs: Option[String] = None)
+                             whenDoYouWantToJoinFrs: Option[String] = None,
+                             startDate: Option[LocalDate] = None)
 
 object VatFlatRateScheme {
   implicit val format: OFormat[VatFlatRateScheme] = Json.format[VatFlatRateScheme]

@@ -21,6 +21,7 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
+import models.ElementPath.flatRateSchemeElementPaths
 import models._
 import models.view.frs.JoinFrsView
 import play.api.mvc.{Action, AnyContent}
@@ -47,7 +48,7 @@ class JoinFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOr
         for {
           _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(false))))
           _ <- vrs.submitVatFlatRateScheme()
-          _ <- vrs.deleteElements(List(VatFrsAnnualCostsInclusivePath, VatFrsAnnualCostsLimitedPath, VatFrsUseThisRate))
+          _ <- vrs.deleteElements(flatRateSchemeElementPaths)
         } yield controllers.routes.SummaryController.show()
       }).map(Redirect)))
 }

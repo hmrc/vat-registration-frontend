@@ -748,6 +748,20 @@ pages.frs.costsLimited.panel.bullet9                    = capital items, for exa
 pages.frs.costsLimited.panel.bullet10                   = services - that is, anything not classified as "goods"
 validation.frs.costsLimited.missing                     = Tell us if you spend less than £{0} a year (including VAT) on business goods
 
+#When do you want to join the Flat Rate Scheme?
+pages.frs.startDate.title                                 = When do you want to join the Flat Rate Scheme?
+pages.frs.startDate.heading                               = When do you want to join the Flat Rate Scheme?
+pages.frs.startDate.radio1                                = The same date I''m registered for VAT
+pages.frs.startDate.radio2                                = On a different date
+pages.frs.startDate.para1                                 = This must be more than 2 working days in the future.
+pages.frs.startDate.hint1                                 = For example, 26 8 2018
+pages.frs.startDate.day                                   = Day
+pages.frs.startDate.month                                 = Month
+pages.frs.startDate.year                                  = Year
+validation.frs.startDate.invalid                          = Enter a valid date
+validation.frs.startDate.choice.missing                   = Tell us when you want to join the Flat Rate Scheme
+validation.frs.startDate.missing                          = Enter the date you want to join the Flat Rate Scheme
+validation.frs.startDate.range.below                      = Enter a date that is more than 2 working days in the future
 
 ## FRS SUMMARY SECTION
 pages.summary.frs.sectionHeading                        = Flat Rate Scheme
@@ -760,3 +774,4 @@ pages.summary.frs.registerForFrs                        = Applied
 pages.summary.frs.businessSector                        = Business sector
 pages.summary.frs.flatRate                              = Your flat rate (%)
 pages.summary.frs.startDate                             = Start date
+pages.summary.frs.startDate.dateOfRegistration          = Date of registration

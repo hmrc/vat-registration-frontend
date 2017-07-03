@@ -19,6 +19,7 @@ package controllers.frs
 import fixtures.VatRegistrationFixture
 import forms.genericForms.YesOrNoFormFactory
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.S4LFlatRateScheme
 import models.api.VatFlatRateScheme
 import models.view.frs.RegisterForFrsView
 import org.mockito.Matchers.any
@@ -66,7 +67,6 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
       }
 
     }
-
   }
 
   s"POST ${routes.RegisterForFrsController.submit()}" should {
@@ -78,22 +78,25 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return 303 with RegisterFor Flat Rate Scheme selected Yes" in {
       save4laterExpectsSave[RegisterForFrsView]()
-      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(true).pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "registerForFrsRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/check-your-answers")
+      ))(_ redirectsTo s"$contextRoot/flat-rate-scheme-join-date")
     }
 
-    "redirect to the welcome page with RegisterFor Flat Rate Scheme selected No" in {
+    "return 303 with RegisterFor Flat Rate Scheme selected No" in {
       save4laterExpectsSave[RegisterForFrsView]()
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(false).pure)
+      when(mockS4LService.fetchAndGet[S4LFlatRateScheme]()(any(), any(), any())).thenReturn(Option.empty.pure)
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "registerForFrsRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/check-your-answers")
 
       verify(mockVatRegistrationService).submitVatFlatRateScheme()(any())
+      verify(mockVatRegistrationService).deleteElements(any())(any())
     }
   }
 
