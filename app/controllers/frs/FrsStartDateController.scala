@@ -38,29 +38,22 @@ class FrsStartDateController @Inject()(frsStartDateFormFactory: FrsStartDateForm
       .map(f => Ok(views.html.pages.frs.frs_start_date(frsStartDateFormFactory.form().fill(f)))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      frsStartDateFormFactory.form().bindFromRequest().fold(
-        badForm => BadRequest(views.html.pages.frs.frs_start_date(badForm)).pure,
-        goodForm => {
-          if(goodForm.dateType == FrsStartDateView.VAT_REGISTRATION_DATE){
+    frsStartDateFormFactory.form().bindFromRequest().fold(
+      badForm => BadRequest(views.html.pages.frs.frs_start_date(badForm)).pure,
+      view => if (view.dateType == FrsStartDateView.VAT_REGISTRATION_DATE) {
+        val updateVatStartDate = setVatRegistrationDateToForm(view)
+        updateVatStartDate.flatMap(frsStartDateView => saveForm(frsStartDateView))
+      } else {
+        saveForm(view)
+      }))
 
-            val updateVatStartDate = setVatRegistrationDateToForm(goodForm)
-            updateVatStartDate.flatMap(frsStartDateView => saveForm(frsStartDateView))
+  private def setVatRegistrationDateToForm(view: FrsStartDateView)
+                                          (implicit headerCarrier: HeaderCarrier): Future[FrsStartDateView] =
+    viewModel[StartDateView]().fold(view)(startDateView => view.copy(date = startDateView.date))
 
-          }else{
-            saveForm(goodForm)
-          }
-        }
-  )
-  )
-
-  private def setVatRegistrationDateToForm(goodForm: FrsStartDateView)
-                                          (implicit  headerCarrier: HeaderCarrier)  : Future[FrsStartDateView]= {
-    viewModel[StartDateView]().fold(goodForm)(startDateView => goodForm.copy(date = startDateView.date))
-  }
-
-  private def saveForm(frsStartDateView: FrsStartDateView)(implicit  headerCarrier: HeaderCarrier)= {
-    save(frsStartDateView).flatMap(_ =>
+  private def saveForm(view: FrsStartDateView)(implicit headerCarrier: HeaderCarrier): Future[Result] =
+    save(view).flatMap(_ =>
       vrs.submitVatFlatRateScheme().map(_ =>
         Redirect(controllers.routes.SummaryController.show())))
-  }
+
 }
