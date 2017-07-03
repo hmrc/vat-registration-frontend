@@ -21,7 +21,11 @@ import play.api.libs.json.Json
 case class VatFlatRateSchemeTestSetup(joinFrs: Option[String],
                                       annualCostsInclusive: Option[String],
                                       annualCostsLimited: Option[String],
-                                      registerForFrs: Option[String])
+                                      registerForFrs: Option[String],
+                                      frsStartDateChoice: Option[String],
+                                      frsStartDateDay: Option[String],
+                                      frsStartDateMonth: Option[String],
+                                      frsStartDateYear: Option[String])
 
 object VatFlatRateSchemeTestSetup {
   implicit val format = Json.format[VatFlatRateSchemeTestSetup]

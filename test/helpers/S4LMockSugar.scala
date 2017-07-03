@@ -21,7 +21,6 @@ import models.{S4LKey, ViewModelFormat}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import play.api.libs.json.Format
 import services.S4LService
 import uk.gov.hmrc.http.cache.client.CacheMap
 
