@@ -36,20 +36,4 @@ class S4LModelsSpec extends UnitSpec {
     }
   }
 
-  "S4LFlatRateScheme ViewModelFormat" should {
-    val view = S4LFlatRateScheme()
-
-    "extract S4LFlatRateScheme from S4LFlatRateScheme" in {
-      S4LFlatRateScheme.viewModelFormat.read(view) shouldBe Some(view)
-    }
-
-    "update empty S4LFlatRateScheme with S4LFlatRateScheme" in {
-      S4LFlatRateScheme.viewModelFormat.update(view, Option.empty[S4LFlatRateScheme]) shouldBe view
-    }
-
-    "update non-empty S4LFlatRateScheme with S4LFlatRateScheme" in {
-      S4LFlatRateScheme.viewModelFormat.update(view, Some(view)) shouldBe view
-    }
-  }
-
 }

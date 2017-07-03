@@ -36,8 +36,7 @@ class AnnualCostsLimitedController @Inject()(ds: CommonPlayDependencies)
     for {
       estimateVatTurnover <- vrs.getFlatRateSchemeThreshold()
       annualCostsLimitedForm <- viewModel[AnnualCostsLimitedView]().fold(defaultForm)(defaultForm.fill)
-    } yield Ok(views.html.pages.frs.annual_costs_limited(annualCostsLimitedForm, estimateVatTurnover))
-  )
+    } yield Ok(views.html.pages.frs.annual_costs_limited(annualCostsLimitedForm, estimateVatTurnover)))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     vrs.getFlatRateSchemeThreshold().flatMap(turnover =>

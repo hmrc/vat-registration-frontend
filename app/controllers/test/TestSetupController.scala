@@ -148,7 +148,11 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
           joinFrs = frs.flatMap(_.joinFrs).map(_.selection.toString),
           annualCostsInclusive = frs.flatMap(_.annualCostsInclusive).map(_.selection),
           annualCostsLimited = frs.flatMap(_.annualCostsLimited).map(_.selection),
-          registerForFrs = frs.flatMap(_.registerForFrs).map(_.selection.toString)
+          registerForFrs = frs.flatMap(_.registerForFrs).map(_.selection.toString),
+          frsStartDateChoice = frs.flatMap(_.frsStartDate).map(_.dateType),
+          frsStartDateDay = frs.flatMap(_.frsStartDate).flatMap(_.date).map(_.getDayOfMonth.toString),
+          frsStartDateMonth = frs.flatMap(_.frsStartDate).flatMap(_.date).map(_.getMonthValue.toString),
+          frsStartDateYear = frs.flatMap(_.frsStartDate).flatMap(_.date).map(_.getYear.toString)
         )
       )
       form = TestSetupForm.form.fill(testSetup)

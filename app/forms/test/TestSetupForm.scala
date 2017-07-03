@@ -136,7 +136,11 @@ object TestSetupForm {
     "joinFrs" -> optional(text),
     "annualCostsInclusive" -> optional(text),
     "annualCostsLimited" -> optional(text),
-    "registerForFrs" -> optional(text)
+    "registerForFrs" -> optional(text),
+    "frsStartDateChoice" -> optional(text),
+    "frsStartDateDay" -> optional(text),
+    "frsStartDateMonth" -> optional(text),
+    "frsStartDateYear" -> optional(text)
   )(VatFlatRateSchemeTestSetup.apply)(VatFlatRateSchemeTestSetup.unapply)
 
   val form = Form(mapping(
