@@ -40,20 +40,14 @@ class JoinFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOr
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.frs.frs_join(badForm)).pure,
-      joinFrs => for {
-        _ <- save(JoinFrsView(joinFrs.answer))
-        route = if (joinFrs.answer) {
-          controllers.frs.routes.AnnualCostsInclusiveController.show().pure
-        } else {
-          for {
-            _ <- save(S4LFlatRateScheme())
-            _ <- save(JoinFrsView(joinFrs.answer))
-            _ <- vrs.submitVatFlatRateScheme()
-            _ <- vrs.deleteElements(List(VatFrsAnnualCostsInclusivePath, VatFrsAnnualCostsLimitedPath, VatFrsUseThisRate))
-          } yield controllers.routes.SummaryController.show()
-        }
-        call <- route
-      } yield (Redirect(call))))
-
+      view => (if (view.answer) {
+        save(JoinFrsView(view.answer)).map(_ =>
+          controllers.frs.routes.AnnualCostsInclusiveController.show())
+      } else {
+        for {
+          _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(false))))
+          _ <- vrs.submitVatFlatRateScheme()
+          _ <- vrs.deleteElements(List(VatFrsAnnualCostsInclusivePath, VatFrsAnnualCostsLimitedPath, VatFrsUseThisRate))
+        } yield controllers.routes.SummaryController.show()
+      }).map(Redirect)))
 }
-
