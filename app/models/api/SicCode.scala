@@ -16,19 +16,20 @@
 
 package models.api
 
+import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
+case class SicCode(id: String,
+                   description: String,
+                   displayDetails: String)
 
-case class VatSicAndCompliance(
-                                businessDescription: String,
-                                culturalCompliance: Option[VatComplianceCultural] = None,
-                                labourCompliance: Option[VatComplianceLabour] = None,
-                                financialCompliance: Option[VatComplianceFinancial] = None,
-                                mainBusinessActivity: SicCode
-                              )
+object SicCode {
 
-object VatSicAndCompliance {
-
-  implicit val format: OFormat[VatSicAndCompliance] = Json.format[VatSicAndCompliance]
+  implicit val format: Format[SicCode] =
+    ((__ \ "id").format[String] and
+      (__ \ "description").format[String] and
+      (__ \ "displayDetails").format[String]
+       ) (SicCode.apply, unlift(SicCode.unapply))
+  val empty = SicCode ("00000000","","")
 
 }
