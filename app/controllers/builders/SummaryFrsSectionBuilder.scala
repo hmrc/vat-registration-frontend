@@ -17,7 +17,7 @@
 package controllers.builders
 
 import models.api._
-import models.view.frs.{AnnualCostsInclusiveView, AnnualCostsLimitedView}
+import models.view.frs.{AnnualCostsInclusiveView, AnnualCostsLimitedView, FrsStartDateView}
 import models.view.{SummaryRow, SummarySection}
 
 case class SummaryFrsSectionBuilder(vatFrs: Option[VatFlatRateScheme] = None)
@@ -58,11 +58,13 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[VatFlatRateScheme] = None)
   )
 
   val startDateRow: SummaryRow = SummaryRow(
-    s"$sectionId.costsLimited",
-    vatFrs.flatMap(_.whenDoYouWantToJoinFrs).getOrElse(""),
-    Some(controllers.frs.routes.FrsStartDateController.show()) //TODO fix once screen is done
+    s"$sectionId.startDate",
+    vatFrs.flatMap(_.whenDoYouWantToJoinFrs).collect {
+      case FrsStartDateView.VAT_REGISTRATION_DATE => "pages.summary.frs.startDate.dateOfRegistration"
+      case FrsStartDateView.DIFFERENT_DATE => vatFrs.flatMap(_.startDate).get.format((presentationFormatter))
+    }.getOrElse(""),
+    Some(controllers.frs.routes.FrsStartDateController.show())
   )
-
 
   val section: SummarySection = SummarySection(
     sectionId,
