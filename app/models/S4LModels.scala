@@ -19,7 +19,7 @@ package models
 import models.api.VatServiceEligibility
 import models.view.frs.{AnnualCostsInclusiveView, AnnualCostsLimitedView, JoinFrsView, RegisterForFrsView}
 import models.view.ppob.PpobView
-import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
@@ -68,6 +68,7 @@ object S4LTradingDetails {
 final case class S4LVatSicAndCompliance
 (
   description: Option[BusinessActivityDescription] = None,
+  mainBusinessActivity: Option[MainBusinessActivityView] = None,
 
   //Cultural Compliance
   notForProfit: Option[NotForProfit] = None,

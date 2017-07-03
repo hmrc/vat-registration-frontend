@@ -1,0 +1,44 @@
+@import models.external.Officer
+@import models.view.vatLodgingOfficer.CompletionCapacityView
+@(completionCapacityForm: Form[CompletionCapacityView], officerList: Seq[Officer])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.mainBusinessActivity.title")) {
+
+    <div class="column-one-third">
+
+        <header class="page-header">
+            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.mainBusinessActivity.heading")</h1>
+        </header>
+
+        @errorSummary(
+            messages("app.common.errorSummaryLabel"),
+            completionCapacityForm
+        )
+
+        <p>@messages("pages.mainBusinessActivity.para1")</p>
+
+
+        @govHelpers.form(action = controllers.sicAndCompliance.routes.MainBusinessActivityController.submit()) {
+            <div class="form-group" id="mainBusinessActivityRadio">
+
+            @govHelpers.inputRadioGroup(
+                field = mainBusinessActivityForm("mainBusinessActivityRadio"),
+                officerList.map(officer => (officer.name.id, officer.name.asLabel)),
+                '_labelAfter -> true,
+                '_legend -> messages("pages.mainBusinessActivity.heading"),
+                '_legendClass -> "hidden",
+                '_labelClass -> "block-label"
+            )
+
+            </div>
+
+            <div class="form-group">
+                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+            </div>
+        }
+
+    </div>
+
+}

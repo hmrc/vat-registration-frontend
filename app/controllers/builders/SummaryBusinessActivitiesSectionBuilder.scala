@@ -29,7 +29,7 @@ case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[V
   val companyBusinessDescriptionRow: SummaryRow = SummaryRow(
     s"$sectionId.businessDescription",
     vatSicAndCompliance.collect {
-      case VatSicAndCompliance(description, _, _, _) if StringUtils.isNotBlank(description) => description
+      case VatSicAndCompliance(description, _, _, _,_) if StringUtils.isNotBlank(description) => description
     }.getOrElse("app.common.no"),
     Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
   )

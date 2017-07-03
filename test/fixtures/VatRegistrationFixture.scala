@@ -92,11 +92,13 @@ trait VatRegistrationFixture {
     accountingPeriods = monthlyAccountingPeriod
   )
 
+  val sicCode = SicCode("88888888", "description", "displayDetails")
   val validSicAndCompliance = VatSicAndCompliance(
     businessDescription = businessActivityDescription,
     culturalCompliance = Some(VatComplianceCultural(notForProfit = false)),
     labourCompliance = None,
-    financialCompliance = None
+    financialCompliance = None,
+    mainBusinessActivity = sicCode
   )
 
   val validDob = DateOfBirth(12, 11, 1973)
