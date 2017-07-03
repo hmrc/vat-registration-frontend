@@ -214,7 +214,3 @@ POST        /use-limited-cost-business-flat-rate                                
 ##Do you spend less than 2% of turnover a year Page
 GET         /spends-less-than-two-percent-of-turnover-a-year-on-goods                           controllers.frs.AnnualCostsLimitedController.show
 POST        /spends-less-than-two-percent-of-turnover-a-year-on-goods                           controllers.frs.AnnualCostsLimitedController.submit
-
-## Do you want to register for FRS page
-GET         /your-flat-rate                                controllers.frs.RegisterForFrsController.show
-POST        /your-flat-rate
