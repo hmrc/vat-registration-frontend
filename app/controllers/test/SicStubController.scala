@@ -21,15 +21,18 @@ import javax.inject.Inject
 import controllers.CommonPlayDependencies
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.test.SicStubForm
-import models.ModelKeys.SIC_CODES_KEY
+import models.ModelKeys.{REGISTERING_OFFICER_KEY, SIC_CODES_KEY}
 import models._
+import models.api.CompletionCapacity
 import models.view.test.SicStub
+import models.view.vatLodgingOfficer.CompletionCapacityView
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService, VatRegistrationService}
-
+import cats.data.OptionT
 class SicStubController @Inject()(ds: CommonPlayDependencies)
                                  (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends ComplianceExitController(ds) with CommonService {
+  extends ComplianceExitController(ds) {
+  import cats.syntax.flatMap._
 
   def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request =>
     for {
@@ -44,17 +47,16 @@ class SicStubController @Inject()(ds: CommonPlayDependencies)
     } yield Ok(views.html.pages.test.sic_stub(form)))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    SicStubForm.form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.test.sic_stub(badForm)).pure,
-      data => s4LService.save[SicStub](data).flatMap(_ =>
-        ComplianceQuestions(data.sicCodes) match {
-          case NoComplianceQuestions =>
-            keystoreConnector.cache(SIC_CODES_KEY, data.fullSicCodes).flatMap(_ =>
-              submitAndExit(List(CulturalCompliancePath, FinancialCompliancePath, LabourCompliancePath)))
-          case _ =>
-            keystoreConnector.cache(SIC_CODES_KEY, data.fullSicCodes).flatMap(_ =>
-              controllers.sicAndCompliance.routes.ComplianceIntroductionController.show().pure)
-        }
-      ).map(Redirect)))
+      SicStubForm.form.bindFromRequest().fold(
+        badForm => BadRequest(views.html.pages.test.sic_stub(badForm)).pure,
+        data => {
+          (data.sicCodes.size == 1).pure.ifM(
+            ifTrue = selectNextPage(data).pure,
+            ifFalse = {
+              keystoreConnector.cache(SIC_CODES_KEY, data.fullSicCodes)
+              Redirect(controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()).pure
+            }
+          )
+        }))
 
 }
