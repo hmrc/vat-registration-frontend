@@ -43,7 +43,7 @@ class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.act_as_intermediary(badForm)).pure,
-      data => save(data).map(_ => data.yesNo).ifM(
+      view => save(view).map(_ => view.yesNo).ifM(
         ifTrue = submitAndExit(ElementPath.finCompElementPaths),
         ifFalse = controllers.sicAndCompliance.financial.routes.ChargeFeesController.show().pure
       ).map(Redirect)))

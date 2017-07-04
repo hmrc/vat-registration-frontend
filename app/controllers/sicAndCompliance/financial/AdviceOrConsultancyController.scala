@@ -42,10 +42,9 @@ class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(badForm)).pure,
-      data => for {
+      view => for {
         clearCompliance <- clearComplianceContainer
-        _ <- save(clearCompliance)
-        _ <- save(data)
+        _ <- s4LService.save(clearCompliance.copy(adviceOrConsultancy = Some(view)))
         _ <- vrs.deleteElements(List(CulturalCompliancePath, LabourCompliancePath))
       } yield Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show())))
 
