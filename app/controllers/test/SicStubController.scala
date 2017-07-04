@@ -51,11 +51,12 @@ class SicStubController @Inject()(ds: CommonPlayDependencies)
       SicStubForm.form.bindFromRequest().fold(
         badForm => BadRequest(views.html.pages.test.sic_stub(badForm)).pure,
         data => {
-          keystoreConnector.cache(SIC_CODES_KEY,  configConnect.getSicCodesListFromCodes(data.fullSicCodes))
+          val sicCodesList = configConnect.getSicCodesListFromCodes(data.fullSicCodes)
+          keystoreConnector.cache(SIC_CODES_KEY,  sicCodesList)
           data.sicCodes match {
-            case head :: Nil =>  Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.show()).pure
-            case _ :: tail => Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.show()).pure
-            case Nil => Redirect(controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()).pure
+            case head :: Nil  => Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.redirectToNext()).pure
+            case head :: tail => Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.show()).pure
+            case Nil          => selectNextPage(sicCodesList)
           }
         }))
 
