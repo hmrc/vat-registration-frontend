@@ -40,10 +40,9 @@ class NotForProfitController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.cultural.not_for_profit(badForm)).pure,
-      data => for {
+      view => for {
         clearCompliance <- clearComplianceContainer
-        _ <- save(clearCompliance)
-        _ <- save(data)
+        _ <- s4LService.save(clearCompliance.copy(notForProfit = Some(view)))
         call <- submitAndExit(List(FinancialCompliancePath, LabourCompliancePath))
       } yield Redirect(call)))
 

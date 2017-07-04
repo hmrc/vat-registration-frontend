@@ -40,7 +40,7 @@ class ChargeFeesController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.charge_fees(badForm)).pure,
-      data => save(data).map(_ =>
+      view => save(view).map(_ =>
         Redirect(controllers.sicAndCompliance.financial.routes.AdditionalNonSecuritiesWorkController.show()))))
 
 }
