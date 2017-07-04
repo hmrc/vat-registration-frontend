@@ -45,8 +45,8 @@ class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.lease_vehicles(badForm)).pure,
       data => save(data).map(_ => data.yesNo).ifM(
         ifTrue = submitAndExit(ElementPath.finCompElementPaths.drop(4)),
-        ifFalse = controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show().pure)
-        .map(Redirect)))
+        ifFalse = Redirect(controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show()).pure)
+        ))
 
 }
 

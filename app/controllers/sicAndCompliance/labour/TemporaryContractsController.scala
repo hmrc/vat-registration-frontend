@@ -42,8 +42,8 @@ class TemporaryContractsController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.temporary_contracts(badForm)).pure,
       data => save(data).map(_ => data.yesNo == TemporaryContracts.TEMP_CONTRACTS_YES).ifM(
-        ifTrue = controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show().pure,
+        ifTrue = Redirect(controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show()).pure,
         ifFalse = submitAndExit(ElementPath.labCompElementPaths.drop(3))
-        ).map(Redirect)))
+        )))
 
 }
