@@ -18,21 +18,17 @@ package controllers.test
 
 import javax.inject.Inject
 
+import connectors.ConfigConnect
 import controllers.CommonPlayDependencies
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.test.SicStubForm
-import models.ModelKeys.{REGISTERING_OFFICER_KEY, SIC_CODES_KEY}
-import models._
-import models.api.CompletionCapacity
+import models.ModelKeys.SIC_CODES_KEY
 import models.view.test.SicStub
-import models.view.vatLodgingOfficer.CompletionCapacityView
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, S4LService, VatRegistrationService}
-import cats.data.OptionT
+import services.{S4LService, VatRegistrationService}
 class SicStubController @Inject()(ds: CommonPlayDependencies)
-                                 (implicit s4LService: S4LService, vrs: VatRegistrationService)
+                                 (implicit s4LService: S4LService, vrs: VatRegistrationService, configConnect: ConfigConnect)
   extends ComplianceExitController(ds) {
-  import cats.syntax.flatMap._
 
   def show: Action[AnyContent] = authorised.async(body = implicit user => implicit request =>
     for {
@@ -50,13 +46,14 @@ class SicStubController @Inject()(ds: CommonPlayDependencies)
       SicStubForm.form.bindFromRequest().fold(
         badForm => BadRequest(views.html.pages.test.sic_stub(badForm)).pure,
         data => {
-          (data.sicCodes.size == 1).pure.ifM(
-            ifTrue = selectNextPage(data).pure,
-            ifFalse = {
-              keystoreConnector.cache(SIC_CODES_KEY, data.fullSicCodes)
-              Redirect(controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()).pure
-            }
-          )
+          val sicCodesList = configConnect.getSicCodesListFromCodes(data.fullSicCodes)
+          keystoreConnector.cache(SIC_CODES_KEY,  sicCodesList)
+          data.sicCodes match {
+            case head :: Nil  => Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.redirectToNext()).pure
+            case head :: tail => Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.show()).pure
+            case Nil          => selectNextPage(sicCodesList)
+          }
         }))
+
 
 }
