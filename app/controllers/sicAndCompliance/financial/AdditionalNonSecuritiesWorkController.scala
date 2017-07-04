@@ -42,7 +42,7 @@ class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.additional_non_securities_work(badForm)).pure,
-      data => save(data).map(_ => data.yesNo).ifM(
+      view => save(view).map(_ => view.yesNo).ifM(
         ifTrue = submitAndExit(ElementPath.finCompElementPaths.drop(2)),
         ifFalse = controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show().pure
       ).map(Redirect)))
