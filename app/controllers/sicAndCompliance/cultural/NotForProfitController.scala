@@ -45,6 +45,6 @@ class NotForProfitController @Inject()(ds: CommonPlayDependencies)
         _ <- save(clearCompliance)
         _ <- save(data)
         call <- submitAndExit(List(FinancialCompliancePath, LabourCompliancePath))
-      } yield Redirect(call)))
+      } yield call))
 
 }

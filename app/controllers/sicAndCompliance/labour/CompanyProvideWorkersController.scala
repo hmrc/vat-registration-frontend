@@ -47,9 +47,9 @@ class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
         _ <- vrs.deleteElements(List(CulturalCompliancePath, FinancialCompliancePath))
         route =
           if (CompanyProvideWorkers.PROVIDE_WORKERS_YES == data.yesNo) {
-            controllers.sicAndCompliance.labour.routes.WorkersController.show().pure
+            Redirect(controllers.sicAndCompliance.labour.routes.WorkersController.show()).pure
           } else { submitAndExit(ElementPath.labCompElementPaths.drop(1)) }
         call <- route
-      } yield Redirect(call)))
+      } yield call))
 
 }

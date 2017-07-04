@@ -43,8 +43,8 @@ class WorkersController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.workers(badForm)).pure,
       data => save(data).map(_ => data.numberOfWorkers >= 8).ifM(
-        ifTrue = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show().pure,
+        ifTrue = Redirect(controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show()).pure,
         ifFalse = submitAndExit(ElementPath.labCompElementPaths.drop(2))
-      ).map(Redirect)))
+      )))
 
 }

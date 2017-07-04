@@ -23,14 +23,15 @@ import controllers.sicAndCompliance.ComplianceExitController
 import forms.test.SicStubForm
 import models.ModelKeys.{REGISTERING_OFFICER_KEY, SIC_CODES_KEY}
 import models._
-import models.api.CompletionCapacity
+import models.api.{CompletionCapacity, SicCode}
 import models.view.test.SicStub
 import models.view.vatLodgingOfficer.CompletionCapacityView
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, S4LService, VatRegistrationService}
 import cats.data.OptionT
+import connectors.ConfigConnect
 class SicStubController @Inject()(ds: CommonPlayDependencies)
-                                 (implicit s4LService: S4LService, vrs: VatRegistrationService)
+                                 (implicit s4LService: S4LService, vrs: VatRegistrationService, configConnect: ConfigConnect)
   extends ComplianceExitController(ds) {
   import cats.syntax.flatMap._
 
@@ -50,13 +51,13 @@ class SicStubController @Inject()(ds: CommonPlayDependencies)
       SicStubForm.form.bindFromRequest().fold(
         badForm => BadRequest(views.html.pages.test.sic_stub(badForm)).pure,
         data => {
-          (data.sicCodes.size == 1).pure.ifM(
-            ifTrue = selectNextPage(data).pure,
-            ifFalse = {
-              keystoreConnector.cache(SIC_CODES_KEY, data.fullSicCodes)
-              Redirect(controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()).pure
-            }
-          )
+          keystoreConnector.cache(SIC_CODES_KEY,  configConnect.getSicCodesListFromCodes(data.fullSicCodes))
+          data.sicCodes match {
+            case head :: Nil =>  Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.show()).pure
+            case _ :: tail => Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.show()).pure
+            case Nil => Redirect(controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()).pure
+          }
         }))
+
 
 }
