@@ -79,8 +79,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterReturnsNoViewModel[BusinessActivityDescription]()
-      save4laterExpectsSave[S4LVatSicAndCompliance]()
-      save4laterExpectsSave[AdviceOrConsultancy]()
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
 
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "true"
@@ -94,8 +93,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterReturnsNoViewModel[BusinessActivityDescription]()
-      save4laterExpectsSave[S4LVatSicAndCompliance]()
-      save4laterExpectsSave[AdviceOrConsultancy]()
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
 
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "false"

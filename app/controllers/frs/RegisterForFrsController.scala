@@ -36,33 +36,18 @@ class RegisterForFrsController @Inject()(ds: CommonPlayDependencies, formFactory
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     Ok(views.html.pages.frs.frs_register_for(form)).pure)
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.frs.frs_register_for(badForm)).pure,
-      view => (if (view.answer) {
-        save(RegisterForFrsView(view.answer)).map(_ => controllers.frs.routes.FrsStartDateController.show())
-      } else {
-        for {
-          _ <- save(RegisterForFrsView(view.answer)) // this ensures S4LFlatRateScheme is present in S4L
-          frs <- s4LService.fetchAndGet[S4LFlatRateScheme]()
-          _ <- s4LService.save(frs.getOrElse(S4LFlatRateScheme()).copy(frsStartDate = None))
-          _ <- vrs.submitVatFlatRateScheme()
-          _ <- vrs.deleteElements(List(VatFrsWhenToJoin, VatFrsStartDate))
-        } yield controllers.routes.SummaryController.show()
-      }).map(Redirect)))
-
-  //  def submit2: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-  //    form.bindFromRequest().fold(
-  //      badForm => BadRequest(views.html.pages.frs.frs_register_for(badForm)).pure,
-  //      view =>
-  //        save(RegisterForFrsView(view.answer)).map(_ => view.answer.pure.ifM(
-  //          ifTrue = controllers.frs.routes.FrsStartDateController.show().pure,
-  //          ifFalse = for {
-  //            frs <- s4LService.fetchAndGet[S4LFlatRateScheme]()
-  //            _ <- s4LService.save(frs.getOrElse(S4LFlatRateScheme()).copy(frsStartDate = None))
-  //            _ <- vrs.submitVatFlatRateScheme()
-  //            _ <- vrs.deleteElements(List(VatFrsWhenToJoin, VatFrsStartDate))
-  //          } yield controllers.routes.SummaryController.show()
-  //        )).map(Redirect)))
+    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+      form.bindFromRequest().fold(
+        badForm => BadRequest(views.html.pages.frs.frs_register_for(badForm)).pure,
+        view =>
+          save(RegisterForFrsView(view.answer)).map(_ => view.answer).ifM(
+            ifTrue = controllers.frs.routes.FrsStartDateController.show().pure,
+            ifFalse = for {
+              frs <- s4LService.fetchAndGet[S4LFlatRateScheme]()
+              _ <- s4LService.save(frs.getOrElse(S4LFlatRateScheme()).copy(frsStartDate = None))
+              _ <- vrs.submitVatFlatRateScheme()
+              _ <- vrs.deleteElements(List(VatFrsWhenToJoin, VatFrsStartDate))
+            } yield controllers.routes.SummaryController.show()
+          ).map(Redirect)))
 }
 
