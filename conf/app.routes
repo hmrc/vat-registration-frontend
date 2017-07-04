@@ -89,6 +89,8 @@ POST        /describe-what-company-does                                         
 ## MAIN BUSINESS ACTIVITY
 GET         /main-source-of-income                                                             controllers.sicAndCompliance.MainBusinessActivityController.show
 POST        /main-source-of-income                                                             controllers.sicAndCompliance.MainBusinessActivityController.submit
+POST        /redirect-to-main-source-of-income                                                 controllers.sicAndCompliance.MainBusinessActivityController.redirectToNext
+
 
 ## COMPLIANCE INTRODUCTION
 GET         /tell-us-more-about-the-company                                                    controllers.sicAndCompliance.ComplianceIntroductionController.show

@@ -19,48 +19,46 @@ package controllers.sicAndCompliance
 import javax.inject.Inject
 
 import cats.data.OptionT
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.CommonPlayDependencies
 import forms.sicAndCompliance.MainBusinessActivityForm
 import models.ModelKeys._
-import models.api.CompletionCapacity
-import models.external.Officer
+import models.api.SicCode
 import models.view.sicAndCompliance.MainBusinessActivityView
-import models.view.vatLodgingOfficer.CompletionCapacityView
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}
+import services.{S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
+
 
 class MainBusinessActivityController @Inject()(ds: CommonPlayDependencies)
                                               (implicit s4l: S4LService,
-                                             vrs: VatRegistrationService,
-                                             prePopService: PrePopulationService)
-  extends VatRegistrationController(ds) with CommonService {
-
-  import cats.syntax.flatMap._
+                                               vrs: VatRegistrationService)
+  extends ComplianceExitController(ds) {
 
   private val form = MainBusinessActivityForm.form
 
-  private def fetchOfficerList()(implicit hc: HeaderCarrier) =
-    OptionT(keystoreConnector.fetchAndGet[Seq[Officer]](OFFICER_LIST_KEY))
+  private def fetchSicCodeList()(implicit hc: HeaderCarrier) =
+    OptionT(keystoreConnector.fetchAndGet[List[SicCode]](SIC_CODES_KEY))
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
-      officerList <- prePopService.getOfficerList()
-      _ <- keystoreConnector.cache(OFFICER_LIST_KEY, officerList)
+      sicCodeList <- fetchSicCodeList.getOrElse(List.empty)
       res <- viewModel[MainBusinessActivityView]().fold(form)(form.fill)
-    } yield Ok(views.html.pages.sicAndCompliance.main_business_activity(res, officerList)))
+    } yield Ok(views.html.pages.sicAndCompliance.main_business_activity(res, sicCodeList)))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
       form.bindFromRequest().fold(
-        badForm => fetchOfficerList().getOrElse(Seq()).map(
-          officerList => BadRequest(views.html.pages.sicAndCompliance.main_business_activity(badForm, officerList))),
-        view => (view.id == "other").pure.ifM(
-          ifTrue = Ok(views.html.pages.vatEligibility.ineligible("completionCapacity")).pure,
-          ifFalse = for {
-            officerSeq <- fetchOfficerList().getOrElse(Seq())
-            _ = officerSeq.find(_.name.id == view.id).map(o =>
-              save(CompletionCapacityView(view.id, Some(CompletionCapacity(o.name, o.role)))).map(
-                _ => keystoreConnector.cache(REGISTERING_OFFICER_KEY, o)))
-          } yield Redirect(controllers.vatLodgingOfficer.routes.FormerNameController.show()))))
+        badForm => fetchSicCodeList().getOrElse(List.empty).map(sicCodeList =>
+          BadRequest(views.html.pages.sicAndCompliance.main_business_activity(badForm, sicCodeList))),
+        view =>
+          fetchSicCodeList.getOrElse(List.empty).flatMap(sicCodesList =>
+            save(MainBusinessActivityView(sicCodesList.head.id, Some(sicCodesList.head))).flatMap( x => selectNextPage(sicCodesList))
+          )
+  ))
 
+ def redirectToNext: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    fetchSicCodeList.getOrElse(List.empty).flatMap(sicCodesList => {
+     save(MainBusinessActivityView(sicCodesList.head.id, Some(sicCodesList.head))).flatMap(x => selectNextPage(sicCodesList))
+
+   })
+ )
 }
