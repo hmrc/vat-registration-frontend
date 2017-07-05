@@ -45,7 +45,9 @@ class SicStubController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
       SicStubForm.form.bindFromRequest().fold(
         badForm => BadRequest(views.html.pages.test.sic_stub(badForm)).pure,
-        data => {
+        data => s4LService.save[SicStub](data).flatMap(_ =>
+
+          {
           val sicCodesList = configConnect.getSicCodesListFromCodes(data.fullSicCodes)
           keystoreConnector.cache(SIC_CODES_KEY,  sicCodesList)
           data.sicCodes match {
@@ -53,7 +55,7 @@ class SicStubController @Inject()(ds: CommonPlayDependencies)
             case head :: tail => Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.show()).pure
             case Nil          => selectNextPage(sicCodesList)
           }
-        }))
+        })))
 
 
 }
