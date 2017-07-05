@@ -17,11 +17,31 @@
 package models.view.sicAndCompliance.labour
 
 import fixtures.VatRegistrationFixture
-import models.api.VatComplianceLabour
-import models.{ApiModelTransformer, S4LVatSicAndCompliance}
+import models.api.{VatComplianceLabour, VatSicAndCompliance}
+import models.view.sicAndCompliance.labour.TemporaryContracts.TEMP_CONTRACTS_NO
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class TemporaryContractsSpec extends UnitSpec with VatRegistrationFixture {
+
+  "toApi" should {
+    val temporaryContracts = TemporaryContracts(TEMP_CONTRACTS_NO)
+
+    val vatSicAndCompliance = VatSicAndCompliance(
+      businessActivityDescription,
+      labourCompliance = Some(VatComplianceLabour(labour = true, temporaryContracts = Some(true)))
+    )
+
+    val differentSicAndCompliance = VatSicAndCompliance(
+      businessActivityDescription,
+      labourCompliance = Some(VatComplianceLabour(labour = true, temporaryContracts = Some(false)))
+    )
+
+    "update VatSicAndCompliance with new TemporaryContracts" in {
+      ViewModelTransformer[TemporaryContracts, VatSicAndCompliance]
+        .toApi(temporaryContracts, vatSicAndCompliance) shouldBe differentSicAndCompliance
+    }
+  }
 
   "apply" should {
 
@@ -42,7 +62,7 @@ class TemporaryContractsSpec extends UnitSpec with VatRegistrationFixture {
 
     "convert VatScheme with LabourCompliance section to view model - temporary contracts no" in {
       val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = Some(VatComplianceLabour(true, Some(8), Some(false), Some(true))))))
-      ApiModelTransformer[TemporaryContracts].toViewModel(vs) shouldBe Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO))
+      ApiModelTransformer[TemporaryContracts].toViewModel(vs) shouldBe Some(TemporaryContracts(TEMP_CONTRACTS_NO))
     }
 
   }

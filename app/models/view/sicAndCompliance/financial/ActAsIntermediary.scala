@@ -40,9 +40,6 @@ object ActAsIntermediary {
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: ActAsIntermediary, g: VatSicAndCompliance) =>
-    /*TODO: This works as the user will always see question 1, but ideally we don't want to be defaulting
-      the 1st question to false here in case they somehow manage to avoid it, may need looking into*/
-
     g.copy(financialCompliance = Some(VatComplianceFinancial(
                                       g.financialCompliance.exists(_.adviceOrConsultancyOnly),
                                       actAsIntermediary = c.yesNo)))

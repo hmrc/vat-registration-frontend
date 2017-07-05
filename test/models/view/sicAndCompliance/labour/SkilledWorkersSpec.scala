@@ -17,11 +17,31 @@
 package models.view.sicAndCompliance.labour
 
 import fixtures.VatRegistrationFixture
-import models.api.VatComplianceLabour
-import models.{ApiModelTransformer, S4LVatSicAndCompliance}
+import models.api.{VatComplianceLabour, VatSicAndCompliance}
+import models.view.sicAndCompliance.labour.SkilledWorkers.SKILLED_WORKERS_NO
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class SkilledWorkersSpec extends UnitSpec with VatRegistrationFixture {
+
+  "toApi" should {
+    val skilledWorkers = SkilledWorkers(SKILLED_WORKERS_NO)
+
+    val vatSicAndCompliance = VatSicAndCompliance(
+      businessActivityDescription,
+      labourCompliance = Some(VatComplianceLabour(labour = true, skilledWorkers = Some(true)))
+    )
+
+    val differentSicAndCompliance = VatSicAndCompliance(
+      businessActivityDescription,
+      labourCompliance = Some(VatComplianceLabour(labour = true, skilledWorkers = Some(false)))
+    )
+
+    "update VatSicAndCompliance with new SkilledWorkers" in {
+      ViewModelTransformer[SkilledWorkers, VatSicAndCompliance]
+        .toApi(skilledWorkers, vatSicAndCompliance) shouldBe differentSicAndCompliance
+    }
+  }
 
   "apply" should {
 
@@ -37,7 +57,7 @@ class SkilledWorkersSpec extends UnitSpec with VatRegistrationFixture {
 
     "convert VatScheme with LabourCompliance section to view model -  Company Does not Provide Skilled Workers " in {
       val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = Some(VatComplianceLabour(false, Some(8), Some(false), Some(false))))))
-      ApiModelTransformer[SkilledWorkers].toViewModel(vs) shouldBe Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO))
+      ApiModelTransformer[SkilledWorkers].toViewModel(vs) shouldBe Some(SkilledWorkers(SKILLED_WORKERS_NO))
     }
 
     "convert VatScheme with LabourCompliance section to view model - Company Does Provide Skilled Workers" in {
