@@ -28,7 +28,7 @@ class SummaryCulturalComplianceSectionBuilderSpec extends VatRegSpec with VatReg
     "with notForProfitRow render" should {
 
       " 'YES' selected for notForProfitRow" in {
-        val compliance = VatSicAndCompliance("Business Described", culturalCompliance = Some(VatComplianceCultural(notForProfit = true)))
+        val compliance = VatSicAndCompliance("Business Described", culturalCompliance = Some(VatComplianceCultural(notForProfit = true)), mainBusinessActivity = sicCode)
         val builder = SummaryCulturalComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.notForProfitRow mustBe
           SummaryRow(
@@ -39,7 +39,7 @@ class SummaryCulturalComplianceSectionBuilderSpec extends VatRegSpec with VatReg
       }
 
       " 'NO' selected for notForProfitRow" in {
-        val compliance = VatSicAndCompliance("Business Described", culturalCompliance = Some(VatComplianceCultural(notForProfit = false)))
+        val compliance = VatSicAndCompliance("Business Described", culturalCompliance = Some(VatComplianceCultural(notForProfit = false)), mainBusinessActivity = sicCode)
         val builder = SummaryCulturalComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.notForProfitRow mustBe
           SummaryRow(
@@ -52,7 +52,7 @@ class SummaryCulturalComplianceSectionBuilderSpec extends VatRegSpec with VatReg
     }
 
     "with section generate" should {
-      val compliance = VatSicAndCompliance("Business Described", culturalCompliance = Some(VatComplianceCultural(notForProfit = true)))
+      val compliance = VatSicAndCompliance("Business Described", culturalCompliance = Some(VatComplianceCultural(notForProfit = true)), mainBusinessActivity = sicCode)
       val builder = SummaryCulturalComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
 
       "a valid summary section" in {

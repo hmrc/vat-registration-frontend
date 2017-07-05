@@ -40,13 +40,12 @@ class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.company_provide_workers(badForm)).pure,
-      data => for {
+      view => for {
         clearCompliance <- clearComplianceContainer
-        _ <- save(clearCompliance)
-        _ <- save(data)
+        _ <- s4LService.save(clearCompliance.copy(companyProvideWorkers = Some(view)))
         _ <- vrs.deleteElements(List(CulturalCompliancePath, FinancialCompliancePath))
         route =
-          if (CompanyProvideWorkers.PROVIDE_WORKERS_YES == data.yesNo) {
+          if (CompanyProvideWorkers.PROVIDE_WORKERS_YES == view.yesNo) {
             Redirect(controllers.sicAndCompliance.labour.routes.WorkersController.show()).pure
           } else { submitAndExit(ElementPath.labCompElementPaths.drop(1)) }
         call <- route

@@ -40,7 +40,6 @@ class ManageAdditionalFundsController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.manage_additional_funds(badForm)).pure,
       data => save(data).flatMap(_ => submitAndExit(List()))))
-
 }
 
 

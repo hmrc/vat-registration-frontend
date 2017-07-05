@@ -29,13 +29,15 @@ class LeaseVehiclesSpec extends UnitSpec with VatRegistrationFixture {
     val vatSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
       financialCompliance = Some(VatComplianceFinancial(
-        adviceOrConsultancyOnly = true, actAsIntermediary = true, vehicleOrEquipmentLeasing = Some(true)))
+        adviceOrConsultancyOnly = true, actAsIntermediary = true, vehicleOrEquipmentLeasing = Some(true))),
+      mainBusinessActivity = sicCode
     )
 
     val differentSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
       financialCompliance = Some(VatComplianceFinancial(
-        adviceOrConsultancyOnly = true, actAsIntermediary = true, vehicleOrEquipmentLeasing = Some(false)))
+        adviceOrConsultancyOnly = true, actAsIntermediary = true, vehicleOrEquipmentLeasing = Some(false))),
+      mainBusinessActivity = sicCode
     )
 
     "update VatSicAndCompliance with new LeaseVehicles" in {

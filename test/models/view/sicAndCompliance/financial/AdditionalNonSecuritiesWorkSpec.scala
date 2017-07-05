@@ -28,12 +28,14 @@ class AdditionalNonSecuritiesWorkSpec extends UnitSpec with VatRegistrationFixtu
 
     val vatSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, additionalNonSecuritiesWork = Some(true)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, additionalNonSecuritiesWork = Some(true))),
+      mainBusinessActivity = sicCode
     )
 
     val differentSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, additionalNonSecuritiesWork = Some(false)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, additionalNonSecuritiesWork = Some(false))),
+      mainBusinessActivity = sicCode
     )
 
     "update VatSicAndCompliance with new AdditionalNonSecuritiesWork" in {
