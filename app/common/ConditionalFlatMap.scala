@@ -37,7 +37,7 @@ import scala.language.higherKinds
   */
 object ConditionalFlatMap {
 
-  implicit class CustomApplicativeOps[F[_] : Applicative, A](fa: => F[A])(implicit F: Applicative[F]) {
+  implicit class CustomApplicativeOps[F[_], A](fa: => F[A])(implicit F: Applicative[F]) {
 
     def onlyIf(condition: Boolean): F[Unit] =
       if (condition) F.map(fa)(_ => ()) else F.pure(())
