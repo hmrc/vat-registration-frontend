@@ -28,12 +28,14 @@ class ChargeFeesSpec extends UnitSpec with VatRegistrationFixture {
 
     val vatSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, chargeFees = Some(true)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, chargeFees = Some(true))),
+      mainBusinessActivity = sicCode
     )
 
     val differentSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, chargeFees = Some(false)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, chargeFees = Some(false))),
+      mainBusinessActivity = sicCode
     )
 
     "update VatSicAndCompliance with new ChargeFees" in {

@@ -28,8 +28,10 @@ class BusinessActivityDescriptionSpec extends UnitSpec with VatRegistrationFixtu
   val businessActivityDescription_1 = BusinessActivityDescription(description_1)
   val businessActivityDescription_2 = BusinessActivityDescription(description_2)
 
-  val sicAndCompliance = VatSicAndCompliance(description_1, None)
-  val differentSicAndCompliance = VatSicAndCompliance(description_2, None)
+  val sicAndCompliance = VatSicAndCompliance(description_1, None,
+    mainBusinessActivity = sicCode)
+  val differentSicAndCompliance = VatSicAndCompliance(description_2, None,
+    mainBusinessActivity = sicCode)
 
   "toApi" should {
     "update a SicAndCompliance with new BusinessActivityDescription" in {

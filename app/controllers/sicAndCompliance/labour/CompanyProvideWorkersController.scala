@@ -45,13 +45,8 @@ class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
         _ <- s4LService.save(clearCompliance.copy(companyProvideWorkers = Some(view)))
         _ <- vrs.deleteElements(List(CulturalCompliancePath, FinancialCompliancePath))
         route =
-<<<<<<< HEAD
-          if (CompanyProvideWorkers.PROVIDE_WORKERS_YES == data.yesNo) {
-            Redirect(controllers.sicAndCompliance.labour.routes.WorkersController.show()).pure
-=======
           if (CompanyProvideWorkers.PROVIDE_WORKERS_YES == view.yesNo) {
-            controllers.sicAndCompliance.labour.routes.WorkersController.show().pure
->>>>>>> c6ab0cccd57edee74c840c657fad849bb312383c
+            Redirect(controllers.sicAndCompliance.labour.routes.WorkersController.show()).pure
           } else { submitAndExit(ElementPath.labCompElementPaths.drop(1)) }
         call <- route
       } yield call))

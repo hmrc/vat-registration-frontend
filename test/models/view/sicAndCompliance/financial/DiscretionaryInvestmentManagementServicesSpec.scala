@@ -28,12 +28,14 @@ class DiscretionaryInvestmentManagementServicesSpec extends UnitSpec with VatReg
 
     val vatSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, discretionaryInvestmentManagementServices = Some(true)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, discretionaryInvestmentManagementServices = Some(true))),
+      mainBusinessActivity = sicCode
     )
 
     val differentSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, discretionaryInvestmentManagementServices = Some(false)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, discretionaryInvestmentManagementServices = Some(false))),
+      mainBusinessActivity = sicCode
     )
 
     "update VatSicAndCompliance with new DiscretionaryInvestmentManagementServices" in {
