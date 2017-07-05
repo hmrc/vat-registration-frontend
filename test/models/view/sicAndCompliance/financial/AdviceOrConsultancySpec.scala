@@ -17,11 +17,30 @@
 package models.view.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
-import models.api.VatComplianceFinancial
-import models.{ApiModelTransformer, S4LVatSicAndCompliance}
+import models.api.{VatComplianceFinancial, VatSicAndCompliance}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class AdviceOrConsultancySpec extends UnitSpec with VatRegistrationFixture {
+
+  "toApi" should {
+    val adviceOrConsultancy = AdviceOrConsultancy(false)
+
+    val vatSicAndCompliance = VatSicAndCompliance(
+      businessActivityDescription,
+      financialCompliance = Some(VatComplianceFinancial(adviceOrConsultancyOnly = true, actAsIntermediary = true))
+    )
+
+    val differentSicAndCompliance = VatSicAndCompliance(
+      businessActivityDescription,
+      financialCompliance = Some(VatComplianceFinancial(adviceOrConsultancyOnly = false, actAsIntermediary = true))
+    )
+
+    "update VatSicAndCompliance with new AdviceOrConsultancy" in {
+      ViewModelTransformer[AdviceOrConsultancy, VatSicAndCompliance]
+        .toApi(adviceOrConsultancy, vatSicAndCompliance) shouldBe differentSicAndCompliance
+    }
+  }
 
   "apply" should {
 
