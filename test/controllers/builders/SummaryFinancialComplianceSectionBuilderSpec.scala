@@ -33,7 +33,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
     manageFundsAdditional = Some(false)
   )
 
-  val testVatSicAndCompliance = Some(VatSicAndCompliance(businessDescription = "TEST"))
+  val testVatSicAndCompliance = Some(VatSicAndCompliance(businessDescription = "TEST", mainBusinessActivity = sicCode))
 
   "The section builder composing a financial details section" should {
 
@@ -52,7 +52,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
 
 
       " 'YES' selected for provideAdviceRow" in {
-        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(adviceOrConsultancyOnly = true)))
+        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(adviceOrConsultancyOnly = true)), mainBusinessActivity = sicCode)
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.provideAdviceRow mustBe
           SummaryRow(
@@ -78,7 +78,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
 
 
       " 'YES' selected for actAsIntermediaryRow" in {
-        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(actAsIntermediary = true)))
+        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(actAsIntermediary = true)), mainBusinessActivity = sicCode)
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.actAsIntermediaryRow mustBe
           SummaryRow(
@@ -104,7 +104,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
 
 
       " 'YES' selected for chargesFeesRow" in {
-        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(chargeFees = Some(true))))
+        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(chargeFees = Some(true))), mainBusinessActivity = sicCode)
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.chargesFeesRow mustBe
           SummaryRow(
@@ -129,7 +129,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
 
 
       " 'YES' selected for additionalWorkRow" in {
-        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(additionalNonSecuritiesWork = Some(true))))
+        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(additionalNonSecuritiesWork = Some(true))), mainBusinessActivity = sicCode)
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.additionalWorkRow mustBe
           SummaryRow(
@@ -155,7 +155,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
 
 
       " 'YES' selected for provideDiscretionaryInvestmentRow" in {
-        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(discretionaryInvestmentManagementServices = Some(true))))
+        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(discretionaryInvestmentManagementServices = Some(true))), mainBusinessActivity = sicCode)
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.provideDiscretionaryInvestmentRow mustBe
           SummaryRow(
@@ -180,7 +180,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
 
 
       " 'YES' selected for leasingVehicleRow" in {
-        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(vehicleOrEquipmentLeasing = Some(true))))
+        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(vehicleOrEquipmentLeasing = Some(true))), mainBusinessActivity = sicCode)
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.leasingVehicleRow mustBe
           SummaryRow(
@@ -205,7 +205,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
 
 
       " 'YES' selected for investmentFundManagementRow" in {
-        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(investmentFundManagementServices = Some(true))))
+        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(investmentFundManagementServices = Some(true))), mainBusinessActivity = sicCode)
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.investmentFundManagementRow mustBe
           SummaryRow(
@@ -230,7 +230,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
 
 
       " 'YES' selected for manageAdditionalFundsRow" in {
-        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(manageFundsAdditional = Some(true))))
+        val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance.copy(manageFundsAdditional = Some(true))), mainBusinessActivity = sicCode)
         val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.manageAdditionalFundsRow mustBe
           SummaryRow(
@@ -243,7 +243,7 @@ class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRe
 
 
     "with section generate" should {
-      val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance))
+      val compliance = VatSicAndCompliance("Business Described", financialCompliance = Some(defaultFinancialCompliance), mainBusinessActivity = sicCode)
       val builder = SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
 
       "a valid summary section" in {

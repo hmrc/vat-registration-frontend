@@ -28,12 +28,14 @@ class InvestmentFundManagementSpec extends UnitSpec with VatRegistrationFixture 
 
     val vatSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, investmentFundManagementServices = Some(true)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, investmentFundManagementServices = Some(true))),
+      mainBusinessActivity = sicCode
     )
 
     val differentSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, investmentFundManagementServices = Some(false)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, investmentFundManagementServices = Some(false))),
+      mainBusinessActivity = sicCode
     )
 
     "update VatFinancials with new AccountingPeriod" in {

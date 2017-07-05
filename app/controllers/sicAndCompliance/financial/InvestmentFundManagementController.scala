@@ -42,13 +42,8 @@ class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.investment_fund_management(badForm)).pure,
-<<<<<<< HEAD
       data => save(data).map(_ => data.yesNo).ifM(
         ifTrue = Redirect(controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show()).pure,
-=======
-      view => save(view).map(_ => view.yesNo).ifM(
-        ifTrue = controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show().pure,
->>>>>>> c6ab0cccd57edee74c840c657fad849bb312383c
         ifFalse = submitAndExit(ElementPath.finCompElementPaths.drop(5))
       )))
 
