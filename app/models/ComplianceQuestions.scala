@@ -76,7 +76,10 @@ object ComplianceQuestions {
   }.getOrElse(NoComplianceQuestions)
 
   def apply(sicCodes: List[SicCode])(implicit m: SicCodeMap): ComplianceQuestions = m.collectFirst {
-    case (q, cs) if sicCodes.nonEmpty && sicCodes.forall(code => cs.contains(code.id)) => q
+    case (q, cs) if sicCodes.nonEmpty && sicCodes.forall(
+      code =>
+        code.id.length == 8 && cs.contains(code.id.substring(0, 5)))
+    => q
   }.getOrElse(NoComplianceQuestions)
 
 }
