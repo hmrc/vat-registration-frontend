@@ -43,7 +43,7 @@ class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPl
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(badForm)).pure,
-      data => save(data).map(_ => data.yesNo).ifM(
+      view => save(view).map(_ => view.yesNo).ifM(
         ifTrue = submitAndExit(ElementPath.finCompElementPaths.drop(3)),
         ifFalse = Redirect(controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show()).pure
       )))

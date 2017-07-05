@@ -39,7 +39,11 @@ class ManageAdditionalFundsController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.manage_additional_funds(badForm)).pure,
+<<<<<<< HEAD
       data => save(data).flatMap(_ => submitAndExit(List()))))
+=======
+      view => save(view).flatMap(_ => submitAndExit(List())).map(Redirect)))
+>>>>>>> c6ab0cccd57edee74c840c657fad849bb312383c
 
 }
 
