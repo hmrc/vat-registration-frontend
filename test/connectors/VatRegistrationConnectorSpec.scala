@@ -181,7 +181,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   "Calling upsertSicAndCompliance" should {
 
-    val compliance = VatSicAndCompliance(businessDescription = "")
+    val compliance = VatSicAndCompliance(businessDescription = "", mainBusinessActivity = sicCode)
 
     "return the correct VatResponse when the microservice completes and returns a SicAndCompliance model" in new Setup {
       mockHttpPATCH[VatFinancials, VatSicAndCompliance]("tst-url", compliance)

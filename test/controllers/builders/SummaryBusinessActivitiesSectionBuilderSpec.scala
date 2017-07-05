@@ -41,7 +41,7 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
       }
 
       "a business activity description in sic and compliance should be shown when one is entered by the user" in {
-        val compliance = VatSicAndCompliance("Business Described", None)
+        val compliance = VatSicAndCompliance("Business Described", None, mainBusinessActivity = sicCode)
         val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.companyBusinessDescriptionRow mustBe
           SummaryRow(

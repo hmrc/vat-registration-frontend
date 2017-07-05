@@ -79,7 +79,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterReturnsNoViewModel[BusinessActivityDescription]()
-      save4laterExpectsSave[S4LVatSicAndCompliance]()
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_YES
@@ -91,7 +91,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
-      save4laterExpectsSave[S4LVatSicAndCompliance]()
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_NO

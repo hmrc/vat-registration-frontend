@@ -173,7 +173,9 @@ trait VatRegistrationFixture {
       businessDescription = activityDescription,
       culturalCompliance = culturalComplianceSection,
       labourCompliance = labourComplianceSection,
-      financialCompliance = financialComplianceSection)
+      financialCompliance = financialComplianceSection,
+      mainBusinessActivity = sicCode
+    )
 
 
   def vatScheme(

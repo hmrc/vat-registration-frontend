@@ -28,12 +28,14 @@ class ManageAdditionalFundsSpec extends UnitSpec with VatRegistrationFixture {
 
     val vatSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, manageFundsAdditional = Some(true)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, manageFundsAdditional = Some(true))),
+      mainBusinessActivity = sicCode
     )
 
     val differentSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, manageFundsAdditional = Some(false)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, manageFundsAdditional = Some(false))),
+      mainBusinessActivity = sicCode
     )
 
     "update VatSicAndCompliance with new ManageAdditionalFunds" in {
