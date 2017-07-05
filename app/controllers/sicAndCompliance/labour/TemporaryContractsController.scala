@@ -41,8 +41,13 @@ class TemporaryContractsController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.temporary_contracts(badForm)).pure,
+<<<<<<< HEAD
       data => save(data).map(_ => data.yesNo == TemporaryContracts.TEMP_CONTRACTS_YES).ifM(
         ifTrue = Redirect(controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show()).pure,
+=======
+      view => save(view).map(_ => view.yesNo == TemporaryContracts.TEMP_CONTRACTS_YES).ifM(
+        ifTrue = controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show().pure,
+>>>>>>> c6ab0cccd57edee74c840c657fad849bb312383c
         ifFalse = submitAndExit(ElementPath.labCompElementPaths.drop(3))
         )))
 
