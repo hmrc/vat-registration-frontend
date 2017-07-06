@@ -217,6 +217,10 @@ POST        /use-limited-cost-business-flat-rate                                
 GET         /spends-less-than-two-percent-of-turnover-a-year-on-goods                          controllers.frs.AnnualCostsLimitedController.show
 POST        /spends-less-than-two-percent-of-turnover-a-year-on-goods                          controllers.frs.AnnualCostsLimitedController.submit
 
+## FRS Confirm business sector page
+GET         /confirm-business-type                                                             controllers.frs.ConfirmBusinessSectorController.show
+POST        /confirm-business-type                                                             controllers.frs.ConfirmBusinessSectorController.submit
+
 ## When do you want to join the Flat Rate Scheme?
 GET         /flat-rate-scheme-join-date                                                        controllers.frs.FrsStartDateController.show
 POST        /flat-rate-scheme-join-date                                                        controllers.frs.FrsStartDateController.submit

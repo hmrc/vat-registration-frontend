@@ -719,6 +719,16 @@ pages.frs.costsInclusive.panel.bullet9                    = capital items, for e
 pages.frs.costsInclusive.panel.bullet10                   = services - that is, anything not classified as "goods"
 validation.frs.costsInclusive.missing                     = Tell us if you spend less than £1,000 a year (including VAT) on business goods
 
+# FRS Confirm business sector Page
+pages.frs.confirmBusinessSector.title                     = Confirm the company''s business type
+pages.frs.confirmBusinessSector.heading                   = Confirm the company''s business type
+pages.frs.confirmBusinessSector.table.row1.heading        = Business type
+pages.frs.confirmBusinessSector.table.row2.heading        = VAT flat rate (%)
+pages.frs.confirmBusinessSector.panel1.para               = You can add a 1% discount to this rate in your first year as a VAT-registered business.
+pages.frs.confirmBusinessSector.exclamationPoint          = It''s your legal responsibility to check the company has the right business type.
+pages.frs.confirmBusinessSector.changeLink                = Change your business type
+validation.frs.confirmBusinessSector.missing              = Tell us if you want to use this rate
+
 #Do you want to register for FRS Page
 pages.frs.registerFor.title                            = Use the 16.5% flat rate
 pages.frs.registerFor.heading                          = You can use the 16.5% flat rate

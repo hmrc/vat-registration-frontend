@@ -46,7 +46,7 @@ class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
         save(view).flatMap(_ =>
           vrs.getFlatRateSchemeThreshold().map {
             case n if n > PREVIOUS_QUESTION_THRESHOLD => controllers.frs.routes.AnnualCostsLimitedController.show()
-            case _ => controllers.frs.routes.RegisterForFrsController.show() //TODO redirect to "Confirm business sector" screen
+            case _ => controllers.frs.routes.ConfirmBusinessSectorController.show()
           })
       } else {
         for {
