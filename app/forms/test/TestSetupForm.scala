@@ -50,7 +50,10 @@ object TestSetupForm {
     "financialDiscretionaryInvestment" -> optional(text),
     "financialLeaseVehiclesOrEquipment" -> optional(text),
     "financialInvestmentFundManagement" -> optional(text),
-    "financialManageAdditionalFunds" -> optional(text)
+    "financialManageAdditionalFunds" -> optional(text),
+    "mainBusinessActivityId" -> optional(text),
+    "mainBusinessActivityDescription" -> optional(text),
+    "mainBusinessActivityDisplayDetails" -> optional(text)
   )(SicAndComplianceTestSetup.apply)(SicAndComplianceTestSetup.unapply)
 
   val vatTradingDetailsTestSetupMapping = mapping(
