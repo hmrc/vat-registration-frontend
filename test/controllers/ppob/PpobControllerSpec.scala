@@ -73,18 +73,14 @@ class PpobControllerSpec extends VatRegSpec
 
   }
 
-  s"POST ${routes.PpobController.submit()} with Empty data" should {
+  s"POST ${routes.PpobController.submit()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("PpobAddressList", None)
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
 
-  }
-
-  s"POST ${routes.PpobController.submit()} with selected address" should {
-
-    "return 303" in {
+    "return 303 with selected address" in {
       save4laterExpectsSave[PpobView]()
       when(mockPPService.getPpobAddressList()(any())).thenReturn(Seq(address).pure)
       when(mockVatRegistrationService.submitPpob()(any())).thenReturn(scrsAddress.pure)
@@ -96,11 +92,7 @@ class PpobControllerSpec extends VatRegSpec
       verify(mockVatRegistrationService).submitPpob()(any())
     }
 
-  }
-
-  s"POST ${routes.PpobController.submit()} with selected address but no address list in keystore" should {
-
-    "return 303" in {
+    "return 303 with selected address but no address list in keystore" in {
       save4laterExpectsSave[PpobView]()
       when(mockPPService.getPpobAddressList()(any())).thenReturn(Seq(address).pure)
       when(mockVatRegistrationService.submitPpob()(any())).thenReturn(scrsAddress.pure)
@@ -112,11 +104,7 @@ class PpobControllerSpec extends VatRegSpec
       verify(mockVatRegistrationService).submitPpob()(any())
     }
 
-  }
-
-  s"POST ${routes.PpobController.submit()} with 'other address' selected" should {
-
-    "redirect the user to TxM address capture page" in {
+    "redirect the user to TxM address capture page with 'other address' selected" in {
       when(mockAddressLookupConnector.getOnRampUrl(any[Call])(any(), any())).thenReturn(Call("GET", "TxM").pure)
 
       submitAuthorised(Controller.submit(),
@@ -125,7 +113,6 @@ class PpobControllerSpec extends VatRegSpec
     }
 
   }
-
 
   s"GET ${routes.PpobController.acceptFromTxm()}" should {
 
@@ -142,5 +129,4 @@ class PpobControllerSpec extends VatRegSpec
     }
 
   }
-
 }
