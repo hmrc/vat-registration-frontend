@@ -19,29 +19,30 @@ package controllers.frs
 import javax.inject.Inject
 
 import cats.syntax.FlatMapSyntax
+import connectors.ConfigConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.frs.AnnualCostsLimitedFormFactory
-import forms.genericForms.YesOrNoFormFactory
-import models.view.frs.{AnnualCostsLimitedView, BusinessSectorView}
+import models.view.frs.BusinessSectorView
+import models.view.sicAndCompliance.MainBusinessActivityView
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
+import uk.gov.hmrc.play.http.HeaderCarrier
 
+import scala.concurrent.Future
 
-class ConfirmBusinessSectorController @Inject()(ds: CommonPlayDependencies, formFactory: YesOrNoFormFactory)
+class ConfirmBusinessSectorController @Inject()(ds: CommonPlayDependencies, configConnect: ConfigConnect)
                                                (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with FlatMapSyntax {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[BusinessSectorView]().getOrElse(BusinessSectorView("foo", 6.5))
+    viewModel[BusinessSectorView]().getOrElseF(determineBusinessSector())
       .map(view => Ok(views.html.pages.frs.frs_confirm_business_sector(view))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    vrs.getFlatRateSchemeThreshold().flatMap(turnover =>
-      AnnualCostsLimitedFormFactory.form(Seq(turnover)).bindFromRequest().fold(
-        badForm => BadRequest(views.html.pages.frs.annual_costs_limited(badForm, turnover)).pure,
-        view => save(view).map(_ => view.selection == AnnualCostsLimitedView.NO).ifM(
-          ifTrue = controllers.frs.routes.RegisterForFrsController.show().pure, //TODO go to CONFIRM BUSINESS SECTOR screen
-          ifFalse = controllers.frs.routes.RegisterForFrsController.show().pure
-        ).map(Redirect))))
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => Ok("cool").pure)
+
+  private def determineBusinessSector()(implicit hc: HeaderCarrier): Future[BusinessSectorView] =
+    viewModel[MainBusinessActivityView]()
+      .subflatMap(mbaView => mbaView.mainBusinessActivity)
+      .map(sicCode => configConnect.getBusinessSectorDetails(sicCode.id))
+      .getOrElse(throw new IllegalStateException("Can't determine main business activity"))
 
 }
