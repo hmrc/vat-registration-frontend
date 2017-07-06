@@ -132,6 +132,7 @@ class PpobControllerSpec extends VatRegSpec
     "save an address and redirect to next page" in {
       save4laterExpectsSave[PpobView]()
       when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
+      when(mockVatRegistrationService.submitPpob()(any())).thenReturn(scrsAddress.pure)
       callAuthorised(Controller.acceptFromTxm("addressId")) {
         _ redirectsTo s"$contextRoot/describe-what-company-does"
       }

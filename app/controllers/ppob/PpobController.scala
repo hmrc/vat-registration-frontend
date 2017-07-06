@@ -24,6 +24,7 @@ import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.ppob.PpobForm
 import models.api.ScrsAddress
 import models.view.ppob.PpobView
+import models.view.vatLodgingOfficer.PreviousAddressView
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}
@@ -67,11 +68,11 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
         } yield controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()
       ).map(Redirect)))
 
-
   def acceptFromTxm(id: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    alfConnector.getAddress(id).flatMap { address =>
-      Logger.debug(s"address received: $address")
-      save(PpobView(address.id, Some(address)))
-    }.map(_ => Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())))
+    for {
+      address <- alfConnector.getAddress(id)
+      _ <- save(PpobView(address.id, Some(address)))
+      _ <- vrs.submitPpob()
+    } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
 
 }
