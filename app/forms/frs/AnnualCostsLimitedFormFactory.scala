@@ -22,6 +22,7 @@ import play.api.data.Form
 import play.api.data.Forms.mapping
 
 object AnnualCostsLimitedFormFactory {
+
   val RADIO_COST_LIMITED: String = "annualCostsLimitedRadio"
 
   def form(msgArgs: Seq[Any] = Seq()): Form[AnnualCostsLimitedView] = {

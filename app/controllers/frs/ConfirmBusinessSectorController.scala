@@ -21,29 +21,26 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.frs.AnnualCostsLimitedFormFactory
-import models.view.frs.AnnualCostsLimitedView
+import forms.genericForms.YesOrNoFormFactory
+import models.view.frs.{AnnualCostsLimitedView, BusinessSectorView}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
 
-class AnnualCostsLimitedController @Inject()(ds: CommonPlayDependencies)
-                                            (implicit s4LService: S4LService, vrs: VatRegistrationService)
+class ConfirmBusinessSectorController @Inject()(ds: CommonPlayDependencies, formFactory: YesOrNoFormFactory)
+                                               (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with FlatMapSyntax {
 
-  val defaultForm = AnnualCostsLimitedFormFactory.form()
-
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    for {
-      estimateVatTurnover <- vrs.getFlatRateSchemeThreshold()
-      annualCostsLimitedForm <- viewModel[AnnualCostsLimitedView]().fold(defaultForm)(defaultForm.fill)
-    } yield Ok(views.html.pages.frs.annual_costs_limited(annualCostsLimitedForm, estimateVatTurnover)))
+    viewModel[BusinessSectorView]().getOrElse(BusinessSectorView("foo", 6.5))
+      .map(view => Ok(views.html.pages.frs.frs_confirm_business_sector(view))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     vrs.getFlatRateSchemeThreshold().flatMap(turnover =>
       AnnualCostsLimitedFormFactory.form(Seq(turnover)).bindFromRequest().fold(
         badForm => BadRequest(views.html.pages.frs.annual_costs_limited(badForm, turnover)).pure,
         view => save(view).map(_ => view.selection == AnnualCostsLimitedView.NO).ifM(
-          ifTrue = controllers.frs.routes.ConfirmBusinessSectorController.show().pure,
+          ifTrue = controllers.frs.routes.RegisterForFrsController.show().pure, //TODO go to CONFIRM BUSINESS SECTOR screen
           ifFalse = controllers.frs.routes.RegisterForFrsController.show().pure
         ).map(Redirect))))
 
