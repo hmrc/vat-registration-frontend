@@ -43,19 +43,16 @@ class ConfigConnector extends ConfigConnect with ServicesConfig {
 
   override def getSicCodesListFromCodes(codes: List[String]) : List[SicCode]= {
     val sicCodeSuffixKey = "sic.codes."
-    codes.map(sicCode => {
-      SicCode(id = sicCode,
-        description = getString(s"${sicCodeSuffixKey}${sicCode}.description"),
-        displayDetails = getString(s"${sicCodeSuffixKey}${sicCode}.displayDetails"))
-    }
-    )
+      codes.map(sicCode => {
+        SicCode(id = sicCode,
+          description = getString(s"${sicCodeSuffixKey}${sicCode}.description"),
+          displayDetails = getString(s"${sicCodeSuffixKey}${sicCode}.displayDetails"))
+      })
   }
 }
 
 @ImplementedBy(classOf[ConfigConnector])
 trait ConfigConnect {
-  self =>
-  val className = self.getClass.getSimpleName
   def getSicCodesListFromCodes(codes: List[String]) : List[SicCode]
 
 }

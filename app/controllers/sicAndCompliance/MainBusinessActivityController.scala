@@ -22,8 +22,9 @@ import cats.data.OptionT
 import controllers.CommonPlayDependencies
 import forms.sicAndCompliance.MainBusinessActivityForm
 import models.ModelKeys._
-import models.api.SicCode
+import models.api.{CompletionCapacity, SicCode}
 import models.view.sicAndCompliance.MainBusinessActivityView
+import models.view.vatLodgingOfficer.CompletionCapacityView
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -50,15 +51,16 @@ class MainBusinessActivityController @Inject()(ds: CommonPlayDependencies)
         badForm => fetchSicCodeList().getOrElse(List.empty).map(sicCodeList =>
           BadRequest(views.html.pages.sicAndCompliance.main_business_activity(badForm, sicCodeList))),
         view =>
-          fetchSicCodeList.getOrElse(List.empty).flatMap(sicCodesList =>
-            save(MainBusinessActivityView(sicCodesList.head.id, Some(sicCodesList.head))).flatMap( x => selectNextPage(sicCodesList))
-          )
+          for {
+            sicCodeList <- fetchSicCodeList.getOrElse(List.empty)
+            _ = sicCodeList.find(_.id == view.id).map(sicCode => save(MainBusinessActivityView(view.id, Some(sicCode))))
+            result <- selectNextPage(sicCodeList)
+          } yield result
   ))
 
  def redirectToNext: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     fetchSicCodeList.getOrElse(List.empty).flatMap(sicCodesList => {
-     save(MainBusinessActivityView(sicCodesList.head.id, Some(sicCodesList.head))).flatMap(x =>
-       selectNextPage(sicCodesList))
+     save(MainBusinessActivityView(sicCodesList.head.id, Some(sicCodesList.head))).flatMap(x => selectNextPage(sicCodesList))
 
    })
  )
