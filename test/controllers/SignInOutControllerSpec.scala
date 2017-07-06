@@ -26,9 +26,9 @@ class SignInOutControllerSpec extends VatRegSpec {
   }
 
   "Post-sign-in" should {
-    "redirect to start of the journey when authorized" in {
+    "redirect to CT post sign in" in {
       callAuthorised(TestController.postSignIn) {
-        _ redirectsTo routes.WelcomeController.start().url
+        _ redirectsTo s"${TestController.compRegFEURL}${TestController.compRegFEURI}/post-sign-in"
       }
     }
   }
