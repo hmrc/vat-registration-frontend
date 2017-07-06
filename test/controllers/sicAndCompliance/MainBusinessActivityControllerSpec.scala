@@ -37,10 +37,21 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
     override val authConnector = mockAuthConnector
     override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
   }
-
+  val validSicCode = SicCode("70221001", "Accounting systems design", "Financial management")
   val fakeRequest = FakeRequest(controllers.sicAndCompliance.routes.MainBusinessActivityController.show())
 
   s"GET ${routes.MainBusinessActivityController.show()}" should {
+
+    "return HTML when there's nothing in S4L and vatScheme contains empty data" in {
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+      save4laterReturnsNoViewModel[MainBusinessActivityView]()
+      mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
+
+      callAuthorised(Controller.show()) {
+        _ includesText "Which business activity is the company"
+      }
+    }
+
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
@@ -84,7 +95,7 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> sicCode.id)
-      )(_ redirectsTo s"$contextRoot/have-you-ever-changed-your-name")
+      )(_ redirectsTo s"$contextRoot/business-bank-account")
 
     }
   }
@@ -100,17 +111,53 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> sicCode.id)
-      )(_ redirectsTo s"$contextRoot/have-you-ever-changed-your-name")
+      )(_ redirectsTo s"$contextRoot/business-bank-account")
 
     }
   }
 
-  s"POST ${routes.MainBusinessActivityController.submit()} with 'someone else' selected" should {
+  s"POST ${routes.MainBusinessActivityController.submit()} with selected sicCode and sicCode list in keystore" should {
 
-    "redirect the user to 'ineligible' page" in {
+    "return 303" in {
+      save4laterExpectsSave[MainBusinessActivityView]()
+      mockKeystoreFetchAndGet(SIC_CODES_KEY, Some(List(validSicCode)))
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> "other")
-      )(_ includesText "You can&#x27;t register for VAT using this service")
+        fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> validSicCode.id)
+      )(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company")
+
+    }
+  }
+
+  s"POST ${routes.MainBusinessActivityController.redirectToNext()}  sicCode list in keystore and redirect to redirectToNext method" should {
+
+    "return 303" in {
+      save4laterExpectsSave[MainBusinessActivityView]()
+      mockKeystoreFetchAndGet(SIC_CODES_KEY, Some(List(validSicCode)))
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
+
+      callAuthorised(Controller.redirectToNext()) (_ redirectsTo s"$contextRoot/tell-us-more-about-the-company")
+
+
+    }
+  }
+
+  s"POST ${routes.MainBusinessActivityController.redirectToNext()}  Empty Sic Code list in keystore and redirect to redirectToNext method" should {
+
+    "return 303" in {
+      save4laterExpectsSave[MainBusinessActivityView]()
+      mockKeystoreFetchAndGet(SIC_CODES_KEY, None)
+      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
+
+      callAuthorised(Controller.redirectToNext()) (_ redirectsTo s"$contextRoot/business-bank-account")
+
+
     }
   }
 

@@ -21,6 +21,7 @@ import javax.inject.Inject
 import cats.data.OptionT
 import controllers.CommonPlayDependencies
 import forms.sicAndCompliance.MainBusinessActivityForm
+import models.ElementPath
 import models.ModelKeys._
 import models.api.{CompletionCapacity, SicCode}
 import models.view.sicAndCompliance.MainBusinessActivityView
@@ -34,7 +35,7 @@ class MainBusinessActivityController @Inject()(ds: CommonPlayDependencies)
                                               (implicit s4l: S4LService,
                                                vrs: VatRegistrationService)
   extends ComplianceExitController(ds) {
-
+  import cats.syntax.flatMap._
   private val form = MainBusinessActivityForm.form
 
   private def fetchSicCodeList()(implicit hc: HeaderCarrier) =
@@ -59,9 +60,11 @@ class MainBusinessActivityController @Inject()(ds: CommonPlayDependencies)
   ))
 
  def redirectToNext: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    fetchSicCodeList.getOrElse(List.empty).flatMap(sicCodesList => {
-     save(MainBusinessActivityView(sicCodesList.head.id, Some(sicCodesList.head))).flatMap(x => selectNextPage(sicCodesList))
-
+  fetchSicCodeList.getOrElse(List.empty).flatMap(sicCodesList => {
+    (sicCodesList.size > 0).pure.ifM(
+      ifTrue = save(MainBusinessActivityView(sicCodesList.head.id, Some(sicCodesList.head))).flatMap(_ => selectNextPage(sicCodesList)),
+      ifFalse = selectNextPage(sicCodesList)
+    )
    })
  )
 }
