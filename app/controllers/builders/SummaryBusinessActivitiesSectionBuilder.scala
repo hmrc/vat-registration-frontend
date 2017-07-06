@@ -33,10 +33,19 @@ case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[V
     }.getOrElse("app.common.no"),
     Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
   )
+  val companyMainBusinessActivityRow: SummaryRow = SummaryRow(
+    s"$sectionId.mainBusinessActivity",
+    vatSicAndCompliance.collect {
+      case VatSicAndCompliance(_, _, _, _, mainBusinessActivity)
+        if StringUtils.isNotBlank(mainBusinessActivity.description) => mainBusinessActivity.description
+    }.getOrElse("app.common.no"),
+    Some(controllers.sicAndCompliance.routes.MainBusinessActivityController.show())
+  )
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
-      (companyBusinessDescriptionRow, true)
+      (companyBusinessDescriptionRow, true),
+      (companyMainBusinessActivityRow, true)
     )
   )
 }

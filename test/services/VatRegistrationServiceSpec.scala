@@ -27,7 +27,7 @@ import models.api._
 import models.external.CoHoCompanyProfile
 import models.view.frs._
 import models.view.ppob.PpobView
-import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
@@ -138,7 +138,8 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
         additionalNonSecuritiesWork = Some(AdditionalNonSecuritiesWork(true)),
         discretionaryInvestmentManagementServices = Some(DiscretionaryInvestmentManagementServices(true)),
         investmentFundManagement = Some(InvestmentFundManagement(true)),
-        manageAdditionalFunds = Some(ManageAdditionalFunds(true))
+        manageAdditionalFunds = Some(ManageAdditionalFunds(true)),
+        mainBusinessActivity = Some(MainBusinessActivityView(sicCode.id, Some(sicCode)))
       ))
 
       save4laterReturns(S4LVatContact(businessContactDetails = Some(validBusinessContactDetails)))
