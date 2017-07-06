@@ -65,18 +65,15 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
     }
   }
 
-  s"POST ${routes.CompletionCapacityController.submit()} with Empty data" should {
+  s"POST ${routes.CompletionCapacityController.submit()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       mockKeystoreFetchAndGet[Seq[Officer]]("OfficerList", None)
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
     }
-  }
 
-  s"POST ${routes.CompletionCapacityController.submit()} with selected completionCapacity but no completionCapacity list in keystore" should {
-
-    "return 303" in {
+    "return 303  with selected completionCapacity but no completionCapacity list in keystore" in {
       save4laterExpectsSave[CompletionCapacityView]()
       mockKeystoreFetchAndGet("OfficerList", Option.empty[Seq[Officer]])
       mockKeystoreCache[Officer](REGISTERING_OFFICER_KEY, dummyCacheMap)
@@ -86,11 +83,8 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
       )(_ redirectsTo s"$contextRoot/have-you-ever-changed-your-name")
 
     }
-  }
 
-  s"POST ${routes.CompletionCapacityController.submit()} with selected completionCapacity" should {
-
-    "return 303" in {
+    "return 303 with selected completionCapacity" in {
       val completionCapacityView = CompletionCapacityView(completionCapacity)
       when(mockPPService.getOfficerList()(any())).thenReturn(Seq(officer).pure)
       save4laterExpectsSave[CompletionCapacityView]()
@@ -101,15 +95,6 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
         fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> completionCapacity.name.id)
       )(_ redirectsTo s"$contextRoot/have-you-ever-changed-your-name")
 
-    }
-  }
-
-  s"POST ${routes.CompletionCapacityController.submit()} with 'someone else' selected" should {
-
-    "redirect the user to 'ineligible' page" in {
-      submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> "other")
-      )(_ includesText "You can&#x27;t register for VAT using this service")
     }
   }
 

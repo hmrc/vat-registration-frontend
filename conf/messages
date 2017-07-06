@@ -89,9 +89,6 @@ pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet1    = hires out boats or 
 pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet2    = owns one or more racehorses
 pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet3    = buys, sells or rents out land or property
 
-pages.completionCapacityEnd.p1                           = We''re only accepting VAT registrations from company directors or secretaries at the moment.
-pages.completionCapacityEnd.p2                           = If you''re neither of these (for example, you''re an accountant) you can register using HMRC''s existing service once you''ve received a company registration number from Companies House.
-
 ## Service Eligibility
 pages.eligibility.start.title                               = Can you use this service?
 pages.eligibility.start.heading                             = Can you use this service?
