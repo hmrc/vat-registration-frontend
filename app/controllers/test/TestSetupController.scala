@@ -107,7 +107,11 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
           financialDiscretionaryInvestment = vatSicAndCompliance.flatMap(_.discretionaryInvestmentManagementServices.map(_.yesNo.toString)),
           financialLeaseVehiclesOrEquipment = vatSicAndCompliance.flatMap(_.leaseVehicles.map(_.yesNo.toString)),
           financialInvestmentFundManagement = vatSicAndCompliance.flatMap(_.investmentFundManagement.map(_.yesNo.toString)),
-          financialManageAdditionalFunds = vatSicAndCompliance.flatMap(_.manageAdditionalFunds.map(_.yesNo.toString))),
+          financialManageAdditionalFunds = vatSicAndCompliance.flatMap(_.manageAdditionalFunds.map(_.yesNo.toString)),
+          mainBusinessActivityId = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.id),
+          mainBusinessActivityDescription = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.description),
+          mainBusinessActivityDisplayDetails = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.displayDetails)
+        ),
         VatServiceEligibilityTestSetup(
           haveNino = eligibility.flatMap(_.vatEligibility).map(_.haveNino.getOrElse("").toString),
           doingBusinessAbroad = eligibility.flatMap(_.vatEligibility).map(_.doingBusinessAbroad.getOrElse("").toString),

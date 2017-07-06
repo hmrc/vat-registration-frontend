@@ -22,10 +22,10 @@ import models._
 import models.api._
 import models.view.frs._
 import models.view.ppob.PpobView
-import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
+import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.test.TestSetup
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
@@ -128,7 +128,14 @@ class TestS4LBuilder {
         case (_, _, _) => S4LVatSicAndCompliance()
       }
 
-    compliance.copy(description = base.businessActivityDescription.map(BusinessActivityDescription(_)))
+    compliance.copy(
+      description = base.businessActivityDescription.map(BusinessActivityDescription(_)),
+      mainBusinessActivity = Some(MainBusinessActivityView(SicCode(
+        id = base.mainBusinessActivityId.getOrElse(""),
+        description = base.mainBusinessActivityDescription.getOrElse(""),
+        displayDetails = base.mainBusinessActivityDisplayDetails.getOrElse("")
+      )))
+    )
   }
 
   def vatContactFromData(data: TestSetup): S4LVatContact = {
