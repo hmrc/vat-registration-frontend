@@ -24,12 +24,12 @@ class ConfigConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
   class Setup {
     val connector = new ConfigConnector()
-    val sicCode = SicCode(id ="01490025", description = "Silk worm raising", displayDetails = "Raising of other animals")
+    val sicCode = SicCode(id = "01490025", description = "Silk worm raising", displayDetails = "Raising of other animals")
   }
 
   "Calling getSicCodesListFromCodes" must {
     "return a SicCode successfully" in new Setup {
-      connector.getSicCodesListFromCodes(List("01490025")) mustBe List(sicCode)
+      connector.getSicCodeDetails("01490025") mustBe sicCode
     }
   }
 
