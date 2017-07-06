@@ -28,7 +28,8 @@ class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegis
   lazy val compRegFEURI = getConfString("company-registration-frontend.www.uri", "")
 
   def postSignIn: Action[AnyContent] = authorised(implicit user => implicit request =>
-    Redirect(controllers.routes.WelcomeController.start()))
+    Redirect(s"$compRegFEURL$compRegFEURI/post-sign-in")
+  )
 
   def signOut: Action[AnyContent] = authorised { implicit user => implicit request =>
     Redirect(s"$compRegFEURL$compRegFEURI/questionnaire").withNewSession
