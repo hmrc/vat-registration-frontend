@@ -52,12 +52,12 @@ class ManageAdditionalFundsSpec extends UnitSpec with VatRegistrationFixture {
     }
 
     "convert VatScheme without FinancialCompliance section to empty view model" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = None)))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = None, mainBusinessActivitySection = sicCode)))
       ApiModelTransformer[ManageAdditionalFunds].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme with FinancialCompliance section to view model - Manage Additional Funds yes" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = Some(VatComplianceFinancial(
                                                                                                         true,
                                                                                                         true,
                                                                                                         manageFundsAdditional = Some(true))))))
@@ -65,7 +65,7 @@ class ManageAdditionalFundsSpec extends UnitSpec with VatRegistrationFixture {
     }
 
     "convert VatScheme with FinancialCompliance section to view model - Manage Additional Funds no" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = Some(VatComplianceFinancial(
                                                                                                         true,
                                                                                                         true,
                                                                                                         manageFundsAdditional = Some(false))))))

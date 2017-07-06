@@ -55,13 +55,13 @@ class LeaseVehiclesSpec extends UnitSpec with VatRegistrationFixture {
 
     "convert VatScheme without FinancialCompliance section to empty view model" in {
       val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(
-        financialComplianceSection = None)))
+        financialComplianceSection = None, mainBusinessActivitySection = sicCode)))
       ApiModelTransformer[LeaseVehicles].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme with FinancialCompliance section to view model - Lease Vehicles or Equipment yes" in {
       val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(
-        financialComplianceSection = Some(
+        mainBusinessActivitySection = sicCode, financialComplianceSection = Some(
           VatComplianceFinancial(
             adviceOrConsultancyOnly = true,
             actAsIntermediary = true,
@@ -70,7 +70,7 @@ class LeaseVehiclesSpec extends UnitSpec with VatRegistrationFixture {
     }
 
     "convert VatScheme with FinancialCompliance section to view model - Lease Vehicles or Equipment no" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = Some(
         VatComplianceFinancial(
           adviceOrConsultancyOnly = true,
           actAsIntermediary = true,

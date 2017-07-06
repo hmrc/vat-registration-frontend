@@ -168,13 +168,14 @@ trait VatRegistrationFixture {
                              adviceOrConsultancyOnly = true,
                              actAsIntermediary = false,
                              chargeFees = Some(true),
-                             additionalNonSecuritiesWork = Some(true)))): VatSicAndCompliance =
+                             additionalNonSecuritiesWork = Some(true))),
+                           mainBusinessActivitySection: SicCode): VatSicAndCompliance =
     VatSicAndCompliance(
       businessDescription = activityDescription,
       culturalCompliance = culturalComplianceSection,
       labourCompliance = labourComplianceSection,
       financialCompliance = financialComplianceSection,
-      mainBusinessActivity = sicCode
+      mainBusinessActivity = mainBusinessActivitySection
     )
 
 
