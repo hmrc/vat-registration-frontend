@@ -53,13 +53,11 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
       form.bindFromRequest().fold(
         badForm => fetchOfficerList().getOrElse(Seq()).map(
           officerList => BadRequest(views.html.pages.vatLodgingOfficer.completion_capacity(badForm, officerList))),
-        view => (view.id == "other").pure.ifM(
-          ifTrue = Ok(views.html.pages.vatEligibility.ineligible("completionCapacity")).pure,
-          ifFalse = for {
+        view => for {
             officerSeq <- fetchOfficerList().getOrElse(Seq())
             _ = officerSeq.find(_.name.id == view.id).map(o =>
               save(CompletionCapacityView(view.id, Some(CompletionCapacity(o.name, o.role)))).map(
                 _ => keystoreConnector.cache(REGISTERING_OFFICER_KEY, o)))
-          } yield Redirect(controllers.vatLodgingOfficer.routes.FormerNameController.show()))))
+          } yield Redirect(controllers.vatLodgingOfficer.routes.FormerNameController.show())))
 
 }
