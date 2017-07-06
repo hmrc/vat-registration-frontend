@@ -45,7 +45,7 @@ class BusinessActivityDescriptionSpec extends UnitSpec with VatRegistrationFixtu
     "Extract a BusinessActivityDescription view model from a VatScheme" in {
       ApiModelTransformer[BusinessActivityDescription].toViewModel(
         vatScheme = vatScheme(
-          sicAndCompliance = Some(vatSicAndCompliance(activityDescription = description_1))
+          sicAndCompliance = Some(vatSicAndCompliance(activityDescription = description_1, mainBusinessActivitySection = sicCode))
         )
       ) shouldBe Some(businessActivityDescription_1)
     }

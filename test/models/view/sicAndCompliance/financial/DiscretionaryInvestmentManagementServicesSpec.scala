@@ -52,12 +52,12 @@ class DiscretionaryInvestmentManagementServicesSpec extends UnitSpec with VatReg
     }
 
     "convert VatScheme without FinancialCompliance section to empty view model" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = None)))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = None, mainBusinessActivitySection = sicCode)))
       ApiModelTransformer[DiscretionaryInvestmentManagementServices].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme with FinancialCompliance section to view model - DiscretionaryInvestmentManagementServices yes" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = Some(VatComplianceFinancial(
         true,
         true,
         discretionaryInvestmentManagementServices = Some(true))))))
@@ -65,7 +65,7 @@ class DiscretionaryInvestmentManagementServicesSpec extends UnitSpec with VatReg
     }
 
     "convert VatScheme with FinancialCompliance section to view model - Charge Fees no" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = Some(VatComplianceFinancial(
         true,
         true,
         discretionaryInvestmentManagementServices = Some(false))))))
