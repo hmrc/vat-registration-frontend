@@ -92,6 +92,11 @@ pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet3    = buys, sells or rent
 pages.completionCapacityEnd.p1                           = We''re only accepting VAT registrations from company directors or secretaries at the moment.
 pages.completionCapacityEnd.p2                           = If you''re neither of these (for example, you''re an accountant) you can register using HMRC''s existing service once you''ve received a company registration number from Companies House.
 
+## Service Eligibility
+pages.eligibility.start.title                               = Can you use this service?
+pages.eligibility.start.heading                             = Can you use this service?
+pages.eligibility.start.para1                               = Before you register for VAT, we need to ask some eligibility questions.
+
 ## Service Eligibility Questions Validation
 validation.eligibility.haveNino.missing                     = Tell us if you have a National Insurance number
 validation.eligibility.doingBusinessAbroad.missing          = Tell us if you''ll do any of the following once you''re registered for VAT
