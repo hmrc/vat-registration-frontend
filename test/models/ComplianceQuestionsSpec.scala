@@ -33,23 +33,23 @@ class ComplianceQuestionsSpec extends UnitSpec with Inspectors with Inside {
   "Compliance questions selection" must {
 
     "select NoComplianceQuestions for an empty list of SIC codes" in new TestSetup {
-      ComplianceQuestions(List.empty[String]) shouldBe NoComplianceQuestions
+      ComplianceQuestions(List.empty[String].toArray) shouldBe NoComplianceQuestions
     }
 
     "select NoComplianceQuestions for when not all codes fall in the same group" in new TestSetup {
-      ComplianceQuestions(List("1", "2", "20")) shouldBe NoComplianceQuestions
+      ComplianceQuestions(List("1", "2", "20").toArray) shouldBe NoComplianceQuestions
     }
 
     "select CulturalComplianceQuestions for when all codes fall in the cultural compliance group" in new TestSetup {
-      ComplianceQuestions(List("1", "2", "3")) shouldBe CulturalComplianceQuestions
+      ComplianceQuestions(List("1", "2", "3").toArray) shouldBe CulturalComplianceQuestions
     }
 
     "select LabourComplianceQuestions for when all codes fall in the labour compliance group" in new TestSetup {
-      ComplianceQuestions(List("10", "20")) shouldBe LabourComplianceQuestions
+      ComplianceQuestions(List("10", "20").toArray) shouldBe LabourComplianceQuestions
     }
 
     "select FinancialComplianceQuestions for when all codes fall in the financial compliance group" in new TestSetup {
-      ComplianceQuestions(List("60", "70")) shouldBe FinancialComplianceQuestions
+      ComplianceQuestions(List("60", "70").toArray) shouldBe FinancialComplianceQuestions
     }
   }
 

@@ -28,12 +28,14 @@ class AdditionalNonSecuritiesWorkSpec extends UnitSpec with VatRegistrationFixtu
 
     val vatSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, additionalNonSecuritiesWork = Some(true)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, additionalNonSecuritiesWork = Some(true))),
+      mainBusinessActivity = sicCode
     )
 
     val differentSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, additionalNonSecuritiesWork = Some(false)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, additionalNonSecuritiesWork = Some(false))),
+      mainBusinessActivity = sicCode
     )
 
     "update VatSicAndCompliance with new AdditionalNonSecuritiesWork" in {
@@ -50,12 +52,12 @@ class AdditionalNonSecuritiesWorkSpec extends UnitSpec with VatRegistrationFixtu
     }
 
     "convert VatScheme without FinancialCompliance section to empty view model" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = None)))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = None, mainBusinessActivitySection = sicCode)))
       ApiModelTransformer[AdditionalNonSecuritiesWork].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme with FinancialCompliance section to view model - Additional Non Securities Work yes" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = Some(VatComplianceFinancial(
                                                                                                         true,
                                                                                                         true,
                                                                                                         additionalNonSecuritiesWork = Some(true))))))
@@ -63,7 +65,7 @@ class AdditionalNonSecuritiesWorkSpec extends UnitSpec with VatRegistrationFixtu
     }
 
     "convert VatScheme with FinancialCompliance section to view model - Additional Non Securities Work no" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = Some(VatComplianceFinancial(
                                                                                                         true,
                                                                                                         true,
                                                                                                         additionalNonSecuritiesWork = Some(false))))))

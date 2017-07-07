@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-package models
+package connectors
 
-trait ModelKeys {
+import fixtures.VatRegistrationFixture
+import helpers.VatRegSpec
+import models.api.SicCode
+
+class ConfigConnectorSpec extends VatRegSpec with VatRegistrationFixture {
+
+  class Setup {
+    val connector = new ConfigConnector()
+    val sicCode = SicCode(id ="01490025", description = "Silk worm raising", displayDetails = "Raising of other animals")
+  }
+
+  "Calling getSicCodesListFromCodes" must {
+    "return a SicCode successfully" in new Setup {
+      connector.getSicCodesListFromCodes(List("01490025")) mustBe List(sicCode)
+    }
+  }
 
 }
-object ModelKeys {
 
-  implicit val OFFICER_LIST_KEY = "OfficerList"
-  implicit val REGISTERING_OFFICER_KEY = "RegisteringOfficer"
-  implicit val SIC_CODES_KEY = "SicCodes"
-
-}

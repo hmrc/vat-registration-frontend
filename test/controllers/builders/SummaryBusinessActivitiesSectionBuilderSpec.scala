@@ -41,13 +41,24 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
       }
 
       "a business activity description in sic and compliance should be shown when one is entered by the user" in {
-        val compliance = VatSicAndCompliance("Business Described", None)
+        val compliance = VatSicAndCompliance("Business Described", None, mainBusinessActivity = sicCode)
         val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.companyBusinessDescriptionRow mustBe
           SummaryRow(
             "businessActivities.businessDescription",
             "Business Described",
             Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+          )
+      }
+
+      "a main business activity in sic and compliance should be shown when one is entered by the user" in {
+        val compliance = VatSicAndCompliance("Business Described", None, mainBusinessActivity = sicCode)
+        val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(compliance))
+        builder.companyMainBusinessActivityRow mustBe
+          SummaryRow(
+            "businessActivities.mainBusinessActivity",
+            "description",
+            Some(controllers.sicAndCompliance.routes.MainBusinessActivityController.show())
           )
       }
     }
@@ -57,7 +68,7 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
       "a valid summary section" in {
         val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(validSicAndCompliance))
         builder.section.id mustBe "businessActivities"
-        builder.section.rows.length mustEqual 1
+        builder.section.rows.length mustEqual 2
       }
     }
   }

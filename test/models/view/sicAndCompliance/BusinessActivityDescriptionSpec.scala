@@ -28,8 +28,10 @@ class BusinessActivityDescriptionSpec extends UnitSpec with VatRegistrationFixtu
   val businessActivityDescription_1 = BusinessActivityDescription(description_1)
   val businessActivityDescription_2 = BusinessActivityDescription(description_2)
 
-  val sicAndCompliance = VatSicAndCompliance(description_1, None)
-  val differentSicAndCompliance = VatSicAndCompliance(description_2, None)
+  val sicAndCompliance = VatSicAndCompliance(description_1, None,
+    mainBusinessActivity = sicCode)
+  val differentSicAndCompliance = VatSicAndCompliance(description_2, None,
+    mainBusinessActivity = sicCode)
 
   "toApi" should {
     "update a SicAndCompliance with new BusinessActivityDescription" in {
@@ -43,7 +45,7 @@ class BusinessActivityDescriptionSpec extends UnitSpec with VatRegistrationFixtu
     "Extract a BusinessActivityDescription view model from a VatScheme" in {
       ApiModelTransformer[BusinessActivityDescription].toViewModel(
         vatScheme = vatScheme(
-          sicAndCompliance = Some(vatSicAndCompliance(activityDescription = description_1))
+          sicAndCompliance = Some(vatSicAndCompliance(activityDescription = description_1, mainBusinessActivitySection = sicCode))
         )
       ) shouldBe Some(businessActivityDescription_1)
     }
