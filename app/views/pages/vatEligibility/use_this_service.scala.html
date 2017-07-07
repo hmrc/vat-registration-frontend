@@ -1,0 +1,23 @@
+@()(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.helpers.form
+
+@main_template(title = messages("pages.eligibility.start.title")) {
+
+<div class="grid-row">
+    <div class="column-one-third">
+
+        <header class="page-header">
+            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.eligibility.start.heading")</h1>
+        </header>
+
+        <p>@messages("pages.eligibility.start.para1")</p>
+        <br>
+        @form(action = controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show("haveNino")) {
+            <div class="form-group">
+                <button class="button-get-started" role="button" id="save-and-continue">@messages("app.common.continue")</button>
+            </div>
+        }
+    </div>
+
+</div>
+}
