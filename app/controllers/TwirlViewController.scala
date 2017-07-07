@@ -25,6 +25,7 @@ class TwirlViewController @Inject()(ds: CommonPlayDependencies) extends VatRegis
   def renderViewAuthorised(viewName: String): Action[AnyContent] = authorised(implicit user => implicit request =>
     Some(viewName).collect {
       case "eligibility-success" => views.html.pages.vatEligibility.eligible()
+      case "eagae-success" => views.html.pages.vatEligibility.eligible()
     }.fold[Result](NotFound)(Ok(_))
   )
 

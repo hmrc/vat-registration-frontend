@@ -31,4 +31,6 @@ object VatSicAndCompliance {
 
   implicit val format: OFormat[VatSicAndCompliance] = Json.format[VatSicAndCompliance]
 
+  val empty = VatSicAndCompliance(businessDescription = "", mainBusinessActivity = SicCode("", "", ""))
+
 }
