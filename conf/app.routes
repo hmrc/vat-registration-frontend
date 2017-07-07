@@ -7,6 +7,8 @@ GET         /                                                                   
 GET         /before-you-register-for-vat                                                       controllers.WelcomeController.start
 
 ## SERVICE CRITERIA QUESTIONS
+GET         /use-this-service                                                                  controllers.TwirlViewController.renderViewAuthorised(viewName="use-this-service")
+
 GET         /do-you-have-national-insurance-number                                             controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "haveNino")
 POST        /do-you-have-national-insurance-number                                             controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "haveNino")
 GET         /will-you-do-any-of-the-following                                                  controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "doingBusinessAbroad")
