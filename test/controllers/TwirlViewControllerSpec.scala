@@ -25,17 +25,18 @@ class TwirlViewControllerSpec extends VatRegSpec {
     override val authConnector = mockAuthConnector
   }
 
-
   "GET" should {
 
-    "return HTML when user is authorized to access" when {
+    "return HTML when user is authorized to access" in {
+      val params = List(("eligibility-success", "You can register for VAT using this service"),
+                        ("use-this-service", "Can you use this service?"))
 
-      "eligibility-success is requested" in {
-        callAuthorised(TestController.renderViewAuthorised("eligibility-success")) {
-          _ includesText "You can register for VAT using this service"
-        }
+      forAll(params) {
+        case (input, expected) =>
+          callAuthorised(TestController.renderViewAuthorised(input)) {
+            _ includesText expected
+          }
       }
-
     }
 
     "return 404" when {
@@ -45,9 +46,6 @@ class TwirlViewControllerSpec extends VatRegSpec {
           result isA Status.NOT_FOUND
         }
       }
-
     }
-
   }
-
 }
