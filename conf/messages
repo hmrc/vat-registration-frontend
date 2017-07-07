@@ -388,6 +388,8 @@ pages.summary.companyContactDetails.ppob                        = Main place of 
 ## Summary Page Business Activities
 pages.summary.businessActivities.sectionHeading                = Business activities
 pages.summary.businessActivities.businessDescription           = Business description
+pages.summary.businessActivities.mainBusinessActivity          = Main business activity
+
 
 ## Summary Page Business Bank Details
 pages.summary.bankDetails.sectionHeading                     = Business bank details
