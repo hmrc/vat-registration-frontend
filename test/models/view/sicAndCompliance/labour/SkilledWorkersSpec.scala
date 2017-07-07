@@ -31,17 +31,17 @@ class SkilledWorkersSpec extends UnitSpec with VatRegistrationFixture {
     }
 
     "convert VatScheme without LabourCompliance section to empty view model" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = None)))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = None, mainBusinessActivitySection = sicCode)))
       ApiModelTransformer[SkilledWorkers].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme with LabourCompliance section to view model -  Company Does not Provide Skilled Workers " in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = Some(VatComplianceLabour(false, Some(8), Some(false), Some(false))))))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, labourComplianceSection = Some(VatComplianceLabour(false, Some(8), Some(false), Some(false))))))
       ApiModelTransformer[SkilledWorkers].toViewModel(vs) shouldBe Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO))
     }
 
     "convert VatScheme with LabourCompliance section to view model - Company Does Provide Skilled Workers" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = Some(VatComplianceLabour(true, Some(8), Some(true), Some(true))))))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, labourComplianceSection = Some(VatComplianceLabour(true, Some(8), Some(true), Some(true))))))
       ApiModelTransformer[SkilledWorkers].toViewModel(vs) shouldBe Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
     }
 

@@ -92,11 +92,13 @@ trait VatRegistrationFixture {
     accountingPeriods = monthlyAccountingPeriod
   )
 
+  val sicCode = SicCode("88888888", "description", "displayDetails")
   val validSicAndCompliance = VatSicAndCompliance(
     businessDescription = businessActivityDescription,
     culturalCompliance = Some(VatComplianceCultural(notForProfit = false)),
     labourCompliance = None,
-    financialCompliance = None
+    financialCompliance = None,
+    mainBusinessActivity = sicCode
   )
 
   val validDob = DateOfBirth(12, 11, 1973)
@@ -166,12 +168,15 @@ trait VatRegistrationFixture {
                              adviceOrConsultancyOnly = true,
                              actAsIntermediary = false,
                              chargeFees = Some(true),
-                             additionalNonSecuritiesWork = Some(true)))): VatSicAndCompliance =
+                             additionalNonSecuritiesWork = Some(true))),
+                           mainBusinessActivitySection: SicCode): VatSicAndCompliance =
     VatSicAndCompliance(
       businessDescription = activityDescription,
       culturalCompliance = culturalComplianceSection,
       labourCompliance = labourComplianceSection,
-      financialCompliance = financialComplianceSection)
+      financialCompliance = financialComplianceSection,
+      mainBusinessActivity = mainBusinessActivitySection
+    )
 
 
   def vatScheme(

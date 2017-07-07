@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-package models
+package forms.sicAndCompliance
 
-trait ModelKeys {
+import forms.FormValidation.textMapping
+import models.view.sicAndCompliance.MainBusinessActivityView
+import play.api.data.Form
+import play.api.data.Forms.mapping
 
-}
-object ModelKeys {
 
-  implicit val OFFICER_LIST_KEY = "OfficerList"
-  implicit val REGISTERING_OFFICER_KEY = "RegisteringOfficer"
-  implicit val SIC_CODES_KEY = "SicCodes"
+object MainBusinessActivityForm {
 
+
+  val NAME_ID: String = "mainBusinessActivityRadio"
+
+  val form = Form(
+    mapping(
+      NAME_ID -> textMapping()("mainBusinessActivity")
+    )(MainBusinessActivityView(_))(view => Option(view.id))
+
+  )
 }

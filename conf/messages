@@ -388,6 +388,8 @@ pages.summary.companyContactDetails.ppob                        = Main place of 
 ## Summary Page Business Activities
 pages.summary.businessActivities.sectionHeading                = Business activities
 pages.summary.businessActivities.businessDescription           = Business description
+pages.summary.businessActivities.mainBusinessActivity          = Main business activity
+
 
 ## Summary Page Business Bank Details
 pages.summary.bankDetails.sectionHeading                     = Business bank details
@@ -473,6 +475,12 @@ validation.companyBankAccount.number.missing = Enter a business account number
 validation.companyBankAccount.number.invalid = Enter a valid business account number
 validation.companyBankAccount.sortCode.missing = Enter a sort code
 validation.companyBankAccount.sortCode.invalid = Enter a valid sort code
+
+## Main Business Activity
+pages.mainBusinessActivity.heading                        = Which business activity is the company''s main source of income?
+pages.mainBusinessActivity.title                          = Which business activity is the company''s main source of income?
+pages.mainBusinessActivity.para1                          = This business activity will be on your VAT certificate.
+validation.mainBusinessActivity.missing                   = Tell us the company''s main source of income
 
 ## Compliance - Tell us more about your company page
 pages.compliance.introduction.title                          = Compliance questions

@@ -45,7 +45,7 @@ class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.act_as_intermediary(badForm)).pure,
       view => save(view).map(_ => view.yesNo).ifM(
         ifTrue = submitAndExit(ElementPath.finCompElementPaths),
-        ifFalse = controllers.sicAndCompliance.financial.routes.ChargeFeesController.show().pure
-      ).map(Redirect)))
+        ifFalse = Redirect(controllers.sicAndCompliance.financial.routes.ChargeFeesController.show()).pure
+      )))
 
 }

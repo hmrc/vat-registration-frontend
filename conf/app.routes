@@ -88,6 +88,12 @@ POST        /business-bank-account-details                                      
 GET         /describe-what-company-does                                                        controllers.sicAndCompliance.BusinessActivityDescriptionController.show
 POST        /describe-what-company-does                                                        controllers.sicAndCompliance.BusinessActivityDescriptionController.submit
 
+## MAIN BUSINESS ACTIVITY
+GET         /main-source-of-income                                                             controllers.sicAndCompliance.MainBusinessActivityController.show
+POST        /main-source-of-income                                                             controllers.sicAndCompliance.MainBusinessActivityController.submit
+GET         /redirect-to-main-source-of-income                                                 controllers.sicAndCompliance.MainBusinessActivityController.redirectToNext
+
+
 ## COMPLIANCE INTRODUCTION
 GET         /tell-us-more-about-the-company                                                    controllers.sicAndCompliance.ComplianceIntroductionController.show
 POST        /tell-us-more-about-the-company                                                    controllers.sicAndCompliance.ComplianceIntroductionController.submit

@@ -41,19 +41,19 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
   "Correct compliance section should be rendered" when {
 
     "labour questions have been answered by user" in {
-      val vs = VatScheme("ID", vatSicAndCompliance = Some(VatSicAndCompliance("TEST", labourCompliance = Some(validVatLabourCompliance))))
+      val vs = VatScheme("ID", vatSicAndCompliance = Some(VatSicAndCompliance("TEST", labourCompliance = Some(validVatLabourCompliance), mainBusinessActivity = sicCode)))
       val summarySection = TestSummaryController.complianceSection(vs)
       summarySection.id mustBe "labourCompliance"
     }
 
     "cultural questions have been answered by user" in {
-      val vs = VatScheme("ID", vatSicAndCompliance = Some(VatSicAndCompliance("TEST", culturalCompliance = Some(validVatCulturalCompliance))))
+      val vs = VatScheme("ID", vatSicAndCompliance = Some(VatSicAndCompliance("TEST", culturalCompliance = Some(validVatCulturalCompliance), mainBusinessActivity = sicCode)))
       val summarySection = TestSummaryController.complianceSection(vs)
       summarySection.id mustBe "culturalCompliance"
     }
 
     "financial questions have been answered by user" in {
-      val vs = VatScheme("ID", vatSicAndCompliance = Some(VatSicAndCompliance("TEST", financialCompliance = Some(validVatFinancialCompliance))))
+      val vs = VatScheme("ID", vatSicAndCompliance = Some(VatSicAndCompliance("TEST", financialCompliance = Some(validVatFinancialCompliance), mainBusinessActivity = sicCode)))
       val summarySection = TestSummaryController.complianceSection(vs)
       summarySection.id mustBe "financialCompliance"
     }

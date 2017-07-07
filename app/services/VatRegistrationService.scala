@@ -151,7 +151,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
           .andThen(update(s4l.discretionaryInvestmentManagementServices))
           .andThen(update(s4l.investmentFundManagement))
           .andThen(update(s4l.manageAdditionalFunds))
-          .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance("")))
+          .andThen(update(s4l.mainBusinessActivity))
+          .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance("", mainBusinessActivity = SicCode.empty)))
       }
 
     for {

@@ -28,12 +28,14 @@ class ChargeFeesSpec extends UnitSpec with VatRegistrationFixture {
 
     val vatSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, chargeFees = Some(true)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, chargeFees = Some(true))),
+      mainBusinessActivity = sicCode
     )
 
     val differentSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, chargeFees = Some(false)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, chargeFees = Some(false))),
+      mainBusinessActivity = sicCode
     )
 
     "update VatSicAndCompliance with new ChargeFees" in {
@@ -50,12 +52,12 @@ class ChargeFeesSpec extends UnitSpec with VatRegistrationFixture {
     }
 
     "convert VatScheme without FinancialCompliance section to empty view model" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = None)))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = None)))
       ApiModelTransformer[ChargeFees].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme with FinancialCompliance section to view model - Charge Fees yes" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = Some(VatComplianceFinancial(
                                                                                                         true,
                                                                                                         true,
                                                                                                         chargeFees = Some(true))))))
@@ -63,7 +65,7 @@ class ChargeFeesSpec extends UnitSpec with VatRegistrationFixture {
     }
 
     "convert VatScheme with FinancialCompliance section to view model - Charge Fees no" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = Some(VatComplianceFinancial(
                                                                                                         true,
                                                                                                         true,
                                                                                                         chargeFees = Some(false))))))
