@@ -19,6 +19,7 @@ package connectors
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api.SicCode
+import models.view.frs.BusinessSectorView
 
 class ConfigConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -27,9 +28,15 @@ class ConfigConnectorSpec extends VatRegSpec with VatRegistrationFixture {
     val sicCode = SicCode(id = "01490025", description = "Silk worm raising", displayDetails = "Raising of other animals")
   }
 
-  "Calling getSicCodesListFromCodes" must {
+  "Calling getSicCodeDetails" must {
     "return a SicCode successfully" in new Setup {
       connector.getSicCodeDetails("01490025") mustBe sicCode
+    }
+  }
+
+  "Calling getBusinessSectorDetails" must {
+    "return a BusinessSectorView successfully" in new Setup {
+      connector.getBusinessSectorDetails("01490025") mustBe BusinessSectorView("Farming or agriculture that is not listed elsewhere", 6.5)
     }
   }
 
