@@ -675,6 +675,17 @@ validation.formerName.missing                            = Tell us if you have a
 validation.formerName.selected.missing                   = Enter a name
 validation.formerName.selected.invalid                   = Enter a valid name
 
+## Former Name Date
+pages.formerNameDate.title                               = When did you change it last?
+pages.formerNameDate.heading                             = When did you change it from ?
+pages.formerNameDate.hint1                               = For example, 31 3 2006.
+pages.formerNameDate.missing                             = Enter when this changed
+validation.formerNameDate.day.invalid                    = Enter a valid day
+validation.formerNameDate.day.invalid                    = Enter a valid month
+validation.formerNameDate.day.invalid                    = Enter a valid year
+
+
+
 ## Previous Address Question
 pages.previousAddressQuestion.title                      = Have you lived at your current address for 3 years or more?
 pages.previousAddressQuestion.heading                    = Have you lived at your current address for 3 years or more?
