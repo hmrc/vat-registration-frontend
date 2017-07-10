@@ -18,9 +18,8 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LVatSicAndCompliance
-import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.financial.AdviceOrConsultancy
+import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -78,8 +77,9 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsNoViewModel[BusinessActivityDescription]()
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      save4laterReturnsNoViewModel[MainBusinessActivityView]()
+      save4laterReturnsNoViewModel[BusinessActivityDescription]()
 
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "true"
@@ -92,8 +92,9 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsNoViewModel[BusinessActivityDescription]()
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      save4laterReturnsNoViewModel[MainBusinessActivityView]()
+      save4laterReturnsNoViewModel[BusinessActivityDescription]()
 
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "false"
