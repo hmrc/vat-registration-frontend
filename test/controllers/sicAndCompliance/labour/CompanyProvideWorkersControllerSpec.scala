@@ -19,9 +19,9 @@ package controllers.sicAndCompliance.labour
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LVatSicAndCompliance
-import models.view.sicAndCompliance.BusinessActivityDescription
+import models.api._
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
+import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -77,9 +77,16 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
     "return 303 with company provide workers Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsNoViewModel[BusinessActivityDescription]()
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+
+      val vsc = VatSicAndCompliance(
+        businessDescription = "bad",
+        mainBusinessActivity = SicCode("","","")
+      )
+
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme.copy(vatSicAndCompliance = Some(vsc))))
+      save4laterReturnsNoViewModel[MainBusinessActivityView]()
+      save4laterReturnsNoViewModel[BusinessActivityDescription]()
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_YES
@@ -90,8 +97,9 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      save4laterReturnsNoViewModel[MainBusinessActivityView]()
+      save4laterReturnsNoViewModel[BusinessActivityDescription]()
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_NO
