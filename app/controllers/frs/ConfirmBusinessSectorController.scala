@@ -18,31 +18,19 @@ package controllers.frs
 
 import javax.inject.Inject
 
-import cats.syntax.FlatMapSyntax
 import connectors.ConfigConnect
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import models.view.frs.BusinessSectorView
-import models.view.sicAndCompliance.MainBusinessActivityView
+import controllers.CommonPlayDependencies
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
-
-class ConfirmBusinessSectorController @Inject()(ds: CommonPlayDependencies, configConnect: ConfigConnect)
+class ConfirmBusinessSectorController @Inject()(ds: CommonPlayDependencies, configConnector: ConfigConnect)
                                                (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with FlatMapSyntax {
+  extends BusinessSectorAwareController(ds, configConnector) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[BusinessSectorView]().getOrElseF(determineBusinessSector())
-      .map(view => Ok(views.html.pages.frs.frs_confirm_business_sector(view))))
+    businessSectorView().map(view => Ok(views.html.pages.frs.frs_confirm_business_sector(view))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => Ok("cool").pure)
-
-  private def determineBusinessSector()(implicit hc: HeaderCarrier): Future[BusinessSectorView] =
-    viewModel[MainBusinessActivityView]()
-      .subflatMap(mbaView => mbaView.mainBusinessActivity)
-      .map(sicCode => configConnect.getBusinessSectorDetails(sicCode.id))
-      .getOrElse(throw new IllegalStateException("Can't determine main business activity"))
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    businessSectorView().flatMap(save(_).map(_ => Redirect(controllers.frs.routes.RegisterForFrsWithSectorController.show()))))
 
 }
