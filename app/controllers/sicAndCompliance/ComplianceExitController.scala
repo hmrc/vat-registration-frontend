@@ -28,7 +28,9 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.Future
 
 class ComplianceExitController (ds: CommonPlayDependencies)(implicit vrs: RegistrationService, s4LService: S4LService)
-  extends VatRegistrationController(ds) with CommonService{
+  extends VatRegistrationController(ds) with CommonService {
+
+  import cats.syntax.all._
 
   def submitAndExit(elements: List[ElementPath])(implicit hc: HeaderCarrier): Future[Result] =
     for {
@@ -37,12 +39,10 @@ class ComplianceExitController (ds: CommonPlayDependencies)(implicit vrs: Regist
     } yield Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
 
   def clearComplianceContainer(implicit hc: HeaderCarrier): Future[S4LVatSicAndCompliance] =
-    for {
-      bad <- viewModel[BusinessActivityDescription]().
-        fold(Option.empty[BusinessActivityDescription])(Some(_))
-      mba <- viewModel[MainBusinessActivityView]().
-        fold(Option.empty[MainBusinessActivityView])(Some(_))
-    } yield S4LVatSicAndCompliance(description = bad, mainBusinessActivity = mba)
+    viewModel[BusinessActivityDescription]().value |@|
+      viewModel[MainBusinessActivityView]().value map {
+        (bad, mba) => S4LVatSicAndCompliance(description = bad, mainBusinessActivity = mba)
+    }
 
   def selectNextPage(sicCodesList: List[SicCode])(implicit hc: HeaderCarrier):  Future[Result] = {
     ComplianceQuestions(sicCodesList) match {
