@@ -43,7 +43,7 @@ class OfficerViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
         nino = "",
         role = testRole,
         name = testName,
-        formerName = FormerName(false, None),
+        changeOfName = changeOfName,
         currentOrPreviousAddress = currentOrPreviousAddress,
         contact = OfficerContactDetails.empty)
 
