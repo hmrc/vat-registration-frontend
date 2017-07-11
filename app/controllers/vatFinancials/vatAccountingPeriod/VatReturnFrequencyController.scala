@@ -56,7 +56,7 @@ class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
         } else {
           controllers.frs.routes.JoinFrsController.show()
         },
-        ifFalse = controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show().pure)
-        .map(Redirect)))
+        ifFalse = controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show().pure
+      ).map(Redirect)))
 
 }

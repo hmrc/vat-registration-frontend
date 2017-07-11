@@ -33,7 +33,6 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
-      _ <- vrs.submitVatScheme()
       summary <- getRegistrationSummary()
       _ <- s4LService.clear()
     } yield Ok(views.html.pages.summary(summary)))

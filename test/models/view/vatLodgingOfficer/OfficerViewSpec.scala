@@ -17,9 +17,9 @@
 package models.view.vatLodgingOfficer
 
 import fixtures.VatRegistrationFixture
+import models.ApiModelTransformer
 import models.api._
 import models.external.Officer
-import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelTransformer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 

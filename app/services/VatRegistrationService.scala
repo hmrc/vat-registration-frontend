@@ -39,8 +39,6 @@ trait RegistrationService {
 
   def getAckRef(regId: String)(implicit hc: HeaderCarrier): OptionalResponse[String]
 
-  def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit]
-
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials]
 
   def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[VatSicAndCompliance]
@@ -106,11 +104,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       optCompProfile <- compRegConnector.getCompanyRegistrationDetails(vatScheme.id).value
       _ <- optCompProfile.map(keystoreConnector.cache[CoHoCompanyProfile]("CompanyProfile", _)).pure
     } yield ()
-
-  def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
-    submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@|
-      submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer |@|
-      submitPpob map { case _ => () }
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
     def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =
