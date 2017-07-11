@@ -34,6 +34,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
   val fakeRequest = FakeRequest(routes.AnnualCostsLimitedController.show())
   val estimateVatTurnover = EstimateVatTurnover(1000000L)
   val twoPercent = estimateVatTurnover.vatTurnoverEstimate / 50
+
   s"GET ${routes.AnnualCostsLimitedController.show()}" should {
 
     "return HTML Annual Costs Limited page with no Selection" in {
@@ -89,13 +90,11 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
-  }
-
-  s"POST ${routes.AnnualCostsLimitedController.submit()}" should {
 
     "return 303 with Annual Costs Limited selected Yes" in {
       save4laterExpectsSave[AnnualCostsLimitedView]()
       when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any())).thenReturn(twoPercent.pure)
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsLimitedRadio" -> AnnualCostsLimitedView.YES
@@ -105,6 +104,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
     "return 303 with Annual Costs Limited selected No - but within 12 months" in {
       save4laterExpectsSave[AnnualCostsLimitedView]()
       when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any())).thenReturn(twoPercent.pure)
+      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsLimitedRadio" -> AnnualCostsLimitedView.YES_WITHIN_12_MONTHS
