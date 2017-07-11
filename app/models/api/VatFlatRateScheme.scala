@@ -25,7 +25,10 @@ case class VatFlatRateScheme(joinFrs: Boolean = false,
                              annualCostsLimited: Option[String] = None,
                              doYouWantToUseThisRate: Option[Boolean] = None,
                              whenDoYouWantToJoinFrs: Option[String] = None,
-                             startDate: Option[LocalDate] = None)
+                             startDate: Option[LocalDate] = None,
+                             categoryOfBusiness: Option[String] = None,
+                             percentage: Option[BigDecimal] = None)
+
 
 object VatFlatRateScheme {
   implicit val format: OFormat[VatFlatRateScheme] = Json.format[VatFlatRateScheme]
