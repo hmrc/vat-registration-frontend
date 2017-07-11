@@ -17,7 +17,7 @@
 package models.view.sicAndCompliance.labour
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatComplianceLabour, VatSicAndCompliance}
+import models.api.{SicCode, VatComplianceLabour, VatSicAndCompliance}
 import models.view.sicAndCompliance.labour.TemporaryContracts.TEMP_CONTRACTS_NO
 import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
@@ -28,13 +28,15 @@ class TemporaryContractsSpec extends UnitSpec with VatRegistrationFixture {
     val temporaryContracts = TemporaryContracts(TEMP_CONTRACTS_NO)
 
     val vatSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      labourCompliance = Some(VatComplianceLabour(labour = true, temporaryContracts = Some(true)))
+      businessDescription = businessActivityDescription,
+      labourCompliance = Some(VatComplianceLabour(labour = true, temporaryContracts = Some(true))),
+      mainBusinessActivity = SicCode("","","")
     )
 
     val differentSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      labourCompliance = Some(VatComplianceLabour(labour = true, temporaryContracts = Some(false)))
+      businessDescription = businessActivityDescription,
+      labourCompliance = Some(VatComplianceLabour(labour = true, temporaryContracts = Some(false))),
+      mainBusinessActivity = SicCode("","","")
     )
 
     "update VatSicAndCompliance with new TemporaryContracts" in {
@@ -56,12 +58,18 @@ class TemporaryContractsSpec extends UnitSpec with VatRegistrationFixture {
     }
 
     "convert VatScheme with LabourCompliance section to view model - temporary contracts yes" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, labourComplianceSection = Some(VatComplianceLabour(true, Some(8), Some(true), Some(true))))))
+      val vs = vatScheme(
+        sicAndCompliance = Some(
+          vatSicAndCompliance(mainBusinessActivitySection = sicCode,
+            labourComplianceSection = Some(VatComplianceLabour(true, Some(8), Some(true), Some(true))))))
       ApiModelTransformer[TemporaryContracts].toViewModel(vs) shouldBe Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES))
     }
 
     "convert VatScheme with LabourCompliance section to view model - temporary contracts no" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, labourComplianceSection = Some(VatComplianceLabour(true, Some(8), Some(false), Some(true))))))
+      val vs = vatScheme(
+        sicAndCompliance = Some(
+          vatSicAndCompliance(mainBusinessActivitySection = sicCode,
+            labourComplianceSection = Some(VatComplianceLabour(true, Some(8), Some(false), Some(true))))))
       ApiModelTransformer[TemporaryContracts].toViewModel(vs) shouldBe Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO))
     }
 

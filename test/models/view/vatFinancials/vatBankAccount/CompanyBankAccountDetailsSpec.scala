@@ -17,8 +17,8 @@
 package models.view.vatFinancials.vatBankAccount
 
 import fixtures.VatRegistrationFixture
-import models.{ApiModelTransformer, S4LVatFinancials}
 import models.api.{VatBankAccount, VatFinancials, VatScheme}
+import models.{ApiModelTransformer, S4LVatFinancials}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CompanyBankAccountDetailsSpec extends UnitSpec with VatRegistrationFixture {

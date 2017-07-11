@@ -17,7 +17,7 @@
 package models.view.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatComplianceFinancial, VatSicAndCompliance}
+import models.api.{SicCode, VatComplianceFinancial, VatSicAndCompliance}
 import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -27,13 +27,15 @@ class ActAsIntermediarySpec extends UnitSpec with VatRegistrationFixture {
     val actAsIntermediary = ActAsIntermediary(false)
 
     val vatSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(adviceOrConsultancyOnly = true, actAsIntermediary = true))
+      businessDescription = businessActivityDescription,
+      financialCompliance = Some(VatComplianceFinancial(adviceOrConsultancyOnly = true, actAsIntermediary = true)),
+      mainBusinessActivity = SicCode("","","")
     )
 
     val differentSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(adviceOrConsultancyOnly = true, actAsIntermediary = false))
+      businessDescription = businessActivityDescription,
+      financialCompliance = Some(VatComplianceFinancial(adviceOrConsultancyOnly = true, actAsIntermediary = false)),
+      mainBusinessActivity = SicCode("","","")
     )
 
     "update VatSicAndCompliance with new ActAsIntermediary" in {
