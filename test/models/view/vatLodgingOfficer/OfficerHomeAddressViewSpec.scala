@@ -35,7 +35,7 @@ class OfficerHomeAddressViewSpec extends UnitSpec with VatRegistrationFixture wi
       nino = "",
       role = "director",
       name = officerName,
-      formerName = formerName,
+      changeOfName = changeOfName,
       currentOrPreviousAddress = currentOrPreviousAddress,
       contact = validOfficerContactDetails)
 

@@ -48,7 +48,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       val vatScheme = validVatScheme.copy(lodgingOfficer =
         Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director",
-                        officerName, formerName, currentOrPreviousAddress, validOfficerContactDetails)))
+                        officerName, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)))
 
       save4laterReturnsNoViewModel[OfficerHomeAddressView]()
       mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", dummyCacheMap)
