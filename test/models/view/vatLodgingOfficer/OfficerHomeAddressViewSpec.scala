@@ -16,10 +16,8 @@
 
 package models.view.vatLodgingOfficer
 
-import java.time.LocalDate
-
 import fixtures.VatRegistrationFixture
-import models.api.{DateOfBirth, Name, ScrsAddress, VatLodgingOfficer}
+import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer}
 import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelTransformer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec

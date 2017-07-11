@@ -17,9 +17,9 @@
 package models.view.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
-import models.{ApiModelTransformer, S4LTradingDetails}
 import models.api.{VatChoice, VatScheme}
 import models.view.vatTradingDetails.vatChoice.TaxableTurnover._
+import models.{ApiModelTransformer, S4LTradingDetails}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
