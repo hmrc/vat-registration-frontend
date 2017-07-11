@@ -49,7 +49,7 @@ class BusinessSectorAwareControllerSpec extends VatRegSpec with VatRegistrationF
     "determine a businessSectorView if none is saved but main business activity is known" in
       new BusinessSectorAwareController(ds, mockConfigConnector) {
         implicit val hc = HeaderCarrier()
-        when(mockVatRegistrationService.getVatScheme()).thenReturn(validVatScheme.pure)
+        when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
         save4laterReturnsNoViewModel[BusinessSectorView]()
         save4laterReturnsViewModel(MainBusinessActivityView(SicCode("12345678", "description", "displayDetails")))()
         when(mockConfigConnector.getBusinessSectorDetails("12345678")).thenReturn(testBusinessSectorView)
@@ -60,10 +60,10 @@ class BusinessSectorAwareControllerSpec extends VatRegSpec with VatRegistrationF
     "fail if no BusinessSectorView is saved and main business activity is not known" in
       new BusinessSectorAwareController(ds, mockConfigConnector) {
         implicit val hc = HeaderCarrier()
-        when(mockVatRegistrationService.getVatScheme()).thenReturn(validVatScheme.pure)
+        when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
         save4laterReturnsNoViewModel[BusinessSectorView]()
         save4laterReturnsNoViewModel[MainBusinessActivityView]()
-        businessSectorView().failedWith(new IllegalStateException("foo"))
+        businessSectorView() failedWith classOf[IllegalStateException]
       }
 
   }
