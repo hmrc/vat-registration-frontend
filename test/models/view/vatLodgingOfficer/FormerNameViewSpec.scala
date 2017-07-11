@@ -16,6 +16,8 @@
 
 package models.view.vatLodgingOfficer
 
+import java.time.LocalDate
+
 import fixtures.VatRegistrationFixture
 import models.api._
 import models.external.Officer
@@ -25,8 +27,8 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class FormerNameViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
-  val testFormerName = FormerName(selection = true, formerName = Some("Test Name"))
-  val testFormerNameView = FormerNameView(true, testFormerName.formerName)
+  val changeOfName = ChangeOfName(true, Some(FormerName("Bob")))
+  val testFormerNameView = FormerNameView(true, Some("Bob"))
 
   val anOfficer = Officer(Name(Some("name1"), Some("name2"),"SurName"), "director", Some(validDob))
   val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
@@ -34,7 +36,7 @@ class FormerNameViewSpec extends UnitSpec with VatRegistrationFixture with Insid
   "apiModelTransformer" should {
 
     "convert VatScheme with VatLodgingOfficer details into a FormerNameView" in {
-      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName,  testFormerName, currentOrPreviousAddress, validOfficerContactDetails)
+      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName,  changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       ApiModelTransformer[FormerNameView].toViewModel(vs) shouldBe Some(testFormerNameView)
@@ -50,8 +52,8 @@ class FormerNameViewSpec extends UnitSpec with VatRegistrationFixture with Insid
 
   "viewModelTransformer" should {
     "update logical group given a component" in {
-      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(false, None), currentOrPreviousAddress, validOfficerContactDetails)
-      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, testFormerName, currentOrPreviousAddress, validOfficerContactDetails)
+      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, ChangeOfName(false, Some(FormerName(""))), currentOrPreviousAddress, validOfficerContactDetails)
+      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
 
       ViewModelTransformer[FormerNameView, VatLodgingOfficer].
         toApi(testFormerNameView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
@@ -60,7 +62,7 @@ class FormerNameViewSpec extends UnitSpec with VatRegistrationFixture with Insid
 
   "apply" should {
     "create a FormerNameView instance" in {
-      FormerNameView(testFormerName) shouldBe testFormerNameView
+      FormerNameView(changeOfName) shouldBe testFormerNameView
     }
   }
 

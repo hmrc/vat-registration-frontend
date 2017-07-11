@@ -38,7 +38,7 @@ object FormerNameDateForm {
 
   val form = Form(
     mapping (
-      "dob" -> mapping(
+      "date" -> mapping(
         "day" -> text,
         "month" -> text,
         "year" -> text

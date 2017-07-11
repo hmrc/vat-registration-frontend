@@ -19,42 +19,41 @@ package models.view.vatLodgingOfficer
 import java.time.LocalDate
 
 import models._
-import models.api.{VatFlatRateScheme, VatScheme, VatStartDate, VatTradingDetails}
+import models.api._
 import play.api.libs.json.Json
 
 import scala.util.Try
 
-case class FormerNameDateView(dateType: String = "", date: Option[LocalDate] = None)
+case class FormerNameDateView(date: Option[LocalDate] = None )
 
 object FormerNameDateView {
 
-  def bind(dateType: String, dateModel: Option[DateModel]): FormerNameDateView =
-    FormerNameDateView(dateType, dateModel.flatMap(_.toLocalDate))
+  def bind(dateModel: DateModel): FormerNameDateView =
+    FormerNameDateView(dateModel.toLocalDate)
 
-  def unbind(formerNameDate: FormerNameDateView): Option[(String, Option[DateModel])] =
+  def unbind(formerNameDate: FormerNameDateView): Option[DateModel] =
     Try {
-      formerNameDate.date.fold((formerNameDate.dateType, Option.empty[DateModel])) {
-        d => (formerNameDate.dateType, Some(DateModel.fromLocalDate(d)))
+      formerNameDate.date.fold((Option.empty[DateModel])) {
+        d => Some(DateModel.fromLocalDate(d))
       }
-    }.toOption
+    }.getOrElse((Option.empty[DateModel]))
 
   implicit val format = Json.format[FormerNameDateView]
 
   implicit val viewModelFormat = ViewModelFormat(
-    readF = (group: S4LFlatRateScheme) => group.formerNameDate,
-    updateF = (c: FormerNameDateView, g: Option[S4LFlatRateScheme]) =>
-      g.getOrElse(S4LFlatRateScheme()).copy(formerNameDate = Some(c))
+    readF = (group: S4LVatLodgingOfficer) => group.formerNameDate,
+    updateF = (c: FormerNameDateView, g: Option[S4LVatLodgingOfficer]) =>
+      g.getOrElse(S4LVatLodgingOfficer()).copy(formerNameDate = Some(c))
   )
+
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[FormerNameDateView] { vs: VatScheme =>
-    vs.vatFlatRateScheme.collect{
-      case VatFlatRateScheme(_, _, _, _, Some(dateType), d@_) => FormerNameDateView(dateType, d)
-    }
+    vs.lodgingOfficer.flatMap(_.changeOfName.formerName).map(formerName => FormerNameDateView(formerName.dateOfNameChange))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: FormerNameDateView, g: VatFlatRateScheme) =>
-    g.copy(whenDoYouWantToJoinFrs = Some(c.dateType), startDate = c.date)
+  implicit val viewModelTransformer = ViewModelTransformer { (c: FormerNameDateView, g: VatLodgingOfficer) => {
+    g.copy(changeOfName = g.changeOfName.copy(formerName = g.changeOfName.formerName.map(formerName => formerName.copy(dateOfNameChange = c.date))))
   }
-
-}
+  }
+ }

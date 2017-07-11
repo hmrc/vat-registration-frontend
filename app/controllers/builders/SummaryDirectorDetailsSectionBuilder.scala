@@ -30,10 +30,11 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLod
     Some(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
   )
 
+
   val formerName: SummaryRow = SummaryRow(
     s"$sectionId.formerName",
-    vatLodgingOfficer.map(_.formerName.selection).collect {
-      case true => vatLodgingOfficer.flatMap(_.formerName.formerName).getOrElse("")
+    vatLodgingOfficer.map(_.changeOfName.nameHasChanged).collect {
+      case true => vatLodgingOfficer.flatMap(_.changeOfName.formerName).map(_.formerName).getOrElse("")
     }.getOrElse(s"pages.summary.$sectionId.noFormerName"),
     Some(controllers.vatLodgingOfficer.routes.FormerNameController.show())
   )

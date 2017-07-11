@@ -16,14 +16,12 @@
 
 package models.api
 
-import java.time.LocalDate
-
 import play.api.libs.json.Json
 
-case class FormerName(formerName: String, dateOfNameChange: Option[LocalDate] = None)
+case class ChangeOfName(nameHasChanged: Boolean, formerName: Option[FormerName] = None)
 
-object FormerName {
+object ChangeOfName {
 
-  implicit val format = Json.format[FormerName]
+  implicit val format = Json.format[ChangeOfName]
 
 }

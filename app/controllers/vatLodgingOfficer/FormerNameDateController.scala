@@ -20,20 +20,22 @@ import javax.inject.Inject
 
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
+import forms.vatLodgingOfficer.{FormerNameDateForm, OfficerDateOfBirthForm}
 import models.view.vatLodgingOfficer.FormerNameDateView
 import play.api.data.Form
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 
-class FormerNameDateController @Inject()(formerNameDateForm: FormerNameDateForm, ds: CommonPlayDependencies)
+class FormerNameDateController @Inject()(ds: CommonPlayDependencies)
                                         (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with FlatMapSyntax {
 
-  val form: Form[FormerNameDateView] = formerNameDateForm.form()
+  val form: Form[FormerNameDateView] = FormerNameDateForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel[FormerNameDateView]().getOrElse(FormerNameDateView())
-      .map(f => Ok(views.html.pages.vatLodgingOfficer.former_name_date(f))))
+      .map(f => Ok(views.html.pages.vatLodgingOfficer.former_name_date(form.fill(f)))))
+
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(

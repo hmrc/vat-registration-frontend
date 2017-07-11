@@ -120,6 +120,7 @@ final case class S4LVatLodgingOfficer
   completionCapacity: Option[CompletionCapacityView] = None,
   officerContactDetails: Option[OfficerContactDetailsView] = None,
   formerName: Option[FormerNameView] = None,
+  formerNameDate: Option[FormerNameDateView] = None,
   previousAddress: Option[PreviousAddressView] = None
 )
 
