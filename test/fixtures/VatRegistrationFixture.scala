@@ -234,7 +234,9 @@ trait VatRegistrationFixture {
     joinFrs = true,
     annualCostsInclusive = Some(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS),
     annualCostsLimited = Some(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS),
-    doYouWantToUseThisRate = Some(false)
+    doYouWantToUseThisRate = Some(false),
+    categoryOfBusiness = Some("test business sector"),
+    percentage = Some(BigDecimal(3.14))
   )
 
   val validVatScheme = VatScheme(
