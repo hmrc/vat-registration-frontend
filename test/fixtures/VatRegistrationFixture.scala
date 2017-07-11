@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import models.api.{VatComplianceCultural, _}
 import models.external.{CoHoCompanyProfile, Officer}
-import models.view.frs.{AnnualCostsInclusiveView, AnnualCostsLimitedView, JoinFrsView, RegisterForFrsView}
+import models.view.frs._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
@@ -230,11 +230,15 @@ trait VatRegistrationFixture {
   val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
 
   val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
+  val validBusinessSectorView = BusinessSectorView("test business sector", 3.14)
+
   val validVatFlatRateScheme = VatFlatRateScheme(
     joinFrs = true,
     annualCostsInclusive = Some(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS),
     annualCostsLimited = Some(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS),
-    doYouWantToUseThisRate = Some(false)
+    doYouWantToUseThisRate = Some(false),
+    categoryOfBusiness = Some(validBusinessSectorView.businessSector),
+    percentage = Some(BigDecimal(3.14))
   )
 
   val validVatScheme = VatScheme(

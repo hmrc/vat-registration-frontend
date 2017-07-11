@@ -92,7 +92,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.NO
-      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
+      ))(_ redirectsTo s"$contextRoot/confirm-business-type")
     }
 
     "redirect to next question if 2% of estimated taxable turnover > 1K and NO answered" in {
