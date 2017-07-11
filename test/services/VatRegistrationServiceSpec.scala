@@ -27,7 +27,7 @@ import models.api._
 import models.external.CoHoCompanyProfile
 import models.view.frs._
 import models.view.ppob.PpobView
-import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}

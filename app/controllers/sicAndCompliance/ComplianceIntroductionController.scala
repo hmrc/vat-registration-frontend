@@ -32,7 +32,9 @@ class ComplianceIntroductionController @Inject()(s4LService: S4LService, ds: Com
     Ok(views.html.pages.sicAndCompliance.compliance_introduction()))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    OptionT(s4LService.fetchAndGet[SicStub]()).map(ss => ComplianceQuestions(ss.sicCodes))
+    OptionT(s4LService.fetchAndGet[SicStub]()).map(
+      ss =>
+        ComplianceQuestions(ss.sicCodes.toArray))
       .fold(controllers.test.routes.SicStubController.show())(_.firstQuestion).map(Redirect))
 
 }

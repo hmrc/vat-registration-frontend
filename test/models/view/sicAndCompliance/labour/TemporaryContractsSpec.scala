@@ -51,18 +51,18 @@ class TemporaryContractsSpec extends UnitSpec with VatRegistrationFixture {
     }
 
     "convert VatScheme without LabourCompliance section to empty view model" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = None)))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = None, mainBusinessActivitySection = sicCode)))
       ApiModelTransformer[TemporaryContracts].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme with LabourCompliance section to view model - temporary contracts yes" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = Some(VatComplianceLabour(true, Some(8), Some(true), Some(true))))))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, labourComplianceSection = Some(VatComplianceLabour(true, Some(8), Some(true), Some(true))))))
       ApiModelTransformer[TemporaryContracts].toViewModel(vs) shouldBe Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES))
     }
 
     "convert VatScheme with LabourCompliance section to view model - temporary contracts no" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = Some(VatComplianceLabour(true, Some(8), Some(false), Some(true))))))
-      ApiModelTransformer[TemporaryContracts].toViewModel(vs) shouldBe Some(TemporaryContracts(TEMP_CONTRACTS_NO))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, labourComplianceSection = Some(VatComplianceLabour(true, Some(8), Some(false), Some(true))))))
+      ApiModelTransformer[TemporaryContracts].toViewModel(vs) shouldBe Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO))
     }
 
   }

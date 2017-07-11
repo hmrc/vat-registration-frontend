@@ -36,7 +36,10 @@ case class SicAndComplianceTestSetup(businessActivityDescription: Option[String]
                                      financialDiscretionaryInvestment: Option[String],
                                      financialLeaseVehiclesOrEquipment: Option[String],
                                      financialInvestmentFundManagement: Option[String],
-                                     financialManageAdditionalFunds: Option[String]
+                                     financialManageAdditionalFunds: Option[String],
+                                     mainBusinessActivityId: Option[String] ,
+                                     mainBusinessActivityDescription: Option[String] ,
+                                     mainBusinessActivityDisplayDetails: Option[String]
                                     )
 
 object SicAndComplianceTestSetup {

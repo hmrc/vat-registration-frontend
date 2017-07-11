@@ -19,8 +19,7 @@ package models.view.frs
 import java.time.LocalDate
 
 import models._
-import models.api.{VatFlatRateScheme, VatScheme, VatStartDate, VatTradingDetails}
-import models.view.vatTradingDetails.vatChoice.StartDateView
+import models.api.{VatFlatRateScheme, VatScheme}
 import play.api.libs.json.Json
 
 import scala.util.Try
@@ -54,8 +53,8 @@ object FrsStartDateView {
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[FrsStartDateView] { vs: VatScheme =>
-    vs.vatFlatRateScheme.collect{
-      case VatFlatRateScheme(_, _, _, _, Some(dateType), d@_) => FrsStartDateView(dateType, d)
+    vs.vatFlatRateScheme.collect {
+      case VatFlatRateScheme(_, _, _, _, Some(dateType), d@_, _, _) => FrsStartDateView(dateType, d) //TODO review if such collect necessary
     }
   }
 

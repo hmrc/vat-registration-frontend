@@ -50,17 +50,17 @@ class AdviceOrConsultancySpec extends UnitSpec with VatRegistrationFixture {
     }
 
     "convert VatScheme without FinancialCompliance section to empty view model" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = None)))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = None, mainBusinessActivitySection = sicCode)))
       ApiModelTransformer[AdviceOrConsultancy].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme with FinancialCompliance section to view model - Advice or Consultancy yes" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(true, true)))))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = Some(VatComplianceFinancial(true, true)))))
       ApiModelTransformer[AdviceOrConsultancy].toViewModel(vs) shouldBe Some(AdviceOrConsultancy(true))
     }
 
     "convert VatScheme with FinancialCompliance section to view model - Advice or Consultancy no" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(false, false)))))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = Some(VatComplianceFinancial(false, false)))))
       ApiModelTransformer[AdviceOrConsultancy].toViewModel(vs) shouldBe Some(AdviceOrConsultancy(false))
     }
 

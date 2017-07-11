@@ -28,12 +28,14 @@ class InvestmentFundManagementSpec extends UnitSpec with VatRegistrationFixture 
 
     val vatSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, investmentFundManagementServices = Some(true)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, investmentFundManagementServices = Some(true))),
+      mainBusinessActivity = sicCode
     )
 
     val differentSicAndCompliance = VatSicAndCompliance(
       businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, investmentFundManagementServices = Some(false)))
+      financialCompliance = Some(VatComplianceFinancial(true, true, investmentFundManagementServices = Some(false))),
+      mainBusinessActivity = sicCode
     )
 
     "update VatFinancials with new AccountingPeriod" in {
@@ -50,12 +52,12 @@ class InvestmentFundManagementSpec extends UnitSpec with VatRegistrationFixture 
     }
 
     "convert VatScheme without FinancialCompliance section to empty view model" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = None)))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = None, mainBusinessActivitySection = sicCode)))
       ApiModelTransformer[InvestmentFundManagement].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme with FinancialCompliance section to view model - Investment Fund Management yes" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = Some(VatComplianceFinancial(
                                                                                                         true,
                                                                                                         true,
                                                                                                         investmentFundManagementServices = Some(true))))))
@@ -63,7 +65,7 @@ class InvestmentFundManagementSpec extends UnitSpec with VatRegistrationFixture 
     }
 
     "convert VatScheme with FinancialCompliance section to view model - Investment Fund Management no" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = Some(VatComplianceFinancial(
                                                                                                         true,
                                                                                                         true,
                                                                                                         investmentFundManagementServices = Some(false))))))

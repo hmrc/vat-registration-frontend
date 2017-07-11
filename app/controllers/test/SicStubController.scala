@@ -18,16 +18,16 @@ package controllers.test
 
 import javax.inject.Inject
 
+import connectors.ConfigConnect
 import controllers.CommonPlayDependencies
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.test.SicStubForm
-import models.ElementPath.allCompliancePaths
-import models._
+import models.ModelKeys.SIC_CODES_KEY
 import models.view.test.SicStub
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
-class SicStubController @Inject()(ds: CommonPlayDependencies)
+class SicStubController @Inject()(ds: CommonPlayDependencies, configConnect: ConfigConnect)
                                  (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends ComplianceExitController(ds) {
 
@@ -46,11 +46,14 @@ class SicStubController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     SicStubForm.form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.test.sic_stub(badForm)).pure,
-      data => s4LService.save[SicStub](data).flatMap(_ =>
-        ComplianceQuestions(data.sicCodes) match {
-          case NoComplianceQuestions => submitAndExit(List(CulturalCompliancePath, FinancialCompliancePath, LabourCompliancePath))
-          case _ => controllers.sicAndCompliance.routes.ComplianceIntroductionController.show().pure
-        }
-      ).map(Redirect)))
+      data => s4LService.save[SicStub](data).flatMap(_ => {
+        val sicCodesList = data.fullSicCodes.map(configConnect.getSicCodeDetails)
+        keystoreConnector.cache(SIC_CODES_KEY, sicCodesList).flatMap(_ =>
+          data.sicCodes match {
+            case head :: Nil => Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.redirectToNext()).pure
+            case _ :: tail => Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.show()).pure
+            case Nil => selectNextPage(sicCodesList)
+          })
+      })))
 
 }

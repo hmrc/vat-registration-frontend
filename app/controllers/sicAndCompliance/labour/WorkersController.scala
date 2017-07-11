@@ -42,9 +42,9 @@ class WorkersController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.workers(badForm)).pure,
-      view => save(view).map(_ => view.numberOfWorkers >= 8).ifM(
-        ifTrue = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show().pure,
+      data => save(data).map(_ => data.numberOfWorkers >= 8).ifM(
+        ifTrue = Redirect(controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show()).pure,
         ifFalse = submitAndExit(ElementPath.labCompElementPaths.drop(2))
-      ).map(Redirect)))
+      )))
 
 }

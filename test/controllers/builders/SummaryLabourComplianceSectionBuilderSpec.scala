@@ -30,7 +30,7 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
     skilledWorkers = Some(true)
   )
 
-  val testVatSicAndCompliance = Some(VatSicAndCompliance(businessDescription = "TEST"))
+  val testVatSicAndCompliance = Some(VatSicAndCompliance(businessDescription = "TEST", mainBusinessActivity = sicCode))
 
   "The section builder composing a labour details section" should {
 
@@ -38,7 +38,7 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
     "providingWorkersRow render" should {
 
       " 'Yes' selected providingWorkersRow " in {
-        val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance.copy(labour = true)))
+        val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance.copy(labour = true)), mainBusinessActivity = sicCode)
         val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.providingWorkersRow mustBe
           SummaryRow(
@@ -50,7 +50,7 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
 
 
       " 'No' selected for providingWorkersRow" in {
-        val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance.copy(labour = false)))
+        val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance.copy(labour = false)), mainBusinessActivity = sicCode)
         val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.providingWorkersRow mustBe
           SummaryRow(
@@ -65,7 +65,7 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
     "numberOfWorkers render" should {
 
       "render a row" in {
-        val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance))
+        val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance), mainBusinessActivity = sicCode)
         val builder = SummaryLabourComplianceSectionBuilder(Some(compliance))
         builder.numberOfWorkersRow mustBe
           SummaryRow(
@@ -92,7 +92,7 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
 
 
       " 'YES' selected for temporaryContractsRow" in {
-        val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance))
+        val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance), mainBusinessActivity = sicCode)
         val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.temporaryContractsRow mustBe
           SummaryRow(
@@ -117,7 +117,7 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
 
 
       " 'YES' selected for skilledWorkersRow" in {
-        val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance))
+        val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance), mainBusinessActivity = sicCode)
         val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
         builder.skilledWorkersRow mustBe
           SummaryRow(
@@ -130,7 +130,7 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
 
 
     "section generate" should {
-      val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance))
+      val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance), mainBusinessActivity = sicCode)
       val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
 
       "a valid summary section" in {

@@ -45,7 +45,7 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies, f
     case DoingBusinessAbroadQuestion => eligibilityRoutes.ServiceCriteriaQuestionsController.show(DoAnyApplyToYouQuestion.name)
     case DoAnyApplyToYouQuestion => eligibilityRoutes.ServiceCriteriaQuestionsController.show(ApplyingForAnyOfQuestion.name)
     case ApplyingForAnyOfQuestion => eligibilityRoutes.ServiceCriteriaQuestionsController.show(CompanyWillDoAnyOfQuestion.name)
-    case CompanyWillDoAnyOfQuestion => controllers.routes.TwirlViewController.renderViewAuthorised()
+    case CompanyWillDoAnyOfQuestion => controllers.routes.TwirlViewController.renderViewAuthorised("eligibility-success")
   }
 
   private def viewForQuestion(q: EligibilityQuestion, form: Form[YesOrNoQuestion])(implicit r: Request[AnyContent]) = q match {

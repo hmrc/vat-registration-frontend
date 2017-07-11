@@ -50,13 +50,13 @@ class WorkersSpec extends UnitSpec with VatRegistrationFixture {
     }
 
     "convert VatScheme without LabourCompliance section to empty view model" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = None)))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(labourComplianceSection = None, mainBusinessActivitySection = sicCode)))
       ApiModelTransformer[Workers].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme with LabourCompliance section to view model" in {
       val vs = vatScheme(sicAndCompliance =
-        Some(vatSicAndCompliance(labourComplianceSection =
+        Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, labourComplianceSection =
           Some(VatComplianceLabour(true, Some(8), Some(true), Some(true))))))
 
       ApiModelTransformer[Workers].toViewModel(vs) shouldBe Some(Workers(8))

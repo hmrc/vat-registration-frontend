@@ -44,6 +44,6 @@ class NotForProfitController @Inject()(ds: CommonPlayDependencies)
         clearCompliance <- clearComplianceContainer
         _ <- s4LService.save(clearCompliance.copy(notForProfit = Some(view)))
         call <- submitAndExit(List(FinancialCompliancePath, LabourCompliancePath))
-      } yield Redirect(call)))
+      } yield call))
 
 }

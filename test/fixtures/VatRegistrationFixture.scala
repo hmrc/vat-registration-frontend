@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import models.api.{VatComplianceCultural, _}
 import models.external.{CoHoCompanyProfile, Officer}
-import models.view.frs.{AnnualCostsInclusiveView, AnnualCostsLimitedView, JoinFrsView, RegisterForFrsView}
+import models.view.frs._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
@@ -92,11 +92,13 @@ trait VatRegistrationFixture {
     accountingPeriods = monthlyAccountingPeriod
   )
 
+  val sicCode = SicCode("88888888", "description", "displayDetails")
   val validSicAndCompliance = VatSicAndCompliance(
     businessDescription = businessActivityDescription,
     culturalCompliance = Some(VatComplianceCultural(notForProfit = false)),
     labourCompliance = None,
-    financialCompliance = None
+    financialCompliance = None,
+    mainBusinessActivity = sicCode
   )
 
   val validDob = DateOfBirth(12, 11, 1973)
@@ -166,12 +168,15 @@ trait VatRegistrationFixture {
                              adviceOrConsultancyOnly = true,
                              actAsIntermediary = false,
                              chargeFees = Some(true),
-                             additionalNonSecuritiesWork = Some(true)))): VatSicAndCompliance =
+                             additionalNonSecuritiesWork = Some(true))),
+                           mainBusinessActivitySection: SicCode): VatSicAndCompliance =
     VatSicAndCompliance(
       businessDescription = activityDescription,
       culturalCompliance = culturalComplianceSection,
       labourCompliance = labourComplianceSection,
-      financialCompliance = financialComplianceSection)
+      financialCompliance = financialComplianceSection,
+      mainBusinessActivity = mainBusinessActivitySection
+    )
 
 
   def vatScheme(
@@ -225,11 +230,15 @@ trait VatRegistrationFixture {
   val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
 
   val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
+  val validBusinessSectorView = BusinessSectorView("test business sector", 3.14)
+
   val validVatFlatRateScheme = VatFlatRateScheme(
     joinFrs = true,
     annualCostsInclusive = Some(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS),
     annualCostsLimited = Some(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS),
-    doYouWantToUseThisRate = Some(false)
+    doYouWantToUseThisRate = Some(false),
+    categoryOfBusiness = Some(validBusinessSectorView.businessSector),
+    percentage = Some(BigDecimal(3.14))
   )
 
   val validVatScheme = VatScheme(
