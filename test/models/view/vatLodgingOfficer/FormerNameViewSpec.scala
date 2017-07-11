@@ -27,7 +27,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class FormerNameViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
-  val changeOfName = ChangeOfName(true, Some(FormerName("Bob")))
+  override val changeOfName = ChangeOfName(true, Some(FormerName("Bob")))
   val testFormerNameView = FormerNameView(true, Some("Bob"))
 
   val anOfficer = Officer(Name(Some("name1"), Some("name2"),"SurName"), "director", Some(validDob))
