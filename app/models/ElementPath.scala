@@ -73,6 +73,21 @@ object ElementPath {
 
   val allCompliancePaths = List(CulturalCompliancePath, FinancialCompliancePath, LabourCompliancePath)
 
+  val fromFrsAnnualCostsInclusiveElementPaths = List(
+    VatFrsAnnualCostsLimitedPath,
+    VatFrsPercentage,
+    VatFrsBusCategory,
+    VatFrsUseThisRate,
+    VatFrsWhenToJoin,
+    VatFrsStartDate)
+
+  val fromFrsAnnualCostsLimitedElementPaths = List(
+    VatFrsPercentage,
+    VatFrsBusCategory,
+    VatFrsUseThisRate,
+    VatFrsWhenToJoin,
+    VatFrsStartDate)
+
   val flatRateSchemeElementPaths = List(
     VatFrsAnnualCostsInclusivePath,
     VatFrsAnnualCostsLimitedPath,
