@@ -19,7 +19,7 @@ package controllers.test
 import java.time.LocalDate
 
 import models._
-import models.api._
+import models.api.{ChangeOfName, _}
 import models.view.frs._
 import models.view.ppob.PpobView
 import models.view.sicAndCompliance.cultural.NotForProfit
@@ -203,10 +203,12 @@ class TestS4LBuilder {
         mobile = data.vatLodgingOfficer.mobile,
         tel = data.vatLodgingOfficer.phone))
 
-    val formerName = data.vatLodgingOfficer.formernameChoice.map(_ =>
-      FormerName(
-        selection = data.vatLodgingOfficer.formernameChoice.exists(_.toBoolean),
-        formerName = data.vatLodgingOfficer.formername))
+    val changeOfName = data.vatLodgingOfficer.formernameChoice.map(_ =>
+      ChangeOfName(
+        nameHasChanged = data.vatLodgingOfficer.formernameChoice.exists(_.toBoolean),
+        formerName = Some(FormerName(data.vatLodgingOfficer.formername.getOrElse("")))
+      )
+    )
 
     S4LVatLodgingOfficer(
       previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
@@ -215,8 +217,9 @@ class TestS4LBuilder {
       officerNino = nino.map(OfficerNinoView(_)),
       completionCapacity = completionCapacity.map(CompletionCapacityView(_)),
       officerContactDetails = contactDetails.map(OfficerContactDetailsView(_)),
-      formerName = formerName.map(FormerNameView(_))
-    )
+      formerName = changeOfName.map(changeOfName =>
+        FormerNameView(changeOfName.nameHasChanged, changeOfName.formerName.map(name => name.formerName)))
+      )
   }
 
   def vatFrsFromData(data: TestSetup): S4LFlatRateScheme = {
