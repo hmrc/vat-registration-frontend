@@ -28,6 +28,7 @@ class FormerNameController @Inject()(ds: CommonPlayDependencies)
                                     (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
+  import cats.syntax.flatMap._
   val form = FormerNameForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
@@ -37,16 +38,11 @@ class FormerNameController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatLodgingOfficer.former_name(badForm)).pure,
-      data => save(data) map (_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show()))))
-
+      data =>
+        (data.yesNo == true).pure.ifM(
+          ifTrue =  save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())),
+          ifFalse = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.FormerNameDateController.show()))
+          )
+    )
+  )
 }
-
-/*(data.addressId == "other").pure.ifM(
-        ifTrue = alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm()),
-        ifFalse = for {
-          addressList <- fetchAddressList().getOrElse(Seq())
-          address = addressList.find(_.id == data.addressId)
-          _ <- save(OfficerHomeAddressView(data.addressId, address))
-        } yield controllers.vatLodgingOfficer.routes.PreviousAddressController.show()
-      ).map(Redirect)))
- */
