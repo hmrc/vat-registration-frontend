@@ -18,7 +18,6 @@ package models.view.sicAndCompliance
 
 import fixtures.VatRegistrationFixture
 import models.api.VatSicAndCompliance
-import models.view.sicAndCompliance.labour.Workers
 import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
