@@ -50,17 +50,17 @@ class ActAsIntermediarySpec extends UnitSpec with VatRegistrationFixture {
     }
 
     "convert VatScheme without FinancialCompliance section to empty view model" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = None)))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = None, mainBusinessActivitySection = sicCode)))
       ApiModelTransformer[ActAsIntermediary].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme with FinancialCompliance section to view model - Act as Intermediary yes" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(true, true)))))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = Some(VatComplianceFinancial(true, true)))))
       ApiModelTransformer[ActAsIntermediary].toViewModel(vs) shouldBe Some(ActAsIntermediary(true))
     }
 
     "convert VatScheme with FinancialCompliance section to view model - Act as Intermediary no" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(financialComplianceSection = Some(VatComplianceFinancial(false, false)))))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, financialComplianceSection = Some(VatComplianceFinancial(false, false)))))
       ApiModelTransformer[ActAsIntermediary].toViewModel(vs) shouldBe Some(ActAsIntermediary(false))
     }
 

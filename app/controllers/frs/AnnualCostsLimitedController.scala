@@ -43,7 +43,7 @@ class AnnualCostsLimitedController @Inject()(ds: CommonPlayDependencies)
       AnnualCostsLimitedFormFactory.form(Seq(turnover)).bindFromRequest().fold(
         badForm => BadRequest(views.html.pages.frs.annual_costs_limited(badForm, turnover)).pure,
         view => save(view).map(_ => view.selection == AnnualCostsLimitedView.NO).ifM(
-          ifTrue = controllers.frs.routes.RegisterForFrsController.show().pure, //TODO go to CONFIRM BUSINESS SECTOR screen
+          ifTrue = controllers.frs.routes.ConfirmBusinessSectorController.show().pure,
           ifFalse = controllers.frs.routes.RegisterForFrsController.show().pure
         ).map(Redirect))))
 

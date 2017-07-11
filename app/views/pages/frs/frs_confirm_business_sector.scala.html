@@ -1,0 +1,52 @@
+@import models.view.frs.BusinessSectorView
+@(businessSectorView: BusinessSectorView)(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+
+@main_template(title = messages("pages.frs.confirmBusinessSector.title")) {
+
+    <div class="column-two-thirds">
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.frs.confirmBusinessSector.heading")</h1>
+
+
+        <table class="form-group">
+            <tbody>
+                <tr>
+                    <td>@messages("pages.frs.confirmBusinessSector.table.row1.heading")</td>
+                    <td>@Html(businessSectorView.businessSector)</td>
+                </tr>
+                <tr>
+                    <td>@messages("pages.frs.confirmBusinessSector.table.row2.heading")</td>
+                    <td>@Html(businessSectorView.flatRatePercentageFormatted)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="form-group">
+            <div class="panel indent">
+                <p>@messages("pages.frs.confirmBusinessSector.panel1.para")</p>
+            </div>
+        </div>
+
+        <div class="form-group notice">
+            <i class="icon icon-important">
+                <span class="hidden">Warning</span>
+            </i>
+            <strong class="bold-small">
+                @messages("pages.frs.confirmBusinessSector.exclamationPoint")
+            </strong>
+        </div>
+
+        <div class="form-group">
+            <a href="#">@messages("pages.frs.confirmBusinessSector.changeLink")</a>
+        </div>
+
+        @govHelpers.form(action = controllers.frs.routes.ConfirmBusinessSectorController.submit()) {
+            <div class="form-group">
+                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+            </div>
+        }
+
+    </div>
+
+}

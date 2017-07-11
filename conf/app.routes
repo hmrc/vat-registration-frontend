@@ -7,6 +7,8 @@ GET         /                                                                   
 GET         /before-you-register-for-vat                                                       controllers.WelcomeController.start
 
 ## SERVICE CRITERIA QUESTIONS
+GET         /use-this-service                                                                  controllers.TwirlViewController.renderViewAuthorised(viewName="use-this-service")
+
 GET         /do-you-have-national-insurance-number                                             controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "haveNino")
 POST        /do-you-have-national-insurance-number                                             controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "haveNino")
 GET         /will-you-do-any-of-the-following                                                  controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "doingBusinessAbroad")
@@ -85,6 +87,12 @@ POST        /business-bank-account-details                                      
 ## BUSINESS ACTIVITY DESCRIPTION
 GET         /describe-what-company-does                                                        controllers.sicAndCompliance.BusinessActivityDescriptionController.show
 POST        /describe-what-company-does                                                        controllers.sicAndCompliance.BusinessActivityDescriptionController.submit
+
+## MAIN BUSINESS ACTIVITY
+GET         /main-source-of-income                                                             controllers.sicAndCompliance.MainBusinessActivityController.show
+POST        /main-source-of-income                                                             controllers.sicAndCompliance.MainBusinessActivityController.submit
+GET         /redirect-to-main-source-of-income                                                 controllers.sicAndCompliance.MainBusinessActivityController.redirectToNext
+
 
 ## COMPLIANCE INTRODUCTION
 GET         /tell-us-more-about-the-company                                                    controllers.sicAndCompliance.ComplianceIntroductionController.show
@@ -204,12 +212,20 @@ GET         /spends-less-including-vat-on-goods                                 
 POST        /spends-less-including-vat-on-goods                                                controllers.frs.AnnualCostsInclusiveController.submit
 
 ## Do you want to register for FRS page
-GET         /use-limited-cost-business-flat-rate                                                                     controllers.frs.RegisterForFrsController.show
-POST        /use-limited-cost-business-flat-rate                                                                     controllers.frs.RegisterForFrsController.submit
+GET         /use-limited-cost-business-flat-rate                                               controllers.frs.RegisterForFrsController.show
+POST        /use-limited-cost-business-flat-rate                                               controllers.frs.RegisterForFrsController.submit
+
+## Do you want to register for FRS page - Business Sector selected
+GET         /your-flat-rate                                                                    controllers.frs.RegisterForFrsWithSectorController.show
+POST        /your-flat-rate                                                                    controllers.frs.RegisterForFrsWithSectorController.submit
 
 ##Do you spend less than 2% of turnover a year Page
 GET         /spends-less-than-two-percent-of-turnover-a-year-on-goods                          controllers.frs.AnnualCostsLimitedController.show
 POST        /spends-less-than-two-percent-of-turnover-a-year-on-goods                          controllers.frs.AnnualCostsLimitedController.submit
+
+## FRS Confirm business sector page
+GET         /confirm-business-type                                                             controllers.frs.ConfirmBusinessSectorController.show
+POST        /confirm-business-type                                                             controllers.frs.ConfirmBusinessSectorController.submit
 
 ## When do you want to join the Flat Rate Scheme?
 GET         /flat-rate-scheme-join-date                                                        controllers.frs.FrsStartDateController.show

@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package forms.frs
+package models.api
 
-import forms.FormValidation.textMappingWithMessageArgs
-import models.view.frs.AnnualCostsLimitedView
-import play.api.data.Form
-import play.api.data.Forms.mapping
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-object AnnualCostsLimitedFormFactory {
-  val RADIO_COST_LIMITED: String = "annualCostsLimitedRadio"
+case class SicCode(id: String,
+                   description: String,
+                   displayDetails: String)
 
-  def form(msgArgs: Seq[Any] = Seq()): Form[AnnualCostsLimitedView] = {
-    Form(mapping(
-      RADIO_COST_LIMITED -> textMappingWithMessageArgs()(msgArgs)("frs.costsLimited").verifying(AnnualCostsLimitedView.valid)
-    )(AnnualCostsLimitedView.apply)(AnnualCostsLimitedView.unapply))
-  }
+object SicCode {
+
+  implicit val format: Format[SicCode] =
+    ((__ \ "id").format[String] and
+      (__ \ "description").format[String] and
+      (__ \ "displayDetails").format[String]
+       ) (SicCode.apply, unlift(SicCode.unapply))
 
 }

@@ -89,8 +89,10 @@ pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet1    = hires out boats or 
 pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet2    = owns one or more racehorses
 pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet3    = buys, sells or rents out land or property
 
-pages.completionCapacityEnd.p1                           = We''re only accepting VAT registrations from company directors or secretaries at the moment.
-pages.completionCapacityEnd.p2                           = If you''re neither of these (for example, you''re an accountant) you can register using HMRC''s existing service once you''ve received a company registration number from Companies House.
+## Service Eligibility
+pages.eligibility.start.title                               = Can you use this service?
+pages.eligibility.start.heading                             = Can you use this service?
+pages.eligibility.start.para1                               = Before you register for VAT, we need to ask some eligibility questions.
 
 ## Service Eligibility Questions Validation
 validation.eligibility.haveNino.missing                     = Tell us if you have a National Insurance number
@@ -386,6 +388,8 @@ pages.summary.companyContactDetails.ppob                        = Main place of 
 ## Summary Page Business Activities
 pages.summary.businessActivities.sectionHeading                = Business activities
 pages.summary.businessActivities.businessDescription           = Business description
+pages.summary.businessActivities.mainBusinessActivity          = Main business activity
+
 
 ## Summary Page Business Bank Details
 pages.summary.bankDetails.sectionHeading                     = Business bank details
@@ -471,6 +475,12 @@ validation.companyBankAccount.number.missing = Enter a business account number
 validation.companyBankAccount.number.invalid = Enter a valid business account number
 validation.companyBankAccount.sortCode.missing = Enter a sort code
 validation.companyBankAccount.sortCode.invalid = Enter a valid sort code
+
+## Main Business Activity
+pages.mainBusinessActivity.heading                        = Which business activity is the company''s main source of income?
+pages.mainBusinessActivity.title                          = Which business activity is the company''s main source of income?
+pages.mainBusinessActivity.para1                          = This business activity will be on your VAT certificate.
+validation.mainBusinessActivity.missing                   = Tell us the company''s main source of income
 
 ## Compliance - Tell us more about your company page
 pages.compliance.introduction.title                          = Compliance questions
@@ -713,13 +723,32 @@ pages.frs.costsInclusive.panel.bullet9                    = capital items, for e
 pages.frs.costsInclusive.panel.bullet10                   = services - that is, anything not classified as "goods"
 validation.frs.costsInclusive.missing                     = Tell us if you spend less than £1,000 a year (including VAT) on business goods
 
+# FRS Confirm business sector Page
+pages.frs.confirmBusinessSector.title                     = Confirm the company''s business type
+pages.frs.confirmBusinessSector.heading                   = Confirm the company''s business type
+pages.frs.confirmBusinessSector.table.row1.heading        = Business sector
+pages.frs.confirmBusinessSector.table.row2.heading        = VAT flat rate (%)
+pages.frs.confirmBusinessSector.panel1.para               = You can add a 1% discount to this rate in your first year as a VAT-registered business.
+pages.frs.confirmBusinessSector.exclamationPoint          = It''s your legal responsibility to check the company has the right business type.
+pages.frs.confirmBusinessSector.changeLink                = Change your business type
+validation.frs.confirmBusinessSector.missing              = Tell us if you want to use this rate
+
 #Do you want to register for FRS Page
-pages.frs.registerFor.title                            = Use the 16.5% flat rate
-pages.frs.registerFor.heading                          = You can use the 16.5% flat rate
-pages.frs.registerFor.p                                = This is because you don''t spend enough (including VAT) on business goods.
-pages.frs.registerFor.panel1.para                      = You can add a 1% discount to this rate in your first year as a VAT-registered business.
-pages.frs.registerFor.subheading1                      = Do you want to use this rate?
-validation.frs.registerFor.missing                     = Tell us if you want to use this rate
+pages.frs.registerFor.title                               = Use the 16.5% flat rate
+pages.frs.registerFor.heading                             = You can use the 16.5% flat rate
+pages.frs.registerFor.p                                   = This is because you don''t spend enough (including VAT) on business goods.
+pages.frs.registerFor.panel1.para                         = You can add a 1% discount to this rate in your first year as a VAT-registered business.
+pages.frs.registerFor.subheading1                         = Do you want to use this rate?
+validation.frs.registerFor.missing                        = Tell us if you want to use this rate
+
+#Do you want to register for FRS Page - With business sector details
+pages.frs.registerForWithSector.title                     = Your flat rate
+pages.frs.registerForWithSector.heading                   = Your flat rate
+pages.frs.registerForWithSector.table.row1.heading        = Business sector
+pages.frs.registerForWithSector.table.row2.heading        = VAT flat rate (%)
+pages.frs.registerForWithSector.panel1.para               = You can add a 1% discount to this rate in your first year as a VAT-registered business.
+pages.frs.registerForWithSector.subheading1               = Do you want to use this rate?
+validation.frs.registerForWithSector.missing              = Tell us if you want to use this rate
 
 #Do you spend less than 2% of your turn over Page
 pages.frs.costsLimited.title                            = Do you spend less than 2% of turnover a year including VAT on goods for the business?

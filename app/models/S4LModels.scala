@@ -19,10 +19,10 @@ package models
 import models.api.VatServiceEligibility
 import models.view.frs._
 import models.view.ppob.PpobView
-import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
+import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
@@ -68,6 +68,7 @@ object S4LTradingDetails {
 final case class S4LVatSicAndCompliance
 (
   description: Option[BusinessActivityDescription] = None,
+  mainBusinessActivity: Option[MainBusinessActivityView] = None,
 
   //Cultural Compliance
   notForProfit: Option[NotForProfit] = None,
@@ -141,7 +142,8 @@ final case class S4LFlatRateScheme
   annualCostsInclusive: Option[AnnualCostsInclusiveView] = None,
   annualCostsLimited: Option[AnnualCostsLimitedView] = None,
   registerForFrs: Option[RegisterForFrsView] = None,
-  frsStartDate: Option[FrsStartDateView] = None
+  frsStartDate: Option[FrsStartDateView] = None,
+  categoryOfBusiness: Option[BusinessSectorView] = None
 )
 
 object S4LFlatRateScheme {

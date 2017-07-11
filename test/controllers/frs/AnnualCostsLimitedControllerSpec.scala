@@ -111,23 +111,23 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
       ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
     }
 
-    "redirect to the welcome page with Annual Costs Limited selected No" in {
+    "redirect to confirm business sector with Annual Costs Limited selected No" in {
       save4laterExpectsSave[AnnualCostsLimitedView]()
       when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any())).thenReturn(twoPercent.pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsLimitedRadio" -> AnnualCostsLimitedView.NO
-      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
+      ))(_ redirectsTo s"$contextRoot/confirm-business-type")
     }
 
-    "redirect to the welcome page with Annual Costs Limited selected No and EstimateVatTurnover is Null in S4l and Database" in {
+    "redirect to confirm business sector with Annual Costs Limited selected No and EstimateVatTurnover is Null in S4l and Database" in {
       save4laterExpectsSave[AnnualCostsLimitedView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
       when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any())).thenReturn(twoPercent.pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsLimitedRadio" -> AnnualCostsLimitedView.NO
-      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
+      ))(_ redirectsTo s"$contextRoot/confirm-business-type")
     }
   }
 }

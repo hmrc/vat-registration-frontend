@@ -144,7 +144,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
           .andThen(update(s4l.discretionaryInvestmentManagementServices))
           .andThen(update(s4l.investmentFundManagement))
           .andThen(update(s4l.manageAdditionalFunds))
-          .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance("")))
+          .andThen(update(s4l.mainBusinessActivity))
+          .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance.empty))
       }
 
     for {
@@ -232,6 +233,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
         update(s4l.joinFrs)
           .andThen(update(s4l.annualCostsInclusive))
           .andThen(update(s4l.annualCostsLimited))
+          .andThen(update(s4l.categoryOfBusiness))
           .andThen(update(s4l.registerForFrs))
           .andThen(update(s4l.frsStartDate))
           .apply(vs.vatFlatRateScheme.getOrElse(VatFlatRateScheme()))

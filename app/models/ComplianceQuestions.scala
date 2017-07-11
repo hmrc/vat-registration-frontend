@@ -16,6 +16,7 @@
 
 package models
 
+import models.api.SicCode
 import play.api.mvc.Call
 
 sealed trait ComplianceQuestions {
@@ -70,8 +71,13 @@ object ComplianceQuestions {
       "65300", "66120", "66300")
   )
 
-  def apply(sicCodes: List[String])(implicit m: SicCodeMap): ComplianceQuestions = m.collectFirst {
+  def apply(sicCodes: Array[String])(implicit m: SicCodeMap): ComplianceQuestions = m.collectFirst {
     case (q, cs) if sicCodes.nonEmpty && sicCodes.forall(cs.contains) => q
+  }.getOrElse(NoComplianceQuestions)
+
+  def apply(sicCodes: List[SicCode])(implicit m: SicCodeMap): ComplianceQuestions = m.collectFirst {
+    case (q, cs) if sicCodes.nonEmpty && sicCodes.forall(code =>
+      code.id.length == 8  && cs.contains(code.id.substring(0, 5))) => q
   }.getOrElse(NoComplianceQuestions)
 
 }

@@ -51,17 +51,17 @@ class NotForProfitSpec extends UnitSpec with VatRegistrationFixture {
     }
 
     "convert VatScheme without CulturalCompliance section to empty view model" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(culturalComplianceSection = None)))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(culturalComplianceSection = None, mainBusinessActivitySection = sicCode)))
       ApiModelTransformer[NotForProfit].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme with CulturalCompliance section to view model - for profit" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(culturalComplianceSection = Some(VatComplianceCultural(notForProfit = false)))))
-      ApiModelTransformer[NotForProfit].toViewModel(vs) shouldBe Some(NotForProfit(NOT_PROFIT_NO))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, culturalComplianceSection = Some(VatComplianceCultural(notForProfit = false)))))
+      ApiModelTransformer[NotForProfit].toViewModel(vs) shouldBe Some(NotForProfit(NotForProfit.NOT_PROFIT_NO))
     }
 
     "convert VatScheme with CulturalCompliance section to view model - not for profit" in {
-      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(culturalComplianceSection = Some(VatComplianceCultural(notForProfit = true)))))
+      val vs = vatScheme(sicAndCompliance = Some(vatSicAndCompliance(mainBusinessActivitySection = sicCode, culturalComplianceSection = Some(VatComplianceCultural(notForProfit = true)))))
       ApiModelTransformer[NotForProfit].toViewModel(vs) shouldBe Some(NotForProfit(NotForProfit.NOT_PROFIT_YES))
     }
 

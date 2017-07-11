@@ -23,11 +23,14 @@ case class VatSicAndCompliance(
                                 businessDescription: String,
                                 culturalCompliance: Option[VatComplianceCultural] = None,
                                 labourCompliance: Option[VatComplianceLabour] = None,
-                                financialCompliance: Option[VatComplianceFinancial] = None
+                                financialCompliance: Option[VatComplianceFinancial] = None,
+                                mainBusinessActivity: SicCode
                               )
 
 object VatSicAndCompliance {
 
   implicit val format: OFormat[VatSicAndCompliance] = Json.format[VatSicAndCompliance]
+
+  val empty = VatSicAndCompliance(businessDescription = "", mainBusinessActivity = SicCode("", "", ""))
 
 }

@@ -1,0 +1,63 @@
+@import models.view.frs.BusinessSectorView
+@import forms.genericForms.YesOrNoAnswer
+@(businessSectorView: BusinessSectorView, registerForFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.frs.registerForWithSector.title")) {
+
+    <div class="column-two-thirds">
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.frs.registerForWithSector.heading")</h1>
+
+        @errorSummary(
+            Messages("app.common.errorSummaryLabel"),
+            registerForFrsForm
+        )
+
+        <table class="form-group">
+            <tbody>
+                <tr>
+                    <td>@messages("pages.frs.registerForWithSector.table.row1.heading")</td>
+                    <td>@Html(businessSectorView.businessSector)</td>
+                </tr>
+                <tr>
+                    <td>@messages("pages.frs.registerForWithSector.table.row2.heading")</td>
+                    <td>@Html(businessSectorView.flatRatePercentageFormatted)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="form-group">
+            <div class="panel indent">
+                <p>@messages("pages.frs.registerForWithSector.panel1.para")</p>
+            </div>
+        </div>
+
+        <h3>@messages("pages.frs.registerForWithSector.subheading1")</h3>
+
+        @govHelpers.form(action = controllers.frs.routes.RegisterForFrsWithSectorController.submit()) {
+            <div class="form-group">
+                <fieldset class="inline">
+                    <span id="registerForFrsWithSectorRadio"></span>
+                    @govHelpers.inputRadioGroup(
+                        field = registerForFrsForm("registerForFrsWithSectorRadio"),
+                        Seq(
+                            "true" -> Messages("app.common.yes"),
+                            "false" -> Messages("app.common.no")
+                        ),
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label"
+                    )
+                </fieldset>
+            </div>
+
+            <div class="form-group">
+                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+            </div>
+
+        }
+
+    </div>
+
+}
