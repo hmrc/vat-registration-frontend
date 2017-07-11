@@ -41,7 +41,7 @@ class PreviousAddressViewSpec extends UnitSpec with VatRegistrationFixture with 
           nino = "",
           role = "director",
           name = officerName,
-          formerName = FormerName(true, None),
+          changeOfName = changeOfName,
           currentOrPreviousAddress = testPreviousAddress,
           contact = validOfficerContactDetails)
 
@@ -67,7 +67,7 @@ class PreviousAddressViewSpec extends UnitSpec with VatRegistrationFixture with 
           nino = "",
           role = "",
           name = Name.empty,
-          formerName = FormerName(true, None),
+          changeOfName = changeOfName,
           currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(address)),
           contact = validOfficerContactDetails)
 
@@ -78,7 +78,7 @@ class PreviousAddressViewSpec extends UnitSpec with VatRegistrationFixture with 
           nino = "",
           role = "",
           name = Name.empty,
-          formerName = FormerName(true, None),
+          changeOfName = changeOfName,
           currentOrPreviousAddress = testPreviousAddress,
           contact = validOfficerContactDetails)
 

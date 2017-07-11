@@ -38,7 +38,7 @@ class OfficerContactDetailsViewSpec extends UnitSpec with VatRegistrationFixture
         nino = "",
         role = "",
         name = Name.empty,
-        formerName = FormerName(false, None),
+        changeOfName = changeOfName,
         currentOrPreviousAddress = currentOrPreviousAddress,
         contact = officerContactDetails)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
@@ -62,7 +62,7 @@ class OfficerContactDetailsViewSpec extends UnitSpec with VatRegistrationFixture
         nino = "",
         role = "",
         name = Name.empty,
-        formerName = FormerName(false, None),
+        changeOfName = changeOfName,
         currentOrPreviousAddress = currentOrPreviousAddress,
         contact = OfficerContactDetails.empty)
       val updatedVatLodgingOfficer = VatLodgingOfficer(
@@ -71,7 +71,7 @@ class OfficerContactDetailsViewSpec extends UnitSpec with VatRegistrationFixture
         nino = "",
         role = "",
         name = Name.empty,
-        formerName = FormerName(false, None),
+        changeOfName = changeOfName,
         currentOrPreviousAddress = currentOrPreviousAddress,
         contact = officerContactDetails)
 

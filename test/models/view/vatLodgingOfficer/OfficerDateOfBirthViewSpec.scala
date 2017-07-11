@@ -34,7 +34,7 @@ class OfficerDateOfBirthViewSpec extends UnitSpec with VatRegistrationFixture wi
   "apiModelTransformer" should {
 
     "convert VatScheme with VatLodgingOfficer details into a OfficerDateOfBirthView" in {
-      val vatLodgingOfficer = VatLodgingOfficer(address, testDOB, "", "", Name.empty, FormerName(false, None), currentOrPreviousAddress, OfficerContactDetails.empty)
+      val vatLodgingOfficer = VatLodgingOfficer(address, testDOB, "", "", Name.empty, changeOfName, currentOrPreviousAddress, OfficerContactDetails.empty)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       ApiModelTransformer[OfficerDateOfBirthView].toViewModel(vs) shouldBe Some(testDOBView)
@@ -50,8 +50,8 @@ class OfficerDateOfBirthViewSpec extends UnitSpec with VatRegistrationFixture wi
 
   "viewModelTransformer" should {
     "update logical group given a component" in {
-      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, FormerName(false, None), currentOrPreviousAddress, OfficerContactDetails.empty)
-      val updatedVatLodgingOfficer = VatLodgingOfficer(address, testDOB, "", "", Name.empty, FormerName(false, None), currentOrPreviousAddress, OfficerContactDetails.empty)
+      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, changeOfName, currentOrPreviousAddress, OfficerContactDetails.empty)
+      val updatedVatLodgingOfficer = VatLodgingOfficer(address, testDOB, "", "", Name.empty, changeOfName, currentOrPreviousAddress, OfficerContactDetails.empty)
 
       ViewModelTransformer[OfficerDateOfBirthView, VatLodgingOfficer].
         toApi(testDOBView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
