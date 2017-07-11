@@ -21,6 +21,7 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.frs.AnnualCostsLimitedFormFactory
+import models.ElementPath.fromFrsAnnualCostsLimitedElementPaths
 import models._
 import models.view.frs.AnnualCostsLimitedView
 import play.api.mvc.{Action, AnyContent}
@@ -45,9 +46,8 @@ class AnnualCostsLimitedController @Inject()(ds: CommonPlayDependencies)
         badForm => BadRequest(views.html.pages.frs.annual_costs_limited(badForm, turnover)).pure,
         view => save(view).map(_ => view.selection == AnnualCostsLimitedView.NO).ifM(
           ifTrue = controllers.frs.routes.ConfirmBusinessSectorController.show().pure,
-          ifFalse = vrs.deleteElements(
-            List(VatFrsPercentage, VatFrsBusCategory, VatFrsUseThisRate, VatFrsWhenToJoin, VatFrsStartDate)
-          ).map(_ => controllers.frs.routes.RegisterForFrsController.show())
+          ifFalse = vrs.deleteElements(fromFrsAnnualCostsLimitedElementPaths).
+            map(_ => controllers.frs.routes.RegisterForFrsController.show())
         ).map(Redirect))))
 
 }
