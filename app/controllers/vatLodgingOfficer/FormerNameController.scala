@@ -40,3 +40,13 @@ class FormerNameController @Inject()(ds: CommonPlayDependencies)
       data => save(data) map (_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show()))))
 
 }
+
+/*(data.addressId == "other").pure.ifM(
+        ifTrue = alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm()),
+        ifFalse = for {
+          addressList <- fetchAddressList().getOrElse(Seq())
+          address = addressList.find(_.id == data.addressId)
+          _ <- save(OfficerHomeAddressView(data.addressId, address))
+        } yield controllers.vatLodgingOfficer.routes.PreviousAddressController.show()
+      ).map(Redirect)))
+ */
