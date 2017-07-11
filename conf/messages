@@ -681,8 +681,8 @@ pages.formerNameDate.heading                             = When did you change i
 pages.formerNameDate.hint1                               = For example, 31 3 2006.
 pages.formerNameDate.missing                             = Enter when this changed
 validation.formerNameDate.day.invalid                    = Enter a valid day
-validation.formerNameDate.day.invalid                    = Enter a valid month
-validation.formerNameDate.day.invalid                    = Enter a valid year
+validation.formerNameDate.month.invalid                  = Enter a valid month
+validation.formerNameDate.year.invalid                   = Enter a valid year
 
 
 
