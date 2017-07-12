@@ -21,9 +21,11 @@ import java.time.LocalDate
 import controllers.vatLodgingOfficer
 import cats.data.OptionT
 import common.Now
+import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import forms.vatLodgingOfficer.FormerNameDateForm
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.api.ScrsAddress
 import models.view.vatLodgingOfficer.FormerNameDateView
 import org.mockito.Matchers
 import org.mockito.Matchers._
@@ -32,6 +34,8 @@ import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.HeaderCarrier
+import models.ModelKeys._
+import models.external.Officer
 
 import scala.concurrent.Future
 
@@ -44,41 +48,46 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
   object FormerNameDateController extends FormerNameDateController(ds)(mockS4LService, mockVatRegistrationService) {
     implicit val fixedToday = Now[LocalDate](today)
     override val authConnector = mockAuthConnector
+    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+
   }
 
   val fakeRequest = FakeRequest(routes.FormerNameDateController.show())
 
   s"GET ${vatLodgingOfficer.routes.FormerNameDateController.show()}" should {
 
-    "return HTML when a date has been entered in S4L" in {
+    "return HTML when a date has been entered in S4L and Former name in Keystore" in {
       val formerNameDate = FormerNameDateView(Some(LocalDate.now))
 
       save4laterReturnsViewModel(formerNameDate)()
+      mockKeystoreFetchAndGet(FORMER_NAME, Some("FORMER_NAME"))
 
       callAuthorised(FormerNameDateController.show) {
-        _ includesText ("When did you change it from ?")
+        _ includesText ("When did you change it from")
       }
     }
 
-    "return HTML when there's nothing in S4L and vatScheme contains data" in {
+    "return HTML when there's nothing in S4L , NO Former name in Keystoreand vatScheme contains data" in {
       save4laterReturnsNoViewModel[FormerNameDateView]()
+      mockKeystoreFetchAndGet(FORMER_NAME, Some("FORMER_NAME"))
 
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(FormerNameDateController.show) {
-        _ includesText ("When did you change it from ?")
+        _ includesText ("When did you change it from")
       }
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[FormerNameDateView]()
+      mockKeystoreFetchAndGet(FORMER_NAME, Some("FORMER_NAME"))
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(FormerNameDateController.show) {
-        _ includesText ("When did you change it from ?")
+        _ includesText ("When did you change it from")
       }
     }
   }
@@ -87,6 +96,7 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return 400 when no data posted" in {
       save4laterReturnsViewModel(FormerNameDateView(Some(LocalDate.now)))()
+      mockKeystoreFetchAndGet(FORMER_NAME, Some("FORMER_NAME"))
 
       submitAuthorised(
         FormerNameDateController.submit(), fakeRequest.withFormUrlEncodedBody()) {
@@ -96,6 +106,7 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return 400 when partial data is posted" in {
       save4laterReturnsViewModel(FormerNameDateView(Some(LocalDate.now)))()
+      mockKeystoreFetchAndGet(FORMER_NAME, Some("FORMER_NAME"))
 
       submitAuthorised(
         FormerNameDateController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -107,10 +118,11 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
       }
     }
 
-    "return 303 with Vat Registration Date selected" in {
+    "return 303 with Former name Date selected" in {
             val minDate: LocalDate = today
             save4laterReturnsViewModel(FormerNameDateView(Some(LocalDate.now)))()
             save4laterExpectsSave[FormerNameDateView]()
+            mockKeystoreFetchAndGet(FORMER_NAME, Some("FORMER_NAME"))
 
       submitAuthorised(
         FormerNameDateController.submit(), fakeRequest.withFormUrlEncodedBody(
