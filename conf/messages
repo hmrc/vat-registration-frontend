@@ -356,6 +356,7 @@ pages.summary.directorContactDetails.mobilePhone       = Mobile number
 pages.summary.directorDetails.sectionHeading           = Director details
 pages.summary.directorDetails.whoIsRegistering         = Who is registering the company for VAT
 pages.summary.directorDetails.formerName               = Former name
+pages.summary.directorDetails.formerNameDate           = Date former name changed
 pages.summary.directorDetails.noFormerName             = No former name
 pages.summary.directorDetails.homeAddress              = Home address
 pages.summary.directorDetails.moreThanThreeYears       = Lived at current address for more than 3 years
