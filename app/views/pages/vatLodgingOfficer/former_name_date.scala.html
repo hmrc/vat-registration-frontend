@@ -1,7 +1,7 @@
 @import models.view.vatLodgingOfficer.FormerNameDateView
 @import java.time.format.DateTimeFormatter
 
-@(formerNameDateForm: Form[FormerNameDateView])(implicit request: Request[_], messages: Messages)
+@(formerNameDateForm: Form[FormerNameDateView], formerName : String)(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
 
@@ -10,7 +10,7 @@
   <div class="grid-row">
     <div class="column-two-thirds">
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.formerNameDate.heading")</h1>
+      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.formerNameDate.heading1") @formerName @messages("pages.formerNameDate.heading2")</h1>
 
       @errorSummary(
           Messages("app.common.errorSummaryLabel"),

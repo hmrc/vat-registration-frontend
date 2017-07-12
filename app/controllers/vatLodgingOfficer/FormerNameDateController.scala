@@ -18,28 +18,43 @@ package controllers.vatLodgingOfficer
 
 import javax.inject.Inject
 
+import cats.data.OptionT
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.{FormerNameDateForm, OfficerDateOfBirthForm}
-import models.view.vatLodgingOfficer.FormerNameDateView
+import models.api.ScrsAddress
+import models.view.vatLodgingOfficer.{FormerNameDateView, OfficerHomeAddressView}
 import play.api.data.Form
 import play.api.mvc._
-import services.{S4LService, VatRegistrationService}
-
+import services.{CommonService, S4LService, VatRegistrationService}
+import uk.gov.hmrc.play.http.HeaderCarrier
+import models.ModelKeys._
 class FormerNameDateController @Inject()(ds: CommonPlayDependencies)
                                         (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with FlatMapSyntax {
+  extends VatRegistrationController(ds) with FlatMapSyntax with CommonService {
 
   val form: Form[FormerNameDateView] = FormerNameDateForm.form
 
+  private def fetchFormerName()(implicit headerCarrier: HeaderCarrier) =
+    OptionT(keystoreConnector.fetchAndGet[String](FORMER_NAME))
+
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[FormerNameDateView]().getOrElse(FormerNameDateView())
-      .map(f => Ok(views.html.pages.vatLodgingOfficer.former_name_date(form.fill(f)))))
+
+    for {
+      formerName <- fetchFormerName().getOrElse("")
+      res <- viewModel[FormerNameDateView]().fold(form)(form.fill)
+    } yield Ok(views.html.pages.vatLodgingOfficer.former_name_date(res, formerName))
+  )
 
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.vatLodgingOfficer.former_name_date(badForm)).pure,
+      badForm =>
+        for {
+          formerName <- fetchFormerName().getOrElse("")
+          res <- viewModel[FormerNameDateView]().fold(form)(form.fill)
+        } yield BadRequest(views.html.pages.vatLodgingOfficer.former_name_date(badForm, formerName))
+      ,
       data => save(data) map (_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show()))))
 
 }
