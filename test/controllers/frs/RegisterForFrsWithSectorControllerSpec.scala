@@ -93,6 +93,8 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
       save4laterReturnsNoViewModel[BusinessSectorView]()
       save4laterReturnsNoViewModel[MainBusinessActivityView]()
       save4laterReturnsNoViewModel[RegisterForFrsView]()
+
+
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
       save4laterExpectsSave[RegisterForFrsView]()
       save4laterExpectsSave[BusinessSectorView]()
