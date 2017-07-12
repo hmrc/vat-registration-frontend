@@ -51,9 +51,17 @@ class FormerNameViewSpec extends UnitSpec with VatRegistrationFixture with Insid
   }
 
   "viewModelTransformer" should {
-    "update logical group given a component" in {
+    "update logical group with Former Name change true" in {
       val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, ChangeOfName(false, Some(FormerName(""))), currentOrPreviousAddress, validOfficerContactDetails)
       val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
+
+      ViewModelTransformer[FormerNameView, VatLodgingOfficer].
+        toApi(testFormerNameView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
+    }
+    "update logical group with Former Name change false" in {
+      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, ChangeOfName(false, Some(FormerName("Bob"))), currentOrPreviousAddress, validOfficerContactDetails)
+      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, ChangeOfName(false, None), currentOrPreviousAddress, validOfficerContactDetails)
+      val testFormerNameView = FormerNameView(false, None)
 
       ViewModelTransformer[FormerNameView, VatLodgingOfficer].
         toApi(testFormerNameView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
