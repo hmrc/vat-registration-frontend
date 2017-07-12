@@ -39,8 +39,6 @@ trait RegistrationService {
 
   def getAckRef(regId: String)(implicit hc: HeaderCarrier): OptionalResponse[String]
 
-  def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit]
-
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials]
 
   def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[VatSicAndCompliance]
@@ -107,11 +105,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       _ <- optCompProfile.map(keystoreConnector.cache[CoHoCompanyProfile]("CompanyProfile", _)).pure
     } yield ()
 
-  def submitVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
-    submitTradingDetails |@| submitVatFinancials |@| submitSicAndCompliance |@|
-      submitVatContact |@| submitVatEligibility() |@| submitVatLodgingOfficer |@|
-      submitPpob map { case _ => () }
-
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
     def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =
       fresh.fold(
@@ -152,7 +145,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
           .andThen(update(s4l.investmentFundManagement))
           .andThen(update(s4l.manageAdditionalFunds))
           .andThen(update(s4l.mainBusinessActivity))
-          .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance("", mainBusinessActivity = SicCode.empty)))
+          .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance.empty))
       }
 
     for {
@@ -241,6 +234,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
         update(s4l.joinFrs)
           .andThen(update(s4l.annualCostsInclusive))
           .andThen(update(s4l.annualCostsLimited))
+          .andThen(update(s4l.categoryOfBusiness))
           .andThen(update(s4l.registerForFrs))
           .andThen(update(s4l.frsStartDate))
           .apply(vs.vatFlatRateScheme.getOrElse(VatFlatRateScheme()))

@@ -68,7 +68,6 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   "Calling summary to show the summary page" should {
     "return HTML with a valid summary view" in {
-      when(mockVatRegistrationService.submitVatScheme()(any())).thenReturn(().pure)
       when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)
 
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")

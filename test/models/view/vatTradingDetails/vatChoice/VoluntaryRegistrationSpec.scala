@@ -17,8 +17,8 @@
 package models.view.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
-import models.{S4LTradingDetails, ViewModelTransformer}
 import models.api.{VatChoice, VatTradingDetails}
+import models.{S4LTradingDetails, ViewModelTransformer}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class VoluntaryRegistrationSpec extends UnitSpec with VatRegistrationFixture {
