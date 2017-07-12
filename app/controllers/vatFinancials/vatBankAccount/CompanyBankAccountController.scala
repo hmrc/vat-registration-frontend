@@ -41,9 +41,9 @@ class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(badForm)).pure,
       data => save(data).map(_ => data.yesNo == CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES).ifM(
-        controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show().pure,
-        vrs.deleteElement(VatBankAccountPath).map(_ =>
-          controllers.vatFinancials.routes.EstimateVatTurnoverController.show()))
-        .map(Redirect)))
+        ifTrue = controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show().pure,
+        ifFalse = vrs.deleteElement(VatBankAccountPath).map(_ =>
+          controllers.vatFinancials.routes.EstimateVatTurnoverController.show())
+      ).map(Redirect)))
 
 }

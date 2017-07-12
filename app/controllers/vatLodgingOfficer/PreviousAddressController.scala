@@ -30,8 +30,8 @@ import services.{S4LService, VatRegistrationService}
 
 class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
                                          (implicit s4l: S4LService,
-                                                  vrs: VatRegistrationService,
-                                                  alfConnector: AddressLookupConnect)
+                                          vrs: VatRegistrationService,
+                                          alfConnector: AddressLookupConnect)
   extends VatRegistrationController(ds) {
 
   import cats.syntax.flatMap._
@@ -46,7 +46,6 @@ class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatLodgingOfficer.previous_address(badForm)).pure,
-
       data => (!data.yesNo).pure.ifM(
         ifTrue = alfConnector.getOnRampUrl(routes.PreviousAddressController.acceptFromTxm()),
         ifFalse = for {
@@ -58,14 +57,14 @@ class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
   )
 
   def acceptFromTxm(id: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    alfConnector.getAddress(id).flatMap { address =>
-      Logger.debug(s"address received: $address")
-          save(PreviousAddressView(false, Some(address)))
-    }.map(_ => Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())))
+    for {
+      address <- alfConnector.getAddress(id)
+      _ <- save(PreviousAddressView(false, Some(address)))
+      _ <- vrs.submitVatLodgingOfficer()
+    } yield Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show()))
 
   def changeAddress: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    alfConnector.getOnRampUrl(routes.PreviousAddressController.acceptFromTxm()).map(Redirect)
-  )
+    alfConnector.getOnRampUrl(routes.PreviousAddressController.acceptFromTxm()).map(Redirect))
 }
 
 

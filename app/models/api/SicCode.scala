@@ -30,6 +30,5 @@ object SicCode {
       (__ \ "description").format[String] and
       (__ \ "displayDetails").format[String]
        ) (SicCode.apply, unlift(SicCode.unapply))
-  val empty = SicCode ("00000000","","")
 
 }

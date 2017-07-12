@@ -17,11 +17,10 @@
 package controllers.sicAndCompliance
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import models.ModelKeys.SIC_CODES_KEY
+import models.ElementPath.allCompliancePaths
 import models._
 import models.api.SicCode
-import models.view.sicAndCompliance.BusinessActivityDescription
-import models.view.test.SicStub
+import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import play.api.mvc._
 import services.{CommonService, RegistrationService, S4LService}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -29,7 +28,9 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.Future
 
 class ComplianceExitController (ds: CommonPlayDependencies)(implicit vrs: RegistrationService, s4LService: S4LService)
-  extends VatRegistrationController(ds) with CommonService{
+  extends VatRegistrationController(ds) with CommonService {
+
+  import cats.syntax.all._
 
   def submitAndExit(elements: List[ElementPath])(implicit hc: HeaderCarrier): Future[Result] =
     for {
@@ -37,14 +38,15 @@ class ComplianceExitController (ds: CommonPlayDependencies)(implicit vrs: Regist
       _ <- vrs.submitSicAndCompliance()
     } yield Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
 
-
   def clearComplianceContainer(implicit hc: HeaderCarrier): Future[S4LVatSicAndCompliance] =
-    viewModel[BusinessActivityDescription]().
-      fold(S4LVatSicAndCompliance())(bad => S4LVatSicAndCompliance(description = Some(bad)))
+    viewModel[BusinessActivityDescription]().value |@|
+      viewModel[MainBusinessActivityView]().value map {
+        (bad, mba) => S4LVatSicAndCompliance(description = bad, mainBusinessActivity = mba)
+    }
 
   def selectNextPage(sicCodesList: List[SicCode])(implicit hc: HeaderCarrier):  Future[Result] = {
     ComplianceQuestions(sicCodesList) match {
-      case NoComplianceQuestions => submitAndExit(List(CulturalCompliancePath, FinancialCompliancePath, LabourCompliancePath))
+      case NoComplianceQuestions => submitAndExit(allCompliancePaths)
       case _ =>
         Redirect(controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()).pure
     }

@@ -102,6 +102,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
     "save an address and redirect to next page" in {
       save4laterExpectsSave[PreviousAddressView]()
       when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
+      when(mockVatRegistrationService.submitVatLodgingOfficer()(any())).thenReturn(validLodgingOfficer.pure)
       callAuthorised(TestPreviousAddressController.acceptFromTxm("addressId")) {
         _ redirectsTo s"$contextRoot/company-contact-details"
       }

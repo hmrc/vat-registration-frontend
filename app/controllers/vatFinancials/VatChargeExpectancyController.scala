@@ -43,8 +43,8 @@ class VatChargeExpectancyController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatFinancials.vat_charge_expectancy(badForm)).pure,
       view => save(view).map(_ => view.yesNo == VAT_CHARGE_YES).ifM(
-        controllers.vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show().pure,
-        save(VatReturnFrequency(VatReturnFrequency.QUARTERLY))
+        ifTrue = controllers.vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show().pure,
+        ifFalse = save(VatReturnFrequency(VatReturnFrequency.QUARTERLY))
           .map(_ => controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show())
       ).map(Redirect)))
 
