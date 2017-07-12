@@ -102,6 +102,8 @@ trait VatRegistrationFixture {
   )
 
   val validDob = DateOfBirth(12, 11, 1973)
+  val validStartDate = DateOfBirth(12, 11, 1990)
+
 
   val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", Some(validDob), None, None)
   val completionCapacity = CompletionCapacity(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director")

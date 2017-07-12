@@ -32,11 +32,7 @@ object FormerNameDateView {
     FormerNameDateView(dateModel.toLocalDate)
 
   def unbind(formerNameDate: FormerNameDateView): Option[DateModel] =
-    Try {
-      formerNameDate.date.fold((Option.empty[DateModel])) {
-        d => Some(DateModel.fromLocalDate(d))
-      }
-    }.getOrElse((Option.empty[DateModel]))
+      formerNameDate.date.fold((Option.empty[DateModel]))(d => Some(DateModel.fromLocalDate(d)))
 
   implicit val format = Json.format[FormerNameDateView]
 
