@@ -113,7 +113,10 @@ object TestSetupForm {
     "mobile" -> optional(text),
     "phone" -> optional(text),
     "formernameChoice" -> optional(text),
-    "formername" -> optional(text)
+    "formername" -> optional(text),
+    "formernameChangeDay" -> optional(text),
+    "formernameChangeMonth" -> optional(text),
+    "formernameChangeYear" -> optional(text)
   )(VatLodgingOfficerTestSetup.apply)(VatLodgingOfficerTestSetup.unapply)
 
   val officeHomeAddressMapping = mapping(

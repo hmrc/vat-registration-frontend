@@ -7,12 +7,12 @@
 
 @main_template(title = messages("pages.formerNameDate.title")) {
 
-  <div class="grid-row">
-    <div class="column-two-thirds">
+    <div class="column-one-third">
 
+        <header class="page-header">
       <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.formerNameDate.heading1") @formerName @messages("pages.formerNameDate.heading2")</h1>
-
-      @errorSummary(
+        </header>
+            @errorSummary(
           Messages("app.common.errorSummaryLabel"),
           formerNameDateForm
       )
@@ -73,16 +73,14 @@
                                 </fieldset>
                             </div>
                         }
-                    </div>
+            </div>
+            <div class="form-group">
+                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
             </div>
 
-            <div class="form-group">
-                <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-            </div>
         }
 
     </div>
-  </div>
 
 }
 
