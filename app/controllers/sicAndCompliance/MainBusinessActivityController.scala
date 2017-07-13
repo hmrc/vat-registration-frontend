@@ -21,50 +21,58 @@ import javax.inject.Inject
 import cats.data.OptionT
 import controllers.CommonPlayDependencies
 import forms.sicAndCompliance.MainBusinessActivityForm
-import models.ElementPath
+import models.ElementPath.flatRateSchemeElementPaths
 import models.ModelKeys._
-import models.api.{CompletionCapacity, SicCode}
+import models.S4LFlatRateScheme
+import models.api.SicCode
 import models.view.sicAndCompliance.MainBusinessActivityView
-import models.view.vatLodgingOfficer.CompletionCapacityView
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
+
+import scala.concurrent.Future
 
 
 class MainBusinessActivityController @Inject()(ds: CommonPlayDependencies)
                                               (implicit s4l: S4LService,
                                                vrs: VatRegistrationService)
   extends ComplianceExitController(ds) {
-  import cats.syntax.flatMap._
+
+  import cats.syntax.cartesian._
+  import common.ConditionalFlatMap._
+
   private val form = MainBusinessActivityForm.form
 
-  private def fetchSicCodeList()(implicit hc: HeaderCarrier) =
-    OptionT(keystoreConnector.fetchAndGet[List[SicCode]](SIC_CODES_KEY))
+  private def fetchSicCodeList()(implicit hc: HeaderCarrier): Future[List[SicCode]] =
+    OptionT(keystoreConnector.fetchAndGet[List[SicCode]](SIC_CODES_KEY)).getOrElse(List.empty[SicCode])
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
-      sicCodeList <- fetchSicCodeList.getOrElse(List.empty)
+      sicCodeList <- fetchSicCodeList
       res <- viewModel[MainBusinessActivityView]().fold(form)(form.fill)
     } yield Ok(views.html.pages.sicAndCompliance.main_business_activity(res, sicCodeList)))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      form.bindFromRequest().fold(
-        badForm => fetchSicCodeList().getOrElse(List.empty).map(sicCodeList =>
-          BadRequest(views.html.pages.sicAndCompliance.main_business_activity(badForm, sicCodeList))),
-        view =>
-          for {
-            sicCodeList <- fetchSicCodeList.getOrElse(List.empty)
-            _ = sicCodeList.find(_.id == view.id).map(sicCode => save(MainBusinessActivityView(view.id, Some(sicCode))))
-            result <- selectNextPage(sicCodeList)
-          } yield result
-  ))
+    form.bindFromRequest().fold(
+      badForm => fetchSicCodeList().map(sicCodeList =>
+        BadRequest(views.html.pages.sicAndCompliance.main_business_activity(badForm, sicCodeList))),
+      view => fetchSicCodeList().flatMap(sicCodeList =>
+        sicCodeList.find(_.id == view.id).fold(
+          BadRequest(views.html.pages.sicAndCompliance.main_business_activity(form, sicCodeList)).pure
+        )(selected => for {
+          mainSic <- viewModel[MainBusinessActivityView]().value
+          selectionChanged = mainSic.exists(_.id != selected.id)
+          _ <- s4l.save(S4LFlatRateScheme()) *> vrs.deleteElements(flatRateSchemeElementPaths) onlyIf selectionChanged
+          _ <- save(MainBusinessActivityView(selected))
+          result <- selectNextPage(sicCodeList)
+        } yield result))))
 
- def redirectToNext: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-  fetchSicCodeList.getOrElse(List.empty).flatMap(sicCodesList => {
-    (sicCodesList.size > 0).pure.ifM(
-      ifTrue = save(MainBusinessActivityView(sicCodesList.head.id, Some(sicCodesList.head))).flatMap(_ => selectNextPage(sicCodesList)),
-      ifFalse = selectNextPage(sicCodesList)
-    )
-   })
- )
+  def redirectToNext: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    fetchSicCodeList().flatMap {
+      case Nil => selectNextPage(Nil)
+      case sicCodeList@(head :: tail) => save(MainBusinessActivityView(head)).flatMap(_ => selectNextPage(sicCodeList))
+    })
+
 }
+
+
