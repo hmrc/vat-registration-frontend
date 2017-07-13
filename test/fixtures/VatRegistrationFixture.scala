@@ -102,6 +102,8 @@ trait VatRegistrationFixture {
   )
 
   val validDob = DateOfBirth(12, 11, 1973)
+  val validStartDate = DateOfBirth(12, 11, 1990)
+
 
   val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", Some(validDob), None, None)
   val completionCapacity = CompletionCapacity(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director")
@@ -111,7 +113,7 @@ trait VatRegistrationFixture {
   val officerName = Name(Some("Reddy"), None, "Yattapu", Some("Dr"))
   val validOfficerContactDetailsView = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
   val validOfficerContactDetails = OfficerContactDetails(Some("test@test.com"), None, None)
-  val formerName = FormerName(selection = true, formerName = Some("Bubbly Bobbings"))
+  val changeOfName = ChangeOfName(true, None)
   val currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(ScrsAddress("", "")))
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
 
@@ -120,7 +122,7 @@ trait VatRegistrationFixture {
     DateOfBirth.empty,
     "", "director",
     officerName,
-    formerName,
+    changeOfName,
     currentOrPreviousAddress,
     validOfficerContactDetails
   )

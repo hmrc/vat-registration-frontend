@@ -356,6 +356,7 @@ pages.summary.directorContactDetails.mobilePhone       = Mobile number
 pages.summary.directorDetails.sectionHeading           = Director details
 pages.summary.directorDetails.whoIsRegistering         = Who is registering the company for VAT
 pages.summary.directorDetails.formerName               = Former name
+pages.summary.directorDetails.formerNameDate           = Date former name changed
 pages.summary.directorDetails.noFormerName             = No former name
 pages.summary.directorDetails.homeAddress              = Home address
 pages.summary.directorDetails.moreThanThreeYears       = Lived at current address for more than 3 years
@@ -674,6 +675,18 @@ pages.formerName.fullName.label                          = Full name
 validation.formerName.missing                            = Tell us if you have a former name
 validation.formerName.selected.missing                   = Enter a name
 validation.formerName.selected.invalid                   = Enter a valid name
+
+## Former Name Date
+pages.formerNameDate.title                               = When did you change it last?
+pages.formerNameDate.heading1                            = When did you change it from 
+pages.formerNameDate.heading2                            = ?
+pages.formerNameDate.hint1                               = For example, 31 3 2006.
+validation.formerNameDate.invalid                        = Enter when this changed
+validation.formerNameDate.day.invalid                    = Day
+validation.formerNameDate.month.invalid                  = Month
+validation.formerNameDate.year.invalid                   = Year
+
+
 
 ## Previous Address Question
 pages.previousAddressQuestion.title                      = Have you lived at your current address for 3 years or more?

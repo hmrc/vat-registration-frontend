@@ -16,6 +16,8 @@
 
 package models.view.test
 
+import java.time.LocalDate
+
 import play.api.libs.json.Json
 
 case class VatLodgingOfficerTestSetup(
@@ -31,7 +33,10 @@ case class VatLodgingOfficerTestSetup(
                                   mobile: Option[String] = None,
                                   phone: Option[String] = None,
                                   formernameChoice: Option[String] = None,
-                                  formername: Option[String] = None
+                                  formername: Option[String] = None,
+                                  formernameChangeDay: Option[String] = None,
+                                  formernameChangeMonth: Option[String] = None,
+                                  formernameChangeYear: Option[String] = None
                                      )
 
 object VatLodgingOfficerTestSetup {

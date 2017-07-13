@@ -169,6 +169,11 @@ POST        /your-contact-details                                               
 GET         /have-you-ever-changed-your-name                                                   controllers.vatLodgingOfficer.FormerNameController.show
 POST        /have-you-ever-changed-your-name                                                   controllers.vatLodgingOfficer.FormerNameController.submit
 
+## FORMER NAME DATE PAGE
+GET         /former-name-date                                                                 controllers.vatLodgingOfficer.FormerNameDateController.show
+POST        /former-name-date                                                                 controllers.vatLodgingOfficer.FormerNameDateController.submit
+
+
 ## PREVIOUS ADDRESS QUESTION
 GET         /current-address-three-years-or-more                                               controllers.vatLodgingOfficer.PreviousAddressController.show
 POST        /current-address-three-years-or-more                                               controllers.vatLodgingOfficer.PreviousAddressController.submit

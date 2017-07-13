@@ -30,7 +30,7 @@ class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture wi
   "apiModelTransformer" should {
 
     "convert VatScheme with VatLodgingOfficer details into a CompletionCapacityView" in {
-      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName, formerName, currentOrPreviousAddress, validOfficerContactDetails)
+      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       val expected = CompletionCapacityView(officerName.id, Some(CompletionCapacity(officerName, "director")))
@@ -49,8 +49,8 @@ class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture wi
   "viewModelTransformer" should {
     "update logical group given a component" in {
       val ccv = CompletionCapacityView(anOfficer)
-      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, formerName, currentOrPreviousAddress, validOfficerContactDetails)
-      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", anOfficer.name, formerName, currentOrPreviousAddress, validOfficerContactDetails)
+      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
+      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", anOfficer.name, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
 
       ViewModelTransformer[CompletionCapacityView, VatLodgingOfficer].
         toApi(ccv, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
