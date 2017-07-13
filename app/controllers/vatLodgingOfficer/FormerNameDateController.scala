@@ -21,27 +21,23 @@ import javax.inject.Inject
 import cats.data.OptionT
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatLodgingOfficer.{FormerNameDateForm, OfficerDateOfBirthForm}
-import models.api.ScrsAddress
-import models.view.vatLodgingOfficer.{FormerNameDateView, OfficerHomeAddressView}
+import forms.vatLodgingOfficer.FormerNameDateForm
+import models.ModelKeys._
+import models.view.vatLodgingOfficer.{FormerNameDateView, FormerNameView}
 import play.api.data.Form
 import play.api.mvc._
 import services.{CommonService, S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
-import models.ModelKeys._
 class FormerNameDateController @Inject()(ds: CommonPlayDependencies)
                                         (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with FlatMapSyntax with CommonService {
 
   val form: Form[FormerNameDateView] = FormerNameDateForm.form
 
-  private def fetchFormerName()(implicit headerCarrier: HeaderCarrier) =
-    OptionT(keystoreConnector.fetchAndGet[String](FORMER_NAME))
-
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
 
     for {
-      formerName <- fetchFormerName().getOrElse("")
+      formerName <- viewModel[FormerNameView]().fold("")(view => view.formerName.getOrElse(""))
       res <- viewModel[FormerNameDateView]().fold(form)(form.fill)
     } yield Ok(views.html.pages.vatLodgingOfficer.former_name_date(res, formerName))
   )
@@ -51,7 +47,7 @@ class FormerNameDateController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm =>
         for {
-          formerName <- fetchFormerName().getOrElse("")
+          formerName <- viewModel[FormerNameView]().fold("")(view => view.formerName.getOrElse(""))
           res <- viewModel[FormerNameDateView]().fold(form)(form.fill)
         } yield BadRequest(views.html.pages.vatLodgingOfficer.former_name_date(badForm, formerName))
       ,

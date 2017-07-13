@@ -28,7 +28,7 @@ import models.ModelKeys._
 
 class FormerNameController @Inject()(ds: CommonPlayDependencies)
                                     (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService)
-  extends VatRegistrationController(ds) with CommonService {
+  extends VatRegistrationController(ds) {
 
   import cats.syntax.flatMap._
   val form = FormerNameForm.form
@@ -41,7 +41,6 @@ class FormerNameController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatLodgingOfficer.former_name(badForm)).pure,
       data => {
-        data.formerName.map(keystoreConnector.cache[String](FORMER_NAME, _))
         (data.yesNo).pure.ifM(
           ifTrue = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.FormerNameDateController.show())),
           ifFalse = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show()))

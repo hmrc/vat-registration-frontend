@@ -18,15 +18,14 @@ package controllers.vatLodgingOfficer
 
 import java.time.LocalDate
 
-import controllers.vatLodgingOfficer
-import cats.data.OptionT
 import common.Now
 import connectors.KeystoreConnector
+import controllers.vatLodgingOfficer
 import fixtures.VatRegistrationFixture
 import forms.vatLodgingOfficer.FormerNameDateForm
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.api.ScrsAddress
-import models.view.vatLodgingOfficer.FormerNameDateView
+import models.ModelKeys._
+import models.view.vatLodgingOfficer.{FormerNameDateView, FormerNameView}
 import org.mockito.Matchers
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -34,8 +33,6 @@ import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.HeaderCarrier
-import models.ModelKeys._
-import models.external.Officer
 
 import scala.concurrent.Future
 
@@ -44,11 +41,11 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
   val today: LocalDate = LocalDate.of(2017, 3, 21)
   val formerNameDateForm = FormerNameDateForm
   implicit val localDateOrdering = formerNameDateForm
+  val validFormerNameView = FormerNameView(true, Some("FORMER_NAME"))
 
   object FormerNameDateController extends FormerNameDateController(ds)(mockS4LService, mockVatRegistrationService) {
     implicit val fixedToday = Now[LocalDate](today)
     override val authConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
 
   }
 
@@ -59,8 +56,23 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
     "return HTML when a date has been entered in S4L and Former name in Keystore" in {
       val formerNameDate = FormerNameDateView(Some(LocalDate.now))
 
+      save4laterReturnsViewModel[FormerNameDateView](formerNameDate)()
+      save4laterReturnsViewModel[FormerNameView](validFormerNameView)()
+
+      callAuthorised(FormerNameDateController.show) {
+        _ includesText ("When did you change it from")
+      }
+    }
+
+    "return HTML when a date has been entered in S4L and None Former name " in {
+      val formerNameDate = FormerNameDateView(Some(LocalDate.now))
+      save4laterReturnsNoViewModel[FormerNameView]()
+      save4laterReturnsViewModel[FormerNameDateView](formerNameDate)()
+
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
+        .thenReturn(Future.successful(validVatScheme))
+
       save4laterReturnsViewModel(formerNameDate)()
-      mockKeystoreFetchAndGet(FORMER_NAME, Some("FORMER_NAME"))
 
       callAuthorised(FormerNameDateController.show) {
         _ includesText ("When did you change it from")
@@ -69,7 +81,7 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return HTML when there's nothing in S4L , NO Former name in Keystoreand vatScheme contains data" in {
       save4laterReturnsNoViewModel[FormerNameDateView]()
-      mockKeystoreFetchAndGet(FORMER_NAME, Some("FORMER_NAME"))
+      save4laterReturnsViewModel[FormerNameView](validFormerNameView)()
 
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
@@ -81,7 +93,7 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[FormerNameDateView]()
-      mockKeystoreFetchAndGet(FORMER_NAME, Some("FORMER_NAME"))
+      save4laterReturnsViewModel[FormerNameView](validFormerNameView)()
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
@@ -95,8 +107,12 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
   s"POST ${routes.FormerNameDateController.submit()}" should {
 
     "return 400 when no data posted" in {
-      save4laterReturnsViewModel(FormerNameDateView(Some(LocalDate.now)))()
-      mockKeystoreFetchAndGet(FORMER_NAME, Some("FORMER_NAME"))
+      //save4laterReturnsViewModel(FormerNameDateView(Some(LocalDate.now)))()
+      save4laterReturnsNoViewModel[FormerNameDateView]()
+      save4laterReturnsNoViewModel[FormerNameView]()
+
+      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
+        .thenReturn(Future.successful(validVatScheme))
 
       submitAuthorised(
         FormerNameDateController.submit(), fakeRequest.withFormUrlEncodedBody()) {
@@ -105,8 +121,10 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "return 400 when partial data is posted" in {
-      save4laterReturnsViewModel(FormerNameDateView(Some(LocalDate.now)))()
-      mockKeystoreFetchAndGet(FORMER_NAME, Some("FORMER_NAME"))
+      //save4laterReturnsNoViewModel[FormerNameDateView]()
+      save4laterReturnsViewModel[FormerNameDateView](FormerNameDateView(Some(LocalDate.now)))()
+      save4laterReturnsViewModel[FormerNameView](validFormerNameView)()
+
 
       submitAuthorised(
         FormerNameDateController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -120,9 +138,11 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return 303 with Former name Date selected" in {
             val minDate: LocalDate = today
-            save4laterReturnsViewModel(FormerNameDateView(Some(LocalDate.now)))()
+            save4laterReturnsViewModel[FormerNameDateView](FormerNameDateView(Some(LocalDate.now)))()
+            save4laterReturnsViewModel[FormerNameView](validFormerNameView)()
+
             save4laterExpectsSave[FormerNameDateView]()
-            mockKeystoreFetchAndGet(FORMER_NAME, Some("FORMER_NAME"))
+
 
       submitAuthorised(
         FormerNameDateController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -136,4 +156,5 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
           }
 
   }
+
 }
