@@ -31,7 +31,6 @@ trait S4LMockSugar {
 
   implicit val dummyCacheMap = CacheMap("", Map.empty)
 
-  //TODO remove these two and drop the 2 suffix later
   def save4laterReturnsNothing[T: S4LKey]()(implicit s4l: S4LService, ec: ExecutionContext): Unit =
     when(s4l.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(None.pure)
 
@@ -47,11 +46,9 @@ trait S4LMockSugar {
       when(s4l.getViewModel[T, G]()(Matchers.eq(viewModelFormat), any(), Matchers.eq(k), any())).thenReturn(OptionT.fromOption(t))
   }
 
-
   def save4laterReturnsNoViewModel[T] = new S4LFetchHelper[T](Option.empty[T])
 
   def save4laterReturnsViewModel[T](t: T) = new S4LFetchHelper[T](Some(t))
-
 
   final class S4LSaveHelper[T] {
     def apply[G]()
