@@ -146,7 +146,10 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
           mobile = vatLodgingOfficer.flatMap(_.officerContactDetails).flatMap(_.daytimePhone),
           phone = vatLodgingOfficer.flatMap(_.officerContactDetails).flatMap(_.mobile),
           formernameChoice = vatLodgingOfficer.flatMap(_.formerName).map(_.yesNo.toString),
-          formername = vatLodgingOfficer.flatMap(_.formerName).flatMap(_.formerName)
+          formername = vatLodgingOfficer.flatMap(_.formerName).flatMap(_.formerName),
+          formernameChangeDay = vatLodgingOfficer.flatMap(_.formerNameDate).map(_.date.get.getDayOfMonth.toString),
+          formernameChangeMonth = vatLodgingOfficer.flatMap(_.formerNameDate).map(_.date.get.getMonthValue.toString),
+          formernameChangeYear = vatLodgingOfficer.flatMap(_.formerNameDate).map(_.date.get.getYear.toString)
         ),
         vatFlatRateScheme = VatFlatRateSchemeTestSetup(
           joinFrs = frs.flatMap(_.joinFrs).map(_.selection.toString),
