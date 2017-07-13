@@ -51,20 +51,8 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
   s"GET ${vatLodgingOfficer.routes.FormerNameDateController.show()}" should {
 
-    "return HTML when a date has been entered in S4L and Former name in Keystore" in {
-      val formerNameDate = FormerNameDateView(LocalDate.now)
-
-      save4laterReturnsViewModel[FormerNameDateView](formerNameDate)()
-      save4laterReturnsViewModel[FormerNameView](validFormerNameView)()
-
-      callAuthorised(FormerNameDateController.show) {
-        _ includesText ("When did you change it from")
-      }
-
-    }
-
     "return HTML when a date no data entered in S4L for Former name" in {
-      val formerNameDate = FormerNameDateView(Some(LocalDate.now))
+      val formerNameDate = FormerNameDateView(LocalDate.now)
       save4laterReturnsNoViewModel[FormerNameView]()
       save4laterReturnsViewModel[FormerNameDateView](formerNameDate)()
 
@@ -91,7 +79,7 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
       }
     }
 
-    "return HTML when there's nothing in S4L , NO Former name and vatScheme contains data" in {
+    "return HTML when there's nothing in S4L, No Former name and vatScheme contains data" in {
       save4laterReturnsNoViewModel[FormerNameDateView]()
       save4laterReturnsViewModel[FormerNameView](validFormerNameView)()
 
@@ -153,7 +141,6 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
       save4laterReturnsViewModel[FormerNameView](validFormerNameView)()
 
       save4laterExpectsSave[FormerNameDateView]()
-
 
       submitAuthorised(
         FormerNameDateController.submit(), fakeRequest.withFormUrlEncodedBody(

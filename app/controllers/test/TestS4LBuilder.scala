@@ -19,7 +19,7 @@ package controllers.test
 import java.time.LocalDate
 
 import models._
-import models.api.{ChangeOfName, _}
+import models.api._
 import models.view.frs._
 import models.view.ppob.PpobView
 import models.view.sicAndCompliance.cultural.NotForProfit
@@ -203,12 +203,15 @@ class TestS4LBuilder {
         mobile = data.vatLodgingOfficer.mobile,
         tel = data.vatLodgingOfficer.phone))
 
-    val formerName = FormerNameView(data.vatLodgingOfficer.formernameChoice.exists(_.toBoolean), data.vatLodgingOfficer.formername)
-    val formerNameDate: Option[LocalDate] = data.vatLodgingOfficer.formernameChangeDay.map(_ =>
+    val formerName = FormerNameView(
+      yesNo = data.vatLodgingOfficer.formernameChoice.exists(_.toBoolean),
+      formerName = data.vatLodgingOfficer.formername)
+
+    val formerNameDate = data.vatLodgingOfficer.formernameChangeDay.map(_ =>
       LocalDate.of(
         data.vatLodgingOfficer.formernameChangeYear.getOrElse("1900").toInt,
         data.vatLodgingOfficer.formernameChangeMonth.getOrElse("1").toInt,
-        data.vatLodgingOfficer.formernameChangeDay.getOrElse("1").toInt))
+        data.vatLodgingOfficer.formernameChangeDay.getOrElse("1").toInt)).get
 
     S4LVatLodgingOfficer(
       previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
@@ -249,10 +252,5 @@ class TestS4LBuilder {
     )
 
   }
-
-
-
-
-
 
 }
