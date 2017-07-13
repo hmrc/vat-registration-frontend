@@ -28,56 +28,47 @@ import uk.gov.hmrc.play.test.UnitSpec
 class FormerNameDateViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
   override val changeOfName = ChangeOfName(true, Some(FormerName("Bob", Some(validStartDate))))
-  val testFormerNameDateView = FormerNameDateView(Some(validStartDate))
-  val differentFormerNameDateView = FormerNameDateView(Some(validDob))
+  val testFormerNameDateView = FormerNameDateView(validStartDate)
+  val differentFormerNameDateView = FormerNameDateView(validDob)
 
   val anOfficer = Officer(Name(Some("name1"), Some("name2"),"SurName"), "director", Some(validDob))
   val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
 
-
   val date = LocalDate.of(2017, 3, 21)
-
 
   "unbind" should {
     "decompose valid StartDate" in {
-      val testStartDate = FormerNameDateView(Some(validStartDate))
+      val testStartDate = FormerNameDateView(validStartDate)
       inside(FormerNameDateView.unbind(testStartDate)) {
         case Some(dateModel) =>
           dateModel shouldBe DateModel.fromLocalDate(validStartDate)
       }
     }
-
-    "decompose throw Exception StartDate" in {
-      val testStartDate = FormerNameDateView()
-      inside(FormerNameDateView.unbind(testStartDate)) {
-        case _ =>
-      }
-    }
-
-    "decompose empty StartDate" in {
-      val testStartDate = FormerNameDateView(None)
-      inside(FormerNameDateView.unbind(testStartDate)) {
-        case _ =>
-      }
-    }
-
   }
 
   "bind" should {
     "create StartDate when DateModel is present" in {
-      FormerNameDateView.bind(DateModel.fromLocalDate(validStartDate)) shouldBe FormerNameDateView(Some(validStartDate))
+      FormerNameDateView.bind(DateModel.fromLocalDate(validStartDate)) shouldBe FormerNameDateView(validStartDate)
     }
 
   }
-  "apiModelTransformer" should {
 
+  "apiModelTransformer" should {
     "convert VatScheme with VatLodgingOfficer details into a FormerNameDateView" in {
-      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName,  changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
+      val vatLodgingOfficer = VatLodgingOfficer(
+        currentAddress = address,
+        dob = DateOfBirth.empty,
+        nino = "",
+        role = "director",
+        name = officerName,
+        changeOfName = changeOfName,
+        currentOrPreviousAddress = currentOrPreviousAddress,
+        contact = validOfficerContactDetails)
+
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       ApiModelTransformer[FormerNameDateView].toViewModel(vs) shouldBe Some(testFormerNameDateView)
     }
-
 
     "convert VatScheme without VatLodgingOfficer to empty view model" in {
       val vs = vatScheme().copy(lodgingOfficer = None)
@@ -88,8 +79,25 @@ class FormerNameDateViewSpec extends UnitSpec with VatRegistrationFixture with I
 
   "viewModelTransformer" should {
     "update logical group given a component" in {
-      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, ChangeOfName(true, Some(FormerName("Bob"))), currentOrPreviousAddress, validOfficerContactDetails)
-      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
+      val initialVatLodgingOfficer = VatLodgingOfficer(
+        currentAddress = address,
+        dob = DateOfBirth.empty,
+        nino = "",
+        role = "",
+        name = Name.empty,
+        changeOfName = ChangeOfName(true, Some(FormerName("Bob"))),
+        currentOrPreviousAddress = currentOrPreviousAddress,
+        contact = validOfficerContactDetails)
+
+      val updatedVatLodgingOfficer = VatLodgingOfficer(
+        currentAddress = address,
+        dob = DateOfBirth.empty,
+        nino = "",
+        role = "",
+        name = Name.empty,
+        changeOfName = changeOfName,
+        currentOrPreviousAddress = currentOrPreviousAddress,
+        contact = validOfficerContactDetails)
 
       ViewModelTransformer[FormerNameDateView, VatLodgingOfficer].
         toApi(testFormerNameDateView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
@@ -98,7 +106,7 @@ class FormerNameDateViewSpec extends UnitSpec with VatRegistrationFixture with I
 
   "apply" should {
     "create a FormerNameDateView instance" in {
-      FormerNameDateView(Some(validStartDate)) shouldBe testFormerNameDateView
+      FormerNameDateView(validStartDate) shouldBe testFormerNameDateView
     }
   }
 
