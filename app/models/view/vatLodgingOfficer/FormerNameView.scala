@@ -27,7 +27,7 @@ case class FormerNameView(
 
 object FormerNameView {
 
-  def apply(fn: FormerName): FormerNameView = new FormerNameView(fn.selection, fn.formerName)
+  def apply(changeOfName: ChangeOfName): FormerNameView = new FormerNameView(changeOfName.nameHasChanged, changeOfName.formerName.map(_.formerName))
 
   implicit val format = Json.format[FormerNameView]
 
@@ -39,11 +39,13 @@ object FormerNameView {
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[FormerNameView] { vs: VatScheme =>
-    vs.lodgingOfficer.map(_.formerName).map(fn => FormerNameView(fn.selection, fn.formerName))
+    vs.lodgingOfficer.map(_.changeOfName).map(changeOfName => FormerNameView(changeOfName.nameHasChanged, changeOfName.formerName.map(_.formerName)))
   }
 
   implicit val viewModelTransformer = ViewModelTransformer { (c: FormerNameView, g: VatLodgingOfficer) =>
-    g.copy(formerName = FormerName(c.yesNo, c.formerName))
+    g.copy(changeOfName =
+      ChangeOfName(c.yesNo,
+        if (c.yesNo) Some(FormerName(c.formerName.getOrElse(""))) else None))
   }
 
 }

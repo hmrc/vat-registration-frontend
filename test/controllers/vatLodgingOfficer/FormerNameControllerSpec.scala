@@ -19,6 +19,7 @@ package controllers.vatLodgingOfficer
 import controllers.vatLodgingOfficer
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.ModelKeys.FORMER_NAME
 import models.view.vatLodgingOfficer.FormerNameView
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -74,6 +75,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "return 303 with valid data no former name" in {
       save4laterExpectsSave[FormerNameView]()
+      mockKeystoreCache[String](FORMER_NAME, dummyCacheMap)
 
       submitAuthorised(TestFormerNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "formerNameRadio" -> "false"
@@ -85,11 +87,12 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "return 303 with valid data with former name" in {
       save4laterExpectsSave[FormerNameView]()
+      mockKeystoreCache[String](FORMER_NAME, dummyCacheMap)
       submitAuthorised(TestFormerNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "formerNameRadio" -> "true",
         "formerName" -> "some name"
       )) {
-        _ redirectsTo s"$contextRoot/your-date-of-birth"
+        _ redirectsTo s"$contextRoot/former-name-date"
       }
     }
   }

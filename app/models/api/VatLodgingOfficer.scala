@@ -16,6 +16,8 @@
 
 package models.api
 
+import java.time.LocalDate
+
 import play.api.libs.json.{Json, OFormat}
 
 case class VatLodgingOfficer(
@@ -24,7 +26,7 @@ case class VatLodgingOfficer(
                               nino: String,
                               role: String,
                               name: Name,
-                              formerName: FormerName,
+                              changeOfName: ChangeOfName,
                               currentOrPreviousAddress : CurrentOrPreviousAddress,
                               contact: OfficerContactDetails
                             )
@@ -35,13 +37,14 @@ object VatLodgingOfficer {
   // TODO remove once no longer required
   val currentAddress = ScrsAddress(line1 = "", line2 = "")
   val currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(currentAddress))
+  val changeOfName = ChangeOfName(true, Some(FormerName("")))
   val empty = VatLodgingOfficer(
     currentAddress,
     dob = DateOfBirth(1, 1, 1977),
     nino = "NB686868C",
     role = "",
     name = Name.empty,
-    formerName = FormerName(selection = false, formerName = None),
+    changeOfName = changeOfName,
     currentOrPreviousAddress,
     contact = OfficerContactDetails.empty)
 }

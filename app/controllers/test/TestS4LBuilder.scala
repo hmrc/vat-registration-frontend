@@ -203,10 +203,15 @@ class TestS4LBuilder {
         mobile = data.vatLodgingOfficer.mobile,
         tel = data.vatLodgingOfficer.phone))
 
-    val formerName = data.vatLodgingOfficer.formernameChoice.map(_ =>
-      FormerName(
-        selection = data.vatLodgingOfficer.formernameChoice.exists(_.toBoolean),
-        formerName = data.vatLodgingOfficer.formername))
+    val formerName = FormerNameView(
+      yesNo = data.vatLodgingOfficer.formernameChoice.exists(_.toBoolean),
+      formerName = data.vatLodgingOfficer.formername)
+
+    val formerNameDate = data.vatLodgingOfficer.formernameChangeDay.map(_ =>
+      LocalDate.of(
+        data.vatLodgingOfficer.formernameChangeYear.getOrElse("1900").toInt,
+        data.vatLodgingOfficer.formernameChangeMonth.getOrElse("1").toInt,
+        data.vatLodgingOfficer.formernameChangeDay.getOrElse("1").toInt)).get
 
     S4LVatLodgingOfficer(
       previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
@@ -215,7 +220,8 @@ class TestS4LBuilder {
       officerNino = nino.map(OfficerNinoView(_)),
       completionCapacity = completionCapacity.map(CompletionCapacityView(_)),
       officerContactDetails = contactDetails.map(OfficerContactDetailsView(_)),
-      formerName = formerName.map(FormerNameView(_))
+      formerName = Some(formerName),
+      formerNameDate = Some(FormerNameDateView(formerNameDate))
     )
   }
 
@@ -246,10 +252,5 @@ class TestS4LBuilder {
     )
 
   }
-
-
-
-
-
 
 }
