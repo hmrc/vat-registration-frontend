@@ -50,7 +50,9 @@ object ElementPath {
       VatFrsAnnualCostsLimitedPath,
       VatFrsUseThisRate,
       VatFrsWhenToJoin,
-      VatFrsStartDate
+      VatFrsStartDate,
+      VatFrsBusinessSector,
+      VatFrsPercentage
     ).map(ep => (ep.name, ep)).toMap
 
     override def writes(e: ElementPath): JsValue = JsString(e.name)
@@ -71,9 +73,26 @@ object ElementPath {
 
   val allCompliancePaths = List(CulturalCompliancePath, FinancialCompliancePath, LabourCompliancePath)
 
+  val fromFrsAnnualCostsInclusiveElementPaths = List(
+    VatFrsAnnualCostsLimitedPath,
+    VatFrsPercentage,
+    VatFrsBusinessSector,
+    VatFrsUseThisRate,
+    VatFrsWhenToJoin,
+    VatFrsStartDate)
+
+  val fromFrsAnnualCostsLimitedElementPaths = List(
+    VatFrsPercentage,
+    VatFrsBusinessSector,
+    VatFrsUseThisRate,
+    VatFrsWhenToJoin,
+    VatFrsStartDate)
+
   val flatRateSchemeElementPaths = List(
     VatFrsAnnualCostsInclusivePath,
     VatFrsAnnualCostsLimitedPath,
+    VatFrsPercentage,
+    VatFrsBusinessSector,
     VatFrsUseThisRate,
     VatFrsWhenToJoin,
     VatFrsStartDate)
@@ -196,6 +215,16 @@ case object VatFrsWhenToJoin extends ElementPath {
 case object VatFrsStartDate extends ElementPath {
   override val path = "vatFlatRateScheme.startDate"
   override val name = "vat-frs-start-date"
+}
+
+case object VatFrsBusinessSector extends ElementPath {
+  override val path = "vatFlatRateScheme.categoryOfBusiness"
+  override val name = "vat-frs-business-category"
+}
+
+case object VatFrsPercentage extends ElementPath {
+  override val path = "vatFlatRateScheme.percentage"
+  override val name = "vat-frs-percentage"
 }
 
 // $COVERAGE-ON$

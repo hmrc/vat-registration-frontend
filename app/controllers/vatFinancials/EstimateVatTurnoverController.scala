@@ -42,7 +42,7 @@ class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
         originalTurnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
         _ <- keystoreConnector.cache[Long](EstimateVatTurnoverKey.lastKnownValueKey, originalTurnover)
         _ <- save(view)
-      } yield (Redirect(controllers.vatFinancials.routes.ZeroRatedSalesController.show()))))
+      } yield Redirect(controllers.vatFinancials.routes.ZeroRatedSalesController.show())))
 
 }
 
