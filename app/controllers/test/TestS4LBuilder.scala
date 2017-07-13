@@ -203,12 +203,12 @@ class TestS4LBuilder {
         mobile = data.vatLodgingOfficer.mobile,
         tel = data.vatLodgingOfficer.phone))
 
-    val changeOfName = data.vatLodgingOfficer.formernameChoice.map(_ =>
-      ChangeOfName(
-        nameHasChanged = data.vatLodgingOfficer.formernameChoice.exists(_.toBoolean),
-        formerName = Some(FormerName(data.vatLodgingOfficer.formername.getOrElse("")))
-      )
-    )
+    val formerName = FormerNameView(data.vatLodgingOfficer.formernameChoice.exists(_.toBoolean), data.vatLodgingOfficer.formername)
+    val formerNameDate: Option[LocalDate] = data.vatLodgingOfficer.formernameChangeDay.map(_ =>
+      LocalDate.of(
+        data.vatLodgingOfficer.formernameChangeYear.getOrElse("1900").toInt,
+        data.vatLodgingOfficer.formernameChangeMonth.getOrElse("1").toInt,
+        data.vatLodgingOfficer.formernameChangeDay.getOrElse("1").toInt))
 
     S4LVatLodgingOfficer(
       previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
@@ -217,9 +217,9 @@ class TestS4LBuilder {
       officerNino = nino.map(OfficerNinoView(_)),
       completionCapacity = completionCapacity.map(CompletionCapacityView(_)),
       officerContactDetails = contactDetails.map(OfficerContactDetailsView(_)),
-      formerName = changeOfName.map(changeOfName =>
-        FormerNameView(changeOfName.nameHasChanged, changeOfName.formerName.map(name => name.formerName)))
-      )
+      formerName = Some(formerName),
+      formerNameDate = Some(FormerNameDateView(formerNameDate))
+    )
   }
 
   def vatFrsFromData(data: TestSetup): S4LFlatRateScheme = {
