@@ -49,6 +49,8 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
       "visited for the first time" in {
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
         save4laterReturnsNoViewModel[BusinessSectorView]()
+        save4laterReturnsNoViewModel[MainBusinessActivityView]()
+        save4laterReturnsNoViewModel[RegisterForFrsView]()
         save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
         when(mockConfigConnector.getBusinessSectorDetails(sicCode.id)).thenReturn(validBusinessSectorView)
 
@@ -61,6 +63,8 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
       }
 
       "user's answer has already been submitted to backend" in {
+        save4laterReturnsNoViewModel[BusinessSectorView]()
+        save4laterReturnsNoViewModel[MainBusinessActivityView]()
         save4laterReturnsNoViewModel[RegisterForFrsView]()
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
@@ -75,6 +79,8 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
   s"POST ${routes.RegisterForFrsWithSectorController.submit()}" should {
 
     "return 400 with Empty data" in {
+      save4laterReturnsNoViewModel[BusinessSectorView]()
+      save4laterReturnsNoViewModel[MainBusinessActivityView]()
       save4laterReturnsNoViewModel[RegisterForFrsView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
@@ -83,6 +89,8 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
     }
 
     "return 303 with RegisterFor Flat Rate Scheme selected Yes" in {
+      save4laterReturnsNoViewModel[BusinessSectorView]()
+      save4laterReturnsNoViewModel[MainBusinessActivityView]()
       save4laterReturnsNoViewModel[RegisterForFrsView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
       save4laterExpectsSave[RegisterForFrsView]()

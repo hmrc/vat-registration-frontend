@@ -44,7 +44,7 @@ trait S4LMockSugar {
                  viewModelFormat: ViewModelFormat.Aux[T, G],
                  k: S4LKey[G],
                  s4l: S4LService): Unit =
-      when(s4l.getViewModel[T, G]()(any(), any(), Matchers.eq(k), any())).thenReturn(OptionT.fromOption(t))
+      when(s4l.getViewModel[T, G]()(Matchers.eq(viewModelFormat), any(), Matchers.eq(k), any())).thenReturn(OptionT.fromOption(t))
   }
 
   def save4laterReturnsNoViewModel[T] = new S4LFetchHelper[T](Option.empty[T])
