@@ -21,9 +21,10 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.frs.AnnualCostsInclusiveForm
+import models.ElementPath.fromFrsAnnualCostsInclusiveElementPaths
 import models.view.frs.AnnualCostsInclusiveView.NO
 import models.view.frs.{AnnualCostsInclusiveView, JoinFrsView}
-import models.{S4LFlatRateScheme, VatFrsAnnualCostsLimitedPath, VatFrsUseThisRate}
+import models._
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -51,7 +52,7 @@ class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
       } else {
         for {
           _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)), annualCostsInclusive = Some(view)))
-          _ <- vrs.deleteElements(List(VatFrsAnnualCostsLimitedPath, VatFrsUseThisRate))
+          _ <- vrs.deleteElements(fromFrsAnnualCostsInclusiveElementPaths)
         } yield controllers.frs.routes.RegisterForFrsController.show()
       }).map(Redirect)))
 

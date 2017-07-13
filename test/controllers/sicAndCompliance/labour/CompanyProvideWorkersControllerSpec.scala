@@ -78,15 +78,8 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
-
-      val vsc = VatSicAndCompliance(
-        businessDescription = "bad",
-        mainBusinessActivity = SicCode("","","")
-      )
-
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme.copy(vatSicAndCompliance = Some(vsc))))
-      save4laterReturnsNoViewModel[MainBusinessActivityView]()
-      save4laterReturnsNoViewModel[BusinessActivityDescription]()
+      save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_YES
@@ -96,10 +89,9 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
     "return 303 with company provide workers No selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterReturnsNoViewModel[MainBusinessActivityView]()
-      save4laterReturnsNoViewModel[BusinessActivityDescription]()
+      save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_NO

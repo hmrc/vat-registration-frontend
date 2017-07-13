@@ -19,6 +19,7 @@ package controllers.sicAndCompliance.cultural
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.api.SicCode
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import org.mockito.Matchers.any
@@ -91,10 +92,9 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
     "return 303 with not for profit Yes selected" in {
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterReturnsNoViewModel[MainBusinessActivityView]()
-      save4laterReturnsNoViewModel[BusinessActivityDescription]()
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
 
       submitAuthorised(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> NotForProfit.NOT_PROFIT_YES
@@ -105,10 +105,9 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
     "return 303 with not for profit No selected" in {
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterReturnsNoViewModel[MainBusinessActivityView]()
-      save4laterReturnsNoViewModel[BusinessActivityDescription]()
+      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
 
       submitAuthorised(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> NotForProfit.NOT_PROFIT_NO
@@ -116,4 +115,5 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
 
     }
   }
+
 }
