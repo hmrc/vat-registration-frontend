@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import connectors.ConfigConnect
 import controllers.CommonPlayDependencies
-import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
+import forms.genericForms.YesOrNoFormFactory
 import models.view.frs.RegisterForFrsView
 import models.{S4LFlatRateScheme, VatFrsStartDate, VatFrsWhenToJoin}
 import play.api.mvc.{Action, AnyContent}
@@ -34,10 +34,7 @@ class RegisterForFrsWithSectorController @Inject()(ds: CommonPlayDependencies, f
   val form = formFactory.form("registerForFrsWithSector")("frs.registerForWithSector")
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    for {
-      sectorInfo <- businessSectorView()
-      preFilledForm <- viewModel[RegisterForFrsView]().fold(form)(view => form.fill(YesOrNoAnswer(view.selection)))
-    } yield Ok(views.html.pages.frs.frs_your_flat_rate(sectorInfo, preFilledForm)))
+    businessSectorView().map(sectorInfo => Ok(views.html.pages.frs.frs_your_flat_rate(sectorInfo, form))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(

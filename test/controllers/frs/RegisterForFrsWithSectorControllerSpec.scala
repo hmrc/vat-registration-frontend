@@ -26,6 +26,9 @@ import models.view.sicAndCompliance.MainBusinessActivityView
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
+import uk.gov.hmrc.play.http.HeaderCarrier
+
+import scala.concurrent.Future
 
 class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
@@ -62,6 +65,8 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
 
       "user's answer has already been submitted to backend" in {
         save4laterReturnsNoViewModel[RegisterForFrsView]()
+        save4laterReturnsNoViewModel[BusinessSectorView]()
+        save4laterReturnsNoViewModel[MainBusinessActivityView]()
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
         callAuthorised(Controller.show) {
@@ -75,6 +80,8 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
   s"POST ${routes.RegisterForFrsWithSectorController.submit()}" should {
 
     "return 400 with Empty data" in {
+      save4laterReturnsNoViewModel[BusinessSectorView]()
+      save4laterReturnsNoViewModel[MainBusinessActivityView]()
       save4laterReturnsNoViewModel[RegisterForFrsView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
@@ -83,7 +90,11 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
     }
 
     "return 303 with RegisterFor Flat Rate Scheme selected Yes" in {
+      save4laterReturnsNoViewModel[BusinessSectorView]()
+      save4laterReturnsNoViewModel[MainBusinessActivityView]()
       save4laterReturnsNoViewModel[RegisterForFrsView]()
+
+
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
       save4laterExpectsSave[RegisterForFrsView]()
       save4laterExpectsSave[BusinessSectorView]()

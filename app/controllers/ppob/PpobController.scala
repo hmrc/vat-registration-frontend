@@ -24,17 +24,15 @@ import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.ppob.PpobForm
 import models.api.ScrsAddress
 import models.view.ppob.PpobView
-import models.view.vatLodgingOfficer.PreviousAddressView
-import play.api.Logger
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 class PpobController @Inject()(ds: CommonPlayDependencies)
                               (implicit s4l: S4LService,
-                                             vrs: VatRegistrationService,
-                                             prePopService: PrePopulationService,
-                                             alfConnector: AddressLookupConnect)
+                               vrs: VatRegistrationService,
+                               prePopService: PrePopulationService,
+                               alfConnector: AddressLookupConnect)
   extends VatRegistrationController(ds) with CommonService {
 
   import cats.syntax.flatMap._
