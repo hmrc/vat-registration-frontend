@@ -51,7 +51,7 @@ object ElementPath {
       VatFrsUseThisRate,
       VatFrsWhenToJoin,
       VatFrsStartDate,
-      VatFrsBusCategory,
+      VatFrsBusinessSector,
       VatFrsPercentage
     ).map(ep => (ep.name, ep)).toMap
 
@@ -76,14 +76,14 @@ object ElementPath {
   val fromFrsAnnualCostsInclusiveElementPaths = List(
     VatFrsAnnualCostsLimitedPath,
     VatFrsPercentage,
-    VatFrsBusCategory,
+    VatFrsBusinessSector,
     VatFrsUseThisRate,
     VatFrsWhenToJoin,
     VatFrsStartDate)
 
   val fromFrsAnnualCostsLimitedElementPaths = List(
     VatFrsPercentage,
-    VatFrsBusCategory,
+    VatFrsBusinessSector,
     VatFrsUseThisRate,
     VatFrsWhenToJoin,
     VatFrsStartDate)
@@ -92,7 +92,7 @@ object ElementPath {
     VatFrsAnnualCostsInclusivePath,
     VatFrsAnnualCostsLimitedPath,
     VatFrsPercentage,
-    VatFrsBusCategory,
+    VatFrsBusinessSector,
     VatFrsUseThisRate,
     VatFrsWhenToJoin,
     VatFrsStartDate)
@@ -217,7 +217,7 @@ case object VatFrsStartDate extends ElementPath {
   override val name = "vat-frs-start-date"
 }
 
-case object VatFrsBusCategory extends ElementPath {
+case object VatFrsBusinessSector extends ElementPath {
   override val path = "vatFlatRateScheme.categoryOfBusiness"
   override val name = "vat-frs-business-category"
 }
