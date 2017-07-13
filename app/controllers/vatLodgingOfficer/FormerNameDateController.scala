@@ -18,16 +18,13 @@ package controllers.vatLodgingOfficer
 
 import javax.inject.Inject
 
-import cats.data.OptionT
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.FormerNameDateForm
-import models.ModelKeys._
 import models.view.vatLodgingOfficer.{FormerNameDateView, FormerNameView}
 import play.api.data.Form
 import play.api.mvc._
 import services.{CommonService, S4LService, VatRegistrationService}
-import uk.gov.hmrc.play.http.HeaderCarrier
 class FormerNameDateController @Inject()(ds: CommonPlayDependencies)
                                         (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with FlatMapSyntax with CommonService {
