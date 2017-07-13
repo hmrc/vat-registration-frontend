@@ -24,15 +24,15 @@ import play.api.libs.json.Json
 
 import scala.util.Try
 
-case class FormerNameDateView(date: Option[LocalDate] = None )
+case class FormerNameDateView(date: LocalDate)
 
 object FormerNameDateView {
 
   def bind(dateModel: DateModel): FormerNameDateView =
-    FormerNameDateView(dateModel.toLocalDate)
+    FormerNameDateView(dateModel.toLocalDate.get)  // form ensures valid date
 
   def unbind(formerNameDate: FormerNameDateView): Option[DateModel] =
-      formerNameDate.date.fold((Option.empty[DateModel]))(d => Some(DateModel.fromLocalDate(d)))
+      Some(DateModel.fromLocalDate(formerNameDate.date))  // form ensures valid date
 
   implicit val format = Json.format[FormerNameDateView]
 
@@ -42,17 +42,18 @@ object FormerNameDateView {
       g.getOrElse(S4LVatLodgingOfficer()).copy(formerNameDate = Some(c))
   )
 
-
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[FormerNameDateView] { vs: VatScheme =>
-    vs.lodgingOfficer.flatMap(_.changeOfName.formerName).map(formerName => FormerNameDateView(formerName.dateOfNameChange))
+    vs.lodgingOfficer.flatMap(_.changeOfName.formerName).collect {
+      case FormerName(_, Some(d)) => FormerNameDateView(d)
+    }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: FormerNameDateView, g: VatLodgingOfficer) => {
+  implicit val viewModelTransformer = ViewModelTransformer { (c: FormerNameDateView, g: VatLodgingOfficer) =>
     g.copy(changeOfName =
       g.changeOfName.copy(formerName =
         g.changeOfName.formerName.map(formerName =>
-          formerName.copy(dateOfNameChange = c.date))))
+          formerName.copy(dateOfNameChange = Some(c.date)))))
   }
-  }
- }
+
+}
