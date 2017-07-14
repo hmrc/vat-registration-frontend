@@ -203,10 +203,9 @@ class TestS4LBuilder {
         mobile = data.vatLodgingOfficer.mobile,
         tel = data.vatLodgingOfficer.phone))
 
-    val formerName: Option[FormerName] = data.vatLodgingOfficer.formernameChoice.map(
-      choice => choice match {
-        case "true" => FormerName(data.vatLodgingOfficer.formername.get)
-      })
+    val formerName: Option[FormerName] = data.vatLodgingOfficer.formernameChoice.map {
+      case "true" => FormerName(data.vatLodgingOfficer.formername.get)
+    }
 
     val formerNameDate: Option[LocalDate] = data.vatLodgingOfficer.formernameChangeDay.map(_ =>
       LocalDate.of(
