@@ -678,10 +678,11 @@ validation.formerName.selected.invalid                   = Enter a valid name
 
 ## Former Name Date
 pages.formerNameDate.title                               = When did you change it last?
-pages.formerNameDate.heading1                            = When did you change it from 
+pages.formerNameDate.heading1                            = When did you change it from
 pages.formerNameDate.heading2                            = ?
 pages.formerNameDate.hint1                               = For example, 31 3 2006.
-validation.formerNameDate.invalid                        = Enter when this changed
+validation.formerNameDate.invalid                        = Enter a valid date
+validation.formerNameDate.missing                        = Enter when this changed
 validation.formerNameDate.day.invalid                    = Day
 validation.formerNameDate.month.invalid                  = Month
 validation.formerNameDate.year.invalid                   = Year
