@@ -197,21 +197,22 @@ class TestS4LBuilder {
         role = data.vatLodgingOfficer.role.getOrElse(""))
     })
 
-    val contactDetails = data.vatLodgingOfficer.email.map(_ =>
+    val contactDetails: Option[OfficerContactDetails] = data.vatLodgingOfficer.email.map(_ =>
       OfficerContactDetails(
         email = data.vatLodgingOfficer.email,
         mobile = data.vatLodgingOfficer.mobile,
         tel = data.vatLodgingOfficer.phone))
 
-    val formerName = FormerNameView(
-      yesNo = data.vatLodgingOfficer.formernameChoice.exists(_.toBoolean),
-      formerName = data.vatLodgingOfficer.formername)
+    val formerName: Option[FormerName] = data.vatLodgingOfficer.formernameChoice.map(
+      choice => choice match {
+        case "true" => FormerName(data.vatLodgingOfficer.formername.get)
+      })
 
-    val formerNameDate = data.vatLodgingOfficer.formernameChangeDay.map(_ =>
+    val formerNameDate: Option[LocalDate] = data.vatLodgingOfficer.formernameChangeDay.map(_ =>
       LocalDate.of(
         data.vatLodgingOfficer.formernameChangeYear.getOrElse("1900").toInt,
         data.vatLodgingOfficer.formernameChangeMonth.getOrElse("1").toInt,
-        data.vatLodgingOfficer.formernameChangeDay.getOrElse("1").toInt)).get
+        data.vatLodgingOfficer.formernameChangeDay.getOrElse("1").toInt))
 
     S4LVatLodgingOfficer(
       previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
@@ -220,8 +221,8 @@ class TestS4LBuilder {
       officerNino = nino.map(OfficerNinoView(_)),
       completionCapacity = completionCapacity.map(CompletionCapacityView(_)),
       officerContactDetails = contactDetails.map(OfficerContactDetailsView(_)),
-      formerName = Some(formerName),
-      formerNameDate = Some(FormerNameDateView(formerNameDate))
+      formerName = formerName.map(a => FormerNameView(true, Some(a.formerName))),
+      formerNameDate = formerNameDate.map(FormerNameDateView(_))
     )
   }
 

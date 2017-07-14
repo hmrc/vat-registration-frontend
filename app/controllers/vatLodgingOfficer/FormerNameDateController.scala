@@ -45,9 +45,7 @@ class FormerNameDateController @Inject()(ds: CommonPlayDependencies)
       badForm =>
         for {
           formerName <- viewModel[FormerNameView]().fold("")(view => view.formerName.getOrElse(""))
-          res <- viewModel[FormerNameDateView]().fold(form)(form.fill)
-        } yield BadRequest(views.html.pages.vatLodgingOfficer.former_name_date(badForm, formerName))
-      ,
+        } yield BadRequest(views.html.pages.vatLodgingOfficer.former_name_date(badForm, formerName)),
       data => save(data) map (_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show()))))
 
 }
