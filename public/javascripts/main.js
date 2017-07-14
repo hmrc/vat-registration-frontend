@@ -158,3 +158,11 @@ $(document).ready($(function () {
  {   "#startDate-specific_date": "#specific_date_panel",
      "#startDate-when_registered": "#other_panel"   });
  */
+
+// FormerNameDate page
+(function (FormerNameDatePage, $, undefined) {
+    FormerNameDatePage.init = function() {
+        var numericInputs = ["formerNameDate\\.day", "formerNameDate\\.month", "formerNameDate\\.year"];
+        UI.preventNonNumericInput(numericInputs);
+    }
+}(window.FormerNameDatePage = window.FormerNameDatePage || {}, jQuery));
