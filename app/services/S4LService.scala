@@ -41,9 +41,20 @@ trait S4LService extends CommonService {
                             f: Format[G],
                             k: S4LKey[G]): Future[CacheMap] =
     for {
-      regId <- fetchRegistrationId
-      group <- s4LConnector.fetchAndGet[G](regId, k.key)
+      regId: String <- fetchRegistrationId
+      group: Option[G] <- s4LConnector.fetchAndGet[G](regId, k.key)
       cm <- s4LConnector.save(regId, k.key, vmf.update(data, group))
+    } yield cm
+
+  def updateViewModel2[T,G](data: T, container: Future[G])
+                           (implicit hc: HeaderCarrier,
+                            vmf: ViewModelFormat.Aux[T, G],
+                            f: Format[G],
+                            k: S4LKey[G]): Future[CacheMap] =
+    for {
+      regId <- fetchRegistrationId
+      group <- container
+      cm <- s4LConnector.save(regId, k.key, vmf.update(data, Some(group)))
     } yield cm
 
   def fetchAndGet[T: S4LKey]()(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =

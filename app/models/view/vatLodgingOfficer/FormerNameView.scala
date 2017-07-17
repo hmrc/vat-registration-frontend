@@ -20,10 +20,8 @@ import models.api._
 import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelFormat, ViewModelTransformer}
 import play.api.libs.json.Json
 
-case class FormerNameView(
-                           yesNo: Boolean,
-                           formerName: Option[String] = None
-                         )
+case class FormerNameView(yesNo: Boolean,
+                           formerName: Option[String] = None)
 
 object FormerNameView {
 
