@@ -16,7 +16,7 @@
 
 package models
 
-import models.api.VatServiceEligibility
+import models.api.{VatScheme, VatServiceEligibility}
 import models.view.frs._
 import models.view.ppob.PpobView
 import models.view.sicAndCompliance.cultural.NotForProfit
@@ -33,6 +33,10 @@ import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, 
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.libs.json.{Json, OFormat}
 
+trait S4LModelTransformer[G] {
+  // Returns a view model for a specific part of a given VatScheme API model
+  def toS4LModel(vatScheme: VatScheme): G
+}
 
 final case class S4LVatFinancials
 (
@@ -48,6 +52,20 @@ final case class S4LVatFinancials
 
 object S4LVatFinancials {
   implicit val format: OFormat[S4LVatFinancials] = Json.format[S4LVatFinancials]
+
+  implicit val transformer = new S4LModelTransformer[S4LVatFinancials] {
+    @Override def toS4LModel(vs: VatScheme): S4LVatFinancials =
+      S4LVatFinancials(
+        estimateVatTurnover = ApiModelTransformer[EstimateVatTurnover].toViewModel(vs),
+        zeroRatedTurnover = ApiModelTransformer[ZeroRatedSales].toViewModel(vs),
+        zeroRatedTurnoverEstimate = ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vs),
+        vatChargeExpectancy = ApiModelTransformer[VatChargeExpectancy].toViewModel(vs),
+        vatReturnFrequency = ApiModelTransformer[VatReturnFrequency].toViewModel(vs),
+        accountingPeriod = ApiModelTransformer[AccountingPeriod].toViewModel(vs),
+        companyBankAccount = ApiModelTransformer[CompanyBankAccount].toViewModel(vs),
+        companyBankAccountDetails = ApiModelTransformer[CompanyBankAccountDetails].toViewModel(vs)
+      )
+  }
 }
 
 final case class S4LTradingDetails
@@ -63,6 +81,19 @@ final case class S4LTradingDetails
 
 object S4LTradingDetails {
   implicit val format: OFormat[S4LTradingDetails] = Json.format[S4LTradingDetails]
+
+  implicit val transformer = new S4LModelTransformer[S4LTradingDetails] {
+    @Override def toS4LModel(vs: VatScheme): S4LTradingDetails =
+      S4LTradingDetails(
+        taxableTurnover = ApiModelTransformer[TaxableTurnover].toViewModel(vs),
+        tradingName = ApiModelTransformer[TradingNameView].toViewModel(vs),
+        startDate = ApiModelTransformer[StartDateView].toViewModel(vs),
+        voluntaryRegistration = ApiModelTransformer[VoluntaryRegistration].toViewModel(vs),
+        voluntaryRegistrationReason = ApiModelTransformer[VoluntaryRegistrationReason].toViewModel(vs),
+        euGoods = ApiModelTransformer[EuGoods].toViewModel(vs),
+        applyEori = ApiModelTransformer[ApplyEori].toViewModel(vs)
+      )
+  }
 }
 
 final case class S4LVatSicAndCompliance
@@ -92,6 +123,30 @@ final case class S4LVatSicAndCompliance
 
 object S4LVatSicAndCompliance {
   implicit val format: OFormat[S4LVatSicAndCompliance] = Json.format[S4LVatSicAndCompliance]
+
+  implicit val transformer = new S4LModelTransformer[S4LVatSicAndCompliance] {
+    @Override def toS4LModel(vs: VatScheme): S4LVatSicAndCompliance =
+      S4LVatSicAndCompliance(
+        description = ApiModelTransformer[BusinessActivityDescription].toViewModel(vs),
+        mainBusinessActivity = ApiModelTransformer[MainBusinessActivityView].toViewModel(vs),
+
+        notForProfit = ApiModelTransformer[NotForProfit].toViewModel(vs),
+
+        companyProvideWorkers = ApiModelTransformer[CompanyProvideWorkers].toViewModel(vs),
+        workers = ApiModelTransformer[Workers].toViewModel(vs),
+        temporaryContracts = ApiModelTransformer[TemporaryContracts].toViewModel(vs),
+        skilledWorkers = ApiModelTransformer[SkilledWorkers].toViewModel(vs),
+
+        adviceOrConsultancy = ApiModelTransformer[AdviceOrConsultancy].toViewModel(vs),
+        actAsIntermediary = ApiModelTransformer[ActAsIntermediary].toViewModel(vs),
+        chargeFees = ApiModelTransformer[ChargeFees].toViewModel(vs),
+        leaseVehicles = ApiModelTransformer[LeaseVehicles].toViewModel(vs),
+        additionalNonSecuritiesWork = ApiModelTransformer[AdditionalNonSecuritiesWork].toViewModel(vs),
+        discretionaryInvestmentManagementServices = ApiModelTransformer[DiscretionaryInvestmentManagementServices].toViewModel(vs),
+        investmentFundManagement = ApiModelTransformer[InvestmentFundManagement].toViewModel(vs),
+        manageAdditionalFunds = ApiModelTransformer[ManageAdditionalFunds].toViewModel(vs)
+      )
+  }
 }
 
 final case class S4LVatContact
@@ -101,6 +156,11 @@ final case class S4LVatContact
 
 object S4LVatContact {
   implicit val format: OFormat[S4LVatContact] = Json.format[S4LVatContact]
+
+  implicit val transformer = new S4LModelTransformer[S4LVatContact] {
+    @Override def toS4LModel(vs: VatScheme): S4LVatContact =
+      S4LVatContact(businessContactDetails = ApiModelTransformer[BusinessContactDetails].toViewModel(vs))
+  }
 }
 
 final case class S4LVatEligibility
@@ -110,6 +170,11 @@ final case class S4LVatEligibility
 
 object S4LVatEligibility {
   implicit val format: OFormat[S4LVatEligibility] = Json.format[S4LVatEligibility]
+
+  implicit val transformer = new S4LModelTransformer[S4LVatEligibility] {
+    @Override def toS4LModel(vs: VatScheme): S4LVatEligibility =
+      S4LVatEligibility(vatEligibility = ApiModelTransformer[VatServiceEligibility].toViewModel(vs))
+  }
 }
 
 final case class S4LVatLodgingOfficer
@@ -126,6 +191,20 @@ final case class S4LVatLodgingOfficer
 
 object S4LVatLodgingOfficer {
   implicit val format: OFormat[S4LVatLodgingOfficer] = Json.format[S4LVatLodgingOfficer]
+
+  implicit val transformer = new S4LModelTransformer[S4LVatLodgingOfficer] {
+    @Override def toS4LModel(vs: VatScheme): S4LVatLodgingOfficer =
+      S4LVatLodgingOfficer(
+        officerHomeAddress = ApiModelTransformer[OfficerHomeAddressView].toViewModel(vs),
+        officerDateOfBirth = ApiModelTransformer[OfficerDateOfBirthView].toViewModel(vs),
+        officerNino = ApiModelTransformer[OfficerNinoView].toViewModel(vs),
+        completionCapacity = ApiModelTransformer[CompletionCapacityView].toViewModel(vs),
+        officerContactDetails = ApiModelTransformer[OfficerContactDetailsView].toViewModel(vs),
+        formerName = ApiModelTransformer[FormerNameView].toViewModel(vs),
+        formerNameDate = ApiModelTransformer[FormerNameDateView].toViewModel(vs),
+        previousAddress = ApiModelTransformer[PreviousAddressView].toViewModel(vs)
+      )
+  }
 }
 
 final case class S4LPpob
@@ -135,6 +214,11 @@ final case class S4LPpob
 
 object S4LPpob {
   implicit val format: OFormat[S4LPpob] = Json.format[S4LPpob]
+
+  implicit val transformer = new S4LModelTransformer[S4LPpob] {
+    @Override def toS4LModel(vs: VatScheme): S4LPpob =
+      S4LPpob(address = ApiModelTransformer[PpobView].toViewModel(vs))
+  }
 }
 
 final case class S4LFlatRateScheme
@@ -149,4 +233,16 @@ final case class S4LFlatRateScheme
 
 object S4LFlatRateScheme {
   implicit val format: OFormat[S4LFlatRateScheme] = Json.format[S4LFlatRateScheme]
+
+  implicit val transformer = new S4LModelTransformer[S4LFlatRateScheme] {
+    @Override def toS4LModel(vs: VatScheme): S4LFlatRateScheme =
+      S4LFlatRateScheme(
+        joinFrs = ApiModelTransformer[JoinFrsView].toViewModel(vs),
+        annualCostsInclusive = ApiModelTransformer[AnnualCostsInclusiveView].toViewModel(vs),
+        annualCostsLimited = ApiModelTransformer[AnnualCostsLimitedView].toViewModel(vs),
+        registerForFrs = ApiModelTransformer[RegisterForFrsView].toViewModel(vs),
+        frsStartDate = ApiModelTransformer[FrsStartDateView].toViewModel(vs),
+        categoryOfBusiness = ApiModelTransformer[BusinessSectorView].toViewModel(vs)
+      )
+  }
 }

@@ -76,6 +76,9 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   private def update[C, G](c: Option[C])(implicit t: ViewModelTransformer[C, G]): G => G =
     g => c.map(t.toApi(_, g)).getOrElse(g)
 
+  private def update2[C, G](c: Option[C])(implicit t: ViewModelTransformer[C, G]): G => G =
+    g => c.map(t.toApi(_, g)).getOrElse(g)
+
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
     fetchRegistrationId.flatMap(vatRegConnector.getRegistration)
 
