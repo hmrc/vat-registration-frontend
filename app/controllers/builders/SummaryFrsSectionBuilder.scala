@@ -63,7 +63,6 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[VatFlatRateScheme] = None)
       case Some("") | None => controllers.frs.routes.RegisterForFrsController.show()
       case Some(_) => controllers.frs.routes.RegisterForFrsWithSectorController.show()
     }
-
   )
 
   val startDateRow: SummaryRow = SummaryRow(
@@ -79,7 +78,8 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[VatFlatRateScheme] = None)
   val flatRatePercentageRow: SummaryRow = SummaryRow(
     s"$sectionId.flatRate",
     vatFrs.flatMap(_.percentage).map(p => decimalFormat.format(p)).getOrElse(""),
-    Some(controllers.frs.routes.ConfirmBusinessSectorController.show())
+    vatFrs.flatMap(_.categoryOfBusiness).collect{
+    case s if StringUtils.isNotBlank(s) => controllers.frs.routes.ConfirmBusinessSectorController.show() }
   )
 
   val businessSectorRow: SummaryRow = SummaryRow(
