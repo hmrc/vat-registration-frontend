@@ -92,7 +92,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
         "formerNameRadio" -> "true",
         "formerName" -> "some name"
       )) {
-        _ redirectsTo s"$contextRoot/former-name-date"
+        _ redirectsTo s"$contextRoot/when-change"
       }
     }
   }
