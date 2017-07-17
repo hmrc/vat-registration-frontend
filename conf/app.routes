@@ -166,12 +166,12 @@ GET         /your-contact-details                                               
 POST        /your-contact-details                                                              controllers.vatLodgingOfficer.OfficerContactDetailsController.submit
 
 ## FORMER NAME PAGE
-GET         /have-you-ever-changed-your-name                                                   controllers.vatLodgingOfficer.FormerNameController.show
-POST        /have-you-ever-changed-your-name                                                   controllers.vatLodgingOfficer.FormerNameController.submit
+GET         /changed-name                                                                      controllers.vatLodgingOfficer.FormerNameController.show
+POST        /changed-name                                                                      controllers.vatLodgingOfficer.FormerNameController.submit
 
 ## FORMER NAME DATE PAGE
-GET         /former-name-date                                                                 controllers.vatLodgingOfficer.FormerNameDateController.show
-POST        /former-name-date                                                                 controllers.vatLodgingOfficer.FormerNameDateController.submit
+GET         /when-change                                                                       controllers.vatLodgingOfficer.FormerNameDateController.show
+POST        /when-change                                                                       controllers.vatLodgingOfficer.FormerNameDateController.submit
 
 
 ## PREVIOUS ADDRESS QUESTION
