@@ -213,11 +213,6 @@ class TestS4LBuilder {
         data.vatLodgingOfficer.formernameChangeMonth.getOrElse("1").toInt,
         data.vatLodgingOfficer.formernameChangeDay.getOrElse("1").toInt))
 
-    def extractBoolean(maybeString: Option[String]): Boolean =
-      maybeString.collect {
-        case "true" => true
-      }.getOrElse(false)
-
     S4LVatLodgingOfficer(
       previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
       officerHomeAddress = homeAddress.map(a => OfficerHomeAddressView(a.id, Some(a))),
@@ -225,7 +220,7 @@ class TestS4LBuilder {
       officerNino = nino.map(OfficerNinoView(_)),
       completionCapacity = completionCapacity.map(CompletionCapacityView(_)),
       officerContactDetails = contactDetails.map(OfficerContactDetailsView(_)),
-      formerName = formerName.map(a => FormerNameView(extractBoolean(data.vatLodgingOfficer.formernameChoice), Some(a.formerName))),
+      formerName = formerName.map(a => FormerNameView(data.vatLodgingOfficer.formernameChoice.contains("true"), Some(a.formerName))),
       formerNameDate = formerNameDate.map(FormerNameDateView(_))
     )
   }
