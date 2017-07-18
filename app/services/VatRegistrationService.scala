@@ -77,7 +77,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     g => c.map(t.toApi(_, g)).getOrElse(g)
 
   private def update2[C, G](c: Option[C])(implicit t: ViewModelTransformer[C, G]): G => G =
-    g => c.map(t.toApi(_, g)).getOrElse(g)
+    g => t.toApi(c, g)
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
     fetchRegistrationId.flatMap(vatRegConnector.getRegistration)
@@ -249,6 +249,9 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     } yield response
   }
 
+  // TODO PPOB breaks the pattern of previous submits
+  // this is because there is no field containing ppob in VatScheme
+  // the ppob data sits directly under VatSceme root
   def submitPpob()(implicit hc: HeaderCarrier): Future[ScrsAddress] = {
 
     def merge(fresh: Option[S4LPpob], vs: VatScheme): VatScheme =
