@@ -203,8 +203,9 @@ class TestS4LBuilder {
         mobile = data.vatLodgingOfficer.mobile,
         tel = data.vatLodgingOfficer.phone))
 
-    val formerName: Option[FormerName] = data.vatLodgingOfficer.formernameChoice.collect {
-      case "true" => FormerName(data.vatLodgingOfficer.formername.get)
+    val formerName: Option[FormerNameView] = data.vatLodgingOfficer.formernameChoice.collect {
+      case "true" => FormerNameView(true, data.vatLodgingOfficer.formername)
+      case "false" => FormerNameView(false, None)
     }
 
     val formerNameDate: Option[LocalDate] = data.vatLodgingOfficer.formernameChangeDay.map(_ =>
@@ -220,7 +221,7 @@ class TestS4LBuilder {
       officerNino = nino.map(OfficerNinoView(_)),
       completionCapacity = completionCapacity.map(CompletionCapacityView(_)),
       officerContactDetails = contactDetails.map(OfficerContactDetailsView(_)),
-      formerName = formerName.map(a => FormerNameView(data.vatLodgingOfficer.formernameChoice.contains("true"), Some(a.formerName))),
+      formerName = formerName,
       formerNameDate = formerNameDate.map(FormerNameDateView(_))
     )
   }
