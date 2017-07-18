@@ -41,6 +41,6 @@ object CompletionCapacityView {
 
   // return a new or updated VatLodgingOfficer from the CompleteCapacityView instance
   implicit val viewModelTransformer = ViewModelTransformer { (c: CompletionCapacityView, g: VatLodgingOfficer) =>
-    g.copy(name = c.completionCapacity.getOrElse(CompletionCapacity.empty).name, role = c.completionCapacity.getOrElse(CompletionCapacity.empty).role)
+    c.completionCapacity.map(cc => g.copy(name = cc.name, role = cc.role)).getOrElse(g)
   }
 }

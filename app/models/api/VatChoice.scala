@@ -18,11 +18,9 @@ package models.api
 
 import play.api.libs.json._
 
-case class VatChoice(
-                      necessity: String, // "obligatory" or "voluntary"
+case class VatChoice(necessity: String, // "obligatory" or "voluntary"
                       vatStartDate: VatStartDate,
-                      reason: Option[String] = None
-                    )
+                      reason: Option[String] = None)
 
 object VatChoice {
 
