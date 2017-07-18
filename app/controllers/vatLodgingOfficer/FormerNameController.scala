@@ -20,18 +20,18 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.FormerNameForm
-import models.api.ScrsAddress
 import models.view.vatLodgingOfficer.FormerNameView
+import play.api.data.Form
 import play.api.mvc._
-import services.{CommonService, S4LService, VatRegistrationService}
-import models.ModelKeys._
+import services.{S4LService, VatRegistrationService}
 
 class FormerNameController @Inject()(ds: CommonPlayDependencies)
                                     (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
   import cats.syntax.flatMap._
-  val form = FormerNameForm.form
+
+  val form: Form[FormerNameView] = FormerNameForm.form
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel[FormerNameView]().fold(form)(form.fill)
@@ -40,12 +40,8 @@ class FormerNameController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatLodgingOfficer.former_name(badForm)).pure,
-      data => {
-        (data.yesNo).pure.ifM(
-          ifTrue = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.FormerNameDateController.show())),
-          ifFalse = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show()))
-        )
-      }
-    )
-  )
+      data => data.yesNo.pure.ifM(
+        ifTrue = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.FormerNameDateController.show())),
+        ifFalse = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())))))
+
 }

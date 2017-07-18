@@ -23,7 +23,7 @@ import play.api.data.Forms._
 import uk.gov.voa.play.form.ConditionalMappings._
 
 object FormerNameForm {
-  
+
   val RADIO_YES_NO: String = "formerNameRadio"
   val INPUT_FORMER_NAME: String = "formerName"
 
