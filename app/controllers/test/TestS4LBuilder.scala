@@ -203,7 +203,7 @@ class TestS4LBuilder {
         mobile = data.vatLodgingOfficer.mobile,
         tel = data.vatLodgingOfficer.phone))
 
-    val formerName: Option[FormerName] = data.vatLodgingOfficer.formernameChoice.map {
+    val formerName: Option[FormerName] = data.vatLodgingOfficer.formernameChoice.collect {
       case "true" => FormerName(data.vatLodgingOfficer.formername.get)
     }
 
