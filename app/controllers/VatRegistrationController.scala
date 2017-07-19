@@ -89,7 +89,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
                  transformer: S4LModelTransformer[G],
                  hc: HeaderCarrier): Future[CacheMap] = {
 
-      val container: Future[G] = OptionT(s4l.fetchAndGet[G]()).getOrElseF(vrs.getVatScheme() map transformer.toS4LModel)
+      val container = OptionT(s4l.fetchAndGet[G]()).getOrElseF(vrs.getVatScheme() map transformer.toS4LModel)
 
       s4l.updateViewModel2(data, container)
     }
