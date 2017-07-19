@@ -19,6 +19,7 @@ package controllers.vatLodgingOfficer
 import controllers.vatLodgingOfficer
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.S4LVatLodgingOfficer
 import models.api.ScrsAddress
 import models.view.vatLodgingOfficer.PreviousAddressView
 import org.mockito.Matchers
@@ -86,6 +87,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
     "return 303 with previous address question yes selected" in {
       save4laterExpectsSave[PreviousAddressView]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
       when(mockVatRegistrationService.submitVatLodgingOfficer()(any())).thenReturn(validLodgingOfficer.pure)
       submitAuthorised(TestPreviousAddressController.submit(), fakeRequest.withFormUrlEncodedBody(
         "previousAddressQuestionRadio" -> "true"
@@ -107,8 +109,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
         _ redirectsTo s"$contextRoot/company-contact-details"
       }
 
-      val expectedAddressView = PreviousAddressView(false, Some(address))
-      verify(mockS4LService).updateViewModel(Matchers.eq(expectedAddressView))(any(), any(), any(), any())
+      verify(mockS4LService).updateViewModel2(any(), any())(any(), any(), any(), any())
     }
 
   }
