@@ -58,35 +58,6 @@ class PreviousAddressViewSpec extends UnitSpec with VatRegistrationFixture with 
 
   }
 
-  "viewModelTransformer" should {
-    "update logical group given a component" in {
-      val initialVatLodgingOfficer =
-        VatLodgingOfficer(
-          currentAddress = address,
-          dob = DateOfBirth.empty,
-          nino = "",
-          role = "",
-          name = Name.empty,
-          changeOfName = changeOfName,
-          currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(address)),
-          contact = validOfficerContactDetails)
-
-      val updatedVatLodgingOfficer =
-        VatLodgingOfficer(
-          currentAddress = address,
-          dob = DateOfBirth.empty,
-          nino = "",
-          role = "",
-          name = Name.empty,
-          changeOfName = changeOfName,
-          currentOrPreviousAddress = testPreviousAddress,
-          contact = validOfficerContactDetails)
-
-      ViewModelTransformer[PreviousAddressView, VatLodgingOfficer].
-        toApi(testPreviousAddressView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
-    }
-  }
-
   "ViewModelFormat" should {
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(previousAddress = Some(testPreviousAddressView))
 

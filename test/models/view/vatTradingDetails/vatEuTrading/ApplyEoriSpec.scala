@@ -24,21 +24,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class ApplyEoriSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
-  "toApi" should {
-    val applyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
-
-    val differentVatTradingDetails = VatTradingDetails(
-      validVatChoice,
-      validTradingName,
-      VatEuTrading(false, Some(true))
-    )
-
-    "update VatTradingDetails with new ApplyEori" in {
-      ViewModelTransformer[ApplyEori, VatTradingDetails]
-        .toApi(applyEori, validVatTradingDetails) shouldBe differentVatTradingDetails
-    }
-  }
-
   "apply" should {
 
     "convert VatScheme without VatTradingDetails to empty view model" in {

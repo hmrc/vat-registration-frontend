@@ -47,10 +47,4 @@ object VoluntaryRegistration {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: VoluntaryRegistration, g: VatTradingDetails) =>
-    g.copy(vatChoice = g.vatChoice.copy(
-      necessity = if (c.yesNo == REGISTER_YES) VatChoice.NECESSITY_VOLUNTARY else VatChoice.NECESSITY_OBLIGATORY
-    ))
-  }
-
 }

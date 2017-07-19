@@ -40,29 +40,6 @@ class VatReturnFrequencySpec extends UnitSpec with VatRegistrationFixture {
 
   val vatScheme = VatScheme(validRegId)
 
-  "toApi" should {
-    "update VatFinancials with new VatReturnFrequency" in {
-
-      val vatReturnFrequency = VatReturnFrequency(MONTHLY)
-
-      val vatFinancials = VatFinancials(
-        turnoverEstimate = 100L,
-        zeroRatedTurnoverEstimate = None,
-        reclaimVatOnMostReturns = true,
-        accountingPeriods = VatAccountingPeriod(frequency = MONTHLY)
-      )
-
-      val updatedVatFinancials = VatFinancials(
-        turnoverEstimate = 100L,
-        zeroRatedTurnoverEstimate = None,
-        reclaimVatOnMostReturns = true,
-        accountingPeriods = VatAccountingPeriod(frequency = MONTHLY)
-      )
-      ViewModelTransformer[VatReturnFrequency, VatFinancials]
-        .toApi(vatReturnFrequency, vatFinancials) shouldBe updatedVatFinancials
-    }
-  }
-
   "apply" should {
     "convert VatFinancials with MONTHLY vat return frequency to view model" in {
       val vs = vatScheme.copy(financials = Some(VatReturnFrequencyWithMonthly))

@@ -49,11 +49,4 @@ object FormerNameDateView {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: FormerNameDateView, g: VatLodgingOfficer) =>
-    g.copy(changeOfName =
-      g.changeOfName.copy(formerName =
-        g.changeOfName.formerName.map(formerName =>
-          formerName.copy(dateOfNameChange = Some(c.date)))))
-  }
-
 }

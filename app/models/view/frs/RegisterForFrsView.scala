@@ -36,7 +36,4 @@ object RegisterForFrsView {
     vs.vatFlatRateScheme.flatMap(answers => answers.doYouWantToUseThisRate.map(RegisterForFrsView.apply))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: RegisterForFrsView, g: VatFlatRateScheme) =>
-    g.copy(doYouWantToUseThisRate = Some(c.selection))
-  }
 }

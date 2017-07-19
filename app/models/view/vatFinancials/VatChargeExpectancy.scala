@@ -48,8 +48,4 @@ object VatChargeExpectancy {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: VatChargeExpectancy, g: VatFinancials) =>
-    g.copy(reclaimVatOnMostReturns = c.yesNo == VAT_CHARGE_YES)
-  }
-
 }

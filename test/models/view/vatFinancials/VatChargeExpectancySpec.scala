@@ -41,17 +41,6 @@ class VatChargeExpectancySpec extends UnitSpec with VatRegistrationFixture {
     accountingPeriods = accountingPeriods
   )
 
-  "toApi" should {
-    "update VatFinancials with new VatChargeExpectancy with Reclaim false" in {
-      ViewModelTransformer[VatChargeExpectancy, VatFinancials]
-        .toApi(vatChargeExpectancyNo, vatFinancialsWithReclaimTrue) shouldBe vatFinancialsWithReclaimFalse
-    }
-    "update VatFinancials with new VatChargeExpectancy with Reclaim true" in {
-      ViewModelTransformer[VatChargeExpectancy, VatFinancials]
-        .toApi(vatChargeExpectancyYes, vatFinancialsWithReclaimFalse) shouldBe vatFinancialsWithReclaimTrue
-    }
-  }
-
   "apply" should {
     val vatScheme = VatScheme(validRegId)
 

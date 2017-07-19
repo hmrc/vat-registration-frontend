@@ -41,11 +41,4 @@ object CompanyBankAccountDetails {
       ))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: CompanyBankAccountDetails, g: VatFinancials) =>
-    g.copy(bankAccount = Some(VatBankAccount(
-      accountName = c.accountName,
-      accountSortCode = c.sortCode,
-      accountNumber = c.accountNumber)))
-  }
-
 }

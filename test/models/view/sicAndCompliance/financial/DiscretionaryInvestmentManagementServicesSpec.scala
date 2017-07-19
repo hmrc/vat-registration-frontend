@@ -23,27 +23,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class DiscretionaryInvestmentManagementServicesSpec extends UnitSpec with VatRegistrationFixture {
 
-  "toApi" should {
-    val discretionaryInvestmentManagementServices = DiscretionaryInvestmentManagementServices(false)
-
-    val vatSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, discretionaryInvestmentManagementServices = Some(true))),
-      mainBusinessActivity = sicCode
-    )
-
-    val differentSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, discretionaryInvestmentManagementServices = Some(false))),
-      mainBusinessActivity = sicCode
-    )
-
-    "update VatSicAndCompliance with new DiscretionaryInvestmentManagementServices" in {
-      ViewModelTransformer[DiscretionaryInvestmentManagementServices, VatSicAndCompliance]
-        .toApi(discretionaryInvestmentManagementServices, vatSicAndCompliance) shouldBe differentSicAndCompliance
-    }
-  }
-
   "apply" should {
 
     "convert VatScheme without SicAndCompliance to empty view model" in {

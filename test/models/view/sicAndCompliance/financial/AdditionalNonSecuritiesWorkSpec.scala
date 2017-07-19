@@ -23,27 +23,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class AdditionalNonSecuritiesWorkSpec extends UnitSpec with VatRegistrationFixture {
 
-  "toApi" should {
-    val additionalNonSecuritiesWork = AdditionalNonSecuritiesWork(false)
-
-    val vatSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, additionalNonSecuritiesWork = Some(true))),
-      mainBusinessActivity = sicCode
-    )
-
-    val differentSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, additionalNonSecuritiesWork = Some(false))),
-      mainBusinessActivity = sicCode
-    )
-
-    "update VatSicAndCompliance with new AdditionalNonSecuritiesWork" in {
-      ViewModelTransformer[AdditionalNonSecuritiesWork, VatSicAndCompliance]
-        .toApi(additionalNonSecuritiesWork, vatSicAndCompliance) shouldBe differentSicAndCompliance
-    }
-  }
-
   "apply" should {
 
     "convert VatScheme without SicAndCompliance to empty view model" in {

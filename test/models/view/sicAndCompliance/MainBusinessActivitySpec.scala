@@ -33,13 +33,6 @@ class MainBusinessActivitySpec extends UnitSpec with VatRegistrationFixture {
   val differentSicAndCompliance = VatSicAndCompliance(description_1, None,
     mainBusinessActivity = sicCodeId_2)
 
-  "toApi" should {
-    "update a SicAndCompliance with new MainBusinessActivityView" in {
-      ViewModelTransformer[MainBusinessActivityView, VatSicAndCompliance]
-        .toApi(mainBusinessActivity_2, sicAndCompliance) shouldBe differentSicAndCompliance
-    }
-  }
-
   "apply" should {
 
     "Extract a MainBusinessActivityView view model from a VatScheme" in {

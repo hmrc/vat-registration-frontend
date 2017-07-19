@@ -59,22 +59,6 @@ class StartDateViewSpec extends UnitSpec with VatRegistrationFixture with Inside
     }
   }
 
-  "toApi" should {
-    "update a VatChoice a new StartDate" in {
-      val vtd = tradingDetails(startDate = newStartDate.date)
-      inside(ViewModelTransformer[StartDateView, VatTradingDetails].toApi(startDate, vtd)) {
-        case tradingDetails => tradingDetails.vatChoice.vatStartDate.startDate shouldBe newStartDate.date
-      }
-    }
-
-    "when no date present, StardDateView contains date type selection" in {
-      val c = StartDateView("from S4L", None)
-      val g = tradingDetails()
-      val transformed = ViewModelTransformer[StartDateView, VatTradingDetails].toApi(c, g)
-      transformed shouldBe g.copy(vatChoice = g.vatChoice.copy(vatStartDate = g.vatChoice.vatStartDate.copy(selection = "from S4L")))
-    }
-  }
-
   "ViewModelFormat" should {
     val s4LTradingDetails: S4LTradingDetails = S4LTradingDetails(startDate = Some(validStartDateView))
 

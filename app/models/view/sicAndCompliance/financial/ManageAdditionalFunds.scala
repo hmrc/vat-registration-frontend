@@ -41,10 +41,6 @@ object ManageAdditionalFunds {
     } yield ManageAdditionalFunds(maf)
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: ManageAdditionalFunds, g: VatSicAndCompliance) =>
-    g.copy(financialCompliance = g.financialCompliance.map(_.copy(manageFundsAdditional = Some(c.yesNo))))
-  }
-
 }
 
 

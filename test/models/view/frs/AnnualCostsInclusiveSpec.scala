@@ -26,22 +26,6 @@ class AnnualCostsInclusiveSpec extends UnitSpec with Matchers with Inspectors wi
 
   private val validationFunction = AnnualCostsInclusiveView.valid
 
-  "ViewModelTransformer" should {
-
-    "update VatFlatRateScheme with new AnnualCostsInclusiveView (answer YES)" in {
-      val transformed = ViewModelTransformer[AnnualCostsInclusiveView, VatFlatRateScheme]
-        .toApi(AnnualCostsInclusiveView(AnnualCostsInclusiveView.YES), VatFlatRateScheme(annualCostsInclusive = Some(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS)))
-      transformed.annualCostsInclusive shouldBe Some(AnnualCostsInclusiveView.YES)
-    }
-
-    "update VatFlatRateScheme with new AnnualCostsInclusiveView (answer NO)" in {
-      val transformed = ViewModelTransformer[AnnualCostsInclusiveView, VatFlatRateScheme]
-        .toApi(AnnualCostsInclusiveView(AnnualCostsInclusiveView.NO), VatFlatRateScheme(annualCostsInclusive = Some(AnnualCostsInclusiveView.YES)))
-      transformed.annualCostsInclusive shouldBe Some(AnnualCostsInclusiveView.NO)
-    }
-
-  }
-
   "ApiModelTransformer" should {
 
     "produce empty view model from an empty annual costs inclusive" in {

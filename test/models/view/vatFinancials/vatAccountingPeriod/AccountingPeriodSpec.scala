@@ -49,27 +49,6 @@ class AccountingPeriodSpec extends UnitSpec with VatRegistrationFixture {
 
   val vatScheme = VatScheme(validRegId)
 
-  "toApi" should {
-    val accountingPeriod = AccountingPeriod(JAN_APR_JUL_OCT)
-
-    val vatFinancials = VatFinancials(
-      turnoverEstimate = turnover,
-      reclaimVatOnMostReturns = false,
-      accountingPeriods = accountingPeriods2
-    )
-
-    val differentVatFinancials = VatFinancials(
-      turnoverEstimate = turnover,
-      reclaimVatOnMostReturns = false,
-      accountingPeriods = accountingPeriods1
-    )
-
-    "update VatFinancials with new AccountingPeriod" in {
-      ViewModelTransformer[AccountingPeriod, VatFinancials]
-        .toApi(accountingPeriod, vatFinancials) shouldBe differentVatFinancials
-    }
-  }
-
   "apply" should {
 
     "convert VatFinancials with accounting period jan_apr_jul_oct to view model" in {

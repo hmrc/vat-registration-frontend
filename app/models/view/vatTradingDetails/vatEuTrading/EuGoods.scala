@@ -41,10 +41,6 @@ object EuGoods {
     vs.tradingDetails.map(td => EuGoods(if (td.euTrading.selection) EU_GOODS_YES else EU_GOODS_NO))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: EuGoods, g: VatTradingDetails) =>
-    g.copy(euTrading = VatEuTrading(c.yesNo == EU_GOODS_YES))
-  }
-
 }
 
 

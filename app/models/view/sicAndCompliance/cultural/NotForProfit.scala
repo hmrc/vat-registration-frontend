@@ -43,8 +43,4 @@ object NotForProfit {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: NotForProfit, g: VatSicAndCompliance) =>
-    g.copy(culturalCompliance = Some(VatComplianceCultural(c.yesNo == NOT_PROFIT_YES)))
-  }
-
 }

@@ -41,10 +41,6 @@ object LeaseVehicles {
     } yield LeaseVehicles(vel)
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: LeaseVehicles, g: VatSicAndCompliance) =>
-    g.copy(financialCompliance = g.financialCompliance.map(_.copy(vehicleOrEquipmentLeasing = Some(c.yesNo))))
-  }
-
 }
 
 

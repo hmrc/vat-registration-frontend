@@ -26,22 +26,6 @@ class AnnualCostsLimitedSpec extends UnitSpec with Matchers with Inspectors with
 
   private val validationFunction = AnnualCostsLimitedView.valid
 
-  "ViewModelTransformer" should {
-
-    "update VatFlatRateScheme with new AnnualCostsLimitedView (answer YES)" in {
-      val transformed = ViewModelTransformer[AnnualCostsLimitedView, VatFlatRateScheme]
-        .toApi(AnnualCostsLimitedView(AnnualCostsLimitedView.YES), VatFlatRateScheme(annualCostsLimited = Some(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS)))
-      transformed.annualCostsLimited shouldBe Some(AnnualCostsLimitedView.YES)
-    }
-
-    "update VatFlatRateScheme with new AnnualCostsLimitedView (answer NO)" in {
-      val transformed = ViewModelTransformer[AnnualCostsLimitedView, VatFlatRateScheme]
-        .toApi(AnnualCostsLimitedView(AnnualCostsLimitedView.NO), VatFlatRateScheme(annualCostsLimited = Some(AnnualCostsLimitedView.YES)))
-      transformed.annualCostsLimited shouldBe Some(AnnualCostsLimitedView.NO)
-    }
-
-  }
-
   "ApiModelTransformer" should {
 
     "produce empty view model from an empty annual costs limited" in {

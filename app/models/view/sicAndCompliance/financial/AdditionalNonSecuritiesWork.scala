@@ -41,10 +41,6 @@ object AdditionalNonSecuritiesWork {
     } yield AdditionalNonSecuritiesWork(answ)
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: AdditionalNonSecuritiesWork, g: VatSicAndCompliance) =>
-    g.copy(financialCompliance = g.financialCompliance.map(_.copy(additionalNonSecuritiesWork = Some(c.yesNo))))
-  }
-
 }
 
 

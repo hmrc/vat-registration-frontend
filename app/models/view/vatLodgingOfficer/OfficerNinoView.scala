@@ -37,8 +37,4 @@ object OfficerNinoView {
     vs.lodgingOfficer.map(_.nino).map(OfficerNinoView(_))
   }
 
-  // return a new or updated VatLodgingOfficer from the CurrentAddressView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerNinoView, g: VatLodgingOfficer) =>
-    g.copy(nino = c.nino)
-  }
 }

@@ -27,22 +27,6 @@ class VoluntaryRegistrationReasonSpec extends UnitSpec with Matchers with Inspec
 
   private val validationFunction = VoluntaryRegistrationReason.valid
 
-  "ViewModelTransformer" should {
-
-    "update VatTradingDetails with new VoluntaryRegistrationReason (sells taxable goods)" in {
-      val transformed = ViewModelTransformer[VoluntaryRegistrationReason, VatTradingDetails]
-        .toApi(VoluntaryRegistrationReason.sells, tradingDetails(reason = Some(INTENDS_TO_SELL)))
-      transformed.vatChoice.reason shouldBe Some(SELLS)
-    }
-
-    "update VatTradingDetails with new VoluntaryRegistrationReason (intends to sell taxable goods)" in {
-      val transformed = ViewModelTransformer[VoluntaryRegistrationReason, VatTradingDetails]
-        .toApi(VoluntaryRegistrationReason.intendsToSell, tradingDetails(reason = Some(SELLS)))
-      transformed.vatChoice.reason shouldBe Some(INTENDS_TO_SELL)
-    }
-
-  }
-
   "ApiModelTransformer" should {
 
     "produce empty view model from an empty voluntary registration reason" in {

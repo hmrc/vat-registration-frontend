@@ -41,10 +41,6 @@ object DiscretionaryInvestmentManagementServices {
     } yield DiscretionaryInvestmentManagementServices(dims)
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: DiscretionaryInvestmentManagementServices, g: VatSicAndCompliance) =>
-    g.copy(financialCompliance = g.financialCompliance.map(_.copy(discretionaryInvestmentManagementServices = Some(c.yesNo))))
-  }
-
 }
 
 
