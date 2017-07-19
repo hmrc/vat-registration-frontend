@@ -23,29 +23,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class LeaseVehiclesSpec extends UnitSpec with VatRegistrationFixture {
 
-  "toApi" should {
-    val leaseVehicles = LeaseVehicles(false)
-
-    val vatSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(
-        adviceOrConsultancyOnly = true, actAsIntermediary = true, vehicleOrEquipmentLeasing = Some(true))),
-      mainBusinessActivity = sicCode
-    )
-
-    val differentSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(
-        adviceOrConsultancyOnly = true, actAsIntermediary = true, vehicleOrEquipmentLeasing = Some(false))),
-      mainBusinessActivity = sicCode
-    )
-
-    "update VatSicAndCompliance with new LeaseVehicles" in {
-      ViewModelTransformer[LeaseVehicles, VatSicAndCompliance]
-        .toApi(leaseVehicles, vatSicAndCompliance) shouldBe differentSicAndCompliance
-    }
-  }
-
   "apply" should {
 
     "convert VatScheme without SicAndCompliance to empty view model" in {

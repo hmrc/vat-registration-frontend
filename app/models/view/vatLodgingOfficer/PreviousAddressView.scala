@@ -37,11 +37,6 @@ object PreviousAddressView {
     vs.lodgingOfficer.map(_.currentOrPreviousAddress).map(p => PreviousAddressView(p.currentAddressThreeYears, p.previousAddress))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: PreviousAddressView, g: VatLodgingOfficer) =>
-    g.copy(currentOrPreviousAddress = g.currentOrPreviousAddress.copy(currentAddressThreeYears = c.yesNo, previousAddress = c.address)
-    )
-  }
-
 }
 
 

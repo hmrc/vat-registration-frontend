@@ -24,27 +24,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class NotForProfitSpec extends UnitSpec with VatRegistrationFixture {
 
-  "toApi" should {
-    val notForProfit = NotForProfit(NOT_PROFIT_NO)
-
-    val vatSicAndCompliance = VatSicAndCompliance(
-      businessDescription = businessActivityDescription,
-      culturalCompliance = Some(VatComplianceCultural(true)),
-      mainBusinessActivity = SicCode("","","")
-    )
-
-    val differentSicAndCompliance = VatSicAndCompliance(
-      businessDescription = businessActivityDescription,
-      culturalCompliance = Some(VatComplianceCultural(false)),
-      mainBusinessActivity = SicCode("","","")
-    )
-
-    "update VatSicAndCompliance with new NotForProfit" in {
-      ViewModelTransformer[NotForProfit, VatSicAndCompliance]
-        .toApi(notForProfit, vatSicAndCompliance) shouldBe differentSicAndCompliance
-    }
-  }
-
   "apply" should {
 
     "convert VatScheme without SicAndCompliance to empty view model" in {

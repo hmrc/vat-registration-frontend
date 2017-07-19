@@ -46,8 +46,4 @@ object AccountingPeriod {
     } yield AccountingPeriod(ps.toUpperCase())
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: AccountingPeriod, g: VatFinancials) =>
-    g.copy(accountingPeriods = g.accountingPeriods.copy(periodStart = Some(c.accountingPeriod.toLowerCase)))
-  }
-
 }

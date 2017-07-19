@@ -39,12 +39,6 @@ object ActAsIntermediary {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: ActAsIntermediary, g: VatSicAndCompliance) =>
-    g.copy(financialCompliance = Some(VatComplianceFinancial(
-                                      g.financialCompliance.exists(_.adviceOrConsultancyOnly),
-                                      actAsIntermediary = c.yesNo)))
-  }
-
 }
 
 

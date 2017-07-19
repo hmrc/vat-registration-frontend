@@ -46,18 +46,6 @@ class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture wi
 
   }
 
-  "viewModelTransformer" should {
-    "update logical group given a component" in {
-      val ccv = CompletionCapacityView(anOfficer)
-      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
-      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", anOfficer.name, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
-
-      ViewModelTransformer[CompletionCapacityView, VatLodgingOfficer].
-        toApi(ccv, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
-    }
-  }
-
-
   "apply" should {
     "create a CompletionCapacityView instance with the correct id" in {
       val ccv = CompletionCapacityView(anOfficer)

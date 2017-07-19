@@ -41,10 +41,6 @@ object ChargeFees {
     } yield ChargeFees(cf)
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: ChargeFees, g: VatSicAndCompliance) =>
-    g.copy(financialCompliance = g.financialCompliance.map(_.copy(chargeFees = Some(c.yesNo))))
-  }
-
 }
 
 

@@ -25,16 +25,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class TradingNameViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
-  "toApi" should {
-    "update a VatTradingDetails a new TradingNameView" in {
-      val tn = Some("HOLIDAY INC")
-      val tradingName = TradingNameView(TradingNameView.TRADING_NAME_YES, tn)
-      inside(ViewModelTransformer[TradingNameView, VatTradingDetails].toApi(tradingName, validVatTradingDetails)) {
-        case td => td.tradingName.tradingName shouldBe tn
-      }
-    }
-  }
-
   "apply" should {
     "extract a TradingNameView from a VatScheme" in {
       val vm = ApiModelTransformer[TradingNameView].toViewModel(validVatScheme)

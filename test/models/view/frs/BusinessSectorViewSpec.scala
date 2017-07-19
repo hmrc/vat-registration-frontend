@@ -55,17 +55,6 @@ class BusinessSectorViewSpec extends UnitSpec with VatRegistrationFixture with I
 
   }
 
-  "viewModelTransformer" should {
-    "update logical group given a component" in {
-      val initialAnswers: VatFlatRateScheme = VatFlatRateScheme(categoryOfBusiness=Some("Dog walking"), percentage=Some(5.7))
-      val updatedAnswers: VatFlatRateScheme = VatFlatRateScheme(categoryOfBusiness=Some("Dog grooming"), percentage=Some(13.2))
-
-      ViewModelTransformer[BusinessSectorView, VatFlatRateScheme]
-        .toApi(BusinessSectorView("Dog grooming", 13.2), initialAnswers) shouldBe updatedAnswers
-    }
-  }
-
-
   "ViewModelFormat" should {
     val s4LFlatRateScheme: S4LFlatRateScheme = S4LFlatRateScheme(categoryOfBusiness = Some(BusinessSectorView("Foo", 1)))
 

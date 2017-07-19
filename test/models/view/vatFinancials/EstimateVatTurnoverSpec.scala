@@ -40,13 +40,6 @@ class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
   )
   val vatScheme = VatScheme(id = validRegId, financials = Some(vatFinancials))
 
-  "toApi" should {
-    "update a VatFinancials with new EstimateVatTurnover" in {
-      ViewModelTransformer[EstimateVatTurnover, VatFinancials]
-        .toApi(newEstimateVatTurnover, vatFinancials) shouldBe differentVatFinancials
-    }
-  }
-
   "apply" should {
     "Extract a EstimateVatTurnover view model from a VatScheme" in {
       ApiModelTransformer[EstimateVatTurnover].toViewModel(vatScheme) shouldBe Some(estimatedVatTurnover)

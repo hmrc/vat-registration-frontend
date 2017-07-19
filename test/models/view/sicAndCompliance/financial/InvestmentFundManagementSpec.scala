@@ -23,27 +23,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class InvestmentFundManagementSpec extends UnitSpec with VatRegistrationFixture {
 
-  "toApi" should {
-    val investmentFundManagementServices = InvestmentFundManagement(false)
-
-    val vatSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, investmentFundManagementServices = Some(true))),
-      mainBusinessActivity = sicCode
-    )
-
-    val differentSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, investmentFundManagementServices = Some(false))),
-      mainBusinessActivity = sicCode
-    )
-
-    "update VatFinancials with new AccountingPeriod" in {
-      ViewModelTransformer[InvestmentFundManagement, VatSicAndCompliance]
-        .toApi(investmentFundManagementServices, vatSicAndCompliance) shouldBe differentSicAndCompliance
-    }
-  }
-
   "apply" should {
 
     "convert VatScheme without SicAndCompliance to empty view model" in {

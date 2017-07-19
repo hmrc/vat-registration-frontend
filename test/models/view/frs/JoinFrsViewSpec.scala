@@ -41,16 +41,6 @@ class JoinFrsViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
   }
 
-  "viewModelTransformer" should {
-    "update logical group given a component" in {
-      val initialAnswers: VatFlatRateScheme = VatFlatRateScheme(joinFrs = false)
-      val updatedAnswers: VatFlatRateScheme = VatFlatRateScheme(joinFrs = true)
-
-      ViewModelTransformer[JoinFrsView, VatFlatRateScheme]
-        .toApi(JoinFrsView(true), initialAnswers) shouldBe updatedAnswers
-    }
-  }
-
   "ViewModelFormat" should {
     val s4LFlatRateScheme: S4LFlatRateScheme = S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)))
 

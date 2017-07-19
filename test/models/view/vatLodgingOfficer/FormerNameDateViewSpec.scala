@@ -77,33 +77,6 @@ class FormerNameDateViewSpec extends UnitSpec with VatRegistrationFixture with I
 
   }
 
-  "viewModelTransformer" should {
-    "update logical group given a component" in {
-      val initialVatLodgingOfficer = VatLodgingOfficer(
-        currentAddress = address,
-        dob = DateOfBirth.empty,
-        nino = "",
-        role = "",
-        name = Name.empty,
-        changeOfName = ChangeOfName(true, Some(FormerName("Bob"))),
-        currentOrPreviousAddress = currentOrPreviousAddress,
-        contact = validOfficerContactDetails)
-
-      val updatedVatLodgingOfficer = VatLodgingOfficer(
-        currentAddress = address,
-        dob = DateOfBirth.empty,
-        nino = "",
-        role = "",
-        name = Name.empty,
-        changeOfName = changeOfName,
-        currentOrPreviousAddress = currentOrPreviousAddress,
-        contact = validOfficerContactDetails)
-
-      ViewModelTransformer[FormerNameDateView, VatLodgingOfficer].
-        toApi(testFormerNameDateView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
-    }
-  }
-
   "apply" should {
     "create a FormerNameDateView instance" in {
       FormerNameDateView(validStartDate) shouldBe testFormerNameDateView

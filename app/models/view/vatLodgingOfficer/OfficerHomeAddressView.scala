@@ -39,9 +39,4 @@ object OfficerHomeAddressView {
     }
   }
 
-  // return a new or updated VatLodgingOfficer from the CurrentAddressView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerHomeAddressView, g: VatLodgingOfficer) =>
-    c.address.fold(g)(address => g.copy(currentAddress = address))
-  }
-
 }

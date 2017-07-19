@@ -47,9 +47,5 @@ object OfficerContactDetailsView {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerContactDetailsView, g: VatLodgingOfficer) =>
-    g.copy(contact = OfficerContactDetails(c.email, c.daytimePhone, c.mobile))
-  }
-
 }
 

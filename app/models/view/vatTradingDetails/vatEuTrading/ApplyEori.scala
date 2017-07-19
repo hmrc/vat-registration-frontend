@@ -40,8 +40,4 @@ object ApplyEori {
     vs.tradingDetails.flatMap(td => td.euTrading.eoriApplication).map(ApplyEori.apply)
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: ApplyEori, g: VatTradingDetails) =>
-    g.copy(euTrading = g.euTrading.copy(eoriApplication = Some(c.yesNo)))
-  }
-
 }

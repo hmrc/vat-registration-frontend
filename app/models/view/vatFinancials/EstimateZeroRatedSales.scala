@@ -38,8 +38,4 @@ object EstimateZeroRatedSales {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: EstimateZeroRatedSales, g: VatFinancials) =>
-    g.copy(zeroRatedTurnoverEstimate = Some(c.zeroRatedTurnoverEstimate))
-  }
-
 }

@@ -45,8 +45,4 @@ object SkilledWorkers {
     } yield SkilledWorkers(if (sw) SKILLED_WORKERS_YES else SKILLED_WORKERS_NO)
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: SkilledWorkers, g: VatSicAndCompliance) =>
-    g.copy(labourCompliance = g.labourCompliance.map(_.copy(skilledWorkers = Some(c.yesNo == SKILLED_WORKERS_YES))))
-  }
-
 }

@@ -44,8 +44,4 @@ object BusinessContactDetails {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: BusinessContactDetails, g: VatContact) =>
-    g.copy(digitalContact = VatDigitalContact(email = c.email, tel = c.daytimePhone, mobile = c.mobile), website = c.website)
-  }
-
 }

@@ -40,12 +40,6 @@ object FormerNameView {
     vs.lodgingOfficer.map(_.changeOfName).map(changeOfName => FormerNameView(changeOfName.nameHasChanged, changeOfName.formerName.map(_.formerName)))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: FormerNameView, g: VatLodgingOfficer) =>
-    g.copy(changeOfName =
-      ChangeOfName(c.yesNo,
-        if (c.yesNo) Some(FormerName(c.formerName.getOrElse(""))) else None))
-  }
-
 }
 
 

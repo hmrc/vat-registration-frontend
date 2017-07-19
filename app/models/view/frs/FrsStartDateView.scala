@@ -58,8 +58,4 @@ object FrsStartDateView {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: FrsStartDateView, g: VatFlatRateScheme) =>
-    g.copy(whenDoYouWantToJoinFrs = Some(c.dateType), startDate = c.date)
-  }
-
 }

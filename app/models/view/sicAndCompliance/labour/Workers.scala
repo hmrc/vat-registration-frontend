@@ -40,10 +40,5 @@ object Workers {
     } yield Workers(w)
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: Workers, g: VatSicAndCompliance) => {
-    g.copy(labourCompliance = g.labourCompliance.map(_.copy(workers = Some(c.numberOfWorkers))))
-  }
-  }
-
 }
 

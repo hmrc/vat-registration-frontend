@@ -26,19 +26,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 class PpobViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
 
-  "ViewModelTransformer" should {
-    val vatSchemeEmpty = VatScheme(id ="12345")
-    val address = ScrsAddress(line1 = "new", line2 = "address", postcode = Some("postcode"))
-    val addressView = PpobView(address.id, Some(address))
-    val vatSchemeWithPpob = vatSchemeEmpty.copy(ppob = Some(address))
-
-
-    "update Ppob with new current address" in {
-      ViewModelTransformer[PpobView, VatScheme]
-        .toApi(addressView, vatSchemeEmpty) shouldBe vatSchemeWithPpob
-    }
-  }
-
   "ApiModelTransformer" should {
 
     "convert VatScheme without Ppob to empty view model" in {

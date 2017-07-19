@@ -50,8 +50,4 @@ object VoluntaryRegistrationReason {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: VoluntaryRegistrationReason, g: VatTradingDetails) =>
-    g.copy(vatChoice = g.vatChoice.copy(reason = Some(c.reason)))
-  }
-
 }

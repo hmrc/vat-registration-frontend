@@ -48,16 +48,6 @@ class OfficerDateOfBirthViewSpec extends UnitSpec with VatRegistrationFixture wi
 
   }
 
-  "viewModelTransformer" should {
-    "update logical group given a component" in {
-      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, changeOfName, currentOrPreviousAddress, OfficerContactDetails.empty)
-      val updatedVatLodgingOfficer = VatLodgingOfficer(address, testDOB, "", "", Name.empty, changeOfName, currentOrPreviousAddress, OfficerContactDetails.empty)
-
-      ViewModelTransformer[OfficerDateOfBirthView, VatLodgingOfficer].
-        toApi(testDOBView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
-    }
-  }
-
   "ViewModelFormat" should {
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(officerDateOfBirth = Some(testDOBView))
 

@@ -23,27 +23,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class AdviceOrConsultancySpec extends UnitSpec with VatRegistrationFixture {
 
-  "toApi" should {
-    val adviceOrConsultancy = AdviceOrConsultancy(false)
-
-    val vatSicAndCompliance = VatSicAndCompliance(
-      businessDescription = businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(adviceOrConsultancyOnly = true, actAsIntermediary = true)),
-      mainBusinessActivity = SicCode("","","")
-    )
-
-    val differentSicAndCompliance = VatSicAndCompliance(
-      businessDescription = businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(adviceOrConsultancyOnly = false, actAsIntermediary = true)),
-      mainBusinessActivity = SicCode("","","")
-    )
-
-    "update VatSicAndCompliance with new AdviceOrConsultancy" in {
-      ViewModelTransformer[AdviceOrConsultancy, VatSicAndCompliance]
-        .toApi(adviceOrConsultancy, vatSicAndCompliance) shouldBe differentSicAndCompliance
-    }
-  }
-
   "apply" should {
 
     "convert VatScheme without SicAndCompliance to empty view model" in {

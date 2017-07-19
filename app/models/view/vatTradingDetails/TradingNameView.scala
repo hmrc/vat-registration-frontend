@@ -49,8 +49,4 @@ object TradingNameView {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: TradingNameView, g: VatTradingDetails) =>
-    g.copy(tradingName = models.api.TradingName(c.yesNo == TRADING_NAME_YES, c.tradingName))
-  }
-
 }

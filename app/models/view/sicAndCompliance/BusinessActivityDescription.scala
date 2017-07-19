@@ -38,8 +38,4 @@ object BusinessActivityDescription {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: BusinessActivityDescription, g: VatSicAndCompliance) =>
-    g.copy(businessDescription = c.description)
-  }
-
 }

@@ -24,27 +24,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class SkilledWorkersSpec extends UnitSpec with VatRegistrationFixture {
 
-  "toApi" should {
-    val skilledWorkers = SkilledWorkers(SKILLED_WORKERS_NO)
-
-    val vatSicAndCompliance = VatSicAndCompliance(
-      businessDescription = businessActivityDescription,
-      labourCompliance = Some(VatComplianceLabour(labour = true, skilledWorkers = Some(true))),
-      mainBusinessActivity = SicCode("","","")
-    )
-
-    val differentSicAndCompliance = VatSicAndCompliance(
-      businessDescription = businessActivityDescription,
-      labourCompliance = Some(VatComplianceLabour(labour = true, skilledWorkers = Some(false))),
-      mainBusinessActivity = SicCode("","","")
-    )
-
-    "update VatSicAndCompliance with new SkilledWorkers" in {
-      ViewModelTransformer[SkilledWorkers, VatSicAndCompliance]
-        .toApi(skilledWorkers, vatSicAndCompliance) shouldBe differentSicAndCompliance
-    }
-  }
-
   "apply" should {
 
     "convert VatScheme without SicAndCompliance to empty view model" in {

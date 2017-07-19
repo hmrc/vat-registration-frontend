@@ -45,8 +45,4 @@ object VatReturnFrequency {
     vs.financials map (vf => VatReturnFrequency(vf.accountingPeriods.frequency))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: VatReturnFrequency, g: VatFinancials) =>
-    g.copy(accountingPeriods = g.accountingPeriods.copy(frequency = c.frequencyType))
-  }
-
 }

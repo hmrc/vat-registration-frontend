@@ -41,8 +41,4 @@ object MainBusinessActivityView {
         Some(SicCode(cc.mainBusinessActivity.id, cc.mainBusinessActivity.description, cc.mainBusinessActivity.displayDetails))))
   }
 
-  // return a new or updated VatLodgingOfficer from the CompleteCapacityView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: MainBusinessActivityView, g: VatSicAndCompliance) =>
-    c.mainBusinessActivity.fold(g)(businessActivity => g.copy(mainBusinessActivity = businessActivity))
-  }
 }
