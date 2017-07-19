@@ -110,12 +110,12 @@ class TestS4LBuilder {
       (base.culturalNotForProfit, base.labourCompanyProvideWorkers, base.financialAdviceOrConsultancy) match {
         case (Some(_), None, None) => S4LVatSicAndCompliance(
           notForProfit = Some(NotForProfit(base.culturalNotForProfit.get)))
-        case(None, Some(_), None) => S4LVatSicAndCompliance(
+        case (None, Some(_), None) => S4LVatSicAndCompliance(
           companyProvideWorkers = base.labourCompanyProvideWorkers.flatMap(x => Some(CompanyProvideWorkers(x))),
           workers = base.labourWorkers.flatMap(x => Some(Workers(x.toInt))),
           temporaryContracts = base.labourTemporaryContracts.flatMap(x => Some(TemporaryContracts(x))),
           skilledWorkers = base.labourSkilledWorkers.flatMap(x => Some(SkilledWorkers(x))))
-        case(None, None, Some(_)) => S4LVatSicAndCompliance(
+        case (None, None, Some(_)) => S4LVatSicAndCompliance(
           adviceOrConsultancy = base.financialAdviceOrConsultancy.flatMap(x => Some(AdviceOrConsultancy(x.toBoolean))),
           actAsIntermediary = base.financialActAsIntermediary.flatMap(x => Some(ActAsIntermediary(x.toBoolean))),
           chargeFees = base.financialChargeFees.flatMap(x => Some(ChargeFees(x.toBoolean))),
@@ -203,8 +203,9 @@ class TestS4LBuilder {
         mobile = data.vatLodgingOfficer.mobile,
         tel = data.vatLodgingOfficer.phone))
 
-    val formerName: Option[FormerName] = data.vatLodgingOfficer.formernameChoice.map {
-      case "true" => FormerName(data.vatLodgingOfficer.formername.get)
+    val formerName: Option[FormerNameView] = data.vatLodgingOfficer.formernameChoice.collect {
+      case "true" => FormerNameView(true, data.vatLodgingOfficer.formername)
+      case "false" => FormerNameView(false, None)
     }
 
     val formerNameDate: Option[LocalDate] = data.vatLodgingOfficer.formernameChangeDay.map(_ =>
@@ -220,7 +221,7 @@ class TestS4LBuilder {
       officerNino = nino.map(OfficerNinoView(_)),
       completionCapacity = completionCapacity.map(CompletionCapacityView(_)),
       officerContactDetails = contactDetails.map(OfficerContactDetailsView(_)),
-      formerName = formerName.map(a => FormerNameView(true, Some(a.formerName))),
+      formerName = formerName,
       formerNameDate = formerNameDate.map(FormerNameDateView(_))
     )
   }

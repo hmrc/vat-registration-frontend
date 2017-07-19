@@ -80,7 +80,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> completionCapacity.name.id)
-      )(_ redirectsTo s"$contextRoot/have-you-ever-changed-your-name")
+      )(_ redirectsTo s"$contextRoot/changed-name")
 
     }
 
@@ -93,7 +93,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> completionCapacity.name.id)
-      )(_ redirectsTo s"$contextRoot/have-you-ever-changed-your-name")
+      )(_ redirectsTo s"$contextRoot/changed-name")
 
     }
   }
