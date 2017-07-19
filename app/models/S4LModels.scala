@@ -42,9 +42,12 @@ import models.view.vatTradingDetails.vatEuTrading.EuGoods.EU_GOODS_YES
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.libs.json.{Json, OFormat}
 
-trait S4LModelTransformer[C, API] {
+trait S4LModelTransformer[C] {
   // Returns an S4L container for a logical group given a VatScheme
   def toS4LModel(vatScheme: VatScheme): C
+}
+
+trait S4LApiTransformer[C, API] {
   // Returns logical group API model given an S4L container
   def toApi(container: C, group: API): API
 }
@@ -65,8 +68,7 @@ final case class S4LVatFinancials
 object S4LVatFinancials {
   implicit val format: OFormat[S4LVatFinancials] = Json.format[S4LVatFinancials]
 
-  implicit val transformer = new S4LModelTransformer[S4LVatFinancials, VatFinancials] {
-
+  implicit val modelT = new S4LModelTransformer[S4LVatFinancials] {
     // map VatScheme to S4LVatFinancials
     override def toS4LModel(vs: VatScheme): S4LVatFinancials =
       S4LVatFinancials(
@@ -79,7 +81,9 @@ object S4LVatFinancials {
         companyBankAccount = ApiModelTransformer[CompanyBankAccount].toViewModel(vs),
         companyBankAccountDetails = ApiModelTransformer[CompanyBankAccountDetails].toViewModel(vs)
       )
+  }
 
+  implicit val apiT = new S4LApiTransformer[S4LVatFinancials, VatFinancials] {
     // map S4LVatFinancials to VatFinancials
     override def toApi(c: S4LVatFinancials, g: VatFinancials): VatFinancials =
       g.copy(
@@ -115,8 +119,7 @@ final case class S4LTradingDetails
 object S4LTradingDetails {
   implicit val format: OFormat[S4LTradingDetails] = Json.format[S4LTradingDetails]
 
-  implicit val transformer = new S4LModelTransformer[S4LTradingDetails, VatTradingDetails] {
-
+  implicit val modelT = new S4LModelTransformer[S4LTradingDetails] {
     // map VatScheme to VatTradingDetails
     override def toS4LModel(vs: VatScheme): S4LTradingDetails =
       S4LTradingDetails(
@@ -128,7 +131,8 @@ object S4LTradingDetails {
         euGoods = ApiModelTransformer[EuGoods].toViewModel(vs),
         applyEori = ApiModelTransformer[ApplyEori].toViewModel(vs)
       )
-
+  }
+  implicit val apiT = new S4LApiTransformer[S4LTradingDetails, VatTradingDetails] {
     // map S4LTradingDetails to VatTradingDetails
     override def toApi(c: S4LTradingDetails, g: VatTradingDetails): VatTradingDetails =
       g.copy(
@@ -181,8 +185,7 @@ final case class S4LVatSicAndCompliance
 object S4LVatSicAndCompliance {
   implicit val format: OFormat[S4LVatSicAndCompliance] = Json.format[S4LVatSicAndCompliance]
 
-  implicit val transformer = new S4LModelTransformer[S4LVatSicAndCompliance, VatSicAndCompliance] {
-
+  implicit val modelT = new S4LModelTransformer[S4LVatSicAndCompliance] {
     override def toS4LModel(vs: VatScheme): S4LVatSicAndCompliance =
       S4LVatSicAndCompliance(
         description = ApiModelTransformer[BusinessActivityDescription].toViewModel(vs),
@@ -204,7 +207,9 @@ object S4LVatSicAndCompliance {
         investmentFundManagement = ApiModelTransformer[InvestmentFundManagement].toViewModel(vs),
         manageAdditionalFunds = ApiModelTransformer[ManageAdditionalFunds].toViewModel(vs)
       )
+  }
 
+  implicit val apiT = new S4LApiTransformer[S4LVatSicAndCompliance, VatSicAndCompliance] {
     override def toApi(c: S4LVatSicAndCompliance, g: VatSicAndCompliance): VatSicAndCompliance =
       g.copy(
         businessDescription = c.description.map(_.description).getOrElse(g.businessDescription),
@@ -243,11 +248,12 @@ final case class S4LVatContact
 object S4LVatContact {
   implicit val format: OFormat[S4LVatContact] = Json.format[S4LVatContact]
 
-  implicit val transformer = new S4LModelTransformer[S4LVatContact, VatContact] {
-
+  implicit val modelT = new S4LModelTransformer[S4LVatContact] {
     override def toS4LModel(vs: VatScheme): S4LVatContact =
       S4LVatContact(businessContactDetails = ApiModelTransformer[BusinessContactDetails].toViewModel(vs))
+  }
 
+  implicit val apiT = new S4LApiTransformer[S4LVatContact, VatContact] {
     override def toApi(c: S4LVatContact, g: VatContact): VatContact =
       c.businessContactDetails.map( bc => VatContact(
         VatDigitalContact(email = bc.email, tel = bc.daytimePhone, mobile = bc.mobile), website = bc.website)).
@@ -264,11 +270,12 @@ final case class S4LVatEligibility
 object S4LVatEligibility {
   implicit val format: OFormat[S4LVatEligibility] = Json.format[S4LVatEligibility]
 
-  implicit val transformer = new S4LModelTransformer[S4LVatEligibility, VatServiceEligibility] {
-
+  implicit val modelT = new S4LModelTransformer[S4LVatEligibility] {
     override def toS4LModel(vs: VatScheme): S4LVatEligibility =
       S4LVatEligibility(vatEligibility = ApiModelTransformer[VatServiceEligibility].toViewModel(vs))
+  }
 
+  implicit val apiT = new S4LApiTransformer[S4LVatEligibility, VatServiceEligibility] {
     override def toApi(c: S4LVatEligibility, g: VatServiceEligibility): VatServiceEligibility = {
       c.vatEligibility.map(ve => VatServiceEligibility(
         haveNino = ve.haveNino,
@@ -297,8 +304,7 @@ final case class S4LVatLodgingOfficer
 object S4LVatLodgingOfficer {
   implicit val format: OFormat[S4LVatLodgingOfficer] = Json.format[S4LVatLodgingOfficer]
 
-  implicit val transformer = new S4LModelTransformer[S4LVatLodgingOfficer, VatLodgingOfficer] {
-
+  implicit val modelT = new S4LModelTransformer[S4LVatLodgingOfficer] {
     override def toS4LModel(vs: VatScheme): S4LVatLodgingOfficer =
       S4LVatLodgingOfficer(
         officerHomeAddress = ApiModelTransformer[OfficerHomeAddressView].toViewModel(vs),
@@ -310,7 +316,9 @@ object S4LVatLodgingOfficer {
         formerNameDate = ApiModelTransformer[FormerNameDateView].toViewModel(vs),
         previousAddress = ApiModelTransformer[PreviousAddressView].toViewModel(vs)
       )
+  }
 
+  implicit val apiT = new S4LApiTransformer[S4LVatLodgingOfficer, VatLodgingOfficer] {
     override def toApi(c: S4LVatLodgingOfficer, g: VatLodgingOfficer): VatLodgingOfficer =
       g.copy(
         currentAddress = c.officerHomeAddress.flatMap(_.address).getOrElse(g.currentAddress),
@@ -344,11 +352,12 @@ final case class S4LPpob
 object S4LPpob {
   implicit val format: OFormat[S4LPpob] = Json.format[S4LPpob]
 
-  implicit val transformer = new S4LModelTransformer[S4LPpob, ScrsAddress] {
-
+  implicit val modelT = new S4LModelTransformer[S4LPpob] {
     override def toS4LModel(vs: VatScheme): S4LPpob =
       S4LPpob(address = ApiModelTransformer[PpobView].toViewModel(vs))
+  }
 
+  implicit val transformer = new S4LApiTransformer[S4LPpob, ScrsAddress] {
     // TODO PPOB sits directly under VatScheme root !! see VRS.submitPpob()
     override def toApi(c: S4LPpob, g: ScrsAddress): ScrsAddress = g
   }
@@ -368,8 +377,7 @@ final case class S4LFlatRateScheme
 object S4LFlatRateScheme {
   implicit val format: OFormat[S4LFlatRateScheme] = Json.format[S4LFlatRateScheme]
 
-  implicit val transformer = new S4LModelTransformer[S4LFlatRateScheme, VatFlatRateScheme] {
-
+  implicit val modelT = new S4LModelTransformer[S4LFlatRateScheme] {
     override def toS4LModel(vs: VatScheme): S4LFlatRateScheme =
       S4LFlatRateScheme(
         joinFrs = ApiModelTransformer[JoinFrsView].toViewModel(vs),
@@ -379,7 +387,9 @@ object S4LFlatRateScheme {
         frsStartDate = ApiModelTransformer[FrsStartDateView].toViewModel(vs),
         categoryOfBusiness = ApiModelTransformer[BusinessSectorView].toViewModel(vs)
       )
+  }
 
+  implicit val apiT = new S4LApiTransformer[S4LFlatRateScheme, VatFlatRateScheme] {
     override def toApi(c: S4LFlatRateScheme, g: VatFlatRateScheme): VatFlatRateScheme =
       g.copy(
         joinFrs = c.joinFrs.map(_.selection).getOrElse(g.joinFrs),
