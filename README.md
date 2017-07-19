@@ -42,7 +42,7 @@ sbt run
 
 To run with the test-only endpoints, then execute the following command:
 ```
-sbt run -Dapplication.router=testOnlyDoNotUseInAppConf.Routes 
+sbt run -Dapplication.router=testOnlyDoNotUseInAppConf.Routes
 ```
 ### Nginx
 if you want to avoid having to include the service port number in the URL, add a rule to your nginx config.
