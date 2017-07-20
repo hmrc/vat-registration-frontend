@@ -50,13 +50,13 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLod
     val dob: SummaryRow = SummaryRow(
     s"$sectionId.dob",
     vatLodgingOfficer.map(_.dob.format(presentationFormatter)).getOrElse(""),
-    Some(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
+    Some(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show())
   )
 
   val nino: SummaryRow = SummaryRow(
     s"$sectionId.nino",
     vatLodgingOfficer.map(_.nino).getOrElse(""),
-    Some(controllers.vatLodgingOfficer.routes.OfficerNinoController.show())
+    Some(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show())
   )
 
   val email: SummaryRow = SummaryRow(

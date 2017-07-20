@@ -115,8 +115,7 @@ object S4LVatEligibility {
 final case class S4LVatLodgingOfficer
 (
   officerHomeAddress: Option[OfficerHomeAddressView] = None,
-  officerDateOfBirth: Option[OfficerDateOfBirthView] = None,
-  officerNino: Option[OfficerNinoView] = None,
+  officerSecurityQuestions: Option[OfficerSecurityQuestionsView] = None,
   completionCapacity: Option[CompletionCapacityView] = None,
   officerContactDetails: Option[OfficerContactDetailsView] = None,
   formerName: Option[FormerNameView] = None,

@@ -48,6 +48,7 @@ trait VatRegistrationFixture {
   val notFound = new NotFoundException(NOT_FOUND.toString)
   val internalServiceException = new InternalServerException(BAD_GATEWAY.toString)
   val runTimeException = new RuntimeException("tst")
+  val NINO: String = "AA 12 34 56 C"
 
   val validHttpResponse = HttpResponse(OK)
 

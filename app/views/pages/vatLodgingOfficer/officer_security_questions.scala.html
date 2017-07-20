@@ -1,0 +1,101 @@
+@import models.view.vatLodgingOfficer.OfficerSecurityQuestionsView
+@(securityQuestionsForm: Form[OfficerSecurityQuestionsView])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.errorSummary
+
+@main_template(title = messages("pages.security.questions.title")) {
+
+  <div class="column-one-third">
+
+      <header class="page-header">
+          <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.security.questions.heading")</h1>
+      </header>
+
+      @errorSummary(
+          messages("app.common.errorSummaryLabel"),
+          securityQuestionsForm
+      )
+      <p>@messages("pages.security.questions.p1")</p>
+      <h3 class="form-title heading-medium">@messages("pages.security.questions.date.of.birth.h3")</h3>
+
+      @govHelpers.form(action = controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.submit()) {
+      <div class="form-group-compound">
+          @defining(securityQuestionsForm("dob").errors.nonEmpty) { errorPresent =>
+              <div class="form-date @if(errorPresent) { form-field--error }">
+              <fieldset id="dob">
+                  <label><span class="hidden">DOB input</span>
+                      @securityQuestionsForm.error("dob").map { error =>
+                          <span class="error-notification" role="tooltip">
+                              @messages(error.message, error.args: _*)
+                          </span>
+                      }
+                  </label>
+                  <span class="form-hint">@messages("pages.security.questions.date.of.birth.hint")</span>
+
+                  @govHelpers.input(
+                      securityQuestionsForm("dob.day"),
+                      '_divClass -> "form-group",
+                      '_inputClass -> "form-control",
+                      '_maxlength -> 2,
+                      '_label -> messages("pages.security.questions.day.label"),
+                      '_labelClass -> "form-label"
+                  )
+
+                  @govHelpers.input(
+                      securityQuestionsForm("dob.month"),
+                      '_divClass -> "form-group",
+                      '_inputClass -> "form-control",
+                      '_maxlength -> 2,
+                      '_label -> messages("pages.security.questions.month.label"),
+                      '_labelClass -> "form-label"
+                  )
+
+                  @govHelpers.input(
+                      securityQuestionsForm("dob.year"),
+                      '_divClass -> "form-group form-group-year",
+                      '_inputClass -> "form-control",
+                      '_maxlength -> 4,
+                      '_label -> messages("pages.security.questions.year.label"),
+                      '_labelClass -> "form-label"
+                  )
+                  @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
+                  <input type="hidden" name="dob" value="" id="dob" class="hidden" />
+              </fieldset>
+              </div>
+
+              <h3 class="form-title heading-medium">@messages("pages.security.questions.nino.h3")</h3>
+                  <p>@messages("pages.security.questions.nino.p1")</p>
+
+                  <fieldset id="nino">
+                  <legend></legend>
+                  <span class="form-hint">@messages("pages.security.questions.nino.hint")</span>
+                  @govHelpers.input(
+                      securityQuestionsForm("nino"),
+                      '_divClass -> "form-group",
+                      '_inputClass -> "form-control",
+                      '_minlength -> 13,
+                      '_maxlength -> 13,
+                      '_label -> messages("pages.security.questions.nino.h3"),
+                      '_labelTextClass -> "hidden",
+                      '_labelClass -> "form-label"
+                  )
+
+              </fieldset>                 
+                  
+      }
+      </div>
+          <div class="form-group">
+        <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+      </div>
+
+      }
+
+    </div>
+
+}
+
+<script type="text/javascript">
+        $(document).ready($(function () {
+            OfficerDOBPage.init()
+        }));
+</script>

@@ -625,25 +625,27 @@ pages.officerHomeAddress.heading                         = What is your home add
 pages.officerHomeAddress.different.address               = A different address
 validation.officerHomeAddress.missing                    = Tell us your home address
 
-## Officer Date of Birth
-pages.officerDOB.title                                   = Director''s date of birth
-pages.officerDOB.heading                                 = What is your date of birth?
-pages.officerDOB.day.label                               = Day
-pages.officerDOB.month.label                             = Month
-pages.officerDOB.year.label                              = Year
-pages.officerDOB.hint                                    = For example, 31 3 1980
-validation.officerDOB.missing                            = Enter your date of birth
-validation.officerDOB.invalid                            = Enter a valid date of birth
-validation.officerDOB.range.above                        = Date of birth must not be in the future
-validation.officerDOB.range.below                        = Date of birth must be after 1 Jan 1900
+## Officer Security questions
+pages.security.questions.title                                   = We''re about to pass you through security
+pages.security.questions.heading                                 = We''re about to pass you through security
+pages.security.questions.p1                                      = Before we do, we need ask you two questions.
+pages.security.questions.date.of.birth.h3                        = What is your date of birth?
+pages.security.questions.date.of.birth.hint                      = For example, 31 3 1980
+pages.security.questions.day.label                               = Day
+pages.security.questions.month.label                             = Month
+pages.security.questions.year.label                              = Year
 
-## Officer Nino
-pages.officerNino.title                                   = Director''s National Insurance
-pages.officerNino.heading                                 = What is your National Insurance number?
-pages.officerNino.hint                                    = For example, QQ 12 34 56 C
-pages.officerNino.para1                                   = You can find your National Insurance number on your National Insurance card, benefit letter, payslip or P60.
-validation.officerNino.missing                            = Enter your National Insurance number
-validation.officerNino.invalid                            = Enter a valid National Insurance number
+pages.security.questions.nino.h3                                 = What is your National Insurance number?
+pages.security.questions.nino.p1                                 = You can find your National Insurance number on your National Insurance card, benefit letter, payslip or P60.
+pages.security.questions.nino.hint                               = For example, QQ 12 34 56 C
+
+validation.security.questions.dob.missing                            = Enter your date of birth
+validation.security.questions.dob.invalid                            = Enter a valid date of birth
+validation.security.questions.dob.range.above                        = Date of birth must not be in the future
+validation.security.questions.dob.range.below                        = Date of birth must be after 1 Jan 1900
+
+validation.security.questions.nino.missing                            = Enter your National Insurance number
+validation.security.questions.nino.invalid                            = Enter a valid National Insurance number
 
 ## Officer Completion Capacity
 pages.completionCapacity.title                           = Who is registering the company for VAT?
