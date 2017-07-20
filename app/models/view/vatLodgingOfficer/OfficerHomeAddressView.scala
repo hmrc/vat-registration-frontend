@@ -17,7 +17,7 @@
 package models.view.vatLodgingOfficer
 
 import models._
-import models.api.{ScrsAddress, VatLodgingOfficer, VatScheme}
+import models.api.{ScrsAddress, VatScheme}
 import play.api.libs.json.Json
 
 case class OfficerHomeAddressView(addressId: String, address: Option[ScrsAddress] = None)

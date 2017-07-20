@@ -19,7 +19,6 @@ package controllers.frs
 import fixtures.VatRegistrationFixture
 import forms.genericForms.YesOrNoFormFactory
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LFlatRateScheme
 import models.api.VatFlatRateScheme
 import models.view.frs.JoinFrsView
 import org.mockito.Matchers.any

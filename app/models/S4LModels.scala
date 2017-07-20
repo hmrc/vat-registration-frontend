@@ -21,6 +21,7 @@ import models.api.{VatFinancials, _}
 import models.view.frs._
 import models.view.ppob.PpobView
 import models.view.sicAndCompliance.cultural.NotForProfit
+import models.view.sicAndCompliance.cultural.NotForProfit.NOT_PROFIT_YES
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers.PROVIDE_WORKERS_YES
 import models.view.sicAndCompliance.labour.SkilledWorkers.SKILLED_WORKERS_YES
@@ -30,6 +31,7 @@ import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessAc
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials.VatChargeExpectancy.VAT_CHARGE_YES
 import models.view.vatFinancials._
+import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.MONTHLY
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.view.vatLodgingOfficer._
@@ -97,8 +99,8 @@ object S4LVatFinancials {
         reclaimVatOnMostReturns = c.vatChargeExpectancy.map
                   (_.yesNo == VAT_CHARGE_YES).getOrElse(g.reclaimVatOnMostReturns),
         accountingPeriods = g.accountingPeriods.copy(
-                              frequency = c.vatReturnFrequency.map(_.frequencyType).getOrElse(g.accountingPeriods.frequency),
-                              periodStart = c.accountingPeriod.map(_.accountingPeriod.toLowerCase()))
+                              frequency = c.vatReturnFrequency.map(_.frequencyType).getOrElse(MONTHLY),
+                              periodStart = c.vatReturnFrequency.flatMap(_ => c.accountingPeriod.map(_.accountingPeriod.toLowerCase())))
       )
 
   }
@@ -215,7 +217,7 @@ object S4LVatSicAndCompliance {
         businessDescription = c.description.map(_.description).getOrElse(g.businessDescription),
         mainBusinessActivity = c.mainBusinessActivity.flatMap(_.mainBusinessActivity).getOrElse(g.mainBusinessActivity),
 
-        culturalCompliance = c.notForProfit.map(nfp => VatComplianceCultural(nfp.yesNo.toBoolean)),
+        culturalCompliance = c.notForProfit.map(nfp => VatComplianceCultural(nfp.yesNo == NOT_PROFIT_YES)),
 
         labourCompliance = c.companyProvideWorkers.map(cpw =>
                                 VatComplianceLabour(
@@ -392,7 +394,7 @@ object S4LFlatRateScheme {
   implicit val apiT = new S4LApiTransformer[S4LFlatRateScheme, VatFlatRateScheme] {
     override def toApi(c: S4LFlatRateScheme, g: VatFlatRateScheme): VatFlatRateScheme =
       g.copy(
-        joinFrs = c.joinFrs.map(_.selection).getOrElse(g.joinFrs),
+        joinFrs = c.joinFrs.map(_.selection).getOrElse(false),
         annualCostsInclusive = c.annualCostsInclusive.map(_.selection),
         annualCostsLimited = c.annualCostsLimited.map(_.selection),
         doYouWantToUseThisRate = c.registerForFrs.map(_.selection),

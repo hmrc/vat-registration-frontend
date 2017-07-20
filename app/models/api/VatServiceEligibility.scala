@@ -62,13 +62,5 @@ object VatServiceEligibility {
     vs.vatServiceEligibility
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: VatServiceEligibility, g: VatServiceEligibility) =>
-    g.copy(haveNino = c.haveNino,
-      doingBusinessAbroad = c.doingBusinessAbroad,
-      doAnyApplyToYou = c.doAnyApplyToYou,
-      applyingForAnyOf = c.applyingForAnyOf,
-      companyWillDoAnyOf = c.companyWillDoAnyOf)
-  }
-
 }
 

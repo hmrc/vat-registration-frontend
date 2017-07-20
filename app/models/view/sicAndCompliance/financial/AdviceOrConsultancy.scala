@@ -17,7 +17,7 @@
 package models.view.sicAndCompliance.financial
 
 import models.api._
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class AdviceOrConsultancy(yesNo: Boolean)

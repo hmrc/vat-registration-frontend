@@ -18,7 +18,7 @@ package models.view.vatFinancials
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, S4LVatFinancials, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatFinancials}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {

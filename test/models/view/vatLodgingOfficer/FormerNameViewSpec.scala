@@ -16,12 +16,10 @@
 
 package models.view.vatLodgingOfficer
 
-import java.time.LocalDate
-
 import fixtures.VatRegistrationFixture
 import models.api._
 import models.external.Officer
-import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatLodgingOfficer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 

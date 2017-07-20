@@ -19,7 +19,7 @@ package models.view.vatFinancials.vatAccountingPeriod
 import fixtures.VatRegistrationFixture
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.{MONTHLY, QUARTERLY}
-import models.{ApiModelTransformer, S4LVatFinancials, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatFinancials}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class VatReturnFrequencySpec extends UnitSpec with VatRegistrationFixture {

@@ -17,9 +17,8 @@
 package models.view.sicAndCompliance.labour
 
 import fixtures.VatRegistrationFixture
-import models.api.{SicCode, VatComplianceLabour, VatSicAndCompliance}
-import models.view.sicAndCompliance.labour.SkilledWorkers.SKILLED_WORKERS_NO
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
+import models.api.VatComplianceLabour
+import models.{ApiModelTransformer, S4LVatSicAndCompliance}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class SkilledWorkersSpec extends UnitSpec with VatRegistrationFixture {

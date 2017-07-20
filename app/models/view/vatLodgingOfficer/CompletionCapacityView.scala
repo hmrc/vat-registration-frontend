@@ -16,8 +16,8 @@
 
 package models.view.vatLodgingOfficer
 
-import models.api.{CompletionCapacity, VatLodgingOfficer, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer, _}
+import models.api.{CompletionCapacity, VatScheme}
+import models.{ApiModelTransformer, _}
 import play.api.libs.json.Json
 
 case class CompletionCapacityView(id: String, completionCapacity: Option[CompletionCapacity] = None)

@@ -17,7 +17,7 @@
 package models.view.vatTradingDetails.vatEuTrading
 
 import models.api._
-import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class EuGoods(yesNo: String)

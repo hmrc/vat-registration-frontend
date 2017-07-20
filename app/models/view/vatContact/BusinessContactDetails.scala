@@ -17,15 +17,13 @@
 package models.view.vatContact
 
 import models._
-import models.api.{VatContact, VatDigitalContact, VatScheme}
+import models.api.{VatContact, VatScheme}
 import play.api.libs.json.{Json, OFormat}
 
-case class BusinessContactDetails(
-                                   email: String,
+case class BusinessContactDetails(email: String,
                                    daytimePhone: Option[String] = None,
                                    mobile: Option[String] = None,
-                                   website: Option[String] = None
-                                 )
+                                   website: Option[String] = None)
 
 object BusinessContactDetails {
 

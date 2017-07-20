@@ -17,9 +17,8 @@
 package models.view.sicAndCompliance.cultural
 
 import fixtures.VatRegistrationFixture
-import models.api.{SicCode, VatComplianceCultural, VatSicAndCompliance}
-import models.view.sicAndCompliance.cultural.NotForProfit.NOT_PROFIT_NO
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
+import models.api.VatComplianceCultural
+import models.{ApiModelTransformer, S4LVatSicAndCompliance}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class NotForProfitSpec extends UnitSpec with VatRegistrationFixture {

@@ -18,7 +18,7 @@ package models.view.frs
 
 import fixtures.VatRegistrationFixture
 import models.api._
-import models.{ApiModelTransformer, S4LFlatRateScheme, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LFlatRateScheme}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 

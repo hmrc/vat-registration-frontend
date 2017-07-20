@@ -17,9 +17,9 @@
 package models.view.vatTradingDetails
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatScheme, VatTradingDetails}
+import models.api.VatScheme
 import models.view.vatTradingDetails.TradingNameView._
-import models.{ApiModelTransformer, S4LTradingDetails, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LTradingDetails}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 

@@ -17,8 +17,8 @@
 package models.view.vatTradingDetails.vatChoice
 
 import models.api.VatChoice.NECESSITY_VOLUNTARY
-import models.api.{VatChoice, VatScheme, VatTradingDetails}
-import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat, ViewModelTransformer}
+import models.api.VatScheme
+import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class VoluntaryRegistration(yesNo: String)

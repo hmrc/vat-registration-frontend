@@ -19,8 +19,7 @@ package models.view.vatTradingDetails.vatChoice
 import java.time.LocalDate
 
 import fixtures.VatRegistrationFixture
-import models.api.VatTradingDetails
-import models.{DateModel, S4LTradingDetails, ViewModelTransformer}
+import models.{DateModel, S4LTradingDetails}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 

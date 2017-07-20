@@ -16,8 +16,8 @@
 
 package models.view.vatLodgingOfficer
 
-import models.api._
 import models._
+import models.api._
 import play.api.libs.json.Json
 
 case class PreviousAddressView(yesNo: Boolean, address: Option[ScrsAddress] = None)
