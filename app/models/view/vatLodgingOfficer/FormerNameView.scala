@@ -17,7 +17,7 @@
 package models.view.vatLodgingOfficer
 
 import models.api._
-import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelFormat, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class FormerNameView(yesNo: Boolean,

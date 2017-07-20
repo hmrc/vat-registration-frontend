@@ -17,8 +17,8 @@
 package models.view.ppob
 
 import fixtures.VatRegistrationFixture
-import models.api.{ScrsAddress, VatScheme}
-import models.{ApiModelTransformer, S4LPpob, ViewModelTransformer}
+import models.api.ScrsAddress
+import models.{ApiModelTransformer, S4LPpob}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 

@@ -18,8 +18,8 @@ package models.view.vatLodgingOfficer
 
 import java.time.LocalDate
 
-import models.api.{DateOfBirth, VatLodgingOfficer, VatScheme, _}
-import models.{ApiModelTransformer, DateModel, ViewModelTransformer, _}
+import models.api.{VatScheme, _}
+import models.{ApiModelTransformer, DateModel, _}
 import play.api.libs.json.Json
 
 case class OfficerDateOfBirthView(dob: LocalDate, officerName: Option[Name] = None)

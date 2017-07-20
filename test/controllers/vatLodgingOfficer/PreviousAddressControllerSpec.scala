@@ -19,10 +19,8 @@ package controllers.vatLodgingOfficer
 import controllers.vatLodgingOfficer
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LVatLodgingOfficer
 import models.api.ScrsAddress
 import models.view.vatLodgingOfficer.PreviousAddressView
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.mvc.Call

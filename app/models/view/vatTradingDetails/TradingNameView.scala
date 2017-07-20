@@ -17,7 +17,7 @@
 package models.view.vatTradingDetails
 
 import models.api.{TradingName, VatEuTrading, VatScheme, VatTradingDetails}
-import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class TradingNameView(

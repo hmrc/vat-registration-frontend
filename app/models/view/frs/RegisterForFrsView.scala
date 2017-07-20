@@ -16,8 +16,8 @@
 
 package models.view.frs
 
-import models.api.{VatFlatRateScheme, VatScheme}
-import models.{ApiModelTransformer, S4LFlatRateScheme, ViewModelFormat, ViewModelTransformer}
+import models.api.VatScheme
+import models.{ApiModelTransformer, S4LFlatRateScheme, ViewModelFormat}
 import play.api.libs.json.Json
 
 final case class RegisterForFrsView(selection: Boolean)

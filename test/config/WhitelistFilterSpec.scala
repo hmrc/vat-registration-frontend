@@ -21,8 +21,8 @@ import java.util.Base64
 import org.scalatest.TestData
 import org.scalatestplus.play.{OneAppPerTest, PlaySpec}
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.test._
 import play.api.test.Helpers._
+import play.api.test._
 import play.api.{Application, Environment, Mode}
 
 class WhitelistFilterSpec extends PlaySpec with OneAppPerTest {

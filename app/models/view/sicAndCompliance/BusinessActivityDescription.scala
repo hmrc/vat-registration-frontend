@@ -17,7 +17,7 @@
 package models.view.sicAndCompliance
 
 import models._
-import models.api.{VatScheme, VatSicAndCompliance}
+import models.api.VatScheme
 import play.api.libs.json.Json
 
 case class BusinessActivityDescription(description: String)

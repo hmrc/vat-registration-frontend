@@ -16,8 +16,8 @@
 
 package models.view.vatFinancials
 
-import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat, ViewModelTransformer}
+import models.api.VatScheme
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat}
 import play.api.libs.json.{Json, OFormat}
 
 case class EstimateVatTurnover(vatTurnoverEstimate: Long)

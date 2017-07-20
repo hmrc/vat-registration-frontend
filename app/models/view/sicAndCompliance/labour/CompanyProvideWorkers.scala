@@ -16,8 +16,8 @@
 
 package models.view.sicAndCompliance.labour
 
-import models.api.{VatComplianceLabour, VatScheme, VatSicAndCompliance}
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
+import models.api.VatScheme
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class  CompanyProvideWorkers(yesNo: String)

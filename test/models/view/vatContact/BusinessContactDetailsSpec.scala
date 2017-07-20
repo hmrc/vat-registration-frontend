@@ -18,7 +18,7 @@ package models.view.vatContact
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatContact, VatDigitalContact}
-import models.{ApiModelTransformer, S4LVatContact, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatContact}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 

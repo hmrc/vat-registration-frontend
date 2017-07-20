@@ -22,8 +22,6 @@ import models._
 import models.api._
 import play.api.libs.json.Json
 
-import scala.util.Try
-
 case class FormerNameDateView(date: LocalDate)
 
 object FormerNameDateView {

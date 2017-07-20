@@ -17,7 +17,7 @@
 package models.view.sicAndCompliance
 
 import models.api._
-import models.{ApiModelTransformer, ViewModelTransformer, _}
+import models.{ApiModelTransformer, _}
 import play.api.libs.json.Json
 
 case class MainBusinessActivityView(id: String, mainBusinessActivity: Option[SicCode] = None)

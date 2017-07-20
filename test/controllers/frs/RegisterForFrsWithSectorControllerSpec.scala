@@ -26,9 +26,6 @@ import models.view.sicAndCompliance.MainBusinessActivityView
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.HeaderCarrier
-
-import scala.concurrent.Future
 
 class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 

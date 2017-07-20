@@ -18,7 +18,7 @@ package models.view.sicAndCompliance
 
 import fixtures.VatRegistrationFixture
 import models.api.{SicCode, VatSicAndCompliance}
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class MainBusinessActivitySpec extends UnitSpec with VatRegistrationFixture {
