@@ -16,8 +16,8 @@
 
 package models.view.vatLodgingOfficer
 
-import models.api._
 import models._
+import models.api._
 import play.api.libs.json.Json
 
 case class PreviousAddressView(yesNo: Boolean, address: Option[ScrsAddress] = None)
@@ -35,11 +35,6 @@ object PreviousAddressView {
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[PreviousAddressView] { vs: VatScheme =>
     vs.lodgingOfficer.map(_.currentOrPreviousAddress).map(p => PreviousAddressView(p.currentAddressThreeYears, p.previousAddress))
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: PreviousAddressView, g: VatLodgingOfficer) =>
-    g.copy(currentOrPreviousAddress = g.currentOrPreviousAddress.copy(currentAddressThreeYears = c.yesNo, previousAddress = c.address)
-    )
   }
 
 }

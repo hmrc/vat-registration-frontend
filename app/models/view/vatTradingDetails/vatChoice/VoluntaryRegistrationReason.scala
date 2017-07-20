@@ -16,8 +16,8 @@
 
 package models.view.vatTradingDetails.vatChoice
 
-import models.api.{VatScheme, VatTradingDetails}
-import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat, ViewModelTransformer}
+import models.api.VatScheme
+import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class VoluntaryRegistrationReason(reason: String)
@@ -48,10 +48,6 @@ object VoluntaryRegistrationReason {
       case SELLS => sells
       case INTENDS_TO_SELL => intendsToSell
     }
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: VoluntaryRegistrationReason, g: VatTradingDetails) =>
-    g.copy(vatChoice = g.vatChoice.copy(reason = Some(c.reason)))
   }
 
 }

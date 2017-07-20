@@ -38,9 +38,4 @@ object PpobView {
     }
   }
 
-  // return a new or updated VatScheme from the PpobView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: PpobView, g: VatScheme) =>
-    c.address.fold(g)(address => g.copy( ppob = Some(address)))
-  }
-
 }

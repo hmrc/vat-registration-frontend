@@ -18,10 +18,7 @@ package models.api
 
 import play.api.libs.json.Json
 
-case class CompletionCapacity(
-                    name: Name,
-                    role: String
-                  )
+case class CompletionCapacity(name: Name, role: String)
 
 object CompletionCapacity {
 

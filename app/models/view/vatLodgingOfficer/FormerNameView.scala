@@ -17,13 +17,11 @@
 package models.view.vatLodgingOfficer
 
 import models.api._
-import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelFormat, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelFormat}
 import play.api.libs.json.Json
 
-case class FormerNameView(
-                           yesNo: Boolean,
-                           formerName: Option[String] = None
-                         )
+case class FormerNameView(yesNo: Boolean,
+                           formerName: Option[String] = None)
 
 object FormerNameView {
 
@@ -40,12 +38,6 @@ object FormerNameView {
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[FormerNameView] { vs: VatScheme =>
     vs.lodgingOfficer.map(_.changeOfName).map(changeOfName => FormerNameView(changeOfName.nameHasChanged, changeOfName.formerName.map(_.formerName)))
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: FormerNameView, g: VatLodgingOfficer) =>
-    g.copy(changeOfName =
-      ChangeOfName(c.yesNo,
-        if (c.yesNo) Some(FormerName(c.formerName.getOrElse(""))) else None))
   }
 
 }

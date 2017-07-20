@@ -18,7 +18,7 @@ package models.view.vatFinancials
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, S4LVatFinancials, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatFinancials}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
@@ -33,19 +33,6 @@ class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
     reclaimVatOnMostReturns = true,
     accountingPeriods = monthlyAccountingPeriod
   )
-
-  "toApi" should {
-    "update VatFinancials with new EstimateZeroRatedSales" in {
-      val updatedVatFinancials = VatFinancials(
-        turnoverEstimate = turnover,
-        zeroRatedTurnoverEstimate = Some(estimateZeroRatedSales.zeroRatedTurnoverEstimate),
-        reclaimVatOnMostReturns = true,
-        accountingPeriods = monthlyAccountingPeriod
-      )
-      ViewModelTransformer[EstimateZeroRatedSales, VatFinancials]
-        .toApi(estimateZeroRatedSales, vatFinancials) shouldBe updatedVatFinancials
-    }
-  }
 
   "apply" should {
     "convert a VatFinancials to a view model" in {

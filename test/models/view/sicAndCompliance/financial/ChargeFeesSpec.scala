@@ -17,32 +17,11 @@
 package models.view.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatComplianceFinancial, VatSicAndCompliance}
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
+import models.api.VatComplianceFinancial
+import models.{ApiModelTransformer, S4LVatSicAndCompliance}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class ChargeFeesSpec extends UnitSpec with VatRegistrationFixture {
-
-  "toApi" should {
-    val chargeFees = ChargeFees(false)
-
-    val vatSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, chargeFees = Some(true))),
-      mainBusinessActivity = sicCode
-    )
-
-    val differentSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(true, true, chargeFees = Some(false))),
-      mainBusinessActivity = sicCode
-    )
-
-    "update VatSicAndCompliance with new ChargeFees" in {
-      ViewModelTransformer[ChargeFees, VatSicAndCompliance]
-        .toApi(chargeFees, vatSicAndCompliance) shouldBe differentSicAndCompliance
-    }
-  }
 
   "apply" should {
 

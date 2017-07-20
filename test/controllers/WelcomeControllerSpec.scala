@@ -22,7 +22,6 @@ import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.VatRegistrationService
 
 import scala.concurrent.Future
 

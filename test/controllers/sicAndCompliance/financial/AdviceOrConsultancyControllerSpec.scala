@@ -18,7 +18,6 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.api.SicCode
 import models.view.sicAndCompliance.financial.AdviceOrConsultancy
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import org.mockito.Matchers

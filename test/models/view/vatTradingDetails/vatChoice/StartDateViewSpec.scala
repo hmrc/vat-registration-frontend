@@ -19,8 +19,7 @@ package models.view.vatTradingDetails.vatChoice
 import java.time.LocalDate
 
 import fixtures.VatRegistrationFixture
-import models.api.VatTradingDetails
-import models.{DateModel, S4LTradingDetails, ViewModelTransformer}
+import models.{DateModel, S4LTradingDetails}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -56,22 +55,6 @@ class StartDateViewSpec extends UnitSpec with VatRegistrationFixture with Inside
     }
     "create StartDate when DateModel is NOT present" in {
       StartDateView.bind("any", None) shouldBe StartDateView("any", None)
-    }
-  }
-
-  "toApi" should {
-    "update a VatChoice a new StartDate" in {
-      val vtd = tradingDetails(startDate = newStartDate.date)
-      inside(ViewModelTransformer[StartDateView, VatTradingDetails].toApi(startDate, vtd)) {
-        case tradingDetails => tradingDetails.vatChoice.vatStartDate.startDate shouldBe newStartDate.date
-      }
-    }
-
-    "when no date present, StardDateView contains date type selection" in {
-      val c = StartDateView("from S4L", None)
-      val g = tradingDetails()
-      val transformed = ViewModelTransformer[StartDateView, VatTradingDetails].toApi(c, g)
-      transformed shouldBe g.copy(vatChoice = g.vatChoice.copy(vatStartDate = g.vatChoice.vatStartDate.copy(selection = "from S4L")))
     }
   }
 

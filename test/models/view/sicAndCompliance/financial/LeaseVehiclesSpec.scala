@@ -17,34 +17,11 @@
 package models.view.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatComplianceFinancial, VatSicAndCompliance}
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
+import models.api.VatComplianceFinancial
+import models.{ApiModelTransformer, S4LVatSicAndCompliance}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class LeaseVehiclesSpec extends UnitSpec with VatRegistrationFixture {
-
-  "toApi" should {
-    val leaseVehicles = LeaseVehicles(false)
-
-    val vatSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(
-        adviceOrConsultancyOnly = true, actAsIntermediary = true, vehicleOrEquipmentLeasing = Some(true))),
-      mainBusinessActivity = sicCode
-    )
-
-    val differentSicAndCompliance = VatSicAndCompliance(
-      businessActivityDescription,
-      financialCompliance = Some(VatComplianceFinancial(
-        adviceOrConsultancyOnly = true, actAsIntermediary = true, vehicleOrEquipmentLeasing = Some(false))),
-      mainBusinessActivity = sicCode
-    )
-
-    "update VatSicAndCompliance with new LeaseVehicles" in {
-      ViewModelTransformer[LeaseVehicles, VatSicAndCompliance]
-        .toApi(leaseVehicles, vatSicAndCompliance) shouldBe differentSicAndCompliance
-    }
-  }
 
   "apply" should {
 

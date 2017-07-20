@@ -16,8 +16,8 @@
 
 package models.view.sicAndCompliance.financial
 
-import models.api.{VatScheme, VatSicAndCompliance}
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
+import models.api.VatScheme
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class InvestmentFundManagement(yesNo: Boolean)
@@ -39,10 +39,6 @@ object InvestmentFundManagement {
       fc <- vsc.financialCompliance
       cf <- fc.investmentFundManagementServices
     } yield InvestmentFundManagement(cf)
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: InvestmentFundManagement, g: VatSicAndCompliance) =>
-    g.copy(financialCompliance = g.financialCompliance.map(_.copy(investmentFundManagementServices = Some(c.yesNo))))
   }
 
 }

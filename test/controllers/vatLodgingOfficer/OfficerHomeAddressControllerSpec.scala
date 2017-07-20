@@ -21,7 +21,6 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer}
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{verify, when}
 import play.api.mvc.Call
@@ -75,18 +74,14 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
 
   }
 
-  s"POST ${routes.OfficerHomeAddressController.submit()} with Empty data" should {
+  s"POST ${routes.OfficerHomeAddressController.submit()}" should {
 
-    "return 400" in {
+    "return 400 with Empty data" in {
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", None)
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
 
-  }
-
-  s"POST ${routes.OfficerHomeAddressController.submit()} with selected address" should {
-
-    "return 303" in {
+    "return 303 with selected address" in {
       save4laterExpectsSave[OfficerHomeAddressView]()
       when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", Some(Seq(address)))
@@ -96,11 +91,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
       )(_ redirectsTo s"$contextRoot/current-address-three-years-or-more")
     }
 
-  }
-
-  s"POST ${routes.OfficerHomeAddressController.submit()} with selected address but no address list in keystore" should {
-
-    "return 303" in {
+    "return 303 with selected address but no address list in keystore" in {
       save4laterExpectsSave[OfficerHomeAddressView]()
       when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
       mockKeystoreFetchAndGet("OfficerAddressList", Option.empty[Seq[ScrsAddress]])
@@ -110,20 +101,14 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
       )(_ redirectsTo s"$contextRoot/current-address-three-years-or-more")
     }
 
-  }
-
-  s"POST ${routes.OfficerHomeAddressController.submit()} with 'other address' selected" should {
-
-    "redirect the user to TxM address capture page" in {
+    "redirect the user to TxM address capture page with 'other address' selected" in {
       when(mockAddressLookupConnector.getOnRampUrl(any[Call])(any(), any())).thenReturn(Call("GET", "TxM").pure)
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> "other")
       )(_ redirectsTo "TxM")
     }
-
   }
-
 
   s"GET ${routes.OfficerHomeAddressController.acceptFromTxm()}" should {
 
@@ -134,8 +119,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
         _ redirectsTo s"$contextRoot/current-address-three-years-or-more"
       }
 
-      val expectedAddressView = OfficerHomeAddressView(address.id, Some(address))
-      verify(mockS4LService).updateViewModel(Matchers.eq(expectedAddressView))(any(), any(), any(), any())
+      verify(mockS4LService).updateViewModel2(any(), any())(any(), any(), any(), any())
     }
 
   }

@@ -17,7 +17,7 @@
 package models.view.vatLodgingOfficer
 
 import models._
-import models.api.{VatLodgingOfficer, VatScheme}
+import models.api.VatScheme
 import play.api.libs.json.Json
 
 case class OfficerNinoView(nino: String)
@@ -37,8 +37,4 @@ object OfficerNinoView {
     vs.lodgingOfficer.map(_.nino).map(OfficerNinoView(_))
   }
 
-  // return a new or updated VatLodgingOfficer from the CurrentAddressView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerNinoView, g: VatLodgingOfficer) =>
-    g.copy(nino = c.nino)
-  }
 }

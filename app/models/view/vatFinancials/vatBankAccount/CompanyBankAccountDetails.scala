@@ -16,8 +16,8 @@
 
 package models.view.vatFinancials.vatBankAccount
 
-import models.api.{VatBankAccount, VatFinancials, VatScheme}
-import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat, ViewModelTransformer}
+import models.api.VatScheme
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class CompanyBankAccountDetails(accountName: String, accountNumber: String, sortCode: String)
@@ -39,13 +39,6 @@ object CompanyBankAccountDetails {
         accountNumber = account.accountNumber,
         sortCode = account.accountSortCode
       ))
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: CompanyBankAccountDetails, g: VatFinancials) =>
-    g.copy(bankAccount = Some(VatBankAccount(
-      accountName = c.accountName,
-      accountSortCode = c.sortCode,
-      accountNumber = c.accountNumber)))
   }
 
 }

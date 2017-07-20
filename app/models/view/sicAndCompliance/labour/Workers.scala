@@ -16,8 +16,8 @@
 
 package models.view.sicAndCompliance.labour
 
-import models.api.{VatScheme, VatSicAndCompliance}
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
+import models.api.VatScheme
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat}
 import play.api.libs.json.{Json, OFormat}
 
 case class Workers(numberOfWorkers: Int)
@@ -38,11 +38,6 @@ object Workers {
       lc <- vsc.labourCompliance
       w <- lc.workers
     } yield Workers(w)
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: Workers, g: VatSicAndCompliance) => {
-    g.copy(labourCompliance = g.labourCompliance.map(_.copy(workers = Some(c.numberOfWorkers))))
-  }
   }
 
 }
