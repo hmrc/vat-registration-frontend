@@ -70,43 +70,17 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
     }
 
 
-    "return 303 with valid Officer Contact Details entered and default Voluntary Reg = Yes" in {
-      save4laterReturnsViewModel(VoluntaryRegistration.yes)()
+    "return 303 with valid Officer Contact Details entered" in {
       save4laterExpectsSave[OfficerContactDetailsView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com")
-      )(_ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be")
+        fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com",
+                                           "daytimePhone" -> "01234 567891",
+                                           "mobile" -> "01234 567891")
+      )(_ redirectsTo s"$contextRoot/your-home-address")
     }
 
-    "return 303 with valid Officer Contact Details entered and default Voluntary Reg = No" in {
-      save4laterExpectsSave[OfficerContactDetailsView]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
-      save4laterReturnsViewModel(VoluntaryRegistration.no)()
-
-      submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody(
-          "email" -> "some@email.com",
-          "daytimePhone" -> "123123",
-          "mobile" -> "123123")
-      )(_ redirectsTo s"$contextRoot/vat-start-date")
-    }
-
-    "return 303 with valid Officer Contact Details entered and no Voluntary Reg present" in {
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
-      save4laterExpectsSave[OfficerContactDetailsView]()
-      save4laterReturnsNoViewModel[VoluntaryRegistration]()
-
-      submitAuthorised(
-        Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody(
-          "email" -> "some@email.com",
-          "daytimePhone" -> "123123",
-          "mobile" -> "123123")
-      )(_ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be")
-
-    }
   }
 
 }

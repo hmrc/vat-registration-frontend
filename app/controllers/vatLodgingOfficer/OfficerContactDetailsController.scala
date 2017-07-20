@@ -41,12 +41,6 @@ class OfficerContactDetailsController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       copyGlobalErrorsToFields("email", "daytimePhone", "mobile")
         .andThen(form => BadRequest(views.html.pages.vatLodgingOfficer.officer_contact_details(form)).pure),
-      view => (for {
-        _ <- save[OfficerContactDetailsView](view)
-        optVR <- viewModel[VoluntaryRegistration]().value
-      } yield optVR.fold(true)(_ == VoluntaryRegistration.yes)).ifM(
-        ifTrue = vatChoiceRoutes.StartDateController.show().pure,
-        ifFalse = vatChoiceRoutes.MandatoryStartDateController.show().pure
-      ).map(Redirect)))
+      data => save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show()))))
 
 }
