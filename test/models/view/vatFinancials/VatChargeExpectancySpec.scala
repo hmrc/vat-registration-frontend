@@ -19,7 +19,7 @@ package models.view.vatFinancials
 import fixtures.VatRegistrationFixture
 import models.api.{VatFinancials, VatScheme}
 import models.view.vatFinancials.VatChargeExpectancy.{VAT_CHARGE_NO, VAT_CHARGE_YES}
-import models.{ApiModelTransformer, S4LVatFinancials, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatFinancials}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class VatChargeExpectancySpec extends UnitSpec with VatRegistrationFixture {
@@ -40,17 +40,6 @@ class VatChargeExpectancySpec extends UnitSpec with VatRegistrationFixture {
     reclaimVatOnMostReturns = false,
     accountingPeriods = accountingPeriods
   )
-
-  "toApi" should {
-    "update VatFinancials with new VatChargeExpectancy with Reclaim false" in {
-      ViewModelTransformer[VatChargeExpectancy, VatFinancials]
-        .toApi(vatChargeExpectancyNo, vatFinancialsWithReclaimTrue) shouldBe vatFinancialsWithReclaimFalse
-    }
-    "update VatFinancials with new VatChargeExpectancy with Reclaim true" in {
-      ViewModelTransformer[VatChargeExpectancy, VatFinancials]
-        .toApi(vatChargeExpectancyYes, vatFinancialsWithReclaimFalse) shouldBe vatFinancialsWithReclaimTrue
-    }
-  }
 
   "apply" should {
     val vatScheme = VatScheme(validRegId)

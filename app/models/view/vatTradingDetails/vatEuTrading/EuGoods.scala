@@ -17,7 +17,7 @@
 package models.view.vatTradingDetails.vatEuTrading
 
 import models.api._
-import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class EuGoods(yesNo: String)
@@ -39,10 +39,6 @@ object EuGoods {
 
   implicit val modelTransformer = ApiModelTransformer[EuGoods] { (vs: VatScheme) =>
     vs.tradingDetails.map(td => EuGoods(if (td.euTrading.selection) EU_GOODS_YES else EU_GOODS_NO))
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: EuGoods, g: VatTradingDetails) =>
-    g.copy(euTrading = VatEuTrading(c.yesNo == EU_GOODS_YES))
   }
 
 }

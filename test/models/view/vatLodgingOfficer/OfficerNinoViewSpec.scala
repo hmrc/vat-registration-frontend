@@ -18,7 +18,7 @@ package models.view.vatLodgingOfficer
 
 import fixtures.VatRegistrationFixture
 import models.api._
-import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatLodgingOfficer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -45,19 +45,6 @@ class OfficerNinoViewSpec extends UnitSpec with VatRegistrationFixture with Insi
     }
 
   }
-
-  "viewModelTransformer" should {
-    "update logical group given a component" in {
-      val initialVatLodgingOfficer =
-        VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, changeOfName, currentOrPreviousAddress, OfficerContactDetails.empty)
-      val updatedVatLodgingOfficer =
-        VatLodgingOfficer(address, DateOfBirth.empty, testNino, "", Name.empty, changeOfName, currentOrPreviousAddress, OfficerContactDetails.empty)
-
-      ViewModelTransformer[OfficerNinoView, VatLodgingOfficer].
-        toApi(testNinoView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
-    }
-  }
-
 
   "ViewModelFormat" should {
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(officerNino = Some(testNinoView))

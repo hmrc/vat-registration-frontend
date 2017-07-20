@@ -17,33 +17,11 @@
 package models.view.sicAndCompliance.labour
 
 import fixtures.VatRegistrationFixture
-import models.api.{SicCode, VatComplianceLabour, VatSicAndCompliance}
-import models.view.sicAndCompliance.labour.CompanyProvideWorkers.PROVIDE_WORKERS_NO
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
+import models.api.VatComplianceLabour
+import models.{ApiModelTransformer, S4LVatSicAndCompliance}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CompanyProvideWorkersSpec extends UnitSpec with VatRegistrationFixture {
-
-  "toApi" should {
-    val companyProvideWorkers = CompanyProvideWorkers(PROVIDE_WORKERS_NO)
-
-    val vatSicAndCompliance = VatSicAndCompliance(
-      businessDescription = businessActivityDescription,
-      labourCompliance = Some(VatComplianceLabour(labour = true)),
-      mainBusinessActivity = SicCode("","","")
-    )
-
-    val differentSicAndCompliance = VatSicAndCompliance(
-      businessDescription = businessActivityDescription,
-      labourCompliance = Some(VatComplianceLabour(labour = false)),
-      mainBusinessActivity = SicCode("","","")
-    )
-
-    "update VatSicAndCompliance with new NotForProfit" in {
-      ViewModelTransformer[CompanyProvideWorkers, VatSicAndCompliance]
-        .toApi(companyProvideWorkers, vatSicAndCompliance) shouldBe differentSicAndCompliance
-    }
-  }
 
   "apply" should {
 

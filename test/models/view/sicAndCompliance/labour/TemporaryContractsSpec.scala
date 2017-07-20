@@ -17,33 +17,11 @@
 package models.view.sicAndCompliance.labour
 
 import fixtures.VatRegistrationFixture
-import models.api.{SicCode, VatComplianceLabour, VatSicAndCompliance}
-import models.view.sicAndCompliance.labour.TemporaryContracts.TEMP_CONTRACTS_NO
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
+import models.api.VatComplianceLabour
+import models.{ApiModelTransformer, S4LVatSicAndCompliance}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class TemporaryContractsSpec extends UnitSpec with VatRegistrationFixture {
-
-  "toApi" should {
-    val temporaryContracts = TemporaryContracts(TEMP_CONTRACTS_NO)
-
-    val vatSicAndCompliance = VatSicAndCompliance(
-      businessDescription = businessActivityDescription,
-      labourCompliance = Some(VatComplianceLabour(labour = true, temporaryContracts = Some(true))),
-      mainBusinessActivity = SicCode("","","")
-    )
-
-    val differentSicAndCompliance = VatSicAndCompliance(
-      businessDescription = businessActivityDescription,
-      labourCompliance = Some(VatComplianceLabour(labour = true, temporaryContracts = Some(false))),
-      mainBusinessActivity = SicCode("","","")
-    )
-
-    "update VatSicAndCompliance with new TemporaryContracts" in {
-      ViewModelTransformer[TemporaryContracts, VatSicAndCompliance]
-        .toApi(temporaryContracts, vatSicAndCompliance) shouldBe differentSicAndCompliance
-    }
-  }
 
   "apply" should {
 

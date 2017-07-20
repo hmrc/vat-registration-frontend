@@ -19,7 +19,6 @@ package controllers.sicAndCompliance.cultural
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.api.SicCode
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import org.mockito.Matchers.any

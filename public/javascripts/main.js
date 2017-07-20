@@ -2,6 +2,14 @@ $(document).ready($(function () {
 
 }));
 
+
+/*
+ example of multiple hide/show areas
+ UI.hideShowOnRadioButton("startDate",
+ {   "#startDate-specific_date": "#specific_date_panel",
+ "#startDate-when_registered": "#other_panel"   });
+ */
+
 // UI module (common code)
 (function (UI, $, undefined) {
     UI.show = function (selector) {
@@ -152,13 +160,6 @@ $(document).ready($(function () {
     }
 }(window.FrsStartDatePage = window.FrsStartDatePage || {}, jQuery));
 
-/*
- example of multiple hide/show areas
- UI.hideShowOnRadioButton("startDate",
- {   "#startDate-specific_date": "#specific_date_panel",
-     "#startDate-when_registered": "#other_panel"   });
- */
-
 // FormerNameDate page
 (function (FormerNameDatePage, $, undefined) {
     FormerNameDatePage.init = function() {
@@ -166,3 +167,5 @@ $(document).ready($(function () {
         UI.preventNonNumericInput(numericInputs);
     }
 }(window.FormerNameDatePage = window.FormerNameDatePage || {}, jQuery));
+
+

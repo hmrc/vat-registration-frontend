@@ -73,9 +73,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   private def s4l[T: Format : S4LKey]()(implicit hc: HeaderCarrier) =
     s4LService.fetchAndGet[T]()
 
-  private def update[C, G](c: Option[C])(implicit t: ViewModelTransformer[C, G]): G => G =
-    g => c.map(t.toApi(_, g)).getOrElse(g)
-
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
     fetchRegistrationId.flatMap(vatRegConnector.getRegistration)
 
@@ -109,15 +106,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =
       fresh.fold(
         vs.financials.getOrElse(throw fail("VatFinancials"))
-      ) { s4l =>
-        update(s4l.estimateVatTurnover)
-          .andThen(update(s4l.zeroRatedTurnoverEstimate))
-          .andThen(update(s4l.vatChargeExpectancy))
-          .andThen(update(s4l.vatReturnFrequency))
-          .andThen(update(s4l.accountingPeriod))
-          .andThen(update(s4l.companyBankAccountDetails))
-          .apply(vs.financials.getOrElse(VatFinancials.empty)) //TODO remove the "seeding" with empty
-      }
+      ) (s4l => S4LVatFinancials.apiT.toApi(s4l, VatFinancials.empty)) //TODO remove the "seeding" with empty
 
     for {
       (vs, vf) <- (getVatScheme() |@| s4l[S4LVatFinancials]()).tupled
@@ -129,24 +118,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     def merge(fresh: Option[S4LVatSicAndCompliance], vs: VatScheme) =
       fresh.fold(
         vs.vatSicAndCompliance.getOrElse(throw fail("VatSicAndCompliance"))
-      ) { s4l =>
-        update(s4l.description)
-          .andThen(update(s4l.notForProfit))
-          .andThen(update(s4l.companyProvideWorkers))
-          .andThen(update(s4l.workers))
-          .andThen(update(s4l.temporaryContracts))
-          .andThen(update(s4l.skilledWorkers))
-          .andThen(update(s4l.adviceOrConsultancy))
-          .andThen(update(s4l.actAsIntermediary))
-          .andThen(update(s4l.chargeFees))
-          .andThen(update(s4l.leaseVehicles))
-          .andThen(update(s4l.additionalNonSecuritiesWork))
-          .andThen(update(s4l.discretionaryInvestmentManagementServices))
-          .andThen(update(s4l.investmentFundManagement))
-          .andThen(update(s4l.manageAdditionalFunds))
-          .andThen(update(s4l.mainBusinessActivity))
-          .apply(vs.vatSicAndCompliance.getOrElse(VatSicAndCompliance.empty))
-      }
+      ) ( s4l => S4LVatSicAndCompliance.apiT.toApi(s4l, VatSicAndCompliance.empty)) //TODO remove the "seeding" with empty
 
     for {
       (vs, vsc) <- (getVatScheme() |@| s4l[S4LVatSicAndCompliance]()).tupled
@@ -158,15 +130,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     def merge(fresh: Option[S4LTradingDetails], vs: VatScheme): VatTradingDetails =
       fresh.fold(
         vs.tradingDetails.getOrElse(throw fail("VatTradingDetails"))
-      ) { s4l =>
-        update(s4l.voluntaryRegistration)
-          .andThen(update(s4l.tradingName))
-          .andThen(update(s4l.startDate))
-          .andThen(update(s4l.voluntaryRegistrationReason))
-          .andThen(update(s4l.euGoods))
-          .andThen(update(s4l.applyEori))
-          .apply(vs.tradingDetails.getOrElse(VatTradingDetails.empty)) //TODO remove the "seeding" with empty
-      }
+      ) (s4l => S4LTradingDetails.apiT.toApi(s4l, VatTradingDetails.empty)) //TODO remove the "seeding" with empty
 
     for {
       (vs, vlo) <- (getVatScheme() |@| s4l[S4LTradingDetails]()).tupled
@@ -178,10 +142,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     def merge(fresh: Option[S4LVatContact], vs: VatScheme): VatContact =
       fresh.fold(
         vs.vatContact.getOrElse(throw fail("VatContact"))
-      ) { s4l =>
-        update(s4l.businessContactDetails)
-          .apply(vs.vatContact.getOrElse(VatContact.empty)) //TODO remove the "seeding" with empty
-      }
+      ) (s4l => S4LVatContact.apiT.toApi(s4l, VatContact.empty)) //TODO remove the "seeding" with empty
 
     for {
       (vs, vlo) <- (getVatScheme() |@| s4l[S4LVatContact]()).tupled
@@ -193,10 +154,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     def merge(fresh: Option[S4LVatEligibility], vs: VatScheme): VatServiceEligibility =
       fresh.fold(
         vs.vatServiceEligibility.getOrElse(throw fail("VatServiceEligibility"))
-      ) { s4l =>
-        update(s4l.vatEligibility)
-          .apply(vs.vatServiceEligibility.getOrElse(VatServiceEligibility()))
-      }
+      ) ( s4l => S4LVatEligibility.apiT.toApi(s4l, VatServiceEligibility()))
 
     for {
       (vs, ve) <- (getVatScheme() |@| s4l[S4LVatEligibility]()).tupled
@@ -208,17 +166,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     def merge(fresh: Option[S4LVatLodgingOfficer], vs: VatScheme): VatLodgingOfficer =
       fresh.fold(
         vs.lodgingOfficer.getOrElse(throw fail("VatLodgingOfficer"))
-      ) { s4l =>
-        update(s4l.officerHomeAddress)
-          .andThen(update(s4l.officerDateOfBirth))
-          .andThen(update(s4l.officerNino))
-          .andThen(update(s4l.completionCapacity))
-          .andThen(update(s4l.officerContactDetails))
-          .andThen(update(s4l.formerName))
-          .andThen(update(s4l.formerNameDate))
-          .andThen(update(s4l.previousAddress))
-          .apply(vs.lodgingOfficer.getOrElse(VatLodgingOfficer.empty)) //TODO remove the "seeding" with empty
-      }
+      ) ( s4l => S4LVatLodgingOfficer.apiT.toApi(s4l, VatLodgingOfficer.empty)) //TODO remove the "seeding" with empty
 
     for {
       (vs, vlo) <- (getVatScheme() |@| s4l[S4LVatLodgingOfficer]()).tupled
@@ -230,15 +178,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     def merge(fresh: Option[S4LFlatRateScheme], vs: VatScheme): VatFlatRateScheme =
       fresh.fold(
         vs.vatFlatRateScheme.getOrElse(throw fail("VatFlatRateScheme"))
-      ) { s4l =>
-        update(s4l.joinFrs)
-          .andThen(update(s4l.annualCostsInclusive))
-          .andThen(update(s4l.annualCostsLimited))
-          .andThen(update(s4l.categoryOfBusiness))
-          .andThen(update(s4l.registerForFrs))
-          .andThen(update(s4l.frsStartDate))
-          .apply(vs.vatFlatRateScheme.getOrElse(VatFlatRateScheme()))
-      }
+      ) ( s4l => S4LFlatRateScheme.apiT.toApi(s4l, VatFlatRateScheme()) )
 
     for {
       (vs, frsa) <- (getVatScheme() |@| s4l[S4LFlatRateScheme]()).tupled
@@ -246,6 +186,9 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     } yield response
   }
 
+  // TODO PPOB breaks the pattern of previous submits
+  // this is because there is no field containing ppob in VatScheme
+  // the ppob data sits directly under VatSceme root
   def submitPpob()(implicit hc: HeaderCarrier): Future[ScrsAddress] = {
 
     def merge(fresh: Option[S4LPpob], vs: VatScheme): VatScheme =
