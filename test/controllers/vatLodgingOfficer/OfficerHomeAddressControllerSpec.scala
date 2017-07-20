@@ -119,7 +119,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
         _ redirectsTo s"$contextRoot/current-address-three-years-or-more"
       }
 
-      verify(mockS4LService).updateViewModel2(any(), any())(any(), any(), any(), any())
+      verify(mockS4LService).updateViewModel(any(), any())(any(), any(), any(), any())
     }
 
   }

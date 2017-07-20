@@ -91,7 +91,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
 
       val container = OptionT(s4l.fetchAndGet[G]()).getOrElseF(vrs.getVatScheme() map transformer.toS4LModel)
 
-      s4l.updateViewModel2(data, container)
+      s4l.updateViewModel(data, container)
     }
   }
 
