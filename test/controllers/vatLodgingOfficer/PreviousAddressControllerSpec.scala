@@ -107,7 +107,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
         _ redirectsTo s"$contextRoot/company-contact-details"
       }
 
-      verify(mockS4LService).updateViewModel2(any(), any())(any(), any(), any(), any())
+      verify(mockS4LService).updateViewModel(any(), any())(any(), any(), any(), any())
     }
 
   }

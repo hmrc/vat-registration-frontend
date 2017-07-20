@@ -57,7 +57,7 @@ trait S4LMockSugar {
                  k: S4LKey[G],
                  s4l: S4LService): Unit = {
       when(s4l.fetchAndGet[G]()(any(), any(), any())).thenReturn(None.pure)
-      when(s4l.updateViewModel2[T, G](any(), any())(any(), any(), any(), Matchers.eq(k))).thenReturn(dummyCacheMap.pure)
+      when(s4l.updateViewModel[T, G](any(), any())(any(), any(), any(), Matchers.eq(k))).thenReturn(dummyCacheMap.pure)
     }
   }
 

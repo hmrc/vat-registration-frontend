@@ -123,7 +123,7 @@ class PpobControllerSpec extends VatRegSpec
         _ redirectsTo s"$contextRoot/describe-what-company-does"
       }
 
-      verify(mockS4LService).updateViewModel2(any(), any())(any(), any(), any(), any())
+      verify(mockS4LService).updateViewModel(any(), any())(any(), any(), any(), any())
     }
 
   }
