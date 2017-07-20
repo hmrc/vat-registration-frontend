@@ -210,8 +210,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
         vs.lodgingOfficer.getOrElse(throw fail("VatLodgingOfficer"))
       ) { s4l =>
         update(s4l.officerHomeAddress)
-          .andThen(update(s4l.officerDateOfBirth))
-          .andThen(update(s4l.officerNino))
+          .andThen(update(s4l.officerSecurityQuestions))
           .andThen(update(s4l.completionCapacity))
           .andThen(update(s4l.officerContactDetails))
           .andThen(update(s4l.formerName))
