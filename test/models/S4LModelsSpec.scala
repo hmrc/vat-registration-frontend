@@ -381,7 +381,7 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
 
       val s4l = S4LVatLodgingOfficer(
         officerHomeAddress = Some(OfficerHomeAddressView(address.id, Some(address))),
-        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(dob = date, nino = NINO, officerName = Some(name))),
+        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(dob = date, nino = "nino", officerName = Some(name))),
         completionCapacity = Some(CompletionCapacityView(id = "id", completionCapacity = Some(CompletionCapacity(name, "role")))),
         officerContactDetails = Some(
           OfficerContactDetailsView(email = Some("email"), daytimePhone = Some("daytimePhone"), mobile = Some("mobile"))),
@@ -393,7 +393,7 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
       val expected = VatLodgingOfficer(
         currentAddress = address,
         dob = DateOfBirth(date),
-        nino = NINO,
+        nino = "nino",
         role = "role",
         name = name,
         changeOfName = ChangeOfName(nameHasChanged = true,

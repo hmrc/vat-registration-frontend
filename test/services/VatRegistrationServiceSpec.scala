@@ -307,7 +307,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.upsertVatLodgingOfficer(any(), any())(any(), any())).thenReturn(validLodgingOfficer.pure)
       save4laterReturns(S4LVatLodgingOfficer(
         officerHomeAddress = Some(OfficerHomeAddressView("")),
-        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.now, NINO)),
+        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.now, validNino)),
         completionCapacity = Some(CompletionCapacityView(""))
       ))
       service.submitVatLodgingOfficer() returns validLodgingOfficer

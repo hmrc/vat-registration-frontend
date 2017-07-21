@@ -48,7 +48,6 @@ trait VatRegistrationFixture {
   val notFound = new NotFoundException(NOT_FOUND.toString)
   val internalServiceException = new InternalServerException(BAD_GATEWAY.toString)
   val runTimeException = new RuntimeException("tst")
-  val NINO: String = "AA 12 34 56 C"
 
   val validHttpResponse = HttpResponse(OK)
 
@@ -117,6 +116,7 @@ trait VatRegistrationFixture {
   val changeOfName = ChangeOfName(true, None)
   val currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(ScrsAddress("", "")))
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
+  val validNino: String = "AA 12 34 56 C"
 
   val validLodgingOfficer = VatLodgingOfficer(
     ScrsAddress("", ""),
