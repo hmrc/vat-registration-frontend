@@ -17,7 +17,7 @@
 package models.api
 
 import fixtures.VatRegistrationFixture
-import play.api.libs.json.{JsSuccess, JsValue, Json, __}
+import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CompletionCapacitySpec extends UnitSpec with VatRegistrationFixture {

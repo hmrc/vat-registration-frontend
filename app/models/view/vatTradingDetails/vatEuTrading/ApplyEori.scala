@@ -16,8 +16,8 @@
 
 package models.view.vatTradingDetails.vatEuTrading
 
-import models.api.{VatTradingDetails, _}
-import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat, ViewModelTransformer}
+import models.api._
+import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class ApplyEori(yesNo: Boolean)
@@ -38,10 +38,6 @@ object ApplyEori {
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[ApplyEori] { vs: VatScheme =>
     vs.tradingDetails.flatMap(td => td.euTrading.eoriApplication).map(ApplyEori.apply)
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: ApplyEori, g: VatTradingDetails) =>
-    g.copy(euTrading = g.euTrading.copy(eoriApplication = Some(c.yesNo)))
   }
 
 }

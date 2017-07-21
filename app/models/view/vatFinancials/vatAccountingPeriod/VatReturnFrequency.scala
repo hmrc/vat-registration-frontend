@@ -16,8 +16,8 @@
 
 package models.view.vatFinancials.vatAccountingPeriod
 
-import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat, ViewModelTransformer}
+import models.api.VatScheme
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class VatReturnFrequency(frequencyType: String)
@@ -43,10 +43,6 @@ object VatReturnFrequency {
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer { (vs: VatScheme) =>
     vs.financials map (vf => VatReturnFrequency(vf.accountingPeriods.frequency))
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: VatReturnFrequency, g: VatFinancials) =>
-    g.copy(accountingPeriods = g.accountingPeriods.copy(frequency = c.frequencyType))
   }
 
 }

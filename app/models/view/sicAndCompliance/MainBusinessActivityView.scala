@@ -17,7 +17,7 @@
 package models.view.sicAndCompliance
 
 import models.api._
-import models.{ApiModelTransformer, ViewModelTransformer, _}
+import models.{ApiModelTransformer, _}
 import play.api.libs.json.Json
 
 case class MainBusinessActivityView(id: String, mainBusinessActivity: Option[SicCode] = None)
@@ -41,8 +41,4 @@ object MainBusinessActivityView {
         Some(SicCode(cc.mainBusinessActivity.id, cc.mainBusinessActivity.description, cc.mainBusinessActivity.displayDetails))))
   }
 
-  // return a new or updated VatLodgingOfficer from the CompleteCapacityView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: MainBusinessActivityView, g: VatSicAndCompliance) =>
-    c.mainBusinessActivity.fold(g)(businessActivity => g.copy(mainBusinessActivity = businessActivity))
-  }
 }

@@ -23,7 +23,7 @@ import cats.data.OptionT
 import cats.instances.FutureInstances
 import cats.syntax.ApplicativeSyntax
 import config.FrontendAuthConnector
-import models.{ApiModelTransformer, S4LKey, ViewModelFormat}
+import models.{ApiModelTransformer, S4LKey, S4LModelTransformer, ViewModelFormat}
 import play.api.Configuration
 import play.api.data.{Form, FormError}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -82,10 +82,17 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
   protected final class ViewModelUpdateHelper[T] {
     def apply[G](data: T)
                 (implicit s4l: S4LService,
+                 vrs: RegistrationService,
                  r: ViewModelFormat.Aux[T, G],
                  f: Format[G],
                  k: S4LKey[G],
-                 hc: HeaderCarrier): Future[CacheMap] = s4l.updateViewModel(data)
+                 transformer: S4LModelTransformer[G],
+                 hc: HeaderCarrier): Future[CacheMap] = {
+
+      val container = OptionT(s4l.fetchAndGet[G]()).getOrElseF(vrs.getVatScheme() map transformer.toS4LModel)
+
+      s4l.updateViewModel(data, container)
+    }
   }
 
   protected[controllers] def copyGlobalErrorsToFields[T](globalErrors: String*): Form[T] => Form[T] =

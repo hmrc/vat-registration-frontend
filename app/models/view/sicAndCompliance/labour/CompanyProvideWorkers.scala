@@ -16,8 +16,8 @@
 
 package models.view.sicAndCompliance.labour
 
-import models.api.{VatComplianceLabour, VatScheme, VatSicAndCompliance}
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
+import models.api.VatScheme
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class  CompanyProvideWorkers(yesNo: String)
@@ -41,10 +41,6 @@ object CompanyProvideWorkers {
     vs.vatSicAndCompliance.flatMap(_.labourCompliance).map { labourCompliance =>
       CompanyProvideWorkers(if (labourCompliance.labour) PROVIDE_WORKERS_YES else PROVIDE_WORKERS_NO)
     }
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: CompanyProvideWorkers, g: VatSicAndCompliance) =>
-    g.copy(labourCompliance = Some(VatComplianceLabour(c.yesNo == PROVIDE_WORKERS_YES)))
   }
 
 }

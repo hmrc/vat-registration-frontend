@@ -27,13 +27,9 @@ import models.api._
 import models.external.CoHoCompanyProfile
 import models.view.frs._
 import models.view.ppob.PpobView
-import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
-import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.financial._
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatFinancials.{EstimateVatTurnover, ZeroRatedSales}
 import models.view.vatLodgingOfficer._
-import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration, VoluntaryRegistrationReason}
+import models.view.vatTradingDetails.vatChoice.StartDateView
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._

@@ -16,12 +16,10 @@
 
 package models.view.vatLodgingOfficer
 
-import java.time.LocalDate
-
 import fixtures.VatRegistrationFixture
 import models.api._
 import models.external.Officer
-import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatLodgingOfficer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -48,24 +46,6 @@ class FormerNameViewSpec extends UnitSpec with VatRegistrationFixture with Insid
       ApiModelTransformer[FormerNameView].toViewModel(vs) shouldBe None
     }
 
-  }
-
-  "viewModelTransformer" should {
-    "update logical group with Former Name change true" in {
-      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, ChangeOfName(false, Some(FormerName(""))), currentOrPreviousAddress, validOfficerContactDetails)
-      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
-
-      ViewModelTransformer[FormerNameView, VatLodgingOfficer].
-        toApi(testFormerNameView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
-    }
-    "update logical group with Former Name change false" in {
-      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, ChangeOfName(false, Some(FormerName("Bob"))), currentOrPreviousAddress, validOfficerContactDetails)
-      val updatedVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, ChangeOfName(false, None), currentOrPreviousAddress, validOfficerContactDetails)
-      val testFormerNameView = FormerNameView(false, None)
-
-      ViewModelTransformer[FormerNameView, VatLodgingOfficer].
-        toApi(testFormerNameView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
-    }
   }
 
   "apply" should {

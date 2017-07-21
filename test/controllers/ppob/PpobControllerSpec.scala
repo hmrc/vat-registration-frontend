@@ -21,7 +21,6 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.api.ScrsAddress
 import models.view.ppob.PpobView
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{verify, when}
 import play.api.mvc.Call
@@ -124,8 +123,7 @@ class PpobControllerSpec extends VatRegSpec
         _ redirectsTo s"$contextRoot/describe-what-company-does"
       }
 
-      val expectedAddressView = PpobView(address.id, Some(address))
-      verify(mockS4LService).updateViewModel(Matchers.eq(expectedAddressView))(any(), any(), any(), any())
+      verify(mockS4LService).updateViewModel(any(), any())(any(), any(), any(), any())
     }
 
   }

@@ -16,8 +16,8 @@
 
 package models.view.vatFinancials
 
-import models.api.{VatFinancials, VatScheme}
-import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat, ViewModelTransformer}
+import models.api.VatScheme
+import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat}
 import play.api.libs.json.{Json, OFormat}
 
 case class VatChargeExpectancy(yesNo: String)
@@ -46,10 +46,6 @@ object VatChargeExpectancy {
       case true => VatChargeExpectancy(VAT_CHARGE_YES)
       case false => VatChargeExpectancy(VAT_CHARGE_NO)
     }
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: VatChargeExpectancy, g: VatFinancials) =>
-    g.copy(reclaimVatOnMostReturns = c.yesNo == VAT_CHARGE_YES)
   }
 
 }

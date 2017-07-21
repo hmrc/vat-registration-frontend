@@ -19,7 +19,7 @@ package models.view.vatTradingDetails.vatChoice
 import java.time.LocalDate
 
 import models._
-import models.api.{VatScheme, VatStartDate, VatTradingDetails}
+import models.api.{VatScheme, VatStartDate}
 import play.api.libs.json.Json
 
 import scala.util.Try
@@ -61,15 +61,6 @@ object StartDateView {
     vs.tradingDetails.map(_.vatChoice.vatStartDate).collect {
       case VatStartDate(dateType, d@_) => StartDateView(dateType, d)
     }
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: StartDateView, g: VatTradingDetails) =>
-    g.copy(
-      vatChoice = g.vatChoice.copy(
-        vatStartDate = g.vatChoice.vatStartDate.copy(
-          selection = c.dateType,
-          startDate = if (c.dateType == StartDateView.BUSINESS_START_DATE) c.ctActiveDate else c.date
-        )))
   }
 
 }
