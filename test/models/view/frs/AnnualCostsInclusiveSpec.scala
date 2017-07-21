@@ -18,29 +18,13 @@ package models.view.frs
 
 import fixtures.VatRegistrationFixture
 import models.api.VatFlatRateScheme
-import models.{ApiModelTransformer, S4LFlatRateScheme, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LFlatRateScheme}
 import org.scalatest.{Inspectors, Matchers}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class AnnualCostsInclusiveSpec extends UnitSpec with Matchers with Inspectors with VatRegistrationFixture {
 
   private val validationFunction = AnnualCostsInclusiveView.valid
-
-  "ViewModelTransformer" should {
-
-    "update VatFlatRateScheme with new AnnualCostsInclusiveView (answer YES)" in {
-      val transformed = ViewModelTransformer[AnnualCostsInclusiveView, VatFlatRateScheme]
-        .toApi(AnnualCostsInclusiveView(AnnualCostsInclusiveView.YES), VatFlatRateScheme(annualCostsInclusive = Some(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS)))
-      transformed.annualCostsInclusive shouldBe Some(AnnualCostsInclusiveView.YES)
-    }
-
-    "update VatFlatRateScheme with new AnnualCostsInclusiveView (answer NO)" in {
-      val transformed = ViewModelTransformer[AnnualCostsInclusiveView, VatFlatRateScheme]
-        .toApi(AnnualCostsInclusiveView(AnnualCostsInclusiveView.NO), VatFlatRateScheme(annualCostsInclusive = Some(AnnualCostsInclusiveView.YES)))
-      transformed.annualCostsInclusive shouldBe Some(AnnualCostsInclusiveView.NO)
-    }
-
-  }
 
   "ApiModelTransformer" should {
 

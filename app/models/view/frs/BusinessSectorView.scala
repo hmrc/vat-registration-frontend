@@ -49,7 +49,4 @@ object BusinessSectorView {
     } yield BusinessSectorView(sector, percentage)
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: BusinessSectorView, g: VatFlatRateScheme) =>
-    g.copy(categoryOfBusiness = Some(c.businessSector), percentage = Some(c.flatRatePercentage))
-  }
 }

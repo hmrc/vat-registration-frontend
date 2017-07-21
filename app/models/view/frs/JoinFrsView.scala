@@ -35,7 +35,4 @@ object JoinFrsView {
     vs.vatFlatRateScheme.map(_.joinFrs).map(JoinFrsView(_))
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: JoinFrsView, g: VatFlatRateScheme) =>
-    g.copy(joinFrs = c.selection)
-  }
 }

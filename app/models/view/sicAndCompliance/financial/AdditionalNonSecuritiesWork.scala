@@ -16,8 +16,8 @@
 
 package models.view.sicAndCompliance.financial
 
-import models.api.{VatScheme, VatSicAndCompliance}
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
+import models.api.VatScheme
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class AdditionalNonSecuritiesWork(yesNo: Boolean)
@@ -39,10 +39,6 @@ object AdditionalNonSecuritiesWork {
       fc <- vsc.financialCompliance
       answ <- fc.additionalNonSecuritiesWork
     } yield AdditionalNonSecuritiesWork(answ)
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: AdditionalNonSecuritiesWork, g: VatSicAndCompliance) =>
-    g.copy(financialCompliance = g.financialCompliance.map(_.copy(additionalNonSecuritiesWork = Some(c.yesNo))))
   }
 
 }

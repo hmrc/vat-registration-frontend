@@ -17,25 +17,10 @@
 package models.view.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatChoice, VatTradingDetails}
-import models.{S4LTradingDetails, ViewModelTransformer}
+import models.S4LTradingDetails
 import uk.gov.hmrc.play.test.UnitSpec
 
 class VoluntaryRegistrationSpec extends UnitSpec with VatRegistrationFixture {
-
-  "toApi" should {
-    "update VatTradingDetails with new VoluntaryRegistration (YES)" in {
-      val transformed = ViewModelTransformer[VoluntaryRegistration, VatTradingDetails]
-        .toApi(VoluntaryRegistration.yes, tradingDetails(necessity = VatChoice.NECESSITY_OBLIGATORY))
-      transformed.vatChoice.necessity shouldBe VatChoice.NECESSITY_VOLUNTARY
-    }
-
-    "update VatTradingDetails with new VoluntaryRegistration (NO)" in {
-      val transformed = ViewModelTransformer[VoluntaryRegistration, VatTradingDetails]
-        .toApi(VoluntaryRegistration.no, tradingDetails(necessity = VatChoice.NECESSITY_VOLUNTARY))
-      transformed.vatChoice.necessity shouldBe VatChoice.NECESSITY_OBLIGATORY
-    }
-  }
 
   "ViewModelFormat" should {
     val validVoluntaryRegistration = VoluntaryRegistration(VoluntaryRegistration.REGISTER_YES)

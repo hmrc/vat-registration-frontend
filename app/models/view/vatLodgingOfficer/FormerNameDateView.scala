@@ -22,8 +22,6 @@ import models._
 import models.api._
 import play.api.libs.json.Json
 
-import scala.util.Try
-
 case class FormerNameDateView(date: LocalDate)
 
 object FormerNameDateView {
@@ -47,13 +45,6 @@ object FormerNameDateView {
     vs.lodgingOfficer.flatMap(_.changeOfName.formerName).collect {
       case FormerName(_, Some(d)) => FormerNameDateView(d)
     }
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: FormerNameDateView, g: VatLodgingOfficer) =>
-    g.copy(changeOfName =
-      g.changeOfName.copy(formerName =
-        g.changeOfName.formerName.map(formerName =>
-          formerName.copy(dateOfNameChange = Some(c.date)))))
   }
 
 }

@@ -18,7 +18,7 @@ package models.view.frs
 
 import fixtures.VatRegistrationFixture
 import models.api._
-import models.{ApiModelTransformer, S4LFlatRateScheme, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LFlatRateScheme}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -40,17 +40,6 @@ class RegisterForFrsViewSpec extends UnitSpec with VatRegistrationFixture with I
     }
 
   }
-
-  "viewModelTransformer" should {
-    "update logical group given a component" in {
-      val initialAnswers: VatFlatRateScheme = VatFlatRateScheme(doYouWantToUseThisRate = Some(false))
-      val updatedAnswers: VatFlatRateScheme = VatFlatRateScheme(doYouWantToUseThisRate = Some(true))
-
-      ViewModelTransformer[RegisterForFrsView, VatFlatRateScheme]
-        .toApi(RegisterForFrsView(true), initialAnswers) shouldBe updatedAnswers
-    }
-  }
-
 
   "ViewModelFormat" should {
     val s4LFlatRateScheme: S4LFlatRateScheme = S4LFlatRateScheme(registerForFrs = Some(RegisterForFrsView(true)))
