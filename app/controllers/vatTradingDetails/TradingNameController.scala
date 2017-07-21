@@ -38,6 +38,6 @@ class TradingNameController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatTradingDetails.trading_name(badForm)).pure,
       goodForm => save(goodForm).map(_ =>
-        Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()))))
+        Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))))
 
 }
