@@ -48,6 +48,6 @@ class StartDateController @Inject()(startDateFormFactory: StartDateFormFactory, 
     startDateFormFactory.form().bindFromRequest().fold(
       badForm => BadRequest(start_date(badForm)).pure,
       goodForm => populateCtActiveDate(goodForm).flatMap(vm => save(vm)).map(_ =>
-        Redirect(controllers.vatTradingDetails.routes.TradingNameController.show()))))
+        Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))))
 
 }

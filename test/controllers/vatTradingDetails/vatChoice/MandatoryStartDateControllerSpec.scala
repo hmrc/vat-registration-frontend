@@ -16,11 +16,12 @@
 
 package controllers.vatTradingDetails.vatChoice
 
+import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
-class MandatoryStartDateControllerSpec extends VatRegSpec {
+class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   object MandatoryStartDateController extends MandatoryStartDateController(mockS4LService, ds) {
     override val authConnector = mockAuthConnector
@@ -43,10 +44,11 @@ class MandatoryStartDateControllerSpec extends VatRegSpec {
 
   s"POST ${routes.MandatoryStartDateController.submit()}" should {
 
-    "redirect the user to the trading name page after clicking continue on the mandatory start date confirmation page" in {
+    "redirect the user to the bank account page after clicking continue on the mandatory start date confirmation page" in {
       callAuthorised(MandatoryStartDateController.submit) {
         result =>
           status(result) mustBe SEE_OTHER
+          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/business-bank-account"
       }
     }
   }

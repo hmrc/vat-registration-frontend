@@ -28,6 +28,6 @@ class MandatoryStartDateController @Inject()(s4LService: S4LService, ds: CommonP
     Ok(views.html.pages.vatTradingDetails.vatChoice.mandatory_start_date_confirmation()))
 
   def submit: Action[AnyContent] = authorised(implicit user => implicit request =>
-    Redirect(controllers.vatTradingDetails.routes.TradingNameController.show()))
+    Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))
 
 }
