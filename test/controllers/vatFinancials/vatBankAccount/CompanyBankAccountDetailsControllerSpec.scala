@@ -16,9 +16,12 @@
 
 package controllers.vatFinancials.vatBankAccount
 
+import connectors.KeystoreConnector
 import controllers.vatFinancials
+import controllers.vatFinancials.EstimateVatTurnoverKey
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -28,6 +31,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
 
   object Controller extends CompanyBankAccountDetailsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show())
@@ -87,14 +91,53 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
   }
 
 
-  s"POST ${vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.submit()} with valid Company Bank Account Details" should {
+  s"POST ${vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.submit()} " +
+    s"with valid Company Bank Account Details and turnover estimate less than threshold" should {
 
-    "return 303" in {
+    "redirect to start of FRS flow" in {
       save4laterExpectsSave[CompanyBankAccountDetails]()
-
+      save4laterReturnsViewModel(EstimateVatTurnover(149000L))()
+      when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+      mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
+      when(mockVatRegistrationService.conditionalDeleteElement(any(), any())(any())).thenReturn(().pure)
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
-        _ redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months"
+        _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
+      }
+    }
+
+  }
+
+  s"POST ${vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.submit()} " +
+    s"with valid Company Bank Account Details and turnover estimate greater than threshold" should {
+
+    "redirect to summary" in {
+      save4laterExpectsSave[CompanyBankAccountDetails]()
+      save4laterReturnsViewModel(EstimateVatTurnover(151000))()
+      when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+      mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
+      when(mockVatRegistrationService.conditionalDeleteElement(any(), any())(any())).thenReturn(().pure)
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
+        _ redirectsTo s"$contextRoot/check-your-answers"
+      }
+    }
+
+  }
+
+  s"POST ${vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.submit()} " +
+    s"with valid Company Bank Account Details and no turnover estimate found" should {
+
+    "redirect to start of FRS flow" in {
+      save4laterExpectsSave[CompanyBankAccountDetails]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+      save4laterReturnsNoViewModel[EstimateVatTurnover]()
+      when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+      mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
+      when(mockVatRegistrationService.conditionalDeleteElement(any(), any())(any())).thenReturn(().pure)
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
+        _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
       }
     }
 
@@ -105,7 +148,6 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
     "return 400" in {
       save4laterExpectsSave[CompanyBankAccountDetails]()
       val invalidFormData = validBankAccountFormData.drop(1)
-
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(invalidFormData: _*))(_ isA 400)
     }
 
