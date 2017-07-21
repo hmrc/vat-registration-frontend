@@ -21,13 +21,13 @@ import java.time.LocalDate
 import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
 import forms.FormValidation._
 import models.DateModel
-import models.view.vatLodgingOfficer.OfficerDateOfBirthView
+import models.view.vatLodgingOfficer.OfficerSecurityQuestionsView
 import play.api.data.Form
 import play.api.data.Forms.{mapping, text}
 
-object OfficerDateOfBirthForm {
+object OfficerSecurityQuestionsForm {
 
-  implicit val errorCode: ErrorCode = "officerDOB"
+  val NINO_REGEX = """^[[A-Z]&&[^DFIQUV]][[A-Z]&&[^DFIQUVO]] ?\d{2} ?\d{2} ?\d{2} ?[A-D]{1}$""".r
 
   implicit object LocalDateOrdering extends Ordering[LocalDate] {
     override def compare(x: LocalDate, y: LocalDate): Int = x.compareTo(y)
@@ -38,11 +38,19 @@ object OfficerDateOfBirthForm {
 
   val form = Form(
     mapping (
-      "dob" -> mapping(
-        "day" -> text,
-        "month" -> text,
-        "year" -> text
-      )(DateModel.apply)(DateModel.unapply).verifying(nonEmptyDateModel(validDateModel(inRange(minDate, maxDate))))
-    ) (OfficerDateOfBirthView.bind)(OfficerDateOfBirthView.unbind)
+      "dob" -> {
+        implicit val errorCodeDob: ErrorCode = "security.questions.dob"
+        mapping(
+          "day" -> text,
+          "month" -> text,
+          "year" -> text
+        )(DateModel.apply)(DateModel.unapply).verifying(nonEmptyDateModel(validDateModel(inRange(minDate, maxDate))))
+      }
+      ,
+      "nino" -> {
+        implicit val errorCodeNino: ErrorCode = "security.questions.nino"
+        text.verifying(nonEmptyValidText(NINO_REGEX))
+      }
+    ) (OfficerSecurityQuestionsView.bind)(OfficerSecurityQuestionsView.unbind)
   )
 }

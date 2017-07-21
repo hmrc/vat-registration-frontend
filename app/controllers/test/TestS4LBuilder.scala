@@ -217,8 +217,7 @@ class TestS4LBuilder {
     S4LVatLodgingOfficer(
       previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
       officerHomeAddress = homeAddress.map(a => OfficerHomeAddressView(a.id, Some(a))),
-      officerDateOfBirth = dob.map(OfficerDateOfBirthView(_, completionCapacity.map(_.name))),
-      officerNino = nino.map(OfficerNinoView(_)),
+      officerSecurityQuestions = dob.map(OfficerSecurityQuestionsView(_, nino.getOrElse(""), completionCapacity.map(_.name))),
       completionCapacity = completionCapacity.map(CompletionCapacityView(_)),
       officerContactDetails = contactDetails.map(OfficerContactDetailsView(_)),
       formerName = formerName,
