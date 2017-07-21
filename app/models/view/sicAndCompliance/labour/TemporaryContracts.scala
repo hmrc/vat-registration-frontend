@@ -16,8 +16,8 @@
 
 package models.view.sicAndCompliance.labour
 
-import models.api.{VatScheme, VatSicAndCompliance}
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
+import models.api.VatScheme
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class TemporaryContracts(yesNo: String)
@@ -43,10 +43,6 @@ object TemporaryContracts {
       lc <- vsc.labourCompliance
       tc <- lc.temporaryContracts
     } yield TemporaryContracts(if (tc) TEMP_CONTRACTS_YES else TEMP_CONTRACTS_NO)
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: TemporaryContracts, g: VatSicAndCompliance) =>
-    g.copy(labourCompliance = g.labourCompliance.map(_.copy(temporaryContracts = Some(c.yesNo == TEMP_CONTRACTS_YES))))
   }
 
 }

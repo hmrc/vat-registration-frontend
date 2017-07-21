@@ -17,7 +17,7 @@
 package models.view.vatLodgingOfficer
 
 import models._
-import models.api.{ScrsAddress, VatLodgingOfficer, VatScheme}
+import models.api.{ScrsAddress, VatScheme}
 import play.api.libs.json.Json
 
 case class OfficerHomeAddressView(addressId: String, address: Option[ScrsAddress] = None)
@@ -37,11 +37,6 @@ object OfficerHomeAddressView {
     vs.lodgingOfficer.map(_.currentAddress).collect {
       case address => OfficerHomeAddressView(address.id, Some(address))
     }
-  }
-
-  // return a new or updated VatLodgingOfficer from the CurrentAddressView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerHomeAddressView, g: VatLodgingOfficer) =>
-    c.address.fold(g)(address => g.copy(currentAddress = address))
   }
 
 }

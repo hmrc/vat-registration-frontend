@@ -71,8 +71,8 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
 
 
     "a real Ppob value should be returned expected test value for Ppob" in {
-      import cats.syntax.show._
       import ScrsAddress.htmlShow._
+      import cats.syntax.show._
       val builder = SummaryCompanyContactDetailsSectionBuilder(Some(vatContact), Some(scrsAddress))
       builder.ppobRow mustBe
         SummaryRow(

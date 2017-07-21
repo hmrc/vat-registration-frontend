@@ -22,7 +22,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class FormattersSpec extends UnitSpec with Inspectors {
 
-
   "NINO" should {
     "be formatted correctly" in {
       Formatters.ninoFormatter("AB123456X") shouldBe "AB 12 34 56 X"

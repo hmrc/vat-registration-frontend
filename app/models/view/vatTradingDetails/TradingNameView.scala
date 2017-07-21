@@ -17,7 +17,7 @@
 package models.view.vatTradingDetails
 
 import models.api.{TradingName, VatEuTrading, VatScheme, VatTradingDetails}
-import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class TradingNameView(
@@ -47,10 +47,6 @@ object TradingNameView {
         TradingNameView(TRADING_NAME_YES, Some(tn))
       case _ => TradingNameView(TRADING_NAME_NO)
     }
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: TradingNameView, g: VatTradingDetails) =>
-    g.copy(tradingName = models.api.TradingName(c.yesNo == TRADING_NAME_YES, c.tradingName))
   }
 
 }

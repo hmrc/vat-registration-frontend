@@ -20,7 +20,6 @@ import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api._
 import models.view.SummaryRow
-import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 
 class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 

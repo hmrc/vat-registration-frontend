@@ -17,33 +17,11 @@
 package models.view.sicAndCompliance.cultural
 
 import fixtures.VatRegistrationFixture
-import models.api.{SicCode, VatComplianceCultural, VatSicAndCompliance}
-import models.view.sicAndCompliance.cultural.NotForProfit.NOT_PROFIT_NO
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelTransformer}
+import models.api.VatComplianceCultural
+import models.{ApiModelTransformer, S4LVatSicAndCompliance}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class NotForProfitSpec extends UnitSpec with VatRegistrationFixture {
-
-  "toApi" should {
-    val notForProfit = NotForProfit(NOT_PROFIT_NO)
-
-    val vatSicAndCompliance = VatSicAndCompliance(
-      businessDescription = businessActivityDescription,
-      culturalCompliance = Some(VatComplianceCultural(true)),
-      mainBusinessActivity = SicCode("","","")
-    )
-
-    val differentSicAndCompliance = VatSicAndCompliance(
-      businessDescription = businessActivityDescription,
-      culturalCompliance = Some(VatComplianceCultural(false)),
-      mainBusinessActivity = SicCode("","","")
-    )
-
-    "update VatSicAndCompliance with new NotForProfit" in {
-      ViewModelTransformer[NotForProfit, VatSicAndCompliance]
-        .toApi(notForProfit, vatSicAndCompliance) shouldBe differentSicAndCompliance
-    }
-  }
 
   "apply" should {
 

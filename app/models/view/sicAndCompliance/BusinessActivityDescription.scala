@@ -17,7 +17,7 @@
 package models.view.sicAndCompliance
 
 import models._
-import models.api.{VatScheme, VatSicAndCompliance}
+import models.api.VatScheme
 import play.api.libs.json.Json
 
 case class BusinessActivityDescription(description: String)
@@ -36,10 +36,6 @@ object BusinessActivityDescription {
     vs.vatSicAndCompliance.map(_.businessDescription).collect {
       case description => BusinessActivityDescription(description)
     }
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: BusinessActivityDescription, g: VatSicAndCompliance) =>
-    g.copy(businessDescription = c.description)
   }
 
 }

@@ -16,20 +16,16 @@
 
 package models.api
 
-import java.time.LocalDate
-
 import play.api.libs.json.{Json, OFormat}
 
-case class VatLodgingOfficer(
-                              currentAddress: ScrsAddress,
+case class VatLodgingOfficer(currentAddress: ScrsAddress,
                               dob: DateOfBirth,
                               nino: String,
                               role: String,
                               name: Name,
                               changeOfName: ChangeOfName,
                               currentOrPreviousAddress : CurrentOrPreviousAddress,
-                              contact: OfficerContactDetails
-                            )
+                              contact: OfficerContactDetails)
 
 object VatLodgingOfficer {
   implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
