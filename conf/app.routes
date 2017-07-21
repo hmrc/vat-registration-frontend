@@ -150,12 +150,8 @@ POST        /your-home-address                                                  
 GET         /your-home-address/acceptFromTxm                                                   controllers.vatLodgingOfficer.OfficerHomeAddressController.acceptFromTxm(id: String ?= "")
 
 ## OFFICER DOB PAGE
-GET         /your-date-of-birth                                                                controllers.vatLodgingOfficer.OfficerDateOfBirthController.show
-POST        /your-date-of-birth                                                                controllers.vatLodgingOfficer.OfficerDateOfBirthController.submit
-
-## OFFICER NINO PAGE
-GET         /your-national-insurance-number                                                    controllers.vatLodgingOfficer.OfficerNinoController.show
-POST        /your-national-insurance-number                                                    controllers.vatLodgingOfficer.OfficerNinoController.submit
+GET         /pass-security                                                                     controllers.vatLodgingOfficer.OfficerSecurityQuestionsController.show
+POST        /pass-security                                                                     controllers.vatLodgingOfficer.OfficerSecurityQuestionsController.submit
 
 ## COMPLETION CAPACITY PAGE
 GET         /who-is-registering-the-company-for-vat                                            controllers.vatLodgingOfficer.CompletionCapacityController.show

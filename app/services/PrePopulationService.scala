@@ -88,7 +88,7 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
       for {
         completionCapacityView <- s4l.completionCapacity
         cc <- completionCapacityView.completionCapacity
-      } yield Officer(cc.name, cc.role, s4l.officerDateOfBirth.map(_.dob).map(DateOfBirth.apply)))
+      } yield Officer(cc.name, cc.role, s4l.officerSecurityQuestions.map(_.dob).map(DateOfBirth.apply)))
     val officerFromBE = OptionT(vrs.getVatScheme() map ApiModelTransformer[OfficerView].toViewModel).map(_.officer)
 
     for {

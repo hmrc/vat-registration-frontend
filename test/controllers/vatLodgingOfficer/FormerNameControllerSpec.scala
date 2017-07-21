@@ -80,7 +80,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
       submitAuthorised(TestFormerNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "formerNameRadio" -> "false"
       )) {
-        _ redirectsTo s"$contextRoot/your-date-of-birth"
+        _ redirectsTo s"$contextRoot/pass-security"
       }
 
     }

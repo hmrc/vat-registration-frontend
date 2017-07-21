@@ -26,7 +26,7 @@ import helpers.{S4LMockSugar, VatRegSpec}
 import models.api._
 import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
 import models.view.ppob.PpobView
-import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerDateOfBirthView, OfficerHomeAddressView}
+import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerHomeAddressView, OfficerSecurityQuestionsView}
 import models.{S4LPpob, S4LVatLodgingOfficer}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -159,7 +159,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
       when(mockIIService.getOfficerList()).thenReturn(Seq.empty[Officer].pure)
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
       save4laterReturns(S4LVatLodgingOfficer(completionCapacity = Some(completeCapacityView),
-        officerDateOfBirth = Some(OfficerDateOfBirthView(LocalDate.of(1999,1,1)))))
+        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.of(1999,1,1), ""))))
 
       service.getOfficerList() returns Seq(officer)
     }
