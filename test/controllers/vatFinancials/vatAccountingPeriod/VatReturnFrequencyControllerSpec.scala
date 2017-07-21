@@ -18,9 +18,12 @@ package controllers.vatFinancials.vatAccountingPeriod
 
 import connectors.KeystoreConnector
 import controllers.vatFinancials
+import controllers.vatFinancials.EstimateVatTurnoverKey
 import fixtures.VatRegistrationFixture
 import forms.vatFinancials.vatAccountingPeriod.VatReturnFrequencyForm
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.S4LTradingDetails
+import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import org.mockito.Matchers.any
@@ -94,6 +97,53 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
         verify(mockVatRegistrationService).submitVatFinancials()(any())
       }
 
+      "voluntary registration is yes" in {
+        save4laterReturnsViewModel(VoluntaryRegistration.yes)()
+        save4laterExpectsSave[VatReturnFrequency]()
+        save4laterExpectsSave[AccountingPeriod]()
+
+        when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+        when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+
+        submitAuthorised(Controller.submit(),
+          fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
+          _ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be"
+        }
+
+        verify(mockVatRegistrationService).submitVatFinancials()(any())
+      }
+
+      "no voluntary registration view model exists" in {
+        when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+        save4laterExpectsSave[VatReturnFrequency]()
+        save4laterExpectsSave[AccountingPeriod]()
+        save4laterReturnsNoViewModel[VoluntaryRegistration]()
+
+        when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+        when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+
+        submitAuthorised(Controller.submit(),
+          fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
+          _ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be"
+        }
+
+        verify(mockVatRegistrationService).submitVatFinancials()(any())
+      }
+
+
+    }
+  }
+
+  s"POST ${vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Quarterly" should {
+
+    "return 303" in {
+      save4laterExpectsSave[VatReturnFrequency]()
+      save4laterExpectsSave[AccountingPeriod]()
+
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.QUARTERLY)) {
+        _ redirectsTo s"$contextRoot/vat-return-periods-end"
+      }
     }
   }
 

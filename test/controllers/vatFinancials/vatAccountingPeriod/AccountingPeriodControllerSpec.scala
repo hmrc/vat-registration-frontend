@@ -91,10 +91,38 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
         }
       }
 
+      "voluntary registration is yes" in {
+        forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
+          accountingPeriod =>
+            save4laterReturnsViewModel(VoluntaryRegistration.yes)()
+            save4laterExpectsSave[AccountingPeriod]()
+            when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+            when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
+
+            submitAuthorised(Controller.submit(),
+              fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
+              _ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be"
+            }
+        }
+      }
+
+      "no voluntary registration view model exists" in {
+        forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
+          accountingPeriod =>
+            when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+            save4laterExpectsSave[AccountingPeriod]()
+            save4laterReturnsNoViewModel[VoluntaryRegistration]()
+            when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+            when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
+
+            submitAuthorised(Controller.submit(),
+              fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
+              _ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be"
+            }
+        }
+      }
 
     }
-
-
 
   }
 }
