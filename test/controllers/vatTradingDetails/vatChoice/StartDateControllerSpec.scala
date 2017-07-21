@@ -131,7 +131,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/trading-name"
+          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/business-bank-account"
       }
     }
 
@@ -144,7 +144,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/trading-name"
+          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/business-bank-account"
       }
     }
 
@@ -161,7 +161,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/trading-name"
+          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/business-bank-account"
       }
     }
   }
