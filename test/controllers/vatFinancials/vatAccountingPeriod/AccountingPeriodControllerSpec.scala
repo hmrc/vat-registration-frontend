@@ -18,11 +18,10 @@ package controllers.vatFinancials.vatAccountingPeriod
 
 import connectors.KeystoreConnector
 import controllers.vatFinancials
-import controllers.vatFinancials.EstimateVatTurnoverKey
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod
+import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -75,58 +74,27 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   }
 
   s"POST ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.submit()} with any accounting period selected" should {
-    "redirect to summary page" when {
-      "estimated vat turnover greater than 150k" in {
+    "redirect to mandatory start date page" when {
+
+      "voluntary registration is no" in {
         forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
           accountingPeriod =>
-            save4laterReturnsViewModel(EstimateVatTurnover(200000L))() //above the 150k threshold
+            save4laterReturnsViewModel(VoluntaryRegistration.no)()
             save4laterExpectsSave[AccountingPeriod]()
             when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
             when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
-            mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
 
             submitAuthorised(Controller.submit(),
               fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
-              _ redirectsTo s"$contextRoot/check-your-answers"
+              _ redirectsTo s"$contextRoot/vat-start-date"
             }
         }
       }
+
+
     }
 
-    "redirect to start of FRS Flow" when {
-      "estimated vat turnover less than 150k" in {
-        forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
-          accountingPeriod =>
-            save4laterReturnsViewModel(EstimateVatTurnover(100000L))() //below the 150k threshold
-            save4laterExpectsSave[AccountingPeriod]()
-            when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
-            when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
-            mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
 
-            submitAuthorised(Controller.submit(),
-              fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
-              _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
-            }
-        }
-      }
 
-      "estimated vat turnover can't be determined" in {
-        forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
-          accountingPeriod =>
-            save4laterExpectsSave[AccountingPeriod]()
-            when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
-            when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
-            save4laterReturnsNoViewModel[EstimateVatTurnover]()
-            when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
-            mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
-
-            submitAuthorised(Controller.submit(),
-              fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
-              _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
-            }
-        }
-      }
-
-    }
   }
 }
