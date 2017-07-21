@@ -294,8 +294,7 @@ object S4LVatEligibility {
 final case class S4LVatLodgingOfficer
 (
   officerHomeAddress: Option[OfficerHomeAddressView] = None,
-  officerDateOfBirth: Option[OfficerDateOfBirthView] = None,
-  officerNino: Option[OfficerNinoView] = None,
+  officerSecurityQuestions: Option[OfficerSecurityQuestionsView] = None,
   completionCapacity: Option[CompletionCapacityView] = None,
   officerContactDetails: Option[OfficerContactDetailsView] = None,
   formerName: Option[FormerNameView] = None,
@@ -306,12 +305,12 @@ final case class S4LVatLodgingOfficer
 object S4LVatLodgingOfficer {
   implicit val format: OFormat[S4LVatLodgingOfficer] = Json.format[S4LVatLodgingOfficer]
 
+
   implicit val modelT = new S4LModelTransformer[S4LVatLodgingOfficer] {
     override def toS4LModel(vs: VatScheme): S4LVatLodgingOfficer =
       S4LVatLodgingOfficer(
         officerHomeAddress = ApiModelTransformer[OfficerHomeAddressView].toViewModel(vs),
-        officerDateOfBirth = ApiModelTransformer[OfficerDateOfBirthView].toViewModel(vs),
-        officerNino = ApiModelTransformer[OfficerNinoView].toViewModel(vs),
+        officerSecurityQuestions = ApiModelTransformer[OfficerSecurityQuestionsView].toViewModel(vs),
         completionCapacity = ApiModelTransformer[CompletionCapacityView].toViewModel(vs),
         officerContactDetails = ApiModelTransformer[OfficerContactDetailsView].toViewModel(vs),
         formerName = ApiModelTransformer[FormerNameView].toViewModel(vs),
@@ -324,8 +323,8 @@ object S4LVatLodgingOfficer {
     override def toApi(c: S4LVatLodgingOfficer, g: VatLodgingOfficer): VatLodgingOfficer =
       g.copy(
         currentAddress = c.officerHomeAddress.flatMap(_.address).getOrElse(g.currentAddress),
-        dob = c.officerDateOfBirth.map(d => DateOfBirth(d.dob)).getOrElse(g.dob),
-        nino = c.officerNino.map(n => n.nino).getOrElse(g.nino),
+        dob = c.officerSecurityQuestions.map(d => DateOfBirth(d.dob)).getOrElse(g.dob),
+        nino = c.officerSecurityQuestions.map(n => n.nino).getOrElse(g.nino),
         role = c.completionCapacity.flatMap(_.completionCapacity.map(_.role)).getOrElse(g.role),
         name = c.completionCapacity.flatMap(_.completionCapacity.map(_.name)).getOrElse(g.name),
 

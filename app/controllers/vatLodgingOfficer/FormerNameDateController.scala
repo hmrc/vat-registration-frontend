@@ -42,6 +42,6 @@ extends VatRegistrationController(ds) with FlatMapSyntax with CommonService {
       form.bindFromRequest().fold(
         badForm => viewModel[FormerNameView]().subflatMap(_.formerName).getOrElse("")
           .map(formerName => BadRequest(views.html.pages.vatLodgingOfficer.former_name_date(badForm, formerName))) ,
-          data => save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show()))))
+          data => save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show()))))
 
 }
