@@ -18,7 +18,6 @@ package controllers.frs
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.api.SicCode
 import models.view.frs.BusinessSectorView
 import models.view.sicAndCompliance.MainBusinessActivityView
 import org.mockito.Matchers.any

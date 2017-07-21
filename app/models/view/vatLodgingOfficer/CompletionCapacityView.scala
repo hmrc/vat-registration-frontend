@@ -16,8 +16,8 @@
 
 package models.view.vatLodgingOfficer
 
-import models.api.{CompletionCapacity, VatLodgingOfficer, VatScheme}
-import models.{ApiModelTransformer, ViewModelTransformer, _}
+import models.api.{CompletionCapacity, VatScheme}
+import models.{ApiModelTransformer, _}
 import play.api.libs.json.Json
 
 case class CompletionCapacityView(id: String, completionCapacity: Option[CompletionCapacity] = None)
@@ -39,8 +39,4 @@ object CompletionCapacityView {
     vs.lodgingOfficer.map(cc => CompletionCapacityView(cc.name.id, Some(CompletionCapacity(cc.name, cc.role))))
   }
 
-  // return a new or updated VatLodgingOfficer from the CompleteCapacityView instance
-  implicit val viewModelTransformer = ViewModelTransformer { (c: CompletionCapacityView, g: VatLodgingOfficer) =>
-    g.copy(name = c.completionCapacity.getOrElse(CompletionCapacity.empty).name, role = c.completionCapacity.getOrElse(CompletionCapacity.empty).role)
-  }
 }

@@ -46,8 +46,4 @@ object AnnualCostsLimitedView {
     }
   }
 
-  implicit val viewModelTransformer = ViewModelTransformer { (c: AnnualCostsLimitedView, g: VatFlatRateScheme) =>
-    g.copy(annualCostsLimited = Some(c.selection))
-  }
-
 }

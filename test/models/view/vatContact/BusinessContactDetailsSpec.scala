@@ -18,25 +18,11 @@ package models.view.vatContact
 
 import fixtures.VatRegistrationFixture
 import models.api.{VatContact, VatDigitalContact}
-import models.{ApiModelTransformer, S4LVatContact, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatContact}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
 class BusinessContactDetailsSpec extends UnitSpec with VatRegistrationFixture with Inside {
-
-  "toApi" should {
-    val initialVatContact = VatContact(VatDigitalContact(email = "initial@com", tel = None, mobile = None), website = None)
-
-    val newBusinessContactDetails =
-      BusinessContactDetails(email = "asd@xyz", daytimePhone = Some("123"), mobile = Some("123"), website = Some("qwe.com"))
-
-    val updatedVatContact = VatContact(VatDigitalContact(email = "asd@xyz", tel = Some("123"), mobile = Some("123")), Some("qwe.com"))
-
-    "update VatContact with new BusinessContactDetails" in {
-      ViewModelTransformer[BusinessContactDetails, VatContact]
-        .toApi(newBusinessContactDetails, initialVatContact) shouldBe updatedVatContact
-    }
-  }
 
   "apply" should {
 

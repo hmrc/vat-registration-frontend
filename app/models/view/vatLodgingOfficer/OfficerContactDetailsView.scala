@@ -17,7 +17,7 @@
 package models.view.vatLodgingOfficer
 
 import models.api._
-import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelFormat, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelFormat}
 import play.api.libs.json.{Json, OFormat}
 
 case class OfficerContactDetailsView(
@@ -45,10 +45,6 @@ object OfficerContactDetailsView {
       case OfficerContactDetails(e,t,m) =>
         OfficerContactDetailsView(email = e, daytimePhone = t, mobile = m)
     }
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: OfficerContactDetailsView, g: VatLodgingOfficer) =>
-    g.copy(contact = OfficerContactDetails(c.email, c.daytimePhone, c.mobile))
   }
 
 }

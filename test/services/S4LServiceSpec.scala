@@ -118,10 +118,11 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
 
     val cacheMap = CacheMap("id", Map())
     val testView = TestView("test")
+    val testGroup = TestGroup()
 
     "fail with an exception when registration ID cannot be found in keystore" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", None)
-      service.updateViewModel[TestView, TestGroup](testView) failedWith classOf[RegistrationIdNotFoundException]
+      service.updateViewModel[TestView, TestGroup](testView, testGroup.pure) failedWith classOf[RegistrationIdNotFoundException]
     }
 
     "save test view in appropriate container object in Save 4 Later" when {
@@ -131,7 +132,7 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
         when(mockS4LConnector.fetchAndGet[TestGroup](=~=(validRegId), =~=(key))(any(), any())).thenReturn(Option.empty.pure)
         when(mockS4LConnector.save(=~=(validRegId), =~=(key), any())(any(), any())).thenReturn(cacheMap.pure)
 
-        service.updateViewModel[TestView, TestGroup](testView) returns cacheMap
+        service.updateViewModel[TestView, TestGroup](testView, testGroup.pure) returns cacheMap
         verify(mockS4LConnector).save(validRegId, key, TestGroup(Some(testView)))
       }
 
@@ -140,7 +141,7 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
         when(mockS4LConnector.fetchAndGet[TestGroup](=~=(validRegId), =~=(key))(any(), any())).thenReturn(Option(TestGroup()).pure)
         when(mockS4LConnector.save(=~=(validRegId), =~=(key), any())(any(), any())).thenReturn(cacheMap.pure)
 
-        service.updateViewModel[TestView, TestGroup](testView) returns cacheMap
+        service.updateViewModel[TestView, TestGroup](testView, testGroup.pure) returns cacheMap
         verify(mockS4LConnector).save(validRegId, key, TestGroup(Some(testView)))
       }
 
@@ -150,7 +151,7 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
           .thenReturn(Option(TestGroup(Some(TestView("oldProperty")))).pure)
         when(mockS4LConnector.save(=~=(validRegId), =~=(key), any())(any(), any())).thenReturn(cacheMap.pure)
 
-        service.updateViewModel[TestView, TestGroup](testView) returns cacheMap
+        service.updateViewModel[TestView, TestGroup](testView, testGroup.pure) returns cacheMap
         verify(mockS4LConnector).save(validRegId, key, TestGroup(Some(testView)))
       }
     }

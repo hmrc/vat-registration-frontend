@@ -16,16 +16,15 @@
 
 package controllers
 
+import cats.data.OptionT
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.VatRegistrationService
+
 import scala.concurrent.Future
-import cats.data.OptionT
 
 class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistrationFixture {
 

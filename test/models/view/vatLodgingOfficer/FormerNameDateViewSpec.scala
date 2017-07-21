@@ -21,7 +21,7 @@ import java.time.LocalDate
 import fixtures.VatRegistrationFixture
 import models.api._
 import models.external.Officer
-import models.{ApiModelTransformer, DateModel, S4LVatLodgingOfficer, ViewModelTransformer}
+import models.{ApiModelTransformer, DateModel, S4LVatLodgingOfficer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -75,33 +75,6 @@ class FormerNameDateViewSpec extends UnitSpec with VatRegistrationFixture with I
       ApiModelTransformer[FormerNameDateView].toViewModel(vs) shouldBe None
     }
 
-  }
-
-  "viewModelTransformer" should {
-    "update logical group given a component" in {
-      val initialVatLodgingOfficer = VatLodgingOfficer(
-        currentAddress = address,
-        dob = DateOfBirth.empty,
-        nino = "",
-        role = "",
-        name = Name.empty,
-        changeOfName = ChangeOfName(true, Some(FormerName("Bob"))),
-        currentOrPreviousAddress = currentOrPreviousAddress,
-        contact = validOfficerContactDetails)
-
-      val updatedVatLodgingOfficer = VatLodgingOfficer(
-        currentAddress = address,
-        dob = DateOfBirth.empty,
-        nino = "",
-        role = "",
-        name = Name.empty,
-        changeOfName = changeOfName,
-        currentOrPreviousAddress = currentOrPreviousAddress,
-        contact = validOfficerContactDetails)
-
-      ViewModelTransformer[FormerNameDateView, VatLodgingOfficer].
-        toApi(testFormerNameDateView, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
-    }
   }
 
   "apply" should {

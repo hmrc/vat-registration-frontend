@@ -17,7 +17,7 @@
 package models.view.sicAndCompliance.financial
 
 import models.api._
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class AdviceOrConsultancy(yesNo: Boolean)
@@ -37,15 +37,6 @@ object AdviceOrConsultancy {
     vs.vatSicAndCompliance.flatMap(_.financialCompliance).map { financialCompliance =>
       AdviceOrConsultancy(financialCompliance.adviceOrConsultancyOnly)
     }
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: AdviceOrConsultancy, g: VatSicAndCompliance) =>
-    /*TODO: This works as the user will always see question 2, but ideally we don't want to be defaulting
-      the 2nd question to false here in case they somehow manage to avoid it, may need looking into*/
-
-    g.copy(financialCompliance = Some(VatComplianceFinancial(
-                                      adviceOrConsultancyOnly = c.yesNo,
-                                      g.financialCompliance.map(_.actAsIntermediary).getOrElse(false))))
   }
 
 }

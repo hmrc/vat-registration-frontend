@@ -17,31 +17,14 @@
 package models.view.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
-import models.api.VatTradingDetails
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason.{INTENDS_TO_SELL, NEITHER, SELLS}
-import models.{ApiModelTransformer, S4LTradingDetails, ViewModelTransformer}
+import models.{ApiModelTransformer, S4LTradingDetails}
 import org.scalatest.{Inspectors, Matchers}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class VoluntaryRegistrationReasonSpec extends UnitSpec with Matchers with Inspectors with VatRegistrationFixture {
 
   private val validationFunction = VoluntaryRegistrationReason.valid
-
-  "ViewModelTransformer" should {
-
-    "update VatTradingDetails with new VoluntaryRegistrationReason (sells taxable goods)" in {
-      val transformed = ViewModelTransformer[VoluntaryRegistrationReason, VatTradingDetails]
-        .toApi(VoluntaryRegistrationReason.sells, tradingDetails(reason = Some(INTENDS_TO_SELL)))
-      transformed.vatChoice.reason shouldBe Some(SELLS)
-    }
-
-    "update VatTradingDetails with new VoluntaryRegistrationReason (intends to sell taxable goods)" in {
-      val transformed = ViewModelTransformer[VoluntaryRegistrationReason, VatTradingDetails]
-        .toApi(VoluntaryRegistrationReason.intendsToSell, tradingDetails(reason = Some(SELLS)))
-      transformed.vatChoice.reason shouldBe Some(INTENDS_TO_SELL)
-    }
-
-  }
 
   "ApiModelTransformer" should {
 

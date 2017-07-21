@@ -16,8 +16,8 @@
 
 package models.view.sicAndCompliance.financial
 
-import models.api.{VatComplianceFinancial, VatScheme, VatSicAndCompliance}
-import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat, ViewModelTransformer}
+import models.api.VatScheme
+import models.{ApiModelTransformer, S4LVatSicAndCompliance, ViewModelFormat}
 import play.api.libs.json.Json
 
 case class ActAsIntermediary(yesNo: Boolean)
@@ -37,12 +37,6 @@ object ActAsIntermediary {
     vs.vatSicAndCompliance.flatMap(_.financialCompliance).map { financialCompliance =>
       ActAsIntermediary(financialCompliance.actAsIntermediary)
     }
-  }
-
-  implicit val viewModelTransformer = ViewModelTransformer { (c: ActAsIntermediary, g: VatSicAndCompliance) =>
-    g.copy(financialCompliance = Some(VatComplianceFinancial(
-                                      g.financialCompliance.exists(_.adviceOrConsultancyOnly),
-                                      actAsIntermediary = c.yesNo)))
   }
 
 }
