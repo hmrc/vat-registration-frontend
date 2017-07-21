@@ -381,8 +381,7 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
 
       val s4l = S4LVatLodgingOfficer(
         officerHomeAddress = Some(OfficerHomeAddressView(address.id, Some(address))),
-        officerDateOfBirth = Some(OfficerDateOfBirthView(dob = date, officerName = Some(name))),
-        officerNino = Some(OfficerNinoView(nino = "nino")),
+        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(dob = date, nino = NINO, officerName = Some(name))),
         completionCapacity = Some(CompletionCapacityView(id = "id", completionCapacity = Some(CompletionCapacity(name, "role")))),
         officerContactDetails = Some(
           OfficerContactDetailsView(email = Some("email"), daytimePhone = Some("daytimePhone"), mobile = Some("mobile"))),
@@ -394,7 +393,7 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
       val expected = VatLodgingOfficer(
         currentAddress = address,
         dob = DateOfBirth(date),
-        nino = "nino",
+        nino = NINO,
         role = "role",
         name = name,
         changeOfName = ChangeOfName(nameHasChanged = true,
@@ -410,8 +409,7 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
 
       val s4l = S4LVatLodgingOfficer(
         officerHomeAddress = Some(OfficerHomeAddressView(address.id, Some(address))),
-        officerDateOfBirth = None,
-        officerNino = None,
+        officerSecurityQuestions = None,
         completionCapacity = Some(CompletionCapacityView(id = "id", completionCapacity = Some(CompletionCapacity(name, "role")))),
         officerContactDetails = Some(
           OfficerContactDetailsView(email = Some("email"), daytimePhone = Some("daytimePhone"), mobile = Some("mobile"))),
