@@ -16,9 +16,12 @@
 
 package controllers.vatFinancials.vatBankAccount
 
+import connectors.KeystoreConnector
 import controllers.vatFinancials
+import controllers.vatFinancials.EstimateVatTurnoverKey
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccount
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -28,6 +31,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
 
   object Controller extends CompanyBankAccountController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
@@ -82,13 +86,46 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
 
   s"POST ${vatFinancials.vatBankAccount.routes.CompanyBankAccountController.submit()} with Company Bank Account selected No" should {
 
-    "return 303" in {
+    "redirect to summary if turnover is greater than 150k" in {
+      save4laterReturnsViewModel(EstimateVatTurnover(151000L))()
       save4laterExpectsSave[CompanyBankAccount]()
       when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+      when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+      when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
+      mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("companyBankAccountRadio" -> CompanyBankAccount.COMPANY_BANK_ACCOUNT_NO)) {
-        _ redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months"
+        _ redirectsTo s"$contextRoot/check-your-answers"
+      }
+    }
+
+    "redirect to start of FRS flow if turnover is less than 150k" in {
+      save4laterReturnsViewModel(EstimateVatTurnover(149000L))()
+      save4laterExpectsSave[CompanyBankAccount]()
+      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+      when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+      when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
+      mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
+
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody("companyBankAccountRadio" -> CompanyBankAccount.COMPANY_BANK_ACCOUNT_NO)) {
+        _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
+      }
+    }
+
+    "redirect to start of FRS flow if no turnover estimate found" in {
+      save4laterReturnsNoViewModel[EstimateVatTurnover]()
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+      save4laterExpectsSave[CompanyBankAccount]()
+      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+      when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
+      when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
+      mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
+
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody("companyBankAccountRadio" -> CompanyBankAccount.COMPANY_BANK_ACCOUNT_NO)) {
+        _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
       }
     }
   }
