@@ -58,6 +58,6 @@ class OfficerSecurityQuestionsController @Inject()(ds: CommonPlayDependencies)
       data => for {
         officer <- fetchOfficer()
         _ <- save(officer.fold(data)(officer => data.copy(officerName = Some(officer.name))))
-      } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())))
+      } yield Redirect(controllers.vatLodgingOfficer.routes.FormerNameController.show())))
 
 }
