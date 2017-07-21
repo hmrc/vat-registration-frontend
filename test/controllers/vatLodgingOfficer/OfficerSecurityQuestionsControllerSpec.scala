@@ -24,23 +24,23 @@ import helpers.{S4LMockSugar, VatRegSpec}
 import models.ModelKeys.REGISTERING_OFFICER_KEY
 import models.api.{DateOfBirth, Name, VatScheme}
 import models.external.Officer
-import models.view.vatLodgingOfficer.OfficerDateOfBirthView
+import models.view.vatLodgingOfficer.OfficerSecurityQuestionsView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 
-class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object Controller extends OfficerDateOfBirthController(ds)(mockS4LService, mockVatRegistrationService) {
+  object Controller extends OfficerSecurityQuestionsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
     override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
   }
 
-  val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.OfficerDateOfBirthController.show())
+  val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show())
 
-  s"GET ${routes.OfficerDateOfBirthController.show()}" should {
+  s"GET ${routes.OfficerSecurityQuestionsController.show()}" should {
 
-    "succeed for all possible Officer / OfficerDateOfBirthView combinations" in {
+    "succeed for all possible Officer / OfficerSecurityQuestionsView combinations" in {
 
       val nameSame = Name(Some("forename"), None, "surname")
       val nameOther = Name(Some("other"), None, "other")
@@ -48,38 +48,39 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
       val officerWithDOB = Officer(name = nameSame, role = "", dateOfBirth = Some(DateOfBirth(1, 1, 1900)))
       val officerWithoutDOB = Officer(name = nameSame, role = "", dateOfBirth = None)
 
-      val dobViewSameName = OfficerDateOfBirthView(LocalDate.of(2000, 1, 1), Some(nameSame))
-      val dobViewOtherName = OfficerDateOfBirthView(LocalDate.of(2000, 1, 1), Some(nameOther))
+      val securityQuestionsViewSameName = OfficerSecurityQuestionsView(LocalDate.of(2000, 1, 1), NINO, Some(nameSame))
+      val securityQuestionsViewOtherName = OfficerSecurityQuestionsView(LocalDate.of(2000, 1, 1), NINO, Some(nameOther))
 
-      val dobViewFromOfficerWithDOB = OfficerDateOfBirthView(LocalDate.of(1900, 1, 1), Some(officerWithDOB.name))
+      val securityQuestionsViewFromOfficerWithDOB = OfficerSecurityQuestionsView(LocalDate.of(1900, 1, 1), NINO, Some(officerWithDOB.name))
 
-      case class TestCase(officer: Option[Officer], dobView: Option[OfficerDateOfBirthView], expected: Option[OfficerDateOfBirthView])
+      case class TestCase(officer: Option[Officer], securityQuestionsView: Option[OfficerSecurityQuestionsView], expected: Option[OfficerSecurityQuestionsView])
+
       val testCases = List(
         TestCase(None, None, None),
-        TestCase(None, Some(dobViewSameName), Some(dobViewSameName)),
+        TestCase(None, Some(securityQuestionsViewSameName), Some(securityQuestionsViewSameName)),
 
-        TestCase(Some(officerWithDOB), None, Some(dobViewFromOfficerWithDOB)),
-        TestCase(Some(officerWithDOB), Some(dobViewSameName), Some(dobViewSameName)),
-        TestCase(Some(officerWithDOB), Some(dobViewOtherName), Some(dobViewFromOfficerWithDOB)),
+        TestCase(Some(officerWithDOB), Some(securityQuestionsViewFromOfficerWithDOB), Some(securityQuestionsViewFromOfficerWithDOB)),
+        TestCase(Some(officerWithDOB), Some(securityQuestionsViewSameName), Some(securityQuestionsViewSameName)),
+        TestCase(Some(officerWithDOB), Some(securityQuestionsViewOtherName), Some(securityQuestionsViewFromOfficerWithDOB)),
 
         TestCase(Some(officerWithoutDOB), None, None),
-        TestCase(Some(officerWithoutDOB), Some(dobViewSameName), Some(dobViewSameName)),
-        TestCase(Some(officerWithoutDOB), Some(dobViewOtherName), None)
+        TestCase(Some(officerWithoutDOB), Some(securityQuestionsViewSameName), Some(securityQuestionsViewSameName)),
+        TestCase(Some(officerWithoutDOB), Some(securityQuestionsViewOtherName), None)
       )
 
       def test(testCase: TestCase): Boolean = {
         val officerOpt = testCase.officer
-        val dobViewOpt = testCase.dobView
+        val securityQuestionsViewOpt = testCase.securityQuestionsView
 
         // setup mocks
-        dobViewOpt.fold(save4laterReturnsNoViewModel[OfficerDateOfBirthView]())(view => save4laterReturnsViewModel(view)())
+        securityQuestionsViewOpt.fold(save4laterReturnsNoViewModel[OfficerSecurityQuestionsView]())(view => save4laterReturnsViewModel(view)())
         officerOpt.fold(mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer]))(
           (officer: Officer) => mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Some(officer)))
 
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.copy(lodgingOfficer = None).pure)
 
         // test controller logic here
-        Controller.getView(officerOpt, dobViewOpt) == testCase.expected
+        Controller.getView(officerOpt, securityQuestionsViewOpt) == testCase.expected
       }
 
       // test all scenarios
@@ -89,7 +90,7 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return HTML and form populated" in {
       val vatScheme = validVatScheme.copy(lodgingOfficer = Some(validLodgingOfficer))
-      save4laterReturnsNoViewModel[OfficerDateOfBirthView]()
+      save4laterReturnsNoViewModel[OfficerSecurityQuestionsView]()
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
 
@@ -100,7 +101,7 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return HTML with empty form" in {
       val emptyVatScheme = VatScheme("0")
-      save4laterReturnsNoViewModel[OfficerDateOfBirthView]()
+      save4laterReturnsNoViewModel[OfficerSecurityQuestionsView]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
 
@@ -111,30 +112,30 @@ class OfficerDateOfBirthControllerSpec extends VatRegSpec with VatRegistrationFi
 
   }
 
-  s"POST ${routes.OfficerDateOfBirthController.submit()} with Empty data" should {
+  s"POST ${routes.OfficerSecurityQuestionsController.submit()} with Empty data" should {
     "return 400" in {
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
   }
 
-  s"POST ${routes.OfficerDateOfBirthController.submit()} with valid DateOfBirth entered" should {
+  s"POST ${routes.OfficerSecurityQuestionsController.submit()} with valid DateOfBirth entered" should {
 
     val officer = Officer(Name(None, None, "surname"), "director", Some(DateOfBirth(12, 11, 1973)))
 
     "return 303 with officer in keystore" in {
-      save4laterExpectsSave[OfficerDateOfBirthView]()
+      save4laterExpectsSave[OfficerSecurityQuestionsView]()
       mockKeystoreFetchAndGet[Officer](REGISTERING_OFFICER_KEY, Some(officer))
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980")
-      )(_ redirectsTo s"$contextRoot/your-national-insurance-number")
+        fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> NINO)
+      )(_ redirectsTo s"$contextRoot/your-contact-details")
     }
 
     "return 303 with no officer in keystore" in {
-      save4laterExpectsSave[OfficerDateOfBirthView]()
+      save4laterExpectsSave[OfficerSecurityQuestionsView]()
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980")
-      )(_ redirectsTo s"$contextRoot/your-national-insurance-number")
+        fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> NINO)
+      )(_ redirectsTo s"$contextRoot/your-contact-details")
     }
   }
 
