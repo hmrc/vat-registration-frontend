@@ -48,10 +48,10 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
       val officerWithDOB = Officer(name = nameSame, role = "", dateOfBirth = Some(DateOfBirth(1, 1, 1900)))
       val officerWithoutDOB = Officer(name = nameSame, role = "", dateOfBirth = None)
 
-      val securityQuestionsViewSameName = OfficerSecurityQuestionsView(LocalDate.of(2000, 1, 1), NINO, Some(nameSame))
-      val securityQuestionsViewOtherName = OfficerSecurityQuestionsView(LocalDate.of(2000, 1, 1), NINO, Some(nameOther))
+      val securityQuestionsViewSameName = OfficerSecurityQuestionsView(LocalDate.of(2000, 1, 1), validNino, Some(nameSame))
+      val securityQuestionsViewOtherName = OfficerSecurityQuestionsView(LocalDate.of(2000, 1, 1), validNino, Some(nameOther))
 
-      val securityQuestionsViewFromOfficerWithDOB = OfficerSecurityQuestionsView(LocalDate.of(1900, 1, 1), NINO, Some(officerWithDOB.name))
+      val securityQuestionsViewFromOfficerWithDOB = OfficerSecurityQuestionsView(LocalDate.of(1900, 1, 1), validNino, Some(officerWithDOB.name))
 
       case class TestCase(officer: Option[Officer], securityQuestionsView: Option[OfficerSecurityQuestionsView], expected: Option[OfficerSecurityQuestionsView])
 
@@ -126,7 +126,7 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
       save4laterExpectsSave[OfficerSecurityQuestionsView]()
       mockKeystoreFetchAndGet[Officer](REGISTERING_OFFICER_KEY, Some(officer))
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> NINO)
+        fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> validNino)
       )(_ redirectsTo s"$contextRoot/your-contact-details")
     }
 
@@ -134,7 +134,7 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
       save4laterExpectsSave[OfficerSecurityQuestionsView]()
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> NINO)
+        fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> validNino)
       )(_ redirectsTo s"$contextRoot/your-contact-details")
     }
   }

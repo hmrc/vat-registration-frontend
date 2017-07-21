@@ -52,9 +52,17 @@ class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
       } else {
         for {
           _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)), annualCostsInclusive = Some(view)))
-          _ <- vrs.deleteElements(fromFrsAnnualCostsInclusiveElementPaths)
+          //_ <- vrs.deleteElements(fromFrsAnnualCostsInclusiveElementPaths)
         } yield controllers.frs.routes.RegisterForFrsController.show()
       }).map(Redirect)))
 
 }
-
+/*
+  val fromFrsAnnualCostsInclusiveElementPaths = List(
+    VatFrsAnnualCostsLimitedPath,
+    VatFrsPercentage,
+    VatFrsBusinessSector,
+    VatFrsUseThisRate,
+    VatFrsWhenToJoin,
+    VatFrsStartDate)
+*/

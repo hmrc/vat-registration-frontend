@@ -18,18 +18,19 @@ package controllers.vatFinancials
 
 import javax.inject.Inject
 
+import cats.data.OptionT
 import cats.syntax.FlatMapSyntax
 import controllers.vatFinancials.{routes => financialRoutes}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.ZeroRatedSalesForm
-import models.ZeroRatedTurnoverEstimatePath
+import models.S4LVatFinancials
 import models.view.vatFinancials.ZeroRatedSales
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
 
 class ZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
-                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
+                                        (implicit s4lService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with FlatMapSyntax {
 
   val form = ZeroRatedSalesForm.form
@@ -42,9 +43,12 @@ class ZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatFinancials.zero_rated_sales(badForm)).pure,
       view => save(view).map(_ => view.yesNo == ZeroRatedSales.ZERO_RATED_SALES_YES).ifM(
-        financialRoutes.EstimateZeroRatedSalesController.show().pure,
-        vrs.deleteElement(ZeroRatedTurnoverEstimatePath)
-          .map(_ => financialRoutes.VatChargeExpectancyController.show())
+        ifTrue = financialRoutes.EstimateZeroRatedSalesController.show().pure,
+        // delete any previous zeroRatedTurnoverEstimate by updating the container with None
+        ifFalse =
+          OptionT(s4lService.fetchAndGet[S4LVatFinancials]())
+            .semiflatMap(container => s4lService.save(container.copy(zeroRatedTurnoverEstimate = None))).value
+              .map(_ => financialRoutes.VatChargeExpectancyController.show())
       ).map(Redirect)))
 
 }
