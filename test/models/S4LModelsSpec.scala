@@ -376,13 +376,15 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
     val prevAddress = ScrsAddress(line1 = "pal1", line2 = "pal2", postcode = Some("paPostcode"))
     val date = LocalDate.of(2017, 11, 12)
     val name = Name(forename = Some("first"), otherForenames = None, surname = "surname", title = None)
+    val testNino = "nino"
+    val testRole = "role"
 
     "transform complete s4l container to API" in {
 
       val s4l = S4LVatLodgingOfficer(
         officerHomeAddress = Some(OfficerHomeAddressView(address.id, Some(address))),
-        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(dob = date, nino = "nino", officerName = Some(name))),
-        completionCapacity = Some(CompletionCapacityView(id = "id", completionCapacity = Some(CompletionCapacity(name, "role")))),
+        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(dob = date, nino = testNino, officerName = Some(name))),
+        completionCapacity = Some(CompletionCapacityView(id = "id", completionCapacity = Some(CompletionCapacity(name, testRole)))),
         officerContactDetails = Some(
           OfficerContactDetailsView(email = Some("email"), daytimePhone = Some("daytimePhone"), mobile = Some("mobile"))),
         formerName = Some(FormerNameView(yesNo = true, formerName = Some("formerName"))),
@@ -393,8 +395,8 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
       val expected = VatLodgingOfficer(
         currentAddress = address,
         dob = DateOfBirth(date),
-        nino = "nino",
-        role = "role",
+        nino = testNino,
+        role = testRole,
         name = name,
         changeOfName = ChangeOfName(nameHasChanged = true,
           formerName = Some(FormerName(formerName = "formerName", dateOfNameChange = Some(date)))),
@@ -410,7 +412,7 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
       val s4l = S4LVatLodgingOfficer(
         officerHomeAddress = Some(OfficerHomeAddressView(address.id, Some(address))),
         officerSecurityQuestions = None,
-        completionCapacity = Some(CompletionCapacityView(id = "id", completionCapacity = Some(CompletionCapacity(name, "role")))),
+        completionCapacity = Some(CompletionCapacityView(id = "id", completionCapacity = Some(CompletionCapacity(name, testRole)))),
         officerContactDetails = Some(
           OfficerContactDetailsView(email = Some("email"), daytimePhone = Some("daytimePhone"), mobile = Some("mobile"))),
         formerName = Some(FormerNameView(yesNo = true, formerName = Some("formerName"))),
@@ -421,8 +423,8 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
       val before = VatLodgingOfficer(
         currentAddress = address,
         dob = DateOfBirth(date),
-        nino = "nino",
-        role = "role",
+        nino = testNino,
+        role = testRole,
         name = name,
         changeOfName = ChangeOfName(nameHasChanged = true,
           formerName = Some(FormerName(formerName = "formerName", dateOfNameChange = Some(date)))),
@@ -433,8 +435,8 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
       val expected = VatLodgingOfficer(
         currentAddress = address,
         dob = DateOfBirth(date),
-        nino = "nino",
-        role = "role",
+        nino = testNino,
+        role = testRole,
         name = name,
         changeOfName = ChangeOfName(nameHasChanged = true,
           formerName = Some(FormerName(formerName = "formerName", dateOfNameChange = Some(date)))),

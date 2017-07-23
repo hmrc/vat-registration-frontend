@@ -20,11 +20,14 @@ import common.exceptions.DownstreamExceptions.RegistrationIdNotFoundException
 import fixtures.{S4LFixture, VatRegistrationFixture}
 import helpers.VatRegSpec
 import models.api.VatServiceEligibility
-import models.{S4LKey, S4LVatEligibility, ViewModelFormat}
+import models.view.vatContact.BusinessContactDetails
+import models.{S4LKey, S4LVatContact, S4LVatEligibility, ViewModelFormat}
 import org.mockito.Matchers.{any, eq => =~=}
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.cache.client.CacheMap
+
+import scala.concurrent.Future
 
 
 class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixture {
@@ -86,32 +89,18 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
   }
 
   "getting a View Model from Save 4 Later" should {
-
-    "fail with an exception when registration ID cannot be found in keystore" in new Setup {
-      mockKeystoreFetchAndGet[String]("RegistrationId", None)
-      service.getViewModel[TestView, TestGroup]() failedWith classOf[RegistrationIdNotFoundException]
+    "yield a None given a unpopulated Container" in new Setup {
+      val container = S4LVatContact(None)
+      service.getViewModel[BusinessContactDetails, S4LVatContact](Future.successful(container)).returnsNone
     }
 
-    "return None if not in S4L" in new Setup {
-      mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
-      when(mockS4LConnector.fetchAndGet[TestGroup](=~=(validRegId), =~=(key))(any(), any()))
-        .thenReturn(Option.empty.pure)
-      service.getViewModel[TestView, TestGroup]().returnsNone
+    "yield a ViewModel given a populated Container" in new Setup {
+      private val contactDetails = BusinessContactDetails(email = "email", daytimePhone = Some("123"), mobile = Some("345"))
+      val container = S4LVatContact(Some(contactDetails))
+
+      service.getViewModel[BusinessContactDetails, S4LVatContact](Future.successful(container)) returnsSome contactDetails
     }
 
-    "return None if container object in S4l does not contain requested View" in new Setup {
-      mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
-      when(mockS4LConnector.fetchAndGet[TestGroup](=~=(validRegId), =~=(key))(any(), any()))
-        .thenReturn(Some(TestGroup()).pure)
-      service.getViewModel[TestView, TestGroup]().returnsNone
-    }
-
-    "return a view model if container object in S4l contains requested View" in new Setup {
-      mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
-      when(mockS4LConnector.fetchAndGet[TestGroup](=~=(validRegId), =~=(key))(any(), any()))
-        .thenReturn(Some(TestGroup(testView = Some(TestView("test")))).pure)
-      service.getViewModel[TestView, TestGroup]() returnsSome TestView("test")
-    }
   }
 
   "updating a View Model in Save 4 Later" should {

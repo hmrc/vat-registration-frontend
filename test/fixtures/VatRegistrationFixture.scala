@@ -52,7 +52,8 @@ trait VatRegistrationFixture {
   val validHttpResponse = HttpResponse(OK)
 
   val validRegId = "VAT123456"
-  val someTestDate = Some(LocalDate.of(2017, 3, 21))
+  val testDate = LocalDate.of(2017, 3, 21)
+  val someTestDate = Some(testDate)
   val vatStartDate = VatStartDate(StartDateView.SPECIFIC_DATE, someTestDate)
   val validStartDateView = StartDateView(StartDateView.SPECIFIC_DATE, someTestDate)
 

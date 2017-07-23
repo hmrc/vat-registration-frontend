@@ -45,7 +45,7 @@ class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
       view => for {
         clearCompliance <- clearComplianceContainer
         _ <- s4LService.save(clearCompliance.copy(adviceOrConsultancy = Some(view)))
-        _ <- vrs.deleteElements(List(CulturalCompliancePath, LabourCompliancePath))
+        //_ <- vrs.deleteElements(List(CulturalCompliancePath, LabourCompliancePath))
       } yield Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show())))
 
 }

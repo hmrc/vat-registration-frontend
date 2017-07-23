@@ -48,7 +48,6 @@ class JoinFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOr
         for {
           _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(false))))
           _ <- vrs.submitVatFlatRateScheme()
-          _ <- vrs.deleteElements(flatRateSchemeElementPaths)
         } yield controllers.routes.SummaryController.show()
       }).map(Redirect)))
 }
