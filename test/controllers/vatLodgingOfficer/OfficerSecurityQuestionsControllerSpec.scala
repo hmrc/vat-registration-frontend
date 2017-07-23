@@ -104,13 +104,10 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
   }
 
-  s"POST ${routes.OfficerSecurityQuestionsController.submit()} with Empty data" should {
-    "return 400" in {
+  s"POST ${routes.OfficerSecurityQuestionsController.submit()}" should {
+    "return 400 with Empty data" in {
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
-  }
-
-  s"POST ${routes.OfficerSecurityQuestionsController.submit()} with valid DateOfBirth entered" should {
 
     val officer = Officer(Name(None, None, "surname"), "director", Some(DateOfBirth(12, 11, 1973)))
 
@@ -118,7 +115,7 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
       save4laterExpectsSave[OfficerSecurityQuestionsView]()
       mockKeystoreFetchAndGet[Officer](REGISTERING_OFFICER_KEY, Some(officer))
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> NINO)
+        fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> validNino)
       )(_ redirectsTo s"$contextRoot/changed-name")
     }
 
@@ -126,7 +123,7 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
       save4laterExpectsSave[OfficerSecurityQuestionsView]()
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> NINO)
+        fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> validNino)
       )(_ redirectsTo s"$contextRoot/changed-name")
     }
   }
