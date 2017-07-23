@@ -58,6 +58,6 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
             _ = officerSeq.find(_.name.id == view.id).map(o =>
               save(CompletionCapacityView(view.id, Some(CompletionCapacity(o.name, o.role)))).map(
                 _ => keystoreConnector.cache(REGISTERING_OFFICER_KEY, o)))
-          } yield Redirect(controllers.vatLodgingOfficer.routes.FormerNameController.show())))
+          } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show())))
 
 }
