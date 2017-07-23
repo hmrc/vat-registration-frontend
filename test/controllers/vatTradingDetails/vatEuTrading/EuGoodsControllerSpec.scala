@@ -19,7 +19,7 @@ package controllers.vatTradingDetails.vatEuTrading
 import controllers.vatTradingDetails
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.view.vatTradingDetails.vatEuTrading.EuGoods
+import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -71,26 +71,26 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
           contentAsString(result) must include("Will the company trade VAT taxable goods or services with countries outside the EU?")
       }
     }
-  }
 
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNoViewModel[EuGoods]()
+    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      save4laterReturnsNoViewModel[EuGoods]()
 
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
-      .thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+        .thenReturn(Future.successful(emptyVatScheme))
 
-    callAuthorised(EuGoodsController.show) {
-      result =>
-        status(result) mustBe OK
-        contentType(result) mustBe Some("text/html")
-        charset(result) mustBe Some("utf-8")
-        contentAsString(result) must include("Will the company trade VAT taxable goods or services with countries outside the EU?")
+      callAuthorised(EuGoodsController.show) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("Will the company trade VAT taxable goods or services with countries outside the EU?")
+      }
     }
   }
 
-  s"POST ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()} with Empty data" should {
 
-    "return 400" in {
+  s"POST ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()}" should {
+    "return 400 with Empty data\" should {" in {
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
@@ -98,11 +98,8 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
       }
 
     }
-  }
 
-  s"POST ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.submit()} with Eu Goods Yes selected" should {
-
-    "return 303" in {
+    "return 303 with Eu Goods Yes selected" in {
       save4laterExpectsSave[EuGoods]()
 
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -113,12 +110,10 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
       }
 
     }
-  }
 
-  s"POST ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.submit()} with Eu Goods No selected" should {
-
-    "return 303" in {
+    "return 303 with Eu Goods No selected" in {
       save4laterExpectsSave[EuGoods]()
+      save4laterExpectsSave[ApplyEori]()
       when(mockVatRegistrationService.submitTradingDetails()(any())).thenReturn(validVatTradingDetails.pure)
 
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(

@@ -85,39 +85,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     }
   }
 
-  "Calling getFlatRateSchemeThreshold" should {
-    "return 0 if no EstimateVatTurnover can be found anywhere" in new Setup {
-      when(mockS4LService.getViewModel[EstimateVatTurnover, S4LVatFinancials]()(any(), any(), any(), any())).thenReturn(OptionT.none[Future, EstimateVatTurnover])
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-
-      service.getFlatRateSchemeThreshold() returns 0L
-    }
-
-
-    "return 1000 if EstimateVatTurnover in the backend is 50'000" in new Setup {
-      when(mockS4LService.getViewModel[EstimateVatTurnover, S4LVatFinancials]()(any(), any(), any(), any())).thenReturn(OptionT.none[Future, EstimateVatTurnover])
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
-
-      service.getFlatRateSchemeThreshold() returns 1000L
-    }
-
-
-    "return correct number (2% rounded to nearest pound if EstimateVatTurnover is in Save 4 Later" in new Setup {
-      forAll(Seq[(Int, Double)](
-        1000 -> 20,
-        100 -> 2,
-        49 -> 1,
-        12324 -> 246, // 246.48 rounded down
-        12325 -> 247 // 246.5 rounded up
-      )) {
-        case (estimate, expectedFlatRateThreshold) =>
-          when(mockS4LService.getViewModel[EstimateVatTurnover, S4LVatFinancials]()(any(), any(), any(), any()))
-            .thenReturn(OptionT.some(EstimateVatTurnover(estimate)))
-          service.getFlatRateSchemeThreshold() returns expectedFlatRateThreshold
-      }
-    }
-  }
-
   "Calling submitTradingDetails" should {
     "return a success response when VatTradingDetails is submitted" in new Setup {
       save4laterReturns(S4LTradingDetails(tradingName = Some(validTradingNameView)))

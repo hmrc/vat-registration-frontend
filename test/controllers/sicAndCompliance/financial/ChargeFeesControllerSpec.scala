@@ -18,7 +18,7 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.view.sicAndCompliance.financial.{AdviceOrConsultancy, ChargeFees}
+import models.view.sicAndCompliance.financial.ChargeFees
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -79,7 +79,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "return 303 with charge fees Yes" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      save4laterExpectsSave[AdviceOrConsultancy]()
+      save4laterExpectsSave[ChargeFees]()
 
       submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> "true"
@@ -91,7 +91,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "return 303 with charge fees No" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      save4laterExpectsSave[AdviceOrConsultancy]()
+      save4laterExpectsSave[ChargeFees]()
 
       submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> "false"

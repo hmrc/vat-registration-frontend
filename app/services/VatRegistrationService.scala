@@ -65,11 +65,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
 
   import cats.syntax.all._
 
-  def getFlatRateSchemeThreshold()(implicit hc: HeaderCarrier): Future[Long] =
-    s4LService.getViewModel[EstimateVatTurnover, S4LVatFinancials]()
-      .orElseF(getVatScheme() map ApiModelTransformer[EstimateVatTurnover].toViewModel)
-      .map(_.vatTurnoverEstimate).fold(0L)(estimate => Math.round(estimate * 0.02))
-
   private def s4l[T: Format : S4LKey]()(implicit hc: HeaderCarrier) =
     s4LService.fetchAndGet[T]()
 

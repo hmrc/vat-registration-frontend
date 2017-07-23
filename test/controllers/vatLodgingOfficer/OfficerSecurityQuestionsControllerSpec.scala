@@ -22,11 +22,9 @@ import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.ModelKeys.REGISTERING_OFFICER_KEY
-import models.api.{DateOfBirth, Name, VatScheme}
+import models.api.{DateOfBirth, Name}
 import models.external.Officer
 import models.view.vatLodgingOfficer.OfficerSecurityQuestionsView
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 
 class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
@@ -77,8 +75,6 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
         officerOpt.fold(mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer]))(
           (officer: Officer) => mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Some(officer)))
 
-        when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.copy(lodgingOfficer = None).pure)
-
         // test controller logic here
         Controller.getView(officerOpt, securityQuestionsViewOpt) == testCase.expected
       }
@@ -89,10 +85,8 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
 
     "return HTML and form populated" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer = Some(validLodgingOfficer))
-      save4laterReturnsNoViewModel[OfficerSecurityQuestionsView]()
+      save4laterReturnsViewModel(OfficerSecurityQuestionsView(testDate, validNino, Some(officerName)))()
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
 
       callAuthorised(Controller.show()) {
         _ includesText "What is your date of birth"
@@ -100,9 +94,7 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
     }
 
     "return HTML with empty form" in {
-      val emptyVatScheme = VatScheme("0")
       save4laterReturnsNoViewModel[OfficerSecurityQuestionsView]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
 
       callAuthorised(Controller.show()) {

@@ -21,7 +21,7 @@ import forms.genericForms.YesOrNoFormFactory
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.S4LFlatRateScheme
 import models.api.VatFlatRateScheme
-import models.view.frs.RegisterForFrsView
+import models.view.frs.{BusinessSectorView, RegisterForFrsView}
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -78,6 +78,7 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return 303 with RegisterFor Flat Rate Scheme selected Yes" in {
       save4laterExpectsSave[RegisterForFrsView]()
+      save4laterExpectsSave[BusinessSectorView]()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "registerForFrsRadio" -> "true"
@@ -86,17 +87,17 @@ class RegisterForFrsControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return 303 with RegisterFor Flat Rate Scheme selected No" in {
       save4laterExpectsSave[RegisterForFrsView]()
+      save4laterExpectsSave[BusinessSectorView]()
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(false).pure)
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
       when(mockS4LService.fetchAndGet[S4LFlatRateScheme]()(any(), any(), any())).thenReturn(Option.empty.pure)
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "registerForFrsRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/check-your-answers")
 
       verify(mockVatRegistrationService).submitVatFlatRateScheme()(any())
-      verify(mockVatRegistrationService).deleteElements(any())(any())
     }
   }
 

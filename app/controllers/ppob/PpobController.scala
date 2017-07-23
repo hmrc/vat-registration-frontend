@@ -48,7 +48,7 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
     for {
       addresses <- prePopService.getPpobAddressList()
       _ <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
-      res <- viewModel[PpobView]().fold(form)(form.fill)
+      res <- viewModel[PpobView]().fold({println("XXXXXX"); form})(form.fill)
     } yield Ok(views.html.pages.ppob.ppob(res, addresses))
   )
 
