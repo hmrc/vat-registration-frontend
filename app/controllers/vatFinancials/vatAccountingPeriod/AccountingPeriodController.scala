@@ -41,7 +41,6 @@ class AccountingPeriodController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.vatFinancials.vatAccountingPeriod.accounting_period(badForm)).pure,
       data => for {
         _ <- save(data)
-        _ <- vrs.submitVatFinancials()
         voluntaryReg <- viewModel[VoluntaryRegistration]().fold(true)(_ == VoluntaryRegistration.yes)
       } yield Redirect(if (voluntaryReg) {
         controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()

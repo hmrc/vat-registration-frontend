@@ -95,7 +95,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
       submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "false"
-      ))(_ redirectsTo s"$contextRoot/business-bank-account")
+      ))(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
     }
   }
 }

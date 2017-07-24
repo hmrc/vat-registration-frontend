@@ -84,14 +84,11 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
         save4laterExpectsSave[AccountingPeriod]()
 
         when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
-        when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
 
         submitAuthorised(Controller.submit(),
           fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
           _ redirectsTo s"$contextRoot/vat-start-date"
         }
-
-        verify(mockVatRegistrationService).submitVatFinancials()(any())
       }
 
       "voluntary registration is yes" in {
@@ -100,14 +97,11 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
         save4laterExpectsSave[AccountingPeriod]()
 
         when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
-        when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
 
         submitAuthorised(Controller.submit(),
           fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
           _ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be"
         }
-
-        verify(mockVatRegistrationService).submitVatFinancials()(any())
       }
 
       "no voluntary registration view model exists" in {
@@ -117,16 +111,12 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
         save4laterReturnsNoViewModel[VoluntaryRegistration]()
 
         when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
-        when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
 
         submitAuthorised(Controller.submit(),
           fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
           _ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be"
         }
-
-        verify(mockVatRegistrationService).submitVatFinancials()(any())
       }
-
 
     }
   }

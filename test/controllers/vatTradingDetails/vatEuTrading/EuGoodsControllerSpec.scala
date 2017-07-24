@@ -114,13 +114,12 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "return 303 with Eu Goods No selected" in {
       save4laterExpectsSave[EuGoods]()
       save4laterExpectsSave[ApplyEori]()
-      when(mockVatRegistrationService.submitTradingDetails()(any())).thenReturn(validVatTradingDetails.pure)
 
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> EuGoods.EU_GOODS_NO
       )) {
         response =>
-          response redirectsTo s"$contextRoot/your-home-address"
+          response redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months"
       }
 
       verify(mockVatRegistrationService).submitTradingDetails()(any())

@@ -47,6 +47,7 @@ class OfficerSecurityQuestionsController @Inject()(ds: CommonPlayDependencies)
       case (true, _, Some(v)) => Some(v)
       case (false, None, Some(v)) if officer.isEmpty => Some(v)
       case (false, None, Some(v)) => None
+      case (false, Some(dob), None) => Some(OfficerSecurityQuestionsView(dob, "", Some(officer.get.name)))
       case (false, Some(dob), Some(v)) => Some(OfficerSecurityQuestionsView(dob, v.nino, Some(officer.get.name)))
 
     }

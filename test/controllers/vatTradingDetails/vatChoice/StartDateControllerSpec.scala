@@ -122,6 +122,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
     "return 303 with valid data" in {
       save4laterExpectsSave[StartDateView]()
       when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockVatRegistrationService.submitTradingDetails()(any())).thenReturn(validVatTradingDetails.pure)
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.COMPANY_REGISTRATION_DATE,
@@ -133,11 +134,14 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
           status(result) mustBe Status.SEE_OTHER
           redirectLocation(result).getOrElse("") mustBe s"$contextRoot/business-bank-account"
       }
+
+      verify(mockVatRegistrationService).submitTradingDetails()(any())
     }
 
     "return 303 with valid data BUSINESS_START_DATE" in {
       save4laterExpectsSave[StartDateView]()
       when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockVatRegistrationService.submitTradingDetails()(any())).thenReturn(validVatTradingDetails.pure)
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.BUSINESS_START_DATE
@@ -146,12 +150,15 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
           status(result) mustBe Status.SEE_OTHER
           redirectLocation(result).getOrElse("") mustBe s"$contextRoot/business-bank-account"
       }
+
+      verify(mockVatRegistrationService).submitTradingDetails()(any())
     }
 
     "return 303 with StartDate having a specific date" in {
       save4laterExpectsSave[StartDateView]()
       when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
       when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
+      when(mockVatRegistrationService.submitTradingDetails()(any())).thenReturn(validVatTradingDetails.pure)
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.SPECIFIC_DATE,
@@ -163,6 +170,8 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
           status(result) mustBe Status.SEE_OTHER
           redirectLocation(result).getOrElse("") mustBe s"$contextRoot/business-bank-account"
       }
+
+      verify(mockVatRegistrationService).submitTradingDetails()(any())
     }
   }
 }

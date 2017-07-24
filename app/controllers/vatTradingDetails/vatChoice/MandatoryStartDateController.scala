@@ -20,14 +20,16 @@ import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc._
-import services.S4LService
+import services.{S4LService, VatRegistrationService}
 
-class MandatoryStartDateController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class MandatoryStartDateController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies)
+                                            (implicit vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised(implicit user => implicit request =>
     Ok(views.html.pages.vatTradingDetails.vatChoice.mandatory_start_date_confirmation()))
 
-  def submit: Action[AnyContent] = authorised(implicit user => implicit request =>
-    Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    vrs.submitTradingDetails().map(_ =>
+      Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())))
 
 }
