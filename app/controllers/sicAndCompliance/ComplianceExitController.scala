@@ -36,7 +36,7 @@ class ComplianceExitController (ds: CommonPlayDependencies)(implicit vrs: Regist
     for {
       _ <- vrs.deleteElements(elements)
       _ <- vrs.submitSicAndCompliance()
-    } yield Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+    } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
 
   def clearComplianceContainer(implicit hc: HeaderCarrier): Future[S4LVatSicAndCompliance] =
     viewModel[BusinessActivityDescription]().value |@|
