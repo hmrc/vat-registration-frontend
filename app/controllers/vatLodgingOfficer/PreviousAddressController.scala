@@ -51,7 +51,7 @@ class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
         ifFalse = for {
           _ <- save(PreviousAddressView(true))
           _ <- vrs.submitVatLodgingOfficer()
-        } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
+        } yield controllers.ppob.routes.PpobController.show()
       ).map(Redirect)
     )
   )
@@ -61,7 +61,7 @@ class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
       address <- alfConnector.getAddress(id)
       _ <- save(PreviousAddressView(false, Some(address)))
       _ <- vrs.submitVatLodgingOfficer()
-    } yield Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show()))
+    } yield Redirect(controllers.ppob.routes.PpobController.show()))
 
   def changeAddress: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     alfConnector.getOnRampUrl(routes.PreviousAddressController.acceptFromTxm()).map(Redirect))

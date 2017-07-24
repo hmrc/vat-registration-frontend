@@ -18,6 +18,8 @@ package controllers.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import org.mockito.Matchers.any
+import org.mockito.Mockito.{verify, when}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
@@ -45,11 +47,15 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.MandatoryStartDateController.submit()}" should {
 
     "redirect the user to the bank account page after clicking continue on the mandatory start date confirmation page" in {
+
+      when(mockVatRegistrationService.submitTradingDetails()(any())).thenReturn(validVatTradingDetails.pure)
       callAuthorised(MandatoryStartDateController.submit) {
         result =>
           status(result) mustBe SEE_OTHER
           redirectLocation(result).getOrElse("") mustBe s"$contextRoot/business-bank-account"
       }
+
+      verify(mockVatRegistrationService).submitTradingDetails()(any())
     }
   }
 

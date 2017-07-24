@@ -22,9 +22,11 @@ import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.ModelKeys.REGISTERING_OFFICER_KEY
-import models.api.{DateOfBirth, Name}
+import models.api.{DateOfBirth, Name, VatScheme}
 import models.external.Officer
 import models.view.vatLodgingOfficer.OfficerSecurityQuestionsView
+import org.mockito.Matchers.any
+import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 
 class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
@@ -49,7 +51,8 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
       val securityQuestionsViewSameName = OfficerSecurityQuestionsView(LocalDate.of(2000, 1, 1), validNino, Some(nameSame))
       val securityQuestionsViewOtherName = OfficerSecurityQuestionsView(LocalDate.of(2000, 1, 1), validNino, Some(nameOther))
 
-      val securityQuestionsViewFromOfficerWithDOB = OfficerSecurityQuestionsView(LocalDate.of(1900, 1, 1), validNino, Some(officerWithDOB.name))
+      val securityQuestionsViewFromOfficerWithDOB = OfficerSecurityQuestionsView(LocalDate.of(1900, 1, 1), NINO, Some(officerWithDOB.name))
+      val securityQuestionsViewOfficerWithDOBAndNINOIsNone = OfficerSecurityQuestionsView(LocalDate.of(1900, 1, 1), "", Some(officerWithDOB.name))
 
       case class TestCase(officer: Option[Officer], securityQuestionsView: Option[OfficerSecurityQuestionsView], expected: Option[OfficerSecurityQuestionsView])
 
@@ -63,7 +66,9 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
         TestCase(Some(officerWithoutDOB), None, None),
         TestCase(Some(officerWithoutDOB), Some(securityQuestionsViewSameName), Some(securityQuestionsViewSameName)),
-        TestCase(Some(officerWithoutDOB), Some(securityQuestionsViewOtherName), None)
+        TestCase(Some(officerWithoutDOB), Some(securityQuestionsViewOtherName), None),
+        TestCase(Some(officerWithDOB), None, Some(securityQuestionsViewOfficerWithDOBAndNINOIsNone))
+
       )
 
       def test(testCase: TestCase): Boolean = {

@@ -63,7 +63,7 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
           address = addressList.find(_.id == data.addressId)
           _ <- save(PpobView(data.addressId, address))
           _ <- vrs.submitPpob()
-        } yield controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()
+        } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
       ).map(Redirect)))
 
   def acceptFromTxm(id: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
@@ -71,6 +71,6 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
       address <- alfConnector.getAddress(id)
       _ <- save(PpobView(address.id, Some(address)))
       _ <- vrs.submitPpob()
-    } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
+    } yield Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show()))
 
 }

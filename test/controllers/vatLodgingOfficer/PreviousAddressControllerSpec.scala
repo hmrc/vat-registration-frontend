@@ -90,7 +90,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
       submitAuthorised(TestPreviousAddressController.submit(), fakeRequest.withFormUrlEncodedBody(
         "previousAddressQuestionRadio" -> "true"
       )) {
-        _ redirectsTo s"$contextRoot/company-contact-details"
+        _ redirectsTo s"$contextRoot/where-will-company-carry-out-most-of-its-business-activities"
       }
 
       verify(mockVatRegistrationService).submitVatLodgingOfficer()(any())
@@ -104,7 +104,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
       when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
       when(mockVatRegistrationService.submitVatLodgingOfficer()(any())).thenReturn(validLodgingOfficer.pure)
       callAuthorised(TestPreviousAddressController.acceptFromTxm("addressId")) {
-        _ redirectsTo s"$contextRoot/company-contact-details"
+        _ redirectsTo s"$contextRoot/where-will-company-carry-out-most-of-its-business-activities"
       }
 
       verify(mockS4LService).updateViewModel(any(), any())(any(), any(), any(), any())
