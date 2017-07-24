@@ -39,6 +39,6 @@ class ApplyEoriController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.vatTradingDetails.vatEuTrading.eori_apply(badForm)).pure,
       goodForm => save(goodForm).flatMap(_ => vrs.submitTradingDetails().map(_ =>
-        Redirect(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())))))
+        Redirect(controllers.vatFinancials.routes.EstimateVatTurnoverController.show())))))
 
 }

@@ -78,7 +78,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_YES)
       )) {
-        _ redirectsTo s"$contextRoot/your-home-address"
+        _ redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months"
       }
 
       verify(mockVatRegistrationService).submitTradingDetails()(any())
@@ -94,7 +94,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_NO)
       )) {
-        _ redirectsTo s"$contextRoot/your-home-address"
+        _ redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months"
       }
 
       verify(mockVatRegistrationService).submitTradingDetails()(any())
