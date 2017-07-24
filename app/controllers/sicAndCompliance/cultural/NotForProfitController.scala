@@ -18,18 +18,19 @@ package controllers.sicAndCompliance.cultural
 
 import javax.inject.Inject
 
-import controllers.CommonPlayDependencies
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.cultural.NotForProfitForm
+import models.S4LVatSicAndCompliance
+import models.S4LVatSicAndCompliance.culturalOnly
 import models.view.sicAndCompliance.cultural.NotForProfit
-import models.{FinancialCompliancePath, LabourCompliancePath}
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, VatRegistrationService}
 
 
 class NotForProfitController @Inject()(ds: CommonPlayDependencies)
-                                      (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends ComplianceExitController(ds) {
+                                      (implicit s4lService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with CommonService {
 
   val form = NotForProfitForm.form
 
@@ -41,9 +42,9 @@ class NotForProfitController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.cultural.not_for_profit(badForm)).pure,
       view => for {
-        clearCompliance <- clearComplianceContainer
-        _ <- s4LService.save(clearCompliance.copy(notForProfit = Some(view)))
-        call <- submitAndExit(List(FinancialCompliancePath, LabourCompliancePath))
-      } yield call))
+        container <- s4lContainer[S4LVatSicAndCompliance]()
+        _ <- s4lService.save(culturalOnly(container.copy(notForProfit = Some(view))))
+        _ <- vrs.submitSicAndCompliance()
+      } yield Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())))
 
 }

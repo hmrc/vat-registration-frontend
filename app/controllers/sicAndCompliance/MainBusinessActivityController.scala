@@ -70,7 +70,7 @@ class MainBusinessActivityController @Inject()(ds: CommonPlayDependencies)
   def redirectToNext: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     fetchSicCodeList().flatMap {
       case Nil => selectNextPage(Nil)
-      case sicCodeList@(head :: tail) => save(MainBusinessActivityView(head)).flatMap(_ => selectNextPage(sicCodeList))
+      case sicCodeList@(head :: _) => save(MainBusinessActivityView(head)).flatMap(_ => selectNextPage(sicCodeList))
     })
 
 }

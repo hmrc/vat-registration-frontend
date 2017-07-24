@@ -18,17 +18,17 @@ package controllers.sicAndCompliance.labour
 
 import javax.inject.Inject
 
-import controllers.CommonPlayDependencies
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.labour.SkilledWorkersForm
 import models.view.sicAndCompliance.labour.SkilledWorkers
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, VatRegistrationService}
 
 
 class SkilledWorkersController @Inject()(ds: CommonPlayDependencies)
-                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends ComplianceExitController(ds) {
+                                        (implicit s4lService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with CommonService {
 
   val form = SkilledWorkersForm.form
 
@@ -39,6 +39,9 @@ class SkilledWorkersController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     SkilledWorkersForm.form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.skilled_workers(badForm)).pure,
-      data => save(data).flatMap(_ => submitAndExit(List()))))
+      view => for {
+        _ <- save(view)
+        _ <- vrs.submitSicAndCompliance()
+      } yield Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())))
 
 }
