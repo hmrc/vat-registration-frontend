@@ -87,7 +87,7 @@ class PpobControllerSpec extends VatRegSpec
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("ppobRadio" -> address.id)
-      )(_ redirectsTo s"$contextRoot/describe-what-company-does")
+      )(_ redirectsTo s"$contextRoot/company-contact-details")
       verify(mockVatRegistrationService).submitPpob()(any())
     }
 
@@ -99,7 +99,7 @@ class PpobControllerSpec extends VatRegSpec
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("ppobRadio" -> address.id)
-      )(_ redirectsTo s"$contextRoot/describe-what-company-does")
+      )(_ redirectsTo s"$contextRoot/company-contact-details")
       verify(mockVatRegistrationService).submitPpob()(any())
     }
 
@@ -120,7 +120,7 @@ class PpobControllerSpec extends VatRegSpec
       when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
       when(mockVatRegistrationService.submitPpob()(any())).thenReturn(scrsAddress.pure)
       callAuthorised(Controller.acceptFromTxm("addressId")) {
-        _ redirectsTo s"$contextRoot/describe-what-company-does"
+        _ redirectsTo s"$contextRoot/company-contact-details"
       }
 
       verify(mockS4LService).updateViewModel(any(), any())(any(), any(), any(), any())
