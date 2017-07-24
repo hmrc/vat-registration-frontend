@@ -52,6 +52,7 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
       val securityQuestionsViewOtherName = OfficerSecurityQuestionsView(LocalDate.of(2000, 1, 1), NINO, Some(nameOther))
 
       val securityQuestionsViewFromOfficerWithDOB = OfficerSecurityQuestionsView(LocalDate.of(1900, 1, 1), NINO, Some(officerWithDOB.name))
+      val securityQuestionsViewOfficerWithDOBAndNINOIsNone = OfficerSecurityQuestionsView(LocalDate.of(1900, 1, 1), "", Some(officerWithDOB.name))
 
       case class TestCase(officer: Option[Officer], securityQuestionsView: Option[OfficerSecurityQuestionsView], expected: Option[OfficerSecurityQuestionsView])
 
@@ -65,7 +66,9 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
         TestCase(Some(officerWithoutDOB), None, None),
         TestCase(Some(officerWithoutDOB), Some(securityQuestionsViewSameName), Some(securityQuestionsViewSameName)),
-        TestCase(Some(officerWithoutDOB), Some(securityQuestionsViewOtherName), None)
+        TestCase(Some(officerWithoutDOB), Some(securityQuestionsViewOtherName), None),
+        TestCase(Some(officerWithDOB), None, Some(securityQuestionsViewOfficerWithDOBAndNINOIsNone))
+
       )
 
       def test(testCase: TestCase): Boolean = {
