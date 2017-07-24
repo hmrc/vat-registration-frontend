@@ -39,7 +39,7 @@ import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.TradingNameView.TRADING_NAME_YES
 import models.view.vatTradingDetails.vatChoice.StartDateView.BUSINESS_START_DATE
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.REGISTER_YES
-import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
+import models.view.vatTradingDetails.vatChoice._
 import models.view.vatTradingDetails.vatEuTrading.EuGoods.EU_GOODS_YES
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.libs.json.{Json, OFormat}
@@ -115,7 +115,8 @@ final case class S4LTradingDetails
   voluntaryRegistration: Option[VoluntaryRegistration] = None,
   voluntaryRegistrationReason: Option[VoluntaryRegistrationReason] = None,
   euGoods: Option[EuGoods] = None,
-  applyEori: Option[ApplyEori] = None
+  applyEori: Option[ApplyEori] = None,
+  overThreshold: Option[OverThresholdView] = None
 )
 
 object S4LTradingDetails {
@@ -131,7 +132,8 @@ object S4LTradingDetails {
         voluntaryRegistration = ApiModelTransformer[VoluntaryRegistration].toViewModel(vs),
         voluntaryRegistrationReason = ApiModelTransformer[VoluntaryRegistrationReason].toViewModel(vs),
         euGoods = ApiModelTransformer[EuGoods].toViewModel(vs),
-        applyEori = ApiModelTransformer[ApplyEori].toViewModel(vs)
+        applyEori = ApiModelTransformer[ApplyEori].toViewModel(vs),
+        overThreshold = ApiModelTransformer[OverThresholdView].toViewModel(vs)
       )
   }
   implicit val apiT = new S4LApiTransformer[S4LTradingDetails, VatTradingDetails] {
