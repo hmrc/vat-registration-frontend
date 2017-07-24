@@ -51,7 +51,7 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
       val securityQuestionsViewSameName = OfficerSecurityQuestionsView(LocalDate.of(2000, 1, 1), validNino, Some(nameSame))
       val securityQuestionsViewOtherName = OfficerSecurityQuestionsView(LocalDate.of(2000, 1, 1), validNino, Some(nameOther))
 
-      val securityQuestionsViewFromOfficerWithDOB = OfficerSecurityQuestionsView(LocalDate.of(1900, 1, 1), NINO, Some(officerWithDOB.name))
+      val securityQuestionsViewFromOfficerWithDOB = OfficerSecurityQuestionsView(LocalDate.of(1900, 1, 1), validNino, Some(officerWithDOB.name))
       val securityQuestionsViewOfficerWithDOBAndNINOIsNone = OfficerSecurityQuestionsView(LocalDate.of(1900, 1, 1), "", Some(officerWithDOB.name))
 
       case class TestCase(officer: Option[Officer], securityQuestionsView: Option[OfficerSecurityQuestionsView], expected: Option[OfficerSecurityQuestionsView])

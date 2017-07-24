@@ -19,8 +19,8 @@ package controllers.sicAndCompliance.labour
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
-import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -75,10 +75,8 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
 
     "return 303 with company provide workers Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
-      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterReturns(S4LVatSicAndCompliance())
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_YES
@@ -87,10 +85,8 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
 
     "return 303 with company provide workers No selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
-      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterReturns(S4LVatSicAndCompliance())
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_NO

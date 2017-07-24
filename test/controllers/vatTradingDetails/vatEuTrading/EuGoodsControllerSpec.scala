@@ -122,7 +122,6 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
           response redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months"
       }
 
-      verify(mockVatRegistrationService).submitTradingDetails()(any())
     }
   }
 }

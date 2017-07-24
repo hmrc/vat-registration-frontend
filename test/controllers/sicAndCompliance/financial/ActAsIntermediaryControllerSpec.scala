@@ -18,7 +18,7 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.view.sicAndCompliance.BusinessActivityDescription
+import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.financial.ActAsIntermediary
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -77,10 +77,10 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
 
     "return 303 with Act As Intermediary Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterExpectsSave[ActAsIntermediary]()
+      save4laterReturns(S4LVatSicAndCompliance())
 
       submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> "true"
@@ -89,9 +89,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
 
     "return 303 with Act As Intermediary No selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsNoViewModel[BusinessActivityDescription]()
       save4laterExpectsSave[ActAsIntermediary]()
 
       submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(

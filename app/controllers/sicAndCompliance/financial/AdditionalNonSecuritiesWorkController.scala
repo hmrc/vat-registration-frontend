@@ -48,7 +48,7 @@ class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies
           container <- s4lContainer[S4LVatSicAndCompliance]()
           _ <- s4lService.save(dropFromAddNonSecurities(container))
           _ <- vrs.submitSicAndCompliance()
-        } yield controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show(),
+        } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show(),
         ifFalse = controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.show().pure
       ).map(Redirect)))
 
