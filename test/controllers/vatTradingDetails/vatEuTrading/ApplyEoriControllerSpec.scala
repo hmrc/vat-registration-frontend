@@ -73,15 +73,11 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
     "return 303" in {
       save4laterExpectsSave[ApplyEori]()
-      when(mockVatRegistrationService.submitTradingDetails()(any())).thenReturn(validVatTradingDetails.pure)
-
       submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_YES)
       )) {
         _ redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months"
       }
-
-      verify(mockVatRegistrationService).submitTradingDetails()(any())
     }
   }
 
@@ -89,15 +85,11 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
     "return 303" in {
       save4laterExpectsSave[ApplyEori]()
-      when(mockVatRegistrationService.submitTradingDetails()(any())).thenReturn(validVatTradingDetails.pure)
-
       submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_NO)
       )) {
         _ redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months"
       }
-
-      verify(mockVatRegistrationService).submitTradingDetails()(any())
     }
 
   }

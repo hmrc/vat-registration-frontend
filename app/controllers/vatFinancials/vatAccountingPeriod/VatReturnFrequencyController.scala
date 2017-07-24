@@ -46,7 +46,6 @@ class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
       view => save(view).map(_ => view.frequencyType == MONTHLY).ifM(
         ifTrue = for {
           _ <- vrs.deleteElement(AccountingPeriodStartPath)
-          _ <- vrs.submitVatFinancials()
           voluntaryReg <- viewModel[VoluntaryRegistration]().fold(true)(_ == VoluntaryRegistration.yes)
         } yield if (voluntaryReg) {
           controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()
