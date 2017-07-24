@@ -154,51 +154,51 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     }
   }
 
-  "Calling deleteElement" should {
-    "return a success response when successful" in new Setup {
-      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
-
-      service.deleteElement(VatBankAccountPath) completedSuccessfully
-    }
-  }
-
-  "Calling conditionalDeleteElement" should {
-
-    "deleteElement when cond is true" in new Setup {
-      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
-
-      service.conditionalDeleteElement(VatBankAccountPath, true) completedSuccessfully
-
-      verify(mockRegConnector, times(1)).deleteElement(any())(any())(any(), any())
-    }
-
-    "not deleteElement when cond is false" in new Setup {
-      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      service.conditionalDeleteElement(VatBankAccountPath, false) completedSuccessfully
-
-      verify(mockRegConnector, times(0)).deleteElement(any())(any())(any(), any())
-    }
-  }
-
-  "Calling deleteElements with items" should {
-    "return a success response when successful" in new Setup {
-      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
-
-      service.deleteElements(List(VatBankAccountPath, ZeroRatedTurnoverEstimatePath)) completedSuccessfully
-    }
-  }
-
-  "Calling deleteElements without items" should {
-    "return a success response when successful" in new Setup {
-      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
-
-      service.deleteElements(List()) completedSuccessfully
-    }
-  }
+//  "Calling deleteElement" should {
+//    "return a success response when successful" in new Setup {
+//      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+//      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
+//
+//      service.deleteElement(VatBankAccountPath) completedSuccessfully
+//    }
+//  }
+//
+//  "Calling conditionalDeleteElement" should {
+//
+//    "deleteElement when cond is true" in new Setup {
+//      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+//      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
+//
+//      service.conditionalDeleteElement(VatBankAccountPath, true) completedSuccessfully
+//
+//      verify(mockRegConnector, times(1)).deleteElement(any())(any())(any(), any())
+//    }
+//
+//    "not deleteElement when cond is false" in new Setup {
+//      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+//      service.conditionalDeleteElement(VatBankAccountPath, false) completedSuccessfully
+//
+//      verify(mockRegConnector, times(0)).deleteElement(any())(any())(any(), any())
+//    }
+//  }
+//
+//  "Calling deleteElements with items" should {
+//    "return a success response when successful" in new Setup {
+//      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+//      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
+//
+//      service.deleteElements(List(VatBankAccountPath, ZeroRatedTurnoverEstimatePath)) completedSuccessfully
+//    }
+//  }
+//
+//  "Calling deleteElements without items" should {
+//    "return a success response when successful" in new Setup {
+//      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+//      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
+//
+//      service.deleteElements(List()) completedSuccessfully
+//    }
+//  }
 
   "When this is the first time the user starts a journey and we're persisting to the backend" should {
 
