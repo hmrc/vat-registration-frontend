@@ -20,6 +20,7 @@ import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.ModelKeys._
+import models.S4LVatSicAndCompliance
 import models.api.SicCode
 import models.view.sicAndCompliance.MainBusinessActivityView
 import org.mockito.Matchers.any
@@ -81,9 +82,9 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
       save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
       save4laterExpectsSave[MainBusinessActivityView]()
       mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(List(sicCode)))
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(validSicAndCompliance.pure)
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      save4laterReturns(S4LVatSicAndCompliance())
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> sicCode.id)
@@ -95,10 +96,10 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
       save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
       save4laterExpectsSave[MainBusinessActivityView]()
       mockKeystoreFetchAndGet(SIC_CODES_KEY, Some(List(validSicCode)))
-      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(validSicAndCompliance.pure)
+      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(validVatFlatRateScheme.pure)
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      save4laterReturns(S4LVatSicAndCompliance())
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> validSicCode.id)
@@ -122,9 +123,9 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
     "return 303 Empty Sic Code list in keystore and redirect to redirectToNext method" in {
       save4laterExpectsSave[MainBusinessActivityView]()
       mockKeystoreFetchAndGet(SIC_CODES_KEY, None)
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(validSicAndCompliance.pure)
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      save4laterReturns(S4LVatSicAndCompliance())
 
       callAuthorised(Controller.redirectToNext())(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
     }

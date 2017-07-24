@@ -77,8 +77,8 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
     "return 303 with Provide Discretionary Investment Management Services Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterReturns(S4LVatSicAndCompliance())
       save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
+      save4laterReturns(S4LVatSicAndCompliance())
 
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> "true"
@@ -86,9 +86,6 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
     }
 
     "return 303 with Provide Discretionary Investment Management Services No selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterReturns(S4LVatSicAndCompliance())
       save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
 
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
