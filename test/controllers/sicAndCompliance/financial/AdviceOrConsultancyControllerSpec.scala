@@ -75,7 +75,6 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return 303 with Advice Or Consultancy Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
 
@@ -88,7 +87,6 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return 303 with Advice Or Consultancy No selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
 

@@ -21,7 +21,6 @@ import javax.inject.Inject
 import cats.data.OptionT
 import controllers.CommonPlayDependencies
 import forms.sicAndCompliance.MainBusinessActivityForm
-import models.ElementPath.flatRateSchemeElementPaths
 import models.ModelKeys._
 import models.S4LFlatRateScheme
 import models.api.SicCode
