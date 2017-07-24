@@ -18,19 +18,20 @@ package controllers.sicAndCompliance.financial
 
 import javax.inject.Inject
 
-import controllers.CommonPlayDependencies
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.financial.LeaseVehiclesForm
-import models.ElementPath
+import models.S4LVatSicAndCompliance
+import models.S4LVatSicAndCompliance.dropFromLeaseVehicles
 import models.view.sicAndCompliance.financial.LeaseVehicles
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{RegistrationService, S4LService}
+import services.{CommonService, RegistrationService, S4LService}
 
 
 class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
-                                       (implicit s4LService: S4LService, vrs: RegistrationService)
-  extends ComplianceExitController(ds) {
+                                       (implicit s4lService: S4LService, vrs: RegistrationService)
+  extends VatRegistrationController(ds) with CommonService {
 
   import cats.syntax.flatMap._
 
@@ -44,9 +45,13 @@ class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.lease_vehicles(badForm)).pure,
       view => save(view).map(_ => view.yesNo).ifM(
-        ifTrue = submitAndExit(ElementPath.finCompElementPaths.drop(4)),
-        ifFalse = Redirect(controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show()).pure)
-        ))
+        ifTrue = for {
+          container <- s4lContainer[S4LVatSicAndCompliance]()
+          _ <- s4lService.save(dropFromLeaseVehicles(container))
+          _ <- vrs.submitSicAndCompliance()
+        } yield controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show(),
+        ifFalse = controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show().pure
+      ).map(Redirect)))
 
 }
 

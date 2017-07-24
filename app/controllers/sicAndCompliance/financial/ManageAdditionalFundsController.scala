@@ -18,17 +18,17 @@ package controllers.sicAndCompliance.financial
 
 import javax.inject.Inject
 
-import controllers.CommonPlayDependencies
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.financial.ManageAdditionalFundsForm
 import models.view.sicAndCompliance.financial.ManageAdditionalFunds
 import play.api.mvc.{Action, AnyContent}
-import services.{RegistrationService, S4LService}
+import services.{CommonService, RegistrationService, S4LService}
 
 
 class ManageAdditionalFundsController @Inject()(ds: CommonPlayDependencies)
                                                (implicit s4LService: S4LService, vrs: RegistrationService)
-  extends ComplianceExitController(ds) {
+  extends VatRegistrationController(ds) with CommonService {
 
   val form = ManageAdditionalFundsForm.form
 
@@ -39,7 +39,11 @@ class ManageAdditionalFundsController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.manage_additional_funds(badForm)).pure,
-      data => save(data).flatMap(_ => submitAndExit(List()))))
+      view => for {
+        _ <- save(view)
+        _ <- vrs.submitSicAndCompliance()
+      } yield Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())))
+
 }
 
 

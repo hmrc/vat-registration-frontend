@@ -81,7 +81,6 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return 303 with selected completionCapacity" in {
-      val completionCapacityView = CompletionCapacityView(completionCapacity)
       when(mockPPService.getOfficerList()(any())).thenReturn(Seq(officer).pure)
       save4laterExpectsSave[CompletionCapacityView]()
       mockKeystoreFetchAndGet[Seq[Officer]]("OfficerList", Some(Seq(officer)))
