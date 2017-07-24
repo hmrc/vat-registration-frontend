@@ -77,18 +77,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
     fetchRegistrationId.flatMap(vatRegConnector.deleteVatScheme)
 
-//  def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Unit] =
-//    fetchRegistrationId.flatMap(vatRegConnector.deleteElement(elementPath))
-//
-//  def deleteElements(elementPaths: List[ElementPath])(implicit hc: HeaderCarrier): Future[Unit] = {
-//    import cats.instances.list._
-//    elementPaths traverse_ deleteElement
-//  }
-//
-//  def conditionalDeleteElement(elementPath: ElementPath, cond: Boolean)(implicit hc: HeaderCarrier): Future[Unit] = {
-//    if (cond) deleteElement(elementPath) else ().pure
-//  }
-
   def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit] =
     for {
       vatScheme <- vatRegConnector.createNewRegistration()
