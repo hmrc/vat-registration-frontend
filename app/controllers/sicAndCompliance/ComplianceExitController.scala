@@ -36,7 +36,7 @@ class ComplianceExitController (ds: CommonPlayDependencies)
         container <- s4lContainer[S4LVatSicAndCompliance]()
         _ <- s4lService.save(dropAllCompliance(container))
         _ <- vrs.submitSicAndCompliance()
-      } yield Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+      } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
       case _ => Redirect(controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()).pure
     }
 

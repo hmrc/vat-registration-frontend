@@ -19,7 +19,7 @@ package controllers.sicAndCompliance.labour
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.view.sicAndCompliance.BusinessActivityDescription
+import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.labour.TemporaryContracts
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -94,8 +94,6 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return 303 with TemporaryContracts Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsNoViewModel[BusinessActivityDescription]()
       save4laterExpectsSave[TemporaryContracts]()
 
       submitAuthorised(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -109,10 +107,9 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return 303 with TemporaryContracts No selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
-      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterExpectsSave[TemporaryContracts]()
+      save4laterReturns(S4LVatSicAndCompliance())
 
       submitAuthorised(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> TemporaryContracts.TEMP_CONTRACTS_NO

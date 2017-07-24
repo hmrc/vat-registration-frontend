@@ -49,7 +49,7 @@ class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPl
           container <- s4lContainer[S4LVatSicAndCompliance]()
           _ <- s4lService.save(dropFromDiscInvManServices(container))
           _ <- vrs.submitSicAndCompliance()
-        } yield controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show(),
+        } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show(),
         ifFalse = controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show().pure
       ).map(Redirect)))
 

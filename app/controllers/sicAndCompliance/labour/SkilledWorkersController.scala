@@ -42,6 +42,6 @@ class SkilledWorkersController @Inject()(ds: CommonPlayDependencies)
       view => for {
         _ <- save(view)
         _ <- vrs.submitSicAndCompliance()
-      } yield Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())))
+      } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())))
 
 }

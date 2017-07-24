@@ -159,7 +159,6 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "return 303 with Vat Registration Date selected" in {
-      val minDate: LocalDate = today.plusDays(30)
       save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
       save4laterExpectsSave[FrsStartDateView]()
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(true).pure)
