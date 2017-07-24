@@ -52,7 +52,7 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
   val startDateRow: SummaryRow = SummaryRow(
     s"$sectionId.startDate",
     vatTradingDetails.map(_.vatChoice).collect {
-      case VatChoice(NECESSITY_VOLUNTARY, VatStartDate(_, Some(date)), _) => date.format(presentationFormatter)
+      case VatChoice(NECESSITY_VOLUNTARY, VatStartDate(_, Some(date)), _, _) => date.format(presentationFormatter)
     }.getOrElse(s"pages.summary.$sectionId.mandatoryStartDate"),
     if (voluntaryRegistration) Some(controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()) else None
   )
