@@ -42,6 +42,6 @@ class FormerNameController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.vatLodgingOfficer.former_name(badForm)).pure,
       data => data.yesNo.pure.ifM(
         ifTrue = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.FormerNameDateController.show())),
-        ifFalse = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show())))))
+        ifFalse = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())))))
 
 }

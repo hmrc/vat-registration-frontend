@@ -88,7 +88,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
       submitAuthorised(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "manageAdditionalFundsRadio" -> "true"
       )) {
-        response => response redirectsTo s"$contextRoot/business-bank-account"
+        response => response redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk"
       }
     }
 
@@ -102,7 +102,7 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
       submitAuthorised(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "manageAdditionalFundsRadio" -> "false"
       )) {
-        response => response redirectsTo s"$contextRoot/business-bank-account"
+        response => response redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk"
       }
     }
   }
