@@ -16,18 +16,14 @@
 
 package models.api
 
-import play.api.libs.json._
+import java.time.LocalDate
 
-case class VatChoice(necessity: String, // "obligatory" or "voluntary"
-                      vatStartDate: VatStartDate,
-                      reason: Option[String] = None,
-                      vatThresholdPostIncorp: Option[VatThresholdPostIncorp] = None)
+import play.api.libs.json.Json
 
-object VatChoice {
+case class VatThresholdPostIncorp(overThresholdSelection: Boolean, overThresholdDate: Option[LocalDate])
 
-  val NECESSITY_OBLIGATORY = "obligatory"
-  val NECESSITY_VOLUNTARY = "voluntary"
+object VatThresholdPostIncorp {
 
-  implicit val format: OFormat[VatChoice] = Json.format[VatChoice]
+  implicit val format = Json.format[VatThresholdPostIncorp]
 
 }
