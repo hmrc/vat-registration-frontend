@@ -51,10 +51,6 @@ trait RegistrationService {
 
   def submitVatLodgingOfficer()(implicit hc: HeaderCarrier): Future[VatLodgingOfficer]
 
-//  def deleteElement(elementPath: ElementPath)(implicit hc: HeaderCarrier): Future[Unit]
-//
-//  def deleteElements(elementPath: List[ElementPath])(implicit hc: HeaderCarrier): Future[Unit]
-
 }
 
 class VatRegistrationService @Inject()(s4LService: S4LService,
