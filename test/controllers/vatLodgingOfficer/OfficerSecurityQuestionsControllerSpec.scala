@@ -130,7 +130,7 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
       mockKeystoreFetchAndGet[Officer](REGISTERING_OFFICER_KEY, Some(officer))
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> NINO)
-      )(_ redirectsTo s"$contextRoot/your-contact-details")
+      )(_ redirectsTo s"$contextRoot/changed-name")
     }
 
     "return 303 with no officer in keystore" in {
@@ -138,7 +138,7 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> NINO)
-      )(_ redirectsTo s"$contextRoot/your-contact-details")
+      )(_ redirectsTo s"$contextRoot/changed-name")
     }
   }
 

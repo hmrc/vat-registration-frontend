@@ -18,12 +18,11 @@ package controllers.vatFinancials.vatAccountingPeriod
 
 import connectors.KeystoreConnector
 import controllers.vatFinancials
-import controllers.vatFinancials.EstimateVatTurnoverKey
 import fixtures.VatRegistrationFixture
 import forms.vatFinancials.vatAccountingPeriod.VatReturnFrequencyForm
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
+import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -77,65 +76,46 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
   s"POST ${vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Monthly" should {
 
-    "redirect to summary page" when {
+    "redirect to mandatory start date page" when {
 
-      "taxable turnover above the FRS threshold of 150k" in {
-        save4laterReturnsViewModel(EstimateVatTurnover(200000L))() //above the 150k threshold
+      "voluntary registration is no" in {
+        save4laterReturnsViewModel(VoluntaryRegistration.no)()
         save4laterExpectsSave[VatReturnFrequency]()
         save4laterExpectsSave[AccountingPeriod]()
 
         when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
-        when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
-        when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
-        mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
 
         submitAuthorised(Controller.submit(),
           fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
-          _ redirectsTo s"$contextRoot/check-your-answers"
+          _ redirectsTo s"$contextRoot/vat-start-date"
         }
-
-        verify(mockVatRegistrationService).submitVatFinancials()(any())
       }
 
-    }
-
-    "redirect to start of FRS Flow" when {
-
-      "estimated vat turnover less than 150k" in {
-        save4laterReturnsViewModel(EstimateVatTurnover(100000L))() //below the 150k threshold
+      "voluntary registration is yes" in {
+        save4laterReturnsViewModel(VoluntaryRegistration.yes)()
         save4laterExpectsSave[VatReturnFrequency]()
         save4laterExpectsSave[AccountingPeriod]()
 
         when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
-        when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
-        when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
-        mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
 
         submitAuthorised(Controller.submit(),
           fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
-          _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
+          _ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be"
         }
-
-        verify(mockVatRegistrationService).submitVatFinancials()(any())
       }
 
-      "estimated vat turnover can't be determined" in {
-        save4laterExpectsSave[VatReturnFrequency]()
-        save4laterExpectsSave[AccountingPeriod]()
+      "no voluntary registration view model exists" in {
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
-        save4laterReturnsNoViewModel[EstimateVatTurnover]()
+        save4laterExpectsSave[VatReturnFrequency]()
+        save4laterExpectsSave[AccountingPeriod]()
+        save4laterReturnsNoViewModel[VoluntaryRegistration]()
 
         when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
-        when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
-        when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
-        mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
 
         submitAuthorised(Controller.submit(),
           fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
-          _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
+          _ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be"
         }
-
-        verify(mockVatRegistrationService).submitVatFinancials()(any())
       }
 
     }

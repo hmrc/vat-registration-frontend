@@ -18,18 +18,22 @@ package controllers.vatFinancials.vatBankAccount
 
 import javax.inject.Inject
 
+import controllers.vatFinancials.EstimateVatTurnoverKey.lastKnownValueKey
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.vatBankAccount.CompanyBankAccountForm
-import models.VatBankAccountPath
+import models.view.vatFinancials.EstimateVatTurnover
+import models.{VatBankAccountPath, VatFlatRateSchemePath}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccount
 import play.api.mvc._
-import services.{S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, VatRegistrationService}
 
 
 class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with FlatMapSyntax {
+  extends VatRegistrationController(ds) with FlatMapSyntax with CommonService {
+
+  val joinThreshold: Long = conf.getLong("thresholds.frs.joinThreshold").get
 
   val form = CompanyBankAccountForm.form
 
@@ -42,8 +46,18 @@ class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.vatFinancials.vatBankAccount.company_bank_account(badForm)).pure,
       data => save(data).map(_ => data.yesNo == CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES).ifM(
         ifTrue = controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show().pure,
-        ifFalse = vrs.deleteElement(VatBankAccountPath).map(_ =>
-          controllers.vatFinancials.routes.EstimateVatTurnoverController.show())
+        ifFalse = for {
+          originalTurnover <- keystoreConnector.fetchAndGet[Long](lastKnownValueKey)
+          _ <- vrs.deleteElement(VatBankAccountPath)
+          _ <- save(data)
+          _ <- vrs.submitVatFinancials()
+          turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
+          _ <- vrs.conditionalDeleteElement(VatFlatRateSchemePath, originalTurnover.getOrElse(0) != turnover)
+        } yield if (turnover > joinThreshold) {
+          controllers.routes.SummaryController.show()
+        } else {
+          controllers.frs.routes.JoinFrsController.show()
+        }
       ).map(Redirect)))
 
 }

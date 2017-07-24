@@ -47,7 +47,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
         .thenReturn(Future.successful(Some(SicStub(Some("12345678"), None, None, None))))
       callAuthorised(ComplianceIntroductionController.submit) {
         result =>
-          result redirectsTo s"$contextRoot/business-bank-account"
+          result redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk"
       }
     }
 

@@ -38,8 +38,9 @@ class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       copyGlobalErrorsToFields("daytimePhone", "mobile")
         .andThen(form => BadRequest(views.html.pages.vatContact.business_contact_details(form)).pure),
-      save(_).flatMap(_ =>
-        vrs.submitVatContact().map(_
-        => Redirect(controllers.ppob.routes.PpobController.show())))))
+        contactDetails => for {
+        _ <- save(contactDetails)
+        _ <- vrs.submitVatContact()
+      } yield Redirect(controllers.vatTradingDetails.routes.TradingNameController.show())))
 
 }

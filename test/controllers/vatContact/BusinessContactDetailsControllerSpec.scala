@@ -89,7 +89,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
           "email" -> "some@email.com",
           "daytimePhone" -> "0123456789",
           "mobile" -> "0123456789")
-      )(_ redirectsTo s"$contextRoot/where-will-company-carry-out-most-of-its-business-activities")
+      )(_ redirectsTo s"$contextRoot/trading-name")
 
       verify(mockVatRegistrationService).submitVatContact()(any())
     }

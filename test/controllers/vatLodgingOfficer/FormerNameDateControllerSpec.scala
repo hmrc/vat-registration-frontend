@@ -148,7 +148,7 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
           "formerNameDate.month" -> "1",
           "formerNameDate.year" -> "2017"
         )) {
-        _ redirectsTo s"$contextRoot/pass-security"
+        _ redirectsTo s"$contextRoot/your-contact-details"
       }
 
     }

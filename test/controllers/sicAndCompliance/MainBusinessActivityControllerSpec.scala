@@ -108,7 +108,7 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> sicCode.id)
-      )(_ redirectsTo s"$contextRoot/business-bank-account")
+      )(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
 
     }
   }
@@ -153,7 +153,7 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(validSicAndCompliance.pure)
       when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
-      callAuthorised(Controller.redirectToNext())(_ redirectsTo s"$contextRoot/business-bank-account")
+      callAuthorised(Controller.redirectToNext())(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
     }
   }
 
