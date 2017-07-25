@@ -21,8 +21,7 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.vatAccountingPeriod.VatReturnFrequencyForm
-import models.S4LVatSicAndCompliance.financeOnly
-import models.{AccountingPeriodStartPath, S4LVatFinancials, S4LVatSicAndCompliance}
+import models.S4LVatFinancials
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.MONTHLY
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration

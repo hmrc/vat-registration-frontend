@@ -21,10 +21,9 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.frs.AnnualCostsInclusiveForm
-import models.ElementPath.fromFrsAnnualCostsInclusiveElementPaths
+import models._
 import models.view.frs.AnnualCostsInclusiveView.NO
 import models.view.frs.{AnnualCostsInclusiveView, JoinFrsView}
-import models._
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
