@@ -86,7 +86,6 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
       save4laterReturnsViewModel(EstimateVatTurnover(151000L))()
       save4laterExpectsSave[CompanyBankAccount]()
       when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
-      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(validVatFlatRateScheme.pure)
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatFinancials())
 
@@ -101,7 +100,6 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
       save4laterReturnsViewModel(EstimateVatTurnover(149000L))()
       save4laterExpectsSave[CompanyBankAccount]()
       when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
-      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(validVatFlatRateScheme.pure)
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatFinancials())
 
