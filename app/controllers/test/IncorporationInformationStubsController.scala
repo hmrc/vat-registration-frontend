@@ -24,6 +24,7 @@ import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, RegistrationService}
+
 //$COVERAGE-OFF$
 class IncorporationInformationStubsController @Inject()(vatRegistrationService: RegistrationService, vatRegConnector: TestRegistrationConnector, ds: CommonPlayDependencies)
   extends VatRegistrationController(ds) with CommonService{
