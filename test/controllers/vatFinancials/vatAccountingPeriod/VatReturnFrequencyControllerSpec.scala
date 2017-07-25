@@ -21,6 +21,7 @@ import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
 import forms.vatFinancials.vatAccountingPeriod.VatReturnFrequencyForm
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.S4LVatFinancials
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import org.mockito.Matchers.any
@@ -81,9 +82,8 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       "voluntary registration is no" in {
         save4laterReturnsViewModel(VoluntaryRegistration.no)()
         save4laterExpectsSave[VatReturnFrequency]()
-        save4laterExpectsSave[AccountingPeriod]()
-
-        when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+        when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+        save4laterReturns(S4LVatFinancials())
 
         submitAuthorised(Controller.submit(),
           fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
@@ -94,9 +94,8 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       "voluntary registration is yes" in {
         save4laterReturnsViewModel(VoluntaryRegistration.yes)()
         save4laterExpectsSave[VatReturnFrequency]()
-        save4laterExpectsSave[AccountingPeriod]()
-
-        when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+        when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+        save4laterReturns(S4LVatFinancials())
 
         submitAuthorised(Controller.submit(),
           fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
@@ -107,10 +106,9 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       "no voluntary registration view model exists" in {
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
         save4laterExpectsSave[VatReturnFrequency]()
-        save4laterExpectsSave[AccountingPeriod]()
         save4laterReturnsNoViewModel[VoluntaryRegistration]()
-
-        when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+        when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+        save4laterReturns(S4LVatFinancials())
 
         submitAuthorised(Controller.submit(),
           fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {

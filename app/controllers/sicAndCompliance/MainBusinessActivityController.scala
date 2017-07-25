@@ -21,7 +21,6 @@ import javax.inject.Inject
 import cats.data.OptionT
 import controllers.CommonPlayDependencies
 import forms.sicAndCompliance.MainBusinessActivityForm
-import models.ElementPath.flatRateSchemeElementPaths
 import models.ModelKeys._
 import models.S4LFlatRateScheme
 import models.api.SicCode
@@ -62,7 +61,7 @@ class MainBusinessActivityController @Inject()(ds: CommonPlayDependencies)
         )(selected => for {
           mainSic <- viewModel[MainBusinessActivityView]().value
           selectionChanged = mainSic.exists(_.id != selected.id)
-          _ <- s4l.save(S4LFlatRateScheme()) *> vrs.deleteElements(flatRateSchemeElementPaths) onlyIf selectionChanged
+          _ <- s4l.save(S4LFlatRateScheme()) onlyIf selectionChanged
           _ <- save(MainBusinessActivityView(selected))
           result <- selectNextPage(sicCodeList)
         } yield result))))
@@ -70,7 +69,7 @@ class MainBusinessActivityController @Inject()(ds: CommonPlayDependencies)
   def redirectToNext: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     fetchSicCodeList().flatMap {
       case Nil => selectNextPage(Nil)
-      case sicCodeList@(head :: tail) => save(MainBusinessActivityView(head)).flatMap(_ => selectNextPage(sicCodeList))
+      case sicCodeList@(head :: _) => save(MainBusinessActivityView(head)).flatMap(_ => selectNextPage(sicCodeList))
     })
 
 }

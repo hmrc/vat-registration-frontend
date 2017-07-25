@@ -18,19 +18,20 @@ package controllers.sicAndCompliance.financial
 
 import javax.inject.Inject
 
-import controllers.CommonPlayDependencies
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.financial.ActAsIntermediaryForm
-import models.ElementPath
+import models.S4LVatSicAndCompliance
+import models.S4LVatSicAndCompliance.dropFromActAsIntermediary
 import models.view.sicAndCompliance.financial.ActAsIntermediary
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{RegistrationService, S4LService}
+import services.{CommonService, RegistrationService, S4LService}
 
 
 class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
-                                           (implicit s4LService: S4LService, vrs: RegistrationService)
-  extends ComplianceExitController(ds) {
+                                           (implicit s4lService: S4LService, vrs: RegistrationService)
+  extends VatRegistrationController(ds) with CommonService {
 
   import cats.syntax.flatMap._
 
@@ -44,8 +45,12 @@ class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.act_as_intermediary(badForm)).pure,
       view => save(view).map(_ => view.yesNo).ifM(
-        ifTrue = submitAndExit(ElementPath.finCompElementPaths),
-        ifFalse = Redirect(controllers.sicAndCompliance.financial.routes.ChargeFeesController.show()).pure
-      )))
+        ifTrue = for {
+          container <- s4lContainer[S4LVatSicAndCompliance]()
+          _ <- s4lService.save(dropFromActAsIntermediary(container))
+          _ <- vrs.submitSicAndCompliance()
+        } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show(),
+        ifFalse = controllers.sicAndCompliance.financial.routes.ChargeFeesController.show().pure
+      ).map(Redirect)))
 
 }

@@ -22,11 +22,14 @@ import cats.Show
 import controllers.vatFinancials.EstimateVatTurnoverKey.lastKnownValueKey
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.vatBankAccount.{CompanyBankAccountDetailsForm, SortCode}
-import models.VatFlatRateSchemePath
+import models.{S4LFlatRateScheme, VatFlatRateSchemePath}
 import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
 import play.api.mvc._
 import services.{CommonService, S4LService, VatRegistrationService}
+
+import cats.syntax.cartesian._
+import common.ConditionalFlatMap._
 
 class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
                                                    (implicit s4l: S4LService, vrs: VatRegistrationService)
@@ -56,7 +59,7 @@ class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
           sortCode = Show[SortCode].show(view.sortCode)))
         _ <- vrs.submitVatFinancials()
         turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
-        _ <- vrs.conditionalDeleteElement(VatFlatRateSchemePath, originalTurnover.getOrElse(0) != turnover)
+        _ <- s4l.save(S4LFlatRateScheme()) onlyIf originalTurnover.getOrElse(0) != turnover
       } yield if (turnover > joinThreshold) {
         Redirect(controllers.routes.SummaryController.show())
       } else {

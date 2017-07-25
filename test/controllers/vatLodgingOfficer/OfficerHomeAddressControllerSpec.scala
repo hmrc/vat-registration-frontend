@@ -19,7 +19,7 @@ package controllers.vatLodgingOfficer
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer}
+import models.api.ScrsAddress
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{verify, when}
@@ -44,15 +44,10 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
 
   s"GET ${routes.OfficerHomeAddressController.show()}" should {
 
-    "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer =
-        Some(VatLodgingOfficer(address, DateOfBirth.empty, "", "director",
-                        officerName, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)))
-
+    "return HTML when there's nothing in S4L" in {
       save4laterReturnsNoViewModel[OfficerHomeAddressView]()
       mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", dummyCacheMap)
       when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
 
       callAuthorised(Controller.show()) {
         _ includesText "What is your home address"
@@ -60,18 +55,14 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      val vatScheme = validVatScheme.copy(lodgingOfficer = None)
-
-      save4laterReturnsNoViewModel[OfficerHomeAddressView]()
+      save4laterReturnsViewModel(OfficerHomeAddressView(scrsAddress.id, Some(scrsAddress)))()
       mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", dummyCacheMap)
       when(mockPPService.getOfficerAddressList()(any())).thenReturn(Seq(address).pure)
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
 
       callAuthorised(Controller.show()) {
         _ includesText "What is your home address"
       }
     }
-
   }
 
   s"POST ${routes.OfficerHomeAddressController.submit()}" should {
@@ -121,7 +112,5 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
 
       verify(mockS4LService).updateViewModel(any(), any())(any(), any(), any(), any())
     }
-
   }
-
 }
