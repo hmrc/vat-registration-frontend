@@ -16,6 +16,7 @@
 
 package controllers.vatTradingDetails.vatChoice
 
+import java.time.LocalDate
 import javax.inject.Inject
 
 import cats.syntax.FlatMapSyntax
@@ -30,7 +31,7 @@ class OverThresholdController @Inject()(overThresholdFormFactory: OverThresholdF
                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with FlatMapSyntax {
 
-  val form: Form[OverThresholdView] = overThresholdFormFactory.form
+  val form: Form[OverThresholdView] = overThresholdFormFactory.form(LocalDate.now().minusMonths(2)) //waiting on work to get the DOI from II
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel[OverThresholdView]().fold(form)(form.fill)

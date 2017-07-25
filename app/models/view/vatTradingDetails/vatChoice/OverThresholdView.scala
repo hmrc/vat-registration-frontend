@@ -19,7 +19,7 @@ package models.view.vatTradingDetails.vatChoice
 import java.time.LocalDate
 
 import models._
-import models.api.VatScheme
+import models.api.{VatScheme, VatThresholdPostIncorp}
 import play.api.libs.json.Json
 
 import scala.util.Try
@@ -48,7 +48,9 @@ object OverThresholdView {
 
   // Returns a view model for a specific part of a given VatScheme API model
   implicit val modelTransformer = ApiModelTransformer[OverThresholdView] { vs: VatScheme =>
-    None
+    vs.tradingDetails.map(_.vatChoice.vatThresholdPostIncorp).collect {
+      case Some(VatThresholdPostIncorp(selection, d@_)) => OverThresholdView(selection, d)
+    }
   }
 
 }
