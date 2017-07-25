@@ -54,7 +54,8 @@ class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
           _ <- s4l.save(container.copy(companyBankAccountDetails = None))
           _ <- vrs.submitVatFinancials()
           turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
-          _ <- s4l.save(S4LFlatRateScheme()) onlyIf originalTurnover.getOrElse(0) != turnover
+          _ <- s4l.save(S4LFlatRateScheme()).flatMap(
+            _ => vrs.submitVatFlatRateScheme()) onlyIf originalTurnover.getOrElse(0) != turnover
         } yield if (turnover > joinThreshold) {
           controllers.routes.SummaryController.show()
         } else {
