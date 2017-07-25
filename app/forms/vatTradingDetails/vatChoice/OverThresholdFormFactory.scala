@@ -29,7 +29,7 @@ import play.api.data.Forms._
 import services.DateService
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
-class OverThresholdFormFactory @Inject()(dateService: DateService, today: Now[LocalDate]) {
+class OverThresholdFormFactory @Inject()(today: Now[LocalDate]) {
 
   implicit object LocalDateOrdering extends Ordering[LocalDate] {
     override def compare(x: LocalDate, y: LocalDate): Int = x.compareTo(y)
@@ -40,7 +40,7 @@ class OverThresholdFormFactory @Inject()(dateService: DateService, today: Now[Lo
   def form(dateOfIncorporation: LocalDate): Form[OverThresholdView] = {
 
     val minDate: LocalDate = dateOfIncorporation
-    val maxDate: LocalDate = LocalDate.now().minusMonths(1)
+    val maxDate: LocalDate = LocalDate.now()
 
     implicit val specificErrorCode: String = "overThreshold.date"
 
