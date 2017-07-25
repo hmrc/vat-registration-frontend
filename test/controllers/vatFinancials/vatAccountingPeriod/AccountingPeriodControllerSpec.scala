@@ -81,7 +81,6 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
           accountingPeriod =>
             save4laterReturnsViewModel(VoluntaryRegistration.no)()
             save4laterExpectsSave[AccountingPeriod]()
-            when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
 
             submitAuthorised(Controller.submit(),
               fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
@@ -95,7 +94,6 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
           accountingPeriod =>
             save4laterReturnsViewModel(VoluntaryRegistration.yes)()
             save4laterExpectsSave[AccountingPeriod]()
-            when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
 
             submitAuthorised(Controller.submit(),
               fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
@@ -110,7 +108,6 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
             when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
             save4laterExpectsSave[AccountingPeriod]()
             save4laterReturnsNoViewModel[VoluntaryRegistration]()
-            when(mockVatRegistrationService.conditionalDeleteElement(any(),any())(any())).thenReturn(().pure)
 
             submitAuthorised(Controller.submit(),
               fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {

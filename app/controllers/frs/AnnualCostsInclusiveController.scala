@@ -45,16 +45,15 @@ class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.frs.annual_costs_inclusive(badForm)).pure,
       view => (if (view.selection == NO) {
         save(view).flatMap(_ =>
-          vrs.getFlatRateSchemeThreshold().map {
+          getFlatRateSchemeThreshold().map {
             case n if n > PREVIOUS_QUESTION_THRESHOLD => controllers.frs.routes.AnnualCostsLimitedController.show()
             case _ => controllers.frs.routes.ConfirmBusinessSectorController.show()
           })
       } else {
         for {
+          // save annualCostsInclusive and delete all later elements
           _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)), annualCostsInclusive = Some(view)))
-          _ <- vrs.deleteElements(fromFrsAnnualCostsInclusiveElementPaths)
         } yield controllers.frs.routes.RegisterForFrsController.show()
       }).map(Redirect)))
 
 }
-

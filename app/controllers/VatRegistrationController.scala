@@ -23,7 +23,8 @@ import cats.data.OptionT
 import cats.instances.FutureInstances
 import cats.syntax.ApplicativeSyntax
 import config.FrontendAuthConnector
-import models.{ApiModelTransformer, S4LKey, S4LModelTransformer, ViewModelFormat}
+import models.view.vatFinancials.EstimateVatTurnover
+import models._
 import play.api.Configuration
 import play.api.data.{Form, FormError}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -73,9 +74,30 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
                  f: Format[G],
                  k: S4LKey[G],
                  hc: HeaderCarrier,
-                 transformer: ApiModelTransformer[T]): OptionT[Future, T] =
-      s4l.getViewModel[T, G]().orElseF(vrs.getVatScheme() map transformer.toViewModel)
+                 s4lTransformer: S4LModelTransformer[G]
+                ): OptionT[Future, T] =
+      s4l.getViewModel[T, G](s4lContainer[G]())
   }
+
+  /****
+    * Get an up-to-date S4LContainer[G] - either from s4l or db (if not present in s4l)
+    */
+  protected[controllers] def s4lContainer[G]()
+                                            (implicit s4l: S4LService,
+                                             vrs: RegistrationService,
+                                             f: Format[G],
+                                             k: S4LKey[G],
+                                             hc: HeaderCarrier,
+                                             s4lTransformer: S4LModelTransformer[G]
+                                            ): Future[G] =
+    OptionT(s4l.fetchAndGet[G]()).getOrElseF(
+      vrs.getVatScheme() map s4lTransformer.toS4LModel)
+
+
+  def getFlatRateSchemeThreshold()(implicit s4l: S4LService, vrs: RegistrationService, hc: HeaderCarrier): Future[Long] =
+    viewModel[EstimateVatTurnover]()
+      .map(_.vatTurnoverEstimate).fold(0L)(estimate => Math.round(estimate * 0.02))
+
 
   protected[controllers] def save[T] = new ViewModelUpdateHelper[T]
 
@@ -86,13 +108,9 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
                  r: ViewModelFormat.Aux[T, G],
                  f: Format[G],
                  k: S4LKey[G],
-                 transformer: S4LModelTransformer[G],
-                 hc: HeaderCarrier): Future[CacheMap] = {
-
-      val container = OptionT(s4l.fetchAndGet[G]()).getOrElseF(vrs.getVatScheme() map transformer.toS4LModel)
-
-      s4l.updateViewModel(data, container)
-    }
+                 s4lTransformer: S4LModelTransformer[G],
+                 hc: HeaderCarrier): Future[CacheMap] =
+      s4l.updateViewModel(data, s4lContainer[G]())
   }
 
   protected[controllers] def copyGlobalErrorsToFields[T](globalErrors: String*): Form[T] => Form[T] =

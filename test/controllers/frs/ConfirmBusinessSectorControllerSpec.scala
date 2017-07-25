@@ -61,7 +61,9 @@ class ConfirmBusinessSectorControllerSpec extends VatRegSpec with VatRegistratio
 
       "user's answer has already been submitted to backend" in {
         save4laterReturnsNoViewModel[BusinessSectorView]()
+        save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
+        when(mockConfigConnector.getBusinessSectorDetails(sicCode.id)).thenReturn(validBusinessSectorView)
 
         callAuthorised(Controller.show()) { result =>
           result includesText "Confirm the company&#x27;s business type"

@@ -21,6 +21,7 @@ import controllers.vatFinancials
 import controllers.vatFinancials.EstimateVatTurnoverKey
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.S4LVatFinancials
 import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
 import org.mockito.Matchers.any
@@ -84,68 +85,58 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
   }
 
 
-  s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()} with Empty data" should {
-    "return 400" in {
+  s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()}" should {
+    "return 400 with Empty data" in {
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(_ isA 400)
     }
-  }
 
-
-  s"POST ${vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.submit()} " +
-    s"with valid Company Bank Account Details and turnover estimate less than threshold" should {
-
-    "redirect to start of FRS flow" in {
+    "redirect to start of FRS flow with valid Company Bank Account Details and turnover estimate less than threshold" in {
+      mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
       save4laterExpectsSave[CompanyBankAccountDetails]()
       save4laterReturnsViewModel(EstimateVatTurnover(149000L))()
       when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
-      mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
-      when(mockVatRegistrationService.conditionalDeleteElement(any(), any())(any())).thenReturn(().pure)
+      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(validVatFlatRateScheme.pure)
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      save4laterReturns(S4LVatFinancials())
+
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
         _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
       }
     }
 
-  }
-
-  s"POST ${vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.submit()} " +
-    s"with valid Company Bank Account Details and turnover estimate greater than threshold" should {
-
-    "redirect to summary" in {
+    "redirect to summary with valid Company Bank Account Details and turnover estimate greater than threshold" in {
+      mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
       save4laterExpectsSave[CompanyBankAccountDetails]()
       save4laterReturnsViewModel(EstimateVatTurnover(151000))()
       when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
-      mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
-      when(mockVatRegistrationService.conditionalDeleteElement(any(), any())(any())).thenReturn(().pure)
+      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(validVatFlatRateScheme.pure)
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      save4laterReturns(S4LVatFinancials())
+
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
         _ redirectsTo s"$contextRoot/check-your-answers"
       }
     }
 
-  }
-
-  s"POST ${vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.submit()} " +
-    s"with valid Company Bank Account Details and no turnover estimate found" should {
-
-    "redirect to start of FRS flow" in {
+    "redirect to start of FRS flow with valid Company Bank Account Details and no turnover estimate found" in {
+      mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
       save4laterExpectsSave[CompanyBankAccountDetails]()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
       save4laterReturnsNoViewModel[EstimateVatTurnover]()
       when(mockVatRegistrationService.submitVatFinancials()(any())).thenReturn(validVatFinancials.pure)
-      mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
-      when(mockVatRegistrationService.conditionalDeleteElement(any(), any())(any())).thenReturn(().pure)
+      when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(validVatFlatRateScheme.pure)
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      save4laterReturns(S4LVatFinancials())
+
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
         _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
       }
     }
 
-  }
-
-  s"POST ${vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.submit()} with invalid Company Bank Account Details" should {
-
-    "return 400" in {
+    "return 400 with invalid Company Bank Account Details" in {
       save4laterExpectsSave[CompanyBankAccountDetails]()
       val invalidFormData = validBankAccountFormData.drop(1)
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(invalidFormData: _*))(_ isA 400)
