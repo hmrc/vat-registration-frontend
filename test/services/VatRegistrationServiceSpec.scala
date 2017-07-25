@@ -153,7 +153,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       service.deleteVatScheme() completedSuccessfully
     }
   }
-  
+
   "When this is the first time the user starts a journey and we're persisting to the backend" should {
 
     "submitVatFinancials should process the submission even if VatScheme does not contain a VatFinancials object" in new Setup {
