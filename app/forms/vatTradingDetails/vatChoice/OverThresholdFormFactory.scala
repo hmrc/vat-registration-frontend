@@ -20,8 +20,8 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 import common.Now
-import forms.FormValidation.Dates.{nonEmptyPartialDateModel, validPartialDateModel}
-import forms.FormValidation.{missingBooleanFieldMapping, onOrAfter}
+import forms.FormValidation.Dates.{nonEmptyMonthYearModel, validPartialMonthYearModel}
+import forms.FormValidation.{missingBooleanFieldMapping, inRange}
 import models.MonthYearModel
 import models.view.vatTradingDetails.vatChoice.OverThresholdView
 import play.api.data.Form
@@ -37,9 +37,10 @@ class OverThresholdFormFactory @Inject()(dateService: DateService, today: Now[Lo
 
   val RADIO_YES_NO = "overThresholdRadio"
 
-  def form(): Form[OverThresholdView] = {
+  def form(dateOfIncorporation: LocalDate): Form[OverThresholdView] = {
 
-    val minDate: LocalDate = (dateService.addWorkingDays(today(), 2))
+    val minDate: LocalDate = dateOfIncorporation
+    val maxDate: LocalDate = LocalDate.now().minusMonths(1)
 
     implicit val specificErrorCode: String = "overThreshold.date"
 
@@ -52,7 +53,7 @@ class OverThresholdFormFactory @Inject()(dateService: DateService, today: Now[Lo
             "month" -> text,
             "year" -> text
           )(MonthYearModel.apply)(MonthYearModel.unapply).verifying(
-            nonEmptyPartialDateModel(validPartialDateModel(onOrAfter(minDate))))
+            nonEmptyMonthYearModel(validPartialMonthYearModel(inRange(minDate, maxDate))))
         )
       )(OverThresholdView.bind)(OverThresholdView.unbind)
     )
