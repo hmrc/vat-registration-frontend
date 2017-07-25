@@ -54,12 +54,13 @@ class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
       view => for {
         originalTurnover <- keystoreConnector.fetchAndGet[Long](lastKnownValueKey)
         _ <- save(CompanyBankAccountDetails(
-          accountName = view.accountName.trim,
-          accountNumber = view.accountNumber,
-          sortCode = Show[SortCode].show(view.sortCode)))
+                  accountName = view.accountName.trim,
+                  accountNumber = view.accountNumber,
+                  sortCode = Show[SortCode].show(view.sortCode)))
         _ <- vrs.submitVatFinancials()
         turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
-        _ <- s4l.save(S4LFlatRateScheme()) onlyIf originalTurnover.getOrElse(0) != turnover
+        _ <- s4l.save(S4LFlatRateScheme()).flatMap(
+            _ => vrs.submitVatFlatRateScheme()) onlyIf originalTurnover.getOrElse(0) != turnover
       } yield if (turnover > joinThreshold) {
         Redirect(controllers.routes.SummaryController.show())
       } else {
