@@ -18,6 +18,7 @@ package models
 
 import java.time.LocalDate
 import java.time.format.{DateTimeFormatter, ResolverStyle}
+import java.time.temporal.TemporalAdjusters
 
 import scala.util.Try
 
@@ -25,7 +26,7 @@ import scala.util.Try
 case class MonthYearModel(month: String, year: String) {
 
   def toLocalDate: Option[LocalDate] = Try {
-    LocalDate.parse(s"1-$month-$year", MonthYearModel.formatter)
+    LocalDate.parse(s"1-$month-$year", MonthYearModel.formatter).`with`(TemporalAdjusters.lastDayOfMonth())
   }.toOption
 
 }
