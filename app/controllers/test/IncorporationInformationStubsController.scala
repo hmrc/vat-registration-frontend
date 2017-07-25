@@ -40,6 +40,9 @@ class IncorporationInformationStubsController @Inject()(vatRegistrationService: 
     } yield  Ok("Data inserted")
   )
 
+  def getIncorpInfo(): Action[AnyContent] =
+    authorised.async(implicit user => implicit request => vatRegConnector.getIncorpInfo().map(res => Ok(Json.toJson(res.body))))
+
   def defaultTestData(id : String) : JsValue = {
     Json.parse(
       s"""
