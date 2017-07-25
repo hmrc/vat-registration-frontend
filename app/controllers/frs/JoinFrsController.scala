@@ -21,7 +21,6 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
-import models.ElementPath.flatRateSchemeElementPaths
 import models._
 import models.view.frs.JoinFrsView
 import play.api.mvc.{Action, AnyContent}
