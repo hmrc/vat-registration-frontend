@@ -19,7 +19,7 @@ package controllers.sicAndCompliance.labour
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.view.sicAndCompliance.BusinessActivityDescription
+import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.labour.Workers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -91,10 +91,9 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
 
     "return 303 with less than 8 workers entered" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
-      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterExpectsSave[Workers]()
+      save4laterReturns(S4LVatSicAndCompliance())
 
       submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
@@ -106,8 +105,6 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
 
     "return 303 with 8 or more workers entered" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsNoViewModel[BusinessActivityDescription]()
       save4laterExpectsSave[Workers]()
 
       submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(

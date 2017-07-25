@@ -64,11 +64,9 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
 
       "user's answer has already been submitted to backend" in {
         save4laterReturnsNoViewModel[BusinessSectorView]()
-        save4laterReturnsNoViewModel[MainBusinessActivityView]()
-        save4laterReturnsNoViewModel[RegisterForFrsView]()
-        save4laterReturnsNoViewModel[BusinessSectorView]()
-        save4laterReturnsNoViewModel[MainBusinessActivityView]()
+        save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
         when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
+        when(mockConfigConnector.getBusinessSectorDetails(sicCode.id)).thenReturn(validBusinessSectorView)
 
         callAuthorised(Controller.show) {
           _ includesText "Your flat rate"
@@ -81,9 +79,9 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
   s"POST ${routes.RegisterForFrsWithSectorController.submit()}" should {
 
     "return 400 with Empty data" in {
-      save4laterReturnsNoViewModel[BusinessSectorView]()
       save4laterReturnsNoViewModel[MainBusinessActivityView]()
       save4laterReturnsNoViewModel[RegisterForFrsView]()
+      save4laterReturnsViewModel(validBusinessSectorView)()
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -91,10 +89,10 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
     }
 
     "return 303 with RegisterFor Flat Rate Scheme selected Yes" in {
-      save4laterReturnsNoViewModel[BusinessSectorView]()
       save4laterReturnsNoViewModel[MainBusinessActivityView]()
       save4laterReturnsNoViewModel[RegisterForFrsView]()
 
+      save4laterReturnsViewModel(validBusinessSectorView)()
 
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
       save4laterExpectsSave[RegisterForFrsView]()
@@ -115,14 +113,12 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(false).pure)
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "registerForFrsWithSectorRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/check-your-answers")
 
       verify(mockVatRegistrationService).submitVatFlatRateScheme()(any())
-      verify(mockVatRegistrationService).deleteElements(any())(any())
     }
   }
 

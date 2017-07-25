@@ -49,10 +49,12 @@ trait S4LService extends CommonService {
   def fetchAndGet[T: S4LKey]()(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
     fetchRegistrationId.flatMap(s4LConnector.fetchAndGet[T](_, S4LKey[T].key))
 
-  def getViewModel[T, G]()(implicit r: ViewModelFormat.Aux[T, G], f: Format[G], k: S4LKey[G], hc: HeaderCarrier): OptionalResponse[T] =
+  // TODO getViewModel could be moved to VatRegistrationController, but would require rework
+  // TODO of S4LMockSugar and would impact many tests
+  def getViewModel[T, G](container: Future[G])
+                        (implicit r: ViewModelFormat.Aux[T, G], f: Format[G]): OptionalResponse[T] =
     for {
-      regId <- OptionT.liftF(fetchRegistrationId)
-      group <- OptionT(s4LConnector.fetchAndGet[G](regId, k.key))
+      group <- OptionT.liftF(container)
       vm <- OptionT.fromOption(r read group)
     } yield vm
 

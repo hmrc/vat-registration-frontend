@@ -36,18 +36,26 @@ class AnnualCostsLimitedController @Inject()(ds: CommonPlayDependencies)
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
-      estimateVatTurnover <- vrs.getFlatRateSchemeThreshold()
+      estimateVatTurnover <- getFlatRateSchemeThreshold()
       annualCostsLimitedForm <- viewModel[AnnualCostsLimitedView]().fold(defaultForm)(defaultForm.fill)
     } yield Ok(views.html.pages.frs.annual_costs_limited(annualCostsLimitedForm, estimateVatTurnover)))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    vrs.getFlatRateSchemeThreshold().flatMap(turnover =>
+    getFlatRateSchemeThreshold().flatMap(turnover =>
       AnnualCostsLimitedFormFactory.form(Seq(turnover)).bindFromRequest().fold(
         badForm => BadRequest(views.html.pages.frs.annual_costs_limited(badForm, turnover)).pure,
-        view => save(view).map(_ => view.selection == AnnualCostsLimitedView.NO).ifM(
-          ifTrue = controllers.frs.routes.ConfirmBusinessSectorController.show().pure,
-          ifFalse = vrs.deleteElements(fromFrsAnnualCostsLimitedElementPaths).
-            map(_ => controllers.frs.routes.RegisterForFrsController.show())
-        ).map(Redirect))))
+        view => (if (view.selection == AnnualCostsLimitedView.NO) {
+          save(view).map(_ => controllers.frs.routes.ConfirmBusinessSectorController.show())
+        } else {
+          for {
+            // save this view and delete later elements
+            frs <- s4lContainer[S4LFlatRateScheme]()
+            _ <- s4LService.save(frs.copy(
+                  annualCostsLimited = Some(view),
+                  frsStartDate = None,
+                  categoryOfBusiness = None
+            ))
+          } yield controllers.frs.routes.RegisterForFrsController.show()
+        }).map(Redirect))))
 
 }

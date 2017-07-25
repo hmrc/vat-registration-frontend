@@ -19,7 +19,9 @@ package controllers.vatFinancials
 import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
+import models.S4LVatFinancials
+import models.view.vatFinancials.ZeroRatedSales
+import models.view.vatFinancials.ZeroRatedSales.{ZERO_RATED_SALES_NO, ZERO_RATED_SALES_YES}
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -35,7 +37,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
   s"GET ${vatFinancials.routes.ZeroRatedSalesController.show()}" should {
 
     "return HTML when there's a Zero Rated Sales model in S4L" in {
-      save4laterReturnsViewModel(ZeroRatedSales(ZeroRatedSales.ZERO_RATED_SALES_YES))()
+      save4laterReturnsViewModel(ZeroRatedSales(ZERO_RATED_SALES_YES))()
 
       submitAuthorised(Controller.show(), fakeRequest.withFormUrlEncodedBody("zeroRatedSalesRadio" -> "")) {
         _ includesText "Will the company sell any zero-rated goods or services in the next 12 months?"
@@ -62,32 +64,26 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
   }
 
-  s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()} with Empty data" should {
-    "return 400" in {
+  s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()}" should {
+    "return 400 with Empty data" in {
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
-  }
 
-  s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()} with Zero Rated Sales selected Yes" should {
-
-    "return 303" in {
+    "return 303 with Zero Rated Sales selected Yes" in {
       save4laterExpectsSave[ZeroRatedSales]()
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("zeroRatedSalesRadio" -> ZeroRatedSales.ZERO_RATED_SALES_YES)) {
+        fakeRequest.withFormUrlEncodedBody("zeroRatedSalesRadio" -> ZERO_RATED_SALES_YES)) {
         _ redirectsTo s"$contextRoot/estimate-zero-rated-sales-next-12-months"
       }
     }
-  }
 
-  s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()} with Zero Rated Sales selected No" should {
-
-    "return 303" in {
+    "return 303 with Zero Rated Sales selected No" in {
       save4laterExpectsSave[ZeroRatedSales]()
-      save4laterExpectsSave[EstimateZeroRatedSales]()
-      when(mockVatRegistrationService.deleteElement(any())(any())).thenReturn(().pure)
+      save4laterReturns(S4LVatFinancials())
+      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
 
       submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("zeroRatedSalesRadio" -> ZeroRatedSales.ZERO_RATED_SALES_NO)) {
+        fakeRequest.withFormUrlEncodedBody("zeroRatedSalesRadio" -> ZERO_RATED_SALES_NO)) {
         _ redirectsTo s"$contextRoot/expect-to-reclaim-more-vat-than-you-charge"
       }
     }

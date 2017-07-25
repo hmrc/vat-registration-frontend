@@ -46,10 +46,9 @@ class RegisterForFrsWithSectorController @Inject()(ds: CommonPlayDependencies, f
       } yield view.answer).ifM(
         ifTrue = controllers.frs.routes.FrsStartDateController.show().pure,
         ifFalse = for {
-          frs <- s4LService.fetchAndGet[S4LFlatRateScheme]()
-          _ <- s4LService.save(frs.getOrElse(S4LFlatRateScheme()).copy(frsStartDate = None))
+          frs <- s4lContainer[S4LFlatRateScheme]()
+          _ <- s4LService.save(frs.copy(frsStartDate = None))
           _ <- vrs.submitVatFlatRateScheme()
-          _ <- vrs.deleteElements(List(VatFrsWhenToJoin, VatFrsStartDate))
         } yield controllers.routes.SummaryController.show()
       ).map(Redirect)))
 

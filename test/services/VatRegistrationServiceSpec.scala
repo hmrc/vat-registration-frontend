@@ -85,39 +85,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     }
   }
 
-  "Calling getFlatRateSchemeThreshold" should {
-    "return 0 if no EstimateVatTurnover can be found anywhere" in new Setup {
-      when(mockS4LService.getViewModel[EstimateVatTurnover, S4LVatFinancials]()(any(), any(), any(), any())).thenReturn(OptionT.none[Future, EstimateVatTurnover])
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-
-      service.getFlatRateSchemeThreshold() returns 0L
-    }
-
-
-    "return 1000 if EstimateVatTurnover in the backend is 50'000" in new Setup {
-      when(mockS4LService.getViewModel[EstimateVatTurnover, S4LVatFinancials]()(any(), any(), any(), any())).thenReturn(OptionT.none[Future, EstimateVatTurnover])
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
-
-      service.getFlatRateSchemeThreshold() returns 1000L
-    }
-
-
-    "return correct number (2% rounded to nearest pound if EstimateVatTurnover is in Save 4 Later" in new Setup {
-      forAll(Seq[(Int, Double)](
-        1000 -> 20,
-        100 -> 2,
-        49 -> 1,
-        12324 -> 246, // 246.48 rounded down
-        12325 -> 247 // 246.5 rounded up
-      )) {
-        case (estimate, expectedFlatRateThreshold) =>
-          when(mockS4LService.getViewModel[EstimateVatTurnover, S4LVatFinancials]()(any(), any(), any(), any()))
-            .thenReturn(OptionT.some(EstimateVatTurnover(estimate)))
-          service.getFlatRateSchemeThreshold() returns expectedFlatRateThreshold
-      }
-    }
-  }
-
   "Calling submitTradingDetails" should {
     "return a success response when VatTradingDetails is submitted" in new Setup {
       save4laterReturns(S4LTradingDetails(tradingName = Some(validTradingNameView)))
@@ -184,52 +151,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.deleteVatScheme(any())(any(), any())).thenReturn(().pure)
 
       service.deleteVatScheme() completedSuccessfully
-    }
-  }
-
-  "Calling deleteElement" should {
-    "return a success response when successful" in new Setup {
-      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
-
-      service.deleteElement(VatBankAccountPath) completedSuccessfully
-    }
-  }
-
-  "Calling conditionalDeleteElement" should {
-
-    "deleteElement when cond is true" in new Setup {
-      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
-
-      service.conditionalDeleteElement(VatBankAccountPath, true) completedSuccessfully
-
-      verify(mockRegConnector, times(1)).deleteElement(any())(any())(any(), any())
-    }
-
-    "not deleteElement when cond is false" in new Setup {
-      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      service.conditionalDeleteElement(VatBankAccountPath, false) completedSuccessfully
-
-      verify(mockRegConnector, times(0)).deleteElement(any())(any())(any(), any())
-    }
-  }
-
-  "Calling deleteElements with items" should {
-    "return a success response when successful" in new Setup {
-      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
-
-      service.deleteElements(List(VatBankAccountPath, ZeroRatedTurnoverEstimatePath)) completedSuccessfully
-    }
-  }
-
-  "Calling deleteElements without items" should {
-    "return a success response when successful" in new Setup {
-      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteElement(any())(any())(any(), any())).thenReturn(().pure)
-
-      service.deleteElements(List()) completedSuccessfully
     }
   }
 
@@ -307,7 +228,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.upsertVatLodgingOfficer(any(), any())(any(), any())).thenReturn(validLodgingOfficer.pure)
       save4laterReturns(S4LVatLodgingOfficer(
         officerHomeAddress = Some(OfficerHomeAddressView("")),
-        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.now, NINO)),
+        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.now, validNino)),
         completionCapacity = Some(CompletionCapacityView(""))
       ))
       service.submitVatLodgingOfficer() returns validLodgingOfficer
