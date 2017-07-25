@@ -1,11 +1,11 @@
-GET        /current-profile-setup        controllers.test.CurrentProfileController.currentProfileSetup
+GET         /current-profile-setup       controllers.test.CurrentProfileController.currentProfileSetup
 
-GET        /s4l-teardown                 controllers.test.TestCacheController.tearDownS4L
+GET         /s4l-teardown                controllers.test.TestCacheController.tearDownS4L
 
-GET        /db-teardown                  controllers.test.TestVatRegistrationAdminController.dropCollection()
+GET         /db-teardown                 controllers.test.TestVatRegistrationAdminController.dropCollection()
 
-GET        /test-setup                   controllers.test.TestSetupController.show()
-POST       /test-setup                   controllers.test.TestSetupController.submit()
+GET         /test-setup                  controllers.test.TestSetupController.show()
+POST        /test-setup                  controllers.test.TestSetupController.submit()
 
 GET         /sic-stub                    controllers.test.SicStubController.show()
 POST        /sic-stub                    controllers.test.SicStubController.submit()
@@ -14,4 +14,6 @@ GET         /working-days                controllers.test.TestWorkingDaysValidat
 
 GET         /ct-registration             controllers.test.TestCTController.show()
 
-GET        /insert-ii-stub-data         controllers.test.IncorporationInformationStubsController.postTestData()
+GET         /insert-ii-stub-data         controllers.test.IncorporationInformationStubsController.postTestData()
+
+GET         /incorp-info                 controllers,test,IncorporationInformationStubsController.getIncorpInfo()
