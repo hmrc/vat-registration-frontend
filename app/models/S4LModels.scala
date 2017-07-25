@@ -187,6 +187,80 @@ final case class S4LVatSicAndCompliance
 )
 
 object S4LVatSicAndCompliance {
+  // utilities
+  def dropAllCompliance(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    deleteCultural(deleteLabour(deleteFinance(container)))
+
+  def financeOnly(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    deleteCultural(deleteLabour(container))
+
+  def labourOnly(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    deleteCultural(deleteFinance(container))
+
+  def culturalOnly(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    deleteLabour(deleteFinance(container))
+
+  // labour List(LabProvidesWorkersPath, LabWorkersPath, LabTempContractsPath, LabSkilledWorkersPath)
+  def dropFromCompanyProvideWorkers(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    container.copy(workers = None, temporaryContracts = None, skilledWorkers = None)
+
+  def dropFromWorkers(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    container.copy(temporaryContracts = None, skilledWorkers = None)
+
+  def dropFromTemporaryContracts(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    container.copy(skilledWorkers = None)
+
+
+  // finance
+  def dropFromActAsIntermediary(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    container.copy(chargeFees = None,
+      additionalNonSecuritiesWork = None,
+      discretionaryInvestmentManagementServices = None,
+      leaseVehicles = None,
+      investmentFundManagement = None,
+      manageAdditionalFunds = None)
+
+  def dropFromAddNonSecurities(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    container.copy(
+      discretionaryInvestmentManagementServices = None,
+      leaseVehicles = None,
+      investmentFundManagement = None,
+      manageAdditionalFunds = None)
+
+  def dropFromDiscInvManServices(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    container.copy(leaseVehicles = None, investmentFundManagement = None, manageAdditionalFunds = None)
+
+  def dropFromLeaseVehicles(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    container.copy(investmentFundManagement = None, manageAdditionalFunds = None)
+
+  def dropFromInvFundManagement(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    container.copy(manageAdditionalFunds = None)
+
+
+
+  private def deleteFinance(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    container.copy(
+      adviceOrConsultancy = None,
+      actAsIntermediary = None,
+      chargeFees = None,
+      leaseVehicles = None,
+      additionalNonSecuritiesWork = None,
+      discretionaryInvestmentManagementServices = None,
+      investmentFundManagement = None,
+      manageAdditionalFunds = None
+    )
+
+  private def deleteLabour(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    container.copy(
+      companyProvideWorkers = None,
+      workers = None,
+      temporaryContracts = None,
+      skilledWorkers = None
+    )
+
+  private def deleteCultural(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    container.copy(notForProfit = None)
+
   implicit val format: OFormat[S4LVatSicAndCompliance] = Json.format[S4LVatSicAndCompliance]
 
   implicit val modelT = new S4LModelTransformer[S4LVatSicAndCompliance] {

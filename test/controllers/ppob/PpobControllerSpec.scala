@@ -44,12 +44,9 @@ class PpobControllerSpec extends VatRegSpec
 
   s"GET ${routes.PpobController.show()}" should {
 
-    "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      val vatScheme = validVatScheme.copy(ppob = Some(address))
-
+    "return HTML when there's nothing in S4L" in {
       mockKeystoreCache[Seq[ScrsAddress]]("PpobAddressList", dummyCacheMap)
       save4laterReturnsNoViewModel[PpobView]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
       when(mockPPService.getPpobAddressList()(any())).thenReturn(Seq(address).pure)
 
       callAuthorised(Controller.show()) {
@@ -57,12 +54,9 @@ class PpobControllerSpec extends VatRegSpec
       }
     }
 
-    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      val vatScheme = validVatScheme.copy(ppob = None)
-
+    "return HTML when view is present in S4L" in {
+      save4laterReturnsViewModel(PpobView(addressId = address.id, address = Some(address)))()
       mockKeystoreCache[Seq[ScrsAddress]]("PpobAddressList", dummyCacheMap)
-      save4laterReturnsNoViewModel[PpobView]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(vatScheme.pure)
       when(mockPPService.getPpobAddressList()(any())).thenReturn(Seq(address).pure)
 
       callAuthorised(Controller.show()) {

@@ -21,7 +21,8 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.vatAccountingPeriod.VatReturnFrequencyForm
-import models.AccountingPeriodStartPath
+import models.S4LVatSicAndCompliance.financeOnly
+import models.{AccountingPeriodStartPath, S4LVatFinancials, S4LVatSicAndCompliance}
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.MONTHLY
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
@@ -45,13 +46,14 @@ class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.vatFinancials.vatAccountingPeriod.vat_return_frequency(badForm)).pure,
       view => save(view).map(_ => view.frequencyType == MONTHLY).ifM(
         ifTrue = for {
-          _ <- vrs.deleteElement(AccountingPeriodStartPath)
+          container <- s4lContainer[S4LVatFinancials]()
+          _ <- s4l.save(container.copy(accountingPeriod = None))
           voluntaryReg <- viewModel[VoluntaryRegistration]().fold(true)(_ == VoluntaryRegistration.yes)
         } yield if (voluntaryReg) {
-          controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()
-        } else {
-          controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show()
-        },
+            controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()
+          } else {
+            controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show()
+          },
         ifFalse = controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show().pure
       ).map(Redirect)))
 

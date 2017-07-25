@@ -18,18 +18,19 @@ package controllers.sicAndCompliance.labour
 
 import javax.inject.Inject
 
-import controllers.CommonPlayDependencies
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.labour.WorkersForm
-import models.ElementPath
+import models.S4LVatSicAndCompliance
+import models.S4LVatSicAndCompliance.dropFromWorkers
 import models.view.sicAndCompliance.labour.Workers
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, VatRegistrationService}
 
 
 class WorkersController @Inject()(ds: CommonPlayDependencies)
-                                 (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends ComplianceExitController(ds) {
+                                 (implicit s4lService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with CommonService {
 
   import cats.syntax.flatMap._
 
@@ -43,8 +44,12 @@ class WorkersController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.workers(badForm)).pure,
       data => save(data).map(_ => data.numberOfWorkers >= 8).ifM(
-        ifTrue = Redirect(controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show()).pure,
-        ifFalse = submitAndExit(ElementPath.labCompElementPaths.drop(2))
-      )))
+        ifTrue = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show().pure,
+        ifFalse = for {
+          container <- s4lContainer[S4LVatSicAndCompliance]()
+          _ <- s4lService.save(dropFromWorkers(container))
+          _ <- vrs.submitSicAndCompliance()
+        } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
+      ).map(Redirect)))
 
 }

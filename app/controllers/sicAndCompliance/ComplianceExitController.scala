@@ -17,39 +17,27 @@
 package controllers.sicAndCompliance
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import models.ElementPath.allCompliancePaths
+import models.S4LVatSicAndCompliance.dropAllCompliance
 import models._
 import models.api.SicCode
-import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import play.api.mvc._
 import services.{CommonService, RegistrationService, S4LService}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class ComplianceExitController (ds: CommonPlayDependencies)(implicit vrs: RegistrationService, s4LService: S4LService)
+class ComplianceExitController (ds: CommonPlayDependencies)
+                               (implicit vrs: RegistrationService, s4lService: S4LService)
   extends VatRegistrationController(ds) with CommonService {
 
-  import cats.syntax.all._
-
-  def submitAndExit(elements: List[ElementPath])(implicit hc: HeaderCarrier): Future[Result] =
-    for {
-      _ <- vrs.deleteElements(elements)
-      _ <- vrs.submitSicAndCompliance()
-    } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
-
-  def clearComplianceContainer(implicit hc: HeaderCarrier): Future[S4LVatSicAndCompliance] =
-    viewModel[BusinessActivityDescription]().value |@|
-      viewModel[MainBusinessActivityView]().value map {
-        (bad, mba) => S4LVatSicAndCompliance(description = bad, mainBusinessActivity = mba)
-    }
-
-  def selectNextPage(sicCodesList: List[SicCode])(implicit hc: HeaderCarrier):  Future[Result] = {
+  def selectNextPage(sicCodesList: List[SicCode])(implicit hc: HeaderCarrier): Future[Result] =
     ComplianceQuestions(sicCodesList) match {
-      case NoComplianceQuestions => submitAndExit(allCompliancePaths)
-      case _ =>
-        Redirect(controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()).pure
+      case NoComplianceQuestions => for {
+        container <- s4lContainer[S4LVatSicAndCompliance]()
+        _ <- s4lService.save(dropAllCompliance(container))
+        _ <- vrs.submitSicAndCompliance()
+      } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
+      case _ => Redirect(controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()).pure
     }
-  }
 
 }

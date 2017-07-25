@@ -80,9 +80,6 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
 
     "return 303 with Manage Additional Funds Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
-      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
       save4laterExpectsSave[ManageAdditionalFunds]()
 
       submitAuthorised(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -94,9 +91,6 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
 
     "return 303 with Manage Additional Funds No selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
       save4laterExpectsSave[ManageAdditionalFunds]()
 
       submitAuthorised(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
