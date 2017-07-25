@@ -22,7 +22,6 @@ import cats.data.OptionT
 import cats.instances.FutureInstances
 import com.google.inject.ImplementedBy
 import config.WSHttp
-import models.ElementPath
 import models.api._
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
@@ -127,12 +126,6 @@ trait RegistrationConnector extends FutureInstances {
                      (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Unit] =
     http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-scheme") recover {
       case e: Exception => throw logResponse(e, className, "deleteVatScheme")
-    } map (_ => ())
-
-  def deleteElement(elementPath: ElementPath)(regId: String)
-                   (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Unit] =
-    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete/${elementPath.name}") recover {
-      case e: Exception => throw logResponse(e, className, "deleteElement")
     } map (_ => ())
 
 }

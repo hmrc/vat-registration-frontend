@@ -18,7 +18,6 @@ package connectors
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.VatBankAccountPath
 import models.api._
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
@@ -108,17 +107,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "return the notFound exception when trying to DELETE non-existent registration" in new Setup {
       mockHttpFailedDELETE[Boolean]("tst-url", notFound)
       connector.deleteVatScheme("regId") failedWith notFound
-    }
-  }
-
-  "Calling deleteElement" should {
-    "return a successful outcome given an existing registration" in new Setup {
-      mockHttpDELETE[Boolean]("tst-url", true)
-      connector.deleteElement(VatBankAccountPath)("regId") completedSuccessfully
-    }
-    "return the notFound exception when trying to DELETE non-existent registration" in new Setup {
-      mockHttpFailedDELETE[Boolean]("tst-url", notFound)
-      connector.deleteElement(VatBankAccountPath)("regId") failedWith notFound
     }
   }
 

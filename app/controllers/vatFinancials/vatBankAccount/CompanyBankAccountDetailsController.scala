@@ -19,17 +19,15 @@ package controllers.vatFinancials.vatBankAccount
 import javax.inject.Inject
 
 import cats.Show
+import common.ConditionalFlatMap._
 import controllers.vatFinancials.EstimateVatTurnoverKey.lastKnownValueKey
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.vatBankAccount.{CompanyBankAccountDetailsForm, SortCode}
-import models.{S4LFlatRateScheme, VatFlatRateSchemePath}
+import models.S4LFlatRateScheme
 import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
 import play.api.mvc._
 import services.{CommonService, S4LService, VatRegistrationService}
-
-import cats.syntax.cartesian._
-import common.ConditionalFlatMap._
 
 class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
                                                    (implicit s4l: S4LService, vrs: VatRegistrationService)
