@@ -21,8 +21,8 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.genericForms.YesOrNoFormFactory
+import models.S4LFlatRateScheme
 import models.view.frs.{BusinessSectorView, RegisterForFrsView}
-import models.{S4LFlatRateScheme, VatFrsStartDate, VatFrsWhenToJoin}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
