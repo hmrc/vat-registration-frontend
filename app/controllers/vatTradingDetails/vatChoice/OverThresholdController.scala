@@ -17,6 +17,7 @@
 package controllers.vatTradingDetails.vatChoice
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 import cats.syntax.FlatMapSyntax
@@ -31,15 +32,17 @@ class OverThresholdController @Inject()(overThresholdFormFactory: OverThresholdF
                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with FlatMapSyntax {
 
-  val form: Form[OverThresholdView] = overThresholdFormFactory.form(LocalDate.now().minusMonths(2)) //waiting on work to get the DOI from II
+  val presentationFormatter = DateTimeFormatter.ofPattern("dd MMMM y")
+  val dateOfIncorporation = LocalDate.now().minusMonths(2) //fixed date until we can get the DOI from II
+  val form: Form[OverThresholdView] = overThresholdFormFactory.form(dateOfIncorporation)
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel[OverThresholdView]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatTradingDetails.vatChoice.over_threshold((f)))))
+      .map(f => Ok(views.html.pages.vatTradingDetails.vatChoice.over_threshold((f), dateOfIncorporation.format(presentationFormatter)))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.vatTradingDetails.vatChoice.over_threshold(badForm)).pure,
+      badForm => BadRequest(views.html.pages.vatTradingDetails.vatChoice.over_threshold(badForm, dateOfIncorporation.format(presentationFormatter))).pure,
       data => save(data).map(_ => Redirect(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show()))))
 
 }

@@ -1,7 +1,7 @@
 @import java.time.format.DateTimeFormatter
 
 @import models.view.vatTradingDetails.vatChoice.OverThresholdView
-@(overThresholdForm: Form[OverThresholdView])(implicit request: Request[_], messages: Messages)
+@(overThresholdForm: Form[OverThresholdView], dateOfIncorporation: String)(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
 
@@ -12,9 +12,7 @@
 
         <header class="page-header">
             <h1 class="form-title heading-xlarge" id="pageHeading">
-                @messages("pages.thresholdQuestion1.heading.part1")
-                [DOI]
-                @messages("pages.thresholdQuestion1.heading.part2")
+            @messages("pages.thresholdQuestion1.heading", dateOfIncorporation)
             </h1>
         </header>
 
