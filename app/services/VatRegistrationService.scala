@@ -160,8 +160,8 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       ) ( s4l => S4LFlatRateScheme.apiT.toApi(s4l, VatFlatRateScheme()) )
 
     for {
-      (vs, frsa) <- (getVatScheme() |@| s4l[S4LFlatRateScheme]()).tupled
-      response <- vatRegConnector.upsertVatFlatRateScheme(vs.id, merge(frsa, vs))
+      (vs, frs) <- (getVatScheme() |@| s4l[S4LFlatRateScheme]()).tupled
+      response <- vatRegConnector.upsertVatFlatRateScheme(vs.id, merge(frs, vs))
     } yield response
   }
 
