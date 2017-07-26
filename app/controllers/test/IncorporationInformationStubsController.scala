@@ -40,6 +40,9 @@ class IncorporationInformationStubsController @Inject()(
       _ <- vatRegConnector.postTestData(defaultTestData(id))
     } yield  Ok("Data inserted"))
 
+  def wipeTestDataIncorp(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
+      vatRegConnector.wipeIncorpTestData().map( _ => Ok("Incorporation data wiped")))
+
   def postTestDataIncorp(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
       _ <- vatRegistrationService.createRegistrationFootprint()
