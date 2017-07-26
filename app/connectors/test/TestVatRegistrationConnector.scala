@@ -48,10 +48,10 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
   lazy val incorporationFrontendStubsUri: String = getConfString("incorporation-frontend-stub.uri","")
 
   def setupCurrentProfile()(implicit hc: HeaderCarrier): Future[Result] =
-    http.POSTEmpty(s"$vatRegUrl/vatreg/test-only/current-profile-setup").map { _ => Results.Ok }
+    http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/current-profile-setup").map { _ => Results.Ok }
 
   def dropCollection()(implicit hc: HeaderCarrier): Future[Result] =
-    http.POSTEmpty(s"$vatRegUrl/vatreg/test-only/clear").map { _ => Results.Ok }
+    http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/clear").map { _ => Results.Ok }
 
   def getIncorpInfo()(implicit hc : HeaderCarrier) : Future[HttpResponse] =
     http.GET[HttpResponse](s"$vatRegUrl/vatreg/incorporation-information/000-434-23")
