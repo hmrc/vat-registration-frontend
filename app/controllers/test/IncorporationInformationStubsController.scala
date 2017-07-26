@@ -35,18 +35,21 @@ class IncorporationInformationStubsController @Inject()(
   def postTestData(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
       _ <- vatRegistrationService.createRegistrationFootprint()
-      id <- fetchRegistrationId
+     id <- fetchRegistrationId
       _ <- vatRegConnector.wipeTestData
       _ <- vatRegConnector.postTestData(defaultTestData(id))
-      _ <- vatRegConnector.postIncorpTestData(iiSubmissionData(id))
     } yield  Ok("Data inserted"))
 
-  def getIncorpInfo(): Action[AnyContent] =
-    authorised.async(implicit user => implicit request =>{
-      val ii =   vatRegConnector.getIncorpInfo()
-      val mapped = ii.map(res => Ok(res.json))
-      mapped
-    })
+  def postTestDataIncorp(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    for {
+      _ <- vatRegistrationService.createRegistrationFootprint()
+     id <- fetchRegistrationId
+      _ <- vatRegConnector.wipeIncorpTestData()
+      _ <- vatRegConnector.postIncorpTestData(iiSubmissionData(id))
+    } yield Ok("Incorporation data inserted"))
+
+  def getIncorpInfo(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    vatRegConnector.getIncorpInfo().map(res => Ok(res.json)))
 
   def iiSubmissionData(id : String) : JsValue =
     Json.parse(
