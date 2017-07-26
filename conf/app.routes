@@ -235,3 +235,6 @@ POST        /flat-rate-scheme-join-date                                         
 ## Post incorp threshold question 1
 GET         /gone-over-threshold                                                               controllers.vatTradingDetails.vatChoice.OverThresholdController.show
 POST        /gone-over-threshold                                                               controllers.vatTradingDetails.vatChoice.OverThresholdController.submit
+
+## Threshold summary
+GET         /check-confirm-answers                                                             controllers.vatTradingDetails.vatChoice.ThresholdSummaryController.show
