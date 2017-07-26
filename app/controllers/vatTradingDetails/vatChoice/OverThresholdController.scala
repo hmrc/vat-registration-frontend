@@ -17,12 +17,13 @@
 package controllers.vatTradingDetails.vatChoice
 
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.time.format.{DateTimeFormatter, ResolverStyle}
 import javax.inject.Inject
 
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatTradingDetails.vatChoice.OverThresholdFormFactory
+import models.MonthYearModel.FORMAT_DD_MMMM_Y
 import models.view.vatTradingDetails.vatChoice.OverThresholdView
 import play.api.data.Form
 import play.api.mvc._
@@ -32,17 +33,18 @@ class OverThresholdController @Inject()(overThresholdFormFactory: OverThresholdF
                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with FlatMapSyntax {
 
-  val presentationFormatter = DateTimeFormatter.ofPattern("dd MMMM y")
+  //val formatter = DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT)
+
   val dateOfIncorporation = LocalDate.now().minusMonths(2) //fixed date until we can get the DOI from II
   val form: Form[OverThresholdView] = overThresholdFormFactory.form(dateOfIncorporation)
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel[OverThresholdView]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatTradingDetails.vatChoice.over_threshold((f), dateOfIncorporation.format(presentationFormatter)))))
+      .map(f => Ok(views.html.pages.vatTradingDetails.vatChoice.over_threshold((f), dateOfIncorporation.format(FORMAT_DD_MMMM_Y)))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.vatTradingDetails.vatChoice.over_threshold(badForm, dateOfIncorporation.format(presentationFormatter))).pure,
+      badForm => BadRequest(views.html.pages.vatTradingDetails.vatChoice.over_threshold(badForm, dateOfIncorporation.format(FORMAT_DD_MMMM_Y))).pure,
       data => save(data).map(_ => Redirect(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show()))))
 
 }
