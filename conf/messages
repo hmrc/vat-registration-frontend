@@ -834,5 +834,5 @@ validation.overThreshold.date.range.below                 = This date must be af
 ## Threshold Summary Page
 pages.thresholdSummary.title                              = Check and confirm your answers
 pages.thresholdSummary.heading                            = Check and confirm your answers
-pages.summary.threshold.overThresholdSelection            = VAT taxable turnover gone over £85,000 since [DOI]
+pages.summary.threshold.overThresholdSelection            = VAT taxable turnover gone over £85,000 since {0}
 pages.summary.threshold.overThresholdDate                 = Month turnover went over £85,000
