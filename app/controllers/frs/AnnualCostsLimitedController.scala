@@ -21,7 +21,6 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.frs.AnnualCostsLimitedFormFactory
-import models.ElementPath.fromFrsAnnualCostsLimitedElementPaths
 import models._
 import models.view.frs.AnnualCostsLimitedView
 import play.api.mvc.{Action, AnyContent}
