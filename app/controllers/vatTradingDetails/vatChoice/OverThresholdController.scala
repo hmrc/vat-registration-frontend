@@ -17,7 +17,7 @@
 package controllers.vatTradingDetails.vatChoice
 
 import java.time.LocalDate
-import java.time.format.{DateTimeFormatter, ResolverStyle}
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 import cats.syntax.FlatMapSyntax
@@ -33,8 +33,7 @@ class OverThresholdController @Inject()(overThresholdFormFactory: OverThresholdF
                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with FlatMapSyntax {
 
-  //val formatter = DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT)
-
+  val presentationFormatter = DateTimeFormatter.ofPattern("dd MMMM y")
   val dateOfIncorporation = LocalDate.now().minusMonths(2) //fixed date until we can get the DOI from II
   val form: Form[OverThresholdView] = overThresholdFormFactory.form(dateOfIncorporation)
 

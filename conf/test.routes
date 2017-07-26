@@ -15,5 +15,6 @@ GET         /working-days                controllers.test.TestWorkingDaysValidat
 GET         /ct-registration             controllers.test.TestCTController.show()
 
 GET         /insert-ii-stub-data         controllers.test.IncorporationInformationStubsController.postTestData()
+GET         /insert-ii-stub-data-incorp  controllers.test.IncorporationInformationStubsController.postTestDataIncorp()
 
 GET         /incorp-info                 controllers.test.IncorporationInformationStubsController.getIncorpInfo()
