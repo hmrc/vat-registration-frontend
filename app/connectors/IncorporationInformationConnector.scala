@@ -24,8 +24,8 @@ import config.WSHttp
 import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
 import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
-import uk.gov.hmrc.play.http.{NotFoundException, _}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -39,8 +39,7 @@ class IncorporationInformationConnector extends IncorporationInformationConnect 
 }
 
 @ImplementedBy(classOf[IncorporationInformationConnector])
-trait IncorporationInformationConnect {
-  self =>
+trait IncorporationInformationConnect { self =>
 
   val incorpInfoUrl: String
   val incorpInfoUri: String
@@ -48,25 +47,17 @@ trait IncorporationInformationConnect {
 
   val className = self.getClass.getSimpleName
 
-  // get the registered office address from II or return None
-  def getRegisteredOfficeAddress(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[CoHoRegisteredOfficeAddress] = {
-    OptionT {
-      Logger.debug(s"$incorpInfoUrl$incorpInfoUri/$transactionId/company-profile")
-      http.GET[CoHoRegisteredOfficeAddress](s"$incorpInfoUrl$incorpInfoUri/$transactionId/company-profile").map(Some(_)) recover {
-        case e: Exception => logResponse(e, className, "getRegisteredOfficeAddress")
-          Option.empty[CoHoRegisteredOfficeAddress]
-      }
-    }
-  }
+  def getRegisteredOfficeAddress(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[CoHoRegisteredOfficeAddress] =
+    OptionT ( http.GET[CoHoRegisteredOfficeAddress](s"$incorpInfoUrl$incorpInfoUri/$transactionId/company-profile").map(Some(_)).recover{
+      case e: Exception => logResponse(e, className, "getRegisteredOfficeAddress")
+      Option.empty[CoHoRegisteredOfficeAddress]
+    })
 
-  def getOfficerList(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[OfficerList] = {
-    OptionT {
-      http.GET[OfficerList](s"$incorpInfoUrl$incorpInfoUri/$transactionId/officer-list").map(Some(_)) recover {
-        case notFoundException: NotFoundException =>
-          Some(OfficerList(items = Nil))
-        case ex => logResponse(ex, className, "getOfficerList")
-          throw ex
-      }
-    }
-  }
+  def getOfficerList(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[OfficerList] =
+    OptionT( http.GET[OfficerList](s"$incorpInfoUrl$incorpInfoUri/$transactionId/officer-list").map(Some(_)).recover{
+      case notFoundException: NotFoundException => Some(OfficerList(items = Nil))
+      case ex => logResponse(ex, className, "getOfficerList")
+        throw ex
+    })
+
 }
