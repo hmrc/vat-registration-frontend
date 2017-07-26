@@ -814,3 +814,18 @@ pages.summary.frs.businessSector                        = Business sector
 pages.summary.frs.flatRate                              = Your flat rate (%)
 pages.summary.frs.startDate                             = Start date
 pages.summary.frs.startDate.dateOfRegistration          = Date of registration
+
+## POST INCORP THRESHOLD QUESTIONS
+## Q1
+pages.thresholdQuestion1.title                            = In any 12-month period has your company gone over the VAT registration threshold?
+pages.thresholdQuestion1.heading                          = Since {0} has your company''s VAT taxable turnover gone over £85,000?
+pages.thresholdQuestion1.p1                               = £85,000 is the VAT registration threshold for the current financial year.
+pages.thresholdQuestion1.panel.heading                    = When did this first happen?
+pages.thresholdQuestion1.panel.hint                       = For example, 02 2017
+pages.thresholdQuestion1.month                            = Month
+pages.thresholdQuestion1.year                             = Year
+validation.overThreshold.date.invalid                     = Enter a valid date
+validation.overThreshold.date.missing                     = Enter a valid date
+validation.overThreshold.selection.missing                = Tell us if since [DOI] the company''s VAT taxable turnover gone over £85,000
+validation.overThreshold.date.range.above                 = This date must be before the current month
+validation.overThreshold.date.range.below                 = This date must be after {0}
