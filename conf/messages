@@ -827,7 +827,7 @@ pages.thresholdQuestion1.month                            = Month
 pages.thresholdQuestion1.year                             = Year
 validation.overThreshold.date.invalid                     = Enter a valid date
 validation.overThreshold.date.missing                     = Enter a valid date
-validation.overThreshold.selection.missing                = Tell us if since [DOI] the company''s VAT taxable turnover gone over £85,000
+validation.overThreshold.selection.missing                = Tell us if since {0} the company''s VAT taxable turnover gone over £85,000
 validation.overThreshold.date.range.above                 = This date must be before the current month
 validation.overThreshold.date.range.below                 = This date must be after {0}
 
