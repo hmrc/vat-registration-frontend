@@ -23,6 +23,7 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatTradingDetails.vatChoice.OverThresholdFormFactory
+import models.MonthYearModel.FORMAT_DD_MMMM_Y
 import models.view.vatTradingDetails.vatChoice.OverThresholdView
 import play.api.data.Form
 import play.api.mvc._
@@ -38,11 +39,11 @@ class OverThresholdController @Inject()(overThresholdFormFactory: OverThresholdF
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel[OverThresholdView]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatTradingDetails.vatChoice.over_threshold((f), dateOfIncorporation.format(presentationFormatter)))))
+      .map(f => Ok(views.html.pages.vatTradingDetails.vatChoice.over_threshold((f), dateOfIncorporation.format(FORMAT_DD_MMMM_Y)))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.vatTradingDetails.vatChoice.over_threshold(badForm, dateOfIncorporation.format(presentationFormatter))).pure,
-      data => save(data).map(_ => Redirect(controllers.vatTradingDetails.vatChoice.routes.ThresholdSummaryController.show()))))
+      badForm => BadRequest(views.html.pages.vatTradingDetails.vatChoice.over_threshold(badForm, dateOfIncorporation.format(FORMAT_DD_MMMM_Y))).pure,
+      data => save(data).map(_ => Redirect(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show()))))
 
 }
