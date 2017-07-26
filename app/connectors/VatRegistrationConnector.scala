@@ -22,7 +22,6 @@ import cats.data.OptionT
 import cats.instances.FutureInstances
 import com.google.inject.ImplementedBy
 import config.WSHttp
-import models.ElementPath
 import models.api._
 import models.external.IncorporationStatus
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -128,12 +127,6 @@ trait RegistrationConnector extends FutureInstances {
                      (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Unit] =
     http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-scheme") recover {
       case e: Exception => throw logResponse(e, className, "deleteVatScheme")
-    } map (_ => ())
-
-  def deleteElement(elementPath: ElementPath)(regId: String)
-                   (implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Unit] =
-    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete/${elementPath.name}") recover {
-      case e: Exception => throw logResponse(e, className, "deleteElement")
     } map (_ => ())
 
   def getIncorporationInfo(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[IncorporationStatus] =

@@ -61,7 +61,7 @@ class MainBusinessActivityController @Inject()(ds: CommonPlayDependencies)
         )(selected => for {
           mainSic <- viewModel[MainBusinessActivityView]().value
           selectionChanged = mainSic.exists(_.id != selected.id)
-          _ <- s4l.save(S4LFlatRateScheme()) onlyIf selectionChanged
+          _ <-s4l.save(S4LFlatRateScheme()).flatMap(_ => vrs.submitVatFlatRateScheme()) onlyIf selectionChanged
           _ <- save(MainBusinessActivityView(selected))
           result <- selectNextPage(sicCodeList)
         } yield result))))
