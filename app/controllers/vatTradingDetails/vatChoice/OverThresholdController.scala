@@ -33,7 +33,6 @@ class OverThresholdController @Inject()(overThresholdFormFactory: OverThresholdF
                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with FlatMapSyntax {
 
-  val presentationFormatter = DateTimeFormatter.ofPattern("dd MMMM y")
   val dateOfIncorporation = LocalDate.now().minusMonths(2) //fixed date until we can get the DOI from II
   val form: Form[OverThresholdView] = overThresholdFormFactory.form(dateOfIncorporation)
 
