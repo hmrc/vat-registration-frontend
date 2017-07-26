@@ -238,3 +238,4 @@ POST        /gone-over-threshold                                                
 
 ## Threshold summary
 GET         /check-confirm-answers                                                             controllers.vatTradingDetails.vatChoice.ThresholdSummaryController.show
+POST        /check-confirm-answers                                                             controllers.vatTradingDetails.vatChoice.ThresholdSummaryController.submit

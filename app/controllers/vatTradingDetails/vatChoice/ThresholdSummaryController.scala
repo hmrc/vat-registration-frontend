@@ -21,9 +21,9 @@ import javax.inject.Inject
 
 import controllers.builders._
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import models.{DateModel, MonthYearModel, S4LTradingDetails}
 import models.api._
 import models.view._
+import models.{MonthYearModel, S4LTradingDetails}
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -42,6 +42,9 @@ class ThresholdSummaryController @Inject()(ds: CommonPlayDependencies)
     } yield Ok(views.html.pages.vatTradingDetails.vatChoice.threshold_summary(
       thresholdSummary,
       MonthYearModel.FORMAT_DD_MMMM_Y.format(dateOfIncorporation))))
+
+  def submit: Action[AnyContent] = authorised(implicit user => implicit request =>
+      Redirect(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show()))
 
   def getThresholdSummary()(implicit hc: HeaderCarrier): Future[Summary] = {
     getVatThresholdPostIncorp.map(thresholdToSummary)

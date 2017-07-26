@@ -30,7 +30,7 @@
         }
     }
 
-    @form(action = controllers.routes.ApplicationSubmissionController.show()) {
+    @form(action = controllers.vatTradingDetails.vatChoice.routes.ThresholdSummaryController.submit()) {
         <div class="form-group">
             <button class="btn button" role="button" id="confirm-and-continue">@messages("app.common.confirmAndContinue")</button>
         </div>
