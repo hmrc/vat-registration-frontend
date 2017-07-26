@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import cats.Show
 import forms.vatFinancials.vatBankAccount.SortCode
-import models.DateModel
+import models.{DateModel, MonthYearModel}
 import org.apache.commons.lang3.StringUtils
 import play.api.Logger
 import play.api.data.format.Formatter
@@ -194,7 +194,18 @@ private[forms] object FormValidation {
         }
       }
 
+    def nonEmptyMonthYearModel(constraint: => Constraint[MonthYearModel] = unconstrained)(implicit e: ErrorCode): Constraint[MonthYearModel] =
+      Constraint { pdm =>
+        mandatoryText.apply(Seq(pdm.month, pdm.year).mkString.trim) match {
+          case Valid => constraint(pdm)
+          case err@_ => err
+        }
+      }
+
     def validDateModel(dateConstraint: => Constraint[LocalDate] = unconstrained)(implicit e: ErrorCode): Constraint[DateModel] =
+      Constraint(dm => dm.toLocalDate.fold[ValidationResult](Invalid(s"validation.$e.invalid"))(dateConstraint(_)))
+
+    def validPartialMonthYearModel(dateConstraint: => Constraint[LocalDate] = unconstrained)(implicit e: ErrorCode): Constraint[MonthYearModel] =
       Constraint(dm => dm.toLocalDate.fold[ValidationResult](Invalid(s"validation.$e.invalid"))(dateConstraint(_)))
 
   }

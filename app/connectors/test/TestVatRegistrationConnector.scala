@@ -31,6 +31,7 @@ import scala.concurrent.Future
 trait TestRegistrationConnector {
   def setupCurrentProfile()(implicit hc: HeaderCarrier): Future[Result]
   def dropCollection()(implicit hc: HeaderCarrier): Future[Result]
+  def getIncorpInfo()(implicit hc : HeaderCarrier) : Future[HttpResponse]
   def postTestData(jsonData: JsValue)(implicit hc : HeaderCarrier) : Future[HttpResponse]
   def wipeTestData()(implicit hc : HeaderCarrier) : Future[HttpResponse]
 }
@@ -51,6 +52,9 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
   def dropCollection()(implicit hc: HeaderCarrier): Future[Result] = {
     http.POSTEmpty(s"$vatRegUrl/vatreg/test-only/clear").map { _ => Results.Ok }
   }
+
+  def getIncorpInfo()(implicit hc : HeaderCarrier) : Future[HttpResponse] =
+      http.GET[HttpResponse](s"$vatRegUrl/vatreg/incorporation-information/1")
 
   def postTestData(jsonData: JsValue)(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
       Logger.debug(s"###111###$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data")

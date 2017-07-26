@@ -24,6 +24,7 @@ import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, RegistrationService}
+
 //$COVERAGE-OFF$
 class IncorporationInformationStubsController @Inject()(vatRegistrationService: RegistrationService, vatRegConnector: TestRegistrationConnector, ds: CommonPlayDependencies)
   extends VatRegistrationController(ds) with CommonService{
@@ -38,6 +39,9 @@ class IncorporationInformationStubsController @Inject()(vatRegistrationService: 
       _ <- vatRegConnector.postTestData(jsonData)
     } yield  Ok("Data inserted")
   )
+
+  def getIncorpInfo(): Action[AnyContent] =
+    authorised.async(implicit user => implicit request => vatRegConnector.getIncorpInfo().map(res => Ok(Json.toJson(res.body))))
 
   def defaultTestData(id : String) : JsValue = {
     Json.parse(
