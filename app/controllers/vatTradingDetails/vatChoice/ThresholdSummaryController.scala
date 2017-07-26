@@ -16,11 +16,12 @@
 
 package controllers.vatTradingDetails.vatChoice
 
+import java.time.LocalDate
 import javax.inject.Inject
 
 import controllers.builders._
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import models.S4LTradingDetails
+import models.{DateModel, MonthYearModel, S4LTradingDetails}
 import models.api._
 import models.view._
 import play.api.mvc._
@@ -33,19 +34,24 @@ class ThresholdSummaryController @Inject()(ds: CommonPlayDependencies)
                                           (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
+  val dateOfIncorporation = LocalDate.now().minusMonths(2) //fixed date until we can get the DOI from II
+
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
       thresholdSummary <- getThresholdSummary()
-    } yield Ok(views.html.pages.vatTradingDetails.vatChoice.threshold_summary(thresholdSummary)))
+    } yield Ok(views.html.pages.vatTradingDetails.vatChoice.threshold_summary(
+      thresholdSummary,
+      MonthYearModel.FORMAT_DD_MMMM_Y.format(dateOfIncorporation))))
 
   def getThresholdSummary()(implicit hc: HeaderCarrier): Future[Summary] = {
     getVatThresholdPostIncorp.map(thresholdToSummary)
   }
 
-  def thresholdToSummary(vatThresholdPostIncorp: VatThresholdPostIncorp): Summary =
+  def thresholdToSummary(vatThresholdPostIncorp: VatThresholdPostIncorp): Summary = {
     Summary(Seq(
-      SummaryVatThresholdBuilder(Some(vatThresholdPostIncorp)).section
+      SummaryVatThresholdBuilder(Some(vatThresholdPostIncorp), dateOfIncorporation).section
     ))
+  }
 
   def getVatThresholdPostIncorp()(implicit hc: HeaderCarrier): Future[VatThresholdPostIncorp] = {
     for {

@@ -16,12 +16,14 @@
 
 package controllers.builders
 
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import models.api.VatThresholdPostIncorp
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryVatThresholdBuilder(vatThresholdPostIncorp: Option[VatThresholdPostIncorp] = None)
+case class SummaryVatThresholdBuilder(vatThresholdPostIncorp: Option[VatThresholdPostIncorp] = None,
+                                      dateOfIncorporation: LocalDate)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "threshold"
@@ -33,7 +35,8 @@ case class SummaryVatThresholdBuilder(vatThresholdPostIncorp: Option[VatThreshol
       case true => "app.common.yes"
       case false => "app.common.no"
     }.getOrElse(""),
-    Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show())
+    Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show()),
+    questionArg = Some(dateOfIncorporation.format(presentationFormatter))
   )
 
   val overThresholdDateRow: SummaryRow = SummaryRow(
