@@ -1,0 +1,30 @@
+@import helpers.templates.summaryRow
+@import models.view.Summary
+@import uk.gov.hmrc.play.views.html.helpers.form
+@(summaryModel: Summary)(implicit request: Request[_], messages: Messages)
+
+@main_template(title = messages("pages.thresholdSummary.title")) {
+
+    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.thresholdSummary.heading")</h1>
+
+    @for(section <- summaryModel.sections) {
+        @if(section.display) {
+            <section>
+                <table class="check-your-answers form-group">
+                @for((row, doDisplayRow) <- section.rows) {
+                    @if(doDisplayRow) {
+                        @summaryRow(row)
+                    }
+                }
+                </table>
+            </section>
+        }
+    }
+
+    @form(action = controllers.routes.ApplicationSubmissionController.show()) {
+        <div class="form-group">
+            <button class="btn button" role="button" id="confirm-and-continue">@messages("app.common.confirmAndContinue")</button>
+        </div>
+    }
+
+}
