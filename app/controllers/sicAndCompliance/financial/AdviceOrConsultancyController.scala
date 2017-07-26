@@ -18,19 +18,20 @@ package controllers.sicAndCompliance.financial
 
 import javax.inject.Inject
 
-import controllers.CommonPlayDependencies
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.financial.AdviceOrConsultancyForm
+import models.S4LVatSicAndCompliance
+import models.S4LVatSicAndCompliance.financeOnly
 import models.view.sicAndCompliance.financial.AdviceOrConsultancy
-import models.{CulturalCompliancePath, LabourCompliancePath, S4LVatSicAndCompliance}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{RegistrationService, S4LService}
+import services.{CommonService, RegistrationService, S4LService}
 
 
 class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
-                                             (implicit s4LService: S4LService, vrs: RegistrationService)
-  extends ComplianceExitController(ds) {
+                                             (implicit s4lService: S4LService, vrs: RegistrationService)
+  extends VatRegistrationController(ds) with CommonService {
 
   val form: Form[AdviceOrConsultancy] = AdviceOrConsultancyForm.form
 
@@ -43,9 +44,8 @@ class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(badForm)).pure,
       view => for {
-        clearCompliance <- clearComplianceContainer
-        _ <- s4LService.save(clearCompliance.copy(adviceOrConsultancy = Some(view)))
-        _ <- vrs.deleteElements(List(CulturalCompliancePath, LabourCompliancePath))
+        container <- s4lContainer[S4LVatSicAndCompliance]()
+        _ <- s4lService.save(financeOnly(container.copy(adviceOrConsultancy = Some(view))))
       } yield Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show())))
 
 }

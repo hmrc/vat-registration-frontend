@@ -18,18 +18,20 @@ package controllers.sicAndCompliance.labour
 
 import javax.inject.Inject
 
-import controllers.CommonPlayDependencies
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.labour.CompanyProvideWorkersForm
-import models.{CulturalCompliancePath, ElementPath, FinancialCompliancePath}
+import models.S4LVatSicAndCompliance
+import models.S4LVatSicAndCompliance.{dropFromCompanyProvideWorkers, labourOnly}
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
+import models.view.sicAndCompliance.labour.CompanyProvideWorkers.PROVIDE_WORKERS_YES
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, VatRegistrationService}
 
 
 class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
-                                               (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends ComplianceExitController(ds) {
+                                               (implicit s4lService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with CommonService {
 
   val form = CompanyProvideWorkersForm.form
 
@@ -40,15 +42,17 @@ class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.labour.company_provide_workers(badForm)).pure,
-      view => for {
-        clearCompliance <- clearComplianceContainer
-        _ <- s4LService.save(clearCompliance.copy(companyProvideWorkers = Some(view)))
-        _ <- vrs.deleteElements(List(CulturalCompliancePath, FinancialCompliancePath))
-        route =
-          if (CompanyProvideWorkers.PROVIDE_WORKERS_YES == view.yesNo) {
-            Redirect(controllers.sicAndCompliance.labour.routes.WorkersController.show()).pure
-          } else { submitAndExit(ElementPath.labCompElementPaths.drop(1)) }
-        call <- route
-      } yield call))
+      view => (if (PROVIDE_WORKERS_YES == view.yesNo) {
+        for {
+          container <- s4lContainer[S4LVatSicAndCompliance]()
+          _ <- s4lService.save(labourOnly(container.copy(companyProvideWorkers = Some(view))))
+        } yield controllers.sicAndCompliance.labour.routes.WorkersController.show()
+      } else {
+        for {
+          container <- s4lContainer[S4LVatSicAndCompliance]()
+          _ <- s4lService.save(dropFromCompanyProvideWorkers(labourOnly(container.copy(companyProvideWorkers = Some(view)))))
+          _ <- vrs.submitSicAndCompliance()
+        } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
+      }).map(Redirect)))
 
 }

@@ -18,12 +18,14 @@ package controllers.vatFinancials.vatBankAccount
 
 import javax.inject.Inject
 
-import controllers.vatFinancials.EstimateVatTurnoverKey.lastKnownValueKey
 import cats.syntax.FlatMapSyntax
+import cats.syntax.cartesian._
+import common.ConditionalFlatMap._
+import controllers.vatFinancials.EstimateVatTurnoverKey.lastKnownValueKey
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatFinancials.vatBankAccount.CompanyBankAccountForm
+import models._
 import models.view.vatFinancials.EstimateVatTurnover
-import models.{VatBankAccountPath, VatFlatRateSchemePath}
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccount
 import play.api.mvc._
 import services.{CommonService, S4LService, VatRegistrationService}
@@ -48,11 +50,12 @@ class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
         ifTrue = controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show().pure,
         ifFalse = for {
           originalTurnover <- keystoreConnector.fetchAndGet[Long](lastKnownValueKey)
-          _ <- vrs.deleteElement(VatBankAccountPath)
-          _ <- save(data)
+          container <- s4lContainer[S4LVatFinancials]()
+          _ <- s4l.save(container.copy(companyBankAccountDetails = None))
           _ <- vrs.submitVatFinancials()
           turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
-          _ <- vrs.conditionalDeleteElement(VatFlatRateSchemePath, originalTurnover.getOrElse(0) != turnover)
+          _ <- s4l.save(S4LFlatRateScheme()).flatMap(
+            _ => vrs.submitVatFlatRateScheme()) onlyIf originalTurnover.getOrElse(0) != turnover
         } yield if (turnover > joinThreshold) {
           controllers.routes.SummaryController.show()
         } else {

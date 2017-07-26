@@ -18,8 +18,8 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.financial.AdviceOrConsultancy
-import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -75,10 +75,8 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return 303 with Advice Or Consultancy Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
-      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterReturns(S4LVatSicAndCompliance())
 
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "true"
@@ -89,10 +87,8 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return 303 with Advice Or Consultancy No selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
-      save4laterReturnsViewModel(BusinessActivityDescription("bad"))()
+      save4laterReturns(S4LVatSicAndCompliance())
 
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "false"
