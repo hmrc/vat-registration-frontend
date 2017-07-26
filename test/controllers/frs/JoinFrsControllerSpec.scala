@@ -87,7 +87,6 @@ class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "return 303 with Join Flat Rate Scheme selected No" in {
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any())).thenReturn(VatFlatRateScheme(false).pure)
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "joinFrsRadio" -> "false"

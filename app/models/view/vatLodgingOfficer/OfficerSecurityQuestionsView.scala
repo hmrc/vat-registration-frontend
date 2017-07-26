@@ -26,9 +26,11 @@ case class OfficerSecurityQuestionsView(dob: LocalDate, nino: String, officerNam
 
 object OfficerSecurityQuestionsView {
 
-  def bind(dateModel: DateModel, nino: String): OfficerSecurityQuestionsView = OfficerSecurityQuestionsView(dateModel.toLocalDate.get, nino) // form ensures valid date
+  def bind(dateModel: DateModel, nino: String): OfficerSecurityQuestionsView =
+    OfficerSecurityQuestionsView(dateModel.toLocalDate.get, nino) // form ensures valid date
 
-  def unbind(dobView: OfficerSecurityQuestionsView): Option[(DateModel, String)] = Some(DateModel.fromLocalDate(dobView.dob), dobView.nino) // form ensures valid date
+  def unbind(dobView: OfficerSecurityQuestionsView): Option[(DateModel, String)] =
+    Some(DateModel.fromLocalDate(dobView.dob), dobView.nino) // form ensures valid date
 
   implicit val format = Json.format[OfficerSecurityQuestionsView]
 

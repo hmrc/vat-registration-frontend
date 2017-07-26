@@ -21,10 +21,9 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.frs.AnnualCostsInclusiveForm
-import models.ElementPath.fromFrsAnnualCostsInclusiveElementPaths
+import models._
 import models.view.frs.AnnualCostsInclusiveView.NO
 import models.view.frs.{AnnualCostsInclusiveView, JoinFrsView}
-import models._
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -45,16 +44,15 @@ class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
       badForm => BadRequest(views.html.pages.frs.annual_costs_inclusive(badForm)).pure,
       view => (if (view.selection == NO) {
         save(view).flatMap(_ =>
-          vrs.getFlatRateSchemeThreshold().map {
+          getFlatRateSchemeThreshold().map {
             case n if n > PREVIOUS_QUESTION_THRESHOLD => controllers.frs.routes.AnnualCostsLimitedController.show()
             case _ => controllers.frs.routes.ConfirmBusinessSectorController.show()
           })
       } else {
         for {
+          // save annualCostsInclusive and delete all later elements
           _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)), annualCostsInclusive = Some(view)))
-          _ <- vrs.deleteElements(fromFrsAnnualCostsInclusiveElementPaths)
         } yield controllers.frs.routes.RegisterForFrsController.show()
       }).map(Redirect)))
 
 }
-

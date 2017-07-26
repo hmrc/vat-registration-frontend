@@ -19,6 +19,7 @@ package controllers.frs
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.frs.AnnualCostsInclusiveView
+import models.view.vatFinancials.EstimateVatTurnover
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -70,7 +71,6 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
     "return 303 with Annual Costs Inclusive selected Yes" in {
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES
@@ -79,7 +79,6 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
     "return 303 with Annual Costs Inclusive selected No - but within 12 months" in {
       when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      when(mockVatRegistrationService.deleteElements(any())(any())).thenReturn(().pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS
@@ -88,7 +87,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
     "skip next question if 2% of estimated taxable turnover <= 1K and NO answered" in {
       save4laterExpectsSave[AnnualCostsInclusiveView]()
-      when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any())).thenReturn(500L.pure)
+      save4laterReturnsViewModel(EstimateVatTurnover(25000L))()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.NO
@@ -97,7 +96,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
     "redirect to next question if 2% of estimated taxable turnover > 1K and NO answered" in {
       save4laterExpectsSave[AnnualCostsInclusiveView]()
-      when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any())).thenReturn(1500L.pure)
+      save4laterReturnsViewModel(EstimateVatTurnover(75000L))()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.NO

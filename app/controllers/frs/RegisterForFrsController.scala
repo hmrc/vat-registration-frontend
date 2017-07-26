@@ -21,8 +21,8 @@ import javax.inject.Inject
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.genericForms.YesOrNoFormFactory
+import models.S4LFlatRateScheme
 import models.view.frs.{BusinessSectorView, RegisterForFrsView}
-import models.{S4LFlatRateScheme, VatFrsStartDate, VatFrsWhenToJoin}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
@@ -47,10 +47,9 @@ class RegisterForFrsController @Inject()(ds: CommonPlayDependencies, formFactory
       } yield view.answer).ifM(
         ifTrue = controllers.frs.routes.FrsStartDateController.show().pure,
         ifFalse = for {
-          frs <- s4LService.fetchAndGet[S4LFlatRateScheme]()
-          _ <- s4LService.save(frs.getOrElse(S4LFlatRateScheme()).copy(frsStartDate = None))
+          frs <- s4lContainer[S4LFlatRateScheme]()
+          _ <- s4LService.save(frs.copy(frsStartDate = None))
           _ <- vrs.submitVatFlatRateScheme()
-          _ <- vrs.deleteElements(List(VatFrsWhenToJoin, VatFrsStartDate))
         } yield controllers.routes.SummaryController.show()
       ).map(Redirect)))
 }

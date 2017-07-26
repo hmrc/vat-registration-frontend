@@ -18,18 +18,18 @@ package controllers.sicAndCompliance.financial
 
 import javax.inject.Inject
 
-import controllers.CommonPlayDependencies
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.financial.ChargeFeesForm
 import models.view.sicAndCompliance.financial.ChargeFees
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{RegistrationService, S4LService}
+import services.{CommonService, RegistrationService, S4LService}
 
 
 class ChargeFeesController @Inject()(ds: CommonPlayDependencies)
                                     (implicit s4LService: S4LService, vrs: RegistrationService)
-  extends ComplianceExitController(ds) {
+  extends VatRegistrationController(ds) with CommonService {
 
   val form: Form[ChargeFees] = ChargeFeesForm.form
 

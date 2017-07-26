@@ -18,18 +18,19 @@ package controllers.sicAndCompliance.financial
 
 import javax.inject.Inject
 
-import controllers.CommonPlayDependencies
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.financial.InvestmentFundManagementForm
-import models.ElementPath
+import models.S4LVatSicAndCompliance
+import models.S4LVatSicAndCompliance.dropFromInvFundManagement
 import models.view.sicAndCompliance.financial.InvestmentFundManagement
 import play.api.mvc.{Action, AnyContent}
-import services.{RegistrationService, S4LService}
+import services.{CommonService, RegistrationService, S4LService}
 
 
 class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
-                                                  (implicit s4LService: S4LService, vrs: RegistrationService)
-  extends ComplianceExitController(ds) {
+                                                  (implicit s4lService: S4LService, vrs: RegistrationService)
+  extends VatRegistrationController(ds) with CommonService {
 
   val form = InvestmentFundManagementForm.form
 
@@ -43,8 +44,12 @@ class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
     form.bindFromRequest().fold(
       badForm => BadRequest(views.html.pages.sicAndCompliance.financial.investment_fund_management(badForm)).pure,
       data => save(data).map(_ => data.yesNo).ifM(
-        ifTrue = Redirect(controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show()).pure,
-        ifFalse = submitAndExit(ElementPath.finCompElementPaths.drop(5))
-      )))
+        ifTrue = controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show().pure,
+        ifFalse = for {
+          container <- s4lContainer[S4LVatSicAndCompliance]()
+          _ <- s4lService.save(dropFromInvFundManagement(container))
+          _ <- vrs.submitSicAndCompliance()
+        } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
+      ).map(Redirect)))
 
 }
