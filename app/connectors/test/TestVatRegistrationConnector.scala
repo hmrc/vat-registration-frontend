@@ -34,6 +34,7 @@ trait TestRegistrationConnector {
   def getIncorpInfo()(implicit hc: HeaderCarrier): Future[HttpResponse]
   def postTestData(jsonData: JsValue)(implicit hc: HeaderCarrier): Future[HttpResponse]
   def wipeTestData()(implicit hc: HeaderCarrier): Future[HttpResponse]
+  def wipeIncorpTestData()(implicit hc: HeaderCarrier): Future[HttpResponse]
   def postIncorpTestData(jsonData: JsValue)(implicit hc: HeaderCarrier): Future[HttpResponse]
 }
 
@@ -71,6 +72,11 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
 
   def wipeTestData()(implicit hc : HeaderCarrier) :Future[HttpResponse] =
     http.PUT[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data", Json.parse("{}")) recover {
+      case e: Exception => throw logResponse(e,"TestVatRegistrationConnector", s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data")
+    }
+
+  def wipeIncorpTestData()(implicit hc : HeaderCarrier) :Future[HttpResponse] =
+    http.PUT[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/test-only/wipe-submissions", Json.parse("{}")) recover {
       case e: Exception => throw logResponse(e,"TestVatRegistrationConnector", s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data")
     }
 
