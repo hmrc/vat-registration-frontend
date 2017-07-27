@@ -148,7 +148,13 @@ object S4LTradingDetails {
               startDate = if (sd.dateType == BUSINESS_START_DATE) sd.ctActiveDate else sd.date
               )
             ).getOrElse(g.vatChoice.vatStartDate),
-          reason = c.voluntaryRegistrationReason.map(_.reason)),
+          reason = c.voluntaryRegistrationReason.map(_.reason),
+          vatThresholdPostIncorp = c.overThreshold.map(vtp =>
+            VatThresholdPostIncorp(
+              overThresholdSelection = vtp.selection,
+              overThresholdDate = vtp.date
+            )
+          )),
 
         tradingName = c.tradingName.map(tnv =>
           TradingName(tnv.yesNo == TRADING_NAME_YES, tnv.tradingName)).getOrElse(g.tradingName),
