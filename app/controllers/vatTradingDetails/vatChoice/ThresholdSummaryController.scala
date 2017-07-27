@@ -34,7 +34,7 @@ class ThresholdSummaryController @Inject()(ds: CommonPlayDependencies)
                                           (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
-  val dateOfIncorporation = LocalDate.now().minusMonths(2) //fixed date until we can get the DOI from II
+  val dateOfIncorporation = LocalDate.of(2017,5,26) //fixed date until we can get the DOI from II
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
