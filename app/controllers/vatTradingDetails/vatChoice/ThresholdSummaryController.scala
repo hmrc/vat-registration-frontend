@@ -43,8 +43,12 @@ class ThresholdSummaryController @Inject()(ds: CommonPlayDependencies)
       thresholdSummary,
       MonthYearModel.FORMAT_DD_MMMM_Y.format(dateOfIncorporation))))
 
-  def submit: Action[AnyContent] = authorised(implicit user => implicit request =>
-      Redirect(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show()))
+  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
+    getVatThresholdPostIncorp().map(vatThresholdPostIncorp => vatThresholdPostIncorp match {
+      case VatThresholdPostIncorp(true, _) => Redirect(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
+      case _ => Redirect(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show())
+    })
+  })
 
   def getThresholdSummary()(implicit hc: HeaderCarrier): Future[Summary] = {
     getVatThresholdPostIncorp.map(thresholdToSummary)
