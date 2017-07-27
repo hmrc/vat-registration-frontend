@@ -23,6 +23,9 @@ import controllers.builders._
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import models.api._
 import models.view._
+import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
+import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.REGISTER_NO
+import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration}
 import models.{MonthYearModel, S4LTradingDetails}
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}
@@ -45,7 +48,10 @@ class ThresholdSummaryController @Inject()(ds: CommonPlayDependencies)
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     getVatThresholdPostIncorp().map(vatThresholdPostIncorp => vatThresholdPostIncorp match {
-      case VatThresholdPostIncorp(true, _) => Redirect(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
+      case VatThresholdPostIncorp(true, _) =>
+        save(VoluntaryRegistration(REGISTER_NO))
+        save(StartDateView(COMPANY_REGISTRATION_DATE))
+        Redirect(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
       case _ => Redirect(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show())
     })
   })
