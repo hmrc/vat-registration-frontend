@@ -92,7 +92,7 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
       rows = Seq(
         (taxableTurnoverRow, !vatTradingDetails.flatMap(_.vatChoice.vatThresholdPostIncorp).isDefined),
         (overThresholdSelectionRow, vatTradingDetails.flatMap(_.vatChoice.vatThresholdPostIncorp).isDefined),
-        (overThresholdDateRow, vatTradingDetails.flatMap(_.vatChoice.vatThresholdPostIncorp).map(_.overThresholdDate).isDefined),
+        (overThresholdDateRow, vatTradingDetails.flatMap(_.vatChoice.vatThresholdPostIncorp).flatMap(_.overThresholdDate).isDefined),
         (necessityRow, voluntaryRegistration),
         (voluntaryReasonRow, voluntaryRegistration),
         (startDateRow, true),
