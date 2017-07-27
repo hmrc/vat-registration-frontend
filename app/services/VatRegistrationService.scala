@@ -16,14 +16,15 @@
 
 package services
 
+import java.time.LocalDate
 import javax.inject.Inject
 
 import com.google.inject.ImplementedBy
 import connectors.{CompanyRegistrationConnector, OptionalResponse, VatRegistrationConnector}
+import models.ModelKeys._
 import models._
 import models.api._
-import models.external.CoHoCompanyProfile
-import models.view.vatFinancials.EstimateVatTurnover
+import models.external.{CoHoCompanyProfile, IncorporationStatus}
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -51,11 +52,16 @@ trait RegistrationService {
 
   def submitVatLodgingOfficer()(implicit hc: HeaderCarrier): Future[VatLodgingOfficer]
 
+  def getIncorporationDate()(implicit hc: HeaderCarrier): Future[Option[LocalDate]]
+
+  def getIncorporationStatus()(implicit hc: HeaderCarrier): Future[Option[String]]
+
 }
 
 class VatRegistrationService @Inject()(s4LService: S4LService,
                                        vatRegConnector: VatRegistrationConnector,
-                                       compRegConnector: CompanyRegistrationConnector)
+                                       compRegConnector: CompanyRegistrationConnector,
+                                       incorporationService: IncorporationInformationService)
   extends RegistrationService with CommonService {
 
 
@@ -76,10 +82,29 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit] =
     for {
       vatScheme <- vatRegConnector.createNewRegistration()
-      _ <- keystoreConnector.cache[String]("RegistrationId", vatScheme.id)
+      _   <- incorporationService.getIncorporationInfo().map(status => keystoreConnector.cache(INCORPORATION_STATUS, status)).value
+      _ <- keystoreConnector.cache[String](REGISTRATION_ID, vatScheme.id)
       optCompProfile <- compRegConnector.getCompanyRegistrationDetails(vatScheme.id).value
       _ <- optCompProfile.map(keystoreConnector.cache[CoHoCompanyProfile]("CompanyProfile", _)).pure
     } yield ()
+
+  def getIncorporationDate()(implicit hc: HeaderCarrier): Future[Option[LocalDate]] =
+    for {
+      incorporationStatus  <-  keystoreConnector.fetchAndGet[IncorporationStatus](INCORPORATION_STATUS)
+      date <- incorporationStatus.flatMap(status => status.statusEvent.incorporationDate).pure
+    } yield (date)
+
+  def getIncorporationStatus()(implicit hc: HeaderCarrier): Future[Option[String]] =
+    for {
+      incorporationStatus  <-  keystoreConnector.fetchAndGet[IncorporationStatus](INCORPORATION_STATUS)
+      status <- incorporationStatus.map(status => status.statusEvent.status).pure
+    } yield (status)
+
+  def getIncorporationCrn()(implicit hc: HeaderCarrier): Future[Option[String]] =
+    for {
+      incorporationStatus  <-  keystoreConnector.fetchAndGet[IncorporationStatus](INCORPORATION_STATUS)
+      crn <- incorporationStatus.flatMap(status => status.statusEvent.crn).pure
+    } yield (crn)
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
     def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =
