@@ -342,6 +342,8 @@ pages.application.submission.confirmation.button                    = Your busin
 pages.summary.vatDetails.sectionHeading                 = VAT details
 pages.summary.vatDetails.taxableTurnover                = VAT taxable sales over £85,000 in the 30 days after company is registered
 pages.summary.vatDetails.necessity                      = Register voluntarily
+pages.summary.vatDetails.overThresholdSelection         = Since {0} has the company''s VAT taxable turnover gone over £85,000?
+pages.summary.vatDetails.overThresholdDate              = Month turnover went over £85,000
 pages.summary.vatDetails.voluntaryRegistrationReason    = Voluntary registration reason
 pages.summary.vatDetails.startDate                      = VAT start date
 pages.summary.vatDetails.mandatoryStartDate             = The date the company is registered with Companies House
@@ -834,5 +836,5 @@ validation.overThreshold.date.range.below                 = This date must be af
 ## Threshold Summary Page
 pages.thresholdSummary.title                              = Check and confirm your answers
 pages.thresholdSummary.heading                            = Check and confirm your answers
-pages.summary.threshold.overThresholdSelection            = VAT taxable turnover gone over £85,000 since {0}
+pages.summary.threshold.overThresholdSelection            = Since {0} has the company''s VAT taxable turnover gone over £85,000?
 pages.summary.threshold.overThresholdDate                 = Month turnover went over £85,000

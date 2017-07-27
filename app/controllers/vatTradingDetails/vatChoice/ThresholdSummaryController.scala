@@ -24,8 +24,8 @@ import controllers.{CommonPlayDependencies, VatRegistrationController}
 import models.api._
 import models.view._
 import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
-import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.REGISTER_NO
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration}
+import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.REGISTER_NO
 import models.{MonthYearModel, S4LTradingDetails}
 import play.api.mvc._
 import services.{S4LService, VatRegistrationService}

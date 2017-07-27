@@ -27,7 +27,7 @@ case class SummaryVatThresholdBuilder(vatThresholdPostIncorp: Option[VatThreshol
   extends SummarySectionBuilder {
 
   override val sectionId: String = "threshold"
-  override val presentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
+  val monthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
 
   val overThresholdSelectionRow: SummaryRow = SummaryRow(
     s"$sectionId.overThresholdSelection",
@@ -42,7 +42,7 @@ case class SummaryVatThresholdBuilder(vatThresholdPostIncorp: Option[VatThreshol
   val overThresholdDateRow: SummaryRow = SummaryRow(
     s"$sectionId.overThresholdDate",
     vatThresholdPostIncorp.map(_.overThresholdDate).collect {
-      case Some(date) => date.format(presentationFormatter)
+      case Some(date) => date.format(monthYearPresentationFormatter)
     }.getOrElse(""),
     Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show())
   )

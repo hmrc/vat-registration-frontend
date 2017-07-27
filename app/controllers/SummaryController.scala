@@ -16,9 +16,11 @@
 
 package controllers
 
+import java.time.LocalDate
 import javax.inject.Inject
 
 import controllers.builders._
+import models.MonthYearModel
 import models.api._
 import models.view._
 import play.api.mvc._
@@ -31,11 +33,16 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
                                  (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) {
 
+  val dateOfIncorporation = LocalDate.of(2017,5,26)
+
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
       summary <- getRegistrationSummary()
       _ <- s4LService.clear()
-    } yield Ok(views.html.pages.summary(summary)))
+    } yield Ok(views.html.pages.summary(
+      summary,
+      MonthYearModel.FORMAT_DD_MMMM_Y.format(dateOfIncorporation)
+    )))
 
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
     vrs.getVatScheme().map(registrationToSummary)
@@ -53,7 +60,7 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
 
   def registrationToSummary(vs: VatScheme): Summary =
     Summary(Seq(
-      SummaryVatDetailsSectionBuilder(vs.tradingDetails).section,
+      SummaryVatDetailsSectionBuilder(vs.tradingDetails, dateOfIncorporation).section,
       SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer).section,
       SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer).section,
       SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
