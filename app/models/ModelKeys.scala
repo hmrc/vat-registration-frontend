@@ -25,5 +25,7 @@ object ModelKeys {
   implicit val REGISTERING_OFFICER_KEY = "RegisteringOfficer"
   implicit val SIC_CODES_KEY = "SicCodes"
   implicit val FORMER_NAME = "FormerName"
+  implicit val REGISTRATION_ID = "RegistrationId"
+  implicit val INCORPORATION_STATUS = "incorporationStatus"
 
 }

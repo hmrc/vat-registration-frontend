@@ -198,7 +198,9 @@ GET         /post-sign-in                                                       
 GET         /submission-confirmation                                                           controllers.ApplicationSubmissionController.show
 
 ## CAN OR CAN'T REGISTER
-GET         /you-can-register-for-vat-with-this-service                                        controllers.TwirlViewController.renderViewAuthorised(viewName="eligibility-success")
+GET         /you-can-register-for-vat-with-this-service                                        controllers.vatTradingDetails.vatChoice.EligibilitySuccessController.show
+POST        /you-can-register-for-vat-with-this-service                                        controllers.vatTradingDetails.vatChoice.EligibilitySuccessController.submit
+
 GET         /you-cant-register-for-vat-with-this-service                                       controllers.vatEligibility.ServiceCriteriaQuestionsController.ineligible()
 
 

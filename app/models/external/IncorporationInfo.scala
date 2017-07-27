@@ -16,8 +16,8 @@
 
 package models.external
 
-import org.joda.time.DateTime
-import play.api.libs.functional.syntax._
+import java.time.LocalDate
+
 import play.api.libs.json._
 
 
@@ -29,7 +29,7 @@ object IncorpSubscription {
 
 }
 
-final case class IncorpStatusEvent(status: String, crn: Option[String], incorporationDate: Option[DateTime], description: Option[String], timestamp: DateTime)
+final case class IncorpStatusEvent(status: String, crn: Option[String], incorporationDate: Option[LocalDate], description: Option[String])
 
 object IncorpStatusEvent {
 
