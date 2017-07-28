@@ -38,34 +38,6 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
     override val authConnector = mockAuthConnector
   }
 
-  "Correct compliance section should be rendered" when {
-
-    "labour questions have been answered by user" in {
-      val vs = VatScheme("ID", vatSicAndCompliance = Some(VatSicAndCompliance("TEST", labourCompliance = Some(validVatLabourCompliance), mainBusinessActivity = sicCode)))
-      val summarySection = TestSummaryController.complianceSection(vs)
-      summarySection.id mustBe "labourCompliance"
-    }
-
-    "cultural questions have been answered by user" in {
-      val vs = VatScheme("ID", vatSicAndCompliance = Some(VatSicAndCompliance("TEST", culturalCompliance = Some(validVatCulturalCompliance), mainBusinessActivity = sicCode)))
-      val summarySection = TestSummaryController.complianceSection(vs)
-      summarySection.id mustBe "culturalCompliance"
-    }
-
-    "financial questions have been answered by user" in {
-      val vs = VatScheme("ID", vatSicAndCompliance = Some(VatSicAndCompliance("TEST", financialCompliance = Some(validVatFinancialCompliance), mainBusinessActivity = sicCode)))
-      val summarySection = TestSummaryController.complianceSection(vs)
-      summarySection.id mustBe "financialCompliance"
-    }
-
-
-    "No compliance questions have been answered by user" in {
-      val vs = VatScheme("ID", vatSicAndCompliance = None)
-      TestSummaryController.complianceSection(vs).display mustBe false
-    }
-
-  }
-
   "Calling summary to show the summary page" should {
     "return HTML with a valid summary view" in {
       when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)

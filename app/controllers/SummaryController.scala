@@ -47,26 +47,15 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
     vrs.getVatScheme().map(registrationToSummary)
 
-  def complianceSection(vs: VatScheme): SummarySection =
-    List(
-      vs.vatSicAndCompliance.flatMap(_.culturalCompliance),
-      vs.vatSicAndCompliance.flatMap(_.financialCompliance),
-      vs.vatSicAndCompliance.flatMap(_.labourCompliance)
-    ).flatten.map {
-      case c: VatComplianceCultural => SummaryCulturalComplianceSectionBuilder(vs.vatSicAndCompliance).section
-      case c: VatComplianceFinancial => SummaryFinancialComplianceSectionBuilder(vs.vatSicAndCompliance).section
-      case c: VatComplianceLabour => SummaryLabourComplianceSectionBuilder(vs.vatSicAndCompliance).section
-    }.headOption.getOrElse(SummarySection(id = "none", rows = Seq(), display = false))
-
   def registrationToSummary(vs: VatScheme): Summary =
     Summary(Seq(
-      SummaryVatDetailsSectionBuilder(vs.tradingDetails, dateOfIncorporation).section,
+      SummaryVatDetailsSectionBuilder(vs.tradingDetails, Some(dateOfIncorporation)).section,
       SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer).section,
       SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer).section,
       SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
       SummaryCompanyContactDetailsSectionBuilder(vs.vatContact, vs.ppob).section,
       SummaryBusinessActivitiesSectionBuilder(vs.vatSicAndCompliance).section,
-      complianceSection(vs),
+      SummaryComplianceSectionBuilder(vs.vatSicAndCompliance).section,
       SummaryBusinessBankDetailsSectionBuilder(vs.financials).section,
       SummaryTaxableSalesSectionBuilder(vs.financials).section,
       SummaryAnnualAccountingSchemeSectionBuilder(vs.financials).section,
