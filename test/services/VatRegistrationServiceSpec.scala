@@ -24,7 +24,7 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models._
 import models.api._
-import models.external.CoHoCompanyProfile
+import models.external.{CoHoCompanyProfile, IncorporationInfo}
 import models.view.frs._
 import models.view.ppob.PpobView
 import models.view.vatFinancials.{EstimateVatTurnover, ZeroRatedSales}
@@ -49,6 +49,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   override def beforeEach() {
     super.beforeEach()
     mockFetchRegId(validRegId)
+    when(mockIIService.getIncorporationInfo()(any())).thenReturn(OptionT.none[Future, IncorporationInfo])
   }
 
   "Calling createNewRegistration" should {
