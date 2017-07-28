@@ -17,6 +17,7 @@
 package controllers.test
 
 import java.time.LocalDate
+import java.time.temporal.TemporalAdjusters
 
 import models._
 import models.api._
@@ -34,7 +35,7 @@ import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, V
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.TradingNameView._
-import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
+import models.view.vatTradingDetails.vatChoice._
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 
 class TestS4LBuilder {
@@ -57,6 +58,16 @@ class TestS4LBuilder {
       case Some(t) => StartDateView(t, None)
     }
 
+    val overThresholdView: Option[OverThresholdView] = data.vatChoice.overThresholdSelection match {
+      case Some("true") => Some(OverThresholdView(selection = true, Some(LocalDate.of(
+        data.vatChoice.overThresholdYear.map(_.toInt).get,
+        data.vatChoice.overThresholdMonth.map(_.toInt).get,
+        1
+      ).`with`(TemporalAdjusters.lastDayOfMonth()))))
+      case Some("false") => Some(OverThresholdView(selection = false, None))
+      case _ => None
+    }
+
     val voluntaryRegistration: Option[String] = data.vatChoice.voluntaryChoice
     val voluntaryRegistrationReason: Option[String] = data.vatChoice.voluntaryRegistrationReason
 
@@ -75,7 +86,8 @@ class TestS4LBuilder {
       voluntaryRegistrationReason = voluntaryRegistrationReason.map(VoluntaryRegistrationReason(_)),
       tradingName = tradingName.map(t => TradingNameView(if (t.selection) TRADING_NAME_YES else TRADING_NAME_NO, t.tradingName)),
       euGoods = euGoods.map(EuGoods(_)),
-      applyEori = applyEori.map(a => ApplyEori(a.toBoolean))
+      applyEori = applyEori.map(a => ApplyEori(a.toBoolean)),
+      overThreshold = overThresholdView
     )
   }
 
