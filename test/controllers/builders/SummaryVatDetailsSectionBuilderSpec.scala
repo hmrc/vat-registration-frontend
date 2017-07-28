@@ -30,7 +30,6 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
     "with taxableTurnoverRow render" should {
 
-
       "a 'No' if it's a voluntary registration" in {
         val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails(VatChoice.NECESSITY_VOLUNTARY)))
         builder.taxableTurnoverRow mustBe SummaryRow("vatDetails.taxableTurnover", "app.common.no", Some(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()))
@@ -113,7 +112,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
       "a valid summary section" in {
         val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails()))
         builder.section.id mustBe "vatDetails"
-        builder.section.rows.length mustEqual 5
+        builder.section.rows.length mustEqual 7
       }
     }
 
