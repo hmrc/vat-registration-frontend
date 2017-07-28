@@ -41,7 +41,7 @@ import scala.language.postfixOps
 class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   class Setup {
-    val service = new VatRegistrationService(mockS4LService, mockRegConnector, mockCompanyRegConnector) {
+    val service = new VatRegistrationService(mockS4LService, mockRegConnector, mockCompanyRegConnector, mockIIService) {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
