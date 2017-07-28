@@ -72,7 +72,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
       DoingBusinessAbroadQuestion -> urlForQuestion(DoAnyApplyToYouQuestion),
       DoAnyApplyToYouQuestion -> urlForQuestion(ApplyingForAnyOfQuestion),
       ApplyingForAnyOfQuestion -> urlForQuestion(CompanyWillDoAnyOfQuestion),
-      CompanyWillDoAnyOfQuestion -> controllers.routes.TwirlViewController.renderViewAuthorised("eligibility-success").url
+      CompanyWillDoAnyOfQuestion -> controllers.routes.TwirlViewController.renderViewAuthorised().url
     )
 
     "redirect to next screen when user is eligible to register for VAT using this service" in {
