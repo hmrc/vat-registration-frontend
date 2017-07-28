@@ -23,7 +23,7 @@ import cats.instances.FutureInstances
 import com.google.inject.ImplementedBy
 import config.WSHttp
 import models.api._
-import models.external.IncorporationStatus
+import models.external.IncorporationInfo
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
@@ -129,11 +129,8 @@ trait RegistrationConnector extends FutureInstances {
       case e: Exception => throw logResponse(e, className, "deleteVatScheme")
     } map (_ => ())
 
-  def getIncorporationInfo(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[IncorporationStatus] =
-    OptionT ( http.GET[Option[IncorporationStatus]](s"$vatRegUrl/vatreg/incorporation-information/$transactionId").recover{
-      case e: Exception => logResponse(e, className, "getIncorporationInfo")
-      Option.empty[IncorporationStatus]
-    })
+  def getIncorporationInfo(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[IncorporationInfo] =
+    OptionT.liftF(http.GET[IncorporationInfo](s"$vatRegUrl/vatreg/incorporation-information/$transactionId"))
 
 }
 

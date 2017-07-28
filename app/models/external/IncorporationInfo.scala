@@ -37,11 +37,11 @@ object IncorpStatusEvent {
 
 }
 
-final case class IncorporationStatus(subscription: IncorpSubscription, statusEvent: IncorpStatusEvent)
+final case class IncorporationInfo(subscription: IncorpSubscription, statusEvent: IncorpStatusEvent)
 
-object IncorporationStatus {
+object IncorporationInfo {
 
-  implicit val format = Json.format[IncorporationStatus]
+  implicit val format = Json.format[IncorporationInfo]
 
 }
 

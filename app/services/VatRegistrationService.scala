@@ -19,12 +19,13 @@ package services
 import java.time.LocalDate
 import javax.inject.Inject
 
+import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import connectors.{CompanyRegistrationConnector, OptionalResponse, VatRegistrationConnector}
 import models.ModelKeys._
 import models._
 import models.api._
-import models.external.{CoHoCompanyProfile, IncorporationStatus}
+import models.external.CoHoCompanyProfile
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -51,10 +52,6 @@ trait RegistrationService {
   def submitVatEligibility()(implicit hc: HeaderCarrier): Future[VatServiceEligibility]
 
   def submitVatLodgingOfficer()(implicit hc: HeaderCarrier): Future[VatLodgingOfficer]
-
-  def getIncorporationDate()(implicit hc: HeaderCarrier): Future[Option[LocalDate]]
-
-  def getIncorporationStatus()(implicit hc: HeaderCarrier): Future[Option[String]]
 
 }
 
@@ -87,24 +84,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
       optCompProfile <- compRegConnector.getCompanyRegistrationDetails(vatScheme.id).value
       _ <- optCompProfile.map(keystoreConnector.cache[CoHoCompanyProfile]("CompanyProfile", _)).pure
     } yield ()
-
-  def getIncorporationDate()(implicit hc: HeaderCarrier): Future[Option[LocalDate]] =
-    for {
-      incorporationStatus  <-  keystoreConnector.fetchAndGet[IncorporationStatus](INCORPORATION_STATUS)
-      date <- incorporationStatus.flatMap(status => status.statusEvent.incorporationDate).pure
-    } yield (date)
-
-  def getIncorporationStatus()(implicit hc: HeaderCarrier): Future[Option[String]] =
-    for {
-      incorporationStatus  <-  keystoreConnector.fetchAndGet[IncorporationStatus](INCORPORATION_STATUS)
-      status <- incorporationStatus.map(status => status.statusEvent.status).pure
-    } yield (status)
-
-  def getIncorporationCrn()(implicit hc: HeaderCarrier): Future[Option[String]] =
-    for {
-      incorporationStatus  <-  keystoreConnector.fetchAndGet[IncorporationStatus](INCORPORATION_STATUS)
-      crn <- incorporationStatus.flatMap(status => status.statusEvent.crn).pure
-    } yield (crn)
 
   def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
     def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =

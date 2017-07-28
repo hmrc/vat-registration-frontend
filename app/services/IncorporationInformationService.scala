@@ -22,7 +22,7 @@ import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import connectors.{IncorporationInformationConnector, VatRegistrationConnector, OptionalResponse}
 import models.api.ScrsAddress
-import models.external.{CoHoCompanyProfile, Officer, IncorporationStatus}
+import models.external.{CoHoCompanyProfile, Officer, IncorporationInfo}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -34,7 +34,7 @@ trait IncorpInfoService {
 
   def getOfficerList()(implicit headerCarrier: HeaderCarrier): Future[Seq[Officer]]
 
-  def getIncorporationInfo()(implicit headerCarrier: HeaderCarrier): OptionalResponse[IncorporationStatus]
+  def getIncorporationInfo()(implicit headerCarrier: HeaderCarrier): OptionalResponse[IncorporationInfo]
 }
 
 class IncorporationInformationService @Inject()(iiConnector: IncorporationInformationConnector, vatRegConnector: VatRegistrationConnector)
@@ -55,7 +55,7 @@ class IncorporationInformationService @Inject()(iiConnector: IncorporationInform
       officerList <- iiConnector.getOfficerList(profile.transactionId)
     } yield officerList.items).getOrElse(Seq.empty[Officer])
 
-  def getIncorporationInfo()(implicit headerCarrier: HeaderCarrier): OptionalResponse[IncorporationStatus] =
+  def getIncorporationInfo()(implicit headerCarrier: HeaderCarrier): OptionalResponse[IncorporationInfo] =
     companyProfile().flatMap(profile => vatRegConnector.getIncorporationInfo(profile.transactionId))
 
 }
