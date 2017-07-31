@@ -17,6 +17,7 @@
 package fixtures
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 import models.api.{VatComplianceCultural, _}
 import models.external.{IncorporationInfo, _}
@@ -56,8 +57,9 @@ trait VatRegistrationFixture {
   val someTestDate = Some(testDate)
   val vatStartDate = VatStartDate(StartDateView.SPECIFIC_DATE, someTestDate)
   val validStartDateView = StartDateView(StartDateView.SPECIFIC_DATE, someTestDate)
+  val monthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
 
-  val validVatChoice = VatChoice(VatChoice.NECESSITY_VOLUNTARY, vatStartDate)
+  val validVatChoice = VatChoice(VatChoice.NECESSITY_VOLUNTARY, vatStartDate, vatThresholdPostIncorp = Some(VatThresholdPostIncorp(true, Some(testDate))))
 
   val tradingName: String = "ACME INC"
   val validTradingName = TradingName(selection = true, tradingName = Some(tradingName))

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.vatTradingDetails.vatChoice
 
-import controllers.vatTradingDetails.vatChoice.ThresholdSummaryController
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.S4LTradingDetails
@@ -31,18 +30,22 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
 
   object TestThresholdSummaryController extends ThresholdSummaryController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
-    override def getThresholdSummary()(implicit hc: HeaderCarrier): Future[Summary] = Summary(sections = Seq()).pure
   }
 
   val fakeRequest = FakeRequest(controllers.vatTradingDetails.vatChoice.routes.ThresholdSummaryController.show())
 
   "Calling threshold summary to show the threshold summary page" should {
     "return HTML with a valid threshold summary view" in {
+      save4laterReturns(S4LTradingDetails(
+        overThreshold = Some(OverThresholdView(false, None))
+      ))
+
       callAuthorised(TestThresholdSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
     "getVatThresholdPostIncorp returns a valid VatThresholdPostIncorp" in {
       save4laterReturns(S4LTradingDetails(
+
         overThreshold = Some(OverThresholdView(false, None))
       ))
 
