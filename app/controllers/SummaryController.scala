@@ -46,9 +46,9 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
       vs.vatSicAndCompliance.flatMap(_.financialCompliance),
       vs.vatSicAndCompliance.flatMap(_.labourCompliance)
     ).flatten.map {
-      case c: VatComplianceCultural => SummaryCulturalComplianceSectionBuilder(vs.vatSicAndCompliance).section
-      case c: VatComplianceFinancial => SummaryFinancialComplianceSectionBuilder(vs.vatSicAndCompliance).section
-      case c: VatComplianceLabour => SummaryLabourComplianceSectionBuilder(vs.vatSicAndCompliance).section
+      case _: VatComplianceCultural => SummaryCulturalComplianceSectionBuilder(vs.vatSicAndCompliance).section
+      case _: VatComplianceFinancial => SummaryFinancialComplianceSectionBuilder(vs.vatSicAndCompliance).section
+      case _: VatComplianceLabour => SummaryLabourComplianceSectionBuilder(vs.vatSicAndCompliance).section
     }.headOption.getOrElse(SummarySection(id = "none", rows = Seq(), display = false))
 
   def registrationToSummary(vs: VatScheme): Summary =
@@ -57,7 +57,7 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
       SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer).section,
       SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer).section,
       SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
-      SummaryCompanyContactDetailsSectionBuilder(vs.vatContact, vs.ppob).section,
+      SummaryCompanyContactDetailsSectionBuilder(vs.vatContact).section,
       SummaryBusinessActivitiesSectionBuilder(vs.vatSicAndCompliance).section,
       complianceSection(vs),
       SummaryBusinessBankDetailsSectionBuilder(vs.financials).section,

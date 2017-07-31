@@ -19,7 +19,6 @@ package models
 import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import models.api.{VatFinancials, _}
 import models.view.frs._
-import models.view.ppob.PpobView
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.cultural.NotForProfit.NOT_PROFIT_YES
 import models.view.sicAndCompliance.financial._
@@ -29,6 +28,7 @@ import models.view.sicAndCompliance.labour.TemporaryContracts.TEMP_CONTRACTS_YES
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.vatContact.BusinessContactDetails
+import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.VatChargeExpectancy.VAT_CHARGE_YES
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.MONTHLY
@@ -318,7 +318,8 @@ object S4LVatSicAndCompliance {
 
 final case class S4LVatContact
 (
-  businessContactDetails: Option[BusinessContactDetails] = None
+  businessContactDetails: Option[BusinessContactDetails] = None,
+  ppob: Option[PpobView] = None
 )
 
 object S4LVatContact {
@@ -326,15 +327,22 @@ object S4LVatContact {
 
   implicit val modelT = new S4LModelTransformer[S4LVatContact] {
     override def toS4LModel(vs: VatScheme): S4LVatContact =
-      S4LVatContact(businessContactDetails = ApiModelTransformer[BusinessContactDetails].toViewModel(vs))
+      S4LVatContact(
+        businessContactDetails = ApiModelTransformer[BusinessContactDetails].toViewModel(vs),
+        ppob = ApiModelTransformer[PpobView].toViewModel(vs)
+      )
   }
 
   implicit val apiT = new S4LApiTransformer[S4LVatContact, VatContact] {
     override def toApi(c: S4LVatContact, g: VatContact): VatContact =
-      c.businessContactDetails.map( bc => VatContact(
-        VatDigitalContact(email = bc.email, tel = bc.daytimePhone, mobile = bc.mobile), website = bc.website)).
-        getOrElse(g)
-
+      g.copy(
+        digitalContact = VatDigitalContact(
+                          email = c.businessContactDetails.map(_.email).getOrElse(g.digitalContact.email),
+                          tel = c.businessContactDetails.flatMap(_.daytimePhone),
+                          mobile = c.businessContactDetails.flatMap(_.mobile)),
+        website = c.businessContactDetails.flatMap(_.website),
+        ppob = c.ppob.flatMap(_.address).getOrElse(g.ppob)
+      )
   }
 }
 
@@ -417,27 +425,6 @@ object S4LVatLodgingOfficer {
       )
   }
 }
-
-
-final case class S4LPpob
-(
-  address: Option[PpobView] = None
-)
-
-object S4LPpob {
-  implicit val format: OFormat[S4LPpob] = Json.format[S4LPpob]
-
-  implicit val modelT = new S4LModelTransformer[S4LPpob] {
-    override def toS4LModel(vs: VatScheme): S4LPpob =
-      S4LPpob(address = ApiModelTransformer[PpobView].toViewModel(vs))
-  }
-
-  implicit val transformer = new S4LApiTransformer[S4LPpob, ScrsAddress] {
-    // TODO PPOB sits directly under VatScheme root !! see VRS.submitPpob()
-    override def toApi(c: S4LPpob, g: ScrsAddress): ScrsAddress = g
-  }
-}
-
 
 final case class S4LFlatRateScheme
 (
