@@ -23,7 +23,7 @@ import connectors.AddressLookupConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.ppob.PpobForm
 import models.api.ScrsAddress
-import models.view.ppob.PpobView
+import models.view.vatContact.ppob.PpobView
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -62,7 +62,7 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
           addressList <- fetchAddressList().getOrElse(Seq())
           address = addressList.find(_.id == data.addressId)
           _ <- save(PpobView(data.addressId, address))
-          _ <- vrs.submitPpob()
+          //_ <- vrs.submitPpob()
         } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
       ).map(Redirect)))
 
@@ -70,7 +70,7 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
     for {
       address <- alfConnector.getAddress(id)
       _ <- save(PpobView(address.id, Some(address)))
-      _ <- vrs.submitPpob()
+      //_ <- vrs.submitPpob()
     } yield Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show()))
 
 }

@@ -37,7 +37,7 @@ object BusinessContactDetails {
 
   implicit val modelTransformer = ApiModelTransformer[BusinessContactDetails] { (vs: VatScheme) =>
     vs.vatContact.map {
-      case VatContact(dc, ws) =>
+      case VatContact(dc, ws, _) =>
         BusinessContactDetails(email = dc.email, daytimePhone = dc.tel, mobile = dc.mobile, website = ws)
     }
   }

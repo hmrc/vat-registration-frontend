@@ -26,8 +26,7 @@ import models._
 import models.api._
 import models.external.CoHoCompanyProfile
 import models.view.frs._
-import models.view.ppob.PpobView
-import models.view.vatFinancials.{EstimateVatTurnover, ZeroRatedSales}
+import models.view.vatFinancials.ZeroRatedSales
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.vatChoice.StartDateView
 import org.mockito.Matchers
@@ -259,21 +258,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturnsNothing[S4LFlatRateScheme]()
 
       service.submitVatFlatRateScheme() failedWith classOf[IllegalStateException]
-    }
-
-    "submitPpob should fail if there's not trace of PPOB in neither backend nor S4L" in new Setup {
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-      save4laterReturnsNothing[S4LPpob]()
-
-      service.submitPpob() failedWith classOf[IllegalStateException]
-    }
-
-    "submitPpob should succeed when S4LPpob in S4L" in new Setup {
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-      when(mockRegConnector.upsertPpob(any(), any())(any(), any())).thenReturn(scrsAddress.pure)
-      save4laterReturns(S4LPpob(Some(PpobView("1", Some(scrsAddress)))))
-
-      service.submitPpob() returns scrsAddress
     }
 
     "submitSicAndCompliance should fail if VatSicAndCompliance not in backend and S4L" in new Setup {
