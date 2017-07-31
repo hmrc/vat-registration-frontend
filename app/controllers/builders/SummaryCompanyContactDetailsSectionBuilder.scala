@@ -21,8 +21,7 @@ import models.api.ScrsAddress.htmlShow._
 import models.api._
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryCompanyContactDetailsSectionBuilder(vatContact: Option[VatContact] = None,
-                                                       ppob: Option[ScrsAddress] = None)
+case class SummaryCompanyContactDetailsSectionBuilder(vatContact: Option[VatContact] = None)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "companyContactDetails"
@@ -54,7 +53,7 @@ case class SummaryCompanyContactDetailsSectionBuilder(vatContact: Option[VatCont
 
   val ppobRow: SummaryRow = SummaryRow(
     s"$sectionId.ppob",
-    ppob.fold("")(_.show),
+    vatContact.map(_.ppob.show).getOrElse(""),
     Some(controllers.ppob.routes.PpobController.show())
   )
 
@@ -66,7 +65,7 @@ case class SummaryCompanyContactDetailsSectionBuilder(vatContact: Option[VatCont
       (businessDaytimePhoneNumberRow, vatContact.exists(_.digitalContact.tel.isDefined)),
       (businessMobilePhoneNumberRow, vatContact.exists(_.digitalContact.mobile.isDefined)),
       (businessWebsiteRow, vatContact.exists(_.website.isDefined)),
-      (ppobRow, ppob.isDefined)
+      (ppobRow, true)
     )
   )
 }

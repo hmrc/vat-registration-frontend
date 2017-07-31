@@ -22,7 +22,6 @@ import play.api.libs.json.Json
 case class TestSetup(
                       vatChoice: VatChoiceTestSetup,
                       vatTradingDetails: VatTradingDetailsTestSetup,
-                      ppob: VatPpobSetup,
                       vatContact: VatContactTestSetup,
                       vatFinancials: VatFinancialsTestSetup,
                       sicAndCompliance: SicAndComplianceTestSetup,
