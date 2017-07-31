@@ -24,8 +24,7 @@ import models.api.{VatChoice, VatStartDate, VatTradingDetails}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingDetails] = None,
-                                           dateOfIncorporation: Option[LocalDate] = None)
+case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingDetails] = None)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "vatDetails"
@@ -45,8 +44,7 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
       case true => "app.common.yes"
       case false => "app.common.no"
     }.getOrElse(""),
-    Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show()),
-    questionArg = dateOfIncorporation.map(_.format(presentationFormatter))
+    Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show())
   )
 
   val overThresholdDateRow: SummaryRow = SummaryRow(

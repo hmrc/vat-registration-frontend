@@ -22,8 +22,7 @@ import java.time.format.DateTimeFormatter
 import models.api.VatThresholdPostIncorp
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryVatThresholdBuilder(vatThresholdPostIncorp: Option[VatThresholdPostIncorp] = None,
-                                      dateOfIncorporation: LocalDate)
+case class SummaryVatThresholdBuilder(vatThresholdPostIncorp: Option[VatThresholdPostIncorp] = None)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "threshold"
@@ -35,8 +34,7 @@ case class SummaryVatThresholdBuilder(vatThresholdPostIncorp: Option[VatThreshol
       case true => "app.common.yes"
       case false => "app.common.no"
     }.getOrElse(""),
-    Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show()),
-    questionArg = Some(dateOfIncorporation.format(presentationFormatter))
+    Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show())
   )
 
   val overThresholdDateRow: SummaryRow = SummaryRow(
