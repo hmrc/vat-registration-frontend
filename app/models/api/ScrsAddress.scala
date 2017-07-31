@@ -81,8 +81,6 @@ object ScrsAddress {
     import cats.instances.option._
     import cats.syntax.applicative._
 
-    val a2 = address
-
     Seq[Option[AddressLineOrPostcode]](
       address.line1.pure.map(AddressLine),
       address.line2.pure.map(AddressLine),
@@ -96,6 +94,7 @@ object ScrsAddress {
     }
   }
 
+  object htmlShow {
   object htmlShow {
     implicit val html = show((a: ScrsAddress) => normalisedSeq(a).mkString("<br />"))
   }
