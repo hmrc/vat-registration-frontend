@@ -62,7 +62,6 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
           addressList <- fetchAddressList().getOrElse(Seq())
           address = addressList.find(_.id == data.addressId)
           _ <- save(PpobView(data.addressId, address))
-          //_ <- vrs.submitPpob()
         } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
       ).map(Redirect)))
 
@@ -70,7 +69,6 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
     for {
       address <- alfConnector.getAddress(id)
       _ <- save(PpobView(address.id, Some(address)))
-      //_ <- vrs.submitPpob()
     } yield Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show()))
 
 }
