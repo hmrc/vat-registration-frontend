@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package models.view.ppob
+package models.view.vatContact.ppob
 
 import fixtures.VatRegistrationFixture
 import models.api.ScrsAddress
-import models.{ApiModelTransformer, S4LPpob}
+import models.{ApiModelTransformer, S4LVatContact}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -29,14 +29,13 @@ class PpobViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
   "ApiModelTransformer" should {
 
     "convert VatScheme without Ppob to empty view model" in {
-      val vs = vatScheme().copy(ppob = None)
+      val vs = vatScheme().copy(vatContact = None)
       ApiModelTransformer[PpobView].toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme with Ppob section to view model" in {
       val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
-      val ppobAddress =address
-      val vs = vatScheme().copy(ppob = Some(ppobAddress))
+      val vs = vatScheme().copy(vatContact = Some(validVatContact.copy(ppob = address)))
 
       val expectedPpobView = PpobView(address.id, Some(address))
 
@@ -48,20 +47,20 @@ class PpobViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
   "ViewModelFormat" should {
     val testAddress = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
     val testAddressView = PpobView(testAddress.id, Some(testAddress))
-    val s4LPpob: S4LPpob = S4LPpob(address = Some(testAddressView))
+    val s4l: S4LVatContact = S4LVatContact(ppob = Some(testAddressView))
 
     "extract address from PpobView" in {
-      PpobView.viewModelFormat.read(s4LPpob) shouldBe Some(testAddressView)
+      PpobView.viewModelFormat.read(s4l) shouldBe Some(testAddressView)
     }
 
     "update empty lodgingOfficer with PpobView" in {
-      PpobView.viewModelFormat.update(testAddressView, Option.empty[S4LPpob]).
-        address shouldBe Some(testAddressView)
+      PpobView.viewModelFormat.update(testAddressView, Option.empty[S4LVatContact]).
+        ppob shouldBe Some(testAddressView)
     }
 
     "update non-empty lodgingOfficer with PpobView" in {
-      PpobView.viewModelFormat.update(testAddressView, Some(s4LPpob)).
-        address shouldBe Some(testAddressView)
+      PpobView.viewModelFormat.update(testAddressView, Some(s4l)).
+        ppob shouldBe Some(testAddressView)
     }
   }
 }

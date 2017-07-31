@@ -136,7 +136,7 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
         "overThreshold.month" -> "6",
         "overThreshold.year" -> "2017"
       )) {
-        _ redirectsTo s"$contextRoot/do-you-want-to-register-voluntarily"
+        _ redirectsTo s"$contextRoot/check-confirm-answers"
       }
     }
 
@@ -147,7 +147,7 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
       submitAuthorised(TestOverThresholdController.submit(), fakeRequest.withFormUrlEncodedBody(
         "overThresholdRadio" -> "false"
       )) {
-        _ redirectsTo s"$contextRoot/do-you-want-to-register-voluntarily"
+        _ redirectsTo s"$contextRoot/check-confirm-answers"
       }
     }
 

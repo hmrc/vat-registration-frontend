@@ -45,7 +45,7 @@ class OverThresholdController @Inject()(formFactory: OverThresholdFormFactory, d
     fetchIncorporationInfo().subflatMap(_.statusEvent.incorporationDate).getOrElse(throw fail("Date of Incorporation")).flatMap(date =>
       formFactory.form(date).bindFromRequest().fold(badForm =>
         BadRequest(views.html.pages.vatTradingDetails.vatChoice.over_threshold(badForm, date.format(FORMAT_DD_MMMM_Y))).pure,
-        data => save(data).map(_ => Redirect(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show()))
+        data => save(data).map(_ => Redirect(controllers.vatTradingDetails.vatChoice.routes.ThresholdSummaryController.show()))
       )
     )
   }

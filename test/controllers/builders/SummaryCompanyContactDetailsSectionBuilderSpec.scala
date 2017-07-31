@@ -31,7 +31,8 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
         tel = Some("0123456789"),
         mobile = Some("0123456789")
       ),
-      website = Some("http://website.com")
+      website = Some("http://website.com"),
+      ppob = scrsAddress
     )
 
     val sectionBuilder = SummaryCompanyContactDetailsSectionBuilder(Some(vatContact))
@@ -73,7 +74,7 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
     "a real Ppob value should be returned expected test value for Ppob" in {
       import ScrsAddress.htmlShow._
       import cats.syntax.show._
-      val builder = SummaryCompanyContactDetailsSectionBuilder(Some(vatContact), Some(scrsAddress))
+      val builder = SummaryCompanyContactDetailsSectionBuilder(Some(vatContact))
       builder.ppobRow mustBe
         SummaryRow(
           "companyContactDetails.ppob",
@@ -85,11 +86,11 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
     "summary section shows and hides rows" in {
       val testCases = Seq(
         //pair of VatContact and expectedNumberOfRows to be produced in the summary
-        (VatContact(VatDigitalContact(email = "email")), 1),
-        (VatContact(VatDigitalContact(email = "email", tel = Some("123"))), 2),
-        (VatContact(VatDigitalContact(email = "email", mobile = Some("123"))), 2),
-        (VatContact(VatDigitalContact(email = "email", tel = Some("123"), mobile = Some("123"))), 3),
-        (vatContact, 4)
+        (VatContact(digitalContact = VatDigitalContact(email = "email"), ppob = scrsAddress), 2),
+        (VatContact(digitalContact = VatDigitalContact(email = "email", tel = Some("123")), ppob = scrsAddress), 3),
+        (VatContact(digitalContact = VatDigitalContact(email = "email", mobile = Some("123")), ppob = scrsAddress), 3),
+        (VatContact(digitalContact = VatDigitalContact(email = "email", tel = Some("123"), mobile = Some("123")), ppob = scrsAddress), 4),
+        (vatContact, 5)
       )
       forAll(testCases) { test =>
         val (contact, expectedNumberOfRows) = test

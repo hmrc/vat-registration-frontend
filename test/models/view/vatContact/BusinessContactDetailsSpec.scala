@@ -32,7 +32,10 @@ class BusinessContactDetailsSpec extends UnitSpec with VatRegistrationFixture wi
     }
 
     "convert VatScheme with VatContact section to view model" in {
-      val testVatContact = VatContact(VatDigitalContact(email = "test@com", tel = Some("123"), mobile = None), website = Some("test.com"))
+      val testVatContact = VatContact(
+        digitalContact = VatDigitalContact(email = "test@com", tel = Some("123"), mobile = None),
+        website = Some("test.com"),
+        ppob = scrsAddress)
       val vs = vatScheme(contact = Some(testVatContact))
 
       val expectedBusinessContactDetails = BusinessContactDetails(email = "test@com", daytimePhone = Some("123"), website = Some("test.com"))

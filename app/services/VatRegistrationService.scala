@@ -169,24 +169,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     } yield response
   }
 
-  // TODO PPOB breaks the pattern of previous submits
-  // this is because there is no field containing ppob in VatScheme
-  // the ppob data sits directly under VatSceme root
-  def submitPpob()(implicit hc: HeaderCarrier): Future[ScrsAddress] = {
-
-    def merge(fresh: Option[S4LPpob], vs: VatScheme): VatScheme =
-      fresh.fold(
-        vs
-      ) { s4l =>
-        s4l.address.fold(vs)(ppobview => vs.copy(ppob = ppobview.address))
-      }
-
-    for {
-      (vs, vlo) <- (getVatScheme() |@| s4l[S4LPpob]()).tupled
-      response <- vatRegConnector.upsertPpob(vs.id, merge(vlo, vs).ppob.getOrElse(throw fail("PPOB is null")))
-    } yield response
-  }
-
   private def fail(logicalGroup: String): Exception =
     new IllegalStateException(s"$logicalGroup data expected to be found in either backend or save for later")
 }

@@ -20,7 +20,7 @@ import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.api.ScrsAddress
-import models.view.ppob.PpobView
+import models.view.vatContact.ppob.PpobView
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{verify, when}
 import play.api.mvc.Call
@@ -76,25 +76,21 @@ class PpobControllerSpec extends VatRegSpec
     "return 303 with selected address" in {
       save4laterExpectsSave[PpobView]()
       when(mockPPService.getPpobAddressList()(any())).thenReturn(Seq(address).pure)
-      when(mockVatRegistrationService.submitPpob()(any())).thenReturn(scrsAddress.pure)
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("PpobAddressList", Some(Seq(address)))
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("ppobRadio" -> address.id)
       )(_ redirectsTo s"$contextRoot/company-contact-details")
-      verify(mockVatRegistrationService).submitPpob()(any())
     }
 
     "return 303 with selected address but no address list in keystore" in {
       save4laterExpectsSave[PpobView]()
       when(mockPPService.getPpobAddressList()(any())).thenReturn(Seq(address).pure)
-      when(mockVatRegistrationService.submitPpob()(any())).thenReturn(scrsAddress.pure)
       mockKeystoreFetchAndGet("PpobAddressList", Option.empty[Seq[ScrsAddress]])
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("ppobRadio" -> address.id)
       )(_ redirectsTo s"$contextRoot/company-contact-details")
-      verify(mockVatRegistrationService).submitPpob()(any())
     }
 
     "redirect the user to TxM address capture page with 'other address' selected" in {
@@ -112,7 +108,6 @@ class PpobControllerSpec extends VatRegSpec
     "save an address and redirect to next page" in {
       save4laterExpectsSave[PpobView]()
       when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
-      when(mockVatRegistrationService.submitPpob()(any())).thenReturn(scrsAddress.pure)
       callAuthorised(Controller.acceptFromTxm("addressId")) {
         _ redirectsTo s"$contextRoot/company-contact-details"
       }
