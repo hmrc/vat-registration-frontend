@@ -19,7 +19,7 @@ package fixtures
 import java.time.LocalDate
 
 import models.api.{VatComplianceCultural, _}
-import models.external.{CoHoCompanyProfile, Officer}
+import models.external.{IncorporationInfo, _}
 import models.view.frs._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
@@ -254,5 +254,17 @@ trait VatRegistrationFixture {
     vatSicAndCompliance = Some(validSicAndCompliance),
     vatFlatRateScheme = Some(validVatFlatRateScheme)
   )
+
+  val testIncorporationInfo = IncorporationInfo(
+    IncorpSubscription(
+      transactionId = "000-434-23",
+      regime = "vat",
+      subscriber = "scrs",
+      callbackUrl = "http://localhost:9896/TODO-CHANGE-THIS"),
+    IncorpStatusEvent(
+      status = "accepted",
+      crn = Some("90000001"),
+      incorporationDate = Some(LocalDate.of(2016, 8, 5)),
+      description = Some("Some description")))
 
 }

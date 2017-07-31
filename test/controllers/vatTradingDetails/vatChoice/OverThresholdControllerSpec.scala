@@ -18,6 +18,7 @@ package controllers.vatTradingDetails.vatChoice
 
 import java.time.LocalDate
 
+import cats.data.OptionT
 import common.Now
 import fixtures.VatRegistrationFixture
 import forms.vatTradingDetails.vatChoice.OverThresholdFormFactory
@@ -39,7 +40,7 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
 
   val overThresholdFormFactory = new OverThresholdFormFactory(Now[LocalDate](today))
 
-  object TestOverThresholdController extends OverThresholdController(overThresholdFormFactory, ds)(mockS4LService, mockVatRegistrationService) {
+  object TestOverThresholdController extends OverThresholdController(overThresholdFormFactory, ds)(mockS4LService, mockVatRegistrationService, mockIncorpInfoService) {
     implicit val fixedToday = Now[LocalDate](today)
     override val authConnector = mockAuthConnector
   }
@@ -52,7 +53,8 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
       val overThreshold = OverThresholdView(true, Some(LocalDate.of(2017, 6, 30)))
 
       save4laterReturnsViewModel(overThreshold)()
-
+      when(mockIncorpInfoService.getIncorporationInfo()(any[HeaderCarrier]()))
+        .thenReturn(OptionT.liftF(testIncorporationInfo.pure))
       callAuthorised(TestOverThresholdController.show) {
         _ includesText "VAT taxable turnover gone over"
       }
@@ -63,7 +65,8 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
 
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
-
+      when(mockIncorpInfoService.getIncorporationInfo()(any[HeaderCarrier]()))
+        .thenReturn(OptionT.liftF(testIncorporationInfo.pure))
       callAuthorised(TestOverThresholdController.show) {
         _ includesText "VAT taxable turnover gone over"
       }
@@ -74,7 +77,8 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
-
+      when(mockIncorpInfoService.getIncorporationInfo()(any[HeaderCarrier]()))
+        .thenReturn(OptionT.liftF(testIncorporationInfo.pure))
       callAuthorised(TestOverThresholdController.show) {
         _ includesText "VAT taxable turnover gone over"
       }
@@ -82,6 +86,8 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
   }
 
   s"POST ${routes.OverThresholdController.submit()}" should {
+    when(mockIncorpInfoService.getIncorporationInfo()(any[HeaderCarrier]()))
+      .thenReturn(OptionT.liftF(testIncorporationInfo.pure))
 
     "return 400 when no data posted" in {
       submitAuthorised(
@@ -91,6 +97,8 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
     }
 
     "return 400 when partial data is posted" in {
+      when(mockIncorpInfoService.getIncorporationInfo()(any[HeaderCarrier]()))
+        .thenReturn(OptionT.liftF(testIncorporationInfo.pure))
       submitAuthorised(
         TestOverThresholdController.submit(), fakeRequest.withFormUrlEncodedBody(
           "overThresholdRadio" -> "true",
@@ -103,23 +111,25 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
 
     "return 303 with valid data - yes selected" in {
       save4laterExpectsSave[OverThresholdView]()
-
+      when(mockIncorpInfoService.getIncorporationInfo()(any[HeaderCarrier]()))
+        .thenReturn(OptionT.liftF(testIncorporationInfo.pure))
       submitAuthorised(TestOverThresholdController.submit(), fakeRequest.withFormUrlEncodedBody(
         "overThresholdRadio" -> "true",
         "overThreshold.month" -> "6",
         "overThreshold.year" -> "2017"
       )) {
-        _ redirectsTo s"$contextRoot/check-confirm-answers"
+        _ redirectsTo s"$contextRoot/do-you-want-to-register-voluntarily"
       }
     }
 
     "return 303 with valid data - no selected" in {
       save4laterExpectsSave[OverThresholdView]()
-
+      when(mockIncorpInfoService.getIncorporationInfo()(any[HeaderCarrier]()))
+        .thenReturn(OptionT.liftF(testIncorporationInfo.pure))
       submitAuthorised(TestOverThresholdController.submit(), fakeRequest.withFormUrlEncodedBody(
         "overThresholdRadio" -> "false"
       )) {
-        _ redirectsTo s"$contextRoot/check-confirm-answers"
+        _ redirectsTo s"$contextRoot/do-you-want-to-register-voluntarily"
       }
     }
 
