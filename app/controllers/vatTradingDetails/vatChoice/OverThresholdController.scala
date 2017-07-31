@@ -18,27 +18,31 @@ package controllers.vatTradingDetails.vatChoice
 
 import javax.inject.Inject
 
+import cats.data.OptionT
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatTradingDetails.vatChoice.OverThresholdFormFactory
+import models.ModelKeys._
 import models.MonthYearModel.FORMAT_DD_MMMM_Y
+import models.external.IncorporationInfo
 import models.view.vatTradingDetails.vatChoice.OverThresholdView
 import play.api.mvc._
-import services.{IncorpInfoService, S4LService, VatRegistrationService}
+import services.{CommonService, IncorpInfoService, S4LService, VatRegistrationService}
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 class OverThresholdController @Inject()(formFactory: OverThresholdFormFactory, ds: CommonPlayDependencies)
-                                       (implicit s4LService: S4LService, vrs: VatRegistrationService, iiService: IncorpInfoService)
-  extends VatRegistrationController(ds) with FlatMapSyntax {
+                                       (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with FlatMapSyntax with CommonService{
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     for {
-      dateOfIncorporation <- iiService.getIncorporationInfo().subflatMap(_.statusEvent.incorporationDate).getOrElse(throw fail("Date of Incorporation"))
+      dateOfIncorporation <- fetchIncorporationInfo().subflatMap(_.statusEvent.incorporationDate).getOrElse(throw fail("Date of Incorporation"))
       form <- viewModel[OverThresholdView]().fold(formFactory.form(dateOfIncorporation)) (formFactory.form(dateOfIncorporation).fill)
     } yield Ok(views.html.pages.vatTradingDetails.vatChoice.over_threshold(form, dateOfIncorporation.format(FORMAT_DD_MMMM_Y)))
   }
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    iiService.getIncorporationInfo().subflatMap(_.statusEvent.incorporationDate).getOrElse(throw fail("Date of Incorporation")).flatMap(date =>
+    fetchIncorporationInfo().subflatMap(_.statusEvent.incorporationDate).getOrElse(throw fail("Date of Incorporation")).flatMap(date =>
       formFactory.form(date).bindFromRequest().fold(badForm =>
         BadRequest(views.html.pages.vatTradingDetails.vatChoice.over_threshold(badForm, date.format(FORMAT_DD_MMMM_Y))).pure,
         data => save(data).map(_ => Redirect(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show()))
@@ -46,6 +50,9 @@ class OverThresholdController @Inject()(formFactory: OverThresholdFormFactory, d
     )
   }
   )
+
+  private def fetchIncorporationInfo()(implicit headerCarrier: HeaderCarrier) =
+    OptionT(keystoreConnector.fetchAndGet[IncorporationInfo](INCORPORATION_STATUS))
 
   private def fail(logicalGroup: String): Exception =
     new IllegalStateException(s"$logicalGroup data expected to be found in Incorporation")
