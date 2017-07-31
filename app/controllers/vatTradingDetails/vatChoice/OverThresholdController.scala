@@ -32,17 +32,17 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 class OverThresholdController @Inject()(formFactory: OverThresholdFormFactory, ds: CommonPlayDependencies)
                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with FlatMapSyntax with CommonService{
+  extends VatRegistrationController(ds) with FlatMapSyntax with CommonService {
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     for {
-      dateOfIncorporation <- fetchIncorporationInfo().subflatMap(_.statusEvent.incorporationDate).getOrElse(throw fail("Date of Incorporation"))
-      form <- viewModel[OverThresholdView]().fold(formFactory.form(dateOfIncorporation)) (formFactory.form(dateOfIncorporation).fill)
+      dateOfIncorporation <- fetchDateOfIncorporation()
+      form <- viewModel[OverThresholdView]().fold(formFactory.form(dateOfIncorporation))(formFactory.form(dateOfIncorporation).fill)
     } yield Ok(views.html.pages.vatTradingDetails.vatChoice.over_threshold(form, dateOfIncorporation.format(FORMAT_DD_MMMM_Y)))
   }
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    fetchIncorporationInfo().subflatMap(_.statusEvent.incorporationDate).getOrElse(throw fail("Date of Incorporation")).flatMap(date =>
+    fetchDateOfIncorporation().flatMap(date =>
       formFactory.form(date).bindFromRequest().fold(badForm =>
         BadRequest(views.html.pages.vatTradingDetails.vatChoice.over_threshold(badForm, date.format(FORMAT_DD_MMMM_Y))).pure,
         data => save(data).map(_ => Redirect(controllers.vatTradingDetails.vatChoice.routes.ThresholdSummaryController.show()))
@@ -51,9 +51,4 @@ class OverThresholdController @Inject()(formFactory: OverThresholdFormFactory, d
   }
   )
 
-  private def fetchIncorporationInfo()(implicit headerCarrier: HeaderCarrier) =
-    OptionT(keystoreConnector.fetchAndGet[IncorporationInfo](INCORPORATION_STATUS))
-
-  private def fail(logicalGroup: String): Exception =
-    new IllegalStateException(s"$logicalGroup data expected to be found in Incorporation")
 }
