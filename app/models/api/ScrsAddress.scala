@@ -95,7 +95,6 @@ object ScrsAddress {
   }
 
   object htmlShow {
-  object htmlShow {
     implicit val html = show((a: ScrsAddress) => normalisedSeq(a).mkString("<br />"))
   }
 
