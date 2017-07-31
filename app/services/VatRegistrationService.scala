@@ -25,7 +25,7 @@ import connectors.{CompanyRegistrationConnector, OptionalResponse, VatRegistrati
 import models.ModelKeys._
 import models._
 import models.api._
-import models.external.CoHoCompanyProfile
+import models.external.{CoHoCompanyProfile, IncorporationInfo}
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -58,7 +58,7 @@ trait RegistrationService {
 class VatRegistrationService @Inject()(s4LService: S4LService,
                                        vatRegConnector: VatRegistrationConnector,
                                        compRegConnector: CompanyRegistrationConnector,
-                                       incorporationService: IncorporationInformationService)
+                                       incorporationService: IncorpInfoService)
   extends RegistrationService with CommonService {
 
 
@@ -79,7 +79,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit] =
     for {
       vatScheme <- vatRegConnector.createNewRegistration()
-      _   <- incorporationService.getIncorporationInfo().map(status => keystoreConnector.cache(INCORPORATION_STATUS, status)).value
+      _   <- incorporationService.getIncorporationInfo().map(status => keystoreConnector.cache[IncorporationInfo](INCORPORATION_STATUS, status)).value
       _ <- keystoreConnector.cache[String](REGISTRATION_ID, vatScheme.id)
       optCompProfile <- compRegConnector.getCompanyRegistrationDetails(vatScheme.id).value
       _ <- optCompProfile.map(keystoreConnector.cache[CoHoCompanyProfile]("CompanyProfile", _)).pure

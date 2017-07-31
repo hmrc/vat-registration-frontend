@@ -24,16 +24,18 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models._
 import models.api._
-import models.external.CoHoCompanyProfile
+import models.external.{CoHoCompanyProfile, IncorporationInfo}
 import models.view.frs._
 import models.view.ppob.PpobView
-import models.view.vatFinancials.{EstimateVatTurnover, ZeroRatedSales}
+import models.view.vatFinancials.ZeroRatedSales
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.vatChoice.StartDateView
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -51,11 +53,30 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     mockFetchRegId(validRegId)
   }
 
+
+  val json = Json.parse(
+    s"""
+       |{
+       |  "IncorporationInfo":{
+       |    "IncorpSubscription":{
+       |      "callbackUrl":"http://localhost:9896/TODO-CHANGE-THIS"
+       |    },
+       |    "IncorpStatusEvent":{
+       |      "status":"accepted",
+       |      "crn":"90000001",
+       |      "description": "Some description",
+       |      "incorporationDate":1470438000000
+       |    }
+       |  }
+       |}
+        """.stripMargin)
+
   "Calling createNewRegistration" should {
     "return a success response when the Registration is successfully created" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+      when(mockIIService.getIncorporationInfo()(any[HeaderCarrier]())).thenReturn(OptionT.liftF(Future.successful(testIncorporationInfo)))
       when(mockRegConnector.createNewRegistration()(any(), any())).thenReturn(validVatScheme.pure)
-
+      mockKeystoreCache[IncorporationInfo]("INCORPORATION_STATUS", CacheMap("INCORPORATION_STATUS", Map("INCORPORATION_STATUS" -> json)))
       mockKeystoreCache[String]("CompanyProfile", CacheMap("", Map.empty))
       when(mockCompanyRegConnector.getCompanyRegistrationDetails(any())(any())).thenReturn(OptionT.some(validCoHoProfile))
 
@@ -66,7 +87,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   "Calling createNewRegistration" should {
     "return a success response when the Registration is successfully created without finding a company profile" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+      when(mockIIService.getIncorporationInfo()(any[HeaderCarrier]())).thenReturn(OptionT.liftF(Future.successful(testIncorporationInfo)))
       when(mockRegConnector.createNewRegistration()(any(), any())).thenReturn(validVatScheme.pure)
+      mockKeystoreCache[IncorporationInfo]("INCORPORATION_STATUS", CacheMap("INCORPORATION_STATUS", Map("INCORPORATION_STATUS" -> json)))
       mockKeystoreCache[String]("CompanyProfile", CacheMap("", Map.empty))
       when(mockCompanyRegConnector.getCompanyRegistrationDetails(any())(any())).thenReturn(OptionT.none[Future, CoHoCompanyProfile])
 
