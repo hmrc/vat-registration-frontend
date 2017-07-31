@@ -19,6 +19,7 @@ package connectors
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api._
+import models.external.IncorporationInfo
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
 
@@ -313,6 +314,39 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", internalServiceException)
       connector.upsertVatFlatRateScheme("tstID", validVatFlatRateScheme) failedWith internalServiceException
+    }
+  }
+
+  "Calling upsertVatFrsAnswers" should {
+
+    "return the correct VatResponse when the microservice completes and returns a VatFrsAnswers model" in new Setup {
+      mockHttpPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", validVatFlatRateScheme)
+      connector.upsertVatFlatRateScheme("tstID", validVatFlatRateScheme) returns validVatFlatRateScheme
+    }
+    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", forbidden)
+      connector.upsertVatFlatRateScheme("tstID", validVatFlatRateScheme) failedWith forbidden
+    }
+    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
+      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", notFound)
+      connector.upsertVatFlatRateScheme("tstID", validVatFlatRateScheme) failedWith notFound
+    }
+    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", internalServiceException)
+      connector.upsertVatFlatRateScheme("tstID", validVatFlatRateScheme) failedWith internalServiceException
+    }
+  }
+
+  "Calling getIncorporationInfo" should {
+
+    "return a IncorporationInfo when it can be retrieved from the microservice" in new Setup {
+      mockHttpGET[Option[IncorporationInfo]]("tst-url", Some(testIncorporationInfo))
+      connector.getIncorporationInfo("tstID") returnsSome testIncorporationInfo
+    }
+
+    "fail when an Internal Server Error response is returned by the microservice" in new Setup {
+      mockHttpFailedGET[Option[IncorporationInfo]]("test-url", internalServiceException)
+      connector.getAckRef("tstID") failedWith internalServiceException
     }
   }
 }
