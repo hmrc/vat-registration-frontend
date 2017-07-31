@@ -64,7 +64,7 @@ trait VatRegistrationFixture {
   val validTradingNameView = TradingNameView("TRADING_NAME_YES", Some("Test Trading Name"))
   val validEuTrading = VatEuTrading(selection = false, eoriApplication = None)
   val validVatTradingDetails = VatTradingDetails(vatChoice = validVatChoice, tradingName = validTradingName, validEuTrading)
-
+  val validVatThresholdPostIncorp = VatThresholdPostIncorp(overThresholdSelection = false, None)
   val validVatContact = VatContact(VatDigitalContact(email = "asd@com", tel = Some("123"), mobile = None), website = None)
 
   private val turnoverEstimate = 50000L

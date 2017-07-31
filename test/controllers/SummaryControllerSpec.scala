@@ -18,7 +18,6 @@ package controllers
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{VatScheme, VatSicAndCompliance}
 import models.view.Summary
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -30,12 +29,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   object TestSummaryController extends SummaryController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
-
     override def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] = Summary(sections = Seq()).pure
-  }
-
-  object TestSummaryController2 extends SummaryController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
   }
 
   "Calling summary to show the summary page" should {
@@ -47,7 +41,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
     "getRegistrationSummary maps a valid VatScheme object to a Summary object" in {
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
-      TestSummaryController2.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)
+      TestSummaryController.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)
     }
 
     "registrationToSummary maps a valid VatScheme object to a Summary object" in {
