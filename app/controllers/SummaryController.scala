@@ -24,14 +24,14 @@ import models.MonthYearModel
 import models.api._
 import models.view._
 import play.api.mvc._
-import services.{S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class SummaryController @Inject()(ds: CommonPlayDependencies)
                                  (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) {
+  extends VatRegistrationController(ds) with CommonService {
 
   val dateOfIncorporation = LocalDate.of(2017,5,26)
 
