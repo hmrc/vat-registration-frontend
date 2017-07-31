@@ -18,10 +18,17 @@ package models.view.test
 
 import play.api.libs.json.Json
 
-case class VatContactTestSetup(email: Option[String],
-                                      daytimePhone: Option[String],
-                                      mobile: Option[String],
-                                      website: Option[String])
+case class VatContactTestSetup( email: Option[String],
+                                daytimePhone: Option[String],
+                                mobile: Option[String],
+                                website: Option[String],
+                                line1: Option[String],
+                                line2: Option[String],
+                                line3: Option[String],
+                                line4: Option[String],
+                                postcode: Option[String] = None,
+                                country: Option[String] = None
+                              )
 
 object VatContactTestSetup {
   implicit val format = Json.format[VatContactTestSetup]

@@ -22,13 +22,13 @@ import java.time.temporal.TemporalAdjusters
 import models._
 import models.api._
 import models.view.frs._
-import models.view.ppob.PpobView
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.test.TestSetup
 import models.view.vatContact.BusinessContactDetails
+import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, VatChargeExpectancy, ZeroRatedSales}
@@ -157,19 +157,21 @@ class TestS4LBuilder {
         data.vatContact.mobile,
         data.vatContact.website))
 
-    S4LVatContact(businessContactDetails = businessContactDetails)
-  }
-
-  def vatPpobFormData(data: TestSetup): S4LPpob = {
-    val address: Option[ScrsAddress] = data.ppob.line1.map(_ =>
+    val address: Option[ScrsAddress] = data.vatContact.line1.map(_ =>
       ScrsAddress(
-        line1 = data.ppob.line1.getOrElse(""),
-        line2 = data.ppob.line2.getOrElse(""),
-        line3 = data.ppob.line3,
-        line4 = data.ppob.line4,
-        postcode = data.ppob.postcode,
-        country = data.ppob.country))
-    S4LPpob(Some(PpobView(address.map(_.id).getOrElse(""), address)))
+        line1 = data.vatContact.line1.getOrElse(""),
+        line2 = data.vatContact.line2.getOrElse(""),
+        line3 = data.vatContact.line3,
+        line4 = data.vatContact.line4,
+        postcode = data.vatContact.postcode,
+        country = data.vatContact.country))
+
+    val ppob: Option[PpobView] = address.map(a =>
+    PpobView(addressId = a.id, address = Some(a)))
+
+    S4LVatContact(
+      businessContactDetails = businessContactDetails,
+      ppob = ppob)
   }
 
   def vatLodgingOfficerFromData(data: TestSetup): S4LVatLodgingOfficer = {
