@@ -16,7 +16,6 @@
 
 package controllers.vatTradingDetails.vatChoice
 
-import java.time.LocalDate
 import javax.inject.Inject
 
 import controllers.builders._
@@ -57,14 +56,13 @@ class ThresholdSummaryController @Inject()(ds: CommonPlayDependencies)
 
   def getThresholdSummary()(implicit hc: HeaderCarrier): Future[Summary] = {
     for {
-      dateOfIncorporation <- fetchDateOfIncorporation()
       vatThresholdPostIncorp <- getVatThresholdPostIncorp()
-    } yield thresholdToSummary(vatThresholdPostIncorp, dateOfIncorporation)
+    } yield thresholdToSummary(vatThresholdPostIncorp)
   }
 
-  def thresholdToSummary(vatThresholdPostIncorp: VatThresholdPostIncorp, dateOfIncorporation: LocalDate): Summary = {
+  def thresholdToSummary(vatThresholdPostIncorp: VatThresholdPostIncorp): Summary = {
     Summary(Seq(
-      SummaryVatThresholdBuilder(Some(vatThresholdPostIncorp), dateOfIncorporation).section
+      SummaryVatThresholdBuilder(Some(vatThresholdPostIncorp)).section
     ))
   }
 

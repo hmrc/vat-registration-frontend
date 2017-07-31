@@ -30,7 +30,5 @@ case class SummarySection(
 case class SummaryRow(
                        id: String,
                        answerMessageKey: String,
-                       changeLink: Option[Call],
-                       //arg for specifying custom values in a question
-                       questionArg: Option[String] = None
+                       changeLink: Option[Call]
                      )

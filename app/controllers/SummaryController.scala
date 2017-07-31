@@ -16,12 +16,14 @@
 
 package controllers
 
-import java.time.LocalDate
 import javax.inject.Inject
 
+import cats.data.OptionT
 import controllers.builders._
+import models.ModelKeys.INCORPORATION_STATUS
 import models.MonthYearModel
 import models.api._
+import models.external.IncorporationInfo
 import models.view._
 import play.api.mvc._
 import services.{CommonService, S4LService, VatRegistrationService}
@@ -33,15 +35,16 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
                                  (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with CommonService {
 
-  val dateOfIncorporation = LocalDate.of(2017,5,26)
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
       summary <- getRegistrationSummary()
       _ <- s4LService.clear()
+      dateOfIncorporation <- OptionT(keystoreConnector.fetchAndGet[IncorporationInfo](INCORPORATION_STATUS))
+        .subflatMap(_.statusEvent.incorporationDate).fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y))
     } yield Ok(views.html.pages.summary(
       summary,
-      MonthYearModel.FORMAT_DD_MMMM_Y.format(dateOfIncorporation)
+      dateOfIncorporation
     )))
 
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
@@ -49,7 +52,7 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
 
   def registrationToSummary(vs: VatScheme): Summary =
     Summary(Seq(
-      SummaryVatDetailsSectionBuilder(vs.tradingDetails, Some(dateOfIncorporation)).section,
+      SummaryVatDetailsSectionBuilder(vs.tradingDetails).section,
       SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer).section,
       SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer).section,
       SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
