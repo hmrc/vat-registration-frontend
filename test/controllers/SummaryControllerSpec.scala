@@ -16,25 +16,27 @@
 
 package controllers
 
+import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.view.Summary
+import models.ModelKeys.INCORPORATION_STATUS
+import models.external.IncorporationInfo
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import uk.gov.hmrc.play.http.HeaderCarrier
-
-import scala.concurrent.Future
 
 class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   object TestSummaryController extends SummaryController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
   }
 
   "Calling summary to show the summary page" should {
     "return HTML with a valid summary view" in {
       when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)
+      mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
+
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 

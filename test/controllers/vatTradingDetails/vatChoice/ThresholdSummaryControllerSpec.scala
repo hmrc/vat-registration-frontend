@@ -16,20 +16,20 @@
 
 package controllers.vatTradingDetails.vatChoice
 
+import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.ModelKeys.INCORPORATION_STATUS
 import models.S4LTradingDetails
-import models.view.Summary
+import models.external.IncorporationInfo
 import models.view.vatTradingDetails.vatChoice.OverThresholdView
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.HeaderCarrier
-
-import scala.concurrent.Future
 
 class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object TestThresholdSummaryController extends ThresholdSummaryController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(controllers.vatTradingDetails.vatChoice.routes.ThresholdSummaryController.show())
@@ -39,13 +39,13 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
       save4laterReturns(S4LTradingDetails(
         overThreshold = Some(OverThresholdView(false, None))
       ))
+      mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
 
       callAuthorised(TestThresholdSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
     "getVatThresholdPostIncorp returns a valid VatThresholdPostIncorp" in {
       save4laterReturns(S4LTradingDetails(
-
         overThreshold = Some(OverThresholdView(false, None))
       ))
 
