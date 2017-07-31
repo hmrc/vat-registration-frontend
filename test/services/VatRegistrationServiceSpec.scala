@@ -51,6 +51,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   override def beforeEach() {
     super.beforeEach()
     mockFetchRegId(validRegId)
+    when(mockIIService.getIncorporationInfo()(any())).thenReturn(OptionT.none[Future, IncorporationInfo])
   }
 
 
