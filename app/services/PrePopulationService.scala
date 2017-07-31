@@ -26,10 +26,10 @@ import cats.instances.ListInstances
 import cats.syntax.TraverseSyntax
 import com.google.inject.ImplementedBy
 import connectors.{OptionalResponse, PPConnector}
+import models._
 import models.api._
 import models.external.Officer
 import models.view.vatLodgingOfficer.OfficerView
-import models.{ApiModelTransformer, S4LKey, S4LPpob, S4LVatLodgingOfficer}
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -79,7 +79,7 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
 
   override def getPpobAddressList()(implicit hc: HeaderCarrier): Future[Seq[ScrsAddress]] = {
     import ScrsAddress.modelTransformerPpobView
-    getAddresses((_: S4LPpob).address.flatMap(_.address))
+    getAddresses((_: S4LVatContact).ppob.flatMap(_.address))
   }
 
   override def getOfficerList()(implicit hc: HeaderCarrier): Future[Seq[Officer]] = {
