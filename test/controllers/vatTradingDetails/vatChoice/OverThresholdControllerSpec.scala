@@ -104,10 +104,18 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
   }
 
   s"POST ${routes.OverThresholdController.submit()}" should {
+    "return Exception When Incorporation date is empty" in {
+      val testIncorporationInfoWithOutDate = testIncorporationInfo.copy(statusEvent = testIncorporationInfo.statusEvent.copy(incorporationDate = None))
+      mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfoWithOutDate))
+      assertThrows[TestFailedException]{
+        submitAuthorised(TestOverThresholdController.submit(), fakeRequest.withFormUrlEncodedBody()) {
+          (_ =>fail())
+        }
+      }
+    }
 
     "return 400 when no data posted" in {
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
-
       submitAuthorised(
         TestOverThresholdController.submit(), fakeRequest.withFormUrlEncodedBody()) {
         status(_) mustBe Status.BAD_REQUEST
