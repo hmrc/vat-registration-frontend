@@ -28,20 +28,19 @@ import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.REGISTER_NO
 import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration}
 import models.{MonthYearModel, S4LTradingDetails}
 import play.api.mvc._
-import services.{S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class ThresholdSummaryController @Inject()(ds: CommonPlayDependencies)
                                           (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) {
-
-  val dateOfIncorporation = LocalDate.of(2017,5,26) //fixed date until we can get the DOI from II
+  extends VatRegistrationController(ds) with CommonService {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
       thresholdSummary <- getThresholdSummary()
+      dateOfIncorporation <- fetchDateOfIncorporation()
     } yield Ok(views.html.pages.vatTradingDetails.vatChoice.threshold_summary(
       thresholdSummary,
       MonthYearModel.FORMAT_DD_MMMM_Y.format(dateOfIncorporation))))
@@ -57,10 +56,13 @@ class ThresholdSummaryController @Inject()(ds: CommonPlayDependencies)
   })
 
   def getThresholdSummary()(implicit hc: HeaderCarrier): Future[Summary] = {
-    getVatThresholdPostIncorp.map(thresholdToSummary)
+    for {
+      dateOfIncorporation <- fetchDateOfIncorporation()
+      vatThresholdPostIncorp <- getVatThresholdPostIncorp()
+    } yield thresholdToSummary(vatThresholdPostIncorp, dateOfIncorporation)
   }
 
-  def thresholdToSummary(vatThresholdPostIncorp: VatThresholdPostIncorp): Summary = {
+  def thresholdToSummary(vatThresholdPostIncorp: VatThresholdPostIncorp, dateOfIncorporation: LocalDate): Summary = {
     Summary(Seq(
       SummaryVatThresholdBuilder(Some(vatThresholdPostIncorp), dateOfIncorporation).section
     ))
