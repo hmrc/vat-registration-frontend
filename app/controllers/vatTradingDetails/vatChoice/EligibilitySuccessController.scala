@@ -18,22 +18,31 @@ package controllers.vatTradingDetails.vatChoice
 
 import javax.inject.Inject
 
+import cats.data.OptionT
 import org.apache.commons.lang3.StringUtils
 import controllers.{CommonPlayDependencies, VatRegistrationController}
+import models.ModelKeys._
+import models.api.ScrsAddress
+import models.external.IncorporationInfo
 import play.api.mvc.{Action, AnyContent}
-import services.IncorpInfoService
+import services.{CommonService, IncorpInfoService}
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 class EligibilitySuccessController @Inject()(ds: CommonPlayDependencies)
-                                            (implicit iiService: IncorpInfoService )
-  extends VatRegistrationController(ds) {
+  extends VatRegistrationController(ds) with CommonService{
 
   def show: Action[AnyContent] =
     authorised(implicit user => implicit request => Ok(views.html.pages.vatEligibility.eligible()))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      iiService.getIncorporationInfo().subflatMap(_.statusEvent.crn).filter(StringUtils.isNotBlank)
-      .fold(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()) (_ =>
+    fetchIncorporationInfo.subflatMap(_.statusEvent.crn).filter(StringUtils.isNotBlank)
+      .fold(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()) (
+        crn =>
             controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show()).map(Redirect))
+
+
+  private def fetchIncorporationInfo()(implicit headerCarrier: HeaderCarrier) =
+    OptionT(keystoreConnector.fetchAndGet[IncorporationInfo](INCORPORATION_STATUS))
 
 }
 

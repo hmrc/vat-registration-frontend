@@ -20,13 +20,17 @@ import java.time.LocalDate
 
 import cats.data.OptionT
 import common.Now
+import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import forms.vatTradingDetails.vatChoice.OverThresholdFormFactory
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.ModelKeys._
+import models.external.IncorporationInfo
 import models.view.vatTradingDetails.vatChoice.OverThresholdView
 import org.mockito.Matchers
 import org.mockito.Matchers._
 import org.mockito.Mockito._
+import org.scalatest.exceptions.TestFailedException
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -40,21 +44,35 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
 
   val overThresholdFormFactory = new OverThresholdFormFactory(Now[LocalDate](today))
 
-  object TestOverThresholdController extends OverThresholdController(overThresholdFormFactory, ds)(mockS4LService, mockVatRegistrationService, mockIncorpInfoService) {
-    implicit val fixedToday = Now[LocalDate](today)
+  object TestOverThresholdController extends OverThresholdController(overThresholdFormFactory, ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+
   }
 
   val fakeRequest = FakeRequest(routes.OverThresholdController.show())
 
   s"GET ${routes.OverThresholdController.show()}" should {
 
+
+    "returnException if no IncorporationInfo Date present" in {
+      val overThreshold = OverThresholdView(true, Some(LocalDate.of(2017, 6, 30)))
+
+      save4laterReturnsViewModel(overThreshold)()
+      val testIncorporationInfoWithOutDate = testIncorporationInfo.copy(statusEvent = testIncorporationInfo.statusEvent.copy(incorporationDate = None))
+      mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfoWithOutDate))
+
+      assertThrows[TestFailedException]{
+        callAuthorised(TestOverThresholdController.show)(_ =>fail())
+      }
+    }
+
     "return HTML when there's a over threshold view in S4L" in {
       val overThreshold = OverThresholdView(true, Some(LocalDate.of(2017, 6, 30)))
 
       save4laterReturnsViewModel(overThreshold)()
-      when(mockIncorpInfoService.getIncorporationInfo()(any[HeaderCarrier]()))
-        .thenReturn(OptionT.liftF(testIncorporationInfo.pure))
+      mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
+
       callAuthorised(TestOverThresholdController.show) {
         _ includesText "VAT taxable turnover gone over"
       }
@@ -65,8 +83,8 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
 
       when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
-      when(mockIncorpInfoService.getIncorporationInfo()(any[HeaderCarrier]()))
-        .thenReturn(OptionT.liftF(testIncorporationInfo.pure))
+      mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
+
       callAuthorised(TestOverThresholdController.show) {
         _ includesText "VAT taxable turnover gone over"
       }
@@ -77,8 +95,8 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
-      when(mockIncorpInfoService.getIncorporationInfo()(any[HeaderCarrier]()))
-        .thenReturn(OptionT.liftF(testIncorporationInfo.pure))
+      mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
+
       callAuthorised(TestOverThresholdController.show) {
         _ includesText "VAT taxable turnover gone over"
       }
@@ -86,10 +104,10 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
   }
 
   s"POST ${routes.OverThresholdController.submit()}" should {
-    when(mockIncorpInfoService.getIncorporationInfo()(any[HeaderCarrier]()))
-      .thenReturn(OptionT.liftF(testIncorporationInfo.pure))
 
     "return 400 when no data posted" in {
+      mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
+
       submitAuthorised(
         TestOverThresholdController.submit(), fakeRequest.withFormUrlEncodedBody()) {
         status(_) mustBe Status.BAD_REQUEST
@@ -97,8 +115,8 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
     }
 
     "return 400 when partial data is posted" in {
-      when(mockIncorpInfoService.getIncorporationInfo()(any[HeaderCarrier]()))
-        .thenReturn(OptionT.liftF(testIncorporationInfo.pure))
+      mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
+
       submitAuthorised(
         TestOverThresholdController.submit(), fakeRequest.withFormUrlEncodedBody(
           "overThresholdRadio" -> "true",
@@ -111,8 +129,8 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
 
     "return 303 with valid data - yes selected" in {
       save4laterExpectsSave[OverThresholdView]()
-      when(mockIncorpInfoService.getIncorporationInfo()(any[HeaderCarrier]()))
-        .thenReturn(OptionT.liftF(testIncorporationInfo.pure))
+      mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
+
       submitAuthorised(TestOverThresholdController.submit(), fakeRequest.withFormUrlEncodedBody(
         "overThresholdRadio" -> "true",
         "overThreshold.month" -> "6",
@@ -124,8 +142,8 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
 
     "return 303 with valid data - no selected" in {
       save4laterExpectsSave[OverThresholdView]()
-      when(mockIncorpInfoService.getIncorporationInfo()(any[HeaderCarrier]()))
-        .thenReturn(OptionT.liftF(testIncorporationInfo.pure))
+      mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
+
       submitAuthorised(TestOverThresholdController.submit(), fakeRequest.withFormUrlEncodedBody(
         "overThresholdRadio" -> "false"
       )) {

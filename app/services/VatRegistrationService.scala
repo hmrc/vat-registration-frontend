@@ -79,7 +79,9 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
   def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit] =
     for {
       vatScheme <- vatRegConnector.createNewRegistration()
-      _   <- incorporationService.getIncorporationInfo().map(status => keystoreConnector.cache[IncorporationInfo](INCORPORATION_STATUS, status)).value
+      _   <- incorporationService.getIncorporationInfo().map(
+        status =>
+          keystoreConnector.cache[IncorporationInfo](INCORPORATION_STATUS, status)).value
       _ <- keystoreConnector.cache[String](REGISTRATION_ID, vatScheme.id)
       optCompProfile <- compRegConnector.getCompanyRegistrationDetails(vatScheme.id).value
       _ <- optCompProfile.map(keystoreConnector.cache[CoHoCompanyProfile]("CompanyProfile", _)).pure
