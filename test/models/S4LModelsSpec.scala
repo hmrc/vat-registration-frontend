@@ -23,7 +23,7 @@ import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import models.api._
 import models.view.frs.FrsStartDateView.DIFFERENT_DATE
 import models.view.frs._
-import models.view.ppob.PpobView
+import models.view.vatContact.ppob.PpobView
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.cultural.NotForProfit.NOT_PROFIT_YES
 import models.view.sicAndCompliance.financial._
@@ -295,18 +295,6 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
       S4LVatSicAndCompliance.apiT.toApi(s4l, VatSicAndCompliance.empty) shouldBe expected
     }
 
-
-  }
-
-  "S4LPpob.S4LModelTransformer.toS4LModel" should {
-    "transform API to S4L model" in {
-      val address = ScrsAddress(line1 = "l1", line2 = "l2", postcode = Some("postcode"))
-      val vs = emptyVatScheme.copy(ppob = Some(address))
-
-      val expected = S4LPpob(address = Some(PpobView(address.id, Some(address))))
-
-      S4LPpob.modelT.toS4LModel(vs) shouldBe expected
-    }
   }
 
   "S4LFlatRateScheme.S4LApiTransformer.toApi" should {
@@ -366,13 +354,67 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
   }
 
   "S4LVatContact.S4LModelTransformer.toS4LModel" should {
+
+    "transform complete s4l container to API" in {
+      val s4l = S4LVatContact(
+        businessContactDetails = Some(BusinessContactDetails(
+          email = "email",
+          daytimePhone = Some("tel"),
+          mobile = Some("mobile"),
+          website = Some("website"))),
+        ppob = Some(PpobView(scrsAddress.id, Some(scrsAddress)))
+      )
+
+      val expected = VatContact(
+        digitalContact = VatDigitalContact(
+          email = "email",
+          tel = Some("tel"),
+          mobile = Some("mobile")),
+        website = Some("website"),
+        ppob = scrsAddress)
+
+      S4LVatContact.apiT.toApi(s4l, VatContact.empty) shouldBe expected
+
+    }
+
+    "transform s4l container with changes to API" in {
+      val s4l = S4LVatContact(businessContactDetails = None, ppob = None)
+
+      val before = VatContact(
+        digitalContact = VatDigitalContact(
+          email = "email_old",
+          tel = Some("tel_old"),
+          mobile = Some("mobile_old")),
+        website = Some("website_old"),
+        ppob = scrsAddress)
+
+      val expected = VatContact(
+        digitalContact = VatDigitalContact(
+          email = "email_old",
+          tel = None,
+          mobile = None),
+        website = None,
+        ppob = scrsAddress)
+
+      S4LVatContact.apiT.toApi(s4l, before) shouldBe expected
+    }
+
     "transform API to S4L model" in {
       val vs = emptyVatScheme.copy(vatContact = Some(
-        VatContact(digitalContact = VatDigitalContact(email = "email", tel = Some("tel"), mobile = Some("mobile")), website = Some("website"))))
+        VatContact(
+          digitalContact = VatDigitalContact(email = "email", tel = Some("tel"), mobile = Some("mobile")),
+          website = Some("website"),
+          ppob = scrsAddress)))
 
-      val expected = S4LVatContact(businessContactDetails = Some(BusinessContactDetails(
-        email = "email", daytimePhone = Some("tel"), mobile = Some("mobile"), website = Some("website")
-      )))
+      val expected = S4LVatContact(
+        businessContactDetails = Some(BusinessContactDetails(
+                                      email = "email",
+                                      daytimePhone = Some("tel"),
+                                      mobile = Some("mobile"),
+                                      website = Some("website"))),
+        ppob = Some(PpobView(scrsAddress.id, Some(scrsAddress)))
+      )
+
 
       S4LVatContact.modelT.toS4LModel(vs) shouldBe expected
     }

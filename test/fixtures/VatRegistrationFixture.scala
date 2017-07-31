@@ -66,8 +66,14 @@ trait VatRegistrationFixture {
   val validTradingNameView = TradingNameView("TRADING_NAME_YES", Some("Test Trading Name"))
   val validEuTrading = VatEuTrading(selection = false, eoriApplication = None)
   val validVatTradingDetails = VatTradingDetails(vatChoice = validVatChoice, tradingName = validTradingName, validEuTrading)
+
+  val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
+
+  val validVatContact = VatContact(
+    digitalContact = VatDigitalContact(email = "asd@com", tel = Some("123"), mobile = None),
+    website = None,
+    ppob = scrsAddress)
   val validVatThresholdPostIncorp = VatThresholdPostIncorp(overThresholdSelection = false, None)
-  val validVatContact = VatContact(VatDigitalContact(email = "asd@com", tel = Some("123"), mobile = None), website = None)
 
   private val turnoverEstimate = 50000L
   private val estimatedSales = 60000L
@@ -118,17 +124,17 @@ trait VatRegistrationFixture {
   val validOfficerContactDetails = OfficerContactDetails(Some("test@test.com"), None, None)
   val changeOfName = ChangeOfName(true, None)
   val currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(ScrsAddress("", "")))
-  val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
   val validNino: String = "AA 12 34 56 C"
 
   val validLodgingOfficer = VatLodgingOfficer(
-    ScrsAddress("", ""),
-    DateOfBirth.empty,
-    "", "director",
-    officerName,
-    changeOfName,
-    currentOrPreviousAddress,
-    validOfficerContactDetails
+    currentAddress = ScrsAddress("", ""),
+    dob = DateOfBirth.empty,
+    nino = "",
+    role = "director",
+    name = officerName,
+    changeOfName = changeOfName,
+    currentOrPreviousAddress = currentOrPreviousAddress,
+    contact = validOfficerContactDetails
   )
 
   val emptyVatScheme = VatScheme(validRegId)

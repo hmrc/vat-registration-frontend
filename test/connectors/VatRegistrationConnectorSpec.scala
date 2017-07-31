@@ -192,7 +192,10 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   "Calling upsertVatContact" should {
 
-    val vatContact = VatContact(VatDigitalContact(email = "test.com", tel = None, mobile = None), None)
+    val vatContact = VatContact(
+      digitalContact = VatDigitalContact(email = "test.com", tel = None, mobile = None),
+      website = None,
+      ppob = scrsAddress)
 
     "return the correct VatResponse when the microservice completes and returns a VatContact model" in new Setup {
       mockHttpPATCH[VatContact, VatContact]("tst-url", vatContact)
