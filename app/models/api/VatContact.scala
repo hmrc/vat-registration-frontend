@@ -26,10 +26,4 @@ object VatContact {
 
   implicit val format: OFormat[VatContact] = Json.format[VatContact]
 
-  // TODO remove once no longer required
-  val empty = VatContact(
-    digitalContact = VatDigitalContact("", None, None),
-    website = None,
-    ppob = ScrsAddress(line1 = "l1", line2 = "l2", postcode = Some("AA11AA")))
-
 }

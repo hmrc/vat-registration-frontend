@@ -59,8 +59,6 @@ object Name {
       (__ \ "title").readNullable[String](Formatters.normalizeReads)
     ) (Name.apply _)
 
-  val empty = Name(None, None, "", None)
-
 
   private def normalisedSeq(name: Name): Seq[String] = {
     import cats.instances.option._
