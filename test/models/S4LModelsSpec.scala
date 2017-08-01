@@ -46,7 +46,7 @@ import models.view.vatTradingDetails.vatChoice.StartDateView.SPECIFIC_DATE
 import models.view.vatTradingDetails.vatChoice.TaxableTurnover.TAXABLE_NO
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.{REGISTER_NO, REGISTER_YES}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason.INTENDS_TO_SELL
-import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
+import models.view.vatTradingDetails.vatChoice._
 import models.view.vatTradingDetails.vatEuTrading.ApplyEori.APPLY_EORI_YES
 import models.view.vatTradingDetails.vatEuTrading.EuGoods.EU_GOODS_YES
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
@@ -118,7 +118,8 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
           vatChoice = VatChoice(
             necessity = NECESSITY_VOLUNTARY,
             vatStartDate = VatStartDate(selection = SPECIFIC_DATE, startDate = Some(specificDate)),
-            reason = Some(INTENDS_TO_SELL)),
+            reason = Some(INTENDS_TO_SELL),
+            vatThresholdPostIncorp = Some(validVatThresholdPostIncorp)),
           tradingName = TradingName(selection = true, tradingName = Some(tradingName)),
           euTrading = VatEuTrading(selection = true, eoriApplication = Some(true))
         ))
@@ -134,7 +135,8 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
         voluntaryRegistration = Some(VoluntaryRegistration(REGISTER_YES)),
         voluntaryRegistrationReason = Some(VoluntaryRegistrationReason(INTENDS_TO_SELL)),
         euGoods = Some(EuGoods(EU_GOODS_YES)),
-        applyEori = Some(ApplyEori(APPLY_EORI_YES))
+        applyEori = Some(ApplyEori(APPLY_EORI_YES)),
+        overThreshold = Some(OverThresholdView(false, None))
       )
 
       S4LTradingDetails.modelT.toS4LModel(vs) shouldBe expected
@@ -163,7 +165,8 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
         vatChoice = VatChoice(
           necessity = NECESSITY_VOLUNTARY,
           vatStartDate = VatStartDate(selection = SPECIFIC_DATE, startDate = Some(specificDate)),
-          reason = Some(INTENDS_TO_SELL)),
+          reason = Some(INTENDS_TO_SELL),
+          vatThresholdPostIncorp = Some(validVatThresholdPostIncorp)),
         tradingName = TradingName(selection = true, tradingName = Some(tradingName)),
         euTrading = VatEuTrading(selection = true, eoriApplication = Some(true))
       )
@@ -180,6 +183,11 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
           reason = None),
         tradingName = TradingName(selection = true, tradingName = Some(tradingName)),
         euTrading = VatEuTrading(selection = true, eoriApplication = Some(true))
+          vatStartDate = VatStartDate(selection = BUSINESS_START_DATE, startDate = Some(ctDate)),
+          reason = None,
+          vatThresholdPostIncorp = Some(validVatThresholdPostIncorp.copy(overThresholdSelection = true, overThresholdDate = Some(testDate)))),
+        tradingName = TradingName(selection = false, tradingName = None),
+        euTrading = VatEuTrading(selection = false, eoriApplication = None)
       )
 
       val s4lMandatoryBydefault = s4l.copy(voluntaryRegistration = None, voluntaryRegistrationReason = None)

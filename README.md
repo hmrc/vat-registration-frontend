@@ -57,3 +57,8 @@ Link to app running locally:
 http://localhost/register-for-vat/
 
 
+
+# Further Documentation
+
+[Documentation of TEST endpoints](test-endpoints.md)
+

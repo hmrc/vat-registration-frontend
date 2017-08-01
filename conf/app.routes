@@ -198,7 +198,9 @@ GET         /post-sign-in                                                       
 GET         /submission-confirmation                                                           controllers.ApplicationSubmissionController.show
 
 ## CAN OR CAN'T REGISTER
-GET         /you-can-register-for-vat-with-this-service                                        controllers.TwirlViewController.renderViewAuthorised(viewName="eligibility-success")
+GET         /you-can-register-for-vat-with-this-service                                        controllers.vatTradingDetails.vatChoice.EligibilitySuccessController.show
+POST        /you-can-register-for-vat-with-this-service                                        controllers.vatTradingDetails.vatChoice.EligibilitySuccessController.submit
+
 GET         /you-cant-register-for-vat-with-this-service                                       controllers.vatEligibility.ServiceCriteriaQuestionsController.ineligible()
 
 
@@ -231,3 +233,11 @@ POST        /confirm-business-type                                              
 ## When do you want to join the Flat Rate Scheme?
 GET         /flat-rate-scheme-join-date                                                        controllers.frs.FrsStartDateController.show
 POST        /flat-rate-scheme-join-date                                                        controllers.frs.FrsStartDateController.submit
+
+## Post incorp threshold question 1
+GET         /gone-over-threshold                                                               controllers.vatTradingDetails.vatChoice.OverThresholdController.show
+POST        /gone-over-threshold                                                               controllers.vatTradingDetails.vatChoice.OverThresholdController.submit
+
+## Threshold summary
+GET         /check-confirm-answers                                                             controllers.vatTradingDetails.vatChoice.ThresholdSummaryController.show
+POST        /check-confirm-answers                                                             controllers.vatTradingDetails.vatChoice.ThresholdSummaryController.submit
