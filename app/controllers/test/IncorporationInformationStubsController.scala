@@ -24,22 +24,51 @@ import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, RegistrationService}
+
 //$COVERAGE-OFF$
-class IncorporationInformationStubsController @Inject()(vatRegistrationService: RegistrationService, vatRegConnector: TestRegistrationConnector, ds: CommonPlayDependencies)
+class IncorporationInformationStubsController @Inject()(
+  vatRegistrationService: RegistrationService,
+  vatRegConnector: TestRegistrationConnector,
+  ds: CommonPlayDependencies)
   extends VatRegistrationController(ds) with CommonService{
 
   def postTestData(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-
     for {
       _ <- vatRegistrationService.createRegistrationFootprint()
-      id <- fetchRegistrationId
+     id <- fetchRegistrationId
       _ <- vatRegConnector.wipeTestData
-      jsonData <-  Future.successful(defaultTestData(id))
-      _ <- vatRegConnector.postTestData(jsonData)
-    } yield  Ok("Data inserted")
-  )
+      _ <- vatRegConnector.postTestData(defaultTestData(id))
+    } yield  Ok("Data inserted"))
 
-  def defaultTestData(id : String) : JsValue = {
+  def wipeTestDataIncorp(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
+      vatRegConnector.wipeIncorpTestData().map( _ => Ok("Incorporation data wiped")))
+
+  def postTestDataIncorp(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    for {
+      _ <- vatRegistrationService.createRegistrationFootprint()
+     id <- fetchRegistrationId
+      _ <- vatRegConnector.wipeIncorpTestData()
+      _ <- vatRegConnector.postIncorpTestData(iiSubmissionData(id))
+    } yield Ok("Incorporation data inserted"))
+
+  def getIncorpInfo(txId: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    vatRegConnector.getIncorpInfo(txId).map(res => Ok(res.json)))
+
+  def iiSubmissionData(id : String) : JsValue =
+    Json.parse(
+      s"""
+       |{
+       |  "company_number":"90000001",
+       |  "transaction_status":"accepted",
+       |  "transaction_type":"incorporation",
+       |  "company_profile_link":"https://api.companieshouse.gov.uk/company/90000001",
+       |  "transaction_id":"000-434-${id}",
+       |  "incorporated_on":"2016-08-06",
+       |  "timepoint":"22"
+       |}
+        """.stripMargin)
+
+  def defaultTestData(id : String) : JsValue =
     Json.parse(
       s"""
          |{
@@ -129,9 +158,6 @@ class IncorporationInformationStubsController @Inject()(vatRegistrationService: 
          |      ]
          |  }
         """.stripMargin)
-
-  }
-
 
 }
 //$COVERAGE-ON$

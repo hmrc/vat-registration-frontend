@@ -30,7 +30,7 @@ object OfficerSecurityQuestionsView {
     OfficerSecurityQuestionsView(dateModel.toLocalDate.get, nino) // form ensures valid date
 
   def unbind(dobView: OfficerSecurityQuestionsView): Option[(DateModel, String)] =
-    Some(DateModel.fromLocalDate(dobView.dob), dobView.nino) // form ensures valid date
+    Some(DateModel.fromLocalDate(dobView.dob) -> dobView.nino) // form ensures valid date
 
   implicit val format = Json.format[OfficerSecurityQuestionsView]
 

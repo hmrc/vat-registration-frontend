@@ -29,7 +29,10 @@ object TestSetupForm {
     "startDateChoice" -> optional(text),
     "startDateDay" -> optional(text),
     "startDateMonth" -> optional(text),
-    "startDateYear" -> optional(text)
+    "startDateYear" -> optional(text),
+    "overThresholdSelection" -> optional(text),
+    "overThresholdMonth" -> optional(text),
+    "overThresholdYear" -> optional(text)
   )(VatChoiceTestSetup.apply)(VatChoiceTestSetup.unapply)
 
   val sicAndComplianceTestSetupMapping = mapping(
