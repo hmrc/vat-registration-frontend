@@ -16,17 +16,14 @@
 
 package services
 
-import java.time.LocalDate
 import javax.inject.Inject
 
-import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import common.ErrorUtil.fail
 import connectors.{CompanyRegistrationConnector, OptionalResponse, VatRegistrationConnector}
 import models.ModelKeys._
 import models._
 import models.api._
-import models.external.CoHoCompanyProfile
 import models.external.{CoHoCompanyProfile, IncorporationInfo}
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier

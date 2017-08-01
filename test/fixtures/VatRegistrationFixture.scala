@@ -73,6 +73,7 @@ trait VatRegistrationFixture {
     digitalContact = VatDigitalContact(email = "asd@com", tel = Some("123"), mobile = None),
     website = None,
     ppob = scrsAddress)
+
   val validVatThresholdPostIncorp = VatThresholdPostIncorp(overThresholdSelection = false, None)
 
   private val turnoverEstimate = 50000L
