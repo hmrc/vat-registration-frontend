@@ -145,9 +145,9 @@ GET         /company-contact-details                                            
 POST        /company-contact-details                                                           controllers.vatContact.BusinessContactDetailsController.submit
 
 ## PPOB ADDRESS
-GET         /where-will-company-carry-out-most-of-its-business-activities                      controllers.ppob.PpobController.show
-POST        /where-will-company-carry-out-most-of-its-business-activities                      controllers.ppob.PpobController.submit
-GET         /where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm        controllers.ppob.PpobController.acceptFromTxm(id: String ?= "")
+GET         /where-will-company-carry-out-most-of-its-business-activities                      controllers.vatContact.ppob.PpobController.show
+POST        /where-will-company-carry-out-most-of-its-business-activities                      controllers.vatContact.ppob.PpobController.submit
+GET         /where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm        controllers.vatContact.ppob.PpobController.acceptFromTxm(id: String ?= "")
 
 ## OFFICER ADDRESS PAGE
 GET         /your-home-address                                                                 controllers.vatLodgingOfficer.OfficerHomeAddressController.show
