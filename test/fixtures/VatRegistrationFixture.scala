@@ -144,7 +144,7 @@ trait VatRegistrationFixture {
                       tradingName: Option[String] = Some("ACME Ltd."),
                       reason: Option[String] = None,
                       euGoodsSelection: Boolean = true,
-                      eoriApplication: Option[Boolean] = None
+                      eoriApplication: Option[Boolean] = Some(true)
                     ): VatTradingDetails = VatTradingDetails(
     vatChoice = VatChoice(
       necessity = necessity,
