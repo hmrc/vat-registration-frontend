@@ -79,7 +79,7 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
         SummaryRow(
           "companyContactDetails.ppob",
           scrsAddress.show,
-          Some(controllers.ppob.routes.PpobController.show())
+          Some(controllers.vatContact.ppob.routes.PpobController.show())
         )
     }
 
