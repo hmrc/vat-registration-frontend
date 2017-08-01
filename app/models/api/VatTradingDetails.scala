@@ -34,7 +34,4 @@ object VatTradingDetails {
 
   implicit val format: OFormat[VatTradingDetails] = Json.format[VatTradingDetails]
 
-  //TODO remove
-  val empty: VatTradingDetails = VatTradingDetails(VatChoice(VatChoice.NECESSITY_OBLIGATORY, VatStartDate("", None)), TradingName(selection = false, None), VatEuTrading(selection= false, eoriApplication =Some(false)))
-
 }

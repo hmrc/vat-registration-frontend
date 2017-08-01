@@ -34,7 +34,8 @@ class FormerNameViewSpec extends UnitSpec with VatRegistrationFixture with Insid
   "apiModelTransformer" should {
 
     "convert VatScheme with VatLodgingOfficer details into a FormerNameView" in {
-      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName,  changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
+      val vatLodgingOfficer =
+        VatLodgingOfficer(address, validDob, "", "director", officerName,  changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       ApiModelTransformer[FormerNameView].toViewModel(vs) shouldBe Some(testFormerNameView)

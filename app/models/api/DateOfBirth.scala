@@ -37,15 +37,11 @@ object DateOfBirth {
     year = localDate.getYear
   )
 
-  // TODO remove once no longer required
-  val empty = DateOfBirth(1, 1, 1967)
-
   implicit val formatter = (
     (__ \ "day").format(__.readStringifiedInt) and
       (__ \ "month").format(__.readStringifiedInt) and
       (__ \ "year").format(__.readStringifiedInt)
     ) (DateOfBirth.apply, unlift(DateOfBirth.unapply))
-
 
 }
 
