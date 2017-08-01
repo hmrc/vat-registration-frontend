@@ -68,7 +68,6 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors wit
     }
   }
 
-
   "getOfficerList" must {
     "return a list of officers" in new Setup {
       mockKeystoreFetchAndGet("CompanyProfile", Some(CoHoCompanyProfile("status", "transactionId")))
@@ -83,4 +82,11 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors wit
     }
   }
 
+  "getIncorporationInfo" must {
+    "return an incorporation info object" in new Setup {
+      mockKeystoreFetchAndGet("CompanyProfile", Some(CoHoCompanyProfile("accepted", "000-434-23")))
+      when(mockRegConnector.getIncorporationInfo("000-434-23")).thenReturn(OptionT.pure(testIncorporationInfo))
+      service.getIncorporationInfo() returnsSome testIncorporationInfo
+    }
+  }
 }

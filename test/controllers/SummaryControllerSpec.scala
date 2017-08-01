@@ -32,9 +32,17 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
   }
 
   "Calling summary to show the summary page" should {
-    "return HTML with a valid summary view" in {
+    "return HTML with a valid summary view pre-incorp" in {
       when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
+      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
+
+      callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
+    }
+
+    "return HTML with a valid summary view post-incorp" in {
+      when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)
+      mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, None)
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
