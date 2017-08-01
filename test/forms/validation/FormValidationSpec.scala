@@ -348,6 +348,8 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
     implicit val e:ErrorCode = "test"
     val constraint = FormValidation.inRange[Int](0, 100)
+    val constraintWithErrorArgs = FormValidation.inRangeWithArgs[Int](0, 100)("Date Error")
+
 
     "accept values in range" in {
       forAll(Seq(0, 1, 2, 3, 50, 98, 99, 100))(constraint(_) shouldBe Valid)
@@ -362,6 +364,12 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
     "reject values above acceptable maximum" in {
       forAll(Seq(Int.MaxValue, 10000, 101))(in => inside(constraint(in)) {
         case Invalid(err :: _) => err.message shouldBe "validation.test.range.above"
+      })
+    }
+
+    "reject values below acceptable minimum with custom error message" in {
+      forAll(Seq(Int.MinValue, -10000, -1))(in => inside(constraintWithErrorArgs(in)) {
+        case Invalid(err :: _) => err.message shouldBe "validation.test.range.below"
       })
     }
 

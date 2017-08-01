@@ -36,6 +36,7 @@ class OfficerViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
       val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
       val currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(address))
+      val emptyOfficer = OfficerContactDetails(None, None, None)
 
       val vatLodgingOfficer = VatLodgingOfficer(
         currentAddress = address,
@@ -45,7 +46,7 @@ class OfficerViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
         name = testName,
         changeOfName = changeOfName,
         currentOrPreviousAddress = currentOrPreviousAddress,
-        contact = OfficerContactDetails.empty)
+        contact = emptyOfficer)
 
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 

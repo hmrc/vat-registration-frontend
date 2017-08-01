@@ -18,38 +18,37 @@ package controllers
 
 import javax.inject.Inject
 
+import cats.data.OptionT
 import controllers.builders._
+import models.ModelKeys.INCORPORATION_STATUS
+import models.MonthYearModel
 import models.api._
+import models.external.IncorporationInfo
 import models.view._
 import play.api.mvc._
-import services.{S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class SummaryController @Inject()(ds: CommonPlayDependencies)
                                  (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) {
+  extends VatRegistrationController(ds) with CommonService {
+
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     for {
       summary <- getRegistrationSummary()
       _ <- s4LService.clear()
-    } yield Ok(views.html.pages.summary(summary)))
+      dateOfIncorporation <- OptionT(keystoreConnector.fetchAndGet[IncorporationInfo](INCORPORATION_STATUS))
+        .subflatMap(_.statusEvent.incorporationDate).fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y))
+    } yield Ok(views.html.pages.summary(
+      summary,
+      dateOfIncorporation
+    )))
 
   def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
     vrs.getVatScheme().map(registrationToSummary)
-
-  def complianceSection(vs: VatScheme): SummarySection =
-    List(
-      vs.vatSicAndCompliance.flatMap(_.culturalCompliance),
-      vs.vatSicAndCompliance.flatMap(_.financialCompliance),
-      vs.vatSicAndCompliance.flatMap(_.labourCompliance)
-    ).flatten.map {
-      case _: VatComplianceCultural => SummaryCulturalComplianceSectionBuilder(vs.vatSicAndCompliance).section
-      case _: VatComplianceFinancial => SummaryFinancialComplianceSectionBuilder(vs.vatSicAndCompliance).section
-      case _: VatComplianceLabour => SummaryLabourComplianceSectionBuilder(vs.vatSicAndCompliance).section
-    }.headOption.getOrElse(SummarySection(id = "none", rows = Seq(), display = false))
 
   def registrationToSummary(vs: VatScheme): Summary =
     Summary(Seq(
@@ -59,7 +58,7 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
       SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
       SummaryCompanyContactDetailsSectionBuilder(vs.vatContact).section,
       SummaryBusinessActivitiesSectionBuilder(vs.vatSicAndCompliance).section,
-      complianceSection(vs),
+      SummaryComplianceSectionBuilder(vs.vatSicAndCompliance).section,
       SummaryBusinessBankDetailsSectionBuilder(vs.financials).section,
       SummaryTaxableSalesSectionBuilder(vs.financials).section,
       SummaryAnnualAccountingSchemeSectionBuilder(vs.financials).section,

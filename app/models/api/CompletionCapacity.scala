@@ -24,6 +24,4 @@ object CompletionCapacity {
 
   implicit val format = Json.format[CompletionCapacity]
 
-  val empty = CompletionCapacity(Name.empty, "")
-
 }

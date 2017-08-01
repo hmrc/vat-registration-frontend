@@ -31,8 +31,11 @@ import scala.concurrent.Future
 trait TestRegistrationConnector {
   def setupCurrentProfile()(implicit hc: HeaderCarrier): Future[Result]
   def dropCollection()(implicit hc: HeaderCarrier): Future[Result]
-  def postTestData(jsonData: JsValue)(implicit hc : HeaderCarrier) : Future[HttpResponse]
-  def wipeTestData()(implicit hc : HeaderCarrier) : Future[HttpResponse]
+  def getIncorpInfo(txId:String)(implicit hc : HeaderCarrier) : Future[HttpResponse]
+  def postTestData(jsonData: JsValue)(implicit hc: HeaderCarrier): Future[HttpResponse]
+  def wipeTestData()(implicit hc: HeaderCarrier): Future[HttpResponse]
+  def wipeIncorpTestData()(implicit hc: HeaderCarrier): Future[HttpResponse]
+  def postIncorpTestData(jsonData: JsValue)(implicit hc: HeaderCarrier): Future[HttpResponse]
 }
 
 class TestVatRegistrationConnector extends TestRegistrationConnector with ServicesConfig {
@@ -44,26 +47,38 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
   lazy val incorporationFrontendStubsUrl: String = baseUrl("incorporation-frontend-stub")
   lazy val incorporationFrontendStubsUri: String = getConfString("incorporation-frontend-stub.uri","")
 
-  def setupCurrentProfile()(implicit hc: HeaderCarrier): Future[Result] = {
-    http.POSTEmpty(s"$vatRegUrl/vatreg/test-only/current-profile-setup").map { _ => Results.Ok }
-  }
+  def setupCurrentProfile()(implicit hc: HeaderCarrier): Future[Result] =
+    http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/current-profile-setup").map { _ => Results.Ok }
 
-  def dropCollection()(implicit hc: HeaderCarrier): Future[Result] = {
-    http.POSTEmpty(s"$vatRegUrl/vatreg/test-only/clear").map { _ => Results.Ok }
+  def dropCollection()(implicit hc: HeaderCarrier): Future[Result] =
+    http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/clear").map { _ => Results.Ok }
+
+  def getIncorpInfo(txId:String)(implicit hc : HeaderCarrier) : Future[HttpResponse] =
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/incorporation-information/000-434-$txId")
+
+  def postIncorpTestData(jsonData: JsValue)(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
+    Logger.debug(s"###222###$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/test-only/insert-submission")
+    http.POST[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/test-only/insert-submission", jsonData) recover {
+      case e: Exception => throw logResponse(e,"TestVatRegistrationConnector", s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/test-only/insert-submission")
+    }
   }
 
   def postTestData(jsonData: JsValue)(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
-      Logger.debug(s"###111###$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data")
-      http.POST[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data", jsonData) recover {
-        case e: Exception => throw logResponse(e,"TestVatRegistrationConnector", s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data")
-      }
+    Logger.debug(s"###111###$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data")
+    http.POST[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data", jsonData) recover {
+      case e: Exception => throw logResponse(e,"TestVatRegistrationConnector", s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data")
+    }
   }
 
-  def wipeTestData()(implicit hc : HeaderCarrier) :Future[HttpResponse] = {
+  def wipeTestData()(implicit hc : HeaderCarrier) :Future[HttpResponse] =
     http.PUT[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data", Json.parse("{}")) recover {
       case e: Exception => throw logResponse(e,"TestVatRegistrationConnector", s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data")
     }
-  }
+
+  def wipeIncorpTestData()(implicit hc : HeaderCarrier) :Future[HttpResponse] =
+    http.GET[HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/test-only/wipe-submissions").recover {
+      case e: Exception => throw logResponse(e,"TestVatRegistrationConnector", s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-submissions")
+    }
 
   //$COVERAGE-ON$
 
