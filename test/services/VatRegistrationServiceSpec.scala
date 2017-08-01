@@ -26,6 +26,8 @@ import models._
 import models.api._
 import models.external.CoHoCompanyProfile
 import models.view.frs._
+import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
+import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.ZeroRatedSales
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.vatChoice.StartDateView
@@ -85,8 +87,10 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   }
 
   "Calling submitTradingDetails" should {
+    val s4LTradingDetails = S4LTradingDetails.modelT.toS4LModel(validVatScheme)
+
     "return a success response when VatTradingDetails is submitted" in new Setup {
-      save4laterReturns(S4LTradingDetails(tradingName = Some(validTradingNameView)))
+      save4laterReturns(s4LTradingDetails)
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
 
@@ -96,7 +100,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "return a success response when start date choice is BUSINESS_START_DATE" in new Setup {
       val tradingDetailsWithCtActiveDateSelected = tradingDetails(startDateSelection = StartDateView.BUSINESS_START_DATE)
 
-      save4laterReturns(S4LTradingDetails(
+      save4laterReturns(s4LTradingDetails.copy(
         startDate = Some(StartDateView(dateType = StartDateView.BUSINESS_START_DATE, ctActiveDate = someTestDate))
       ))
 
@@ -125,8 +129,11 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "return a success response when SicAndCompliance is submitted for the first time" in new Setup {
-      save4laterReturns(S4LVatSicAndCompliance(skilledWorkers = Some(validSkilledWorkers)))
-      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.copy(vatSicAndCompliance = None).pure)
+      save4laterReturns(S4LVatSicAndCompliance(
+        description = Some(BusinessActivityDescription("bad")),
+        mainBusinessActivity = Some(MainBusinessActivityView(id = "mba", mainBusinessActivity = Some(sicCode)))))
+
+      when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(validVatScheme.pure)
       when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any())).thenReturn(validSicAndCompliance.pure)
 
       service.submitSicAndCompliance() returns validSicAndCompliance
@@ -197,7 +204,10 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "submitVatContact should process the submission even if VatScheme does not contain a VatContact object" in new Setup {
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       when(mockRegConnector.upsertVatContact(any(), any())(any(), any())).thenReturn(validVatContact.pure)
-      save4laterReturns(S4LVatContact(businessContactDetails = Some(validBusinessContactDetails)))
+      save4laterReturns(S4LVatContact(
+        businessContactDetails = Some(validBusinessContactDetails),
+        ppob = Some(PpobView(addressId = "id", address = Some(scrsAddress)))))
+
       service.submitVatContact() returns validVatContact
     }
 
@@ -226,10 +236,14 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.getRegistration(Matchers.eq(validRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       when(mockRegConnector.upsertVatLodgingOfficer(any(), any())(any(), any())).thenReturn(validLodgingOfficer.pure)
       save4laterReturns(S4LVatLodgingOfficer(
-        officerHomeAddress = Some(OfficerHomeAddressView("")),
-        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.now, validNino)),
-        completionCapacity = Some(CompletionCapacityView(""))
+        officerHomeAddress = Some(OfficerHomeAddressView(scrsAddress.id, Some(scrsAddress))),
+        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(testDate, validNino)),
+        completionCapacity = Some(CompletionCapacityView("id", Some(completionCapacity))),
+        officerContactDetails = Some(validOfficerContactDetailsView),
+        formerName = Some(FormerNameView(yesNo = false)),
+        previousAddress = Some(PreviousAddressView(yesNo = false))
       ))
+
       service.submitVatLodgingOfficer() returns validLodgingOfficer
     }
 

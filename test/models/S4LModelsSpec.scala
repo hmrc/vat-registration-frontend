@@ -23,7 +23,6 @@ import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import models.api._
 import models.view.frs.FrsStartDateView.DIFFERENT_DATE
 import models.view.frs._
-import models.view.vatContact.ppob.PpobView
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.cultural.NotForProfit.NOT_PROFIT_YES
 import models.view.sicAndCompliance.financial._
@@ -31,6 +30,7 @@ import models.view.sicAndCompliance.labour.TemporaryContracts.TEMP_CONTRACTS_NO
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.vatContact.BusinessContactDetails
+import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.VatChargeExpectancy.VAT_CHARGE_YES
 import models.view.vatFinancials.ZeroRatedSales.ZERO_RATED_SALES_YES
 import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod.FEB_MAY_AUG_NOV
@@ -41,14 +41,14 @@ import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBank
 import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, VatChargeExpectancy, ZeroRatedSales}
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
-import models.view.vatTradingDetails.TradingNameView.{TRADING_NAME_NO, TRADING_NAME_YES}
-import models.view.vatTradingDetails.vatChoice.StartDateView.{BUSINESS_START_DATE, SPECIFIC_DATE}
-import models.view.vatTradingDetails.vatChoice.TaxableTurnover.{TAXABLE_NO, TAXABLE_YES}
+import models.view.vatTradingDetails.TradingNameView.TRADING_NAME_YES
+import models.view.vatTradingDetails.vatChoice.StartDateView.SPECIFIC_DATE
+import models.view.vatTradingDetails.vatChoice.TaxableTurnover.TAXABLE_NO
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.{REGISTER_NO, REGISTER_YES}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason.INTENDS_TO_SELL
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatEuTrading.ApplyEori.APPLY_EORI_YES
-import models.view.vatTradingDetails.vatEuTrading.EuGoods.{EU_GOODS_NO, EU_GOODS_YES}
+import models.view.vatTradingDetails.vatEuTrading.EuGoods.EU_GOODS_YES
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import org.scalatest.Inspectors
 import uk.gov.hmrc.play.test.UnitSpec
@@ -57,18 +57,19 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
 
   "S4LVatFinancials.S4LApiTransformer.toApi" should {
 
+    val s4l = S4LVatFinancials(
+      estimateVatTurnover = Some(EstimateVatTurnover(10)),
+      zeroRatedTurnover = Some(ZeroRatedSales(ZERO_RATED_SALES_YES)),
+      zeroRatedTurnoverEstimate = Some(EstimateZeroRatedSales(1)),
+      vatChargeExpectancy = Some(VatChargeExpectancy(VAT_CHARGE_YES)),
+      vatReturnFrequency = Some(VatReturnFrequency(QUARTERLY)),
+      accountingPeriod = Some(AccountingPeriod(FEB_MAY_AUG_NOV)),
+      companyBankAccount = Some(CompanyBankAccount(COMPANY_BANK_ACCOUNT_YES)),
+      companyBankAccountDetails = Some(CompanyBankAccountDetails(
+        accountName = "name", sortCode = "code", accountNumber = "number"))
+    )
+
     "transform complete S4L model to API" in {
-      val s4l = S4LVatFinancials(
-        estimateVatTurnover = Some(EstimateVatTurnover(10)),
-        zeroRatedTurnover = Some(ZeroRatedSales(ZERO_RATED_SALES_YES)),
-        zeroRatedTurnoverEstimate = Some(EstimateZeroRatedSales(1)),
-        vatChargeExpectancy = Some(VatChargeExpectancy(VAT_CHARGE_YES)),
-        vatReturnFrequency = Some(VatReturnFrequency(QUARTERLY)),
-        accountingPeriod = Some(AccountingPeriod(FEB_MAY_AUG_NOV)),
-        companyBankAccount = Some(CompanyBankAccount(COMPANY_BANK_ACCOUNT_YES)),
-        companyBankAccountDetails = Some(CompanyBankAccountDetails(
-          accountName = "name", sortCode = "code", accountNumber = "number"))
-      )
       val expected = VatFinancials(
         bankAccount = Some(VatBankAccount(
           accountName = "name", accountSortCode = "code", accountNumber = "number")),
@@ -78,30 +79,32 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
         accountingPeriods = VatAccountingPeriod(QUARTERLY, Some(FEB_MAY_AUG_NOV.toLowerCase))
       )
 
-      S4LVatFinancials.apiT.toApi(s4l, VatFinancials.empty) shouldBe expected
+      S4LVatFinancials.apiT.toApi(s4l) shouldBe expected
     }
 
-    "transform S4L model with changes to API" in {
-      val s4l = S4LVatFinancials(vatReturnFrequency = None) //Some(VatReturnFrequency(MONTHLY)))
-
-      val before = VatFinancials(
-        bankAccount = Some(VatBankAccount(
-          accountName = "oldname", accountSortCode = "oldcode", accountNumber = "oldnumber")),
-        turnoverEstimate = 99,
-        zeroRatedTurnoverEstimate = Some(9),
-        reclaimVatOnMostReturns = true,
-        accountingPeriods = VatAccountingPeriod(frequency = QUARTERLY, periodStart = Some(FEB_MAY_AUG_NOV))
-      )
+    "transform valid partial S4L model to API" in {
+      val s4lWithoutAccountingPeriod = s4l.copy(
+        vatReturnFrequency = None,
+        accountingPeriod = None)
 
       val expected = VatFinancials(
-        bankAccount = None,
-        turnoverEstimate = 99,
-        zeroRatedTurnoverEstimate = None,
+        bankAccount = Some(VatBankAccount(
+          accountName = "name", accountSortCode = "code", accountNumber = "number")),
+        turnoverEstimate = 10,
+        zeroRatedTurnoverEstimate = Some(1),
         reclaimVatOnMostReturns = true,
-        accountingPeriods = VatAccountingPeriod(frequency = MONTHLY, periodStart = None)
+        accountingPeriods = VatAccountingPeriod(MONTHLY, None)
       )
 
-      S4LVatFinancials.apiT.toApi(s4l, before) shouldBe expected
+      S4LVatFinancials.apiT.toApi(s4lWithoutAccountingPeriod) shouldBe expected
+    }
+
+    "transform S4L model with incomplete data error" in {
+      val s4lNoTurnover = s4l.copy(estimateVatTurnover = None)
+      an[IllegalStateException] should be thrownBy S4LVatFinancials.apiT.toApi(s4lNoTurnover)
+
+      val s4lNoVatChargeExpectancy = s4l.copy(vatChargeExpectancy = None)
+      an[IllegalStateException] should be thrownBy S4LVatFinancials.apiT.toApi(s4lNoVatChargeExpectancy)
     }
   }
 
@@ -142,20 +145,20 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
     val specificDate = LocalDate.of(2017, 11, 12)
     val tradingName = "name"
 
-    "transform complete S4L model to API" in {
-      val s4l = S4LTradingDetails(
-        taxableTurnover = Some(TaxableTurnover(TAXABLE_NO)),
-        tradingName = Some(TradingNameView(yesNo = TRADING_NAME_YES, tradingName = Some(tradingName))),
-        startDate = Some(StartDateView(
-          dateType = SPECIFIC_DATE,
-          date = Some(specificDate),
-          ctActiveDate = None)),
-        voluntaryRegistration = Some(VoluntaryRegistration(REGISTER_YES)),
-        voluntaryRegistrationReason = Some(VoluntaryRegistrationReason(INTENDS_TO_SELL)),
-        euGoods = Some(EuGoods(EU_GOODS_YES)),
-        applyEori = Some(ApplyEori(APPLY_EORI_YES))
-      )
+    val s4l = S4LTradingDetails(
+      taxableTurnover = Some(TaxableTurnover(TAXABLE_NO)),
+      tradingName = Some(TradingNameView(yesNo = TRADING_NAME_YES, tradingName = Some(tradingName))),
+      startDate = Some(StartDateView(
+        dateType = SPECIFIC_DATE,
+        date = Some(specificDate),
+        ctActiveDate = None)),
+      voluntaryRegistration = Some(VoluntaryRegistration(REGISTER_YES)),
+      voluntaryRegistrationReason = Some(VoluntaryRegistrationReason(INTENDS_TO_SELL)),
+      euGoods = Some(EuGoods(EU_GOODS_YES)),
+      applyEori = Some(ApplyEori(APPLY_EORI_YES))
+    )
 
+    "transform complete S4L with voluntary registration model to API" in {
       val expected = VatTradingDetails(
         vatChoice = VatChoice(
           necessity = NECESSITY_VOLUNTARY,
@@ -165,56 +168,52 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
         euTrading = VatEuTrading(selection = true, eoriApplication = Some(true))
       )
 
-      S4LTradingDetails.apiT.toApi(s4l, VatTradingDetails.empty) shouldBe expected
+      S4LTradingDetails.apiT.toApi(s4l) shouldBe expected
     }
 
-    "transform S4L model with changes to API" in {
-      val ctDate = LocalDate.of(2016, 10, 11)
-
-      val s4l = S4LTradingDetails(
-        taxableTurnover = Some(TaxableTurnover(TAXABLE_YES)),
-        tradingName = Some(TradingNameView(yesNo = TRADING_NAME_NO, tradingName = None)),
-        startDate = Some(StartDateView(
-          dateType = BUSINESS_START_DATE,
-          date = None,
-          ctActiveDate = Some(ctDate))),
-        voluntaryRegistration = Some(VoluntaryRegistration(REGISTER_NO)),
-        voluntaryRegistrationReason = None,
-        euGoods = Some(EuGoods(EU_GOODS_NO)),
-        applyEori = None
-      )
-
-      val before = VatTradingDetails(
-        vatChoice = VatChoice(
-          necessity = NECESSITY_VOLUNTARY,
-          vatStartDate = VatStartDate(selection = SPECIFIC_DATE, startDate = Some(specificDate)),
-          reason = Some(INTENDS_TO_SELL)),
-        tradingName = TradingName(selection = true, tradingName = Some(tradingName)),
-        euTrading = VatEuTrading(selection = true, eoriApplication = Some(true))
-      )
+    "transform complete S4L with mandatory registration model to API" in {
 
       val expected = VatTradingDetails(
         vatChoice = VatChoice(
           necessity = NECESSITY_OBLIGATORY,
-          vatStartDate = VatStartDate(selection = BUSINESS_START_DATE, startDate = Some(ctDate)),
+          vatStartDate = VatStartDate(selection = SPECIFIC_DATE, startDate = Some(specificDate)),
           reason = None),
-        tradingName = TradingName(selection = false, tradingName = None),
-        euTrading = VatEuTrading(selection = false, eoriApplication = None)
+        tradingName = TradingName(selection = true, tradingName = Some(tradingName)),
+        euTrading = VatEuTrading(selection = true, eoriApplication = Some(true))
       )
 
-      S4LTradingDetails.apiT.toApi(s4l, before) shouldBe expected
+      val s4lMandatoryBydefault = s4l.copy(voluntaryRegistration = None, voluntaryRegistrationReason = None)
+      S4LTradingDetails.apiT.toApi(s4lMandatoryBydefault) shouldBe expected
+
+      val s4lMandatoryExplicit = s4l.copy(voluntaryRegistration = Some(VoluntaryRegistration(REGISTER_NO)), voluntaryRegistrationReason = None)
+      S4LTradingDetails.apiT.toApi(s4lMandatoryExplicit) shouldBe expected
+
+    }
+
+    "transform S4L model with incomplete data error" in {
+      val s4lNoStartDate = s4l.copy(startDate = None)
+      an[IllegalStateException] should be thrownBy S4LTradingDetails.apiT.toApi(s4lNoStartDate)
+
+      val s4lNoTradingName = s4l.copy(tradingName = None)
+      an[IllegalStateException] should be thrownBy S4LTradingDetails.apiT.toApi(s4lNoTradingName)
+
+      val s4lNoEuGoods = s4l.copy(euGoods = None)
+      an[IllegalStateException] should be thrownBy S4LTradingDetails.apiT.toApi(s4lNoEuGoods)
+
     }
   }
 
   "S4LVatSicAndCompliance.S4LApiTransformer.toApi" should {
     val sicCode = SicCode("a", "b", "c")
     val description = "bad"
+    val mbav = MainBusinessActivityView(id = "id", mainBusinessActivity = Some(sicCode))
+    val bad = BusinessActivityDescription(description)
 
     "transform cultural S4L model to API" in {
 
       val s4l = S4LVatSicAndCompliance(
-        description = Some(BusinessActivityDescription(description)),
-        mainBusinessActivity = Some(MainBusinessActivityView(id = "id", mainBusinessActivity = Some(sicCode))),
+        description = Some(bad),
+        mainBusinessActivity = Some(mbav),
         // cultural
         notForProfit = Some(NotForProfit(NOT_PROFIT_YES))
       )
@@ -225,14 +224,14 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
         culturalCompliance = Some(VatComplianceCultural(notForProfit = true))
       )
 
-      S4LVatSicAndCompliance.apiT.toApi(s4l, VatSicAndCompliance.empty) shouldBe expected
+      S4LVatSicAndCompliance.apiT.toApi(s4l) shouldBe expected
     }
 
     "transform labour S4L model to API" in {
 
       val s4l = S4LVatSicAndCompliance(
-        description = Some(BusinessActivityDescription(description)),
-        mainBusinessActivity = Some(MainBusinessActivityView(id = "id", mainBusinessActivity = Some(sicCode))),
+        description = Some(bad),
+        mainBusinessActivity = Some(mbav),
         // labour
         companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
         workers = Some(Workers(8)),
@@ -251,14 +250,14 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
         ))
       )
 
-      S4LVatSicAndCompliance.apiT.toApi(s4l, VatSicAndCompliance.empty) shouldBe expected
+      S4LVatSicAndCompliance.apiT.toApi(s4l) shouldBe expected
     }
 
     "transform finance S4L model to API" in {
 
       val s4l = S4LVatSicAndCompliance(
-        description = Some(BusinessActivityDescription(description)),
-        mainBusinessActivity = Some(MainBusinessActivityView(id = "id", mainBusinessActivity = Some(sicCode))),
+        description = Some(bad),
+        mainBusinessActivity = Some(mbav),
         // finance
         adviceOrConsultancy = Some(AdviceOrConsultancy(true)),
         actAsIntermediary = Some(ActAsIntermediary(false)),
@@ -285,9 +284,16 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
         ))
       )
 
-      S4LVatSicAndCompliance.apiT.toApi(s4l, VatSicAndCompliance.empty) shouldBe expected
+      S4LVatSicAndCompliance.apiT.toApi(s4l) shouldBe expected
     }
 
+    "transform S4L model with incomplete data error" in {
+      val s4lNoDescription = S4LVatSicAndCompliance(description = None, mainBusinessActivity = Some(mbav))
+      an[IllegalStateException] should be thrownBy S4LVatSicAndCompliance.apiT.toApi(s4lNoDescription)
+
+      val s4lNoMBA = S4LVatSicAndCompliance(description = Some(bad), mainBusinessActivity = None)
+      an[IllegalStateException] should be thrownBy S4LVatSicAndCompliance.apiT.toApi(s4lNoMBA)
+    }
   }
 
   "S4LFlatRateScheme.S4LApiTransformer.toApi" should {
@@ -317,46 +323,42 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
         percentage = Some(percent)
       )
 
-      S4LFlatRateScheme.apiT.toApi(s4l, VatFlatRateScheme()) shouldBe expected
+      S4LFlatRateScheme.apiT.toApi(s4l) shouldBe expected
     }
 
-    "transform s4l container with changes to API" in {
+    "transform s4l container with defaults to API" in {
+      val s4l = S4LFlatRateScheme(joinFrs = None)
+      val expected = VatFlatRateScheme(joinFrs = false)
 
-      val s4l = S4LFlatRateScheme(
-        joinFrs = None
-      )
-
-      val before = VatFlatRateScheme(
-        joinFrs = true,
-        annualCostsInclusive = Some(AnnualCostsInclusiveView.NO),
-        annualCostsLimited = Some(AnnualCostsLimitedView.NO),
-        doYouWantToUseThisRate = Some(true),
-        whenDoYouWantToJoinFrs = Some(DIFFERENT_DATE),
-        startDate = Some(specificDate),
-        categoryOfBusiness = Some(category),
-        percentage = Some(percent)
-      )
-
-      val expected = VatFlatRateScheme(
-        joinFrs = false
-      )
-
-      S4LFlatRateScheme.apiT.toApi(s4l, before) shouldBe expected
+      S4LFlatRateScheme.apiT.toApi(s4l) shouldBe expected
     }
 
   }
 
-  "S4LVatContact.S4LModelTransformer.toS4LModel" should {
+  "S4LVatEligibility.S4LModelTransformer.toApi" should {
+    "transform complete s4l container to API" in {
+      val s4l = S4LVatEligibility(Some(validServiceEligibility))
+      S4LVatEligibility.apiT.toApi(s4l) shouldBe validServiceEligibility
+    }
+
+    "transform s4l container with incomplete data error" in {
+      val s4l = S4LVatEligibility()
+      an[IllegalStateException] should be thrownBy S4LVatEligibility.apiT.toApi(s4l)
+    }
+  }
+
+  "S4LVatContact.S4LModelTransformer.toApi" should {
+
+    val s4l = S4LVatContact(
+      businessContactDetails = Some(BusinessContactDetails(
+        email = "email",
+        daytimePhone = Some("tel"),
+        mobile = Some("mobile"),
+        website = Some("website"))),
+      ppob = Some(PpobView(scrsAddress.id, Some(scrsAddress)))
+    )
 
     "transform complete s4l container to API" in {
-      val s4l = S4LVatContact(
-        businessContactDetails = Some(BusinessContactDetails(
-          email = "email",
-          daytimePhone = Some("tel"),
-          mobile = Some("mobile"),
-          website = Some("website"))),
-        ppob = Some(PpobView(scrsAddress.id, Some(scrsAddress)))
-      )
 
       val expected = VatContact(
         digitalContact = VatDigitalContact(
@@ -366,31 +368,20 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
         website = Some("website"),
         ppob = scrsAddress)
 
-      S4LVatContact.apiT.toApi(s4l, VatContact.empty) shouldBe expected
+      S4LVatContact.apiT.toApi(s4l) shouldBe expected
 
     }
 
-    "transform s4l container with changes to API" in {
-      val s4l = S4LVatContact(businessContactDetails = None, ppob = None)
+    "transform s4l container with incomplete data error" in {
+      val s4lNoContactDetails = s4l.copy(businessContactDetails = None)
+      an[IllegalStateException] should be thrownBy S4LVatContact.apiT.toApi(s4lNoContactDetails)
 
-      val before = VatContact(
-        digitalContact = VatDigitalContact(
-          email = "email_old",
-          tel = Some("tel_old"),
-          mobile = Some("mobile_old")),
-        website = Some("website_old"),
-        ppob = scrsAddress)
-
-      val expected = VatContact(
-        digitalContact = VatDigitalContact(
-          email = "email_old",
-          tel = None,
-          mobile = None),
-        website = None,
-        ppob = scrsAddress)
-
-      S4LVatContact.apiT.toApi(s4l, before) shouldBe expected
+      val s4lPpob = s4l.copy(ppob = None)
+      an[IllegalStateException] should be thrownBy S4LVatContact.apiT.toApi(s4lPpob)
     }
+  }
+
+  "S4LVatContact.S4LModelTransformer.toS4LModel" should {
 
     "transform API to S4L model" in {
       val vs = emptyVatScheme.copy(vatContact = Some(
@@ -421,19 +412,19 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
     val testNino = "nino"
     val testRole = "role"
 
+    val s4l = S4LVatLodgingOfficer(
+      officerHomeAddress = Some(OfficerHomeAddressView(address.id, Some(address))),
+      officerSecurityQuestions = Some(OfficerSecurityQuestionsView(dob = date, nino = testNino, officerName = Some(name))),
+      completionCapacity = Some(CompletionCapacityView(id = "id", completionCapacity = Some(CompletionCapacity(name, testRole)))),
+      officerContactDetails = Some(
+        OfficerContactDetailsView(email = Some("email"), daytimePhone = Some("daytimePhone"), mobile = Some("mobile"))),
+      formerName = Some(FormerNameView(yesNo = true, formerName = Some("formerName"))),
+      formerNameDate = Some(FormerNameDateView(date)),
+      previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
+    )
+
     "transform complete s4l container to API" in {
 
-      val s4l = S4LVatLodgingOfficer(
-        officerHomeAddress = Some(OfficerHomeAddressView(address.id, Some(address))),
-        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(dob = date, nino = testNino, officerName = Some(name))),
-        completionCapacity = Some(CompletionCapacityView(id = "id", completionCapacity = Some(CompletionCapacity(name, testRole)))),
-        officerContactDetails = Some(
-          OfficerContactDetailsView(email = Some("email"), daytimePhone = Some("daytimePhone"), mobile = Some("mobile"))),
-        formerName = Some(FormerNameView(yesNo = true, formerName = Some("formerName"))),
-        formerNameDate = Some(FormerNameDateView(date)),
-        previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
-      )
-
       val expected = VatLodgingOfficer(
         currentAddress = address,
         dob = DateOfBirth(date),
@@ -446,47 +437,28 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
         contact = OfficerContactDetails(Some("email"), Some("daytimePhone"), Some("mobile"))
       )
 
-      S4LVatLodgingOfficer.apiT.toApi(s4l, VatLodgingOfficer.empty) shouldBe expected
+      S4LVatLodgingOfficer.apiT.toApi(s4l) shouldBe expected
     }
 
-    "transform s4l container with changes to API" in {
+    "transform s4l container with incomplete data error" in {
+      val s4lNoHomeAddress = s4l.copy(officerHomeAddress = None)
+      an[IllegalStateException] should be thrownBy S4LVatLodgingOfficer.apiT.toApi(s4lNoHomeAddress)
 
-      val s4l = S4LVatLodgingOfficer(
-        officerHomeAddress = Some(OfficerHomeAddressView(address.id, Some(address))),
-        officerSecurityQuestions = None,
-        completionCapacity = Some(CompletionCapacityView(id = "id", completionCapacity = Some(CompletionCapacity(name, testRole)))),
-        officerContactDetails = Some(
-          OfficerContactDetailsView(email = Some("email"), daytimePhone = Some("daytimePhone"), mobile = Some("mobile"))),
-        formerName = Some(FormerNameView(yesNo = true, formerName = Some("formerName"))),
-        formerNameDate = Some(FormerNameDateView(date)),
-        previousAddress = Some(PreviousAddressView(true, None))
-      )
+      val s4lNoSecurityQs = s4l.copy(officerSecurityQuestions = None)
+      an[IllegalStateException] should be thrownBy S4LVatLodgingOfficer.apiT.toApi(s4lNoSecurityQs)
 
-      val before = VatLodgingOfficer(
-        currentAddress = address,
-        dob = DateOfBirth(date),
-        nino = testNino,
-        role = testRole,
-        name = name,
-        changeOfName = ChangeOfName(nameHasChanged = true,
-          formerName = Some(FormerName(formerName = "formerName", dateOfNameChange = Some(date)))),
-        currentOrPreviousAddress = CurrentOrPreviousAddress(currentAddressThreeYears = false, previousAddress = Some(prevAddress)),
-        contact = OfficerContactDetails(Some("email"), Some("daytimePhone"), Some("mobile"))
-      )
+      val s4lNoCompletionCapacity = s4l.copy(completionCapacity = None)
+      an[IllegalStateException] should be thrownBy S4LVatLodgingOfficer.apiT.toApi(s4lNoCompletionCapacity)
 
-      val expected = VatLodgingOfficer(
-        currentAddress = address,
-        dob = DateOfBirth(date),
-        nino = testNino,
-        role = testRole,
-        name = name,
-        changeOfName = ChangeOfName(nameHasChanged = true,
-          formerName = Some(FormerName(formerName = "formerName", dateOfNameChange = Some(date)))),
-        currentOrPreviousAddress = CurrentOrPreviousAddress(currentAddressThreeYears = true, previousAddress = None),
-        contact = OfficerContactDetails(Some("email"), Some("daytimePhone"), Some("mobile"))
-      )
+      val s4lNoFormerName = s4l.copy(formerName = None)
+      an[IllegalStateException] should be thrownBy S4LVatLodgingOfficer.apiT.toApi(s4lNoFormerName)
 
-      S4LVatLodgingOfficer.apiT.toApi(s4l, before) shouldBe expected
+      val s4lNoPreviousAddress = s4l.copy(previousAddress = None)
+      an[IllegalStateException] should be thrownBy S4LVatLodgingOfficer.apiT.toApi(s4lNoPreviousAddress)
+
+      val s4lNoOfficerContactDetails = s4l.copy(officerContactDetails = None)
+      an[IllegalStateException] should be thrownBy S4LVatLodgingOfficer.apiT.toApi(s4lNoOfficerContactDetails)
+
     }
 
   }

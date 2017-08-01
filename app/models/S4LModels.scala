@@ -43,6 +43,7 @@ import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, 
 import models.view.vatTradingDetails.vatEuTrading.EuGoods.EU_GOODS_YES
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.libs.json.{Json, OFormat}
+import common.ErrorUtil.fail
 
 trait S4LModelTransformer[C] {
   // Returns an S4L container for a logical group given a VatScheme
@@ -51,7 +52,7 @@ trait S4LModelTransformer[C] {
 
 trait S4LApiTransformer[C, API] {
   // Returns logical group API model given an S4L container
-  def toApi(container: C, group: API): API
+  def toApi(container: C): API
 }
 
 
@@ -85,26 +86,25 @@ object S4LVatFinancials {
       )
   }
 
+  def error = throw fail("VatFinancials")
+
   implicit val apiT = new S4LApiTransformer[S4LVatFinancials, VatFinancials] {
     // map S4LVatFinancials to VatFinancials
-    override def toApi(c: S4LVatFinancials, g: VatFinancials): VatFinancials =
-      g.copy(
+    override def toApi(c: S4LVatFinancials): VatFinancials =
+      VatFinancials(
         bankAccount = c.companyBankAccountDetails.map(cad =>
           VatBankAccount(
             accountName = cad.accountName,
             accountSortCode = cad.sortCode,
             accountNumber = cad.accountNumber)),
-        turnoverEstimate = c.estimateVatTurnover.map(_.vatTurnoverEstimate).getOrElse(g.turnoverEstimate),
+        turnoverEstimate = c.estimateVatTurnover.map(_.vatTurnoverEstimate).getOrElse(error),
         zeroRatedTurnoverEstimate = c.zeroRatedTurnoverEstimate.map(_.zeroRatedTurnoverEstimate),
-        reclaimVatOnMostReturns = c.vatChargeExpectancy.map
-                  (_.yesNo == VAT_CHARGE_YES).getOrElse(g.reclaimVatOnMostReturns),
-        accountingPeriods = g.accountingPeriods.copy(
-                              frequency = c.vatReturnFrequency.map(_.frequencyType).getOrElse(MONTHLY),
-                              periodStart = c.vatReturnFrequency.flatMap(_ => c.accountingPeriod.map(_.accountingPeriod.toLowerCase())))
+        reclaimVatOnMostReturns = c.vatChargeExpectancy.map(_.yesNo == VAT_CHARGE_YES).getOrElse(error),
+        accountingPeriods = VatAccountingPeriod(
+          frequency = c.vatReturnFrequency.map(_.frequencyType).getOrElse(MONTHLY),
+          periodStart = c.vatReturnFrequency.flatMap(_ => c.accountingPeriod.map(_.accountingPeriod.toLowerCase())))
       )
-
-  }
-
+    }
 }
 
 final case class S4LTradingDetails
@@ -134,25 +134,27 @@ object S4LTradingDetails {
         applyEori = ApiModelTransformer[ApplyEori].toViewModel(vs)
       )
   }
+
+  def error = throw fail("VatTradingDetails")
+
   implicit val apiT = new S4LApiTransformer[S4LTradingDetails, VatTradingDetails] {
     // map S4LTradingDetails to VatTradingDetails
-    override def toApi(c: S4LTradingDetails, g: VatTradingDetails): VatTradingDetails =
-      g.copy(
-        vatChoice = g.vatChoice.copy(
+    override def toApi(c: S4LTradingDetails): VatTradingDetails =
+      VatTradingDetails(
+        vatChoice = VatChoice(
           necessity = c.voluntaryRegistration.map(vr =>
-            if (vr.yesNo == REGISTER_YES) NECESSITY_VOLUNTARY else NECESSITY_OBLIGATORY).getOrElse(g.vatChoice.necessity),
-          vatStartDate = c.startDate.map(sd => g.vatChoice.vatStartDate.copy(
+            if (vr.yesNo == REGISTER_YES) NECESSITY_VOLUNTARY else NECESSITY_OBLIGATORY).getOrElse(NECESSITY_OBLIGATORY),
+          vatStartDate = c.startDate.map(sd => VatStartDate(
               selection = sd.dateType,
-              startDate = if (sd.dateType == BUSINESS_START_DATE) sd.ctActiveDate else sd.date
-              )
-            ).getOrElse(g.vatChoice.vatStartDate),
+              startDate = if (sd.dateType == BUSINESS_START_DATE) sd.ctActiveDate else sd.date)
+            ).getOrElse(error),
           reason = c.voluntaryRegistrationReason.map(_.reason)),
 
         tradingName = c.tradingName.map(tnv =>
-          TradingName(tnv.yesNo == TRADING_NAME_YES, tnv.tradingName)).getOrElse(g.tradingName),
+          TradingName(tnv.yesNo == TRADING_NAME_YES, tnv.tradingName)).getOrElse(error),
 
-        euTrading = g.euTrading.copy(
-          selection = c.euGoods.map(_.yesNo == EU_GOODS_YES).getOrElse(g.euTrading.selection),
+        euTrading = VatEuTrading(
+          selection = c.euGoods.map(_.yesNo == EU_GOODS_YES).getOrElse(error),
           eoriApplication = c.applyEori.map(_.yesNo)
         )
       )
@@ -285,11 +287,13 @@ object S4LVatSicAndCompliance {
       )
   }
 
+  def error = throw fail("VatSicAndCompliance")
+
   implicit val apiT = new S4LApiTransformer[S4LVatSicAndCompliance, VatSicAndCompliance] {
-    override def toApi(c: S4LVatSicAndCompliance, g: VatSicAndCompliance): VatSicAndCompliance =
-      g.copy(
-        businessDescription = c.description.map(_.description).getOrElse(g.businessDescription),
-        mainBusinessActivity = c.mainBusinessActivity.flatMap(_.mainBusinessActivity).getOrElse(g.mainBusinessActivity),
+    override def toApi(c: S4LVatSicAndCompliance): VatSicAndCompliance =
+      VatSicAndCompliance(
+        businessDescription = c.description.map(_.description).getOrElse(error),
+        mainBusinessActivity = c.mainBusinessActivity.flatMap(_.mainBusinessActivity).getOrElse(error),
 
         culturalCompliance = c.notForProfit.map(nfp => VatComplianceCultural(nfp.yesNo == NOT_PROFIT_YES)),
 
@@ -333,15 +337,17 @@ object S4LVatContact {
       )
   }
 
+  def error = throw fail("VatContact")
+
   implicit val apiT = new S4LApiTransformer[S4LVatContact, VatContact] {
-    override def toApi(c: S4LVatContact, g: VatContact): VatContact =
-      g.copy(
+    override def toApi(c: S4LVatContact): VatContact =
+      VatContact(
         digitalContact = VatDigitalContact(
-                          email = c.businessContactDetails.map(_.email).getOrElse(g.digitalContact.email),
+                          email = c.businessContactDetails.map(_.email).getOrElse(error),
                           tel = c.businessContactDetails.flatMap(_.daytimePhone),
                           mobile = c.businessContactDetails.flatMap(_.mobile)),
         website = c.businessContactDetails.flatMap(_.website),
-        ppob = c.ppob.flatMap(_.address).getOrElse(g.ppob)
+        ppob = c.ppob.flatMap(_.address).getOrElse(error)
       )
   }
 }
@@ -359,15 +365,17 @@ object S4LVatEligibility {
       S4LVatEligibility(vatEligibility = ApiModelTransformer[VatServiceEligibility].toViewModel(vs))
   }
 
+  def error = throw fail("VatServiceEligibility")
+
   implicit val apiT = new S4LApiTransformer[S4LVatEligibility, VatServiceEligibility] {
-    override def toApi(c: S4LVatEligibility, g: VatServiceEligibility): VatServiceEligibility = {
+    override def toApi(c: S4LVatEligibility): VatServiceEligibility = {
       c.vatEligibility.map(ve => VatServiceEligibility(
         haveNino = ve.haveNino,
         doingBusinessAbroad = ve.doingBusinessAbroad,
         doAnyApplyToYou = ve.doAnyApplyToYou,
         applyingForAnyOf = ve.applyingForAnyOf,
         companyWillDoAnyOf = ve.companyWillDoAnyOf)
-      ).getOrElse(g)
+      ).getOrElse(error)
     }
   }
 }
@@ -401,27 +409,33 @@ object S4LVatLodgingOfficer {
       )
   }
 
+  def error = throw fail("VatLodgingOfficer")
+
   implicit val apiT = new S4LApiTransformer[S4LVatLodgingOfficer, VatLodgingOfficer] {
-    override def toApi(c: S4LVatLodgingOfficer, g: VatLodgingOfficer): VatLodgingOfficer =
-      g.copy(
-        currentAddress = c.officerHomeAddress.flatMap(_.address).getOrElse(g.currentAddress),
-        dob = c.officerSecurityQuestions.map(d => DateOfBirth(d.dob)).getOrElse(g.dob),
-        nino = c.officerSecurityQuestions.map(n => n.nino).getOrElse(g.nino),
-        role = c.completionCapacity.flatMap(_.completionCapacity.map(_.role)).getOrElse(g.role),
-        name = c.completionCapacity.flatMap(_.completionCapacity.map(_.name)).getOrElse(g.name),
+    override def toApi(c: S4LVatLodgingOfficer): VatLodgingOfficer =
+      VatLodgingOfficer(
+        currentAddress = c.officerHomeAddress.flatMap(_.address).getOrElse(error),
+        dob = c.officerSecurityQuestions.map(d => DateOfBirth(d.dob)).getOrElse(error),
+        //$COVERAGE-OFF$
+        nino = c.officerSecurityQuestions.map(n => n.nino).getOrElse(error),
+        //$COVERAGE-ON$
+        role = c.completionCapacity.flatMap(_.completionCapacity.map(_.role)).getOrElse(error),
+        //$COVERAGE-OFF$
+        name = c.completionCapacity.flatMap(_.completionCapacity.map(_.name)).getOrElse(error),
+        //$COVERAGE-ON$
 
         changeOfName = c.formerName.map((fnv: FormerNameView) =>
           ChangeOfName(nameHasChanged = fnv.yesNo,
                         formerName = fnv.formerName.map(fn =>
                           FormerName(formerName = fn,
-                                      dateOfNameChange = c.formerNameDate.map(_.date))))).getOrElse(g.changeOfName),
+                                      dateOfNameChange = c.formerNameDate.map(_.date))))).getOrElse(error),
 
         currentOrPreviousAddress = c.previousAddress.map(cpav =>
           CurrentOrPreviousAddress(currentAddressThreeYears = cpav.yesNo,
-                                    previousAddress = cpav.address)).getOrElse(g.currentOrPreviousAddress),
+                                    previousAddress = cpav.address)).getOrElse(error),
 
         contact = c.officerContactDetails.map(ocd =>
-           OfficerContactDetails(email = ocd.email, tel = ocd.daytimePhone, mobile = ocd.mobile)).getOrElse(g.contact)
+           OfficerContactDetails(email = ocd.email, tel = ocd.daytimePhone, mobile = ocd.mobile)).getOrElse(error)
       )
   }
 }
@@ -452,8 +466,8 @@ object S4LFlatRateScheme {
   }
 
   implicit val apiT = new S4LApiTransformer[S4LFlatRateScheme, VatFlatRateScheme] {
-    override def toApi(c: S4LFlatRateScheme, g: VatFlatRateScheme): VatFlatRateScheme =
-      g.copy(
+    override def toApi(c: S4LFlatRateScheme): VatFlatRateScheme =
+      VatFlatRateScheme(
         joinFrs = c.joinFrs.map(_.selection).getOrElse(false),
         annualCostsInclusive = c.annualCostsInclusive.map(_.selection),
         annualCostsLimited = c.annualCostsLimited.map(_.selection),

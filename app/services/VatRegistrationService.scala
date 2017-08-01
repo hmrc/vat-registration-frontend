@@ -19,11 +19,11 @@ package services
 import javax.inject.Inject
 
 import com.google.inject.ImplementedBy
+import common.ErrorUtil.fail
 import connectors.{CompanyRegistrationConnector, OptionalResponse, VatRegistrationConnector}
 import models._
 import models.api._
 import models.external.CoHoCompanyProfile
-import models.view.vatFinancials.EstimateVatTurnover
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -85,7 +85,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =
       fresh.fold(
         vs.financials.getOrElse(throw fail("VatFinancials"))
-      ) (s4l => S4LVatFinancials.apiT.toApi(s4l, VatFinancials.empty)) //TODO remove the "seeding" with empty
+      ) (s4l => S4LVatFinancials.apiT.toApi(s4l))
 
     for {
       (vs, vf) <- (getVatScheme() |@| s4l[S4LVatFinancials]()).tupled
@@ -97,7 +97,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     def merge(fresh: Option[S4LVatSicAndCompliance], vs: VatScheme) =
       fresh.fold(
         vs.vatSicAndCompliance.getOrElse(throw fail("VatSicAndCompliance"))
-      ) ( s4l => S4LVatSicAndCompliance.apiT.toApi(s4l, VatSicAndCompliance.empty)) //TODO remove the "seeding" with empty
+      ) (s4l => S4LVatSicAndCompliance.apiT.toApi(s4l))
 
     for {
       (vs, vsc) <- (getVatScheme() |@| s4l[S4LVatSicAndCompliance]()).tupled
@@ -109,7 +109,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     def merge(fresh: Option[S4LTradingDetails], vs: VatScheme): VatTradingDetails =
       fresh.fold(
         vs.tradingDetails.getOrElse(throw fail("VatTradingDetails"))
-      ) (s4l => S4LTradingDetails.apiT.toApi(s4l, VatTradingDetails.empty)) //TODO remove the "seeding" with empty
+      ) (s4l => S4LTradingDetails.apiT.toApi(s4l))
 
     for {
       (vs, vlo) <- (getVatScheme() |@| s4l[S4LTradingDetails]()).tupled
@@ -121,7 +121,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     def merge(fresh: Option[S4LVatContact], vs: VatScheme): VatContact =
       fresh.fold(
         vs.vatContact.getOrElse(throw fail("VatContact"))
-      ) (s4l => S4LVatContact.apiT.toApi(s4l, VatContact.empty)) //TODO remove the "seeding" with empty
+      ) (s4l => S4LVatContact.apiT.toApi(s4l))
 
     for {
       (vs, vlo) <- (getVatScheme() |@| s4l[S4LVatContact]()).tupled
@@ -133,7 +133,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     def merge(fresh: Option[S4LVatEligibility], vs: VatScheme): VatServiceEligibility =
       fresh.fold(
         vs.vatServiceEligibility.getOrElse(throw fail("VatServiceEligibility"))
-      ) ( s4l => S4LVatEligibility.apiT.toApi(s4l, VatServiceEligibility()))
+      ) (s4l => S4LVatEligibility.apiT.toApi(s4l))
 
     for {
       (vs, ve) <- (getVatScheme() |@| s4l[S4LVatEligibility]()).tupled
@@ -145,7 +145,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     def merge(fresh: Option[S4LVatLodgingOfficer], vs: VatScheme): VatLodgingOfficer =
       fresh.fold(
         vs.lodgingOfficer.getOrElse(throw fail("VatLodgingOfficer"))
-      ) ( s4l => S4LVatLodgingOfficer.apiT.toApi(s4l, VatLodgingOfficer.empty)) //TODO remove the "seeding" with empty
+      ) ( s4l => S4LVatLodgingOfficer.apiT.toApi(s4l))
 
     for {
       (vs, vlo) <- (getVatScheme() |@| s4l[S4LVatLodgingOfficer]()).tupled
@@ -157,7 +157,7 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     def merge(fresh: Option[S4LFlatRateScheme], vs: VatScheme): VatFlatRateScheme =
       fresh.fold(
         vs.vatFlatRateScheme.getOrElse(throw fail("VatFlatRateScheme"))
-      ) ( s4l => S4LFlatRateScheme.apiT.toApi(s4l, VatFlatRateScheme()) )
+      ) (s4l => S4LFlatRateScheme.apiT.toApi(s4l))
 
     for {
       (vs, frs) <- (getVatScheme() |@| s4l[S4LFlatRateScheme]()).tupled
@@ -165,6 +165,4 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     } yield response
   }
 
-  private def fail(logicalGroup: String): Exception =
-    new IllegalStateException(s"$logicalGroup data expected to be found in either backend or save for later")
 }
