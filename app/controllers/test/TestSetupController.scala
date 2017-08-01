@@ -56,7 +56,10 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
           startDateChoice = tradingDetails.flatMap(_.startDate).map(_.dateType),
           startDateDay = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getDayOfMonth.toString),
           startDateMonth = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getMonthValue.toString),
-          startDateYear = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getYear.toString)
+          startDateYear = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getYear.toString),
+          overThresholdSelection = tradingDetails.flatMap(_.overThreshold).map(_.selection.toString),
+          overThresholdMonth = tradingDetails.flatMap(_.overThreshold).flatMap(_.date).map(_.getMonthValue.toString),
+          overThresholdYear = tradingDetails.flatMap(_.overThreshold).flatMap(_.date).map(_.getYear.toString)
         ),
         VatTradingDetailsTestSetup(
           tradingNameChoice = tradingDetails.flatMap(_.tradingName).map(_.yesNo),

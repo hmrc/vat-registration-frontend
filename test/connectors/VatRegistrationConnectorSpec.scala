@@ -19,6 +19,7 @@ package connectors
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api._
+import models.external.IncorporationInfo
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
 
@@ -316,6 +317,20 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", internalServiceException)
       connector.upsertVatFlatRateScheme("tstID", validVatFlatRateScheme) failedWith internalServiceException
+    }
+  }
+
+
+  "Calling getIncorporationInfo" should {
+
+    "return a IncorporationInfo when it can be retrieved from the microservice" in new Setup {
+      mockHttpGET[IncorporationInfo]("tst-url", testIncorporationInfo)
+      connector.getIncorporationInfo("tstID") returnsSome testIncorporationInfo
+    }
+
+    "fail when an Internal Server Error response is returned by the microservice" in new Setup {
+      mockHttpFailedGET[IncorporationInfo]("test-url", notFound)
+      connector.getIncorporationInfo("tstID") returnsNone
     }
   }
 }

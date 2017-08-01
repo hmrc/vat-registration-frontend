@@ -16,6 +16,9 @@
 
 package controllers.builders
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 import models.api.VatChoice.NECESSITY_VOLUNTARY
 import models.api.{VatChoice, VatStartDate, VatTradingDetails}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
@@ -25,6 +28,7 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
   extends SummarySectionBuilder {
 
   override val sectionId: String = "vatDetails"
+  val monthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
 
   private val voluntaryRegistration = vatTradingDetails.exists(_.registeringVoluntarily)
 
@@ -32,6 +36,23 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
     s"$sectionId.taxableTurnover",
     s"app.common.${if (voluntaryRegistration) "no" else "yes"}",
     Some(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())
+  )
+
+  val overThresholdSelectionRow: SummaryRow = SummaryRow(
+    s"$sectionId.overThresholdSelection",
+    vatTradingDetails.flatMap(_.vatChoice.vatThresholdPostIncorp.map(_.overThresholdSelection)).collect {
+      case true => "app.common.yes"
+      case false => "app.common.no"
+    }.getOrElse(""),
+    Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show())
+  )
+
+  val overThresholdDateRow: SummaryRow = SummaryRow(
+    s"$sectionId.overThresholdDate",
+    vatTradingDetails.flatMap(_.vatChoice.vatThresholdPostIncorp.map(_.overThresholdDate)).collect {
+      case Some(date) => date.format(monthYearPresentationFormatter)
+    }.getOrElse(""),
+    Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show())
   )
 
   val necessityRow: SummaryRow = SummaryRow(
@@ -67,7 +88,9 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
     SummarySection(
       sectionId,
       rows = Seq(
-        (taxableTurnoverRow, true),
+        (taxableTurnoverRow, !vatTradingDetails.flatMap(_.vatChoice.vatThresholdPostIncorp).isDefined),
+        (overThresholdSelectionRow, vatTradingDetails.flatMap(_.vatChoice.vatThresholdPostIncorp).isDefined),
+        (overThresholdDateRow, vatTradingDetails.flatMap(_.vatChoice.vatThresholdPostIncorp).flatMap(_.overThresholdDate).isDefined),
         (necessityRow, voluntaryRegistration),
         (voluntaryReasonRow, voluntaryRegistration),
         (startDateRow, true),

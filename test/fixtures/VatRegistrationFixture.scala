@@ -17,9 +17,10 @@
 package fixtures
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 import models.api.{VatComplianceCultural, _}
-import models.external.{CoHoCompanyProfile, Officer}
+import models.external.{IncorporationInfo, _}
 import models.view.frs._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
@@ -56,8 +57,9 @@ trait VatRegistrationFixture {
   val someTestDate = Some(testDate)
   val vatStartDate = VatStartDate(StartDateView.SPECIFIC_DATE, someTestDate)
   val validStartDateView = StartDateView(StartDateView.SPECIFIC_DATE, someTestDate)
+  val monthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
 
-  val validVatChoice = VatChoice(VatChoice.NECESSITY_VOLUNTARY, vatStartDate)
+  val validVatChoice = VatChoice(VatChoice.NECESSITY_VOLUNTARY, vatStartDate, vatThresholdPostIncorp = Some(VatThresholdPostIncorp(true, Some(testDate))))
 
   val tradingName: String = "ACME INC"
   val validTradingName = TradingName(selection = true, tradingName = Some(tradingName))
@@ -71,6 +73,7 @@ trait VatRegistrationFixture {
     digitalContact = VatDigitalContact(email = "asd@com", tel = Some("123"), mobile = None),
     website = None,
     ppob = scrsAddress)
+  val validVatThresholdPostIncorp = VatThresholdPostIncorp(overThresholdSelection = false, None)
 
   private val turnoverEstimate = 50000L
   private val estimatedSales = 60000L
@@ -259,5 +262,17 @@ trait VatRegistrationFixture {
     vatSicAndCompliance = Some(validSicAndCompliance),
     vatFlatRateScheme = Some(validVatFlatRateScheme)
   )
+
+  val testIncorporationInfo = IncorporationInfo(
+    IncorpSubscription(
+      transactionId = "000-434-23",
+      regime = "vat",
+      subscriber = "scrs",
+      callbackUrl = "http://localhost:9896/TODO-CHANGE-THIS"),
+    IncorpStatusEvent(
+      status = "accepted",
+      crn = Some("90000001"),
+      incorporationDate = Some(LocalDate.of(2016, 8, 5)),
+      description = Some("Some description")))
 
 }

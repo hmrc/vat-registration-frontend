@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import cats.Show
 import forms.vatFinancials.vatBankAccount.SortCode
-import models.DateModel
+import models.{DateModel, MonthYearModel}
 import org.apache.commons.lang3.StringUtils
 import play.api.Logger
 import play.api.data.format.Formatter
@@ -62,12 +62,16 @@ private[forms] object FormValidation {
 
   private def unconstrained[T] = Constraint[T] { (t: T) => Valid }
 
-  def inRange[T](minValue: T, maxValue: T)(implicit ordering: Ordering[T], e: ErrorCode): Constraint[T] =
+  def inRange[T](minValue: T, maxValue: T)(implicit ordering: Ordering[T], e: ErrorCode): Constraint[T]
+      = inRangeWithArgs[T](minValue, maxValue)(Seq())(ordering, e)
+
+  def inRangeWithArgs[T](minValue: T, maxValue: T)(args: Seq[Any] = Seq())(implicit ordering: Ordering[T], e: ErrorCode): Constraint[T] =
     Constraint[T] { (t: T) =>
       Logger.info(s"Checking constraint for value $t in the range of [$minValue, $maxValue]")
       (ordering.compare(t, minValue).signum, ordering.compare(t, maxValue).signum) match {
         case (1, -1) | (0, _) | (_, 0) => Valid
         case (_, 1) => Invalid(ValidationError(s"validation.$e.range.above", maxValue))
+        case (-1, _) if !args.isEmpty  => Invalid(ValidationError(s"validation.$e.range.below", args.head))
         case (-1, _) => Invalid(ValidationError(s"validation.$e.range.below", minValue))
       }
     }
@@ -148,9 +152,9 @@ private[forms] object FormValidation {
     def unbind(key: String, value: String) = Map(key -> value)
   }
 
-  private def booleanFormat()(implicit e: ErrorCode): Formatter[Boolean] = new Formatter[Boolean] {
+  private def booleanFormat()(args: Seq[Any] = Seq())(implicit e: ErrorCode): Formatter[Boolean] = new Formatter[Boolean] {
     def bind(key: String, data: Map[String, String]) = data.get(key).flatMap(input => Try(input.toBoolean).toOption)
-      .toRight(Seq(FormError(key, s"validation.$e.missing", Nil)))
+      .toRight(Seq(FormError(key, s"validation.$e.missing", args)))
 
     def unbind(key: String, value: Boolean) = Map(key -> value.toString)
   }
@@ -158,10 +162,10 @@ private[forms] object FormValidation {
   def textMapping()(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat("missing")(Seq()))
 
   def textMappingWithMessageArgs()(args: Seq[Any] = Seq())(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat("missing")(args))
-
+  def missingBooleanFieldMappingArgs()(args: Seq[Any] = Seq())(implicit e: ErrorCode): Mapping[Boolean] = FieldMapping[Boolean]()(booleanFormat()(args))
 
   def missingBooleanFieldMapping()(implicit e: ErrorCode): Mapping[Boolean] =
-    FieldMapping[Boolean]()(booleanFormat())
+    FieldMapping[Boolean]()(booleanFormat()(Seq()))
 
   object BankAccount {
 
@@ -194,7 +198,18 @@ private[forms] object FormValidation {
         }
       }
 
+    def nonEmptyMonthYearModel(constraint: => Constraint[MonthYearModel] = unconstrained)(implicit e: ErrorCode): Constraint[MonthYearModel] =
+      Constraint { pdm =>
+        mandatoryText.apply(Seq(pdm.month, pdm.year).mkString.trim) match {
+          case Valid => constraint(pdm)
+          case err@_ => err
+        }
+      }
+
     def validDateModel(dateConstraint: => Constraint[LocalDate] = unconstrained)(implicit e: ErrorCode): Constraint[DateModel] =
+      Constraint(dm => dm.toLocalDate.fold[ValidationResult](Invalid(s"validation.$e.invalid"))(dateConstraint(_)))
+
+    def validPartialMonthYearModel(dateConstraint: => Constraint[LocalDate] = unconstrained)(implicit e: ErrorCode): Constraint[MonthYearModel] =
       Constraint(dm => dm.toLocalDate.fold[ValidationResult](Invalid(s"validation.$e.invalid"))(dateConstraint(_)))
 
   }

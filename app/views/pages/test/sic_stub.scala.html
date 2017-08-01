@@ -16,6 +16,7 @@
             <p><button class="btn button" type="button" onclick="fillLabourCodes()">Labour compliance</button></p>
             <p><button class="btn button" type="button" onclick="fillFinancialCodes()">Financial compliance</button></p>
             <p><button class="btn button" type="button" onclick="fillSingleCode()">Single code - no compliance</button></p>
+            <p><button class="btn button" type="button" onclick="fillMultipleCodes()">Multiple codes - no compliance</button></p>
             <p><button class="btn button" type="button" onclick="clearCodes()">Clear</button></p>
 
             @form(action = controllers.test.routes.SicStubController.submit()) {
@@ -46,6 +47,7 @@
 
         var blanks = ["", "", "", ""];
         var single = ["36000008", "", "", ""];
+        var multiple = ["01110004", "81300003", "82190004", ""];
         var culturalSicCodes = ["90040001", "91012002", "91040003", ""];
         var labourSicCodes = ["81221001", "81222002", "81223003", ""];
         var financialSicCodes = ["70221001", "66110002", "66300001"];
@@ -63,6 +65,10 @@
 
         function fillSingleCode() {
             return fillInputs(single)
+        }
+
+        function fillMultipleCodes() {
+            return fillInputs(multiple)
         }
 
         function fillCulturalCodes() {
