@@ -73,6 +73,7 @@ trait VatRegistrationFixture {
     digitalContact = VatDigitalContact(email = "asd@com", tel = Some("123"), mobile = None),
     website = None,
     ppob = scrsAddress)
+
   val validVatThresholdPostIncorp = VatThresholdPostIncorp(overThresholdSelection = false, None)
 
   private val turnoverEstimate = 50000L
@@ -147,7 +148,7 @@ trait VatRegistrationFixture {
                       tradingName: Option[String] = Some("ACME Ltd."),
                       reason: Option[String] = None,
                       euGoodsSelection: Boolean = true,
-                      eoriApplication: Option[Boolean] = None
+                      eoriApplication: Option[Boolean] = Some(true)
                     ): VatTradingDetails = VatTradingDetails(
     vatChoice = VatChoice(
       necessity = necessity,
