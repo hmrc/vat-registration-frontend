@@ -144,6 +144,11 @@ POST        /manages-funds-not-included-in-this-list                            
 GET         /company-contact-details                                                           controllers.vatContact.BusinessContactDetailsController.show
 POST        /company-contact-details                                                           controllers.vatContact.BusinessContactDetailsController.submit
 
+## PPOB ADDRESS
+GET         /where-will-company-carry-out-most-of-its-business-activities                      controllers.ppob.PpobController.show
+POST        /where-will-company-carry-out-most-of-its-business-activities                      controllers.ppob.PpobController.submit
+GET         /where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm        controllers.ppob.PpobController.acceptFromTxm(id: String ?= "")
+
 ## OFFICER ADDRESS PAGE
 GET         /your-home-address                                                                 controllers.vatLodgingOfficer.OfficerHomeAddressController.show
 POST        /your-home-address                                                                 controllers.vatLodgingOfficer.OfficerHomeAddressController.submit
@@ -175,11 +180,6 @@ GET         /current-address-three-years-or-more                                
 POST        /current-address-three-years-or-more                                               controllers.vatLodgingOfficer.PreviousAddressController.submit
 GET         /current-address-three-years-or-more/changePreviousAddress                         controllers.vatLodgingOfficer.PreviousAddressController.changeAddress
 GET         /current-address-three-years-or-more/acceptFromTxm                                 controllers.vatLodgingOfficer.PreviousAddressController.acceptFromTxm(id: String ?= "")
-
-## PPOB ADDRESS
-GET         /where-will-company-carry-out-most-of-its-business-activities                      controllers.ppob.PpobController.show
-POST        /where-will-company-carry-out-most-of-its-business-activities                      controllers.ppob.PpobController.submit
-GET         /where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm        controllers.ppob.PpobController.acceptFromTxm(id: String ?= "")
 
 ## FEEDBACK
 GET         /feedback                                                                          controllers.feedback.FeedbackController.show

@@ -24,6 +24,12 @@
             <p>@govHelpers.input(testSetupForm("vatTradingDetails.applyEori"), '_label -> "Apply for EORI number? (TRUE, FALSE)")</p>
 
             <b>VAT CONTACT</b>
+            <p>@govHelpers.input(testSetupForm("vatContact.line1"), '_label -> "PPOB Line 1") </p>
+            <p>@govHelpers.input(testSetupForm("vatContact.line2"), '_label -> "PPOB Line 2")</p>
+            <p>@govHelpers.input(testSetupForm("vatContact.line3"), '_label -> "PPOB Line 3")</p>
+            <p>@govHelpers.input(testSetupForm("vatContact.line4"), '_label -> "PPOB Line 4")</p>
+            <p>@govHelpers.input(testSetupForm("vatContact.postcode"), '_label -> "PPOB Post code")</p>
+            <p>@govHelpers.input(testSetupForm("vatContact.country"), '_label -> "PPOB Country")</p>
             <p>@govHelpers.input(testSetupForm("vatContact.email"), '_label -> "Email (mandatory)")</p>
             <p>@govHelpers.input(testSetupForm("vatContact.daytimePhone"), '_label -> "Daytime Phone (at least one of daytime phone or mobile)")</p>
             <p>@govHelpers.input(testSetupForm("vatContact.mobile"), '_label -> "Mobile (at least one of daytime phone or mobile)")</p>
@@ -125,14 +131,6 @@
             <p>@govHelpers.input(testSetupForm("officerPreviousAddress.line4"), '_label -> "Line 4")</p>
             <p>@govHelpers.input(testSetupForm("officerPreviousAddress.postcode"), '_label -> "Post code")</p>
             <p>@govHelpers.input(testSetupForm("officerPreviousAddress.country"), '_label -> "Country")</p>
-
-            <b>PPOB</b>
-            <p>@govHelpers.input(testSetupForm("ppob.line1"), '_label -> "Line 1") </p>
-            <p>@govHelpers.input(testSetupForm("ppob.line2"), '_label -> "Line 2")</p>
-            <p>@govHelpers.input(testSetupForm("ppob.line3"), '_label -> "Line 3")</p>
-            <p>@govHelpers.input(testSetupForm("ppob.line4"), '_label -> "Line 4")</p>
-            <p>@govHelpers.input(testSetupForm("ppob.postcode"), '_label -> "Post code")</p>
-            <p>@govHelpers.input(testSetupForm("ppob.country"), '_label -> "Country")</p>
 
             <b>VAT FRS</b>
             <p>@govHelpers.input(testSetupForm("vatFlatRateScheme.joinFrs"), '_label -> "Join FRS (true or false)") </p>
