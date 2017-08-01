@@ -31,7 +31,7 @@ import scala.concurrent.Future
 trait TestRegistrationConnector {
   def setupCurrentProfile()(implicit hc: HeaderCarrier): Future[Result]
   def dropCollection()(implicit hc: HeaderCarrier): Future[Result]
-  def getIncorpInfo()(implicit hc: HeaderCarrier): Future[HttpResponse]
+  def getIncorpInfo(txId:String)(implicit hc : HeaderCarrier) : Future[HttpResponse]
   def postTestData(jsonData: JsValue)(implicit hc: HeaderCarrier): Future[HttpResponse]
   def wipeTestData()(implicit hc: HeaderCarrier): Future[HttpResponse]
   def wipeIncorpTestData()(implicit hc: HeaderCarrier): Future[HttpResponse]
@@ -53,8 +53,8 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
   def dropCollection()(implicit hc: HeaderCarrier): Future[Result] =
     http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/clear").map { _ => Results.Ok }
 
-  def getIncorpInfo()(implicit hc : HeaderCarrier) : Future[HttpResponse] =
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/incorporation-information/000-434-23")
+  def getIncorpInfo(txId:String)(implicit hc : HeaderCarrier) : Future[HttpResponse] =
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/incorporation-information/000-434-$txId")
 
   def postIncorpTestData(jsonData: JsValue)(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
     Logger.debug(s"###222###$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/test-only/insert-submission")
