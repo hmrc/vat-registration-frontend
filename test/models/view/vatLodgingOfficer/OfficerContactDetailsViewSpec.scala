@@ -32,12 +32,14 @@ class OfficerContactDetailsViewSpec extends UnitSpec with VatRegistrationFixture
   "apiModelTransformer" should {
 
     "convert VatScheme with VatLodgingOfficer details into a OfficerContactDetailsView" in {
+      val emptyName = Name(None, None, "", None)
+
       val vatLodgingOfficer = VatLodgingOfficer(
         currentAddress = address,
-        dob = DateOfBirth.empty,
+        dob = validDob,
         nino = "",
         role = "",
-        name = Name.empty,
+        name = emptyName,
         changeOfName = changeOfName,
         currentOrPreviousAddress = currentOrPreviousAddress,
         contact = officerContactDetails)

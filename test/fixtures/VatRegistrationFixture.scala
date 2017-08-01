@@ -129,7 +129,7 @@ trait VatRegistrationFixture {
 
   val validLodgingOfficer = VatLodgingOfficer(
     currentAddress = ScrsAddress("", ""),
-    dob = DateOfBirth.empty,
+    dob = validDob,
     nino = "",
     role = "director",
     name = officerName,
