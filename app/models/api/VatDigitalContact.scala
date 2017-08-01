@@ -24,6 +24,4 @@ object VatDigitalContact {
 
   implicit val format: OFormat[VatDigitalContact] = Json.format[VatDigitalContact]
 
-  val empty = VatDigitalContact("", None, None)
-
 }

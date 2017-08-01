@@ -28,8 +28,7 @@ class TwirlViewControllerSpec extends VatRegSpec {
   "GET" should {
 
     "return HTML when user is authorized to access" in {
-      val params = List(("eligibility-success", "You can register for VAT using this service"),
-                        ("use-this-service", "Can you use this service?"))
+      val params = List(("use-this-service", "Can you use this service?"))
 
       forAll(params) {
         case (input, expected) =>

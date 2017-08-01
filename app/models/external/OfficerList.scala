@@ -35,7 +35,7 @@ case class Officer(
     case _ => false
   }
 
-  override def hashCode: Int = 1 // TODO temporary fix
+  override def hashCode: Int = 1 // bit of a hack, but works
 }
 
 object Officer {
@@ -56,7 +56,8 @@ object Officer {
           (__ \ "appointment_link").writeNullable[String]
     ) (unlift(Officer.unapply))
 
-  val empty = Officer(Name.empty, "", None, None, None)
+  private val emptyName = Name(None, None, "", None)
+  val empty = Officer(emptyName, "", None, None, None)
 
 }
 

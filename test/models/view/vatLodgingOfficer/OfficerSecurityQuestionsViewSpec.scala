@@ -25,13 +25,15 @@ import uk.gov.hmrc.play.test.UnitSpec
 class OfficerSecurityQuestionsViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
   val testNino = "NB666666D"
   val testDOB = DateOfBirth(1,12,1999)
-  val officerSecurityQuestions = OfficerSecurityQuestionsView(testDOB, testNino, Some(Name.empty))
+  val emptyName = Name(None, None, "", None)
+  val officerSecurityQuestions = OfficerSecurityQuestionsView(testDOB, testNino, Some(emptyName))
   val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
 
   "apiModelTransformer" should {
 
     "convert VatScheme with VatLodgingOfficer details into a OfficerSecurityQuestionsView" in {
-      val vatLodgingOfficer = VatLodgingOfficer(address, testDOB, testNino, "", Name.empty, changeOfName, currentOrPreviousAddress, OfficerContactDetails.empty)
+      val emptyOfficer = OfficerContactDetails(None, None, None)
+      val vatLodgingOfficer = VatLodgingOfficer(address, testDOB, testNino, "", emptyName, changeOfName, currentOrPreviousAddress, emptyOfficer)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       ApiModelTransformer[OfficerSecurityQuestionsView].toViewModel(vs) shouldBe Some(officerSecurityQuestions)
@@ -44,16 +46,6 @@ class OfficerSecurityQuestionsViewSpec extends UnitSpec with VatRegistrationFixt
     }
 
   }
-
- /* "viewModelTransformer" should {
-    "update logical group given a component" in {
-      val initialVatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "", Name.empty, changeOfName, currentOrPreviousAddress, OfficerContactDetails.empty)
-      val updatedVatLodgingOfficer = VatLodgingOfficer(address, testDOB, testNino, "", Name.empty, changeOfName, currentOrPreviousAddress, OfficerContactDetails.empty)
-
-      ViewModelTransformer[OfficerSecurityQuestionsView, VatLodgingOfficer].
-        toApi(officerSecurityQuestions, initialVatLodgingOfficer) shouldBe updatedVatLodgingOfficer
-    }
-  }*/
 
   "ViewModelFormat" should {
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(officerSecurityQuestions = Some(officerSecurityQuestions))

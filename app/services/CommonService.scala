@@ -16,10 +16,14 @@
 
 package services
 
+import java.time.LocalDate
+
 import cats.data.OptionT
 import cats.instances.FutureInstances
 import common.exceptions.DownstreamExceptions._
 import connectors.KeystoreConnector
+import models.ModelKeys.INCORPORATION_STATUS
+import models.external.IncorporationInfo
 import play.api.Logger
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -35,5 +39,11 @@ trait CommonService extends FutureInstances {
       Logger.error("Could not find a registration ID in keystore")
       throw new RegistrationIdNotFoundException
     }
+
+  def fetchDateOfIncorporation()(implicit hc: HeaderCarrier): Future[LocalDate] = {
+    OptionT(keystoreConnector.fetchAndGet[IncorporationInfo](INCORPORATION_STATUS))
+      .subflatMap(_.statusEvent.incorporationDate)
+      .getOrElse(throw new IllegalStateException("Date of Incorporation data expected to be found in Incorporation"))
+  }
 
 }
