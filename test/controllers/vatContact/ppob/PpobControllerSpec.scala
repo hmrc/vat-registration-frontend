@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.ppob
+package controllers.vatContact.ppob
 
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
@@ -38,7 +38,7 @@ class PpobControllerSpec extends VatRegSpec
     override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
   }
 
-  val fakeRequest = FakeRequest(controllers.ppob.routes.PpobController.show())
+  val fakeRequest = FakeRequest(controllers.vatContact.ppob.routes.PpobController.show())
 
   val address = ScrsAddress(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
 

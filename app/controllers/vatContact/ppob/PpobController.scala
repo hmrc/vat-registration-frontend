@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.ppob
+package controllers.vatContact.ppob
 
 import javax.inject.Inject
 
@@ -49,13 +49,13 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
       addresses <- prePopService.getPpobAddressList()
       _ <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
       res <- viewModel[PpobView]().fold(form)(form.fill)
-    } yield Ok(views.html.pages.ppob.ppob(res, addresses))
+    } yield Ok(views.html.pages.vatContact.ppob.ppob(res, addresses))
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
       badForm => fetchAddressList().getOrElse(Seq()).map(
-        addressList => BadRequest(views.html.pages.ppob.ppob(badForm, addressList))),
+        addressList => BadRequest(views.html.pages.vatContact.ppob.ppob(badForm, addressList))),
       data => (data.addressId == "other").pure.ifM(
         ifTrue = alfConnector.getOnRampUrl(routes.PpobController.acceptFromTxm()),
         ifFalse = for {
