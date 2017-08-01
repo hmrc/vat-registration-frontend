@@ -51,8 +51,8 @@ class IncorporationInformationStubsController @Inject()(
       _ <- vatRegConnector.postIncorpTestData(iiSubmissionData(id))
     } yield Ok("Incorporation data inserted"))
 
-  def getIncorpInfo(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    vatRegConnector.getIncorpInfo().map(res => Ok(res.json)))
+  def getIncorpInfo(txId: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    vatRegConnector.getIncorpInfo(txId).map(res => Ok(res.json)))
 
   def iiSubmissionData(id : String) : JsValue =
     Json.parse(
