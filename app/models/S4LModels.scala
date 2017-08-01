@@ -157,6 +157,7 @@ object S4LTradingDetails {
               overThresholdDate = vtp.date
             )
           )),
+
         tradingName = c.tradingName.map(tnv =>
           TradingName(tnv.yesNo == TRADING_NAME_YES, tnv.tradingName)).getOrElse(error),
 

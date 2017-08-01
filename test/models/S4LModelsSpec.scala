@@ -157,7 +157,8 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
       voluntaryRegistration = Some(VoluntaryRegistration(REGISTER_YES)),
       voluntaryRegistrationReason = Some(VoluntaryRegistrationReason(INTENDS_TO_SELL)),
       euGoods = Some(EuGoods(EU_GOODS_YES)),
-      applyEori = Some(ApplyEori(APPLY_EORI_YES))
+      applyEori = Some(ApplyEori(APPLY_EORI_YES)),
+      overThreshold = Some(OverThresholdView(false, None))
     )
 
     "transform complete S4L with voluntary registration model to API" in {
@@ -180,14 +181,10 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
         vatChoice = VatChoice(
           necessity = NECESSITY_OBLIGATORY,
           vatStartDate = VatStartDate(selection = SPECIFIC_DATE, startDate = Some(specificDate)),
-          reason = None),
+          reason = None,
+          vatThresholdPostIncorp = Some(validVatThresholdPostIncorp)),
         tradingName = TradingName(selection = true, tradingName = Some(tradingName)),
         euTrading = VatEuTrading(selection = true, eoriApplication = Some(true))
-          vatStartDate = VatStartDate(selection = BUSINESS_START_DATE, startDate = Some(ctDate)),
-          reason = None,
-          vatThresholdPostIncorp = Some(validVatThresholdPostIncorp.copy(overThresholdSelection = true, overThresholdDate = Some(testDate)))),
-        tradingName = TradingName(selection = false, tradingName = None),
-        euTrading = VatEuTrading(selection = false, eoriApplication = None)
       )
 
       val s4lMandatoryBydefault = s4l.copy(voluntaryRegistration = None, voluntaryRegistrationReason = None)
