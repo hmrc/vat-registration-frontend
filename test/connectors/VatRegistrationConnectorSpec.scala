@@ -151,20 +151,20 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   "Calling upsertVatFinancials" should {
     "return the correct VatResponse when the microservice completes and returns a VatFinancials model" in new Setup {
-      mockHttpPATCH[VatFinancials, VatFinancials]("tst-url", VatFinancials.empty)
-      connector.upsertVatFinancials("tstID", VatFinancials.empty) returns VatFinancials.empty
+      mockHttpPATCH[VatFinancials, VatFinancials]("tst-url", validVatFinancials)
+      connector.upsertVatFinancials("tstID", validVatFinancials) returns validVatFinancials
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH[VatFinancials, VatFinancials]("tst-url", forbidden)
-      connector.upsertVatFinancials("tstID", VatFinancials.empty) failedWith forbidden
+      connector.upsertVatFinancials("tstID", validVatFinancials) failedWith forbidden
     }
     "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
       mockHttpFailedPATCH[VatFinancials, VatFinancials]("tst-url", notFound)
-      connector.upsertVatFinancials("tstID", VatFinancials.empty) failedWith notFound
+      connector.upsertVatFinancials("tstID", validVatFinancials) failedWith notFound
     }
     "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH[VatFinancials, VatFinancials]("tst-url", internalServiceException)
-      connector.upsertVatFinancials("tstID", VatFinancials.empty) failedWith internalServiceException
+      connector.upsertVatFinancials("tstID", validVatFinancials) failedWith internalServiceException
     }
   }
 

@@ -17,7 +17,7 @@
 package models.view.vatLodgingOfficer
 
 import fixtures.VatRegistrationFixture
-import models.api.{DateOfBirth, ScrsAddress, VatLodgingOfficer}
+import models.api.{ScrsAddress, VatLodgingOfficer}
 import models.{ApiModelTransformer, S4LVatLodgingOfficer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
@@ -35,7 +35,8 @@ class OfficerHomeAddressViewSpec extends UnitSpec with VatRegistrationFixture wi
 
     "convert VatScheme with VatLodgingOfficer section to view model" in {
       val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
-      val vatLodgingOfficer = VatLodgingOfficer(address, DateOfBirth.empty, "", "director", officerName, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
+      val vatLodgingOfficer =
+        VatLodgingOfficer(address, validDob, "", "director", officerName, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       val expectedOfficerHomeAddressView = OfficerHomeAddressView(address.id, Some(address))

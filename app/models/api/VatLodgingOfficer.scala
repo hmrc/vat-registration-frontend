@@ -28,19 +28,7 @@ case class VatLodgingOfficer(currentAddress: ScrsAddress,
                               contact: OfficerContactDetails)
 
 object VatLodgingOfficer {
+
   implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
 
-  // TODO remove once no longer required
-  val currentAddress = ScrsAddress(line1 = "", line2 = "")
-  val currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(currentAddress))
-  val changeOfName = ChangeOfName(true, Some(FormerName("")))
-  val empty = VatLodgingOfficer(
-    currentAddress,
-    dob = DateOfBirth(1, 1, 1977),
-    nino = "NB686868C",
-    role = "",
-    name = Name.empty,
-    changeOfName = changeOfName,
-    currentOrPreviousAddress,
-    contact = OfficerContactDetails.empty)
 }

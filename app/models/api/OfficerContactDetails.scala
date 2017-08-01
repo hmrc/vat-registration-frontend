@@ -32,6 +32,4 @@ object OfficerContactDetails {
       (__ \ "mobile").formatNullable[String]
     ) (OfficerContactDetails.apply, unlift(OfficerContactDetails.unapply))
 
-  val empty = OfficerContactDetails(None, None, None)
-
 }
