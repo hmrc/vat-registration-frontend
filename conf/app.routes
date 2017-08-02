@@ -144,6 +144,11 @@ POST        /manages-funds-not-included-in-this-list                            
 GET         /company-contact-details                                                           controllers.vatContact.BusinessContactDetailsController.show
 POST        /company-contact-details                                                           controllers.vatContact.BusinessContactDetailsController.submit
 
+## PPOB ADDRESS
+GET         /where-will-company-carry-out-most-of-its-business-activities                      controllers.vatContact.ppob.PpobController.show
+POST        /where-will-company-carry-out-most-of-its-business-activities                      controllers.vatContact.ppob.PpobController.submit
+GET         /where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm        controllers.vatContact.ppob.PpobController.acceptFromTxm(id: String ?= "")
+
 ## OFFICER ADDRESS PAGE
 GET         /your-home-address                                                                 controllers.vatLodgingOfficer.OfficerHomeAddressController.show
 POST        /your-home-address                                                                 controllers.vatLodgingOfficer.OfficerHomeAddressController.submit
@@ -176,11 +181,6 @@ POST        /current-address-three-years-or-more                                
 GET         /current-address-three-years-or-more/changePreviousAddress                         controllers.vatLodgingOfficer.PreviousAddressController.changeAddress
 GET         /current-address-three-years-or-more/acceptFromTxm                                 controllers.vatLodgingOfficer.PreviousAddressController.acceptFromTxm(id: String ?= "")
 
-## PPOB ADDRESS
-GET         /where-will-company-carry-out-most-of-its-business-activities                      controllers.ppob.PpobController.show
-POST        /where-will-company-carry-out-most-of-its-business-activities                      controllers.ppob.PpobController.submit
-GET         /where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm        controllers.ppob.PpobController.acceptFromTxm(id: String ?= "")
-
 ## FEEDBACK
 GET         /feedback                                                                          controllers.feedback.FeedbackController.show
 
@@ -198,7 +198,9 @@ GET         /post-sign-in                                                       
 GET         /submission-confirmation                                                           controllers.ApplicationSubmissionController.show
 
 ## CAN OR CAN'T REGISTER
-GET         /you-can-register-for-vat-with-this-service                                        controllers.TwirlViewController.renderViewAuthorised(viewName="eligibility-success")
+GET         /you-can-register-for-vat-with-this-service                                        controllers.vatTradingDetails.vatChoice.EligibilitySuccessController.show
+POST        /you-can-register-for-vat-with-this-service                                        controllers.vatTradingDetails.vatChoice.EligibilitySuccessController.submit
+
 GET         /you-cant-register-for-vat-with-this-service                                       controllers.vatEligibility.ServiceCriteriaQuestionsController.ineligible()
 
 
@@ -231,3 +233,11 @@ POST        /confirm-business-type                                              
 ## When do you want to join the Flat Rate Scheme?
 GET         /flat-rate-scheme-join-date                                                        controllers.frs.FrsStartDateController.show
 POST        /flat-rate-scheme-join-date                                                        controllers.frs.FrsStartDateController.submit
+
+## Post incorp threshold question 1
+GET         /gone-over-threshold                                                               controllers.vatTradingDetails.vatChoice.OverThresholdController.show
+POST        /gone-over-threshold                                                               controllers.vatTradingDetails.vatChoice.OverThresholdController.submit
+
+## Threshold summary
+GET         /check-confirm-answers                                                             controllers.vatTradingDetails.vatChoice.ThresholdSummaryController.show
+POST        /check-confirm-answers                                                             controllers.vatTradingDetails.vatChoice.ThresholdSummaryController.submit

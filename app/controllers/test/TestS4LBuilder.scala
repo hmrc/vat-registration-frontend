@@ -17,24 +17,25 @@
 package controllers.test
 
 import java.time.LocalDate
+import java.time.temporal.TemporalAdjusters
 
 import models._
 import models.api._
 import models.view.frs._
-import models.view.ppob.PpobView
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.test.TestSetup
 import models.view.vatContact.BusinessContactDetails
+import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, VatChargeExpectancy, ZeroRatedSales}
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.TradingNameView._
-import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
+import models.view.vatTradingDetails.vatChoice._
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 
 class TestS4LBuilder {
@@ -57,6 +58,16 @@ class TestS4LBuilder {
       case Some(t) => StartDateView(t, None)
     }
 
+    val overThresholdView: Option[OverThresholdView] = data.vatChoice.overThresholdSelection match {
+      case Some("true") => Some(OverThresholdView(selection = true, Some(LocalDate.of(
+        data.vatChoice.overThresholdYear.map(_.toInt).get,
+        data.vatChoice.overThresholdMonth.map(_.toInt).get,
+        1
+      ).`with`(TemporalAdjusters.lastDayOfMonth()))))
+      case Some("false") => Some(OverThresholdView(selection = false, None))
+      case _ => None
+    }
+
     val voluntaryRegistration: Option[String] = data.vatChoice.voluntaryChoice
     val voluntaryRegistrationReason: Option[String] = data.vatChoice.voluntaryRegistrationReason
 
@@ -75,7 +86,8 @@ class TestS4LBuilder {
       voluntaryRegistrationReason = voluntaryRegistrationReason.map(VoluntaryRegistrationReason(_)),
       tradingName = tradingName.map(t => TradingNameView(if (t.selection) TRADING_NAME_YES else TRADING_NAME_NO, t.tradingName)),
       euGoods = euGoods.map(EuGoods(_)),
-      applyEori = applyEori.map(a => ApplyEori(a.toBoolean))
+      applyEori = applyEori.map(a => ApplyEori(a.toBoolean)),
+      overThreshold = overThresholdView
     )
   }
 
@@ -145,19 +157,21 @@ class TestS4LBuilder {
         data.vatContact.mobile,
         data.vatContact.website))
 
-    S4LVatContact(businessContactDetails = businessContactDetails)
-  }
-
-  def vatPpobFormData(data: TestSetup): S4LPpob = {
-    val address: Option[ScrsAddress] = data.ppob.line1.map(_ =>
+    val address: Option[ScrsAddress] = data.vatContact.line1.map(_ =>
       ScrsAddress(
-        line1 = data.ppob.line1.getOrElse(""),
-        line2 = data.ppob.line2.getOrElse(""),
-        line3 = data.ppob.line3,
-        line4 = data.ppob.line4,
-        postcode = data.ppob.postcode,
-        country = data.ppob.country))
-    S4LPpob(Some(PpobView(address.map(_.id).getOrElse(""), address)))
+        line1 = data.vatContact.line1.getOrElse(""),
+        line2 = data.vatContact.line2.getOrElse(""),
+        line3 = data.vatContact.line3,
+        line4 = data.vatContact.line4,
+        postcode = data.vatContact.postcode,
+        country = data.vatContact.country))
+
+    val ppob: Option[PpobView] = address.map(a =>
+    PpobView(addressId = a.id, address = Some(a)))
+
+    S4LVatContact(
+      businessContactDetails = businessContactDetails,
+      ppob = ppob)
   }
 
   def vatLodgingOfficerFromData(data: TestSetup): S4LVatLodgingOfficer = {

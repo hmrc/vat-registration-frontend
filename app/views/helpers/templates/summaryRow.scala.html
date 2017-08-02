@@ -1,11 +1,11 @@
 @import models.view.SummaryRow
 
-@(row: SummaryRow)(implicit messages: Messages)
+@(row: SummaryRow, questionArg: String = "")(implicit messages: Messages)
 
 <tr>
     <td id="@{
         row.id
-    }Question">@Html(messages(s"pages.summary.${row.id}"))</td>
+    }Question">@Html(messages(s"pages.summary.${row.id}", questionArg))</td>
     <td id="@{
         row.id
     }Answer">

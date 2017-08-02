@@ -36,4 +36,11 @@ class CommonServiceSpec extends VatRegSpec with KeystoreFixture {
     }
   }
 
+  "Calling fetchDateOfIncorporation" should {
+    "throw an IllegalStateException when no Incorporation Date is found in keystore" in new Setup {
+      mockKeystoreFetchAndGet[String]("incorporationStatus", None)
+      service.fetchDateOfIncorporation() failedWith classOf[IllegalStateException]
+    }
+  }
+
 }

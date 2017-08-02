@@ -1,4 +1,4 @@
-@import models.view.ppob.PpobView
+@import models.view.vatContact.ppob.PpobView
 @import models.api.ScrsAddress
 @(ppobform: Form[PpobView], addresses: Seq[ScrsAddress])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
@@ -17,7 +17,7 @@
           ppobform
       )
 
-      @govHelpers.form(action = controllers.ppob.routes.PpobController.submit()) {
+      @govHelpers.form(action = controllers.vatContact.ppob.routes.PpobController.submit()) {
       <div class="form-group" id="ppobRadio">
 
           @govHelpers.inputRadioGroup(

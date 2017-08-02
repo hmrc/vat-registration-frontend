@@ -25,9 +25,9 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.api._
 import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
-import models.view.ppob.PpobView
+import models.view.vatContact.ppob.PpobView
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerHomeAddressView, OfficerSecurityQuestionsView}
-import models.{S4LPpob, S4LVatLodgingOfficer}
+import models.{S4LVatContact, S4LVatLodgingOfficer}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
@@ -83,7 +83,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
     "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
       val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
       val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(
-        address, DateOfBirth.empty, "", "director", officerName, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)))
+        address, validDob, "", "director", officerName, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)))
 
       when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
       when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(address))
@@ -111,18 +111,18 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
 
       when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(scsrAddress))
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
-      save4laterReturns(S4LPpob(address = Some(ppobView)))
+      save4laterReturns(S4LVatContact(ppob = Some(ppobView)))
 
       service.getPpobAddressList() returns Seq(scsrAddress)
     }
 
     "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
       val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
-      val vatSchemeWithAddress = VatScheme("123").copy(ppob = Some(scsrAddress))
+      val vatSchemeWithAddress = VatScheme("123").copy(vatContact = Some(validVatContact.copy(ppob = scsrAddress)))
 
       when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
       when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(address))
-      save4laterReturnsNothing[S4LPpob]()
+      save4laterReturnsNothing[S4LVatContact]()
 
       service.getPpobAddressList() returns Seq(address, scsrAddress)
     }
@@ -131,7 +131,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
 
       when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
       when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.none[Future, ScrsAddress])
-      save4laterReturnsNothing[S4LPpob]()
+      save4laterReturnsNothing[S4LVatContact]()
 
       service.getPpobAddressList() returns Seq()
     }
