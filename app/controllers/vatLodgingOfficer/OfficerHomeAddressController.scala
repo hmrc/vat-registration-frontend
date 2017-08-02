@@ -70,7 +70,7 @@ class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
   def acceptFromTxm(id: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
     alfConnector.getAddress(id).flatMap { address =>
       Logger.debug(s"address received: $address")
-      save(OfficerHomeAddressView(address.id, Some(address)))
+      save(OfficerHomeAddressView(address.id, Some(address.normalise())))
     }.map(_ => Redirect(controllers.vatLodgingOfficer.routes.PreviousAddressController.show())))
 
 }
