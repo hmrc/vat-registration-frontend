@@ -40,14 +40,26 @@ case class ScrsAddress(
 
   override def equals(obj: Any): Boolean = obj match {
     case ScrsAddress(objLine1, _, _, _, Some(objPostcode), _)
-      if objPostcode != "" => line1.equalsIgnoreCase(objLine1) && postcode.getOrElse("").equalsIgnoreCase(objPostcode)
-    case ScrsAddress(objLine1, _, _, _, None, Some(objCountry))
-      if objCountry != "" => line1.equalsIgnoreCase(objLine1) && country.getOrElse("").equalsIgnoreCase(objCountry)
+      => line1.equalsIgnoreCase(objLine1) && postcode.getOrElse("").equalsIgnoreCase(objPostcode)
+    case ScrsAddress(objLine1, _, _, _, _, Some(objCountry))
+      => line1.equalsIgnoreCase(objLine1) && country.getOrElse("").equalsIgnoreCase(objCountry)
 
     case _ => false
   }
 
   override def hashCode: Int = 1 // TODO temporary fix to ensure List.distinct works
+
+  /***
+    * trims spaces and converts any Some("  ") to None
+    */
+  def normalise(): ScrsAddress =
+    ScrsAddress(
+      this.line1.trim,
+      this.line2.trim,
+      this.line3 map (_.trim) filterNot (_.isEmpty),
+      this.line4 map (_.trim) filterNot (_.isEmpty),
+      this.postcode map (_.trim) filterNot (_.isEmpty),
+      this.country map (_.trim) filterNot (_.isEmpty))
 }
 
 object ScrsAddress {

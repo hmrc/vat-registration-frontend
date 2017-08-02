@@ -71,6 +71,6 @@ object CoHoRegisteredOfficeAddress {
       },
       address.postalCode,
       address.country
-    )
+    ).normalise()
   }
 }
