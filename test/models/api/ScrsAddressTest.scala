@@ -60,17 +60,23 @@ class ScrsAddressTest extends UnitSpec with Matchers {
 
   }
 
-  "equals (edge case)" should {
-    "not match given same line1 and postcode is empty/None" in {
-      val a1 = ScrsAddress("1 Address Line", "line 2", None, None, Some(""), None)
-      val a2 = ScrsAddress("1 Address Line", "line 2", None, None, None, None)
-      a1 should not equal a2
+  "normalise" should {
+    "leave normal address as-is" in {
+      val a1 = ScrsAddress("line 1", "line 2", None, None, Some("postcode"), None)
+      a1.normalise shouldBe a1
+
+      val a2 = ScrsAddress("line 1", "line 2", Some("l3"), Some("l4"), None, Some("uk"))
+      a2.normalise shouldBe a2
     }
 
-    "not match given same line1 and country is empty/None" in {
-      val a1 = ScrsAddress("1 Address Line", "line 2", None, None, None, Some(""))
-      val a2 = ScrsAddress("1 Address Line", "line 2", None, None, None, None)
-      a1 should not equal a2
+    "convert empty some to none " in {
+      val a1 = ScrsAddress("line 1", "line 2", Some(""), Some("    "), Some("  "), Some("UK"))
+      val expected1 = ScrsAddress("line 1", "line 2", None, None, None, Some("UK"))
+      a1.normalise shouldBe expected1
+
+      val a2 = ScrsAddress("line 1", "line 2", Some(""), Some("  "), Some("postcode"), Some("   "))
+      val expected2 = ScrsAddress("line 1", "line 2", None, None, Some("postcode"), None)
+      a2.normalise shouldBe expected2
     }
   }
 }
