@@ -46,7 +46,6 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
       vatContact <- s4LService.fetchAndGet[S4LVatContact]()
       vatLodgingOfficer <- s4LService.fetchAndGet[S4LVatLodgingOfficer]()
       eligibility <- s4LService.fetchAndGet[S4LVatEligibility]()
-      ppob <- s4LService.fetchAndGet[S4LPpob]()
       frs <- s4LService.fetchAndGet[S4LFlatRateScheme]()
 
       testSetup = TestSetup(
@@ -57,7 +56,10 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
           startDateChoice = tradingDetails.flatMap(_.startDate).map(_.dateType),
           startDateDay = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getDayOfMonth.toString),
           startDateMonth = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getMonthValue.toString),
-          startDateYear = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getYear.toString)
+          startDateYear = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getYear.toString),
+          overThresholdSelection = tradingDetails.flatMap(_.overThreshold).map(_.selection.toString),
+          overThresholdMonth = tradingDetails.flatMap(_.overThreshold).flatMap(_.date).map(_.getMonthValue.toString),
+          overThresholdYear = tradingDetails.flatMap(_.overThreshold).flatMap(_.date).map(_.getYear.toString)
         ),
         VatTradingDetailsTestSetup(
           tradingNameChoice = tradingDetails.flatMap(_.tradingName).map(_.yesNo),
@@ -65,18 +67,17 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
           euGoods = tradingDetails.flatMap(_.euGoods).map(_.yesNo),
           applyEori = tradingDetails.flatMap(_.applyEori).map(_.yesNo.toString)
         ),
-        VatPpobSetup(
-          line1 = ppob.flatMap(_.address).flatMap(_.address).map(_.line1),
-          line2 = ppob.flatMap(_.address).flatMap(_.address).map(_.line2),
-          line3 = ppob.flatMap(_.address).flatMap(_.address).flatMap(_.line3),
-          line4 = ppob.flatMap(_.address).flatMap(_.address).flatMap(_.line4),
-          postcode = ppob.flatMap(_.address).flatMap(_.address).flatMap(_.postcode),
-          country = ppob.flatMap(_.address).flatMap(_.address).flatMap(_.country)),
         VatContactTestSetup(
           email = vatContact.flatMap(_.businessContactDetails).map(_.email),
           daytimePhone = vatContact.flatMap(_.businessContactDetails).flatMap(_.daytimePhone),
           mobile = vatContact.flatMap(_.businessContactDetails).flatMap(_.mobile),
-          website = vatContact.flatMap(_.businessContactDetails).flatMap(_.website)
+          website = vatContact.flatMap(_.businessContactDetails).flatMap(_.website),
+          line1 = vatContact.flatMap(_.ppob).flatMap(_.address).map(_.line1),
+          line2 = vatContact.flatMap(_.ppob).flatMap(_.address).map(_.line2),
+          line3 = vatContact.flatMap(_.ppob).flatMap(_.address).flatMap(_.line3),
+          line4 = vatContact.flatMap(_.ppob).flatMap(_.address).flatMap(_.line4),
+          postcode = vatContact.flatMap(_.ppob).flatMap(_.address).flatMap(_.postcode),
+          country = vatContact.flatMap(_.ppob).flatMap(_.address).flatMap(_.country)
         ),
         VatFinancialsTestSetup(
           vatFinancials.flatMap(_.companyBankAccount).map(_.yesNo),
@@ -196,7 +197,6 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
             _ <- s4LService.save(s4LBuilder.vatFinancialsFromData(data))
             _ <- s4LService.save(s4LBuilder.tradingDetailsFromData(data))
             _ <- s4LService.save(s4LBuilder.vatContactFromData(data))
-            _ <- s4LService.save(s4LBuilder.vatPpobFormData(data))
 
             vatLodgingOfficer = s4LBuilder.vatLodgingOfficerFromData(data)
             _ <- s4LService.save(vatLodgingOfficer)

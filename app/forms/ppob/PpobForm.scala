@@ -17,7 +17,7 @@
 package forms.ppob
 
 import forms.FormValidation.textMapping
-import models.view.ppob.PpobView
+import models.view.vatContact.ppob.PpobView
 import play.api.data.Form
 import play.api.data.Forms.mapping
 

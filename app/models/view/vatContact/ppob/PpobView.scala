@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.view.ppob
+package models.view.vatContact.ppob
 
 import models.api.{ScrsAddress, VatScheme}
 import models.{ViewModelFormat, _}
@@ -27,14 +27,13 @@ object PpobView {
   implicit val format = Json.format[PpobView]
 
   implicit val viewModelFormat = ViewModelFormat(
-    readF = (group: S4LPpob) => group.address,
-    updateF = (c: PpobView, g: Option[S4LPpob]) => g.getOrElse(S4LPpob()).copy(address = Some(c))
+    readF = (group: S4LVatContact) => group.ppob,
+    updateF = (c: PpobView, g: Option[S4LVatContact]) => g.getOrElse(S4LVatContact()).copy(ppob = Some(c))
   )
 
   // return a view model from a VatScheme instance
   implicit val modelTransformer = ApiModelTransformer[PpobView] { vs: VatScheme =>
-    vs.ppob.collect {
-      case address  => PpobView(address.id, Some(address))
+    vs.vatContact.map { vc => PpobView(vc.ppob.id, Some(vc.ppob))
     }
   }
 

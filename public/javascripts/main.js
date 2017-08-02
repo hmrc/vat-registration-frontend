@@ -168,4 +168,13 @@ $(document).ready($(function () {
     }
 }(window.FormerNameDatePage = window.FormerNameDatePage || {}, jQuery));
 
+// OverThreshold page module
+(function (OverThresholdPage, $, undefined) {
+    OverThresholdPage.init = function() {
+        UI.hideShowOnRadioButton("overThresholdRadio",
+            { "#overThresholdRadio-true": "#overThreshold_date_panel" });
+        var numericInputs = ["overThreshold\\.month", "overThreshold\\.year"];
+        UI.preventNonNumericInput(numericInputs);
+    }
+}(window.OverThresholdPage = window.OverThresholdPage || {}, jQuery));
 

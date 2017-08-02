@@ -7,6 +7,7 @@ app.common.yes                          = Yes
 app.common.no                           = No
 app.common.continue                     = Continue
 app.common.saveAndContinue              = Save and continue
+app.common.confirmAndContinue           = Confirm and continue
 app.common.errorSummaryLabel            = The following errors were identified on this page.
 app.common.change                       = Change
 app.common.gbp.symbol                   = £
@@ -341,6 +342,8 @@ pages.application.submission.confirmation.button                    = Your busin
 pages.summary.vatDetails.sectionHeading                 = VAT details
 pages.summary.vatDetails.taxableTurnover                = VAT taxable sales over £85,000 in the 30 days after company is registered
 pages.summary.vatDetails.necessity                      = Register voluntarily
+pages.summary.vatDetails.overThresholdSelection         = Since {0} has the company''s VAT taxable turnover gone over £85,000?
+pages.summary.vatDetails.overThresholdDate              = Month turnover went over £85,000
 pages.summary.vatDetails.voluntaryRegistrationReason    = Voluntary registration reason
 pages.summary.vatDetails.startDate                      = VAT start date
 pages.summary.vatDetails.mandatoryStartDate             = The date the company is registered with Companies House
@@ -814,3 +817,24 @@ pages.summary.frs.businessSector                        = Business sector
 pages.summary.frs.flatRate                              = Your flat rate (%)
 pages.summary.frs.startDate                             = Start date
 pages.summary.frs.startDate.dateOfRegistration          = Date of registration
+
+## POST INCORP THRESHOLD QUESTIONS
+## Q1
+pages.thresholdQuestion1.title                            = In any 12-month period has your company gone over the VAT registration threshold?
+pages.thresholdQuestion1.heading                          = Since {0} has your company''s VAT taxable turnover gone over £85,000?
+pages.thresholdQuestion1.p1                               = £85,000 is the VAT registration threshold for the current financial year.
+pages.thresholdQuestion1.panel.heading                    = When did this first happen?
+pages.thresholdQuestion1.panel.hint                       = For example, 02 2017
+pages.thresholdQuestion1.month                            = Month
+pages.thresholdQuestion1.year                             = Year
+validation.overThreshold.date.invalid                     = Enter a valid date
+validation.overThreshold.date.missing                     = Enter a valid date
+validation.overThreshold.selection.missing                = Tell us if since {0} the company''s VAT taxable turnover gone over £85,000
+validation.overThreshold.date.range.above                 = This date must be before the current month
+validation.overThreshold.date.range.below                 = This date must be after {0}
+
+## Threshold Summary Page
+pages.thresholdSummary.title                              = Check and confirm your answers
+pages.thresholdSummary.heading                            = Check and confirm your answers
+pages.summary.threshold.overThresholdSelection            = Since {0} has the company''s VAT taxable turnover gone over £85,000?
+pages.summary.threshold.overThresholdDate                 = Month turnover went over £85,000

@@ -30,13 +30,4 @@ object VatFinancials {
 
   implicit val format: OFormat[VatFinancials] = Json.format[VatFinancials]
 
-  // TODO remove once no longer required
-  val empty = VatFinancials(
-    turnoverEstimate = 0L,
-    reclaimVatOnMostReturns = false,
-    accountingPeriods = VatAccountingPeriod(
-      frequency = "monthly"
-    )
-  )
-
 }

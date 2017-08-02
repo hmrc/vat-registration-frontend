@@ -37,7 +37,7 @@ class PreviousAddressViewSpec extends UnitSpec with VatRegistrationFixture with 
       val vatLodgingOfficer =
         VatLodgingOfficer(
           currentAddress = address,
-          dob = DateOfBirth.empty,
+          dob = validDob,
           nino = "",
           role = "director",
           name = officerName,
