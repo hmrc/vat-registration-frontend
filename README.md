@@ -33,7 +33,6 @@ Alternatively, create an alias for starting the services required for the VAT Re
 ```bash
 alias scrs='sm --start ADDRESS_LOOKUP AUTH AUTH_LOGIN_STUB AUTHENTICATOR BUS_REG CA_FRONTEND COMP_REG GG GG_AUTHENTICATION GG_STUBS USER_DETAILS KEYSTORE SAVE4LATER DATASTREAM ASSETS_FRONTEND INCORP_INFO INCORP_FE_STUBS -f'
 ```
-
 To run the service, just `cd` to cloned directory and execute:
 
 ```
