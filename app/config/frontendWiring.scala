@@ -30,7 +30,7 @@ import uk.gov.hmrc.whitelist.AkamaiWhitelistFilter
 import scala.language.postfixOps
 
 object FrontendAuditConnector extends Auditing with AppName with RunMode {
-  override lazy val auditingConfig = LoadAuditingConfig(s"$env.auditing")
+  override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
 }
 
 object WSHttp extends WSHttp with AppName with RunMode {
