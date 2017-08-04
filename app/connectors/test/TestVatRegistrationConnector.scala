@@ -15,9 +15,9 @@
  */
 
 package connectors.test
-import connectors._
 import com.google.inject.ImplementedBy
 import config.WSHttp
+import connectors._
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Result, Results}
@@ -32,6 +32,7 @@ trait TestRegistrationConnector {
   def setupCurrentProfile()(implicit hc: HeaderCarrier): Future[Result]
   def dropCollection()(implicit hc: HeaderCarrier): Future[Result]
   def getIncorpInfo(txId:String)(implicit hc : HeaderCarrier) : Future[HttpResponse]
+  def incorpCompany(txId:String)(implicit hc : HeaderCarrier) : Future[HttpResponse]
   def postTestData(jsonData: JsValue)(implicit hc: HeaderCarrier): Future[HttpResponse]
   def wipeTestData()(implicit hc: HeaderCarrier): Future[HttpResponse]
   def wipeIncorpTestData()(implicit hc: HeaderCarrier): Future[HttpResponse]
@@ -56,6 +57,9 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
   def getIncorpInfo(txId:String)(implicit hc : HeaderCarrier) : Future[HttpResponse] =
     http.GET[HttpResponse](s"$vatRegUrl/vatreg/incorporation-information/000-434-$txId")
 
+  def incorpCompany(txId:String)(implicit hc: HeaderCarrier): Future[HttpResponse] =
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/test-only/incorporation-information/incorp-company/$txId")
+
   def postIncorpTestData(jsonData: JsValue)(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
     Logger.debug(s"###222###$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/test-only/insert-submission")
     http.POST[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/test-only/insert-submission", jsonData) recover {
@@ -79,7 +83,6 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
     http.GET[HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/test-only/wipe-submissions").recover {
       case e: Exception => throw logResponse(e,"TestVatRegistrationConnector", s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-submissions")
     }
-
   //$COVERAGE-ON$
 
 }
