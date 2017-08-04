@@ -19,22 +19,18 @@ validation.numeric                      = Enter a numeric value
 ## Welcome Page
 pages.welcome.title                                     = Before you start
 pages.welcome.heading                                   = Register for VAT
-pages.welcome.p1                                        = Use this service if:
-pages.welcome.bullet1                                   = in any 12-month period the company''s VAT taxable turnover was more than the VAT registration threshold
-pages.welcome.bullet2                                   = in any 30-day period you thought the company''s VAT taxable turnover would be more than the VAT registration threshold
-pages.welcome.bullet3                                   = in the next 30 days you expect VAT taxable turnover to be more than the current VAT registration threshold
-pages.welcome.p2                                        = If you don''t meet these criteria, you can register voluntarily so long as your company sells or intends to sell VAT taxable goods or services. You''ll be able to reclaim VAT on any business-related purchases.
+pages.welcome.p1                                        = Use this service to register the company if:
+pages.welcome.bullet1                                   = its VAT taxable sales were more than the VAT registration threshold in any 12-month period
+pages.welcome.bullet2                                   = you thought its VAT taxable sales would be more than the VAT registration threshold in any 30-day period (including the next 30 days)
+pages.welcome.p2                                        = The current VAT registration threshold is £85,000.
+pages.welcome.p3                                        = If the company doesn''t meet these criteria, you can register it voluntarily so long as the company sells or intends to sell VAT taxable goods or services. You''ll be able to reclaim VAT on any business-related purchases.
 pages.welcome.button.start                              = Start now
-pages.welcome.p3                                        = Before you start you''ll need:
-pages.welcome.bullet4                                   = to be a company director or secretary
-pages.welcome.bullet5                                   = personal information we can use to identify you (for example, details from a UK passport, a P60 or payslips)
-pages.welcome.bullet6                                   = your National Insurance number
-pages.welcome.bullet7                                   = estimates of the company''s total VAT taxable sales for the next 12 months
-pages.welcome.p4                                        = Your answers should reflect your current business details. You''ll need to tell HM Revenue and Customs (HMRC) about any changes to your business in the future.
-pages.welcome.panel1.title                              = What is ''VAT taxable turnover'' and the ''VAT registration threshold''?
-pages.welcome.panel1.p1                                 = VAT taxable turnover is the total value of everything you sell that isn''t exempt from VAT.
-pages.welcome.panel1.p2                                 = The VAT registration threshold for the current tax year is £85,000. It''s the amount of <a href="https://www.gov.uk/vat-registration/calculate-turnover">VAT taxable sales</a> you can make before you have to register for VAT.
-pages.welcome.panel1.p3                                 = Find a list of yearly <a href="https://www.gov.uk/government/publications/vat-notice-7001-should-i-be-registered-for-vat/vat-notice-7001-supplement--2#registration-limits-taxable-supplies">VAT registration thresholds</a>.
+pages.welcome.p4                                        = Before you start you''ll need:
+pages.welcome.bullet3                                   = to be a company director or secretary
+pages.welcome.bullet4                                   = personal information we can use to identify you (for example, details from a UK passport, a P60 or payslips)
+pages.welcome.bullet5                                   = your UK National Insurance number
+pages.welcome.bullet6                                   = estimates of the company''s total VAT taxable sales for the next 12 months
+pages.welcome.p5                                        = Your answers should reflect your current business details. You''ll need to tell HM Revenue and Customs (HMRC) about any changes to the company in the future.
 
 ## Service Criteria Questions (VAT Service Eligibility)
 ## Service Criteria Success
