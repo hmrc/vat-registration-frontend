@@ -42,10 +42,11 @@ object FrontendBuild extends Build with MicroService {
     "org.typelevel" %% "cats" % "0.9.0"
   )
 
-  def test(scope: String = "test"): Seq[ModuleID] = Seq(
+  def test(scope: String = "test,it"): Seq[ModuleID] = Seq(
     "uk.gov.hmrc" %% "hmrctest" % "2.3.0" % scope,
     "org.scalatest" %% "scalatest" % "3.0.0" % scope,
     "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0-M1" % scope,
+    "com.github.tomakehurst" % "wiremock" % "2.6.0" % scope,
     "org.pegdown" % "pegdown" % "1.6.0" % scope,
     "org.scoverage" % "scalac-scoverage-runtime_2.11" % "1.3.0" % scope,
     "org.jsoup" % "jsoup" % "1.8.1" % scope,
