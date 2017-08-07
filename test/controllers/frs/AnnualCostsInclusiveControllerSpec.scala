@@ -39,7 +39,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
       save4laterReturnsViewModel(AnnualCostsInclusiveView(""))()
 
       callAuthorised(Controller.show()) {
-        _ includesText "Do you spend less than £1,000 a year (including VAT) on business goods?"
+        _ includesText "Will the company spend more than £1,000 a year (including VAT) on business goods?"
       }
     }
 
@@ -48,7 +48,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(Controller.show) {
-        _ includesText "Do you spend less than £1,000 a year (including VAT) on business goods?"
+        _ includesText "Will the company spend more than £1,000 a year (including VAT) on business goods?"
       }
     }
 
@@ -57,7 +57,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {
-        _ includesText "Do you spend less than £1,000 a year (including VAT) on business goods?"
+        _ includesText "Will the company spend more than £1,000 a year (including VAT) on business goods?"
       }
     }
   }

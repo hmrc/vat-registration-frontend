@@ -43,7 +43,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
       save4laterReturnsViewModel(estimateVatTurnover)()
 
       callAuthorised(Controller.show()) {
-        _ includesText "Do you spend less than £20,000"
+        _ includesText "Will the company spend more than £20,000"
       }
     }
 
@@ -54,7 +54,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(Controller.show) {
-        _ includesText "Do you spend less than £20,000"
+        _ includesText "Will the company spend more than £20,000"
       }
     }
 
@@ -65,7 +65,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {
-        _ includesText "Do you spend less than £20,000"
+        _ includesText "Will the company spend more than £20,000"
       }
     }
 
@@ -77,7 +77,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
         .thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {
-        _ includesText "Do you spend less than £0"
+        _ includesText "Will the company spend more than £0"
       }
     }
   }
