@@ -40,37 +40,13 @@ class IncorporationInformationStubsController @Inject()(
       _ <- vatRegConnector.postTestData(defaultTestData(id))
     } yield Ok("Data inserted"))
 
-  def wipeTestDataIncorp(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    vatRegConnector.wipeIncorpTestData().map(_ => Ok("Incorporation data wiped")))
-
-  def postTestDataIncorp(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    for {
-      _ <- vatRegistrationService.createRegistrationFootprint()
-      id <- fetchRegistrationId
-      _ <- vatRegConnector.wipeIncorpTestData()
-      _ <- vatRegConnector.postIncorpTestData(iiSubmissionData(id))
-    } yield Ok("Incorporation data inserted"))
-
-  def getIncorpInfo(txId: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    vatRegConnector.getIncorpInfo(txId).map(res => Ok(res.json)))
+  def getIncorpInfo(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
+    keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile").flatMap
+    (profile => vatRegConnector.getIncorpInfo(profile.get.transactionId).map(res => Ok(res.json))))
 
   def incorpCompany(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
     keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile").flatMap
     (profile => vatRegConnector.incorpCompany(profile.get.transactionId).map(res => Ok("Company incorporated"))))
-
-  def iiSubmissionData(id: String): JsValue =
-    Json.parse(
-      s"""
-         |{
-         |  "company_number":"90000001",
-         |  "transaction_status":"accepted",
-         |  "transaction_type":"incorporation",
-         |  "company_profile_link":"https://api.companieshouse.gov.uk/company/90000001",
-         |  "transaction_id":"000-434-${id}",
-         |  "incorporated_on":"2016-08-06",
-         |  "timepoint":"22"
-         |}
-        """.stripMargin)
 
   def defaultTestData(id: String): JsValue =
     Json.parse(
