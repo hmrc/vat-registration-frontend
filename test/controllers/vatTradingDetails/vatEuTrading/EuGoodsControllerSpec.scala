@@ -53,7 +53,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Will the company trade VAT taxable goods or services with countries outside the EU?")
+          contentAsString(result) must include("Will you trade VAT taxable goods with countries outside the EU")
       }
     }
 
@@ -68,7 +68,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Will the company trade VAT taxable goods or services with countries outside the EU?")
+          contentAsString(result) must include("Will you trade VAT taxable goods with countries outside the EU")
       }
     }
 
@@ -83,14 +83,14 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Will the company trade VAT taxable goods or services with countries outside the EU?")
+          contentAsString(result) must include("Will you trade VAT taxable goods with countries outside the EU")
       }
     }
   }
 
 
   s"POST ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()}" should {
-    "return 400 with Empty data\" should {" in {
+    "return 400 with Empty data" in {
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
