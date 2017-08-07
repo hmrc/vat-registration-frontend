@@ -15,66 +15,7 @@
         )
 
         <p>@messages("pages.eligibility.applyingForAnyOf.p1")</p>
-
-        <div class="form-group">
-            <ul class="list list-bullet">
-                <li>@Html(messages("pages.eligibility.applyingForAnyOf.bullet1"))</li>
-                <li>@Html(messages("pages.eligibility.applyingForAnyOf.bullet2"))</li>
-                <li>@Html(messages("pages.eligibility.applyingForAnyOf.bullet3"))</li>
-                <li>@Html(messages("pages.eligibility.applyingForAnyOf.bullet4"))</li>
-            </ul>
-        </div>
-
-        <details role="group">
-            <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
-            @messages("pages.eligibility.applyingForAnyOf.panel1.title")
-            </span></summary>
-            <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
-                <p>@messages("pages.eligibility.applyingForAnyOf.panel1.p1")</p>
-                <ul class="list list-bullet">
-                    <li>@messages("pages.eligibility.applyingForAnyOf.panel1.bullet1")</li>
-                    <li>@messages("pages.eligibility.applyingForAnyOf.panel1.bullet2")</li>
-                </ul>
-                <p>@messages("pages.eligibility.applyingForAnyOf.panel1.p2")</p>
-            </div>
-        </details>
-
-        <details role="group">
-            <summary role="button" aria-controls="details-content-2" aria-expanded="false"><span class="summary">
-            @messages("pages.eligibility.applyingForAnyOf.panel2.title")
-            </span></summary>
-            <div class="panel panel-indent" id="details-content-2" aria-hidden="true">
-                <p>@messages("pages.eligibility.applyingForAnyOf.panel2.p1")</p>
-                <ul class="list list-bullet">
-                    <li>@messages("pages.eligibility.applyingForAnyOf.panel2.bullet1")</li>
-                    <li>@messages("pages.eligibility.applyingForAnyOf.panel2.bullet2")</li>
-                </ul>
-                <p>@messages("pages.eligibility.applyingForAnyOf.panel2.p2")</p>
-                <ul class="list list-bullet">
-                    <li>@messages("pages.eligibility.applyingForAnyOf.panel2.bullet3")</li>
-                    <li>@messages("pages.eligibility.applyingForAnyOf.panel2.bullet4")</li>
-                </ul>
-            </div>
-        </details>
-
-        <details role="group">
-            <summary role="button" aria-controls="details-content-3" aria-expanded="false"><span class="summary">
-            @messages("pages.eligibility.applyingForAnyOf.panel3.title")
-            </span></summary>
-            <div class="panel panel-indent" id="details-content-3" aria-hidden="true">
-                <p>@messages("pages.eligibility.applyingForAnyOf.panel3.p1")</p>
-                <p>@messages("pages.eligibility.applyingForAnyOf.panel3.p2")</p>
-            </div>
-        </details>
-
-        <details role="group">
-            <summary role="button" aria-controls="details-content-4" aria-expanded="false"><span class="summary">
-            @messages("pages.eligibility.applyingForAnyOf.panel4.title")
-            </span></summary>
-            <div class="panel panel-indent" id="details-content-4" aria-hidden="true">
-                <p>@messages("pages.eligibility.applyingForAnyOf.panel4.p1")</p>
-            </div>
-        </details>
+        <p>@messages("pages.eligibility.applyingForAnyOf.p2")</p>
 
         @govHelpers.form(action = controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.submit("applyingForAnyOf")) {
             <div class="form-group">
@@ -92,8 +33,6 @@
                     )
                 </fieldset>
             </div>
-
-
 
             <div class="form-group">
                 <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
