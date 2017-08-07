@@ -16,27 +16,6 @@
 
       <p>@Html(messages("pages.frs.costsInclusive.p1"))</p>
 
-      <details role="group">
-          <summary role="button" aria-controls="details-content-0" aria-expanded="false">
-              <span class="summary">@messages("pages.frs.costsInclusive.panel.title")</span>
-          </summary>
-          <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
-              <p>@Html(messages("pages.frs.costsInclusive.panel.p1"))</p>
-              <ul class="list list-bullet">
-                  <li>@messages("pages.frs.costsInclusive.panel.bullet1")</li>
-                  <li>@messages("pages.frs.costsInclusive.panel.bullet2")</li>
-                  <li>@messages("pages.frs.costsInclusive.panel.bullet3")</li>
-                  <li>@messages("pages.frs.costsInclusive.panel.bullet4")</li>
-                  <li>@messages("pages.frs.costsInclusive.panel.bullet5")</li>
-                  <li>@messages("pages.frs.costsInclusive.panel.bullet6")</li>
-                  <li>@messages("pages.frs.costsInclusive.panel.bullet7")</li>
-                  <li>@messages("pages.frs.costsInclusive.panel.bullet8")</li>
-                  <li>@messages("pages.frs.costsInclusive.panel.bullet9")</li>
-                  <li>@messages("pages.frs.costsInclusive.panel.bullet10")</li>
-              </ul>
-          </div>
-      </details>
-
       @govHelpers.form(action = controllers.frs.routes.AnnualCostsInclusiveController.submit()) {
       <div class="form-group">
         <fieldset class="block">

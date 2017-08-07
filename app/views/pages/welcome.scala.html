@@ -16,41 +16,31 @@
                 <ul class="list list-bullet">
                     <li>@messages("pages.welcome.bullet1")</li>
                     <li>@messages("pages.welcome.bullet2")</li>
-                    <li>@Html(messages("pages.welcome.bullet3"))</li>
                 </ul>
             </div>
 
+            <p>@messages("pages.welcome.p2")</p>
+            <p>@messages("pages.welcome.p3")</p>
+
             <div class="form-group">
-                <details role="group">
-                    <summary role="button" aria-controls="details-content-0" aria-expanded="false">
-                        <span class="summary">@messages("pages.welcome.panel1.title")</span>
-                    </summary>
-                    <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
-                        <p>@Html(messages("pages.welcome.panel1.p1"))</p>
-                        <p>@Html(messages("pages.welcome.panel1.p2"))</p>
-                        <p>@Html(messages("pages.welcome.panel1.p3"))</p>
-                    </div>
-                </details>
-
-                <p>@messages("pages.welcome.p2")</p>
-
-                @form(action = controllers.routes.TwirlViewController.renderViewAuthorised()) {
-                    <div class="form-group">
-                        <button class="button-get-started" role="button" id="start">@messages("pages.welcome.button.start")</button>
-                    </div>
-                }
-
-                <p>@messages("pages.welcome.p3")</p>
+            @form(action = controllers.routes.TwirlViewController.renderViewAuthorised()) {
                 <div class="form-group">
-                    <ul class="list list-bullet">
-                        <li>@messages("pages.welcome.bullet4")</li>
-                        <li>@messages("pages.welcome.bullet5")</li>
-                        <li>@messages("pages.welcome.bullet6")</li>
-                        <li>@messages("pages.welcome.bullet7")</li>
-                    </ul>
+                    <button class="button-get-started" role="button" id="start">@messages("pages.welcome.button.start")
+                    </button>
                 </div>
-                <p>@messages("pages.welcome.p4")</p>
+            }
             </div>
+
+            <p>@messages("pages.welcome.p4")</p>
+            <div class="form-group">
+                <ul class="list list-bullet">
+                    <li>@messages("pages.welcome.bullet3")</li>
+                    <li>@messages("pages.welcome.bullet4")</li>
+                    <li>@messages("pages.welcome.bullet5")</li>
+                    <li>@messages("pages.welcome.bullet6")</li>
+                </ul>
+            </div>
+            <p>@messages("pages.welcome.p5")</p>
 
         </div>
 
