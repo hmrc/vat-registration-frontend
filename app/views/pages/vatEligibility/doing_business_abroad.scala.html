@@ -18,55 +18,13 @@
 
         <div class="form-group">
             <ul class="list list-bullet">
-                <li>@messages("pages.eligibility.doingBusinessAbroad.bullet1")</li>
-                <li>@Html(messages("pages.eligibility.doingBusinessAbroad.bullet2"))</li>
-                <li>@Html(messages("pages.eligibility.doingBusinessAbroad.bullet3"))</li>
+                <li>@Html(messages("pages.eligibility.doingBusinessAbroad.bullet1"))</li>
+                <li>@messages("pages.eligibility.doingBusinessAbroad.bullet2")</li>
+                <li>@messages("pages.eligibility.doingBusinessAbroad.bullet3")</li>
                 <li>@messages("pages.eligibility.doingBusinessAbroad.bullet4")</li>
                 <li>@messages("pages.eligibility.doingBusinessAbroad.bullet5")</li>
-                <li>@messages("pages.eligibility.doingBusinessAbroad.bullet6")</li>
-                <li>@messages("pages.eligibility.doingBusinessAbroad.bullet7")</li>
             </ul>
         </div>
-
-        <details role="group">
-            <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
-            @messages("pages.eligibility.doingBusinessAbroad.panel1.title")
-            </span></summary>
-            <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
-                <p>@messages("pages.eligibility.doingBusinessAbroad.panel1.p1")</p>
-                <p>@messages("pages.eligibility.doingBusinessAbroad.panel1.p2")</p>
-                <ul class="list list-bullet">
-                    <li>@messages("pages.eligibility.doingBusinessAbroad.panel1.bullet1")</li>
-                    <li>@messages("pages.eligibility.doingBusinessAbroad.panel1.bullet2")</li>
-                    <li>@messages("pages.eligibility.doingBusinessAbroad.panel1.bullet3")</li>
-                    <li>@messages("pages.eligibility.doingBusinessAbroad.panel1.bullet4")</li>
-                </ul>
-            </div>
-        </details>
-
-        <details role="group">
-            <summary role="button" aria-controls="details-content-2" aria-expanded="false"><span class="summary">
-            @messages("pages.eligibility.doingBusinessAbroad.panel2.title")
-            </span></summary>
-            <div class="panel panel-indent" id="details-content-2" aria-hidden="true">
-                <p>@messages("pages.eligibility.doingBusinessAbroad.panel2.p1")</p>
-            </div>
-        </details>
-
-        <details role="group">
-            <summary role="button" aria-controls="details-content-3" aria-expanded="false"><span class="summary">
-            @messages("pages.eligibility.doingBusinessAbroad.panel3.title")
-            </span></summary>
-            <div class="panel panel-indent" id="details-content-3" aria-hidden="true">
-                <p>@Html(messages("pages.eligibility.doingBusinessAbroad.panel3.p1"))</p>
-                <p>@messages("pages.eligibility.doingBusinessAbroad.panel3.p2")</p>
-                <ul class="list list-bullet">
-                    <li>@Html(messages("pages.eligibility.doingBusinessAbroad.panel3.bullet1"))</li>
-                    <li>@Html(messages("pages.eligibility.doingBusinessAbroad.panel3.bullet2"))</li>
-                    <li>@Html(messages("pages.eligibility.doingBusinessAbroad.panel3.bullet3"))</li>
-                </ul>
-            </div>
-        </details>
 
         @govHelpers.form(action = controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.submit("doingBusinessAbroad")) {
             <div class="form-group">
@@ -84,7 +42,6 @@
                     )
                 </fieldset>
             </div>
-
 
 
             <div class="form-group">

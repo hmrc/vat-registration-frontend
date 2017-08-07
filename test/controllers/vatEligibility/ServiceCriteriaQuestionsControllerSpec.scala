@@ -49,10 +49,10 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
       val eligibilityQuestions = Seq[(EligibilityQuestion, String)](
         HaveNinoQuestion -> "Do you have a National Insurance number?",
-        DoingBusinessAbroadQuestion -> "Will you do any of the following once you&#x27;re registered for VAT?",
-        DoAnyApplyToYouQuestion -> "Do any of the following apply to you or the business?",
-        ApplyingForAnyOfQuestion -> "Will you apply for any of the following?",
-        CompanyWillDoAnyOfQuestion -> "Will you do any of the following?"
+        DoingBusinessAbroadQuestion -> "Will the company do international business",
+        DoAnyApplyToYouQuestion -> "Are you involved with more than one business or changing the legal status of your business?",
+        ApplyingForAnyOfQuestion -> "Is the company applying for either the Agricultural Flat Rate Scheme or the Annual Accounting Scheme?",
+        CompanyWillDoAnyOfQuestion -> "Will the company do any of the following once"
       )
 
       forAll(eligibilityQuestions) { case (question, expectedTitle) =>
