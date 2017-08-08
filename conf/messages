@@ -206,6 +206,10 @@ pages.voluntary.registration.reason.radio.intendsToSell       = It intends to se
 pages.voluntary.registration.reason.radio.neither             = Neither of these
 validation.voluntary.registration.reason.missing              = Tell us why you intend to register voluntarily for VAT
 
+## Voluntary Registration Reason Summary
+pages.summary.voluntaryReason.sells                           = The company is already selling goods or services
+pages.summary.voluntaryReason.intendsToSell                   = The company intends to sell good or services in the future
+
 ## Taxable Turnover Page
 pages.taxable.turnover.title                            = Do you expect the company to make VAT taxable sales of more than £85,000 in the 30 days after it''s registered with Companies House?
 pages.taxable.turnover.heading                          = Do you expect the company to make VAT taxable sales of more than £85,000 in the 30 days after it''s registered with Companies House?
