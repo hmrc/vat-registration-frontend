@@ -35,8 +35,8 @@ trait S4LService extends CommonService {
   def save[T: S4LKey](data: T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] =
     fetchRegistrationId.flatMap(s4LConnector.save[T](_, S4LKey[T].key, data))
 
-  def updateViewModel[T,G](data: T, container: Future[G])
-                          (implicit hc: HeaderCarrier,
+  def updateViewModel[T, G](data: T, container: Future[G])
+                           (implicit hc: HeaderCarrier,
                             vmf: ViewModelFormat.Aux[T, G],
                             f: Format[G],
                             k: S4LKey[G]): Future[CacheMap] =
@@ -49,14 +49,9 @@ trait S4LService extends CommonService {
   def fetchAndGet[T: S4LKey]()(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
     fetchRegistrationId.flatMap(s4LConnector.fetchAndGet[T](_, S4LKey[T].key))
 
-  // TODO getViewModel could be moved to VatRegistrationController, but would require rework
-  // TODO of S4LMockSugar and would impact many tests
   def getViewModel[T, G](container: Future[G])
                         (implicit r: ViewModelFormat.Aux[T, G], f: Format[G]): OptionalResponse[T] =
-    for {
-      group <- OptionT.liftF(container)
-      vm <- OptionT.fromOption(r read group)
-    } yield vm
+    OptionT(container.map(r.read))
 
   def clear()(implicit hc: HeaderCarrier): Future[HttpResponse] =
     fetchRegistrationId.flatMap(s4LConnector.clear)

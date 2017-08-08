@@ -17,27 +17,49 @@
 package support
 
 
+import org.scalatest.concurrent.{IntegrationPatience, PatienceConfiguration}
+import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{Suite, TestSuite}
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.test.FakeApplication
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.it.Port
 
-trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerSuite {
+trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerSuite with IntegrationPatience with PatienceConfiguration {
   me: Suite with TestSuite =>
 
   implicit val hc = HeaderCarrier()
   implicit val portNum = port
 
+  abstract override implicit val patienceConfig =
+    PatienceConfig(
+      timeout = Span(1, Seconds),
+      interval = Span(50, Millis))
+
   override lazy val port: Int = Port.randomAvailable
 
   override implicit lazy val app: FakeApplication = FakeApplication(
     //override app config here, chaning hosts and ports to point app at Wiremock
-    additionalConfiguration = Map(
-      "microservice.services.address-lookup-frontend.host" -> wiremockHost,
-      "microservice.services.address-lookup-frontend.port" -> wiremockPort
-    )
+    additionalConfiguration = replaceWithWiremock(Seq(
+      "address-lookup-frontend",
+      "auth",
+      "auth.company-auth",
+      "vat-registration",
+      "company-registration",
+      "company-registration-frontend",
+      "incorporation-frontend-stub",
+      "incorporation-information",
+      "cachable.short-lived-cache",
+      "cachable.session-cache"
+    ))
   )
+
+  private def replaceWithWiremock(services: Seq[String]) =
+    services.foldLeft(Map.empty[String, Any]) { (configMap, service) =>
+      configMap + (
+        s"microservice.services.$service.host" -> wiremockHost,
+        s"microservice.services.$service.port" -> wiremockPort)
+    }
 
 }
 
