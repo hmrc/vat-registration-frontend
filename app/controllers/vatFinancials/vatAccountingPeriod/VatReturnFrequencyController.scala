@@ -47,7 +47,7 @@ class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
         ifTrue = for {
           container <- s4lContainer[S4LVatFinancials]()
           _ <- s4l.save(container.copy(accountingPeriod = None))
-          voluntaryReg <- viewModel[VoluntaryRegistration]().fold(true)(_ == VoluntaryRegistration.yes)
+          voluntaryReg <- viewModel[VoluntaryRegistration]().fold(true)(reg => reg == VoluntaryRegistration.yes)
         } yield if (voluntaryReg) {
             controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()
           } else {

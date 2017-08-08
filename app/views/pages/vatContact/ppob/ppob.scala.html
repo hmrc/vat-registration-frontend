@@ -17,6 +17,9 @@
           ppobform
       )
 
+      <p>@Html(messages("pages.ppob.p1"))</p>
+      <p>@Html(messages("pages.ppob.p2"))</p>
+
       @govHelpers.form(action = controllers.vatContact.ppob.routes.PpobController.submit()) {
       <div class="form-group" id="ppobRadio">
 

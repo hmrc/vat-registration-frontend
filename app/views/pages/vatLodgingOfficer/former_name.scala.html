@@ -19,14 +19,10 @@
                 Seq("formerName")
             )
 
-            <p>
-            @messages("pages.formerName.p1")
-            </p>
-
             @govHelpers.form(action = controllers.vatLodgingOfficer.routes.FormerNameController.submit()) {
                 <div class="form-group">
                     <fieldset class="inline">
-                        <span id="formmerNameRadio"/>
+                        <span id="formerNameRadio"/>
                         @govHelpers.inputRadioGroup(
                             field = formerNameForm("formerNameRadio"),
                             Seq(
@@ -48,6 +44,7 @@
                                 '_divClass -> "form-group",
                                 '_inputClass -> "form-control",
                                 '_label -> Messages("pages.formerName.fullName.label"),
+                                '_inputHint -> Messages("pages.formerName.fullName.hint"),
                                 '_labelClass -> "form-label"
                             )
 
