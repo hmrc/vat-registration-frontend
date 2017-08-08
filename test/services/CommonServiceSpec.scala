@@ -18,10 +18,9 @@ package services
 
 import common.exceptions.DownstreamExceptions
 import connectors.KeystoreConnector
-import fixtures.KeystoreFixture
 import helpers.VatRegSpec
 
-class CommonServiceSpec extends VatRegSpec with KeystoreFixture {
+class CommonServiceSpec extends VatRegSpec {
 
   trait Setup {
     val service = new CommonService with DownstreamExceptions {

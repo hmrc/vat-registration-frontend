@@ -58,7 +58,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
       "a month and year displayed if a date is entered" in {
         val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(validVatTradingDetails))
-        builder.overThresholdDateRow mustBe SummaryRow("vatDetails.overThresholdDate", testDate.format(monthYearPresentationFormatter), Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show()))
+        builder.overThresholdDateRow mustBe SummaryRow("vatDetails.overThresholdDate", testDate.format(testMonthYearPresentationFormatter), Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show()))
       }
 
     }

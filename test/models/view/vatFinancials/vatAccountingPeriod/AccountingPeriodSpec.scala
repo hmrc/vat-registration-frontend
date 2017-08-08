@@ -47,7 +47,7 @@ class AccountingPeriodSpec extends UnitSpec with VatRegistrationFixture {
     accountingPeriods = accountingPeriods3
   )
 
-  val vatScheme = VatScheme(validRegId)
+  val vatScheme = VatScheme(testRegId)
 
   "apply" should {
 
