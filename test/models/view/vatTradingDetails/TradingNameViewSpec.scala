@@ -28,17 +28,17 @@ class TradingNameViewSpec extends UnitSpec with VatRegistrationFixture with Insi
   "apply" should {
     "extract a TradingNameView from a VatScheme" in {
       val vm = ApiModelTransformer[TradingNameView].toViewModel(validVatScheme)
-      vm shouldBe Some(TradingNameView(TradingNameView.TRADING_NAME_YES, tradingName = Some(tradingName)))
+      vm shouldBe Some(TradingNameView(TradingNameView.TRADING_NAME_YES, tradingName = Some(testTradingName)))
     }
 
     "extract a TradingNameView from VatScheme with no trading name returns empty trading name" in {
-      val vatSchemeEmptyTradingName = VatScheme(id = validRegId, tradingDetails = Some(tradingDetails(tradingName = None)))
+      val vatSchemeEmptyTradingName = VatScheme(id = testRegId, tradingDetails = Some(tradingDetails(tradingName = None)))
       val expectedVM = Some(TradingNameView(yesNo = TRADING_NAME_NO, tradingName = None))
       ApiModelTransformer[TradingNameView].toViewModel(vatSchemeEmptyTradingName) shouldBe expectedVM
     }
 
     "extract a TradingNameView from VatScheme with no VatTradingDetails returns empty trading name" in {
-      val vatSchemeEmptyTradingDetails = VatScheme(id = validRegId, tradingDetails = None)
+      val vatSchemeEmptyTradingDetails = VatScheme(id = testRegId, tradingDetails = None)
       ApiModelTransformer[TradingNameView].toViewModel(vatSchemeEmptyTradingDetails) shouldBe None
     }
 

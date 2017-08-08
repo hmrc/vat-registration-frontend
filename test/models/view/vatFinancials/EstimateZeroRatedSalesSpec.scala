@@ -36,12 +36,12 @@ class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
     "convert a VatFinancials to a view model" in {
-      val vatScheme = VatScheme(id = validRegId, financials = Some(vatFinancials))
+      val vatScheme = VatScheme(id = testRegId, financials = Some(vatFinancials))
       ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vatScheme) shouldBe Some(estimateZeroRatedSales)
     }
 
     "convert a VatScheme without a VatFinancials to an empty view model" in {
-      val vatScheme = VatScheme(id = validRegId)
+      val vatScheme = VatScheme(id = testRegId)
       ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vatScheme) shouldBe None
     }
   }

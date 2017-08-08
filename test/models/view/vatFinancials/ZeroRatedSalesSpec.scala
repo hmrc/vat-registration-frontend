@@ -24,7 +24,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
-    val vatScheme = VatScheme(validRegId)
+    val vatScheme = VatScheme(testRegId)
 
     "convert VatFinancials with zero rated sales to view model" in {
       val vatFinancialsWithZeroRated = VatFinancials(

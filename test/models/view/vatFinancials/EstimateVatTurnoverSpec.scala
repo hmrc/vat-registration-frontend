@@ -38,14 +38,14 @@ class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
     reclaimVatOnMostReturns = true,
     accountingPeriods = monthlyAccountingPeriod
   )
-  val vatScheme = VatScheme(id = validRegId, financials = Some(vatFinancials))
+  val vatScheme = VatScheme(id = testRegId, financials = Some(vatFinancials))
 
   "apply" should {
     "Extract a EstimateVatTurnover view model from a VatScheme" in {
       ApiModelTransformer[EstimateVatTurnover].toViewModel(vatScheme) shouldBe Some(estimatedVatTurnover)
     }
     "Extract an empty EstimateVatTurnover view model from a VatScheme without financials" in {
-      val vatSchemeWithoutFinancials = VatScheme(id = validRegId, financials = None)
+      val vatSchemeWithoutFinancials = VatScheme(id = testRegId, financials = None)
       ApiModelTransformer[EstimateVatTurnover].toViewModel(vatSchemeWithoutFinancials) shouldBe None
     }
   }
