@@ -2,7 +2,7 @@
 
 @(row: SummaryRow, questionArg: String = "")(implicit messages: Messages)
 
-<tr>
+<tr id="@{row.id}">
     <td id="@{
         row.id
     }Question">@Html(messages(s"pages.summary.${row.id}", questionArg))</td>

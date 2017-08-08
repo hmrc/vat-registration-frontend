@@ -48,12 +48,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
       submitAuthorised(EuGoodsController.show(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> ""
       )) {
-
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Will the company trade VAT taxable goods or services with countries outside the EU?")
+        _ includesText "Will you trade VAT taxable goods with countries outside the EU"
       }
     }
 
@@ -64,11 +59,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(EuGoodsController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Will the company trade VAT taxable goods or services with countries outside the EU?")
+        _ includesText "Will you trade VAT taxable goods with countries outside the EU"
       }
     }
 
@@ -79,18 +70,14 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(EuGoodsController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Will the company trade VAT taxable goods or services with countries outside the EU?")
+        _ includesText "Will you trade VAT taxable goods with countries outside the EU"
       }
     }
   }
 
 
   s"POST ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()}" should {
-    "return 400 with Empty data\" should {" in {
+    "return 400 with Empty data" in {
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
@@ -105,8 +92,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> EuGoods.EU_GOODS_YES
       )) {
-        response =>
-          response redirectsTo s"$contextRoot/apply-economic-operator-registration-identification-number"
+       _ redirectsTo s"$contextRoot/apply-economic-operator-registration-identification-number"
       }
 
     }
@@ -118,8 +104,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> EuGoods.EU_GOODS_NO
       )) {
-        response =>
-          response redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months"
+       _ redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months"
       }
 
     }

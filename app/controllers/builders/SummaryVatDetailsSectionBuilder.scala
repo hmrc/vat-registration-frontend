@@ -64,8 +64,8 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
   val voluntaryReasonRow: SummaryRow = SummaryRow(
     s"$sectionId.voluntaryRegistrationReason",
     vatTradingDetails.flatMap(_.vatChoice.reason).collect {
-      case VoluntaryRegistrationReason.SELLS => "pages.voluntary.registration.reason.radio.sells"
-      case VoluntaryRegistrationReason.INTENDS_TO_SELL => "pages.voluntary.registration.reason.radio.intendsToSell"
+      case VoluntaryRegistrationReason.SELLS => "pages.summary.voluntaryReason.sells"
+      case VoluntaryRegistrationReason.INTENDS_TO_SELL => "pages.summary.voluntaryReason.intendsToSell"
     }.getOrElse("app.common.no"),
     Some(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationReasonController.show())
   )

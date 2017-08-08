@@ -22,23 +22,8 @@
                 <li>@Html(messages("pages.eligibility.doAnyApplyToYou.bullet2"))</li>
                 <li>@Html(messages("pages.eligibility.doAnyApplyToYou.bullet3"))</li>
                 <li>@Html(messages("pages.eligibility.doAnyApplyToYou.bullet4"))</li>
-                <li>@Html(messages("pages.eligibility.doAnyApplyToYou.bullet5"))</li>
             </ul>
         </div>
-
-        <details role="group">
-            <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
-            @messages("pages.eligibility.doAnyApplyToYou.panel1.title")
-            </span></summary>
-            <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
-                <p>@messages("pages.eligibility.doAnyApplyToYou.panel1.p1")</p>
-                <ul class="list list-bullet">
-                    <li>@messages("pages.eligibility.doAnyApplyToYou.panel1.bullet1")</li>
-                    <li>@messages("pages.eligibility.doAnyApplyToYou.panel1.bullet2")</li>
-                </ul>
-                <p>@messages("pages.eligibility.doAnyApplyToYou.panel1.p2")</p>
-            </div>
-        </details>
 
         @govHelpers.form(action = controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.submit("doAnyApplyToYou")) {
             <div class="form-group">
@@ -56,8 +41,6 @@
                     )
                 </fieldset>
             </div>
-
-
 
             <div class="form-group">
                 <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>

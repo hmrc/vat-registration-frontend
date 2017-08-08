@@ -60,7 +60,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
       submitAuthorised(TestVoluntaryRegistrationReasonController.show(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> ""
       )) {
-        _ includesText "Which one of the following apply to the company?"
+        _ includesText "Which one applies to the company?"
       }
     }
 
@@ -71,7 +71,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestVoluntaryRegistrationReasonController.show) {
-        _ includesText "Which one of the following apply to the company?"
+        _ includesText "Which one applies to the company?"
       }
     }
 
@@ -82,7 +82,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestVoluntaryRegistrationReasonController.show) {
-        _ includesText "Which one of the following apply to the company?"
+        _ includesText "Which one applies to the company?"
       }
     }
   }
