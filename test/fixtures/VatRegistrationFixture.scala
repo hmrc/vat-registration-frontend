@@ -77,14 +77,11 @@ trait VatRegistrationFixture {
   val validVatReturnFrequency = VatReturnFrequency(VatReturnFrequency.QUARTERLY)
   val validAccountingPeriod = AccountingPeriod(AccountingPeriod.MAR_JUN_SEP_DEC)
   val validBankAccountDetails = CompanyBankAccountDetails(testTradingName, testAccountNumber, testSortCode)
-  //Cultural Compliance Questions
   val validNotForProfit = NotForProfit(NotForProfit.NOT_PROFIT_NO)
-  //Labour Compliance Questions
   val validCompanyProvideWorkers = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
   val validWorkers = Workers(8)
   val validTemporaryContracts = TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)
   val validSkilledWorkers = SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO)
-  //Financial Compliance Questions
   val validAdviceOrConsultancy = AdviceOrConsultancy(true)
   val validActAsIntermediary = ActAsIntermediary(true)
   val validEuGoods = EuGoods(EuGoods.EU_GOODS_YES)
@@ -169,6 +166,18 @@ trait VatRegistrationFixture {
     vatSicAndCompliance = Some(validSicAndCompliance),
     vatFlatRateScheme = Some(validVatFlatRateScheme)
   )
+  val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
+    id = testRegId,
+    vatSicAndCompliance = Some(validSicAndCompliance),
+    financials = Some(
+      VatFinancials(
+        bankAccount = None,
+        turnoverEstimate = 0L,
+        zeroRatedTurnoverEstimate = None,
+        reclaimVatOnMostReturns = false,
+        accountingPeriods = VatAccountingPeriod(VatReturnFrequency.MONTHLY))
+    )
+  )
 
   val testIncorporationInfo = IncorporationInfo(
     IncorpSubscription(
@@ -245,19 +254,6 @@ trait VatRegistrationFixture {
     vatSicAndCompliance = sicAndCompliance,
     vatContact = contact,
     vatFlatRateScheme = vatFlatRateScheme
-  )
-
-  val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
-    id = testRegId,
-    vatSicAndCompliance = Some(validSicAndCompliance),
-    financials = Some(
-      VatFinancials(
-        bankAccount = None,
-        turnoverEstimate = 0L,
-        zeroRatedTurnoverEstimate = None,
-        reclaimVatOnMostReturns = false,
-        accountingPeriods = VatAccountingPeriod(VatReturnFrequency.MONTHLY))
-    )
   )
 
 }
