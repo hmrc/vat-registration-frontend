@@ -62,26 +62,26 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
   "S4L Service" should {
 
     "save a form with the correct key" in new Setup {
-      mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
+      mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
       private val cacheMap = CacheMap("s-date", Map.empty)
       mockS4LSaveForm[S4LVatEligibility](cacheMap)
       service.save(S4LVatEligibility(vatEligibility = Some(testServiceEligibility))) returns cacheMap
     }
 
     "fetch a form with the correct key" in new Setup {
-      mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
+      mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
       mockS4LFetchAndGet(S4LKey[S4LVatEligibility].key, Some(S4LVatEligibility(vatEligibility = Some(testServiceEligibility))))
       service.fetchAndGet[S4LVatEligibility]() returns Some(S4LVatEligibility(vatEligibility = Some(testServiceEligibility)))
     }
 
     "clear down S4L data" in new Setup {
-      mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
+      mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
       mockS4LClear()
       service.clear().map(_.status) returns 200
     }
 
     "fetch all data" in new Setup {
-      mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
+      mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
       private val cacheMap = CacheMap("allData", Map.empty)
       mockS4LFetchAll(Some(cacheMap))
       service.fetchAll() returns Some(cacheMap)
@@ -117,31 +117,31 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
     "save test view in appropriate container object in Save 4 Later" when {
 
       "no container in s4l" in new Setup {
-        mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
-        when(mockS4LConnector.fetchAndGet[TestGroup](=~=(validRegId), =~=(key))(any(), any())).thenReturn(Option.empty.pure)
-        when(mockS4LConnector.save(=~=(validRegId), =~=(key), any())(any(), any())).thenReturn(cacheMap.pure)
+        mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
+        when(mockS4LConnector.fetchAndGet[TestGroup](=~=(testRegId), =~=(key))(any(), any())).thenReturn(Option.empty.pure)
+        when(mockS4LConnector.save(=~=(testRegId), =~=(key), any())(any(), any())).thenReturn(cacheMap.pure)
 
         service.updateViewModel[TestView, TestGroup](testView, testGroup.pure) returns cacheMap
-        verify(mockS4LConnector).save(validRegId, key, TestGroup(Some(testView)))
+        verify(mockS4LConnector).save(testRegId, key, TestGroup(Some(testView)))
       }
 
       "container in s4l does not already contain the view" in new Setup {
-        mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
-        when(mockS4LConnector.fetchAndGet[TestGroup](=~=(validRegId), =~=(key))(any(), any())).thenReturn(Option(TestGroup()).pure)
-        when(mockS4LConnector.save(=~=(validRegId), =~=(key), any())(any(), any())).thenReturn(cacheMap.pure)
+        mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
+        when(mockS4LConnector.fetchAndGet[TestGroup](=~=(testRegId), =~=(key))(any(), any())).thenReturn(Option(TestGroup()).pure)
+        when(mockS4LConnector.save(=~=(testRegId), =~=(key), any())(any(), any())).thenReturn(cacheMap.pure)
 
         service.updateViewModel[TestView, TestGroup](testView, testGroup.pure) returns cacheMap
-        verify(mockS4LConnector).save(validRegId, key, TestGroup(Some(testView)))
+        verify(mockS4LConnector).save(testRegId, key, TestGroup(Some(testView)))
       }
 
       "container in s4l already contains the view" in new Setup {
-        mockKeystoreFetchAndGet[String]("RegistrationId", Some(validRegId))
-        when(mockS4LConnector.fetchAndGet[TestGroup](=~=(validRegId), =~=(key))(any(), any()))
+        mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
+        when(mockS4LConnector.fetchAndGet[TestGroup](=~=(testRegId), =~=(key))(any(), any()))
           .thenReturn(Option(TestGroup(Some(TestView("oldProperty")))).pure)
-        when(mockS4LConnector.save(=~=(validRegId), =~=(key), any())(any(), any())).thenReturn(cacheMap.pure)
+        when(mockS4LConnector.save(=~=(testRegId), =~=(key), any())(any(), any())).thenReturn(cacheMap.pure)
 
         service.updateViewModel[TestView, TestGroup](testView, testGroup.pure) returns cacheMap
-        verify(mockS4LConnector).save(validRegId, key, TestGroup(Some(testView)))
+        verify(mockS4LConnector).save(testRegId, key, TestGroup(Some(testView)))
       }
     }
   }

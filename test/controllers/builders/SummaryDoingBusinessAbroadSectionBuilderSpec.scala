@@ -25,7 +25,7 @@ class SummaryDoingBusinessAbroadSectionBuilderSpec extends VatRegSpec with VatRe
 
   "The section builder composing a company details section" should {
 
-    val bankAccount = VatBankAccount(accountNumber = "12345678", accountName = "Account Name", accountSortCode = sortCode)
+    val bankAccount = VatBankAccount(accountNumber = "12345678", accountName = "Account Name", accountSortCode = testSortCode)
 
     "with EU Goods render" should {
 

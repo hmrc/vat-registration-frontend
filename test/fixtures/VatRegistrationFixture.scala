@@ -39,94 +39,94 @@ import uk.gov.hmrc.play.http._
 
 trait VatRegistrationFixture {
 
-  val contextRoot = "/register-for-vat"
-
+  //Responses
   val IM_A_TEAPOT = 418
-  val badRequest = new BadRequestException(BAD_REQUEST.toString)
   val forbidden = Upstream4xxResponse(FORBIDDEN.toString, FORBIDDEN, FORBIDDEN)
   val upstream4xx = Upstream4xxResponse(IM_A_TEAPOT.toString, IM_A_TEAPOT, IM_A_TEAPOT)
   val upstream5xx = Upstream5xxResponse(INTERNAL_SERVER_ERROR.toString, INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)
+  val validHttpResponse = HttpResponse(OK)
+
+  //Exceptions
+  val badRequest = new BadRequestException(BAD_REQUEST.toString)
   val notFound = new NotFoundException(NOT_FOUND.toString)
   val internalServiceException = new InternalServerException(BAD_GATEWAY.toString)
   val runTimeException = new RuntimeException("tst")
 
-  val validHttpResponse = HttpResponse(OK)
-
-  val validRegId = "VAT123456"
+  //Test variables
+  val contextRoot = "/register-for-vat"
+  val testNino: String = "AA 12 34 56 C"
+  val testSortCode = "12-34-56"
+  val testAccountNumber = "12345678"
+  val testBusinessActivityDescription = "description"
+  val testTurnoverEstimate = 50000L
+  val testEstimatedSales = 60000L
+  val testRegId = "VAT123456"
   val testDate = LocalDate.of(2017, 3, 21)
-  val someTestDate = Some(testDate)
-  val vatStartDate = VatStartDate(StartDateView.SPECIFIC_DATE, someTestDate)
-  val validStartDateView = StartDateView(StartDateView.SPECIFIC_DATE, someTestDate)
-  val monthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
+  val testMonthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
+  val testTradingName: String = "ACME INC"
 
-  val validVatChoice = VatChoice(VatChoice.NECESSITY_VOLUNTARY, vatStartDate, vatThresholdPostIncorp = Some(VatThresholdPostIncorp(true, Some(testDate))))
-
-  val tradingName: String = "ACME INC"
-  val validTradingName = TradingName(selection = true, tradingName = Some(tradingName))
+  //View models
+  val validCompanyBankAccount = CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES)
   val validTradingNameView = TradingNameView("TRADING_NAME_YES", Some("Test Trading Name"))
-  val validEuTrading = VatEuTrading(selection = false, eoriApplication = None)
-  val validVatTradingDetails = VatTradingDetails(vatChoice = validVatChoice, tradingName = validTradingName, validEuTrading)
-
-  val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
-
-  val validVatContact = VatContact(
-    digitalContact = VatDigitalContact(email = "asd@com", tel = Some("123"), mobile = None),
-    website = None,
-    ppob = scrsAddress)
-
-  val validVatThresholdPostIncorp = VatThresholdPostIncorp(overThresholdSelection = false, None)
-
-  private val turnoverEstimate = 50000L
-  private val estimatedSales = 60000L
-
-  val sortCode = "12-34-56"
-  val accountNumber = "12345678"
-  val businessActivityDescription = "description"
-
+  val validStartDateView = StartDateView(StartDateView.SPECIFIC_DATE, Some(testDate))
+  val validOfficerContactDetailsView = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
   val validTaxableTurnover = TaxableTurnover("TAXABLE_YES")
-  val validEstimateVatTurnover = EstimateVatTurnover(turnoverEstimate)
-  val validEstimateZeroRatedSales = EstimateZeroRatedSales(estimatedSales)
+  val validEstimateVatTurnover = EstimateVatTurnover(testTurnoverEstimate)
+  val validEstimateZeroRatedSales = EstimateZeroRatedSales(testEstimatedSales)
   val validVatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
   val validVatReturnFrequency = VatReturnFrequency(VatReturnFrequency.QUARTERLY)
   val validAccountingPeriod = AccountingPeriod(AccountingPeriod.MAR_JUN_SEP_DEC)
-  val validBankAccountDetails = CompanyBankAccountDetails(tradingName, accountNumber, sortCode)
-  val monthlyAccountingPeriod = VatAccountingPeriod(frequency = "monthly")
-  val validBankAccount = VatBankAccount(tradingName, accountNumber, sortCode)
-  val validCompanyBankAccount = CompanyBankAccount.yes
+  val validBankAccountDetails = CompanyBankAccountDetails(testTradingName, testAccountNumber, testSortCode)
+  val validNotForProfit = NotForProfit(NotForProfit.NOT_PROFIT_NO)
+  val validCompanyProvideWorkers = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
+  val validWorkers = Workers(8)
+  val validTemporaryContracts = TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)
+  val validSkilledWorkers = SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO)
+  val validAdviceOrConsultancy = AdviceOrConsultancy(true)
+  val validActAsIntermediary = ActAsIntermediary(true)
+  val validEuGoods = EuGoods(EuGoods.EU_GOODS_YES)
+  val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
+  val validBusinessActivityDescription = BusinessActivityDescription(testBusinessActivityDescription)
+  val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
+  val validBusinessSectorView = BusinessSectorView("test business sector", 3.14)
 
-  val validVatFinancials = VatFinancials(
-    bankAccount = Some(validBankAccount),
-    turnoverEstimate = turnoverEstimate,
-    zeroRatedTurnoverEstimate = Some(estimatedSales),
-    reclaimVatOnMostReturns = true,
-    accountingPeriods = monthlyAccountingPeriod
-  )
-
+  //Api models
   val sicCode = SicCode("88888888", "description", "displayDetails")
-  val validSicAndCompliance = VatSicAndCompliance(
-    businessDescription = businessActivityDescription,
-    culturalCompliance = Some(VatComplianceCultural(notForProfit = false)),
-    labourCompliance = None,
-    financialCompliance = None,
-    mainBusinessActivity = sicCode
-  )
-
   val validDob = DateOfBirth(12, 11, 1973)
   val validStartDate = DateOfBirth(12, 11, 1990)
-
-
   val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", Some(validDob), None, None)
   val completionCapacity = CompletionCapacity(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director")
-
-
   val validServiceEligibility = VatServiceEligibility(Some(true), Some(false), Some(false), Some(false), Some(false))
   val officerName = Name(Some("Reddy"), None, "Yattapu", Some("Dr"))
-  val validOfficerContactDetailsView = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
   val validOfficerContactDetails = OfficerContactDetails(Some("test@test.com"), None, None)
   val changeOfName = ChangeOfName(true, None)
   val currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(ScrsAddress("", "")))
-  val validNino: String = "AA 12 34 56 C"
+  val monthlyAccountingPeriod = VatAccountingPeriod(frequency = "monthly")
+  val validBankAccount = VatBankAccount(testTradingName, testAccountNumber, testSortCode)
+  val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
+  val validEuTrading = VatEuTrading(selection = false, eoriApplication = None)
+  val vatStartDate = VatStartDate(StartDateView.SPECIFIC_DATE, Some(testDate))
+  val validVatChoice = VatChoice(VatChoice.NECESSITY_VOLUNTARY, vatStartDate, vatThresholdPostIncorp = Some(VatThresholdPostIncorp(true, Some(testDate))))
+  val validVatThresholdPostIncorp = VatThresholdPostIncorp(overThresholdSelection = false, None)
+  val validTradingName = TradingName(selection = true, tradingName = Some(testTradingName))
+  val validVatCulturalCompliance = VatComplianceCultural(notForProfit = true)
+  val validVatLabourCompliance = VatComplianceLabour(labour = false)
+  val validVatFinancialCompliance = VatComplianceFinancial(adviceOrConsultancyOnly = false, actAsIntermediary = false)
+  val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
 
+  val emptyVatScheme = VatScheme(testRegId)
+  val validVatFinancials = VatFinancials(
+    bankAccount = Some(validBankAccount),
+    turnoverEstimate = testTurnoverEstimate,
+    zeroRatedTurnoverEstimate = Some(testEstimatedSales),
+    reclaimVatOnMostReturns = true,
+    accountingPeriods = monthlyAccountingPeriod
+  )
+  val validVatTradingDetails = VatTradingDetails(
+    vatChoice = validVatChoice,
+    tradingName = validTradingName,
+    validEuTrading
+  )
   val validLodgingOfficer = VatLodgingOfficer(
     currentAddress = ScrsAddress("", ""),
     dob = validDob,
@@ -137,8 +137,59 @@ trait VatRegistrationFixture {
     currentOrPreviousAddress = currentOrPreviousAddress,
     contact = validOfficerContactDetails
   )
+  val validSicAndCompliance = VatSicAndCompliance(
+    businessDescription = testBusinessActivityDescription,
+    culturalCompliance = Some(VatComplianceCultural(notForProfit = false)),
+    labourCompliance = None,
+    financialCompliance = None,
+    mainBusinessActivity = sicCode
+  )
+  val validVatContact = VatContact(
+    digitalContact = VatDigitalContact(email = "asd@com", tel = Some("123"), mobile = None),
+    website = None,
+    ppob = scrsAddress
+  )
+  val validVatFlatRateScheme = VatFlatRateScheme(
+    joinFrs = true,
+    annualCostsInclusive = Some(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS),
+    annualCostsLimited = Some(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS),
+    doYouWantToUseThisRate = Some(false),
+    categoryOfBusiness = Some(validBusinessSectorView.businessSector),
+    percentage = Some(BigDecimal(3.14))
+  )
+  val validVatScheme = VatScheme(
+    id = testRegId,
+    tradingDetails = Some(validVatTradingDetails),
+    financials = Some(validVatFinancials),
+    vatContact = Some(validVatContact),
+    lodgingOfficer = Some(validLodgingOfficer),
+    vatSicAndCompliance = Some(validSicAndCompliance),
+    vatFlatRateScheme = Some(validVatFlatRateScheme)
+  )
+  val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
+    id = testRegId,
+    vatSicAndCompliance = Some(validSicAndCompliance),
+    financials = Some(
+      VatFinancials(
+        bankAccount = None,
+        turnoverEstimate = 0L,
+        zeroRatedTurnoverEstimate = None,
+        reclaimVatOnMostReturns = false,
+        accountingPeriods = VatAccountingPeriod(VatReturnFrequency.MONTHLY))
+    )
+  )
 
-  val emptyVatScheme = VatScheme(validRegId)
+  val testIncorporationInfo = IncorporationInfo(
+    IncorpSubscription(
+      transactionId = "000-434-23",
+      regime = "vat",
+      subscriber = "scrs",
+      callbackUrl = "http://localhost:9896/TODO-CHANGE-THIS"),
+    IncorpStatusEvent(
+      status = "accepted",
+      crn = Some("90000001"),
+      incorporationDate = Some(LocalDate.of(2016, 8, 5)),
+      description = Some("Some description")))
 
   def tradingDetails(
                       necessity: String = VatChoice.NECESSITY_VOLUNTARY,
@@ -191,9 +242,8 @@ trait VatRegistrationFixture {
       mainBusinessActivity = mainBusinessActivitySection
     )
 
-
   def vatScheme(
-                 id: String = validRegId,
+                 id: String = testRegId,
                  vatTradingDetails: Option[VatTradingDetails] = None,
                  sicAndCompliance: Option[VatSicAndCompliance] = None,
                  contact: Option[VatContact] = None,
@@ -205,75 +255,5 @@ trait VatRegistrationFixture {
     vatContact = contact,
     vatFlatRateScheme = vatFlatRateScheme
   )
-
-  val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
-    id = validRegId,
-    vatSicAndCompliance = Some(validSicAndCompliance),
-    financials = Some(
-      VatFinancials(
-        bankAccount = None,
-        turnoverEstimate = 0L,
-        zeroRatedTurnoverEstimate = None,
-        reclaimVatOnMostReturns = false,
-        accountingPeriods = VatAccountingPeriod(VatReturnFrequency.MONTHLY))
-    )
-  )
-
-  val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
-
-  val validBusinessActivityDescription = BusinessActivityDescription(businessActivityDescription)
-  val validVatCulturalCompliance = VatComplianceCultural(notForProfit = true)
-  val validVatLabourCompliance = VatComplianceLabour(labour = false)
-  val validVatFinancialCompliance = VatComplianceFinancial(adviceOrConsultancyOnly = false, actAsIntermediary = false)
-
-  //Cultural Compliance Questions
-  val validNotForProfit = NotForProfit(NotForProfit.NOT_PROFIT_NO)
-
-  //Labour Compliance Questions
-  val validCompanyProvideWorkers = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
-  val validWorkers = Workers(8)
-  val validTemporaryContracts = TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)
-  val validSkilledWorkers = SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO)
-
-  //Financial Compliance Questions
-  val validAdviceOrConsultancy = AdviceOrConsultancy(true)
-  val validActAsIntermediary = ActAsIntermediary(true)
-
-  val validEuGoods = EuGoods(EuGoods.EU_GOODS_YES)
-  val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
-
-  val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
-  val validBusinessSectorView = BusinessSectorView("test business sector", 3.14)
-
-  val validVatFlatRateScheme = VatFlatRateScheme(
-    joinFrs = true,
-    annualCostsInclusive = Some(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS),
-    annualCostsLimited = Some(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS),
-    doYouWantToUseThisRate = Some(false),
-    categoryOfBusiness = Some(validBusinessSectorView.businessSector),
-    percentage = Some(BigDecimal(3.14))
-  )
-
-  val validVatScheme = VatScheme(
-    id = validRegId,
-    tradingDetails = Some(validVatTradingDetails),
-    financials = Some(validVatFinancials),
-    vatContact = Some(validVatContact),
-    lodgingOfficer = Some(validLodgingOfficer),
-    vatSicAndCompliance = Some(validSicAndCompliance),
-    vatFlatRateScheme = Some(validVatFlatRateScheme)
-  )
-
-  val testIncorporationInfo = IncorporationInfo(
-    IncorpSubscription(
-      transactionId = "000-434-23",
-      regime = "vat",
-      subscriber = "scrs",
-      callbackUrl = "http://localhost:9896/TODO-CHANGE-THIS"),
-    IncorpStatusEvent(
-      status = "accepted",
-      crn = Some("90000001"),
-      incorporationDate = Some(LocalDate.of(2016, 8, 5)),
-      description = Some("Some description")))
 
 }
