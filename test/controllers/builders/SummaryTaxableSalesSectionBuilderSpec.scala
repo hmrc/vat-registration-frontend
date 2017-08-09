@@ -26,7 +26,7 @@ class SummaryTaxableSalesSectionBuilderSpec extends VatRegSpec with VatRegistrat
 
   "The section builder composing a company details section" should {
 
-    val bankAccount = VatBankAccount(accountNumber = "12345678", accountName = "Account Name", accountSortCode = sortCode)
+    val bankAccount = VatBankAccount(accountNumber = "12345678", accountName = "Account Name", accountSortCode = testSortCode)
 
     "with estimatedSalesValueRow render" should {
 

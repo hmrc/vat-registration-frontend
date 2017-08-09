@@ -26,7 +26,7 @@ class SummaryAnnualAccountingSchemeSectionBuilderSpec extends VatRegSpec with Va
 
   "The section builder composing a company details section" should {
 
-    val bankAccount = VatBankAccount(accountNumber = "12345678", accountName = "Account Name", accountSortCode = sortCode)
+    val bankAccount = VatBankAccount(accountNumber = "12345678", accountName = "Account Name", accountSortCode = testSortCode)
 
     "with vatChargeExpectancyRow render" should {
 

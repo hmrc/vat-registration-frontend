@@ -23,7 +23,6 @@ import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
 class OfficerSecurityQuestionsViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
-  val testNino = "NB666666D"
   val testDOB = DateOfBirth(1,12,1999)
   val emptyName = Name(None, None, "", None)
   val officerSecurityQuestions = OfficerSecurityQuestionsView(testDOB, testNino, Some(emptyName))
@@ -38,7 +37,6 @@ class OfficerSecurityQuestionsViewSpec extends UnitSpec with VatRegistrationFixt
 
       ApiModelTransformer[OfficerSecurityQuestionsView].toViewModel(vs) shouldBe Some(officerSecurityQuestions)
     }
-
 
     "convert VatScheme without VatLodgingOfficer to empty view model" in {
       val vs = vatScheme().copy(lodgingOfficer = None)

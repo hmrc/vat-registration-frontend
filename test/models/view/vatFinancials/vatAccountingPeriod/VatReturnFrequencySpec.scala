@@ -38,7 +38,7 @@ class VatReturnFrequencySpec extends UnitSpec with VatRegistrationFixture {
     accountingPeriods = VatAccountingPeriod(frequency = QUARTERLY)
   )
 
-  val vatScheme = VatScheme(validRegId)
+  val vatScheme = VatScheme(testRegId)
 
   "apply" should {
     "convert VatFinancials with MONTHLY vat return frequency to view model" in {

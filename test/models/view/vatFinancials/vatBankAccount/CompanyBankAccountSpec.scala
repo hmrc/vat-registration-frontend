@@ -25,7 +25,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 class CompanyBankAccountSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
-    val vatScheme = VatScheme(validRegId)
+    val vatScheme = VatScheme(testRegId)
     val someBankAccount = VatBankAccount(accountName = "test", accountNumber = "12345678", accountSortCode = "12-12-12")
 
     "convert VatFinancials with bank account to view model" in {

@@ -42,7 +42,7 @@ class VatChargeExpectancySpec extends UnitSpec with VatRegistrationFixture {
   )
 
   "apply" should {
-    val vatScheme = VatScheme(validRegId)
+    val vatScheme = VatScheme(testRegId)
 
     "convert VatFinancials with vat charge expectancy yes to view model" in {
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithReclaimTrue))

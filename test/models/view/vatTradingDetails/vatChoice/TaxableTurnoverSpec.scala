@@ -36,7 +36,7 @@ class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
     }
 
     "convert a none VatChoice to empty view model" in {
-      val vatSchemeVoluntary = VatScheme(validRegId)
+      val vatSchemeVoluntary = VatScheme(testRegId)
       ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe None
     }
   }
