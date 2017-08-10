@@ -22,6 +22,8 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 import uk.gov.hmrc.play.it.Port.randomAvailable
 
+import scala.collection.JavaConversions._
+
 trait StartAndStopWireMock extends BeforeAndAfterEach with BeforeAndAfterAll {
   self: Suite =>
 
@@ -42,5 +44,9 @@ trait StartAndStopWireMock extends BeforeAndAfterEach with BeforeAndAfterAll {
 
   override protected def afterAll(): Unit = {
     wireMockServer.stop()
+    wireMockServer.getAllServeEvents.toList
+      .sortBy(_.getRequest.getLoggedDate)
+      .map(_.getRequest).map(r => s"${r.getMethod}\t${r.getUrl}")
+      .foreach(println)
   }
 }

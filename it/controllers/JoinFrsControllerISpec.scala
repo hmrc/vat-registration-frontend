@@ -16,27 +16,38 @@
 
 package controllers
 
+import controllers.frs.JoinFrsController
+import models.S4LFlatRateScheme
+import models.view.frs.JoinFrsView
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import support.AppAndStubs
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures {
+class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures {
 
-  def controller: WelcomeController = app.injector.instanceOf(classOf[WelcomeController])
+  def controller: JoinFrsController = app.injector.instanceOf(classOf[JoinFrsController])
 
-  "WelcomeController" must {
+  "JoinFrsController" must {
     "return an OK status" when {
-      "user is authenticated and authorised to access the app" in {
+      "a view is in Save 4 Later" in {
         given()
           .user.isAuthorised
-          .vatRegistrationFootprint.exists
-          .corporationTaxRegistration.existsWithStatus("held")
-          .company.isIncorporated
+          .s4lContainer[S4LFlatRateScheme].contains(JoinFrsView(selection = true))
 
-        whenReady(controller.start(request))(res => res.header.status === 200)
+        whenReady(controller.show(request))(res => res.header.status === 200)
       }
+
+      "a view is in neither Save 4 Later nor backend" in {
+        given()
+          .user.isAuthorised
+          .s4lContainer[S4LFlatRateScheme].isEmpty
+          .vatScheme.isBlank
+
+        whenReady(controller.show(request))(res => res.header.status === 200)
+      }
+
     }
   }
 
