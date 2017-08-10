@@ -270,6 +270,14 @@ trait StubUtils {
 
       builder
     }
+
+    def fails: PreconditionBuilder = {
+      stubFor(
+        post(urlPathEqualTo("/vatreg/new"))
+          .willReturn(serverError()))
+
+      builder
+    }
   }
 
   case class UserStub
