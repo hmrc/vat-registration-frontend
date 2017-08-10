@@ -24,15 +24,8 @@ gets CTActiveDate and displays it on screen
 `GET         /insert-ii-stub-data`  
 this will load some officer details and home addresses into II Frontend Stub.
 
-`GET         /insert-ii-stub-data-incorp`  
-this will load some incorporation details into II Frontend Stub. In order for VATREG backend to pick this data up, some feature toggles on the II service will have to be engaged.
-1. First, switch your II service's transactional API to the stub which you have pre-loaded with data using this test endpoint.  
-http://localhost:9976/incorporation-information/test-only/feature-switch/transactionalAPI/stub
-2. Next, enable the incorporation updates (scheduler):  
-http://localhost:9976/incorporation-information/test-only/feature-switch/incorpUpdate/on
-
-`GET         /wipe-incorp-stub-data`  
-this will clear out the whole 'incorp-submission-status' collection from "incorporation-frontend-stubs" database
+`GET         /incorp-company`         
+inserts the required data directly into II through our backend which will essentially incorporate which ever user you are authenticated as via their transaction ID, used for testing post incorporated journeys.
 
 `GET         /incorp-info`  
 returns JSON retrieved from our backend - whatever incorporation status we hold, can be checked in the browser
