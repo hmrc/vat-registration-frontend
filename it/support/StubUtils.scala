@@ -17,12 +17,13 @@
 package support
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.matching.UrlPathPattern
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import models.S4LKey
+import play.api.libs.json.Format
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-
-trait WiremockAware {
-  def wiremockBaseUrl: String
-}
+import uk.gov.hmrc.crypto.CompositeSymmetricCrypto.aes
 
 trait StubUtils {
   me: StartAndStopWireMock =>
@@ -31,29 +32,33 @@ trait StubUtils {
 
   class PreconditionBuilder {
 
-    implicit val builder = this
+    implicit val builder: PreconditionBuilder = this
 
     def address(id: String, line1: String, line2: String, country: String, postcode: String) =
       AddressStub(id, line1, line2, country, postcode)
 
     def journey(id: String) = JourneyStub(id)
 
-    def user(id: String) = UserStub(id)
+    def user = UserStub()
 
-    def vatRegistrationFootprint(id: String) = VatRegistrationFootprintStub(id)
+    def vatRegistrationFootprint = VatRegistrationFootprintStub()
 
-    def corporationTaxRegistration(regId: String) = CorporationTaxRegistrationStub(regId)
+    def vatScheme = VatSchemeStub()
 
-    def company(txId: String) = IncorporationStub(txId)
+    def corporationTaxRegistration = CorporationTaxRegistrationStub()
+
+    def company = IncorporationStub()
+
+    def s4lContainer[C: S4LKey]: ViewModelStub[C] = new ViewModelStub[C]()
 
   }
 
-  def given() = {
+  def given(): PreconditionBuilder = {
     new PreconditionBuilder()
   }
 
   trait KeystoreStub {
-    def stubKeystorePut(key: String, data: String) =
+    def stubKeystorePut(key: String, data: String): StubMapping =
       stubFor(
         put(urlPathMatching(s"/keystore/vat-registration-frontend/session-[a-z0-9-]+/data/$key"))
           .willReturn(ok(
@@ -66,24 +71,14 @@ trait StubUtils {
                |      "lastUpdated": { "$$date": 1502265526026 }}}
             """.stripMargin
           )))
-  }
 
-  case class IncorporationStub
-  (txId: String)
-  (implicit builder: PreconditionBuilder) {
-
-    def isIncorporated(): PreconditionBuilder = {
+    def stubKeystoreGet(key: String, data: String): StubMapping =
       stubFor(
         get(urlPathMatching("/keystore/vat-registration-frontend/session-[a-z0-9-]+"))
           .willReturn(ok(
             s"""
                |{ "atomicId": { "$$oid": "598ac0b64e0000d800170620" },
-               |    "data": {
-               |     "CompanyProfile" : {
-               |       "status" : "held",
-               |       "confirmationReferences" : {
-               |         "transaction-id" : "000-434-$txId"
-               |    } } },
+               |    "data": { "$key": $data },
                |    "id": "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1",
                |    "modifiedDetails": {
                |      "createdAt": { "$$date": 1502265526026 },
@@ -91,8 +86,105 @@ trait StubUtils {
             """.stripMargin
           )))
 
+  }
+
+  trait S4LStub {
+
+    import uk.gov.hmrc.crypto._
+
+    //TODO get the json.encryption.key config value from application.conf
+    val crypto: CompositeSymmetricCrypto = aes("fqpLDZ4sumDsekHkeEBlCA==", Seq.empty)
+
+    def decrypt(encData: String): String = crypto.decrypt(Crypted(encData)).value
+
+    def encrypt(str: String): String = crypto.encrypt(PlainText(str)).value
+
+
+    def stubS4LPut(key: String, data: String): StubMapping =
       stubFor(
-        get(urlPathEqualTo(s"/vatreg/incorporation-information/000-434-$txId"))
+        put(urlPathMatching(s"/save4later/vat-registration-frontend/1/data/$key"))
+          .willReturn(ok(
+            s"""
+               |{ "atomicId": { "$$oid": "598ac0b64e0000d800170620" },
+               |    "data": { "$key": "${encrypt(data)}" },
+               |    "id": "1",
+               |    "modifiedDetails": {
+               |      "createdAt": { "$$date": 1502265526026 },
+               |      "lastUpdated": { "$$date": 1502265526026 }}}
+            """.stripMargin
+          )))
+
+    def stubS4LGet[C, T](t: T)(implicit key: S4LKey[C], fmt: Format[T]): StubMapping =
+      stubFor(
+        get(urlPathMatching("/save4later/vat-registration-frontend/1"))
+          .willReturn(ok(
+            s"""
+               |{
+               |  "atomicId": { "$$oid": "598830cf5e00005e00b3401e" },
+               |  "data": {
+               |    "${key.key}": "${encrypt(fmt.writes(t).toString())}"
+               |  },
+               |  "id": "1",
+               |  "modifiedDetails": {
+               |    "createdAt": { "$$date": 1502097615710 },
+               |    "lastUpdated": { "$$date": 1502189409725 }
+               |  }
+               |}
+            """.stripMargin
+          )))
+
+    def stubS4LGetNothing(): StubMapping =
+      stubFor(
+        get(urlPathMatching("/save4later/vat-registration-frontend/1"))
+          .willReturn(ok(
+            s"""
+               |{
+               |  "atomicId": { "$$oid": "598830cf5e00005e00b3401e" },
+               |  "data": {},
+               |  "id": "1",
+               |  "modifiedDetails": {
+               |    "createdAt": { "$$date": 1502097615710 },
+               |    "lastUpdated": { "$$date": 1502189409725 }
+               |  }
+               |}
+            """.stripMargin
+          )))
+
+  }
+
+
+  class ViewModelStub[C]()(implicit builder: PreconditionBuilder, s4LKey: S4LKey[C]) extends S4LStub with KeystoreStub {
+
+    def contains[T](t: T)(implicit fmt: Format[T]): PreconditionBuilder = {
+      stubKeystoreGet("RegistrationId", "\"1\"")
+      stubS4LGet[C, T](t)
+      builder
+    }
+
+    def isEmpty: PreconditionBuilder = {
+      stubKeystoreGet("RegistrationId", "\"1\"")
+      stubS4LGetNothing()
+      builder
+    }
+
+  }
+
+
+  case class IncorporationStub
+  ()
+  (implicit builder: PreconditionBuilder) extends KeystoreStub {
+
+    def isIncorporated: PreconditionBuilder = {
+
+      stubKeystoreGet(
+        "CompanyProfile",
+        """{ "status" : "held",
+          |  "confirmationReferences" : {
+          |    "transaction-id" : "000-434-1"
+          |}}""".stripMargin)
+
+      stubFor(
+        get(urlPathEqualTo("/vatreg/incorporation-information/000-434-1"))
           .willReturn(ok(
             s"""
                |{
@@ -102,10 +194,10 @@ trait StubUtils {
                |    "status": "accepted"
                |  },
                |  "subscription": {
-               |    "callbackUrl": "http://localhost:9896/TODO-CHANGE-THIS",
+               |    "callbackUrl": "http://localhost:9896/callbackUrl",
                |    "regime": "vat",
                |    "subscriber": "scrs",
-               |    "transactionId": "000-434-$txId"
+               |    "transactionId": "000-434-1"
                |  }
                |}
              """.stripMargin
@@ -116,12 +208,12 @@ trait StubUtils {
 
     def incorporationStatusNotKnown(): PreconditionBuilder = {
       stubFor(
-        get(urlPathEqualTo(s"/vatreg/incorporation-information/000-434-$txId"))
+        get(urlPathEqualTo(s"/vatreg/incorporation-information/000-434-1"))
           .willReturn(notFound().withBody(
             s"""
                |{
-               |    "errorCode": 404,
-               |    "errorMessage": "Incorporation Status not known. A subscription has been setup"
+               |  "errorCode": 404,
+               |  "errorMessage": "Incorporation Status not known. A subscription has been setup"
                |}
              """.stripMargin
           )))
@@ -131,14 +223,30 @@ trait StubUtils {
 
 
   case class CorporationTaxRegistrationStub
-  (regId: String)
+  ()
   (implicit builder: PreconditionBuilder) {
 
     def existsWithStatus(status: String): PreconditionBuilder = {
       stubFor(
-        get(urlPathEqualTo(s"/incorporation-frontend-stubs/$regId/corporation-tax-registration"))
+        get(urlPathEqualTo(s"/incorporation-frontend-stubs/1/corporation-tax-registration"))
           .willReturn(ok(
-            s"""{ "confirmationReferences": { "transaction-id": "000-434-$regId" }, "status": "$status" }"""
+            s"""{ "confirmationReferences": { "transaction-id": "000-434-1" }, "status": "$status" }"""
+          )))
+      builder
+    }
+
+  }
+
+
+  case class VatSchemeStub
+  ()
+  (implicit builder: PreconditionBuilder) extends KeystoreStub {
+
+    def isBlank: PreconditionBuilder = {
+      stubFor(
+        get(urlPathEqualTo("/vatreg/1/get-scheme"))
+          .willReturn(ok(
+            s"""{ "registrationId" : "1" }"""
           )))
       builder
     }
@@ -146,35 +254,36 @@ trait StubUtils {
   }
 
   case class VatRegistrationFootprintStub
-  (vatSchemeId: String)
+  ()
   (implicit builder: PreconditionBuilder) extends KeystoreStub {
-    def exists(): PreconditionBuilder = {
+
+    def exists: PreconditionBuilder = {
       stubFor(
         post(urlPathEqualTo("/vatreg/new"))
           .willReturn(ok(
-            s"""{ "registrationId" : "$vatSchemeId" }"""
+            s"""{ "registrationId" : "1" }"""
           )))
 
-      stubKeystorePut("RegistrationId",      """{ "foo": "Bar" }""")
-      stubKeystorePut("CompanyProfile",      """{ "foo": "Bar" }""")
-      stubKeystorePut("incorporationStatus", """{ "foo": "Bar" }""")
+      stubKeystorePut("RegistrationId", "{}")
+      stubKeystorePut("CompanyProfile", "{}")
+      stubKeystorePut("incorporationStatus", "{}")
 
       builder
     }
   }
 
   case class UserStub
-  (userId: String)
+  ()
   (implicit builder: PreconditionBuilder) extends SessionBuilder {
 
-    def isAuthenticatedAndAuthorised()(implicit requestHolder: RequestHolder) = {
-      requestHolder.request = requestWithSession(userId)
+    def isAuthorised(implicit requestHolder: RequestHolder): PreconditionBuilder = {
+      requestHolder.request = requestWithSession("anyUserId")
       stubFor(
         get(urlPathEqualTo("/auth/authority"))
           .willReturn(ok(
             s"""
                |{
-               |  "uri":"$userId",
+               |  "uri":"anyUserId",
                |  "loggedInAt": "2014-06-09T14:57:09.522Z",
                |  "previouslyLoggedInAt": "2014-06-09T14:48:24.841Z",
                |  "credentials": {"gatewayId":"xxx2"},
@@ -196,17 +305,20 @@ trait StubUtils {
   (journeyId: String)
   (implicit builder: PreconditionBuilder) {
 
-    def initialisedSuccessfully() = {
-      stubFor(
-        post(urlMatching(s""".*/api/init/$journeyId"""))
-          .willReturn(aResponse.withStatus(202).withHeader("Location", "continueUrl")))
+    val journeyInitUrl: UrlPathPattern = urlPathMatching(s".*/api/init/$journeyId")
+
+    def initialisedSuccessfully(): PreconditionBuilder = {
+      stubFor(post(journeyInitUrl).willReturn(aResponse.withStatus(202).withHeader("Location", "continueUrl")))
       builder
     }
 
-    def failedToInitialise() = {
-      stubFor(
-        post(urlMatching(s""".*/api/init/$journeyId"""))
-          .willReturn(ok()))
+    def notInitialisedAsExpected(): PreconditionBuilder = {
+      stubFor(post(journeyInitUrl).willReturn(aResponse().withStatus(202))) // a 202 _without_ Location header
+      builder
+    }
+
+    def failedToInitialise(): PreconditionBuilder = {
+      stubFor(post(journeyInitUrl).willReturn(serverError()))
       builder
     }
 
@@ -218,7 +330,7 @@ trait StubUtils {
 
     val confirmedAddressPath = s""".*/api/confirmed[?]id=$id"""
 
-    def isFound() = {
+    def isFound: PreconditionBuilder = {
       stubFor(
         get(urlMatching(confirmedAddressPath))
           .willReturn(ok(
@@ -243,7 +355,7 @@ trait StubUtils {
       builder
     }
 
-    def isNotFound() = {
+    def isNotFound: PreconditionBuilder = {
       stubFor(
         get(urlMatching(confirmedAddressPath))
           .willReturn(notFound()))

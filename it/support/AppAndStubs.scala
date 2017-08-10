@@ -21,17 +21,21 @@ import org.scalatest.concurrent.{IntegrationPatience, PatienceConfiguration}
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{Suite, TestSuite}
 import org.scalatestplus.play.OneServerPerSuite
-import play.api.test.FakeApplication
+import play.api.mvc.AnyContentAsEmpty
+import play.api.test.{FakeApplication, FakeRequest}
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.it.Port
 
 trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerSuite with IntegrationPatience with PatienceConfiguration {
   me: Suite with TestSuite =>
 
-  implicit val hc = HeaderCarrier()
-  implicit val portNum = port
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val portNum: Int = port
+  implicit val requestHolder: RequestHolder = new RequestHolder(FakeRequest())
 
-  abstract override implicit val patienceConfig =
+  def request: FakeRequest[AnyContentAsEmpty.type] = requestHolder.request
+
+  abstract override implicit val patienceConfig: PatienceConfig =
     PatienceConfig(
       timeout = Span(1, Seconds),
       interval = Span(50, Millis))
