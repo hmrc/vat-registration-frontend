@@ -35,7 +35,7 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .corporationTaxRegistration.existsWithStatus("held")
           .company.isIncorporated
 
-        whenReady(controller.start(request))(res => res.header.status === 200)
+        whenReady(controller.start(request))(res => res.header.status mustBe 200)
       }
     }
   }
