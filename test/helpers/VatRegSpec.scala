@@ -17,7 +17,6 @@
 package helpers
 
 import builders.AuthBuilder
-import cats.data.OptionT
 import cats.instances.FutureInstances
 import cats.syntax.ApplicativeSyntax
 import controllers.CommonPlayDependencies
@@ -29,7 +28,6 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{Assertion, BeforeAndAfterEach, Inside, Inspectors}
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import play.api.http.Status
 import play.api.mvc._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
@@ -39,11 +37,7 @@ import scala.concurrent.Future
 
 class VatRegSpec extends PlaySpec with OneAppPerSuite
   with MockitoSugar with VatMocks with LoginFixture with Inside with Inspectors
-  with ScalaFutures with ApplicativeSyntax with FutureInstances with BeforeAndAfterEach {
-
-  implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
-
-  import play.api.test.Helpers._
+  with ScalaFutures with ApplicativeSyntax with FutureInstances with BeforeAndAfterEach with FutureAssertions {
 
   implicit val hc = HeaderCarrier()
 
@@ -82,55 +76,5 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
 
   def callAuthorised(a: Action[AnyContent])(test: Future[Result] => Assertion): Unit =
     AuthBuilder.withAuthorisedUser(a)(test)
-
-  implicit class FutureUnit(fu: Future[Unit]) {
-
-    def completedSuccessfully: Assertion = whenReady(fu)(_ mustBe (()))
-
-  }
-
-
-  implicit class FutureReturns(f: Future[_]) {
-
-    def returns(o: Any): Assertion = whenReady(f)(_ mustBe o)
-
-    def failedWith(e: Exception): Assertion = whenReady(f.failed)(_ mustBe e)
-
-    def failedWith[F <: Throwable](exClass: Class[F]): Assertion = whenReady(f.failed)(_.getClass mustBe exClass)
-
-  }
-
-  implicit class OptionTReturns[T](ot: OptionT[Future, T]) {
-
-    def returnsSome(t: T): Assertion = whenReady(ot.value)(_ mustBe Some(t))
-
-    def returnsNone: Assertion = whenReady(ot.value)(_ mustBe Option.empty[T])
-
-    def failedWith(e: Exception): Assertion = whenReady(ot.value.failed)(_ mustBe e)
-
-    def failedWith[F <: Throwable](exClass: Class[F]): Assertion = whenReady(ot.value.failed)(_.getClass mustBe exClass)
-
-  }
-
-
-  implicit class FutureResult(fr: Future[Result]) {
-
-    def redirectsTo(url: String): Assertion = {
-      status(fr) mustBe Status.SEE_OTHER
-      redirectLocation(fr) mustBe Some(url)
-    }
-
-    def isA(httpStatusCode: Int): Assertion = {
-      status(fr) mustBe httpStatusCode
-    }
-
-    def includesText(s: String): Assertion = {
-      status(fr) mustBe OK
-      contentType(fr) mustBe Some("text/html")
-      charset(fr) mustBe Some("utf-8")
-      contentAsString(fr) must include(s)
-    }
-
-  }
 
 }

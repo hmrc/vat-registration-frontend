@@ -19,24 +19,23 @@ package models.view.frs
 import java.text.DecimalFormat
 
 import models._
-import models.api.{VatFlatRateScheme, VatScheme}
+import models.api.VatScheme
 import play.api.libs.json.Json
 
 final case class BusinessSectorView(businessSector: String, flatRatePercentage: BigDecimal) {
 
   val flatRatePercentageFormatted = BusinessSectorView.decimalFormat.format(flatRatePercentage)
-  
+
 }
 
 object BusinessSectorView {
 
   val decimalFormat = new DecimalFormat("#0.##")
 
-
   implicit val format = Json.format[BusinessSectorView]
 
   implicit val viewModelFormat = ViewModelFormat(
-    readF = (group: S4LFlatRateScheme) => group.categoryOfBusiness,
+    readF = (_: S4LFlatRateScheme).categoryOfBusiness,
     updateF = (c: BusinessSectorView, g: Option[S4LFlatRateScheme]) =>
       g.getOrElse(S4LFlatRateScheme()).copy(categoryOfBusiness = Some(c))
   )

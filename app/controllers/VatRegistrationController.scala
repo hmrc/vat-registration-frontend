@@ -58,7 +58,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
     * With `AuthenticatedBy` you would do the same but you get a handle on the current user's [[uk.gov.hmrc.play.frontend.auth.AuthContext]] too:
     * {{{authorised( implicit user => implicit request => Ok(...))}}}
     * or
-    * {{{authorised.async( implicit user => imlicit request => ??? // generates a Future Result )}}}
+    * {{{authorised.async( implicit user => implicit request => ??? // generates a Future Result )}}}
     *
     * @return an AuthenticatedBy action builder that is specific to VatTaxRegime and GGConfidence confidence level
     */

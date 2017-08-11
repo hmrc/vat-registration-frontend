@@ -22,7 +22,6 @@ import connectors.AddressLookupConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.PreviousAddressForm
 import models.view.vatLodgingOfficer.PreviousAddressView
-import play.api.Logger
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
