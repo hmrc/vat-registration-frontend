@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package builders
+package support
 
 import java.util.UUID
 
-import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.http.SessionKeys
 
@@ -26,14 +26,8 @@ object SessionBuilder extends SessionBuilder {}
 
 trait SessionBuilder {
 
-  def updateRequestFormWithSession(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], userId: String): FakeRequest[AnyContentAsFormUrlEncoded] =
-    fakeRequest.withSession(
-      SessionKeys.sessionId -> s"session-${UUID.randomUUID}",
-      SessionKeys.token -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId)
-
-  def buildRequestWithSession(userId: String): FakeRequest[AnyContentAsEmpty.type] =
-    FakeRequest().withSession(
+  def requestWithSession(req: FakeRequest[AnyContentAsFormUrlEncoded], userId: String): FakeRequest[AnyContentAsFormUrlEncoded] =
+    req.withSession(
       SessionKeys.sessionId -> s"session-${UUID.randomUUID}",
       SessionKeys.token -> "RANDOMTOKEN",
       SessionKeys.userId -> userId)

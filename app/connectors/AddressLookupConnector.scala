@@ -51,9 +51,9 @@ class AddressLookupConnector @Inject()() extends AddressLookupConnect with Servi
     val postUrl = s"$addressLookupFrontendUrl/api/init/${journeyId.id}"
     val continueJson = Json.obj("continueUrl" -> s"$addressLookupContinueUrl${call.url}")
 
-    http.POST[JsObject, HttpResponse](postUrl, continueJson) map { resp =>
+    http.POST[JsObject, HttpResponse](postUrl, continueJson).map { resp =>
       Logger.debug(s"Response from ALF: $resp")
-      resp.header(LOCATION).map(Call(GET, _)).getOrElse {
+      resp.header(LOCATION).map(Call(GET, _)).getOrElse { //here resp will be a 202 Accepted with a Location header
         Logger.warn("[AddressLookupConnector] [getOnRampUrl] - ERROR: Location header not set in ALF response")
         throw new ALFLocationHeaderNotSetException
       }

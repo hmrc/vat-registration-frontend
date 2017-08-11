@@ -23,7 +23,6 @@ import controllers.vatTradingDetails.vatChoice.{routes => vatChoiceRoutes}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerContactDetailsForm
 import models.view.vatLodgingOfficer.OfficerContactDetailsView
-import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 

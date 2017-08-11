@@ -28,7 +28,7 @@ trait ViewModelFormat[T] {
 
 object ViewModelFormat {
 
-  type Aux[R, Group0] = ViewModelFormat[R] {type Group = Group0}
+  type Aux[T, Group0] = ViewModelFormat[T] {type Group = Group0}
 
   def apply[T, G](readF: G => Option[T], updateF: (T, Option[G]) => G) = new ViewModelFormat[T] {
     override type Group = G
