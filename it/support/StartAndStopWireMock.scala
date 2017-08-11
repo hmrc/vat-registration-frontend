@@ -42,11 +42,16 @@ trait StartAndStopWireMock extends BeforeAndAfterEach with BeforeAndAfterAll {
     reset()
   }
 
-  override protected def afterAll(): Unit = {
-    wireMockServer.stop()
+  override def afterEach(): Unit = {
+    println("===== REQUESTS =====")
     wireMockServer.getAllServeEvents.toList
       .sortBy(_.getRequest.getLoggedDate)
-      .map(_.getRequest).map(r => s"${r.getMethod}\t${r.getUrl}")
+      .map(_.getRequest).map(r => s"${r.getLoggedDate.toInstant.toEpochMilli}\t${r.getMethod}\t${r.getUrl}")
       .foreach(println)
+    println("===== END =====")
+  }
+
+  override protected def afterAll(): Unit = {
+    wireMockServer.stop()
   }
 }

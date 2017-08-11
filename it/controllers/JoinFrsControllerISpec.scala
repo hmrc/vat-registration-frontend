@@ -18,6 +18,7 @@ package controllers
 
 import controllers.frs.JoinFrsController
 import models.S4LFlatRateScheme
+import models.api.VatFlatRateScheme
 import models.view.frs.JoinFrsView
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
@@ -29,14 +30,14 @@ class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
   def controller: JoinFrsController = app.injector.instanceOf(classOf[JoinFrsController])
 
-  "JoinFrsController" must {
+  "accessing the Join FRS page" must {
     "return an OK status" when {
       "a view is in Save 4 Later" in {
         given()
           .user.isAuthorised
           .s4lContainer[S4LFlatRateScheme].contains(JoinFrsView(selection = true))
 
-        whenReady(controller.show(request))(res => res.header.status === 200)
+        whenReady(controller.show(request))(res => res.header.status mustBe 200)
       }
 
       "a view is in neither Save 4 Later nor backend" in {
@@ -45,7 +46,34 @@ class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .s4lContainer[S4LFlatRateScheme].isEmpty
           .vatScheme.isBlank
 
-        whenReady(controller.show(request))(res => res.header.status === 200)
+        whenReady(controller.show(request))(res => res.header.status mustBe 200)
+      }
+    }
+  }
+
+
+  "posting an answer to the Join FRS question" must {
+    "return an Redirect to the next page" when {
+      "user answered Yes" in {
+        given()
+          .postRequest(Map("joinFrsRadio" -> "true")) //ordering matters! oops
+          .user.isAuthorised
+          .s4lContainer[S4LFlatRateScheme].contains(JoinFrsView(selection = false))
+          .s4lContainer[S4LFlatRateScheme].isUpdatedWith(JoinFrsView(selection = true))
+
+        whenReady(controller.submit(request))(res => res.header.status mustBe 303)
+      }
+
+      "user answered No" in {
+        given()
+          .postRequest(Map("joinFrsRadio" -> "false")) //ordering matters! oops
+          .user.isAuthorised
+          .s4lContainer[S4LFlatRateScheme].contains(JoinFrsView(selection = true))
+          .s4lContainer[S4LFlatRateScheme].isUpdatedWith(JoinFrsView(selection = false))
+          .vatScheme.isBlank
+          .vatScheme.isUpdatedWith(VatFlatRateScheme(joinFrs = true))
+
+        whenReady(controller.submit(request))(res => res.header.status mustBe 303)
       }
 
     }

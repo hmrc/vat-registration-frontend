@@ -21,14 +21,14 @@ import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import models.S4LKey
 import play.api.libs.json.Format
-import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.crypto.CompositeSymmetricCrypto.aes
 
 trait StubUtils {
   me: StartAndStopWireMock =>
 
-  final class RequestHolder(var request: FakeRequest[AnyContentAsEmpty.type])
+  final class RequestHolder(var request: FakeRequest[AnyContentAsFormUrlEncoded])
 
   class PreconditionBuilder {
 
@@ -37,9 +37,15 @@ trait StubUtils {
     def address(id: String, line1: String, line2: String, country: String, postcode: String) =
       AddressStub(id, line1, line2, country, postcode)
 
-    def journey(id: String) = JourneyStub(id)
+    def postRequest(data: Map[String, String])(implicit requestHolder: RequestHolder): PreconditionBuilder = {
+      val requestWithBody = FakeRequest("POST", "/").withFormUrlEncodedBody(data.toArray: _*)
+      requestHolder.request = requestWithBody
+      this
+    }
 
     def user = UserStub()
+
+    def journey(id: String) = JourneyStub(id)
 
     def vatRegistrationFootprint = VatRegistrationFootprintStub()
 
@@ -161,6 +167,12 @@ trait StubUtils {
       builder
     }
 
+    def isUpdatedWith[T](t: T)(implicit key: S4LKey[C], fmt: Format[T]): PreconditionBuilder = {
+      stubKeystoreGet("RegistrationId", "\"1\"")
+      stubS4LPut(key.key, fmt.writes(t).toString())
+      builder
+    }
+
     def isEmpty: PreconditionBuilder = {
       stubKeystoreGet("RegistrationId", "\"1\"")
       stubS4LGetNothing()
@@ -251,6 +263,13 @@ trait StubUtils {
       builder
     }
 
+    def isUpdatedWith[T](t: T)(implicit tFmt: Format[T]) = {
+      stubFor(
+        patch(urlPathMatching(s"/vatreg/1/.*"))
+          .willReturn(aResponse().withStatus(202).withBody(tFmt.writes(t).toString())))
+      builder
+    }
+
   }
 
   case class VatRegistrationFootprintStub
@@ -285,7 +304,7 @@ trait StubUtils {
   (implicit builder: PreconditionBuilder) extends SessionBuilder {
 
     def isAuthorised(implicit requestHolder: RequestHolder): PreconditionBuilder = {
-      requestHolder.request = requestWithSession("anyUserId")
+      requestHolder.request = requestWithSession(requestHolder.request, "anyUserId")
       stubFor(
         get(urlPathEqualTo("/auth/authority"))
           .willReturn(ok(

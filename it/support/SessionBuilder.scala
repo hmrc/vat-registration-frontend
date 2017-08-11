@@ -18,7 +18,7 @@ package support
 
 import java.util.UUID
 
-import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.http.SessionKeys
 
@@ -26,8 +26,8 @@ object SessionBuilder extends SessionBuilder {}
 
 trait SessionBuilder {
 
-  def requestWithSession(userId: String): FakeRequest[AnyContentAsEmpty.type] =
-    FakeRequest().withSession(
+  def requestWithSession(req: FakeRequest[AnyContentAsFormUrlEncoded], userId: String): FakeRequest[AnyContentAsFormUrlEncoded] =
+    req.withSession(
       SessionKeys.sessionId -> s"session-${UUID.randomUUID}",
       SessionKeys.token -> "RANDOMTOKEN",
       SessionKeys.userId -> userId)

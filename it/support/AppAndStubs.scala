@@ -21,7 +21,7 @@ import org.scalatest.concurrent.{IntegrationPatience, PatienceConfiguration}
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{Suite, TestSuite}
 import org.scalatestplus.play.OneServerPerSuite
-import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.{FakeApplication, FakeRequest}
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.it.Port
@@ -31,9 +31,9 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerS
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val portNum: Int = port
-  implicit val requestHolder: RequestHolder = new RequestHolder(FakeRequest())
+  implicit val requestHolder: RequestHolder = new RequestHolder(FakeRequest().withFormUrlEncodedBody())
 
-  def request: FakeRequest[AnyContentAsEmpty.type] = requestHolder.request
+  def request: FakeRequest[AnyContentAsFormUrlEncoded] = requestHolder.request
 
   abstract override implicit val patienceConfig: PatienceConfig =
     PatienceConfig(
