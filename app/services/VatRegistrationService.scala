@@ -31,39 +31,37 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@ImplementedBy(classOf[VatRegistrationService])
-trait RegistrationService {
 
-  def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit]
+class VatRegistrationService @Inject()(injS4LService: S4LService,
+                                       injVatRegConnector: VatRegistrationConnector,
+                                       injCompRegConnector: CompanyRegistrationConnector,
+                                       injIncorporationService: IncorpInfoService)
+  extends RegistrationService {
 
-  def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme]
-
-  def getAckRef(regId: String)(implicit hc: HeaderCarrier): OptionalResponse[String]
-
-  def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials]
-
-  def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[VatSicAndCompliance]
-
-  def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails]
-
-  def submitVatContact()(implicit hc: HeaderCarrier): Future[VatContact]
-
-  def submitVatEligibility()(implicit hc: HeaderCarrier): Future[VatServiceEligibility]
-
-  def submitVatLodgingOfficer()(implicit hc: HeaderCarrier): Future[VatLodgingOfficer]
+  override val s4LService = injS4LService
+  override val vatRegConnector = injVatRegConnector
+  override val compRegConnector = injCompRegConnector
+  override val incorporationService = injIncorporationService
 
 }
 
-class VatRegistrationService @Inject()(s4LService: S4LService,
-                                       vatRegConnector: VatRegistrationConnector,
-                                       compRegConnector: CompanyRegistrationConnector,
-                                       incorporationService: IncorpInfoService)
-  extends RegistrationService with CommonService {
+@ImplementedBy(classOf[VatRegistrationService])
+trait RegistrationService extends FlatRateService with LegacyServiceToBeRefactored{
 
+  val s4LService: S4LService
+  val vatRegConnector: VatRegistrationConnector
+  val compRegConnector: CompanyRegistrationConnector
+  val incorporationService: IncorpInfoService
+}
+
+// TODO refactor in a similar way to FRS
+trait LegacyServiceToBeRefactored {
+
+  self : RegistrationService =>
 
   import cats.syntax.all._
 
-  private def s4l[T: Format : S4LKey]()(implicit hc: HeaderCarrier) =
+  private[services] def s4l[T: Format : S4LKey]()(implicit hc: HeaderCarrier) =
     s4LService.fetchAndGet[T]()
 
   def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
@@ -153,18 +151,6 @@ class VatRegistrationService @Inject()(s4LService: S4LService,
     for {
       (vs, vlo) <- (getVatScheme() |@| s4l[S4LVatLodgingOfficer]()).tupled
       response <- vatRegConnector.upsertVatLodgingOfficer(vs.id, merge(vlo, vs))
-    } yield response
-  }
-
-  def submitVatFlatRateScheme()(implicit hc: HeaderCarrier): Future[VatFlatRateScheme] = {
-    def merge(fresh: Option[S4LFlatRateScheme], vs: VatScheme): VatFlatRateScheme =
-      fresh.fold(
-        vs.vatFlatRateScheme.getOrElse(throw fail("VatFlatRateScheme"))
-      )(s4l => S4LFlatRateScheme.apiT.toApi(s4l))
-
-    for {
-      (vs, frs) <- (getVatScheme() |@| s4l[S4LFlatRateScheme]()).tupled
-      response <- vatRegConnector.upsertVatFlatRateScheme(vs.id, merge(frs, vs))
     } yield response
   }
 

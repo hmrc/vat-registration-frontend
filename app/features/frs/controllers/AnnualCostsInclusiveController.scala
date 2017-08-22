@@ -37,11 +37,11 @@ class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel[AnnualCostsInclusiveView]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.frs.annual_costs_inclusive(f))))
+      .map(f => Ok(features.frs.views.html.annual_costs_inclusive(f))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.frs.annual_costs_inclusive(badForm)).pure,
+      badForm => BadRequest(features.frs.views.html.annual_costs_inclusive(badForm)).pure,
       view => (if (view.selection == NO) {
         save(view).flatMap(_ =>
           getFlatRateSchemeThreshold().map {

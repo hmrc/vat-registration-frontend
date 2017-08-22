@@ -40,7 +40,7 @@ class VatRegistrationConnector extends RegistrationConnector with ServicesConfig
 }
 
 @ImplementedBy(classOf[VatRegistrationConnector])
-trait RegistrationConnector extends FutureInstances {
+trait RegistrationConnector extends FlatRateConnector with FutureInstances {
   self =>
 
   val vatRegUrl: String
@@ -96,12 +96,6 @@ trait RegistrationConnector extends FutureInstances {
                              (implicit hc: HeaderCarrier, rds: HttpReads[VatLodgingOfficer]): Future[VatLodgingOfficer] =
     http.PATCH[VatLodgingOfficer, VatLodgingOfficer](s"$vatRegUrl/vatreg/$regId/lodging-officer", vatLodgingOfficer).recover{
       case e: Exception => throw logResponse(e, className, "upsertVatLodgingOfficer")
-    }
-
-  def upsertVatFlatRateScheme(regId: String, vatFrs: VatFlatRateScheme)
-                             (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] =
-    http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", vatFrs).recover{
-      case e: Exception => throw logResponse(e, className, "upsertVatFrsAnswers")
     }
 
   def upsertVatEligibility(regId: String, vatServiceEligibility: VatServiceEligibility)

@@ -35,11 +35,11 @@ class FrsStartDateController @Inject()(frsStartDateFormFactory: FrsStartDateForm
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     viewModel[FrsStartDateView]().getOrElse(FrsStartDateView())
-      .map(f => Ok(views.html.pages.frs.frs_start_date(frsStartDateFormFactory.form().fill(f)))))
+      .map(f => Ok(features.frs.views.html.frs_start_date(frsStartDateFormFactory.form().fill(f)))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     frsStartDateFormFactory.form().bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.frs.frs_start_date(badForm)).pure,
+      badForm => BadRequest(features.frs.views.html.frs_start_date(badForm)).pure,
       view => if (view.dateType == FrsStartDateView.VAT_REGISTRATION_DATE) {
         val updateVatStartDate = setVatRegistrationDateToForm(view)
         updateVatStartDate.flatMap(frsStartDateView => saveForm(frsStartDateView))

@@ -28,7 +28,7 @@ class ConfirmBusinessSectorController @Inject()(ds: CommonPlayDependencies, conf
   extends BusinessSectorAwareController(ds, configConnector) {
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    businessSectorView().map(view => Ok(views.html.pages.frs.frs_confirm_business_sector(view))))
+    businessSectorView().map(view => Ok(features.frs.views.html.frs_confirm_business_sector(view))))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     businessSectorView().flatMap(save(_).map(_ => Redirect(controllers.frs.routes.RegisterForFrsWithSectorController.show()))))
