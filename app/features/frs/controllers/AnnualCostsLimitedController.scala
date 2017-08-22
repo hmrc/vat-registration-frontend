@@ -37,12 +37,12 @@ class AnnualCostsLimitedController @Inject()(ds: CommonPlayDependencies)
     for {
       estimateVatTurnover <- getFlatRateSchemeThreshold()
       annualCostsLimitedForm <- viewModel[AnnualCostsLimitedView]().fold(defaultForm)(defaultForm.fill)
-    } yield Ok(views.html.pages.frs.annual_costs_limited(annualCostsLimitedForm, estimateVatTurnover)))
+    } yield Ok(features.frs.views.html.annual_costs_limited(annualCostsLimitedForm, estimateVatTurnover)))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     getFlatRateSchemeThreshold().flatMap(turnover =>
       AnnualCostsLimitedFormFactory.form(Seq(turnover)).bindFromRequest().fold(
-        badForm => BadRequest(views.html.pages.frs.annual_costs_limited(badForm, turnover)).pure,
+        badForm => BadRequest(features.frs.views.html.annual_costs_limited(badForm, turnover)).pure,
         view => (if (view.selection == AnnualCostsLimitedView.NO) {
           save(view).map(_ => controllers.frs.routes.ConfirmBusinessSectorController.show())
         } else {

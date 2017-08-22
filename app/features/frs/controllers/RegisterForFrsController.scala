@@ -18,31 +18,32 @@ package controllers.frs
 
 import javax.inject.Inject
 
-import connectors.ConfigConnect
-import controllers.CommonPlayDependencies
+import cats.syntax.FlatMapSyntax
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.genericForms.YesOrNoFormFactory
 import models.S4LFlatRateScheme
-import models.view.frs.RegisterForFrsView
+import models.view.frs.{BusinessSectorView, RegisterForFrsView}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, VatRegistrationService}
 
 
-class RegisterForFrsWithSectorController @Inject()(ds: CommonPlayDependencies, formFactory: YesOrNoFormFactory, configConnector: ConfigConnect)
-                                                  (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends BusinessSectorAwareController(ds, configConnector) {
+class RegisterForFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOrNoFormFactory)
+                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with FlatMapSyntax {
 
-  val form = formFactory.form("registerForFrsWithSector")("frs.registerForWithSector")
+  val defaultFlatRate: BigDecimal = 16.5
+
+  val form = formFactory.form("registerForFrs")("frs.registerFor")
 
   def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    businessSectorView().map(sectorInfo => Ok(views.html.pages.frs.frs_your_flat_rate(sectorInfo, form))))
+    Ok(features.frs.views.html.frs_register_for(form)).pure)
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     form.bindFromRequest().fold(
-      badForm => businessSectorView().map(view => BadRequest(views.html.pages.frs.frs_your_flat_rate(view, badForm))),
+      badForm => BadRequest(features.frs.views.html.frs_register_for(badForm)).pure,
       view => (for {
-        sector <- businessSectorView()
-        _ <- save(sector)
         _ <- save(RegisterForFrsView(view.answer))
+        _ <- save(BusinessSectorView("", defaultFlatRate))
       } yield view.answer).ifM(
         ifTrue = controllers.frs.routes.FrsStartDateController.show().pure,
         ifFalse = for {
@@ -51,5 +52,4 @@ class RegisterForFrsWithSectorController @Inject()(ds: CommonPlayDependencies, f
           _ <- vrs.submitVatFlatRateScheme()
         } yield controllers.routes.SummaryController.show()
       ).map(Redirect)))
-
 }
