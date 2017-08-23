@@ -28,6 +28,7 @@ import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, IncorpInfoService}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
+// TODO re-check why this is in trading details rather than vatEligibility
 class EligibilitySuccessController @Inject()(ds: CommonPlayDependencies)
   extends VatRegistrationController(ds) with CommonService{
 

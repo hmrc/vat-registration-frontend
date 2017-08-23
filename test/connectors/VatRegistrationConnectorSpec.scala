@@ -111,44 +111,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  "Calling upsertVatChoice" should {
-    "return the correct VatResponse when the microservice completes and returns a VatChoice model" in new Setup {
-      mockHttpPATCH[VatChoice, VatChoice]("tst-url", validVatChoice)
-      connector.upsertVatChoice("tstID", validVatChoice) returns validVatChoice
-    }
-    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatChoice, VatChoice]("tst-url", forbidden)
-      connector.upsertVatChoice("tstID", validVatChoice) failedWith forbidden
-    }
-    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[VatChoice, VatChoice]("tst-url", notFound)
-      connector.upsertVatChoice("tstID", validVatChoice) failedWith notFound
-    }
-    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatChoice, VatChoice]("tst-url", internalServiceException)
-      connector.upsertVatChoice("tstID", validVatChoice) failedWith internalServiceException
-    }
-  }
-
-  "Calling upsertVatTradingDetails" should {
-    "return the correct VatResponse when the microservice completes and returns a VatTradingDetails model" in new Setup {
-      mockHttpPATCH[VatTradingDetails, VatTradingDetails]("tst-url", validVatTradingDetails)
-      connector.upsertVatTradingDetails("tstID", validVatTradingDetails) returns validVatTradingDetails
-    }
-    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatTradingDetails, VatTradingDetails]("tst-url", forbidden)
-      connector.upsertVatTradingDetails("tstID", validVatTradingDetails) failedWith forbidden
-    }
-    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[VatTradingDetails, VatTradingDetails]("tst-url", notFound)
-      connector.upsertVatTradingDetails("tstID", validVatTradingDetails) failedWith notFound
-    }
-    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatTradingDetails, VatTradingDetails]("tst-url", internalServiceException)
-      connector.upsertVatTradingDetails("tstID", validVatTradingDetails) failedWith internalServiceException
-    }
-  }
-
   "Calling upsertVatFinancials" should {
     "return the correct VatResponse when the microservice completes and returns a VatFinancials model" in new Setup {
       mockHttpPATCH[VatFinancials, VatFinancials]("tst-url", validVatFinancials)

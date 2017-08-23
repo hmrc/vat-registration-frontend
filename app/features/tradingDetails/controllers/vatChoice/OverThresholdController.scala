@@ -37,14 +37,14 @@ class OverThresholdController @Inject()(formFactory: OverThresholdFormFactory, d
     for {
       dateOfIncorporation <- fetchDateOfIncorporation()
       form <- viewModel[OverThresholdView]().fold(formFactory.form(dateOfIncorporation))(formFactory.form(dateOfIncorporation).fill)
-    } yield Ok(views.html.pages.vatTradingDetails.vatChoice.over_threshold(form, dateOfIncorporation.format(FORMAT_DD_MMMM_Y)))
+    } yield Ok(features.tradingDetails.views.html.vatChoice.over_threshold(form, dateOfIncorporation.format(FORMAT_DD_MMMM_Y)))
   }
   )
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
     fetchDateOfIncorporation().flatMap(date =>
       formFactory.form(date).bindFromRequest().fold(badForm =>
-        BadRequest(views.html.pages.vatTradingDetails.vatChoice.over_threshold(badForm, date.format(FORMAT_DD_MMMM_Y))).pure,
+        BadRequest(features.tradingDetails.views.html.vatChoice.over_threshold(badForm, date.format(FORMAT_DD_MMMM_Y))).pure,
         data => save(data).map(_ => Redirect(controllers.vatTradingDetails.vatChoice.routes.ThresholdSummaryController.show()))
       )
     )
