@@ -14,46 +14,140 @@
  * limitations under the License.
  */
 
-package controllers.frs
+package models.view.frs {
 
-import javax.inject.Inject
+  import java.time.LocalDate
 
-import cats.syntax.FlatMapSyntax
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.frs.FrsStartDateFormFactory
-import models.view.frs.FrsStartDateView
-import models.view.vatTradingDetails.vatChoice.StartDateView
-import play.api.mvc._
-import services.{S4LService, VatRegistrationService}
-import uk.gov.hmrc.play.http.HeaderCarrier
+  import models._
+  import models.api.{VatFlatRateScheme, VatScheme}
+  import play.api.libs.json.Json
 
-import scala.concurrent.Future
+  import scala.util.Try
 
-class FrsStartDateController @Inject()(frsStartDateFormFactory: FrsStartDateFormFactory, ds: CommonPlayDependencies)
-                                      (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with FlatMapSyntax {
+  case class FrsStartDateView(dateType: String = "", date: Option[LocalDate] = None)
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[FrsStartDateView]().getOrElse(FrsStartDateView())
-      .map(f => Ok(features.frs.views.html.frs_start_date(frsStartDateFormFactory.form().fill(f)))))
+  object FrsStartDateView {
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    frsStartDateFormFactory.form().bindFromRequest().fold(
-      badForm => BadRequest(features.frs.views.html.frs_start_date(badForm)).pure,
-      view => if (view.dateType == FrsStartDateView.VAT_REGISTRATION_DATE) {
-        val updateVatStartDate = setVatRegistrationDateToForm(view)
-        updateVatStartDate.flatMap(frsStartDateView => saveForm(frsStartDateView))
-      } else {
-        saveForm(view)
-      }))
+    def bind(dateType: String, dateModel: Option[DateModel]): FrsStartDateView =
+      FrsStartDateView(dateType, dateModel.flatMap(_.toLocalDate))
 
-  private def setVatRegistrationDateToForm(view: FrsStartDateView)
-                                          (implicit headerCarrier: HeaderCarrier): Future[FrsStartDateView] =
-    viewModel[StartDateView]().fold(view)(startDateView => view.copy(date = startDateView.date))
+    def unbind(frsStartDate: FrsStartDateView): Option[(String, Option[DateModel])] =
+      Try {
+        frsStartDate.date.fold((frsStartDate.dateType, Option.empty[DateModel])) {
+          d => (frsStartDate.dateType, Some(DateModel.fromLocalDate(d)))
+        }
+      }.toOption
 
-  private def saveForm(view: FrsStartDateView)(implicit headerCarrier: HeaderCarrier): Future[Result] =
-    save(view).flatMap(_ =>
-      vrs.submitVatFlatRateScheme().map(_ =>
-        Redirect(controllers.routes.SummaryController.show())))
+    val VAT_REGISTRATION_DATE = "VAT_REGISTRATION_DATE"
+    val DIFFERENT_DATE = "DIFFERENT_DATE"
 
+    val validSelection: String => Boolean = Seq(VAT_REGISTRATION_DATE, DIFFERENT_DATE).contains
+
+    implicit val format = Json.format[FrsStartDateView]
+
+    implicit val viewModelFormat = ViewModelFormat(
+      readF = (group: S4LFlatRateScheme) => group.frsStartDate,
+      updateF = (c: FrsStartDateView, g: Option[S4LFlatRateScheme]) =>
+        g.getOrElse(S4LFlatRateScheme()).copy(frsStartDate = Some(c))
+    )
+
+    // Returns a view model for a specific part of a given VatScheme API model
+    implicit val modelTransformer = ApiModelTransformer[FrsStartDateView] { vs: VatScheme =>
+      vs.vatFlatRateScheme.collect {
+        case VatFlatRateScheme(_, _, _, _, Some(dateType), d@_, _, _) => FrsStartDateView(dateType, d) //TODO review if such collect necessary
+      }
+    }
+  }
+}
+
+package controllers.frs {
+
+  import javax.inject.Inject
+
+  import cats.syntax.FlatMapSyntax
+  import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import forms.frs.FrsStartDateFormFactory
+  import models.view.frs.FrsStartDateView
+  import models.view.vatTradingDetails.vatChoice.StartDateView
+  import play.api.mvc._
+  import services.{S4LService, VatRegistrationService}
+  import uk.gov.hmrc.play.http.HeaderCarrier
+
+  import scala.concurrent.Future
+
+  class FrsStartDateController @Inject()(frsStartDateFormFactory: FrsStartDateFormFactory, ds: CommonPlayDependencies)
+                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
+    extends VatRegistrationController(ds) with FlatMapSyntax {
+
+    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+      viewModel[FrsStartDateView]().getOrElse(FrsStartDateView())
+        .map(f => Ok(features.frs.views.html.frs_start_date(frsStartDateFormFactory.form().fill(f)))))
+
+    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+      frsStartDateFormFactory.form().bindFromRequest().fold(
+        badForm => BadRequest(features.frs.views.html.frs_start_date(badForm)).pure,
+        view => if (view.dateType == FrsStartDateView.VAT_REGISTRATION_DATE) {
+          val updateVatStartDate = setVatRegistrationDateToForm(view)
+          updateVatStartDate.flatMap(frsStartDateView => saveForm(frsStartDateView))
+        } else {
+          saveForm(view)
+        }))
+
+    private def setVatRegistrationDateToForm(view: FrsStartDateView)
+                                            (implicit headerCarrier: HeaderCarrier): Future[FrsStartDateView] =
+      viewModel[StartDateView]().fold(view)(startDateView => view.copy(date = startDateView.date))
+
+    private def saveForm(view: FrsStartDateView)(implicit headerCarrier: HeaderCarrier): Future[Result] =
+      save(view).flatMap(_ =>
+        vrs.submitVatFlatRateScheme().map(_ =>
+          Redirect(controllers.routes.SummaryController.show())))
+
+  }
+}
+
+package forms.frs {
+
+  import java.time.LocalDate
+  import javax.inject.Inject
+
+  import common.Now
+  import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
+  import forms.FormValidation.{onOrAfter, textMapping}
+  import models.DateModel
+  import models.view.frs.FrsStartDateView
+  import play.api.data.Form
+  import play.api.data.Forms._
+  import services.DateService
+  import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
+
+  class FrsStartDateFormFactory @Inject()(dateService: DateService, today: Now[LocalDate]) {
+
+    implicit object LocalDateOrdering extends Ordering[LocalDate] {
+      override def compare(x: LocalDate, y: LocalDate): Int = x.compareTo(y)
+    }
+
+    val RADIO_INPUT_NAME = "frsStartDateRadio"
+
+    def form(): Form[FrsStartDateView] = {
+
+      val minDate: LocalDate = (dateService.addWorkingDays(today(), 2))
+
+      implicit val specificErrorCode: String = "frs.startDate"
+
+      Form(
+        mapping(
+          RADIO_INPUT_NAME -> textMapping()("frs.startDate.choice").verifying(FrsStartDateView.validSelection),
+          "frsStartDate" -> mandatoryIf(
+            isEqual(RADIO_INPUT_NAME, FrsStartDateView.DIFFERENT_DATE),
+            mapping(
+              "day" -> text,
+              "month" -> text,
+              "year" -> text
+            )(DateModel.apply)(DateModel.unapply).verifying(
+              nonEmptyDateModel(validDateModel(onOrAfter(minDate))))
+          )
+        )(FrsStartDateView.bind)(FrsStartDateView.unbind)
+      )
+    }
+  }
 }

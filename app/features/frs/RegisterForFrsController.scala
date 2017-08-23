@@ -14,42 +14,65 @@
  * limitations under the License.
  */
 
-package controllers.frs
+package models.view.frs {
 
-import javax.inject.Inject
+  import models.api.VatScheme
+  import models.{ApiModelTransformer, S4LFlatRateScheme, ViewModelFormat}
+  import play.api.libs.json.Json
 
-import cats.syntax.FlatMapSyntax
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.genericForms.YesOrNoFormFactory
-import models.S4LFlatRateScheme
-import models.view.frs.{BusinessSectorView, RegisterForFrsView}
-import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, VatRegistrationService}
+  final case class RegisterForFrsView(selection: Boolean)
 
+  object RegisterForFrsView {
+    implicit val format = Json.format[RegisterForFrsView]
 
-class RegisterForFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOrNoFormFactory)
-                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with FlatMapSyntax {
+    implicit val viewModelFormat = ViewModelFormat(
+      readF = (group: S4LFlatRateScheme) => group.registerForFrs,
+      updateF = (c: RegisterForFrsView, g: Option[S4LFlatRateScheme]) =>
+        g.getOrElse(S4LFlatRateScheme()).copy(registerForFrs = Some(c))
+    )
 
-  val defaultFlatRate: BigDecimal = 16.5
+    implicit val modelTransformer = ApiModelTransformer[RegisterForFrsView] { (vs: VatScheme) =>
+      vs.vatFlatRateScheme.flatMap(answers => answers.doYouWantToUseThisRate.map(RegisterForFrsView.apply))
+    }
+  }
+}
 
-  val form = formFactory.form("registerForFrs")("frs.registerFor")
+package controllers.frs {
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    Ok(features.frs.views.html.frs_register_for(form)).pure)
+  import javax.inject.Inject
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      badForm => BadRequest(features.frs.views.html.frs_register_for(badForm)).pure,
-      view => (for {
-        _ <- save(RegisterForFrsView(view.answer))
-        _ <- save(BusinessSectorView("", defaultFlatRate))
-      } yield view.answer).ifM(
-        ifTrue = controllers.frs.routes.FrsStartDateController.show().pure,
-        ifFalse = for {
-          frs <- s4lContainer[S4LFlatRateScheme]()
-          _ <- s4LService.save(frs.copy(frsStartDate = None))
-          _ <- vrs.submitVatFlatRateScheme()
-        } yield controllers.routes.SummaryController.show()
-      ).map(Redirect)))
+  import cats.syntax.FlatMapSyntax
+  import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import forms.genericForms.YesOrNoFormFactory
+  import models.S4LFlatRateScheme
+  import models.view.frs.{BusinessSectorView, RegisterForFrsView}
+  import play.api.mvc.{Action, AnyContent}
+  import services.{S4LService, VatRegistrationService}
+
+  class RegisterForFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOrNoFormFactory)
+                                          (implicit s4LService: S4LService, vrs: VatRegistrationService)
+    extends VatRegistrationController(ds) with FlatMapSyntax {
+
+    val defaultFlatRate: BigDecimal = 16.5
+
+    val form = formFactory.form("registerForFrs")("frs.registerFor")
+
+    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+      Ok(features.frs.views.html.frs_register_for(form)).pure)
+
+    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+      form.bindFromRequest().fold(
+        badForm => BadRequest(features.frs.views.html.frs_register_for(badForm)).pure,
+        view => (for {
+          _ <- save(RegisterForFrsView(view.answer))
+          _ <- save(BusinessSectorView("", defaultFlatRate))
+        } yield view.answer).ifM(
+          ifTrue = controllers.frs.routes.FrsStartDateController.show().pure,
+          ifFalse = for {
+            frs <- s4lContainer[S4LFlatRateScheme]()
+            _ <- s4LService.save(frs.copy(frsStartDate = None))
+            _ <- vrs.submitVatFlatRateScheme()
+          } yield controllers.routes.SummaryController.show()
+        ).map(Redirect)))
+  }
 }

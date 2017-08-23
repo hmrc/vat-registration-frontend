@@ -14,32 +14,66 @@
  * limitations under the License.
  */
 
-package controllers.frs
+package models.view.frs {
 
-import javax.inject.Inject
+  import java.text.DecimalFormat
 
-import cats.syntax.FlatMapSyntax
-import connectors.ConfigConnect
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import models.view.frs.BusinessSectorView
-import models.view.sicAndCompliance.MainBusinessActivityView
-import org.apache.commons.lang3.StringUtils
-import services.{S4LService, VatRegistrationService}
-import uk.gov.hmrc.play.http.HeaderCarrier
+  import models._
+  import models.api.VatScheme
+  import play.api.libs.json.Json
 
-import scala.concurrent.Future
+  final case class BusinessSectorView(businessSector: String, flatRatePercentage: BigDecimal) {
+    val flatRatePercentageFormatted = BusinessSectorView.decimalFormat.format(flatRatePercentage)
+  }
 
-class BusinessSectorAwareController @Inject()(ds: CommonPlayDependencies, configConnect: ConfigConnect)
-                                             (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with FlatMapSyntax {
+  object BusinessSectorView {
 
-  protected def businessSectorView()(implicit headerCarrier: HeaderCarrier): Future[BusinessSectorView] =
-    viewModel[BusinessSectorView]().filter(view => StringUtils.isNotBlank(view.businessSector))
-      .getOrElseF {
-        viewModel[MainBusinessActivityView]()
-          .subflatMap(mbaView => mbaView.mainBusinessActivity)
-          .map(sicCode => configConnect.getBusinessSectorDetails(sicCode.id))
-          .getOrElse(throw new IllegalStateException("Can't determine main business activity"))
-      }
+    val decimalFormat = new DecimalFormat("#0.##")
 
+    implicit val format = Json.format[BusinessSectorView]
+
+    implicit val viewModelFormat = ViewModelFormat(
+      readF = (_: S4LFlatRateScheme).categoryOfBusiness,
+      updateF = (c: BusinessSectorView, g: Option[S4LFlatRateScheme]) =>
+        g.getOrElse(S4LFlatRateScheme()).copy(categoryOfBusiness = Some(c))
+    )
+
+    implicit val modelTransformer = ApiModelTransformer[BusinessSectorView] { (vs: VatScheme) =>
+      for {
+        frs <- vs.vatFlatRateScheme
+        sector <- frs.categoryOfBusiness
+        percentage <- frs.percentage
+      } yield BusinessSectorView(sector, percentage)
+    }
+  }
+}
+
+package controllers.frs {
+
+  import javax.inject.Inject
+
+  import cats.syntax.FlatMapSyntax
+  import connectors.ConfigConnect
+  import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import models.view.frs.BusinessSectorView
+  import models.view.sicAndCompliance.MainBusinessActivityView
+  import org.apache.commons.lang3.StringUtils
+  import services.{S4LService, VatRegistrationService}
+  import uk.gov.hmrc.play.http.HeaderCarrier
+
+  import scala.concurrent.Future
+
+  class BusinessSectorAwareController @Inject()(ds: CommonPlayDependencies, configConnect: ConfigConnect)
+                                               (implicit s4LService: S4LService, vrs: VatRegistrationService)
+    extends VatRegistrationController(ds) with FlatMapSyntax {
+
+    protected def businessSectorView()(implicit headerCarrier: HeaderCarrier): Future[BusinessSectorView] =
+      viewModel[BusinessSectorView]().filter(view => StringUtils.isNotBlank(view.businessSector))
+        .getOrElseF {
+          viewModel[MainBusinessActivityView]()
+            .subflatMap(mbaView => mbaView.mainBusinessActivity)
+            .map(sicCode => configConnect.getBusinessSectorDetails(sicCode.id))
+            .getOrElse(throw new IllegalStateException("Can't determine main business activity"))
+        }
+  }
 }
