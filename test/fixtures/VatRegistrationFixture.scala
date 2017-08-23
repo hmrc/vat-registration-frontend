@@ -30,13 +30,15 @@ import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.view.vatLodgingOfficer.OfficerContactDetailsView
-import models.view.vatTradingDetails.TradingNameView
-import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover}
-import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
+import models.view.vatTradingDetails.vatChoice.StartDateView
 import play.api.http.Status._
 import uk.gov.hmrc.play.http._
 
-trait VatRegistrationFixture extends FlatRateFixture {
+trait BaseFixture {
+  val testDate = LocalDate.of(2017, 3, 21)
+}
+
+trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture {
 
   //Responses
   val IM_A_TEAPOT = 418
@@ -60,16 +62,11 @@ trait VatRegistrationFixture extends FlatRateFixture {
   val testTurnoverEstimate = 50000L
   val testEstimatedSales = 60000L
   val testRegId = "VAT123456"
-  val testDate = LocalDate.of(2017, 3, 21)
   val testMonthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
-  val testTradingName: String = "ACME INC"
 
   //View models
   val validCompanyBankAccount = CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES)
-  val validTradingNameView = TradingNameView("TRADING_NAME_YES", Some("Test Trading Name"))
-  val validStartDateView = StartDateView(StartDateView.SPECIFIC_DATE, Some(testDate))
   val validOfficerContactDetailsView = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
-  val validTaxableTurnover = TaxableTurnover("TAXABLE_YES")
   val validEstimateVatTurnover = EstimateVatTurnover(testTurnoverEstimate)
   val validEstimateZeroRatedSales = EstimateZeroRatedSales(testEstimatedSales)
   val validVatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
@@ -83,8 +80,6 @@ trait VatRegistrationFixture extends FlatRateFixture {
   val validSkilledWorkers = SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO)
   val validAdviceOrConsultancy = AdviceOrConsultancy(true)
   val validActAsIntermediary = ActAsIntermediary(true)
-  val validEuGoods = EuGoods(EuGoods.EU_GOODS_YES)
-  val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
   val validBusinessActivityDescription = BusinessActivityDescription(testBusinessActivityDescription)
   val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
 
@@ -102,11 +97,7 @@ trait VatRegistrationFixture extends FlatRateFixture {
   val monthlyAccountingPeriod = VatAccountingPeriod(frequency = "monthly")
   val validBankAccount = VatBankAccount(testTradingName, testAccountNumber, testSortCode)
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
-  val validEuTrading = VatEuTrading(selection = false, eoriApplication = None)
-  val vatStartDate = VatStartDate(StartDateView.SPECIFIC_DATE, Some(testDate))
-  val validVatChoice = VatChoice(VatChoice.NECESSITY_VOLUNTARY, vatStartDate, vatThresholdPostIncorp = Some(VatThresholdPostIncorp(true, Some(testDate))))
   val validVatThresholdPostIncorp = VatThresholdPostIncorp(overThresholdSelection = false, None)
-  val validTradingName = TradingName(selection = true, tradingName = Some(testTradingName))
   val validVatCulturalCompliance = VatComplianceCultural(notForProfit = true)
   val validVatLabourCompliance = VatComplianceLabour(labour = false)
   val validVatFinancialCompliance = VatComplianceFinancial(adviceOrConsultancyOnly = false, actAsIntermediary = false)
@@ -119,11 +110,6 @@ trait VatRegistrationFixture extends FlatRateFixture {
     zeroRatedTurnoverEstimate = Some(testEstimatedSales),
     reclaimVatOnMostReturns = true,
     accountingPeriods = monthlyAccountingPeriod
-  )
-  val validVatTradingDetails = VatTradingDetails(
-    vatChoice = validVatChoice,
-    tradingName = validTradingName,
-    validEuTrading
   )
   val validLodgingOfficer = VatLodgingOfficer(
     currentAddress = ScrsAddress("", ""),
@@ -180,34 +166,6 @@ trait VatRegistrationFixture extends FlatRateFixture {
       crn = Some("90000001"),
       incorporationDate = Some(LocalDate.of(2016, 8, 5)),
       description = Some("Some description")))
-
-  def tradingDetails(
-                      necessity: String = VatChoice.NECESSITY_VOLUNTARY,
-                      startDateSelection: String = StartDateView.COMPANY_REGISTRATION_DATE,
-                      startDate: Option[LocalDate] = None,
-                      tradingNameSelection: Boolean = true,
-                      tradingName: Option[String] = Some("ACME Ltd."),
-                      reason: Option[String] = None,
-                      euGoodsSelection: Boolean = true,
-                      eoriApplication: Option[Boolean] = Some(true)
-                    ): VatTradingDetails = VatTradingDetails(
-    vatChoice = VatChoice(
-      necessity = necessity,
-      vatStartDate = VatStartDate(
-        selection = startDateSelection,
-        startDate = startDate
-      ),
-      reason = reason
-    ),
-    tradingName = TradingName(
-      selection = tradingNameSelection,
-      tradingName = tradingName
-    ),
-    euTrading = VatEuTrading(
-      euGoodsSelection,
-      eoriApplication
-    )
-  )
 
   def vatSicAndCompliance(
                            activityDescription: String = "Some business activity",

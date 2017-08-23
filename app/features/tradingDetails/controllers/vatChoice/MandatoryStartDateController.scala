@@ -26,7 +26,7 @@ class MandatoryStartDateController @Inject()(s4LService: S4LService, ds: CommonP
                                             (implicit vrs: VatRegistrationService) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised(implicit user => implicit request =>
-    Ok(views.html.pages.vatTradingDetails.vatChoice.mandatory_start_date_confirmation()))
+    Ok(features.tradingDetails.views.html.vatChoice.mandatory_start_date_confirmation()))
 
   def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
     vrs.submitTradingDetails().map(_ =>
