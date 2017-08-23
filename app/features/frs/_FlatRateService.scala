@@ -55,6 +55,13 @@ package connectors {
   trait FlatRateConnector extends FutureInstances {
     self: RegistrationConnector =>
 
+    // TODO - check why this is here twice? update vs upsert?
+    def updateVatFlatRateScheme(regId: String, vatFlatRateScheme: VatFlatRateScheme)
+                               (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] =
+      http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", vatFlatRateScheme).recover{
+        case e: Exception => throw logResponse(e, className, "vatFlatRateScheme")
+      }
+
     def upsertVatFlatRateScheme(regId: String, vatFrs: VatFlatRateScheme)
                                (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] =
       http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", vatFrs).recover{
