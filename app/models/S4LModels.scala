@@ -448,42 +448,5 @@ object S4LVatLodgingOfficer {
   }
 }
 
-final case class S4LFlatRateScheme
-(
-  joinFrs: Option[JoinFrsView] = None,
-  annualCostsInclusive: Option[AnnualCostsInclusiveView] = None,
-  annualCostsLimited: Option[AnnualCostsLimitedView] = None,
-  registerForFrs: Option[RegisterForFrsView] = None,
-  frsStartDate: Option[FrsStartDateView] = None,
-  categoryOfBusiness: Option[BusinessSectorView] = None
-)
 
-object S4LFlatRateScheme {
-  implicit val format: OFormat[S4LFlatRateScheme] = Json.format[S4LFlatRateScheme]
-
-  implicit val modelT = new S4LModelTransformer[S4LFlatRateScheme] {
-    override def toS4LModel(vs: VatScheme): S4LFlatRateScheme =
-      S4LFlatRateScheme(
-        joinFrs = ApiModelTransformer[JoinFrsView].toViewModel(vs),
-        annualCostsInclusive = ApiModelTransformer[AnnualCostsInclusiveView].toViewModel(vs),
-        annualCostsLimited = ApiModelTransformer[AnnualCostsLimitedView].toViewModel(vs),
-        registerForFrs = ApiModelTransformer[RegisterForFrsView].toViewModel(vs),
-        frsStartDate = ApiModelTransformer[FrsStartDateView].toViewModel(vs),
-        categoryOfBusiness = ApiModelTransformer[BusinessSectorView].toViewModel(vs)
-      )
-  }
-
-  implicit val apiT = new S4LApiTransformer[S4LFlatRateScheme, VatFlatRateScheme] {
-    override def toApi(c: S4LFlatRateScheme): VatFlatRateScheme =
-      VatFlatRateScheme(
-        joinFrs = c.joinFrs.map(_.selection).getOrElse(false),
-        annualCostsInclusive = c.annualCostsInclusive.map(_.selection),
-        annualCostsLimited = c.annualCostsLimited.map(_.selection),
-        doYouWantToUseThisRate = c.registerForFrs.map(_.selection),
-        whenDoYouWantToJoinFrs = c.frsStartDate.map(_.dateType),
-        startDate = c.frsStartDate.flatMap(_.date),
-        categoryOfBusiness = c.categoryOfBusiness.map(_.businessSector),
-        percentage = c.categoryOfBusiness.map(_.flatRatePercentage))
-  }
-}
 
