@@ -19,9 +19,8 @@ package fixtures
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-import models.api.{VatComplianceCultural, _}
+import models.api._
 import models.external.{IncorporationInfo, _}
-import models.view.frs._
 import models.view.sicAndCompliance.BusinessActivityDescription
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
@@ -37,7 +36,7 @@ import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import play.api.http.Status._
 import uk.gov.hmrc.play.http._
 
-trait VatRegistrationFixture {
+trait VatRegistrationFixture extends FlatRateFixture {
 
   //Responses
   val IM_A_TEAPOT = 418
@@ -88,7 +87,6 @@ trait VatRegistrationFixture {
   val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
   val validBusinessActivityDescription = BusinessActivityDescription(testBusinessActivityDescription)
   val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
-  val validBusinessSectorView = BusinessSectorView("test business sector", 3.14)
 
   //Api models
   val sicCode = SicCode("88888888", "description", "displayDetails")
@@ -148,14 +146,6 @@ trait VatRegistrationFixture {
     digitalContact = VatDigitalContact(email = "asd@com", tel = Some("123"), mobile = None),
     website = None,
     ppob = scrsAddress
-  )
-  val validVatFlatRateScheme = VatFlatRateScheme(
-    joinFrs = true,
-    annualCostsInclusive = Some(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS),
-    annualCostsLimited = Some(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS),
-    doYouWantToUseThisRate = Some(false),
-    categoryOfBusiness = Some(validBusinessSectorView.businessSector),
-    percentage = Some(BigDecimal(3.14))
   )
   val validVatScheme = VatScheme(
     id = testRegId,

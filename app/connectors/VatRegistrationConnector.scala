@@ -104,12 +104,6 @@ trait RegistrationConnector extends FlatRateConnector with FutureInstances {
       case e: Exception => throw logResponse(e, className, "upsertVatEligibility")
     }
 
-  def updateVatFlatRateScheme(regId: String, vatFlatRateScheme: VatFlatRateScheme)
-                             (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] =
-    http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", vatFlatRateScheme).recover{
-      case e: Exception => throw logResponse(e, className, "vatFlatRateScheme")
-    }
-
   def upsertPpob(regId: String, address: ScrsAddress)
                 (implicit hc: HeaderCarrier, rds: HttpReads[ScrsAddress]): Future[ScrsAddress] =
     http.PATCH[ScrsAddress, ScrsAddress](s"$vatRegUrl/vatreg/$regId/ppob", address).recover{
