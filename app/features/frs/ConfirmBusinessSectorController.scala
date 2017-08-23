@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package controllers.frs
+package controllers.frs {
 
-import javax.inject.Inject
+  import javax.inject.Inject
 
-import connectors.ConfigConnect
-import controllers.CommonPlayDependencies
-import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, VatRegistrationService}
+  import connectors.ConfigConnect
+  import controllers.CommonPlayDependencies
+  import play.api.mvc.{Action, AnyContent}
+  import services.{S4LService, VatRegistrationService}
 
-class ConfirmBusinessSectorController @Inject()(ds: CommonPlayDependencies, configConnector: ConfigConnect)
-                                               (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends BusinessSectorAwareController(ds, configConnector) {
+  class ConfirmBusinessSectorController @Inject()(ds: CommonPlayDependencies, configConnector: ConfigConnect)
+                                                 (implicit s4LService: S4LService, vrs: VatRegistrationService)
+    extends BusinessSectorAwareController(ds, configConnector) {
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    businessSectorView().map(view => Ok(features.frs.views.html.frs_confirm_business_sector(view))))
+    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+      businessSectorView().map(view => Ok(features.frs.views.html.frs_confirm_business_sector(view))))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    businessSectorView().flatMap(save(_).map(_ => Redirect(controllers.frs.routes.RegisterForFrsWithSectorController.show()))))
-
+    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
+      businessSectorView().flatMap(save(_).map(_ => Redirect(controllers.frs.routes.RegisterForFrsWithSectorController.show()))))
+  }
 }
