@@ -30,6 +30,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+// TODO Refactor into a profile that's passed into services
 trait CommonService extends FutureInstances {
 
   val keystoreConnector: KeystoreConnector = KeystoreConnector
