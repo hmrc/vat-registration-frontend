@@ -26,19 +26,19 @@ import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatContact.BusinessContactDetails
-import models.view.vatFinancials._
-import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
-import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.view.vatLodgingOfficer.OfficerContactDetailsView
-import models.view.vatTradingDetails.vatChoice.StartDateView
 import play.api.http.Status._
 import uk.gov.hmrc.play.http._
 
 trait BaseFixture {
+  //Test variables
   val testDate = LocalDate.of(2017, 3, 21)
+  val testTradingName = "ACME INC"
+  val testSortCode = "12-34-56"
+  val testAccountNumber = "12345678"
 }
 
-trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture {
+trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture with FinancialsFixture {
 
   //Responses
   val IM_A_TEAPOT = 418
@@ -56,23 +56,12 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
   //Test variables
   val contextRoot = "/register-for-vat"
   val testNino: String = "AA 12 34 56 C"
-  val testSortCode = "12-34-56"
-  val testAccountNumber = "12345678"
   val testBusinessActivityDescription = "description"
-  val testTurnoverEstimate = 50000L
-  val testEstimatedSales = 60000L
   val testRegId = "VAT123456"
   val testMonthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
 
   //View models
-  val validCompanyBankAccount = CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES)
   val validOfficerContactDetailsView = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
-  val validEstimateVatTurnover = EstimateVatTurnover(testTurnoverEstimate)
-  val validEstimateZeroRatedSales = EstimateZeroRatedSales(testEstimatedSales)
-  val validVatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
-  val validVatReturnFrequency = VatReturnFrequency(VatReturnFrequency.QUARTERLY)
-  val validAccountingPeriod = AccountingPeriod(AccountingPeriod.MAR_JUN_SEP_DEC)
-  val validBankAccountDetails = CompanyBankAccountDetails(testTradingName, testAccountNumber, testSortCode)
   val validNotForProfit = NotForProfit(NotForProfit.NOT_PROFIT_NO)
   val validCompanyProvideWorkers = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
   val validWorkers = Workers(8)
@@ -94,8 +83,6 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
   val validOfficerContactDetails = OfficerContactDetails(Some("test@test.com"), None, None)
   val changeOfName = ChangeOfName(true, None)
   val currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(ScrsAddress("", "")))
-  val monthlyAccountingPeriod = VatAccountingPeriod(frequency = "monthly")
-  val validBankAccount = VatBankAccount(testTradingName, testAccountNumber, testSortCode)
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
   val validVatThresholdPostIncorp = VatThresholdPostIncorp(overThresholdSelection = false, None)
   val validVatCulturalCompliance = VatComplianceCultural(notForProfit = true)
@@ -104,13 +91,6 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
   val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
 
   val emptyVatScheme = VatScheme(testRegId)
-  val validVatFinancials = VatFinancials(
-    bankAccount = Some(validBankAccount),
-    turnoverEstimate = testTurnoverEstimate,
-    zeroRatedTurnoverEstimate = Some(testEstimatedSales),
-    reclaimVatOnMostReturns = true,
-    accountingPeriods = monthlyAccountingPeriod
-  )
   val validLodgingOfficer = VatLodgingOfficer(
     currentAddress = ScrsAddress("", ""),
     dob = validDob,
@@ -151,7 +131,8 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
         turnoverEstimate = 0L,
         zeroRatedTurnoverEstimate = None,
         reclaimVatOnMostReturns = false,
-        accountingPeriods = VatAccountingPeriod(VatReturnFrequency.MONTHLY))
+        accountingPeriods = monthlyAccountingPeriod
+      )
     )
   )
 
