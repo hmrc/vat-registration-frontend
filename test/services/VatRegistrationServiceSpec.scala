@@ -153,38 +153,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
   "When this is the first time the user starts a journey and we're persisting to the backend" should {
 
-    "submitVatFinancials should process the submission even if VatScheme does not contain a VatFinancials object" in new Setup {
-      val mergedVatFinancials = VatFinancials(
-        bankAccount = Some(validBankAccount),
-        turnoverEstimate = validEstimateVatTurnover.vatTurnoverEstimate,
-        zeroRatedTurnoverEstimate = Some(validEstimateZeroRatedSales.zeroRatedTurnoverEstimate),
-        reclaimVatOnMostReturns = true,
-        accountingPeriods = VatAccountingPeriod("monthly")
-      )
-
-      save4laterReturns(S4LVatFinancials(
-        estimateVatTurnover = Some(validEstimateVatTurnover),
-        zeroRatedTurnover = Some(ZeroRatedSales.yes),
-        zeroRatedTurnoverEstimate = Some(validEstimateZeroRatedSales),
-        vatChargeExpectancy = Some(validVatChargeExpectancy),
-        vatReturnFrequency = Some(validVatReturnFrequency),
-        accountingPeriod = Some(validAccountingPeriod),
-        companyBankAccount = Some(validCompanyBankAccount),
-        companyBankAccountDetails = Some(validBankAccountDetails)))
-
-      when(mockRegConnector.getRegistration(Matchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-      when(mockRegConnector.upsertVatFinancials(any(), any())(any(), any())).thenReturn(validVatFinancials.pure)
-
-      service.submitVatFinancials() returns mergedVatFinancials
-    }
-
-    "submitVatFinancials should fail if there's not trace of VatFinancials in neither backend nor S4L" in new Setup {
-      when(mockRegConnector.getRegistration(Matchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-      save4laterReturnsNothing[S4LVatFinancials]()
-
-      service.submitVatFinancials() failedWith classOf[IllegalStateException]
-    }
-
     "submitTradingDetails should fail if there's not trace of VatTradingDetails in neither backend nor S4L" in new Setup {
       when(mockRegConnector.getRegistration(Matchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       save4laterReturnsNothing[S4LTradingDetails]()

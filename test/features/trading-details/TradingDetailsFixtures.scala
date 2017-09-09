@@ -24,8 +24,6 @@ import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover}
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 
 trait TradingDetailsFixture extends BaseFixture {
-  // Test variables
-  val testTradingName = "ACME INC"
 
   //View models
   val validTradingNameView = TradingNameView("TRADING_NAME_YES", Some("Test Trading Name"))

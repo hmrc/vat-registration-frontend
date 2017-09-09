@@ -46,7 +46,7 @@ class VatRegistrationService @Inject()(injS4LService: S4LService,
 }
 
 @ImplementedBy(classOf[VatRegistrationService])
-trait RegistrationService extends FlatRateService with TradingDetailsService with LegacyServiceToBeRefactored{
+trait RegistrationService extends FlatRateService with TradingDetailsService with FinancialsService with LegacyServiceToBeRefactored{
 
   val s4LService: S4LService
   val vatRegConnector: VatRegistrationConnector
@@ -81,18 +81,6 @@ trait LegacyServiceToBeRefactored {
       _ <- keystoreConnector.cache[String](REGISTRATION_ID, vatScheme.id)
       _ <- incorporationService.getIncorporationInfo().map(status => keystoreConnector.cache[IncorporationInfo](INCORPORATION_STATUS, status)).value
     } yield ()
-
-  def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
-    def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =
-      fresh.fold(
-        vs.financials.getOrElse(throw fail("VatFinancials"))
-      ) (s4l => S4LVatFinancials.apiT.toApi(s4l))
-
-    for {
-      (vs, vf) <- (getVatScheme() |@| s4l[S4LVatFinancials]()).tupled
-      response <- vatRegConnector.upsertVatFinancials(vs.id, merge(vf, vs))
-    } yield response
-  }
 
   def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[VatSicAndCompliance] = {
     def merge(fresh: Option[S4LVatSicAndCompliance], vs: VatScheme) =
