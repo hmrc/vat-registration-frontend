@@ -40,7 +40,7 @@ class VatRegistrationConnector extends RegistrationConnector with ServicesConfig
 }
 
 @ImplementedBy(classOf[VatRegistrationConnector])
-trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnector with FutureInstances {
+trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnector with FinancialsConnector with FutureInstances {
   self =>
 
   val vatRegUrl: String
@@ -62,12 +62,6 @@ trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnect
     OptionT(http.GET[Option[String]](s"$vatRegUrl/vatreg/$regId/acknowledgement-reference").recover{
       case e: Exception => throw logResponse(e, className, "getAckRef")
     })
-
-  def upsertVatFinancials(regId: String, vatFinancials: VatFinancials)
-                         (implicit hc: HeaderCarrier, rds: HttpReads[VatFinancials]): Future[VatFinancials] =
-    http.PATCH[VatFinancials, VatFinancials](s"$vatRegUrl/vatreg/$regId/vat-financials", vatFinancials).recover{
-      case e: Exception => throw logResponse(e, className, "upsertVatFinancials")
-    }
 
   def upsertSicAndCompliance(regId: String, sicAndCompliance: VatSicAndCompliance)
                             (implicit hc: HeaderCarrier, rds: HttpReads[VatSicAndCompliance]): Future[VatSicAndCompliance] =
