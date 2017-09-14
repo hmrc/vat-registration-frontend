@@ -1,23 +1,9 @@
-
+@import 'form-validation.css';
 /* position labels above input fields in cascading forms */
 label.cascading span {
 	display: block;
 }
 
-
-/* hide error summary */
-.error-summary {
-	display: none;
-}
-
-/* show error summary when required */
-.error-summary--show  {
-	display: block;
-}
-
-.error-notification {
-	display: inline;
-}
 
 .hidden {
 	display: none;
@@ -68,9 +54,6 @@ td {
 	margin-bottom:0;
 }
 
-.form-field--error {
-	box-sizing: initial;
-}
 
 .fill-width {
 	width: 95%

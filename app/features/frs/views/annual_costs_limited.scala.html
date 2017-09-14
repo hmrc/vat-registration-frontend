@@ -7,14 +7,14 @@
 
   <div class="column-two-thirds">
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">
-          @messages("pages.frs.costsLimited.heading1", "%,d".format(estimateVatTurnover))
-      </h1>
-
       @errorSummary(
           Messages("app.common.errorSummaryLabel"),
           annualCostsInclusiveForm
       )
+
+      <h1 class="form-title heading-xlarge" id="pageHeading">
+          @messages("pages.frs.costsLimited.heading1", "%,d".format(estimateVatTurnover))
+      </h1>
 
       <p>@Html(messages("pages.frs.costsLimited.p1"))</p>
 
