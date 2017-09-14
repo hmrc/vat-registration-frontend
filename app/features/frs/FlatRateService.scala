@@ -37,8 +37,11 @@ package services {
           vs.vatFlatRateScheme.getOrElse(throw fail("VatFlatRateScheme"))
         )(s4l => S4LFlatRateScheme.apiT.toApi(s4l))
 
+      val a = getVatScheme()
+      val b = s4l[S4LFlatRateScheme]()
       for {
-        (vs, frs) <- (getVatScheme() |@| s4l[S4LFlatRateScheme]()).tupled
+        vs <- a
+        frs <- b
         response <- vatRegConnector.upsertVatFlatRateScheme(vs.id, merge(frs, vs))
       } yield response
     }
