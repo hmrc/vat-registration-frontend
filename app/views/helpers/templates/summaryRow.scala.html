@@ -2,20 +2,20 @@
 
 @(row: SummaryRow, questionArg: String = "")(implicit messages: Messages)
 
+@displayAnswer(ans: String) = {
+   @messages(ans)<br>
+}
+
 <tr id="@{row.id}">
-    <td id="@{
-        row.id
-    }Question">@Html(messages(s"pages.summary.${row.id}", questionArg))</td>
-    <td id="@{
-        row.id
-    }Answer">
-    @Html(messages(row.answerMessageKey))
+    <td id="@{row.id}Question">@messages(s"pages.summary.${row.id}", questionArg)</td>
+    <td id="@{row.id}Answer">
+        @for(answer <- row.answerMessageKeys) {
+            @displayAnswer(answer)
+        }
     </td>
     <td class="change-answer">
-    @row.changeLink.map { linkLocation =>
-        <a href="@linkLocation" id="@{
-            row.id
-        }ChangeLink">@messages("app.common.change")</a>
-    }
+        @row.changeLink.map { linkLocation =>
+            <a href="@linkLocation" id="@{row.id}ChangeLink">@messages("app.common.change")</a>
+        }
     </td>
 </tr>

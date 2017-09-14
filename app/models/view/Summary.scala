@@ -20,15 +20,18 @@ import play.api.mvc.Call
 
 case class Summary(sections: Seq[SummarySection])
 
-case class SummarySection(
-                           id: String,
-                           //Tuple2[SummaryRow, Boolean] -> row -> boolean indicating whether to render the row or not
-                           rows: Seq[Tuple2[SummaryRow, Boolean]],
-                           display: Boolean = true
-                         )
+case class SummarySection(id: String,
+                          //Tuple2[SummaryRow, Boolean] -> row -> boolean indicating whether to render the row or not
+                          rows: Seq[Tuple2[SummaryRow, Boolean]],
+                          display: Boolean = true)
 
-case class SummaryRow(
-                       id: String,
-                       answerMessageKey: String,
-                       changeLink: Option[Call]
-                     )
+object SummaryRow {
+  def apply(id: String, answerMessageKey: String, changeLink: Option[Call]): SummaryRow = {
+    SummaryRow(id, Seq(answerMessageKey), changeLink)
+  }
+}
+case class SummaryRow(id: String,
+                      answerMessageKeys: Seq[String],
+                      changeLink: Option[Call]) {
+  def answerMessageKey = answerMessageKeys.head
+}
