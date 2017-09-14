@@ -32,6 +32,4 @@ object SummaryRow {
 }
 case class SummaryRow(id: String,
                       answerMessageKeys: Seq[String],
-                      changeLink: Option[Call]) {
-  def answerMessageKey = answerMessageKeys.head
-}
+                      changeLink: Option[Call])
