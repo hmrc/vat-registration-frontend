@@ -24,12 +24,9 @@ case class SummaryDirectorAddressesSectionBuilder(vatLodgingOfficer: Option[VatL
 
   override val sectionId: String = "directorAddresses"
 
-  import ScrsAddress.htmlShow._
-  import cats.syntax.show._
-
   val homeAddress: SummaryRow = SummaryRow(
     s"$sectionId.homeAddress",
-    vatLodgingOfficer.map(_.currentAddress.show).getOrElse(""),
+    vatLodgingOfficer.map( vlo => ScrsAddress.normalisedSeq(vlo.currentAddress)).getOrElse(Seq("")),
     Some(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())
   )
 
@@ -42,8 +39,8 @@ case class SummaryDirectorAddressesSectionBuilder(vatLodgingOfficer: Option[VatL
   val previousAddress: SummaryRow = SummaryRow(
     s"$sectionId.previousAddress",
     vatLodgingOfficer.map(_.currentOrPreviousAddress.previousAddress).collect {
-      case Some(address) => address.show
-    }.getOrElse(""),
+      case Some(address) => ScrsAddress.normalisedSeq(address)
+    }.getOrElse(Seq("")),
     Some(controllers.vatLodgingOfficer.routes.PreviousAddressController.changeAddress())
   )
 

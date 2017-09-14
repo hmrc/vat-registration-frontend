@@ -53,7 +53,7 @@ case class SummaryCompanyContactDetailsSectionBuilder(vatContact: Option[VatCont
 
   val ppobRow: SummaryRow = SummaryRow(
     s"$sectionId.ppob",
-    vatContact.map(_.ppob.show).getOrElse(""),
+    vatContact.map(vc => ScrsAddress.normalisedSeq(vc.ppob)).getOrElse(Seq("")),
     Some(controllers.vatContact.ppob.routes.PpobController.show())
   )
 
