@@ -29,8 +29,6 @@ package services {
 
     self: RegistrationService =>
 
-    import cats.syntax.all._
-
     def submitVatFlatRateScheme()(implicit hc: HeaderCarrier): Future[VatFlatRateScheme] = {
       def merge(fresh: Option[S4LFlatRateScheme], vs: VatScheme): VatFlatRateScheme =
         fresh.fold(
