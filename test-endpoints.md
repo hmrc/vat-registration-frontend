@@ -20,7 +20,7 @@ lists upcoming working days
 
 `GET         /ct-registration`  
 gets CTActiveDate and displays it on screen
-c
+
 `GET         /insert-ii-stub-data`  
 this will load some officer details and home addresses into II Frontend Stub.
 
