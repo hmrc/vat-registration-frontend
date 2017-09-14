@@ -37,7 +37,7 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerS
 
   abstract override implicit val patienceConfig: PatienceConfig =
     PatienceConfig(
-      timeout = Span(1, Seconds),
+      timeout = Span(2, Seconds),
       interval = Span(50, Millis))
 
   override lazy val port: Int = Port.randomAvailable
