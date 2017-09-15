@@ -18,7 +18,7 @@ import sbt.Keys._
 import sbt.Tests.{Group, SubProcess}
 import sbt._
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
-
+import scoverage.ScoverageKeys
 
 trait MicroService {
 
@@ -35,16 +35,12 @@ trait MicroService {
   lazy val plugins : Seq[Plugins] = Seq.empty
   lazy val playSettings : Seq[Setting[_]] = Seq.empty
 
-  lazy val scoverageSettings = {
-    // Semicolon-separated list of regexs matching classes to exclude
-    import scoverage.ScoverageKeys
-    Seq(
-      ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;controllers.test.*;models.api.*;views.*;forms.test.*;config.*;poc.view.*;poc.config.*;.*(AuthService|BuildInfo|Routes).*",
-      ScoverageKeys.coverageMinimum := 100,
-      ScoverageKeys.coverageFailOnMinimum := false,
-      ScoverageKeys.coverageHighlighting := true
-    )
-  }
+  lazy val scoverageSettings = Seq(
+    ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;controllers.test.*;models.api.*;views.*;forms.test.*;config.*;poc.view.*;poc.config.*;.*(AuthService|BuildInfo|Routes).*",
+    ScoverageKeys.coverageMinimum          := 80,
+    ScoverageKeys.coverageFailOnMinimum    := false,
+    ScoverageKeys.coverageHighlighting     := true
+  )
 
   lazy val microservice = Project(appName, file("."))
     .enablePlugins(Seq(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin) ++ plugins : _*)
