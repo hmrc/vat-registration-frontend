@@ -25,14 +25,12 @@ import org.apache.commons.lang3.text.WordUtils
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
 
-case class ScrsAddress(
-                        line1: String,
-                        line2: String,
-                        line3: Option[String] = None,
-                        line4: Option[String] = None,
-                        postcode: Option[String] = None,
-                        country: Option[String] = None
-                      ) {
+case class ScrsAddress(line1: String,
+                       line2: String,
+                       line3: Option[String] = None,
+                       line4: Option[String] = None,
+                       postcode: Option[String] = None,
+                       country: Option[String] = None) {
 
   val id: String = Seq(Some(line1), if (postcode.isDefined) postcode else country).flatten.mkString.replaceAll(" ", "")
 
@@ -89,7 +87,7 @@ object ScrsAddress {
     }
   }
 
-  private def normalisedSeq(address: ScrsAddress): Seq[String] = {
+  def normalisedSeq(address: ScrsAddress): Seq[String] = {
     import cats.instances.option._
     import cats.syntax.applicative._
 
@@ -107,7 +105,7 @@ object ScrsAddress {
   }
 
   object htmlShow {
-    implicit val html = show((a: ScrsAddress) => normalisedSeq(a).mkString("<br />"))
+    implicit val html = (a: ScrsAddress) => normalisedSeq(a)
   }
 
   object inlineShow {
