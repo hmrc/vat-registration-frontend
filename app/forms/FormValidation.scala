@@ -89,6 +89,7 @@ private[forms] object FormValidation {
   val numberOfWorkersToInt = textToInt(1, 99999) _
 
   def removeSpaces(text: String) = StringUtils.remove(text, ' ')
+  def removeNewlineAndTrim(s: String): String = s.replaceAll("\r\n|\r|\n|\t", " ").trim
 
   private def textToInt(min: Int, max: Int)(s: String): Int = {
     // assumes input string will be numeric

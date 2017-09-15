@@ -123,6 +123,16 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
     }
   }
 
+  "removeNewlineAndTrim" must {
+    "leave an empty string unchanged " in {
+      FormValidation.removeSpaces("") shouldBe ""
+    }
+
+    "replace all newlines and tabs with a space from a non-empty string" in {
+      FormValidation.removeNewlineAndTrim(" \na\nb\tc  ") shouldBe "a b c"
+    }
+  }
+
   "numberOfWorkersTextToInt" must {
     "return MinValue when input converts to value less than zero" in {
       FormValidation.numberOfWorkersToInt("-1") shouldBe Int.MinValue
