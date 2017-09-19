@@ -26,31 +26,40 @@ import models.S4LVatSicAndCompliance.dropFromDiscInvManServices
 import models.view.sicAndCompliance.financial.DiscretionaryInvestmentManagementServices
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, RegistrationService, S4LService}
+import services.{CommonService, RegistrationService, S4LService, SessionProfile}
 
 
 class DiscretionaryInvestmentManagementServicesController @Inject()(ds: CommonPlayDependencies)
                                                                    (implicit s4lService: S4LService, vrs: RegistrationService)
-  extends VatRegistrationController(ds) with CommonService {
+  extends VatRegistrationController(ds) with CommonService with SessionProfile{
 
   import cats.syntax.flatMap._
 
   val form: Form[DiscretionaryInvestmentManagementServices] = DiscretionaryInvestmentManagementServicesForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[DiscretionaryInvestmentManagementServices]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(f))))
-
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(badForm)).pure,
-      view => save(view).map(_ => view.yesNo).ifM(
-        ifTrue = for {
-          container <- s4lContainer[S4LVatSicAndCompliance]()
-          _ <- s4lService.save(dropFromDiscInvManServices(container))
-          _ <- vrs.submitSicAndCompliance()
-        } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show(),
-        ifFalse = controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show().pure
-      ).map(Redirect)))
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          viewModel[DiscretionaryInvestmentManagementServices]().fold(form)(form.fill)
+            .map(f => Ok(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(f)))
+        }
+  }
+  def submit: Action[AnyContent] = authorised.async{
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          form.bindFromRequest().fold(
+            badForm => BadRequest(views.html.pages.sicAndCompliance.financial.discretionary_investment_management_services(badForm)).pure,
+            view => save(view).map(_ => view.yesNo).ifM(
+              ifTrue = for {
+                container <- s4lContainer[S4LVatSicAndCompliance]()
+                _ <- s4lService.save(dropFromDiscInvManServices(container))
+                _ <- vrs.submitSicAndCompliance()
+              } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show(),
+              ifFalse = controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show().pure
+            ).map(Redirect))
+        }
+  }
 
 }

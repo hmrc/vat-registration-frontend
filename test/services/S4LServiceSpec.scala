@@ -109,13 +109,7 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
     val testView = TestView("test")
     val testGroup = TestGroup()
 
-    "fail with an exception when registration ID cannot be found in keystore" in new Setup {
-      mockKeystoreFetchAndGet[String]("RegistrationId", None)
-      service.updateViewModel[TestView, TestGroup](testView, testGroup.pure) failedWith classOf[RegistrationIdNotFoundException]
-    }
-
     "save test view in appropriate container object in Save 4 Later" when {
-
       "no container in s4l" in new Setup {
         mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
         when(mockS4LConnector.fetchAndGet[TestGroup](=~=(testRegId), =~=(key))(any(), any())).thenReturn(Option.empty.pure)

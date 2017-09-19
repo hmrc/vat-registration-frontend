@@ -25,31 +25,40 @@ import models.S4LVatSicAndCompliance
 import models.S4LVatSicAndCompliance.dropFromWorkers
 import models.view.sicAndCompliance.labour.Workers
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
 
 
-class WorkersController @Inject()(ds: CommonPlayDependencies)
-                                 (implicit s4lService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with CommonService {
+class WorkersController @Inject()(ds: CommonPlayDependencies)(implicit s4lService: S4LService, vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
   import cats.syntax.flatMap._
 
   val form = WorkersForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[Workers]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.labour.workers(f))))
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          viewModel[Workers]().fold(form)(form.fill)
+            .map(f => Ok(views.html.pages.sicAndCompliance.labour.workers(f)))
+        }
+  }
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.sicAndCompliance.labour.workers(badForm)).pure,
-      data => save(data).map(_ => data.numberOfWorkers >= 8).ifM(
-        ifTrue = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show().pure,
-        ifFalse = for {
-          container <- s4lContainer[S4LVatSicAndCompliance]()
-          _ <- s4lService.save(dropFromWorkers(container))
-          _ <- vrs.submitSicAndCompliance()
-        } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
-      ).map(Redirect)))
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          form.bindFromRequest().fold(
+            badForm => BadRequest(views.html.pages.sicAndCompliance.labour.workers(badForm)).pure,
+            data => save(data).map(_ => data.numberOfWorkers >= 8).ifM(
+              ifTrue = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show().pure,
+              ifFalse = for {
+                container <- s4lContainer[S4LVatSicAndCompliance]()
+                _ <- s4lService.save(dropFromWorkers(container))
+                _ <- vrs.submitSicAndCompliance()
+              } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
+            ).map(Redirect))
+        }
+  }
 
 }

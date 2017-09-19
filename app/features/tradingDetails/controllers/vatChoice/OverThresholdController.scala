@@ -18,37 +18,42 @@ package controllers.vatTradingDetails.vatChoice
 
 import javax.inject.Inject
 
-import cats.data.OptionT
 import cats.syntax.FlatMapSyntax
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatTradingDetails.vatChoice.OverThresholdFormFactory
-import models.ModelKeys._
 import models.MonthYearModel.FORMAT_DD_MMMM_Y
-import models.external.IncorporationInfo
 import models.view.vatTradingDetails.vatChoice.OverThresholdView
 import play.api.mvc._
-import services.{CommonService, IncorpInfoService, S4LService, VatRegistrationService}
-import uk.gov.hmrc.play.http.HeaderCarrier
+import services._
 
 class OverThresholdController @Inject()(formFactory: OverThresholdFormFactory, ds: CommonPlayDependencies)
                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with FlatMapSyntax with CommonService {
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    for {
-      dateOfIncorporation <- fetchDateOfIncorporation()
-      form <- viewModel[OverThresholdView]().fold(formFactory.form(dateOfIncorporation))(formFactory.form(dateOfIncorporation).fill)
-    } yield Ok(features.tradingDetails.views.html.vatChoice.over_threshold(form, dateOfIncorporation.format(FORMAT_DD_MMMM_Y)))
-  }
-  )
+  extends VatRegistrationController(ds) with FlatMapSyntax with CommonService with SessionProfile {
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request => {
+        withCurrentProfile { implicit profile =>
+          val dateOfIncorporation = profile.incorporationDate
+            .getOrElse(throw new IllegalStateException("Date of Incorporation data expected to be found in Incorporation"))
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-    fetchDateOfIncorporation().flatMap(date =>
-      formFactory.form(date).bindFromRequest().fold(badForm =>
-        BadRequest(features.tradingDetails.views.html.vatChoice.over_threshold(badForm, date.format(FORMAT_DD_MMMM_Y))).pure,
-        data => save(data).map(_ => Redirect(controllers.vatTradingDetails.vatChoice.routes.ThresholdSummaryController.show()))
-      )
-    )
+          viewModel[OverThresholdView]().fold(formFactory.form(dateOfIncorporation))(formFactory.form(dateOfIncorporation).fill) map {
+            form => Ok(features.tradingDetails.views.html.vatChoice.over_threshold(form, dateOfIncorporation.format(FORMAT_DD_MMMM_Y)))
+          }
+        }
+    }
   }
-  )
+
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          fetchDateOfIncorporation().flatMap(date =>
+            formFactory.form(date).bindFromRequest().fold(badForm =>
+              BadRequest(features.tradingDetails.views.html.vatChoice.over_threshold(badForm, date.format(FORMAT_DD_MMMM_Y))).pure,
+              data => save(data).map(_ => Redirect(controllers.vatTradingDetails.vatChoice.routes.ThresholdSummaryController.show()))
+            )
+          )
+        }
+  }
 
 }

@@ -29,20 +29,20 @@ trait S4LConnector {
 
   val shortCache : ShortLivedCache = VatShortLivedCache
 
-  def save[T](userId: String, formId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
-    shortCache.cache[T](userId, formId, data)
+  def save[T](Id: String, formId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
+    shortCache.cache[T](Id, formId, data)
   }
 
-  def fetchAndGet[T](userId: String, formId: String)(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] = {
-    shortCache.fetchAndGetEntry[T](userId, formId)
+  def fetchAndGet[T](Id: String, formId: String)(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] = {
+    shortCache.fetchAndGetEntry[T](Id, formId)
   }
 
-  def clear(userId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    shortCache.remove(userId)
+  def clear(Id: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    shortCache.remove(Id)
   }
 
-  def fetchAll(userId: String)(implicit hc: HeaderCarrier): Future[Option[CacheMap]] = {
-    shortCache.fetch(userId)
+  def fetchAll(Id: String)(implicit hc: HeaderCarrier): Future[Option[CacheMap]] = {
+    shortCache.fetch(Id)
   }
 
 

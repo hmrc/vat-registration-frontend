@@ -32,10 +32,10 @@ trait S4LMockSugar {
   implicit val dummyCacheMap = CacheMap("", Map.empty)
 
   def save4laterReturnsNothing[T: S4LKey]()(implicit s4l: S4LService, ec: ExecutionContext): Unit =
-    when(s4l.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(None.pure)
+    when(s4l.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any(), any())).thenReturn(None.pure)
 
   def save4laterReturns[T: S4LKey](t: T)(implicit s4l: S4LService, ec: ExecutionContext): Unit =
-    when(s4l.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any())).thenReturn(OptionT.pure(t).value)
+    when(s4l.fetchAndGet[T]()(Matchers.eq(S4LKey[T]), any(), any(), any())).thenReturn(OptionT.pure(t).value)
 
   final class S4LFetchHelper[T](private val t: Option[T]) {
     def apply[G]()
@@ -43,7 +43,7 @@ trait S4LMockSugar {
                  viewModelFormat: ViewModelFormat.Aux[T, G],
                  k: S4LKey[G],
                  s4l: S4LService): Unit = {
-      when(s4l.fetchAndGet[G]()(any(), any(), any())).thenReturn(None.pure)
+      when(s4l.fetchAndGet[G]()(any(), any(), any(), any())).thenReturn(None.pure)
       when(s4l.getViewModel[T, G](any())(Matchers.eq(viewModelFormat), any())).thenReturn(OptionT.fromOption(t))
     }
   }
@@ -58,8 +58,8 @@ trait S4LMockSugar {
                  viewModelFormat: ViewModelFormat.Aux[T, G],
                  k: S4LKey[G],
                  s4l: S4LService): Unit = {
-      when(s4l.fetchAndGet[G]()(any(), any(), any())).thenReturn(None.pure)
-      when(s4l.updateViewModel[T, G](any(), any())(any(), Matchers.eq(viewModelFormat), any(), Matchers.eq(k))).thenReturn(dummyCacheMap.pure)
+      when(s4l.fetchAndGet[G]()(any(), any(), any(), any())).thenReturn(None.pure)
+      when(s4l.updateViewModel[T, G](any(), any())(any(), any(), Matchers.eq(viewModelFormat), any(), Matchers.eq(k))).thenReturn(dummyCacheMap.pure)
     }
   }
 

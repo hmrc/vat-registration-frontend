@@ -16,7 +16,9 @@
 
 package controllers
 
+import common.enums.VatRegStatus
 import helpers.VatRegSpec
+import models.CurrentProfile
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsEmpty
@@ -27,17 +29,21 @@ import scala.concurrent.Future
 
 class WelcomeControllerSpec extends VatRegSpec {
 
-  object TestController extends WelcomeController(mockVatRegistrationService, ds) {
+  object TestController extends WelcomeController(mockVatRegistrationService, mockCurrentProfile, ds) {
     override val authConnector = mockAuthConnector
   }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.show())
 
-  "GET /before-you-register-for-vat" should {
+  val testCurrentProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.DRAFT, None)
 
+  "GET /before-you-register-for-vat" should {
     "return HTML when user is authorized to access" in {
       when(mockVatRegistrationService.createRegistrationFootprint()(any()))
-        .thenReturn(Future.successful(()))
+        .thenReturn(Future.successful(("schemeId","txId")))
+
+      when(mockCurrentProfile.buildCurrentProfile(any(),any())(any()))
+        .thenReturn(Future.successful(testCurrentProfile))
 
       callAuthorised(TestController.start) {
         result =>

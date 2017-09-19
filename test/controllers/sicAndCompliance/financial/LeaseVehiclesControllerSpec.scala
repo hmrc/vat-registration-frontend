@@ -18,8 +18,9 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LVatSicAndCompliance
+import models.{CurrentProfile, S4LVatSicAndCompliance}
 import models.view.sicAndCompliance.financial.LeaseVehicles
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -31,15 +32,16 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
 
   object LeaseVehiclesController extends LeaseVehiclesController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(routes.LeaseVehiclesController.show())
 
   s"GET ${routes.LeaseVehiclesController.show()}" should {
-
     "return HTML when there's a Lease Vehicles or Equipment - model in S4L" in {
       save4laterReturnsViewModel(LeaseVehicles(true))()
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(LeaseVehiclesController.show()) {
         _ includesText "Is the company involved in leasing vehicles or equipment to customers?"
       }
@@ -47,8 +49,9 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[LeaseVehicles]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
-
+      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(LeaseVehiclesController.show) {
         _ includesText "Is the company involved in leasing vehicles or equipment to customers?"
       }
@@ -56,8 +59,9 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[LeaseVehicles]()
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(emptyVatScheme.pure)
-
+    when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(emptyVatScheme.pure)
+    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(LeaseVehiclesController.show) {
         _ includesText "Is the company involved in leasing vehicles or equipment to customers?"
       }
@@ -65,28 +69,31 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
   }
 
   s"POST ${routes.LeaseVehiclesController.show()}" should {
-
     "return 400 with Empty data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody()) { result =>
         result isA 400
       }
     }
 
     "redirects to next screen in the flow -  with Lease Vehicles or Equipment - Yes selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[LeaseVehicles]()
-      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "leaseVehiclesRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
     }
 
     "redirects to next screen in the flow -  with Lease Vehicles or Equipment - No selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[LeaseVehicles]()
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody("leaseVehiclesRadio" -> "false")) {
         _ redirectsTo s"$contextRoot/provides-investment-fund-management-services"
       }

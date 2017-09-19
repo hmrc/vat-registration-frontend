@@ -23,30 +23,34 @@ import controllers.{CommonPlayDependencies, VatRegistrationController}
 import models.external.CoHoCompanyProfile
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, RegistrationService}
+import services.{CommonService, RegistrationService, SessionProfile}
 
 //$COVERAGE-OFF$
-class IncorporationInformationStubsController @Inject()(
-                                                         vatRegistrationService: RegistrationService,
-                                                         vatRegConnector: TestRegistrationConnector,
-                                                         ds: CommonPlayDependencies)
-  extends VatRegistrationController(ds) with CommonService {
+class IncorporationInformationStubsController @Inject()(vatRegistrationService: RegistrationService,
+                                                        vatRegConnector: TestRegistrationConnector,
+                                                        ds: CommonPlayDependencies)
+  extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
-  def postTestData(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    for {
-      _ <- vatRegistrationService.createRegistrationFootprint()
-      id <- fetchRegistrationId
-      _ <- vatRegConnector.wipeTestData
-      _ <- vatRegConnector.postTestData(defaultTestData(id))
-    } yield Ok("Data inserted"))
+  def postTestData(): Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        for {
+          _          <- vatRegConnector.setupCurrentProfile()
+          (regId, _) <- vatRegistrationService.createRegistrationFootprint()
+          _          <- vatRegConnector.wipeTestData
+          _          <- vatRegConnector.postTestData(defaultTestData(regId))
+        } yield Ok("Data inserted")
+  }
 
-  def getIncorpInfo(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile").flatMap
-    (profile => vatRegConnector.getIncorpInfo(profile.get.transactionId).map(res => Ok(res.json))))
-
-  def incorpCompany(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    keystoreConnector.fetchAndGet[CoHoCompanyProfile]("CompanyProfile").flatMap
-    (profile => vatRegConnector.incorpCompany(profile.get.transactionId).map(res => Ok("Company incorporated"))))
+  def incorpCompany(): Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          vatRegConnector.incorpCompany(profile.transactionId).map {
+            _=> Ok("Company incorporated")
+          }
+        }
+  }
 
   def defaultTestData(id: String): JsValue =
     Json.parse(

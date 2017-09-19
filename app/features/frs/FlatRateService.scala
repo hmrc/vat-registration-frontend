@@ -22,25 +22,23 @@ import scala.concurrent.Future
 package services {
 
   import common.ErrorUtil.fail
-  import models.S4LFlatRateScheme
+  import models.{CurrentProfile, S4LFlatRateScheme}
   import models.api.{VatFlatRateScheme, VatScheme}
 
   trait FlatRateService extends CommonService {
 
     self: RegistrationService =>
 
-    def submitVatFlatRateScheme()(implicit hc: HeaderCarrier): Future[VatFlatRateScheme] = {
+    def submitVatFlatRateScheme()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatFlatRateScheme] = {
       def merge(fresh: Option[S4LFlatRateScheme], vs: VatScheme): VatFlatRateScheme =
         fresh.fold(
           vs.vatFlatRateScheme.getOrElse(throw fail("VatFlatRateScheme"))
         )(s4l => S4LFlatRateScheme.apiT.toApi(s4l))
 
-      val a = getVatScheme()
-      val b = s4l[S4LFlatRateScheme]()
       for {
-        vs <- a
-        frs <- b
-        response <- vatRegConnector.upsertVatFlatRateScheme(vs.id, merge(frs, vs))
+        vs <- getVatScheme()
+        frs <- s4l[S4LFlatRateScheme]()
+        response <- vatRegConnector.upsertVatFlatRateScheme(profile.registrationId, merge(frs, vs))
       } yield response
     }
 

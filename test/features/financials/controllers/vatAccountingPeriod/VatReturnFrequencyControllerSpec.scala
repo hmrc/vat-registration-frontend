@@ -21,12 +21,15 @@ import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
 import forms.vatFinancials.vatAccountingPeriod.VatReturnFrequencyForm
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LVatFinancials
+import models.{CurrentProfile, S4LVatFinancials}
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
+
+import scala.concurrent.Future
 
 class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
@@ -40,6 +43,9 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
   s"GET ${vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show()}" should {
 
     "return HTML when there's a Vat Return Frequency model in S4L" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterReturnsViewModel(VatReturnFrequency(VatReturnFrequency.MONTHLY))()
 
       submitAuthorised(Controller.show(),
@@ -49,8 +55,11 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterReturnsNoViewModel[VatReturnFrequency]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(Controller.show) {
         _ includesText "How often do you want to submit VAT Returns?"
@@ -58,8 +67,11 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterReturnsNoViewModel[VatReturnFrequency]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {
         _ includesText "How often do you want to submit VAT Returns?"
@@ -69,20 +81,23 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
 
   s"POST ${vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.submit()} with Empty data" should {
-
     "return 400" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(_ isA 400)
     }
   }
 
   s"POST ${vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Monthly" should {
-
     "redirect to mandatory start date page" when {
-
       "voluntary registration is no" in {
+        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some(currentProfile)))
+
         save4laterReturnsViewModel(VoluntaryRegistration.no)()
         save4laterExpectsSave[VatReturnFrequency]()
-        when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+        when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
         save4laterReturns(S4LVatFinancials())
 
         submitAuthorised(Controller.submit(),
@@ -92,9 +107,12 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       }
 
       "voluntary registration is yes" in {
+        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some(currentProfile)))
+
         save4laterReturnsViewModel(VoluntaryRegistration.yes)()
         save4laterExpectsSave[VatReturnFrequency]()
-        when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+        when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
         save4laterReturns(S4LVatFinancials())
 
         submitAuthorised(Controller.submit(),
@@ -104,10 +122,13 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       }
 
       "no voluntary registration view model exists" in {
-        when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some(currentProfile)))
+
+        when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
         save4laterExpectsSave[VatReturnFrequency]()
         save4laterReturnsNoViewModel[VoluntaryRegistration]()
-        when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+        when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
         save4laterReturns(S4LVatFinancials())
 
         submitAuthorised(Controller.submit(),
@@ -120,8 +141,10 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
   }
 
   s"POST ${vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.submit()} with Vat Return Frequency selected Quarterly" should {
-
     "return 303" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterExpectsSave[VatReturnFrequency]()
       save4laterExpectsSave[AccountingPeriod]()
 

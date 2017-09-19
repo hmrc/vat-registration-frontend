@@ -25,31 +25,41 @@ import models.S4LVatSicAndCompliance
 import models.S4LVatSicAndCompliance.dropFromInvFundManagement
 import models.view.sicAndCompliance.financial.InvestmentFundManagement
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, RegistrationService, S4LService}
+import services.{CommonService, RegistrationService, S4LService, SessionProfile}
 
 
 class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
                                                   (implicit s4lService: S4LService, vrs: RegistrationService)
-  extends VatRegistrationController(ds) with CommonService {
+  extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
   val form = InvestmentFundManagementForm.form
 
   import cats.syntax.flatMap._
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[InvestmentFundManagement]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.investment_fund_management(f))))
+  def show: Action[AnyContent] = authorised.async{
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          viewModel[InvestmentFundManagement]().fold(form)(form.fill)
+            .map(f => Ok(views.html.pages.sicAndCompliance.financial.investment_fund_management(f)))
+        }
+  }
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.investment_fund_management(badForm)).pure,
-      data => save(data).map(_ => data.yesNo).ifM(
-        ifTrue = controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show().pure,
-        ifFalse = for {
-          container <- s4lContainer[S4LVatSicAndCompliance]()
-          _ <- s4lService.save(dropFromInvFundManagement(container))
-          _ <- vrs.submitSicAndCompliance()
-        } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
-      ).map(Redirect)))
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          form.bindFromRequest().fold(
+            badForm => BadRequest(views.html.pages.sicAndCompliance.financial.investment_fund_management(badForm)).pure,
+            data => save(data).map(_ => data.yesNo).ifM(
+              ifTrue = controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show().pure,
+              ifFalse = for {
+                container <- s4lContainer[S4LVatSicAndCompliance]()
+                _ <- s4lService.save(dropFromInvFundManagement(container))
+                _ <- vrs.submitSicAndCompliance()
+              } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
+            ).map(Redirect))
+        }
+  }
 
 }

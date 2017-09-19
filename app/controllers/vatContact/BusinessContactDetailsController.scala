@@ -18,29 +18,41 @@ package controllers.vatContact
 
 import javax.inject.Inject
 
+import connectors.KeystoreConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatContact.BusinessContactDetailsForm
 import models.view.vatContact.BusinessContactDetails
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, VatRegistrationService}
+import services.{S4LService, SessionProfile, VatRegistrationService}
 
 class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies)
                                                 (implicit s4l: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) {
+  extends VatRegistrationController(ds) with SessionProfile {
 
   val form = BusinessContactDetailsForm.form
+  val keystoreConnector: KeystoreConnector = KeystoreConnector
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[BusinessContactDetails]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatContact.business_contact_details(f))))
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          viewModel[BusinessContactDetails]().fold(form)(form.fill)
+            .map(f => Ok(views.html.pages.vatContact.business_contact_details(f)))
+        }
+  }
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      copyGlobalErrorsToFields("daytimePhone", "mobile")
-        .andThen(form => BadRequest(views.html.pages.vatContact.business_contact_details(form)).pure),
-        contactDetails => for {
-        _ <- save(contactDetails)
-        _ <- vrs.submitVatContact()
-      } yield Redirect(controllers.vatTradingDetails.routes.TradingNameController.show())))
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          form.bindFromRequest().fold(
+            copyGlobalErrorsToFields("daytimePhone", "mobile")
+              .andThen(form => BadRequest(views.html.pages.vatContact.business_contact_details(form)).pure),
+            contactDetails => for {
+              _ <- save(contactDetails)
+              _ <- vrs.submitVatContact()
+            } yield Redirect(controllers.vatTradingDetails.routes.TradingNameController.show()))
+        }
+  }
 
 }

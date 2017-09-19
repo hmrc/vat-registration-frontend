@@ -26,27 +26,37 @@ import models.S4LVatSicAndCompliance.financeOnly
 import models.view.sicAndCompliance.financial.AdviceOrConsultancy
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, RegistrationService, S4LService}
+import services.{CommonService, RegistrationService, S4LService, SessionProfile}
 
 
 class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
                                              (implicit s4lService: S4LService, vrs: RegistrationService)
-  extends VatRegistrationController(ds) with CommonService {
+  extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
   val form: Form[AdviceOrConsultancy] = AdviceOrConsultancyForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[AdviceOrConsultancy]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(f)))
-  )
+  def show: Action[AnyContent] = authorised.async{
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          viewModel[AdviceOrConsultancy]().fold(form)(form.fill)
+            .map(f => Ok(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(f)))
+        }
+  }
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(badForm)).pure,
-      view => for {
-        container <- s4lContainer[S4LVatSicAndCompliance]()
-        _ <- s4lService.save(financeOnly(container.copy(adviceOrConsultancy = Some(view))))
-      } yield Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show())))
+
+  def submit: Action[AnyContent] = authorised.async{
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          form.bindFromRequest().fold(
+            badForm => BadRequest(views.html.pages.sicAndCompliance.financial.advice_or_consultancy(badForm)).pure,
+            view => for {
+              container <- s4lContainer[S4LVatSicAndCompliance]()
+              _ <- s4lService.save(financeOnly(container.copy(adviceOrConsultancy = Some(view))))
+            } yield Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show()))
+        }
+  }
 
 }
 

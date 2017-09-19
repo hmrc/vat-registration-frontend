@@ -24,24 +24,18 @@ import play.api.libs.json._
 final case class IncorpSubscription(transactionId: String, regime: String, subscriber: String, callbackUrl: String)
 
 object IncorpSubscription {
-
   implicit val format = Json.format[IncorpSubscription]
-
 }
 
 final case class IncorpStatusEvent(status: String, crn: Option[String], incorporationDate: Option[LocalDate], description: Option[String])
 
 object IncorpStatusEvent {
-
   implicit val format = Json.format[IncorpStatusEvent]
-
 }
 
 final case class IncorporationInfo(subscription: IncorpSubscription, statusEvent: IncorpStatusEvent)
 
 object IncorporationInfo {
-
   implicit val format = Json.format[IncorporationInfo]
-
 }
 

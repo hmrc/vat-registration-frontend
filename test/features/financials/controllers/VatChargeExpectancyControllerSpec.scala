@@ -19,16 +19,21 @@ package controllers.vatFinancials
 import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.view.vatFinancials.VatChargeExpectancy
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
+
+import scala.concurrent.Future
 
 class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object Controller extends VatChargeExpectancyController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(vatFinancials.routes.VatChargeExpectancyController.show())
@@ -38,6 +43,9 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
     "return HTML when there's a Vat Charge Expectancy model in S4L" in {
       save4laterReturnsViewModel(VatChargeExpectancy.yes)()
 
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       callAuthorised(Controller.show()) {
         _ includesText "Do you expect to reclaim more VAT than you charge?"
       }
@@ -45,7 +53,10 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[VatChargeExpectancy]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       callAuthorised(Controller.show) {
         _ includesText "Do you expect to reclaim more VAT than you charge?"
@@ -54,25 +65,32 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[VatChargeExpectancy]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       callAuthorised(Controller.show) {
         _ includesText "Do you expect to reclaim more VAT than you charge?"
       }
     }
-
   }
 
   s"POST ${vatFinancials.routes.VatChargeExpectancyController.submit()} with Empty data" should {
     "return 400" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
   }
 
   s"POST ${vatFinancials.routes.VatChargeExpectancyController.submit()} with Vat Charge Expectancy selected Yes" should {
-
     "return 303" in {
       save4laterExpectsSave[VatChargeExpectancy]()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_YES)) {
@@ -83,16 +101,17 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
   }
 
   s"POST ${vatFinancials.routes.VatChargeExpectancyController.submit()} with Vat Charge Expectancy selected No" should {
-
     "return 303" in {
       save4laterExpectsSave[VatChargeExpectancy]()
       save4laterExpectsSave[VatReturnFrequency]()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_NO)) {
         _ redirectsTo s"$contextRoot/vat-return-periods-end"
       }
     }
-
   }
-
 }

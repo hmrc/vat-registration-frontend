@@ -26,38 +26,46 @@ import models.api.CompletionCapacity
 import models.external.Officer
 import models.view.vatLodgingOfficer.CompletionCapacityView
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}
+import services._
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4l: S4LService,
                                              vrs: VatRegistrationService,
                                              prePopService: PrePopulationService)
-  extends VatRegistrationController(ds) with CommonService {
-
-  import cats.syntax.flatMap._
+  extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
   private val form = CompletionCapacityForm.form
 
   private def fetchOfficerList()(implicit hc: HeaderCarrier) =
     OptionT(keystoreConnector.fetchAndGet[Seq[Officer]](OFFICER_LIST_KEY))
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    for {
-      officerList <- prePopService.getOfficerList()
-      _ <- keystoreConnector.cache(OFFICER_LIST_KEY, officerList)
-      res <- viewModel[CompletionCapacityView]().fold(form)(form.fill)
-    } yield Ok(views.html.pages.vatLodgingOfficer.completion_capacity(res, officerList)))
+  def show: Action[AnyContent] = authorised.async{
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          for {
+            officerList <- prePopService.getOfficerList()
+            _ <- keystoreConnector.cache(OFFICER_LIST_KEY, officerList)
+            res <- viewModel[CompletionCapacityView]().fold(form)(form.fill)
+          } yield Ok(views.html.pages.vatLodgingOfficer.completion_capacity(res, officerList))
+        }
+  }
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      form.bindFromRequest().fold(
-        badForm => fetchOfficerList().getOrElse(Seq()).map(
-          officerList => BadRequest(views.html.pages.vatLodgingOfficer.completion_capacity(badForm, officerList))),
-        view => for {
-            officerSeq <- fetchOfficerList().getOrElse(Seq())
-            selectedOfficer = officerSeq.find(_.name.id == view.id).getOrElse(Officer.empty)
-            _ <-  keystoreConnector.cache(REGISTERING_OFFICER_KEY, selectedOfficer)
-            _ <- save(CompletionCapacityView(view.id, Some(CompletionCapacity(selectedOfficer.name, selectedOfficer.role))))
-          } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show())))
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          form.bindFromRequest().fold(
+            badForm => fetchOfficerList().getOrElse(Seq()).map(
+              officerList => BadRequest(views.html.pages.vatLodgingOfficer.completion_capacity(badForm, officerList))),
+            view => for {
+              officerSeq <- fetchOfficerList().getOrElse(Seq())
+              selectedOfficer = officerSeq.find(_.name.id == view.id).getOrElse(Officer.empty)
+              _ <- keystoreConnector.cache(REGISTERING_OFFICER_KEY, selectedOfficer)
+              _ <- save(CompletionCapacityView(view.id, Some(CompletionCapacity(selectedOfficer.name, selectedOfficer.role))))
+            } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show()))
+        }
+  }
 
 }

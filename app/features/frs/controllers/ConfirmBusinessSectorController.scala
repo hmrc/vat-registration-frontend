@@ -18,19 +18,31 @@ package controllers.frs {
 
   import javax.inject.Inject
 
-  import connectors.ConfigConnect
+  import connectors.{ConfigConnect, KeystoreConnector}
   import controllers.CommonPlayDependencies
   import play.api.mvc.{Action, AnyContent}
-  import services.{S4LService, VatRegistrationService}
+  import services.{S4LService, SessionProfile, VatRegistrationService}
 
   class ConfirmBusinessSectorController @Inject()(ds: CommonPlayDependencies, configConnector: ConfigConnect)
                                                  (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends BusinessSectorAwareController(ds, configConnector) {
+    extends BusinessSectorAwareController(ds, configConnector) with SessionProfile {
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      businessSectorView().map(view => Ok(features.frs.views.html.frs_confirm_business_sector(view))))
+    val keystoreConnector: KeystoreConnector = KeystoreConnector
 
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      businessSectorView().flatMap(save(_).map(_ => Redirect(controllers.frs.routes.RegisterForFrsWithSectorController.show()))))
+    def show: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            businessSectorView().map(view => Ok(features.frs.views.html.frs_confirm_business_sector(view)))
+          }
+    }
+
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            businessSectorView().flatMap(save(_).map(_ => Redirect(controllers.frs.routes.RegisterForFrsWithSectorController.show())))
+          }
+    }
   }
 }

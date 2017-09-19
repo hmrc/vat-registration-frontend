@@ -30,7 +30,7 @@ class ComplianceExitController (ds: CommonPlayDependencies)
                                (implicit vrs: RegistrationService, s4lService: S4LService)
   extends VatRegistrationController(ds) with CommonService {
 
-  def selectNextPage(sicCodesList: List[SicCode])(implicit hc: HeaderCarrier): Future[Result] =
+  def selectNextPage(sicCodesList: List[SicCode])(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[Result] =
     ComplianceQuestions(sicCodesList) match {
       case NoComplianceQuestions => for {
         container <- s4lContainer[S4LVatSicAndCompliance]()
