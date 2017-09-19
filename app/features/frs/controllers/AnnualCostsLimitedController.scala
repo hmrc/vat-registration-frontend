@@ -53,43 +53,56 @@ package controllers.frs {
   import javax.inject.Inject
 
   import cats.syntax.FlatMapSyntax
+  import connectors.KeystoreConnector
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.frs.AnnualCostsLimitedFormFactory
   import models._
   import models.view.frs.AnnualCostsLimitedView
   import play.api.mvc.{Action, AnyContent}
-  import services.{S4LService, VatRegistrationService}
+  import services.{S4LService, SessionProfile, VatRegistrationService}
 
 
   class AnnualCostsLimitedController @Inject()(ds: CommonPlayDependencies)
                                               (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with FlatMapSyntax {
+    extends VatRegistrationController(ds) with FlatMapSyntax with SessionProfile {
+
+    val keystoreConnector: KeystoreConnector = KeystoreConnector
 
     val defaultForm = AnnualCostsLimitedFormFactory.form()
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      for {
-        estimateVatTurnover <- getFlatRateSchemeThreshold()
-        annualCostsLimitedForm <- viewModel[AnnualCostsLimitedView]().fold(defaultForm)(defaultForm.fill)
-      } yield Ok(features.frs.views.html.annual_costs_limited(annualCostsLimitedForm, estimateVatTurnover)))
-
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      getFlatRateSchemeThreshold().flatMap(turnover =>
-        AnnualCostsLimitedFormFactory.form(Seq(turnover)).bindFromRequest().fold(
-          badForm => BadRequest(features.frs.views.html.annual_costs_limited(badForm, turnover)).pure,
-          view => (if (view.selection == AnnualCostsLimitedView.NO) {
-            save(view).map(_ => controllers.frs.routes.ConfirmBusinessSectorController.show())
-          } else {
+    def show: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
             for {
-            // save this view and delete later elements
-              frs <- s4lContainer[S4LFlatRateScheme]()
-              _ <- s4LService.save(frs.copy(
-                annualCostsLimited = Some(view),
-                frsStartDate = None,
-                categoryOfBusiness = None
-              ))
-            } yield controllers.frs.routes.RegisterForFrsController.show()
-          }).map(Redirect))))
+              estimateVatTurnover <- getFlatRateSchemeThreshold()
+              annualCostsLimitedForm <- viewModel[AnnualCostsLimitedView]().fold(defaultForm)(defaultForm.fill)
+            } yield Ok(features.frs.views.html.annual_costs_limited(annualCostsLimitedForm, estimateVatTurnover))
+          }
+    }
+
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            getFlatRateSchemeThreshold().flatMap(turnover =>
+              AnnualCostsLimitedFormFactory.form(Seq(turnover)).bindFromRequest().fold(
+                badForm => BadRequest(features.frs.views.html.annual_costs_limited(badForm, turnover)).pure,
+                view => (if (view.selection == AnnualCostsLimitedView.NO) {
+                  save(view).map(_ => controllers.frs.routes.ConfirmBusinessSectorController.show())
+                } else {
+                  for {
+                  // save this view and delete later elements
+                    frs <- s4lContainer[S4LFlatRateScheme]()
+                    _ <- s4LService.save(frs.copy(
+                      annualCostsLimited = Some(view),
+                      frsStartDate = None,
+                      categoryOfBusiness = None
+                    ))
+                  } yield controllers.frs.routes.RegisterForFrsController.show()
+                }).map(Redirect)))
+          }
+    }
 
   }
 }

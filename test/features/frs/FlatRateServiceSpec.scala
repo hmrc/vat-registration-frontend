@@ -18,7 +18,6 @@ package services {
 
   import cats.data.OptionT
   import connectors.KeystoreConnector
-  import fixtures.VatRegistrationFixture
   import helpers.{S4LMockSugar, VatRegSpec}
   import models.S4LFlatRateScheme
   import models.external.IncorporationInfo
@@ -30,7 +29,7 @@ package services {
   import scala.concurrent.Future
   import scala.language.postfixOps
 
-  class FlateRateServiceSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+  class FlateRateServiceSpec extends VatRegSpec with S4LMockSugar {
     class Setup {
       val service: FlatRateService = new RegistrationService {
         override val s4LService = mockS4LService
@@ -44,7 +43,7 @@ package services {
     override def beforeEach() {
       super.beforeEach()
       mockFetchRegId(testRegId)
-      when(mockIIService.getIncorporationInfo()(any())).thenReturn(OptionT.none[Future, IncorporationInfo])
+      when(mockIIService.getIncorporationInfo(any())(any())).thenReturn(OptionT.none[Future, IncorporationInfo])
     }
 
     "When this is the first time the user starts a journey and we're persisting to the backend" should {

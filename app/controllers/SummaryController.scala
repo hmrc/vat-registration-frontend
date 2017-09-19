@@ -18,36 +18,36 @@ package controllers
 
 import javax.inject.Inject
 
-import cats.data.OptionT
 import controllers.builders._
-import models.ModelKeys.INCORPORATION_STATUS
-import models.MonthYearModel
+import models.{CurrentProfile, MonthYearModel}
 import models.api._
-import models.external.IncorporationInfo
 import models.view._
 import play.api.mvc._
-import services.{CommonService, S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class SummaryController @Inject()(ds: CommonPlayDependencies)
                                  (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with CommonService {
+  extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          for {
+            summary             <- getRegistrationSummary()
+            _                   <- s4LService.clear()
+            dateOfIncorporation = profile.incorporationDate.fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y))
+          } yield Ok(views.html.pages.summary(
+            summary,
+            dateOfIncorporation
+          ))
+        }
+  }
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    for {
-      summary <- getRegistrationSummary()
-      _ <- s4LService.clear()
-      dateOfIncorporation <- OptionT(keystoreConnector.fetchAndGet[IncorporationInfo](INCORPORATION_STATUS))
-        .subflatMap(_.statusEvent.incorporationDate).fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y))
-    } yield Ok(views.html.pages.summary(
-      summary,
-      dateOfIncorporation
-    )))
-
-  def getRegistrationSummary()(implicit hc: HeaderCarrier): Future[Summary] =
+  def getRegistrationSummary()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] =
     vrs.getVatScheme().map(registrationToSummary)
 
   def registrationToSummary(vs: VatScheme): Summary =

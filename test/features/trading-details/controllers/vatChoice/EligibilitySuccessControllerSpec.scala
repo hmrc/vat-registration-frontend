@@ -19,16 +19,20 @@ package controllers.vatTradingDetails.vatChoice
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.ModelKeys._
 import models.external.IncorporationInfo
+import org.mockito.Matchers
+import org.mockito.Mockito.when
 import play.api.test.FakeRequest
+
+import scala.concurrent.Future
 
 class EligibilitySuccessControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object TestEligibilitySuccessController extends EligibilitySuccessController(ds){
     override val authConnector = mockAuthConnector
     override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-
   }
 
   val fakeRequest = FakeRequest(routes.EligibilitySuccessController.show())
@@ -36,6 +40,10 @@ class EligibilitySuccessControllerSpec extends VatRegSpec with VatRegistrationFi
   s"GET ${routes.EligibilitySuccessController.show()}" should {
 
     "return HTML when there's a eligibility success view in S4L" in {
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       callAuthorised(TestEligibilitySuccessController.show) {
         _ includesText "You can register for VAT using this service"
       }
@@ -44,8 +52,10 @@ class EligibilitySuccessControllerSpec extends VatRegSpec with VatRegistrationFi
   }
 
   s"POST ${routes.EligibilitySuccessController.submit()}" should {
-
     "return 303 with valid data - Company NOT INCORPORATED" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, None)
 
       submitAuthorised(TestEligibilitySuccessController.submit(), fakeRequest.withFormUrlEncodedBody()) {
@@ -56,8 +66,10 @@ class EligibilitySuccessControllerSpec extends VatRegSpec with VatRegistrationFi
   }
 
   s"POST ${routes.EligibilitySuccessController.submit()}" should {
-
     "return 303 with valid data - Company INCORPORATED" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
 
       submitAuthorised(TestEligibilitySuccessController.submit(), fakeRequest.withFormUrlEncodedBody()) {

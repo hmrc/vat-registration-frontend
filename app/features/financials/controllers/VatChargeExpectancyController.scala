@@ -61,28 +61,39 @@ package controllers.vatFinancials {
   import models.view.vatFinancials.VatChargeExpectancy.VAT_CHARGE_YES
   import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
   import play.api.mvc.{Action, AnyContent}
-  import services.{S4LService, VatRegistrationService}
+  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
 
 
   class VatChargeExpectancyController @Inject()(ds: CommonPlayDependencies)
                                                (implicit s4LService: S4LService,
                                                 vatRegistrationService: VatRegistrationService)
-    extends VatRegistrationController(ds) with FlatMapSyntax {
+    extends VatRegistrationController(ds) with FlatMapSyntax with CommonService with SessionProfile {
 
     val form = VatChargeExpectancyForm.form
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      viewModel[VatChargeExpectancy]().fold(form)(form.fill)
-        .map(f => Ok(features.financials.views.html.vat_charge_expectancy(f))))
+    def show: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            viewModel[VatChargeExpectancy]().fold(form)(form.fill)
+              .map(f => Ok(features.financials.views.html.vat_charge_expectancy(f)))
+          }
+    }
 
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      form.bindFromRequest().fold(
-        badForm => BadRequest(features.financials.views.html.vat_charge_expectancy(badForm)).pure,
-        view => save(view).map(_ => view.yesNo == VAT_CHARGE_YES).ifM(
-          ifTrue = controllers.vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show().pure,
-          ifFalse = save(VatReturnFrequency(VatReturnFrequency.QUARTERLY))
-            .map(_ => controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show())
-        ).map(Redirect)))
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            form.bindFromRequest().fold(
+              badForm => BadRequest(features.financials.views.html.vat_charge_expectancy(badForm)).pure,
+              view => save(view).map(_ => view.yesNo == VAT_CHARGE_YES).ifM(
+                ifTrue = controllers.vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show().pure,
+                ifFalse = save(VatReturnFrequency(VatReturnFrequency.QUARTERLY))
+                  .map(_ => controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show())
+              ).map(Redirect)
+            )
+          }
+    }
   }
 }
 

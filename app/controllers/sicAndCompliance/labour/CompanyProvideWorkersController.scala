@@ -19,40 +19,48 @@ package controllers.sicAndCompliance.labour
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.labour.CompanyProvideWorkersForm
 import models.S4LVatSicAndCompliance
 import models.S4LVatSicAndCompliance.{dropFromCompanyProvideWorkers, labourOnly}
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers.PROVIDE_WORKERS_YES
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
 
 
 class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
                                                (implicit s4lService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with CommonService {
+  extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
   val form = CompanyProvideWorkersForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[CompanyProvideWorkers]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.labour.company_provide_workers(f))))
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          viewModel[CompanyProvideWorkers]().fold(form)(form.fill)
+            .map(f => Ok(views.html.pages.sicAndCompliance.labour.company_provide_workers(f)))
+        }
+  }
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.sicAndCompliance.labour.company_provide_workers(badForm)).pure,
-      view => (if (PROVIDE_WORKERS_YES == view.yesNo) {
-        for {
-          container <- s4lContainer[S4LVatSicAndCompliance]()
-          _ <- s4lService.save(labourOnly(container.copy(companyProvideWorkers = Some(view))))
-        } yield controllers.sicAndCompliance.labour.routes.WorkersController.show()
-      } else {
-        for {
-          container <- s4lContainer[S4LVatSicAndCompliance]()
-          _ <- s4lService.save(dropFromCompanyProvideWorkers(labourOnly(container.copy(companyProvideWorkers = Some(view)))))
-          _ <- vrs.submitSicAndCompliance()
-        } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
-      }).map(Redirect)))
-
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          form.bindFromRequest().fold(
+            badForm => BadRequest(views.html.pages.sicAndCompliance.labour.company_provide_workers(badForm)).pure,
+            view => (if (PROVIDE_WORKERS_YES == view.yesNo) {
+              for {
+                container <- s4lContainer[S4LVatSicAndCompliance]()
+                _ <- s4lService.save(labourOnly(container.copy(companyProvideWorkers = Some(view))))
+              } yield controllers.sicAndCompliance.labour.routes.WorkersController.show()
+            } else {
+              for {
+                container <- s4lContainer[S4LVatSicAndCompliance]()
+                _ <- s4lService.save(dropFromCompanyProvideWorkers(labourOnly(container.copy(companyProvideWorkers = Some(view)))))
+                _ <- vrs.submitSicAndCompliance()
+              } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
+            }).map(Redirect))
+        }
+  }
 }

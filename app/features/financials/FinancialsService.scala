@@ -19,7 +19,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 package services {
 
   import common.ErrorUtil.fail
-  import models.S4LVatFinancials
+  import models.{CurrentProfile, S4LVatFinancials}
   import models.api.{VatFinancials, VatScheme}
   import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -29,17 +29,16 @@ package services {
 
     self: RegistrationService =>
 
-    import cats.syntax.all._
-
-    def submitVatFinancials()(implicit hc: HeaderCarrier): Future[VatFinancials] = {
+    def submitVatFinancials()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatFinancials] = {
       def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =
         fresh.fold(
           vs.financials.getOrElse(throw fail("VatFinancials"))
         ) (s4l => S4LVatFinancials.apiT.toApi(s4l))
 
       for {
-        (vs, vf) <- (getVatScheme() |@| s4l[S4LVatFinancials]()).tupled
-        response <- vatRegConnector.upsertVatFinancials(vs.id, merge(vf, vs))
+        vs <- getVatScheme()
+        vf <- s4l[S4LVatFinancials]
+        response <- vatRegConnector.upsertVatFinancials(profile.registrationId, merge(vf, vs))
       } yield response
     }
 

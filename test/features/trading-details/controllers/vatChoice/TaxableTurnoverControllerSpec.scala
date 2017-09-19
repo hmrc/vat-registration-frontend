@@ -18,7 +18,9 @@ package controllers.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration}
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -30,6 +32,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
   object TestTaxableTurnoverController extends TaxableTurnoverController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(routes.TaxableTurnoverController.show())
@@ -41,6 +44,9 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
       save4laterReturnsViewModel(taxableTurnover)()
 
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(TestTaxableTurnoverController.show(), fakeRequest.withFormUrlEncodedBody(
         "taxableTurnoverRadio" -> ""
       )) {
@@ -51,7 +57,10 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[TaxableTurnover]()
 
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestTaxableTurnoverController.show) {
@@ -63,7 +72,10 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[TaxableTurnover]()
 
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestTaxableTurnoverController.show) {
@@ -74,8 +86,11 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
 
   s"POST ${routes.TaxableTurnoverController.submit()} with Empty data" should {
-
     "return 400" in {
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(TestTaxableTurnoverController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
@@ -88,6 +103,9 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
       save4laterExpectsSave[VoluntaryRegistration]()
       save4laterExpectsSave[StartDateView]()
 
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(TestTaxableTurnoverController.submit(), fakeRequest.withFormUrlEncodedBody(
         "taxableTurnoverRadio" -> TaxableTurnover.TAXABLE_YES
       ))(_ redirectsTo s"$contextRoot/who-is-registering-the-company-for-vat")
@@ -96,14 +114,15 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
   }
 
   s"POST ${routes.TaxableTurnoverController.submit()} with Taxable Turnover selected No" should {
-
     "return 303" in {
       save4laterExpectsSave[TaxableTurnover]()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(TestTaxableTurnoverController.submit(), fakeRequest.withFormUrlEncodedBody(
         "taxableTurnoverRadio" -> TaxableTurnover.TAXABLE_NO
       ))(_ redirectsTo s"$contextRoot/do-you-want-to-register-voluntarily")
-
     }
   }
 

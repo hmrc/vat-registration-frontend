@@ -25,7 +25,7 @@ import forms.ppob.PpobForm
 import models.api.ScrsAddress
 import models.view.vatContact.ppob.PpobView
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, PrePopulationService, S4LService, VatRegistrationService}
+import services._
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 class PpobController @Inject()(ds: CommonPlayDependencies)
@@ -33,7 +33,7 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
                                vrs: VatRegistrationService,
                                prePopService: PrePopulationService,
                                alfConnector: AddressLookupConnect)
-  extends VatRegistrationController(ds) with CommonService {
+  extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
   import cats.syntax.flatMap._
   import models.AddressLookupJourneyId.ppobVatReg
@@ -44,31 +44,46 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
   private def fetchAddressList()(implicit headerCarrier: HeaderCarrier) =
     OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]](addressListKey))
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    for {
-      addresses <- prePopService.getPpobAddressList()
-      _ <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
-      res <- viewModel[PpobView]().fold(form)(form.fill)
-    } yield Ok(views.html.pages.vatContact.ppob.ppob(res, addresses))
-  )
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          for {
+            addresses <- prePopService.getPpobAddressList()
+            _ <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
+            res <- viewModel[PpobView]().fold(form)(form.fill)
+          } yield Ok(views.html.pages.vatContact.ppob.ppob(res, addresses))
+        }
+  }
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      badForm => fetchAddressList().getOrElse(Seq()).map(
-        addressList => BadRequest(views.html.pages.vatContact.ppob.ppob(badForm, addressList))),
-      data => (data.addressId == "other").pure.ifM(
-        ifTrue = alfConnector.getOnRampUrl(routes.PpobController.acceptFromTxm()),
-        ifFalse = for {
-          addressList <- fetchAddressList().getOrElse(Seq())
-          address = addressList.find(_.id == data.addressId)
-          _ <- save(PpobView(data.addressId, address))
-        } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
-      ).map(Redirect)))
 
-  def acceptFromTxm(id: String): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    for {
-      address <- alfConnector.getAddress(id)
-      _ <- save(PpobView(address.id, Some(address)))
-    } yield Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show()))
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          form.bindFromRequest().fold(
+            badForm => fetchAddressList().getOrElse(Seq()).map(
+              addressList => BadRequest(views.html.pages.vatContact.ppob.ppob(badForm, addressList))),
+            data => (data.addressId == "other").pure.ifM(
+              ifTrue = alfConnector.getOnRampUrl(routes.PpobController.acceptFromTxm()),
+              ifFalse = for {
+                addressList <- fetchAddressList().getOrElse(Seq())
+                address = addressList.find(_.id == data.addressId)
+                _ <- save(PpobView(data.addressId, address))
+              } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
+            ).map(Redirect))
+        }
+  }
+
+  def acceptFromTxm(id: String): Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          for {
+            address <- alfConnector.getAddress(id)
+            _ <- save(PpobView(address.id, Some(address)))
+          } yield Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())
+        }
+  }
 
 }

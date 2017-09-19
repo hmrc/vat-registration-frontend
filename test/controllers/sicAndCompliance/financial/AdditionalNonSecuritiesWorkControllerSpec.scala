@@ -18,8 +18,9 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LVatSicAndCompliance
+import models.{CurrentProfile, S4LVatSicAndCompliance}
 import models.view.sicAndCompliance.financial.AdditionalNonSecuritiesWork
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -32,14 +33,17 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
   object AdditionalNonSecuritiesWorkController
     extends AdditionalNonSecuritiesWorkController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(routes.AdditionalNonSecuritiesWorkController.show())
 
   s"GET ${routes.AdditionalNonSecuritiesWorkController.show()}" should {
-
     "return HTML when there's a Additional Non Securities Work model in S4L" in {
       save4laterReturnsViewModel(AdditionalNonSecuritiesWork(true))()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(AdditionalNonSecuritiesWorkController.show(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesRadio" -> "")) {
@@ -50,7 +54,10 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[AdditionalNonSecuritiesWork]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       callAuthorised(AdditionalNonSecuritiesWorkController.show) {
         _ includesText "Does the company do additional work (excluding securities)" +
@@ -60,8 +67,11 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
 
   "return HTML when there's nothing in S4L and vatScheme contains no dataempty vatScheme" in {
     save4laterReturnsNoViewModel[AdditionalNonSecuritiesWork]()
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
+    when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
+
+    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Some(currentProfile)))
 
       callAuthorised(AdditionalNonSecuritiesWorkController.show) {
         _ includesText "Does the company do additional work (excluding securities) " +
@@ -71,29 +81,33 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
   }
 
   s"POST ${routes.AdditionalNonSecuritiesWorkController.show()}" should {
-
     "return 400 with Empty data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
 
     "return 303 with Additional Non Securities Work Yes selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
       save4laterExpectsSave[AdditionalNonSecuritiesWork]()
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
     }
 
     "return 303 with Additional Non Securities Work No selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterExpectsSave[AdditionalNonSecuritiesWork]()
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(
         "additionalNonSecuritiesWorkRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/provides-discretionary-investment-management-services")

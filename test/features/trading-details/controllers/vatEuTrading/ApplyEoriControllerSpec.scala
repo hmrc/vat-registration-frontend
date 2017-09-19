@@ -18,23 +18,31 @@ package controllers.vatTradingDetails.vatEuTrading
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.view.vatTradingDetails.vatEuTrading.ApplyEori
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
+
+import scala.concurrent.Future
 
 class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object ApplyEoriController extends ApplyEoriController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(routes.ApplyEoriController.show())
 
   s"GET ${routes.ApplyEoriController.show()}" should {
-
     "return HTML when there's a Apply Eori model in S4L" in {
       save4laterReturnsViewModel(ApplyEori(ApplyEori.APPLY_EORI_YES))()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(ApplyEoriController.show(), fakeRequest.withFormUrlEncodedBody("applyEoriRadio" -> "")) {
         _ includesText "You need an Economic Operator Registration and Identification (EORI) number"
       }
@@ -42,7 +50,11 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[ApplyEori]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(ApplyEoriController.show) {
         _ includesText "You need an Economic Operator Registration and Identification (EORI) number"
@@ -52,7 +64,10 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[ApplyEori]()
-    when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+    when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+
+    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Some(currentProfile)))
 
     callAuthorised(ApplyEoriController.show) {
       _ includesText "You need an Economic Operator Registration and Identification (EORI) number"
@@ -60,19 +75,23 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
   }
 
   s"POST ${routes.ApplyEoriController.show()} with Empty data" should {
-
     "return 400" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody()) { result =>
         result isA 400
       }
     }
-
   }
 
   s"POST ${routes.ApplyEoriController.submit()} with Apply Eori Yes selected" should {
-
     "return 303" in {
       save4laterExpectsSave[ApplyEori]()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_YES)
       )) {
@@ -82,15 +101,17 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
   }
 
   s"POST ${routes.ApplyEoriController.submit()} with Apply Eori No selected" should {
-
     "return 303" in {
       save4laterExpectsSave[ApplyEori]()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(ApplyEoriController.submit(), fakeRequest.withFormUrlEncodedBody(
         "applyEoriRadio" -> String.valueOf(ApplyEori.APPLY_EORI_NO)
       )) {
         _ redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months"
       }
     }
-
   }
 }

@@ -18,7 +18,7 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.view.sicAndCompliance.BusinessActivityDescription
+import models.CurrentProfile
 import models.view.sicAndCompliance.financial.ManageAdditionalFunds
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -34,15 +34,16 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
 
   object ManageAdditionalFundsController extends ManageAdditionalFundsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(routes.ManageAdditionalFundsController.show())
 
   s"GET ${routes.ManageAdditionalFundsController.show()}" should {
-
     "return HTML when there's a Manage Additional Funds model in S4L" in {
       save4laterReturnsViewModel(ManageAdditionalFunds(true))()
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(ManageAdditionalFundsController.show(), fakeRequest.withFormUrlEncodedBody(
         "manageAdditionalFundsRadio" -> ""
       )) {
@@ -52,8 +53,9 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[ManageAdditionalFunds]()
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any())).thenReturn(Future.successful(validVatScheme))
-
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatScheme))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(ManageAdditionalFundsController.show) {
        _ includesText "Does the company manage any funds that are not included in this list?"
       }
@@ -61,8 +63,9 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[ManageAdditionalFunds]()
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-
+    when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(ManageAdditionalFundsController.show) {
         _ includesText "Does the company manage any funds that are not included in this list?"
       }
@@ -70,8 +73,9 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
   }
 
   s"POST ${routes.ManageAdditionalFundsController.show()}" should {
-
     "return 400 with Empty data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result => status(result) mustBe Status.BAD_REQUEST
@@ -79,9 +83,10 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
     }
 
     "return 303 with Manage Additional Funds Yes selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[ManageAdditionalFunds]()
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "manageAdditionalFundsRadio" -> "true"
       )) {
@@ -90,9 +95,10 @@ class ManageAdditionalFundsControllerSpec extends VatRegSpec with VatRegistratio
     }
 
     "return 303 with Manage Additional Funds No selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[ManageAdditionalFunds]()
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(ManageAdditionalFundsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "manageAdditionalFundsRadio" -> "false"
       )) {

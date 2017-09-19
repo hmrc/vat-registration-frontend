@@ -23,26 +23,36 @@ import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.financial.ManageAdditionalFundsForm
 import models.view.sicAndCompliance.financial.ManageAdditionalFunds
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, RegistrationService, S4LService}
+import services.{CommonService, RegistrationService, S4LService, SessionProfile}
 
 
 class ManageAdditionalFundsController @Inject()(ds: CommonPlayDependencies)
                                                (implicit s4LService: S4LService, vrs: RegistrationService)
-  extends VatRegistrationController(ds) with CommonService {
+  extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
   val form = ManageAdditionalFundsForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[ManageAdditionalFunds]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.manage_additional_funds(f))))
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          viewModel[ManageAdditionalFunds]().fold(form)(form.fill)
+            .map(f => Ok(views.html.pages.sicAndCompliance.financial.manage_additional_funds(f)))
+        }
+  }
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.manage_additional_funds(badForm)).pure,
-      view => for {
-        _ <- save(view)
-        _ <- vrs.submitSicAndCompliance()
-      } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())))
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          form.bindFromRequest().fold(
+            badForm => BadRequest(views.html.pages.sicAndCompliance.financial.manage_additional_funds(badForm)).pure,
+            view => for {
+              _ <- save(view)
+              _ <- vrs.submitSicAndCompliance()
+            } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()))
+        }
+  }
 
 }
 

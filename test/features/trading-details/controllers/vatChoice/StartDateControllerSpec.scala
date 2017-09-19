@@ -24,6 +24,7 @@ import common.Now
 import fixtures.VatRegistrationFixture
 import forms.vatTradingDetails.vatChoice.StartDateFormFactory
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.view.vatTradingDetails.vatChoice.StartDateView
 import org.mockito.Matchers
 import org.mockito.Matchers._
@@ -44,17 +45,20 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
   object TestStartDateController extends StartDateController(startDateFormFactory, mockPPService, ds)(mockS4LService, mockVatRegistrationService) {
     implicit val fixedToday = Now[LocalDate](today)
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(routes.StartDateController.show())
 
   s"GET ${routes.StartDateController.show()}" should {
-
     "return HTML when there's a start date in S4L" in {
       val startDate = StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.of(2017, 3, 21)))
 
       save4laterReturnsViewModel(startDate)()
-      when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       callAuthorised(TestStartDateController.show) {
         result =>
@@ -68,9 +72,12 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[StartDateView]()
 
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
-      when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       callAuthorised(TestStartDateController.show) {
         result =>
@@ -84,9 +91,12 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[StartDateView]()
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
-      when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       callAuthorised(TestStartDateController.show) {
         result =>
@@ -99,8 +109,11 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
   }
 
   s"POST ${routes.StartDateController.submit()}" should {
-
     "return 400 when no data posted" in {
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(
         TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody()) {
         status(_) mustBe Status.BAD_REQUEST
@@ -108,6 +121,10 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
     }
 
     "return 400 when partial data is posted" in {
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(
         TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
           "startDateRadio" -> StartDateView.SPECIFIC_DATE,
@@ -121,8 +138,11 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
     "return 303 with valid data" in {
       save4laterExpectsSave[StartDateView]()
-      when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
-      when(mockVatRegistrationService.submitTradingDetails()(any())).thenReturn(validVatTradingDetails.pure)
+      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockVatRegistrationService.submitTradingDetails()(any(), any())).thenReturn(validVatTradingDetails.pure)
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.COMPANY_REGISTRATION_DATE,
@@ -135,13 +155,16 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
           redirectLocation(result).getOrElse("") mustBe s"$contextRoot/business-bank-account"
       }
 
-      verify(mockVatRegistrationService).submitTradingDetails()(any())
+      verify(mockVatRegistrationService).submitTradingDetails()(any(), any())
     }
 
     "return 303 with valid data BUSINESS_START_DATE" in {
       save4laterExpectsSave[StartDateView]()
-      when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
-      when(mockVatRegistrationService.submitTradingDetails()(any())).thenReturn(validVatTradingDetails.pure)
+      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockVatRegistrationService.submitTradingDetails()(any(), any())).thenReturn(validVatTradingDetails.pure)
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.BUSINESS_START_DATE
@@ -151,14 +174,17 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
           redirectLocation(result).getOrElse("") mustBe s"$contextRoot/business-bank-account"
       }
 
-      verify(mockVatRegistrationService).submitTradingDetails()(any())
+      verify(mockVatRegistrationService).submitTradingDetails()(any(), any())
     }
 
     "return 303 with StartDate having a specific date" in {
       save4laterExpectsSave[StartDateView]()
-      when(mockPPService.getCTActiveDate()(any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
       when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
-      when(mockVatRegistrationService.submitTradingDetails()(any())).thenReturn(validVatTradingDetails.pure)
+      when(mockVatRegistrationService.submitTradingDetails()(any(), any())).thenReturn(validVatTradingDetails.pure)
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.SPECIFIC_DATE,
@@ -171,7 +197,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
           redirectLocation(result).getOrElse("") mustBe s"$contextRoot/business-bank-account"
       }
 
-      verify(mockVatRegistrationService).submitTradingDetails()(any())
+      verify(mockVatRegistrationService).submitTradingDetails()(any(), any())
     }
   }
 }

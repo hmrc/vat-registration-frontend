@@ -71,36 +71,51 @@ package controllers.vatTradingDetails.vatChoice {
   import javax.inject.Inject
 
   import common.Now
+  import connectors.KeystoreConnector
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatTradingDetails.vatChoice.StartDateFormFactory
   import models.view.vatTradingDetails.vatChoice.StartDateView
   import play.api.data.Form
   import play.api.mvc._
-  import services.{PrePopService, S4LService, VatRegistrationService}
+  import services.{PrePopService, S4LService, SessionProfile, VatRegistrationService}
   import uk.gov.hmrc.play.http.HeaderCarrier
   import features.tradingDetails.views.html.vatChoice.start_date
+  import models.CurrentProfile
 
   import scala.concurrent.Future
 
   class StartDateController @Inject()(startDateFormFactory: StartDateFormFactory, iis: PrePopService, ds: CommonPlayDependencies)
-                                     (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+                                     (implicit s4LService: S4LService, vrs: VatRegistrationService)
+    extends VatRegistrationController(ds) with SessionProfile {
+
+    val keystoreConnector: KeystoreConnector = KeystoreConnector
 
     val form: Form[StartDateView] = startDateFormFactory.form()
 
     protected[controllers]
-    def populateCtActiveDate(vm: StartDateView)(implicit hc: HeaderCarrier, today: Now[LocalDate]): Future[StartDateView] =
+    def populateCtActiveDate(vm: StartDateView)(implicit hc: HeaderCarrier, profile: CurrentProfile, today: Now[LocalDate]): Future[StartDateView] =
       iis.getCTActiveDate().filter(today().plusMonths(3).isAfter).fold(vm)(vm.withCtActiveDateOption)
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      viewModel[StartDateView]().getOrElse(StartDateView())
-        .flatMap(populateCtActiveDate).map(f => Ok(start_date(form.fill(f)))))
+    def show: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            viewModel[StartDateView]().getOrElse(StartDateView())
+              .flatMap(populateCtActiveDate).map(f => Ok(start_date(form.fill(f))))
+          }
+    }
 
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      startDateFormFactory.form().bindFromRequest().fold(
-        badForm => BadRequest(start_date(badForm)).pure,
-        goodForm => populateCtActiveDate(goodForm).flatMap(vm => save(vm)).map(_ =>
-          vrs.submitTradingDetails()).map(_ =>
-          Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show()))))
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            startDateFormFactory.form().bindFromRequest().fold(
+              badForm => BadRequest(start_date(badForm)).pure,
+              goodForm => populateCtActiveDate(goodForm).flatMap(vm => save(vm)).map(_ =>
+                vrs.submitTradingDetails()).map(_ =>
+                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())))
+          }
+    }
   }
 }
 

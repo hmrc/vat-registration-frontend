@@ -22,6 +22,7 @@ import models.api.VatFlatRateScheme
 import models.view.frs.JoinFrsView
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
+import play.api.Logger
 import support.AppAndStubs
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,14 +36,18 @@ class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
       "a view is in Save 4 Later" in {
         given()
           .user.isAuthorised
+          .currentProfile.withProfile
           .s4lContainer[S4LFlatRateScheme].contains(JoinFrsView(selection = true))
 
-        whenReady(controller.show(request))(res => res.header.status mustBe 200)
+        whenReady(controller.show(request)) { res =>
+          res.header.status mustBe 200
+        }
       }
 
       "a view is in neither Save 4 Later nor backend" in {
         given()
           .user.isAuthorised
+          .currentProfile.withProfile
           .s4lContainer[S4LFlatRateScheme].isEmpty
           .vatScheme.isBlank
 
@@ -58,6 +63,7 @@ class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         given()
           .postRequest(Map("joinFrsRadio" -> "true")) //ordering matters! oops
           .user.isAuthorised
+          .currentProfile.withProfile
           .s4lContainer[S4LFlatRateScheme].contains(JoinFrsView(selection = false))
           .s4lContainer[S4LFlatRateScheme].isUpdatedWith(JoinFrsView(selection = true))
 
@@ -68,6 +74,7 @@ class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         given()
           .postRequest(Map("joinFrsRadio" -> "false")) //ordering matters! oops
           .user.isAuthorised
+          .currentProfile.withProfile
           .s4lContainer[S4LFlatRateScheme].contains(JoinFrsView(selection = true))
           .s4lContainer[S4LFlatRateScheme].isUpdatedWith(JoinFrsView(selection = false))
           .vatScheme.isBlank

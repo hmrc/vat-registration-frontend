@@ -24,7 +24,7 @@ import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
 import models.api.VatTradingDetails
-import models.{ApiModelTransformer, S4LTradingDetails}
+import models.{ApiModelTransformer, CurrentProfile, S4LTradingDetails}
 import models.external.{AccountingDetails, CorporationTaxRegistration}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason.INTENDS_TO_SELL
@@ -34,6 +34,7 @@ import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 
 @ImplementedBy(classOf[PrePopConnector])
@@ -42,10 +43,9 @@ trait PPConnector {
 //  val companyRegUrl: String
   val http: WSHttp
 
-  def getCompanyRegistrationDetails
-  (regId: String)
-  (implicit hc: HeaderCarrier, rds: HttpReads[CorporationTaxRegistration]): OptionalResponse[CorporationTaxRegistration]
-
+  def getCompanyRegistrationDetails(implicit hc: HeaderCarrier,
+                                    profile: CurrentProfile,
+                                    rds: HttpReads[CorporationTaxRegistration]): OptionalResponse[CorporationTaxRegistration]
 }
 
 
@@ -61,25 +61,12 @@ class PrePopConnector @Inject()(s4l: S4LService, vrs: VatRegistrationService) ex
 
   val expectedFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-  override def getCompanyRegistrationDetails(regId: String)
-                                            (implicit hc: HeaderCarrier, rds: HttpReads[CorporationTaxRegistration])
+  override def getCompanyRegistrationDetails(implicit hc: HeaderCarrier, profile: CurrentProfile, rds: HttpReads[CorporationTaxRegistration])
   : OptionalResponse[CorporationTaxRegistration] =
     OptionT(s4l.fetchAndGet[S4LTradingDetails]()).subflatMap(_.voluntaryRegistrationReason)
       .orElseF(vrs.getVatScheme() map ApiModelTransformer[VoluntaryRegistrationReason].toViewModel).collect {
       case VoluntaryRegistrationReason(INTENDS_TO_SELL) => CorporationTaxRegistration(
         Some(AccountingDetails("", Some(LocalDate.now.plusDays(7) format expectedFormat))))
     }
-
-  //    OptionT(
-  //      http.GET[CorporationTaxRegistration](s"$companyRegUrl/company-registration/corporation-tax-registration/$regId/corporation-tax-registration")
-  //        .map(Option.apply)
-  //        .recover {
-  //          case ex =>
-  //            logResponse(ex, className, "getCompanyRegistrationDetails")
-  //            Option.empty[CorporationTaxRegistration]
-  //        }
-  //    )
-
   //$COVERAGE-ON$
-
 }

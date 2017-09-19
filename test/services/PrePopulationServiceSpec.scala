@@ -54,12 +54,12 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "be a LocalDate" in new Setup {
       val expectedDate = LocalDate.of(2017, 4, 24)
-      when(mockPPConnector.getCompanyRegistrationDetails(any())(any(), any())).thenReturn(expectedDate)
+      when(mockPPConnector.getCompanyRegistrationDetails(any(), any(), any())).thenReturn(expectedDate)
       service.getCTActiveDate returnsSome expectedDate
     }
 
     "be None" in new Setup {
-      when(mockPPConnector.getCompanyRegistrationDetails(any())(any(), any()))
+      when(mockPPConnector.getCompanyRegistrationDetails(any(), any(), any()))
         .thenReturn(OptionT.none[Future, CorporationTaxRegistration])
       service.getCTActiveDate().returnsNone
     }

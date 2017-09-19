@@ -1,4 +1,3 @@
-GET         /current-profile-setup             controllers.test.CurrentProfileController.currentProfileSetup
 
 GET         /s4l-teardown                      controllers.test.TestCacheController.tearDownS4L
 
@@ -14,7 +13,6 @@ GET         /working-days                      controllers.test.TestWorkingDaysV
 
 GET         /ct-registration                   controllers.test.TestCTController.show()
 
-GET         /insert-ii-stub-data               controllers.test.IncorporationInformationStubsController.postTestData()
+GET         /setup-vat-user                    controllers.test.IncorporationInformationStubsController.postTestData()
 
-GET         /incorp-info                       controllers.test.IncorporationInformationStubsController.getIncorpInfo()
 GET         /incorp-company                    controllers.test.IncorporationInformationStubsController.incorpCompany()

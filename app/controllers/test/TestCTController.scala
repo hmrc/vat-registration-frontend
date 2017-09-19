@@ -19,17 +19,23 @@ package controllers.test
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
+import connectors.KeystoreConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
 import play.twirl.api.Html
-import services.PrePopService
+import services.{PrePopService, SessionProfile}
 
 class TestCTController @Inject()(iis: PrePopService, ds: CommonPlayDependencies)
-  extends VatRegistrationController(ds) {
+  extends VatRegistrationController(ds) with SessionProfile {
 
-  def show(): Action[AnyContent] = authorised.async { implicit user =>
-    implicit req =>
-      iis.getCTActiveDate().map(DateTimeFormatter.ISO_LOCAL_DATE.format).getOrElse("NONE").map(s => Ok(Html(s)))
+  val keystoreConnector = KeystoreConnector
+
+  def show(): Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit req =>
+        withCurrentProfile { implicit profile =>
+          iis.getCTActiveDate().map(DateTimeFormatter.ISO_LOCAL_DATE.format).getOrElse("NONE").map(s => Ok(Html(s)))
+        }
   }
 
 }

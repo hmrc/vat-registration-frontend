@@ -20,10 +20,8 @@ package models.view.vatTradingDetails {
   import models.{ApiModelTransformer, S4LTradingDetails, ViewModelFormat}
   import play.api.libs.json.Json
 
-  case class TradingNameView(
-                              yesNo: String,
-                              tradingName: Option[String] = None
-                            )
+  case class TradingNameView(yesNo: String,
+                             tradingName: Option[String] = None)
 
   object TradingNameView {
 
@@ -55,28 +53,40 @@ package controllers.vatTradingDetails {
 
   import javax.inject.Inject
 
+  import connectors.KeystoreConnector
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatTradingDetails.TradingNameForm
   import models.view.vatTradingDetails.TradingNameView
   import play.api.mvc._
-  import services.{S4LService, VatRegistrationService}
+  import services.{S4LService, SessionProfile, VatRegistrationService}
 
   class TradingNameController @Inject()(ds: CommonPlayDependencies)
                                        (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService)
-    extends VatRegistrationController(ds) {
+    extends VatRegistrationController(ds) with SessionProfile {
+
+    val keystoreConnector: KeystoreConnector = KeystoreConnector
 
     val form = TradingNameForm.form
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      viewModel[TradingNameView]().fold(form)(form.fill)
-        .map(f => Ok(features.tradingDetails.views.html.trading_name(f))))
+    def show: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            viewModel[TradingNameView]().fold(form)(form.fill)
+              .map(f => Ok(features.tradingDetails.views.html.trading_name(f)))
+          }
+    }
 
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      form.bindFromRequest().fold(
-        badForm => BadRequest(features.tradingDetails.views.html.trading_name(badForm)).pure,
-        goodForm => save(goodForm).map(_ =>
-          Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))))
-
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            form.bindFromRequest().fold(
+              badForm => BadRequest(features.tradingDetails.views.html.trading_name(badForm)).pure,
+              goodForm => save(goodForm).map(_ =>
+                Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())))
+          }
+    }
   }
 }
 

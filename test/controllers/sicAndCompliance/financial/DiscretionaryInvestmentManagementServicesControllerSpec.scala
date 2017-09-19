@@ -18,8 +18,9 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LVatSicAndCompliance
+import models.{CurrentProfile, S4LVatSicAndCompliance}
 import models.view.sicAndCompliance.financial.DiscretionaryInvestmentManagementServices
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -32,15 +33,16 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
   object DiscretionaryInvestmentManagementServicesController extends
     DiscretionaryInvestmentManagementServicesController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(routes.DiscretionaryInvestmentManagementServicesController.show())
 
   s"GET ${routes.DiscretionaryInvestmentManagementServicesController.show()}" should {
-
     "return HTML when there's a DiscretionaryInvestmentManagementServices model in S4L" in {
       save4laterReturnsViewModel(DiscretionaryInvestmentManagementServices(true))()
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.show(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> ""
       )) {
@@ -50,8 +52,9 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[DiscretionaryInvestmentManagementServices]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
-
+      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(DiscretionaryInvestmentManagementServicesController.show) {
         _ includesText "Does the company provide discretionary investment management services, or introduce clients to companies who do?"
       }
@@ -59,8 +62,9 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[DiscretionaryInvestmentManagementServices]()
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-
+    when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(DiscretionaryInvestmentManagementServicesController.show) {
         _ includesText "Does the company provide discretionary investment management services, or introduce clients to companies who do?"
       }
@@ -68,18 +72,20 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
   }
 
   s"POST ${routes.DiscretionaryInvestmentManagementServicesController.show()}" should {
-
     "return 400 with Empty data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
 
     "return 303 with Provide Discretionary Investment Management Services Yes selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
       save4laterReturns(S4LVatSicAndCompliance())
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
@@ -87,11 +93,11 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
 
     "return 303 with Provide Discretionary Investment Management Services No selected" in {
       save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/involved-in-leasing-vehicles-or-equipment")
-
     }
   }
 }

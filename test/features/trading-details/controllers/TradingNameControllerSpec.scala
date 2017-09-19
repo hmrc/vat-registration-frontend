@@ -19,6 +19,7 @@ package controllers.vatTradingDetails
 import controllers.vatTradingDetails
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.view.vatTradingDetails.TradingNameView
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,23 +31,23 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.Future
 
 class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
-
-
-
   object TestTradingNameController extends TradingNameController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(vatTradingDetails.routes.TradingNameController.show())
 
   s"GET ${vatTradingDetails.routes.TradingNameController.show()}" should {
-
     "return HTML when there's a trading name in S4L" in {
       val tradingName = TradingNameView(TradingNameView.TRADING_NAME_YES, Some("Test Trading Name"))
 
       save4laterReturnsViewModel(tradingName)()
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestTradingNameController.show) {
@@ -61,7 +62,10 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture w
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[TradingNameView]()
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestTradingNameController.show) {
@@ -76,7 +80,10 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture w
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[TradingNameView]()
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestTradingNameController.show) {
@@ -90,21 +97,25 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture w
   }
 
   s"POST ${vatTradingDetails.routes.TradingNameController.submit()} with Empty data" should {
-
     "return 400" in {
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe Status.BAD_REQUEST
       }
-
     }
   }
 
   s"POST ${vatTradingDetails.routes.TradingNameController.submit()} with valid data no trading name" should {
-
     "return 303" in {
       save4laterExpectsSave[TradingNameView]()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "tradingNameRadio" -> TradingNameView.TRADING_NAME_NO
@@ -113,14 +124,15 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture w
           status(result) mustBe Status.SEE_OTHER
           redirectLocation(result).getOrElse("") mustBe s"$contextRoot/describe-what-company-does"
       }
-
     }
   }
 
   s"POST ${vatTradingDetails.routes.TradingNameController.submit()} with valid data with trading name" should {
-
     "return 303" in {
       save4laterExpectsSave[TradingNameView]()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "tradingNameRadio" -> TradingNameView.TRADING_NAME_YES,
@@ -129,10 +141,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture w
         result =>
           status(result) mustBe Status.SEE_OTHER
           redirectLocation(result).getOrElse("") mustBe s"$contextRoot/describe-what-company-does"
-
       }
-
     }
   }
-
 }

@@ -26,31 +26,41 @@ import models.S4LVatSicAndCompliance.dropFromActAsIntermediary
 import models.view.sicAndCompliance.financial.ActAsIntermediary
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, RegistrationService, S4LService}
+import services.{CommonService, RegistrationService, S4LService, SessionProfile}
 
 
 class ActAsIntermediaryController @Inject()(ds: CommonPlayDependencies)
                                            (implicit s4lService: S4LService, vrs: RegistrationService)
-  extends VatRegistrationController(ds) with CommonService {
+  extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
   import cats.syntax.flatMap._
 
   val form: Form[ActAsIntermediary] = ActAsIntermediaryForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[ActAsIntermediary]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.act_as_intermediary(f))))
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          viewModel[ActAsIntermediary]().fold(form)(form.fill)
+            .map(f => Ok(views.html.pages.sicAndCompliance.financial.act_as_intermediary(f)))
+        }
+    }
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.act_as_intermediary(badForm)).pure,
-      view => save(view).map(_ => view.yesNo).ifM(
-        ifTrue = for {
-          container <- s4lContainer[S4LVatSicAndCompliance]()
-          _ <- s4lService.save(dropFromActAsIntermediary(container))
-          _ <- vrs.submitSicAndCompliance()
-        } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show(),
-        ifFalse = controllers.sicAndCompliance.financial.routes.ChargeFeesController.show().pure
-      ).map(Redirect)))
+  def submit: Action[AnyContent] = authorised.async{
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          form.bindFromRequest().fold(
+            badForm => BadRequest(views.html.pages.sicAndCompliance.financial.act_as_intermediary(badForm)).pure,
+            view => save(view).map(_ => view.yesNo).ifM(
+              ifTrue = for {
+                container <- s4lContainer[S4LVatSicAndCompliance]()
+                _ <- s4lService.save(dropFromActAsIntermediary(container))
+                _ <- vrs.submitSicAndCompliance()
+              } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show(),
+              ifFalse = controllers.sicAndCompliance.financial.routes.ChargeFeesController.show().pure
+            ).map(Redirect))
+        }
+  }
 
 }

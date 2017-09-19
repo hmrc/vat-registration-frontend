@@ -19,29 +19,38 @@ package controllers.sicAndCompliance.financial
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.financial.ChargeFeesForm
 import models.view.sicAndCompliance.financial.ChargeFees
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, RegistrationService, S4LService}
+import services.{CommonService, RegistrationService, S4LService, SessionProfile}
 
 
 class ChargeFeesController @Inject()(ds: CommonPlayDependencies)
                                     (implicit s4LService: S4LService, vrs: RegistrationService)
-  extends VatRegistrationController(ds) with CommonService {
+  extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
   val form: Form[ChargeFees] = ChargeFeesForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[ChargeFees]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.financial.charge_fees(f))))
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          viewModel[ChargeFees]().fold(form)(form.fill)
+            .map(f => Ok(views.html.pages.sicAndCompliance.financial.charge_fees(f)))
+        }
+  }
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.sicAndCompliance.financial.charge_fees(badForm)).pure,
-      view => save(view).map(_ =>
-        Redirect(controllers.sicAndCompliance.financial.routes.AdditionalNonSecuritiesWorkController.show()))))
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          form.bindFromRequest().fold(
+            badForm => BadRequest(views.html.pages.sicAndCompliance.financial.charge_fees(badForm)).pure,
+            view => save(view).map(_ =>
+              Redirect(controllers.sicAndCompliance.financial.routes.AdditionalNonSecuritiesWorkController.show())))
+        }
+  }
 
 }
 
