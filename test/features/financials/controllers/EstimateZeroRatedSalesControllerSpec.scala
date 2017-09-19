@@ -19,24 +19,31 @@ package controllers.vatFinancials
 import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.view.vatFinancials.EstimateZeroRatedSales
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
+
+import scala.concurrent.Future
 
 class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
 
   object Controller extends EstimateZeroRatedSalesController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(vatFinancials.routes.EstimateZeroRatedSalesController.show())
 
   s"GET ${vatFinancials.routes.EstimateZeroRatedSalesController.show()}" should {
-
     "return HTML Estimate Zero Rated Sales page with no data in the form" in {
       save4laterReturnsViewModel(EstimateZeroRatedSales(100L))()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       callAuthorised(Controller.show()) {
         _ includesText "How much will the company take in sales of zero-rated goods and services over the next 12 months?"
@@ -45,7 +52,10 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[EstimateZeroRatedSales]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       callAuthorised(Controller.show) {
         _ includesText "How much will the company take in sales of zero-rated goods and services over the next 12 months?"
@@ -54,7 +64,10 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[EstimateZeroRatedSales]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       callAuthorised(Controller.show) {
         _ includesText "How much will the company take in sales of zero-rated goods and services over the next 12 months?"
@@ -66,19 +79,23 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
 
   s"POST ${vatFinancials.routes.EstimateZeroRatedSalesController.submit()} with Empty data" should {
     "return 400" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
   }
 
   s"POST ${vatFinancials.routes.EstimateZeroRatedSalesController.submit()} with a valid turnover estimate entered" should {
-
     "return 303" in {
       save4laterExpectsSave[EstimateZeroRatedSales]()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody("zeroRatedTurnoverEstimate" -> "60000")) {
         _ redirectsTo s"$contextRoot/expect-to-reclaim-more-vat-than-you-charge"
       }
     }
   }
-
 }

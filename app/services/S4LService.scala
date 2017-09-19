@@ -19,7 +19,7 @@ package services
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, OptionalResponse, S4LConnector}
-import models.{S4LKey, ViewModelFormat}
+import models.{CurrentProfile, S4LKey, ViewModelFormat}
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
@@ -32,32 +32,32 @@ trait S4LService extends CommonService {
 
   private[services] val s4LConnector: S4LConnector
 
-  def save[T: S4LKey](data: T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] =
-    fetchRegistrationId.flatMap(s4LConnector.save[T](_, S4LKey[T].key, data))
+  def save[T: S4LKey](data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[CacheMap] =
+    s4LConnector.save[T](profile.registrationId, S4LKey[T].key, data)
 
   def updateViewModel[T, G](data: T, container: Future[G])
                            (implicit hc: HeaderCarrier,
+                            profile: CurrentProfile,
                             vmf: ViewModelFormat.Aux[T, G],
                             f: Format[G],
                             k: S4LKey[G]): Future[CacheMap] =
     for {
-      regId <- fetchRegistrationId
       group <- container
-      cm <- s4LConnector.save(regId, k.key, vmf.update(data, Some(group)))
+      cm <- s4LConnector.save(profile.registrationId, k.key, vmf.update(data, Some(group)))
     } yield cm
 
-  def fetchAndGet[T: S4LKey]()(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
-    fetchRegistrationId.flatMap(s4LConnector.fetchAndGet[T](_, S4LKey[T].key))
+  def fetchAndGet[T: S4LKey]()(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
+    s4LConnector.fetchAndGet[T](profile.registrationId, S4LKey[T].key)
 
   def getViewModel[T, G](container: Future[G])
                         (implicit r: ViewModelFormat.Aux[T, G], f: Format[G]): OptionalResponse[T] =
     OptionT(container.map(r.read))
 
-  def clear()(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    fetchRegistrationId.flatMap(s4LConnector.clear)
+  def clear()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[HttpResponse] =
+    s4LConnector.clear(profile.registrationId)
 
-  def fetchAll()(implicit hc: HeaderCarrier): Future[Option[CacheMap]] =
-    fetchRegistrationId.flatMap(s4LConnector.fetchAll)
+  def fetchAll()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[CacheMap]] =
+    s4LConnector.fetchAll(profile.registrationId)
 
 }
 

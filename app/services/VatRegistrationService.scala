@@ -61,72 +61,76 @@ trait LegacyServiceToBeRefactored {
 
   import cats.syntax.all._
 
-  private[services] def s4l[T: Format : S4LKey]()(implicit hc: HeaderCarrier) =
+  private[services] def s4l[T: Format : S4LKey]()(implicit hc: HeaderCarrier, profile: CurrentProfile) =
     s4LService.fetchAndGet[T]()
 
-  def getVatScheme()(implicit hc: HeaderCarrier): Future[VatScheme] =
-    fetchRegistrationId.flatMap(vatRegConnector.getRegistration)
+  def getVatScheme()(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
+    vatRegConnector.getRegistration(profile.registrationId)
 
   def getAckRef(regId: String)(implicit hc: HeaderCarrier): OptionalResponse[String] =
     vatRegConnector.getAckRef(regId)
 
-  def deleteVatScheme()(implicit hc: HeaderCarrier): Future[Unit] =
-    fetchRegistrationId.flatMap(vatRegConnector.deleteVatScheme)
+  def deleteVatScheme()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Unit] =
+    vatRegConnector.deleteVatScheme(profile.registrationId)
 
-  def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[Unit] =
+  def createRegistrationFootprint()(implicit hc: HeaderCarrier): Future[(String, String)] =
     for {
       vatScheme <- vatRegConnector.createNewRegistration()
-      optCompProfile <- compRegConnector.getCompanyRegistrationDetails(vatScheme.id).value
-      _ <- optCompProfile.map(keystoreConnector.cache[CoHoCompanyProfile]("CompanyProfile", _)).pure
-      _ <- keystoreConnector.cache[String](REGISTRATION_ID, vatScheme.id)
-      _ <- incorporationService.getIncorporationInfo().map(status => keystoreConnector.cache[IncorporationInfo](INCORPORATION_STATUS, status)).value
-    } yield ()
+      txId      <- compRegConnector.getTransactionId(vatScheme.id)
+      _         <- incorporationService.getIncorporationInfo(txId).map {
+        status => keystoreConnector.cache[IncorporationInfo](INCORPORATION_STATUS, status)
+      }.value
+    } yield (vatScheme.id, txId)
 
-  def submitSicAndCompliance()(implicit hc: HeaderCarrier): Future[VatSicAndCompliance] = {
+  def submitSicAndCompliance()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatSicAndCompliance] = {
     def merge(fresh: Option[S4LVatSicAndCompliance], vs: VatScheme) =
       fresh.fold(
         vs.vatSicAndCompliance.getOrElse(throw fail("VatSicAndCompliance"))
       )(s4l => S4LVatSicAndCompliance.apiT.toApi(s4l))
 
     for {
-      (vs, vsc) <- (getVatScheme() |@| s4l[S4LVatSicAndCompliance]()).tupled
-      response <- vatRegConnector.upsertSicAndCompliance(vs.id, merge(vsc, vs))
+      vs       <- getVatScheme()
+      vsc      <- s4l[S4LVatSicAndCompliance]()
+      response <- vatRegConnector.upsertSicAndCompliance(profile.registrationId, merge(vsc, vs))
     } yield response
   }
 
-  def submitVatContact()(implicit hc: HeaderCarrier): Future[VatContact] = {
+  def submitVatContact()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatContact] = {
     def merge(fresh: Option[S4LVatContact], vs: VatScheme): VatContact =
       fresh.fold(
         vs.vatContact.getOrElse(throw fail("VatContact"))
       )(s4l => S4LVatContact.apiT.toApi(s4l))
 
     for {
-      (vs, vlo) <- (getVatScheme() |@| s4l[S4LVatContact]()).tupled
-      response <- vatRegConnector.upsertVatContact(vs.id, merge(vlo, vs))
+      vs       <- getVatScheme()
+      vlo      <- s4l[S4LVatContact]()
+      response <- vatRegConnector.upsertVatContact(profile.registrationId, merge(vlo, vs))
     } yield response
   }
 
-  def submitVatEligibility()(implicit hc: HeaderCarrier): Future[VatServiceEligibility] = {
+  def submitVatEligibility()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatServiceEligibility] = {
     def merge(fresh: Option[S4LVatEligibility], vs: VatScheme): VatServiceEligibility =
       fresh.fold(
         vs.vatServiceEligibility.getOrElse(throw fail("VatServiceEligibility"))
       )(s4l => S4LVatEligibility.apiT.toApi(s4l))
 
     for {
-      (vs, ve) <- (getVatScheme() |@| s4l[S4LVatEligibility]()).tupled
-      response <- vatRegConnector.upsertVatEligibility(vs.id, merge(ve, vs))
+      vs       <- getVatScheme()
+      ve       <- s4l[S4LVatEligibility]()
+      response <- vatRegConnector.upsertVatEligibility(profile.registrationId, merge(ve, vs))
     } yield response
   }
 
-  def submitVatLodgingOfficer()(implicit hc: HeaderCarrier): Future[VatLodgingOfficer] = {
+  def submitVatLodgingOfficer()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatLodgingOfficer] = {
     def merge(fresh: Option[S4LVatLodgingOfficer], vs: VatScheme): VatLodgingOfficer =
       fresh.fold(
         vs.lodgingOfficer.getOrElse(throw fail("VatLodgingOfficer"))
       )(s4l => S4LVatLodgingOfficer.apiT.toApi(s4l))
 
     for {
-      (vs, vlo) <- (getVatScheme() |@| s4l[S4LVatLodgingOfficer]()).tupled
-      response <- vatRegConnector.upsertVatLodgingOfficer(vs.id, merge(vlo, vs))
+      vs       <- getVatScheme()
+      vlo      <- s4l[S4LVatLodgingOfficer]()
+      response <- vatRegConnector.upsertVatLodgingOfficer(profile.registrationId, merge(vlo, vs))
     } yield response
   }
 

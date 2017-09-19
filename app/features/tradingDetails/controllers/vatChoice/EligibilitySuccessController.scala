@@ -22,24 +22,35 @@ import cats.data.OptionT
 import org.apache.commons.lang3.StringUtils
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import models.ModelKeys._
-import models.api.ScrsAddress
 import models.external.IncorporationInfo
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, IncorpInfoService}
+import services.{CommonService, SessionProfile}
 import uk.gov.hmrc.play.http.HeaderCarrier
+
+import scala.concurrent.Future
 
 // TODO re-check why this is in trading details rather than vatEligibility
 class EligibilitySuccessController @Inject()(ds: CommonPlayDependencies)
-  extends VatRegistrationController(ds) with CommonService{
+  extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
-  def show: Action[AnyContent] =
-    authorised(implicit user => implicit request => Ok(views.html.pages.vatEligibility.eligible()))
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { _ =>
+          Future.successful(Ok(views.html.pages.vatEligibility.eligible()))
+        }
+  }
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    fetchIncorporationInfo.subflatMap(_.statusEvent.crn).filter(StringUtils.isNotBlank)
-      .fold(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()) (
-        crn =>
-            controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show()).map(Redirect))
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { _ =>
+          fetchIncorporationInfo.subflatMap(_.statusEvent.crn).filter(StringUtils.isNotBlank)
+            .fold(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())(
+              crn =>
+                controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show()).map(Redirect)
+        }
+  }
 
 
   private def fetchIncorporationInfo()(implicit headerCarrier: HeaderCarrier) =

@@ -19,29 +19,38 @@ package controllers.sicAndCompliance.labour
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.labour.SkilledWorkersForm
 import models.view.sicAndCompliance.labour.SkilledWorkers
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
 
-
-class SkilledWorkersController @Inject()(ds: CommonPlayDependencies)
-                                        (implicit s4lService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with CommonService {
+class SkilledWorkersController @Inject()(ds: CommonPlayDependencies,
+                                         implicit val vrs: VatRegistrationService,
+                                         implicit val s4lService: S4LService)
+  extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
   val form = SkilledWorkersForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[SkilledWorkers]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.labour.skilled_workers(f))))
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          viewModel[SkilledWorkers]().fold(form)(form.fill)
+            .map(f => Ok(views.html.pages.sicAndCompliance.labour.skilled_workers(f)))
+        }
+  }
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    SkilledWorkersForm.form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.sicAndCompliance.labour.skilled_workers(badForm)).pure,
-      view => for {
-        _ <- save(view)
-        _ <- vrs.submitSicAndCompliance()
-      } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())))
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          SkilledWorkersForm.form.bindFromRequest().fold(
+            badForm => BadRequest(views.html.pages.sicAndCompliance.labour.skilled_workers(badForm)).pure,
+            view => for {
+              _ <- save(view)
+              _ <- vrs.submitSicAndCompliance()
+            } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()))
+        }
+  }
 
 }

@@ -35,12 +35,6 @@ trait CommonService extends FutureInstances {
 
   val keystoreConnector: KeystoreConnector = KeystoreConnector
 
-  def fetchRegistrationId(implicit hc: HeaderCarrier): Future[String] =
-    OptionT(keystoreConnector.fetchAndGet[String]("RegistrationId")).getOrElse {
-      Logger.error("Could not find a registration ID in keystore")
-      throw new RegistrationIdNotFoundException
-    }
-
   def fetchDateOfIncorporation()(implicit hc: HeaderCarrier): Future[LocalDate] = {
     OptionT(keystoreConnector.fetchAndGet[IncorporationInfo](INCORPORATION_STATUS))
       .subflatMap(_.statusEvent.incorporationDate)

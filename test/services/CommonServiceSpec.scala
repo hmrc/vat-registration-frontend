@@ -28,18 +28,10 @@ class CommonServiceSpec extends VatRegSpec {
     }
   }
 
-  "Calling fetchRegistrationId" should {
-    "throw a RegistrationNotFoundException when the Registration ID is not found in keystore" in new Setup {
-      mockKeystoreFetchAndGet[String]("RegistrationId", None)
-      service.fetchRegistrationId failedWith classOf[DownstreamExceptions.RegistrationIdNotFoundException]
-    }
-  }
-
   "Calling fetchDateOfIncorporation" should {
     "throw an IllegalStateException when no Incorporation Date is found in keystore" in new Setup {
       mockKeystoreFetchAndGet[String]("incorporationStatus", None)
       service.fetchDateOfIncorporation() failedWith classOf[IllegalStateException]
     }
   }
-
 }

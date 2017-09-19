@@ -18,7 +18,7 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LVatSicAndCompliance
+import models.{CurrentProfile, S4LVatSicAndCompliance}
 import models.view.sicAndCompliance.financial.AdviceOrConsultancy
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -32,14 +32,18 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
 
   object AdviceOrConsultancyController extends AdviceOrConsultancyController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(routes.AdviceOrConsultancyController.show())
 
   s"GET ${routes.AdviceOrConsultancyController.show()}" should {
-
     "return HTML when there's a Advice Or Consultancy model in S4L" in {
       save4laterReturnsViewModel(AdviceOrConsultancy(true))()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(AdviceOrConsultancyController.show(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> ""
       )) {
@@ -49,8 +53,9 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[AdviceOrConsultancy]()
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any())).thenReturn(Future.successful(validVatScheme))
-
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatScheme))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(AdviceOrConsultancyController.show) {
         _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
       }
@@ -58,8 +63,9 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[AdviceOrConsultancy]()
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-
+    when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(AdviceOrConsultancyController.show) {
         _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
       }
@@ -67,17 +73,19 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
   }
 
   s"POST ${routes.AdviceOrConsultancyController.show()}" should {
-
     "return 400 with Empty data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) (result => result isA 400)
     }
 
     "return 303 with Advice Or Consultancy Yes selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "true"
       )) {
@@ -86,10 +94,11 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
     }
 
     "return 303 with Advice Or Consultancy No selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "false"
       )) {

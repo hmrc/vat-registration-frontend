@@ -17,18 +17,26 @@
 package controllers
 
 import helpers.VatRegSpec
+import models.CurrentProfile
+import org.mockito.Matchers
+import org.mockito.Mockito.when
 import play.api.http.Status
+
+import scala.concurrent.Future
 
 class TwirlViewControllerSpec extends VatRegSpec {
 
   object TestController extends TwirlViewController(ds) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   "GET" should {
-
     "return HTML when user is authorized to access" in {
       val params = List(("use-this-service", "Can you use this service?"))
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       forAll(params) {
         case (input, expected) =>
@@ -39,8 +47,10 @@ class TwirlViewControllerSpec extends VatRegSpec {
     }
 
     "return 404" when {
-
       "requested twirl template does not exist" in {
+        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some(currentProfile)))
+
         callAuthorised(TestController.renderViewAuthorised("fake")) { result =>
           result isA Status.NOT_FOUND
         }

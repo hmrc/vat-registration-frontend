@@ -24,6 +24,7 @@ import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import forms.vatTradingDetails.vatChoice.OverThresholdFormFactory
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.ModelKeys._
 import models.external.IncorporationInfo
 import models.view.vatTradingDetails.vatChoice.OverThresholdView
@@ -47,19 +48,20 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
   object TestOverThresholdController extends OverThresholdController(overThresholdFormFactory, ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
     override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-
   }
 
   val fakeRequest = FakeRequest(routes.OverThresholdController.show())
 
   s"GET ${routes.OverThresholdController.show()}" should {
-
-
     "returnException if no IncorporationInfo Date present" in {
       val overThreshold = OverThresholdView(true, Some(LocalDate.of(2017, 6, 30)))
 
       save4laterReturnsViewModel(overThreshold)()
       val testIncorporationInfoWithOutDate = testIncorporationInfo.copy(statusEvent = testIncorporationInfo.statusEvent.copy(incorporationDate = None))
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfoWithOutDate))
 
       assertThrows[TestFailedException]{
@@ -71,6 +73,10 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
       val overThreshold = OverThresholdView(true, Some(LocalDate.of(2017, 6, 30)))
 
       save4laterReturnsViewModel(overThreshold)()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
 
       callAuthorised(TestOverThresholdController.show) {
@@ -81,7 +87,10 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[OverThresholdView]()
 
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
 
@@ -93,7 +102,10 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[OverThresholdView]()
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
 
@@ -106,6 +118,10 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
   s"POST ${routes.OverThresholdController.submit()}" should {
     "return Exception When Incorporation date is empty" in {
       val testIncorporationInfoWithOutDate = testIncorporationInfo.copy(statusEvent = testIncorporationInfo.statusEvent.copy(incorporationDate = None))
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfoWithOutDate))
       assertThrows[TestFailedException]{
         submitAuthorised(TestOverThresholdController.submit(), fakeRequest.withFormUrlEncodedBody()) {
@@ -115,6 +131,10 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
     }
 
     "return 400 when no data posted" in {
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
       submitAuthorised(
         TestOverThresholdController.submit(), fakeRequest.withFormUrlEncodedBody()) {
@@ -123,6 +143,10 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
     }
 
     "return 400 when partial data is posted" in {
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
 
       submitAuthorised(
@@ -137,6 +161,10 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
 
     "return 303 with valid data - yes selected" in {
       save4laterExpectsSave[OverThresholdView]()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
 
       submitAuthorised(TestOverThresholdController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -150,6 +178,10 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
 
     "return 303 with valid data - no selected" in {
       save4laterExpectsSave[OverThresholdView]()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
 
       submitAuthorised(TestOverThresholdController.submit(), fakeRequest.withFormUrlEncodedBody(

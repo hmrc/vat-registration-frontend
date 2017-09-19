@@ -59,36 +59,47 @@ package controllers.vatFinancials.vatAccountingPeriod {
   import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.MONTHLY
   import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
   import play.api.mvc._
-  import services.{CommonService, S4LService, VatRegistrationService}
+  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
 
   class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
                                               (implicit s4l: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with CommonService with FlatMapSyntax {
+    extends VatRegistrationController(ds) with CommonService with FlatMapSyntax with SessionProfile {
 
     val joinThreshold: Long = conf.getLong("thresholds.frs.joinThreshold").get
 
     val form = VatReturnFrequencyForm.form
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      viewModel[VatReturnFrequency]().fold(form)(form.fill)
-        .map(frm => Ok(features.financials.views.html.vatAccountingPeriod.vat_return_frequency(frm))))
+    def show: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            viewModel[VatReturnFrequency]().fold(form)(form.fill)
+              .map(frm => Ok(features.financials.views.html.vatAccountingPeriod.vat_return_frequency(frm)))
+          }
+    }
 
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      form.bindFromRequest().fold(
-        badForm => BadRequest(features.financials.views.html.vatAccountingPeriod.vat_return_frequency(badForm)).pure,
-        view => save(view).map(_ => view.frequencyType == MONTHLY).ifM(
-          ifTrue = for {
-            container <- s4lContainer[S4LVatFinancials]()
-            _ <- s4l.save(container.copy(accountingPeriod = None))
-            voluntaryReg <- viewModel[VoluntaryRegistration]().fold(true)(reg => reg == VoluntaryRegistration.yes)
-          } yield if (voluntaryReg) {
-            controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()
-          } else {
-            controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show()
-          },
-          ifFalse = controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show().pure
-        ).map(Redirect)))
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            form.bindFromRequest().fold(
+              badForm => BadRequest(features.financials.views.html.vatAccountingPeriod.vat_return_frequency(badForm)).pure,
+              view => save(view).map(_ => view.frequencyType == MONTHLY).ifM(
+                ifTrue = for {
+                  container <- s4lContainer[S4LVatFinancials]()
+                  _ <- s4l.save(container.copy(accountingPeriod = None))
+                  voluntaryReg <- viewModel[VoluntaryRegistration]().fold(true)(reg => reg == VoluntaryRegistration.yes)
+                } yield if (voluntaryReg) {
+                  controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()
+                } else {
+                  controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show()
+                },
+                ifFalse = controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show().pure
+              ).map(Redirect))
+          }
+    }
   }
+
 }
 
 package forms.vatFinancials.vatAccountingPeriod {

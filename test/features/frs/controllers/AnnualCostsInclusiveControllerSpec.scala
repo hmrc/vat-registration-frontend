@@ -18,11 +18,15 @@ package controllers.frs
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.view.frs.AnnualCostsInclusiveView
 import models.view.vatFinancials.EstimateVatTurnover
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
+
+import scala.concurrent.Future
 
 class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
@@ -31,11 +35,14 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
   object Controller
     extends AnnualCostsInclusiveController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   s"GET ${routes.AnnualCostsInclusiveController.show()}" should {
-
     "return HTML Annual Costs Inclusive page with no Selection" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterReturnsViewModel(AnnualCostsInclusiveView(""))()
 
       callAuthorised(Controller.show()) {
@@ -44,8 +51,11 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterReturnsNoViewModel[AnnualCostsInclusiveView]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(Controller.show) {
         _ includesText "Will the company spend more than £1,000 a year (including VAT) on business goods?"
@@ -53,8 +63,11 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterReturnsNoViewModel[AnnualCostsInclusiveView]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {
         _ includesText "Will the company spend more than £1,000 a year (including VAT) on business goods?"
@@ -63,14 +76,19 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
   }
 
   s"POST ${routes.AnnualCostsInclusiveController.submit()}" should {
-
     "return 400 with Empty data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
 
     "return 303 with Annual Costs Inclusive selected Yes" in {
-      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES
@@ -78,7 +96,10 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
 
     "return 303 with Annual Costs Inclusive selected No - but within 12 months" in {
-      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS
@@ -86,6 +107,9 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
 
     "skip next question if 2% of estimated taxable turnover <= 1K and NO answered" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterExpectsSave[AnnualCostsInclusiveView]()
       save4laterReturnsViewModel(EstimateVatTurnover(25000L))()
 
@@ -95,6 +119,9 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
 
     "redirect to next question if 2% of estimated taxable turnover > 1K and NO answered" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterExpectsSave[AnnualCostsInclusiveView]()
       save4laterReturnsViewModel(EstimateVatTurnover(75000L))()
 

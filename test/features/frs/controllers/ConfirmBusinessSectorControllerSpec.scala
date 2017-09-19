@@ -18,27 +18,33 @@ package controllers.frs
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.view.frs.BusinessSectorView
 import models.view.sicAndCompliance.MainBusinessActivityView
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
+
+import scala.concurrent.Future
 
 class ConfirmBusinessSectorControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object Controller
     extends ConfirmBusinessSectorController(ds, mockConfigConnector) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(routes.ConfirmBusinessSectorController.show())
 
   s"GET ${routes.ConfirmBusinessSectorController.show()}" should {
-
     "render page" when {
-
       "visited for the first time" in {
-        when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some(currentProfile)))
+
+        when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
         save4laterReturnsNoViewModel[BusinessSectorView]()
         save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
         when(mockConfigConnector.getBusinessSectorDetails(sicCode.id)).thenReturn(validBusinessSectorView)
@@ -50,8 +56,11 @@ class ConfirmBusinessSectorControllerSpec extends VatRegSpec with VatRegistratio
       }
 
       "user has already answered this question" in {
+        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some(currentProfile)))
+
         save4laterReturnsViewModel(validBusinessSectorView)()
-        when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
+        when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
 
         callAuthorised(Controller.show()) { result =>
           result includesText "Confirm the company&#x27;s business type"
@@ -60,9 +69,12 @@ class ConfirmBusinessSectorControllerSpec extends VatRegSpec with VatRegistratio
       }
 
       "user's answer has already been submitted to backend" in {
+        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some(currentProfile)))
+
         save4laterReturnsNoViewModel[BusinessSectorView]()
         save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
-        when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
+        when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
         when(mockConfigConnector.getBusinessSectorDetails(sicCode.id)).thenReturn(validBusinessSectorView)
 
         callAuthorised(Controller.show()) { result =>
@@ -75,14 +87,14 @@ class ConfirmBusinessSectorControllerSpec extends VatRegSpec with VatRegistratio
   }
 
   s"POST ${routes.ConfirmBusinessSectorController.submit()}" should {
-
     "works with Empty data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterReturnsViewModel(validBusinessSectorView)()
       save4laterExpectsSave[BusinessSectorView]()
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(_ redirectsTo s"$contextRoot/your-flat-rate")
     }
-
   }
-
 }

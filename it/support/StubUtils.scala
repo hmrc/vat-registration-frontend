@@ -53,6 +53,8 @@ trait StubUtils {
 
     def corporationTaxRegistration = CorporationTaxRegistrationStub()
 
+    def currentProfile = CurrentProfile()
+
     def company = IncorporationStub()
 
     def s4lContainer[C: S4LKey]: ViewModelStub[C] = new ViewModelStub[C]()
@@ -162,19 +164,16 @@ trait StubUtils {
   class ViewModelStub[C]()(implicit builder: PreconditionBuilder, s4LKey: S4LKey[C]) extends S4LStub with KeystoreStub {
 
     def contains[T](t: T)(implicit fmt: Format[T]): PreconditionBuilder = {
-      stubKeystoreGet("RegistrationId", "\"1\"")
       stubS4LGet[C, T](t)
       builder
     }
 
     def isUpdatedWith[T](t: T)(implicit key: S4LKey[C], fmt: Format[T]): PreconditionBuilder = {
-      stubKeystoreGet("RegistrationId", "\"1\"")
       stubS4LPut(key.key, fmt.writes(t).toString())
       builder
     }
 
     def isEmpty: PreconditionBuilder = {
-      stubKeystoreGet("RegistrationId", "\"1\"")
       stubS4LGetNothing()
       builder
     }
@@ -187,13 +186,6 @@ trait StubUtils {
   (implicit builder: PreconditionBuilder) extends KeystoreStub {
 
     def isIncorporated: PreconditionBuilder = {
-
-      stubKeystoreGet(
-        "CompanyProfile",
-        """{ "status" : "held",
-          |  "confirmationReferences" : {
-          |    "transaction-id" : "000-434-1"
-          |}}""".stripMargin)
 
       stubFor(
         get(urlPathEqualTo("/vatreg/incorporation-information/000-434-1"))
@@ -249,6 +241,62 @@ trait StubUtils {
 
   }
 
+  case class CurrentProfile()(implicit builder: PreconditionBuilder) extends KeystoreStub{
+    def setup: PreconditionBuilder = {
+      stubFor(
+        get(urlPathEqualTo(s"/incorporation-information/000-434-1/company-profile"))
+          .willReturn(ok(
+            s"""{ "company_name": "testCompanyName" }"""
+          )))
+
+      stubFor(
+        get(urlPathEqualTo("/vatreg/incorporation-information/000-434-1"))
+          .willReturn(ok(
+            s"""
+               |{
+               |  "statusEvent": {
+               |    "crn": "90000001",
+               |    "incorporationDate": "2016-08-05",
+               |    "status": "accepted"
+               |  },
+               |  "subscription": {
+               |    "callbackUrl": "http://localhost:9896/callbackUrl",
+               |    "regime": "vat",
+               |    "subscriber": "scrs",
+               |    "transactionId": "000-434-1"
+               |  }
+               |}
+             """.stripMargin
+          )))
+
+      stubKeystorePut("CurrentProfile",
+        """
+          |{
+          | "companyName" : "testCompanyName",
+          | "registrationID" : "1",
+          | "transactionID" : "000-434-1",
+          | "vatRegistrationStatus" : "DRAFT"
+          |}
+        """.stripMargin)
+
+      builder
+    }
+
+    def withProfile: PreconditionBuilder = {
+      stubKeystoreGet("CurrentProfile",
+        """
+          |{
+          | "companyName" : "testCompanyName",
+          | "registrationID" : "1",
+          | "transactionID" : "000-434-1",
+          | "vatRegistrationStatus" : "DRAFT"
+          |}
+        """.stripMargin)
+
+      builder
+    }
+  }
+
 
   case class VatSchemeStub
   ()
@@ -282,10 +330,6 @@ trait StubUtils {
           .willReturn(ok(
             s"""{ "registrationId" : "1" }"""
           )))
-
-      stubKeystorePut("RegistrationId", "{}")
-      stubKeystorePut("CompanyProfile", "{}")
-      stubKeystorePut("incorporationStatus", "{}")
 
       builder
     }

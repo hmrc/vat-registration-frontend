@@ -19,10 +19,14 @@ package controllers
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.CurrentProfile
 import models.ModelKeys.INCORPORATION_STATUS
 import models.external.IncorporationInfo
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+
+import scala.concurrent.Future
 
 class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -33,23 +37,25 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   "Calling summary to show the summary page" should {
     "return HTML with a valid summary view pre-incorp" in {
-      when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)
+      when(mockS4LService.clear()(any(), any())).thenReturn(validHttpResponse.pure)
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
-
+      when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
     "return HTML with a valid summary view post-incorp" in {
-      when(mockS4LService.clear()(any())).thenReturn(validHttpResponse.pure)
+      when(mockS4LService.clear()(any(),any())).thenReturn(validHttpResponse.pure)
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, None)
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
-
+      when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
     "getRegistrationSummary maps a valid VatScheme object to a Summary object" in {
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
       TestSummaryController.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)
     }
 

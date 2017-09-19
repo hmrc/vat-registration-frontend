@@ -19,14 +19,22 @@ package controllers
 import javax.inject.Inject
 
 import play.api.mvc._
-import services.RegistrationService
+import services.{CurrentProfileService, RegistrationService}
+import views.html.pages.welcome
 
-class WelcomeController @Inject()(vatRegistrationService: RegistrationService, ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class WelcomeController @Inject()(vatRegistrationService: RegistrationService,
+                                  currentProfileService: CurrentProfileService,
+                                  ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   //access to root of application should by default direct the user to the proper URL for start of VAT registration
   def show: Action[AnyContent] = Action(implicit request => Redirect(routes.WelcomeController.start()))
 
-  def start: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    vatRegistrationService.createRegistrationFootprint().map(_ => Ok(views.html.pages.welcome())))
-
+  def start: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        for {
+          (regId, txId) <- vatRegistrationService.createRegistrationFootprint()
+          _             <- currentProfileService.buildCurrentProfile(regId, txId)
+        } yield Ok(welcome())
+  }
 }

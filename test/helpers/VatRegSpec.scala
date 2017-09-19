@@ -16,12 +16,16 @@
 
 package helpers
 
+import java.time.LocalDate
+
 import builders.AuthBuilder
 import cats.instances.FutureInstances
 import cats.syntax.ApplicativeSyntax
+import common.enums.VatRegStatus
 import controllers.CommonPlayDependencies
-import fixtures.LoginFixture
+import fixtures.{LoginFixture, VatRegistrationFixture}
 import mocks.VatMocks
+import models.CurrentProfile
 import org.mockito.Mockito.reset
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
@@ -32,16 +36,30 @@ import play.api.mvc._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.http.HeaderCarrier
+import org.mockito.Mockito.when
+import org.mockito.Matchers
+import play.api.libs.json.Json
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Awaitable, Future}
+import scala.concurrent.duration._
 
 class VatRegSpec extends PlaySpec with OneAppPerSuite
   with MockitoSugar with VatMocks with LoginFixture with Inside with Inspectors
-  with ScalaFutures with ApplicativeSyntax with FutureInstances with BeforeAndAfterEach with FutureAssertions {
+  with ScalaFutures with ApplicativeSyntax with FutureInstances with BeforeAndAfterEach with FutureAssertions with VatRegistrationFixture {
 
   implicit val hc = HeaderCarrier()
 
+  implicit val currentProfile = CurrentProfile("Test Me", testRegId, "000-434-1",
+    VatRegStatus.DRAFT,Some(LocalDate.of(2017, 12, 21)))
+
+  when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+    .thenReturn(Future.successful(Some(currentProfile)))
+
   override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Seconds), interval = Span(50, Millis))
+
+  implicit val duration = 5.seconds
+
+  def await[T](future : Awaitable[T]) : T = Await.result(future, duration)
 
   override def beforeEach() {
     reset(mockVatRegistrationService)
@@ -62,6 +80,7 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
     reset(mockIIService)
     reset(mockAddressLookupConnector)
     reset(mockWSHttp)
+    reset(mockCurrentProfile)
   }
 
   // Placeholder for custom configuration

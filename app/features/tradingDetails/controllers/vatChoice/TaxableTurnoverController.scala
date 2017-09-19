@@ -51,6 +51,7 @@ package controllers.vatTradingDetails.vatChoice {
 
   import javax.inject.Inject
 
+  import connectors.KeystoreConnector
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatTradingDetails.vatChoice.TaxableTurnoverForm
   import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
@@ -58,30 +59,42 @@ package controllers.vatTradingDetails.vatChoice {
   import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.REGISTER_NO
   import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration}
   import play.api.mvc.{Action, AnyContent}
-  import services.{S4LService, VatRegistrationService}
+  import services.{S4LService, SessionProfile, VatRegistrationService}
 
   class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies)
                                            (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) {
+    extends VatRegistrationController(ds) with SessionProfile {
 
     import cats.syntax.flatMap._
 
+    val keystoreConnector: KeystoreConnector = KeystoreConnector
+
     val form = TaxableTurnoverForm.form
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      viewModel[TaxableTurnover]().fold(form)(form.fill)
-        .map(f => Ok(features.tradingDetails.views.html.vatChoice.taxable_turnover(f))))
+    def show: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            viewModel[TaxableTurnover]().fold(form)(form.fill)
+              .map(f => Ok(features.tradingDetails.views.html.vatChoice.taxable_turnover(f)))
+          }
+    }
 
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      form.bindFromRequest().fold(
-        badForm => BadRequest(features.tradingDetails.views.html.vatChoice.taxable_turnover(badForm)).pure,
-        (data: TaxableTurnover) => save(data).map(_ => data.yesNo == TAXABLE_YES).ifM(
-          for {
-            _ <- save(VoluntaryRegistration(REGISTER_NO))
-            _ <- save(StartDateView(COMPANY_REGISTRATION_DATE))
-          } yield controllers.vatLodgingOfficer.routes.CompletionCapacityController.show(),
-          controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show().pure
-        ) map Redirect))
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            form.bindFromRequest().fold(
+              badForm => BadRequest(features.tradingDetails.views.html.vatChoice.taxable_turnover(badForm)).pure,
+              (data: TaxableTurnover) => save(data).map(_ => data.yesNo == TAXABLE_YES).ifM(
+                for {
+                  _ <- save(VoluntaryRegistration(REGISTER_NO))
+                  _ <- save(StartDateView(COMPANY_REGISTRATION_DATE))
+                } yield controllers.vatLodgingOfficer.routes.CompletionCapacityController.show(),
+                controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show().pure
+              ) map Redirect)
+          }
+    }
   }
 }
 

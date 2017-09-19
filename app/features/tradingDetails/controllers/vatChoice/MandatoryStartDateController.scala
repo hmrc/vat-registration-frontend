@@ -18,18 +18,35 @@ package controllers.vatTradingDetails.vatChoice
 
 import javax.inject.Inject
 
+import connectors.KeystoreConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc._
-import services.{S4LService, VatRegistrationService}
+import services.{S4LService, SessionProfile, VatRegistrationService}
 
-class MandatoryStartDateController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies)
-                                            (implicit vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+import scala.concurrent.Future
 
-  def show: Action[AnyContent] = authorised(implicit user => implicit request =>
-    Ok(features.tradingDetails.views.html.vatChoice.mandatory_start_date_confirmation()))
+class MandatoryStartDateController @Inject()(s4LService: S4LService,
+                                             ds: CommonPlayDependencies)
+                                            (implicit vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with SessionProfile {
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    vrs.submitTradingDetails().map(_ =>
-      Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())))
+  val keystoreConnector: KeystoreConnector = KeystoreConnector
 
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { _ =>
+          Future.successful(Ok(features.tradingDetails.views.html.vatChoice.mandatory_start_date_confirmation()))
+        }
+  }
+
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          vrs.submitTradingDetails().map { _ =>
+            Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+          }
+        }
+  }
 }

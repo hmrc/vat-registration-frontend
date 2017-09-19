@@ -56,43 +56,53 @@ package controllers.vatFinancials.vatBankAccount {
   import models.view.vatFinancials.EstimateVatTurnover
   import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
   import play.api.mvc._
-  import services.{CommonService, S4LService, VatRegistrationService}
+  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
 
   class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
                                                      (implicit s4l: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with CommonService {
+    extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
     val joinThreshold: Long = conf.getLong("thresholds.frs.joinThreshold").get
 
     val form = CompanyBankAccountDetailsForm.form
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      viewModel[CompanyBankAccountDetails]().map(vm =>
-        CompanyBankAccountDetailsForm(
-          accountName = vm.accountName.trim,
-          accountNumber = "",
-          sortCode = SortCode.parse(vm.sortCode).getOrElse(SortCode("", "", ""))))
-        .fold(form)(form.fill)
-        .map(frm => Ok(features.financials.views.html.vatBankAccount.company_bank_account_details(frm))))
+    def show: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile{ implicit profile =>
+            viewModel[CompanyBankAccountDetails]().map(vm =>
+              CompanyBankAccountDetailsForm(
+                accountName = vm.accountName.trim,
+                accountNumber = "",
+                sortCode = SortCode.parse(vm.sortCode).getOrElse(SortCode("", "", ""))))
+              .fold(form)(form.fill)
+              .map(frm => Ok(features.financials.views.html.vatBankAccount.company_bank_account_details(frm)))
+          }
+    }
 
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      form.bindFromRequest().fold(
-        badForm => BadRequest(features.financials.views.html.vatBankAccount.company_bank_account_details(badForm)).pure,
-        view => for {
-          originalTurnover <- keystoreConnector.fetchAndGet[Long](lastKnownValueKey)
-          _ <- save(CompanyBankAccountDetails(
-            accountName = view.accountName.trim,
-            accountNumber = view.accountNumber,
-            sortCode = Show[SortCode].show(view.sortCode)))
-          _ <- vrs.submitVatFinancials()
-          turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
-          _ <- s4l.save(S4LFlatRateScheme()).flatMap(
-            _ => vrs.submitVatFlatRateScheme()) onlyIf originalTurnover.getOrElse(0) != turnover
-        } yield if (turnover > joinThreshold) {
-          Redirect(controllers.routes.SummaryController.show())
-        } else {
-          Redirect(controllers.frs.routes.JoinFrsController.show())
-        }))
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            form.bindFromRequest().fold(
+              badForm => BadRequest(features.financials.views.html.vatBankAccount.company_bank_account_details(badForm)).pure,
+              view => for {
+                originalTurnover <- keystoreConnector.fetchAndGet[Long](lastKnownValueKey)
+                _ <- save(CompanyBankAccountDetails(
+                  accountName = view.accountName.trim,
+                  accountNumber = view.accountNumber,
+                  sortCode = Show[SortCode].show(view.sortCode)))
+                _ <- vrs.submitVatFinancials()
+                turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
+                _ <- s4l.save(S4LFlatRateScheme()).flatMap(
+                  _ => vrs.submitVatFlatRateScheme()) onlyIf originalTurnover.getOrElse(0) != turnover
+              } yield if (turnover > joinThreshold) {
+                Redirect(controllers.routes.SummaryController.show())
+              } else {
+                Redirect(controllers.frs.routes.JoinFrsController.show())
+            })
+          }
+    }
   }
 }
 

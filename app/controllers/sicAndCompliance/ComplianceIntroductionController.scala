@@ -19,22 +19,37 @@ package controllers.sicAndCompliance
 import javax.inject.Inject
 
 import cats.data.OptionT
+import connectors.KeystoreConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import models.ComplianceQuestions
 import models.view.test.SicStub
 import play.api.mvc._
-import services.S4LService
+import services.{S4LService, SessionProfile}
+
+import scala.concurrent.Future
 
 class ComplianceIntroductionController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies)
-  extends VatRegistrationController(ds) {
+  extends VatRegistrationController(ds) with SessionProfile {
 
-  def show: Action[AnyContent] = authorised(implicit user => implicit request =>
-    Ok(views.html.pages.sicAndCompliance.compliance_introduction()))
+  val keystoreConnector: KeystoreConnector = KeystoreConnector
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    OptionT(s4LService.fetchAndGet[SicStub]()).map(
-      ss =>
-        ComplianceQuestions(ss.sicCodes.toArray))
-      .fold(controllers.test.routes.SicStubController.show())(_.firstQuestion).map(Redirect))
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { _ =>
+          Future.successful(Ok(views.html.pages.sicAndCompliance.compliance_introduction()))
+        }
+  }
+
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          OptionT(s4LService.fetchAndGet[SicStub]()).map(
+            ss =>
+              ComplianceQuestions(ss.sicCodes.toArray))
+            .fold(controllers.test.routes.SicStubController.show())(_.firstQuestion).map(Redirect)
+        }
+  }
 
 }

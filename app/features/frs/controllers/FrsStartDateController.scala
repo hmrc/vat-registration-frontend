@@ -65,39 +65,53 @@ package controllers.frs {
   import javax.inject.Inject
 
   import cats.syntax.FlatMapSyntax
+  import connectors.KeystoreConnector
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.frs.FrsStartDateFormFactory
+  import models.CurrentProfile
   import models.view.frs.FrsStartDateView
   import models.view.vatTradingDetails.vatChoice.StartDateView
   import play.api.mvc._
-  import services.{S4LService, VatRegistrationService}
+  import services.{S4LService, SessionProfile, VatRegistrationService}
   import uk.gov.hmrc.play.http.HeaderCarrier
 
   import scala.concurrent.Future
 
   class FrsStartDateController @Inject()(frsStartDateFormFactory: FrsStartDateFormFactory, ds: CommonPlayDependencies)
                                         (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with FlatMapSyntax {
+    extends VatRegistrationController(ds) with FlatMapSyntax with SessionProfile {
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      viewModel[FrsStartDateView]().getOrElse(FrsStartDateView())
-        .map(f => Ok(features.frs.views.html.frs_start_date(frsStartDateFormFactory.form().fill(f)))))
+    val keystoreConnector: KeystoreConnector = KeystoreConnector
 
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      frsStartDateFormFactory.form().bindFromRequest().fold(
-        badForm => BadRequest(features.frs.views.html.frs_start_date(badForm)).pure,
-        view => if (view.dateType == FrsStartDateView.VAT_REGISTRATION_DATE) {
-          val updateVatStartDate = setVatRegistrationDateToForm(view)
-          updateVatStartDate.flatMap(frsStartDateView => saveForm(frsStartDateView))
-        } else {
-          saveForm(view)
-        }))
+    def show: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            viewModel[FrsStartDateView]().getOrElse(FrsStartDateView())
+              .map(f => Ok(features.frs.views.html.frs_start_date(frsStartDateFormFactory.form().fill(f))))
+          }
+    }
+
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            frsStartDateFormFactory.form().bindFromRequest().fold(
+              badForm => BadRequest(features.frs.views.html.frs_start_date(badForm)).pure,
+              view => if (view.dateType == FrsStartDateView.VAT_REGISTRATION_DATE) {
+                val updateVatStartDate = setVatRegistrationDateToForm(view)
+                updateVatStartDate.flatMap(frsStartDateView => saveForm(frsStartDateView))
+              } else {
+                saveForm(view)
+              })
+          }
+    }
 
     private def setVatRegistrationDateToForm(view: FrsStartDateView)
-                                            (implicit headerCarrier: HeaderCarrier): Future[FrsStartDateView] =
+                                            (implicit headerCarrier: HeaderCarrier, profile: CurrentProfile): Future[FrsStartDateView] =
       viewModel[StartDateView]().fold(view)(startDateView => view.copy(date = startDateView.date))
 
-    private def saveForm(view: FrsStartDateView)(implicit headerCarrier: HeaderCarrier): Future[Result] =
+    private def saveForm(view: FrsStartDateView)(implicit headerCarrier: HeaderCarrier, profile: CurrentProfile): Future[Result] =
       save(view).flatMap(_ =>
         vrs.submitVatFlatRateScheme().map(_ =>
           Redirect(controllers.routes.SummaryController.show())))
