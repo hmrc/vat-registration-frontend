@@ -19,6 +19,7 @@ package controllers.vatTradingDetails.vatEuTrading
 import controllers.vatTradingDetails
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -26,7 +27,6 @@ import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -34,16 +34,19 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
 
   object EuGoodsController extends EuGoodsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
 
   s"GET ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()}" should {
-
     "return HTML when there's a Eu Goods model in S4L" in {
       val euGoods = EuGoods(EuGoods.EU_GOODS_YES)
 
       save4laterReturnsViewModel(euGoods)()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(EuGoodsController.show(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> ""
@@ -55,7 +58,10 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[EuGoods]()
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any(), any()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(EuGoodsController.show) {
@@ -66,7 +72,10 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[EuGoods]()
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any[HeaderCarrier]()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any(), any()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(EuGoodsController.show) {
@@ -75,19 +84,24 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     }
   }
 
-
   s"POST ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()}" should {
     "return 400 with Empty data" in {
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result =>
           status(result) mustBe Status.BAD_REQUEST
       }
-
     }
 
     "return 303 with Eu Goods Yes selected" in {
       save4laterExpectsSave[EuGoods]()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> EuGoods.EU_GOODS_YES
@@ -101,12 +115,14 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
       save4laterExpectsSave[EuGoods]()
       save4laterExpectsSave[ApplyEori]()
 
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> EuGoods.EU_GOODS_NO
       )) {
        _ redirectsTo s"$contextRoot/estimate-vat-taxable-turnover-next-12-months"
       }
-
     }
   }
 }

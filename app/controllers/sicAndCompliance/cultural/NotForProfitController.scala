@@ -19,32 +19,43 @@ package controllers.sicAndCompliance.cultural
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import controllers.sicAndCompliance.ComplianceExitController
 import forms.sicAndCompliance.cultural.NotForProfitForm
 import models.S4LVatSicAndCompliance
 import models.S4LVatSicAndCompliance.culturalOnly
 import models.view.sicAndCompliance.cultural.NotForProfit
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
 
 
-class NotForProfitController @Inject()(ds: CommonPlayDependencies)
-                                      (implicit s4lService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with CommonService {
+class NotForProfitController @Inject()(ds: CommonPlayDependencies,
+                                       implicit val s4lService: S4LService,
+                                       implicit val vrs: VatRegistrationService)
+  extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
   val form = NotForProfitForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[NotForProfit]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.sicAndCompliance.cultural.not_for_profit(f))))
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          viewModel[NotForProfit]().fold(form)(form.fill)
+            .map(f => Ok(views.html.pages.sicAndCompliance.cultural.not_for_profit(f)))
+        }
+  }
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      badForm => BadRequest(views.html.pages.sicAndCompliance.cultural.not_for_profit(badForm)).pure,
-      view => for {
-        container <- s4lContainer[S4LVatSicAndCompliance]()
-        _ <- s4lService.save(culturalOnly(container.copy(notForProfit = Some(view))))
-        _ <- vrs.submitSicAndCompliance()
-      } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())))
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          form.bindFromRequest().fold(
+            badForm => BadRequest(views.html.pages.sicAndCompliance.cultural.not_for_profit(badForm)).pure,
+            view => for {
+              container <- s4lContainer[S4LVatSicAndCompliance]()
+              _ <- s4lService.save(culturalOnly(container.copy(notForProfit = Some(view))))
+              _ <- vrs.submitSicAndCompliance()
+            } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
+          )
+        }
+  }
 
 }

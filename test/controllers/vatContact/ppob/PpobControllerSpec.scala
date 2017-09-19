@@ -19,15 +19,18 @@ package controllers.vatContact.ppob
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.api.ScrsAddress
 import models.view.vatContact.ppob.PpobView
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{verify, when}
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 
-class PpobControllerSpec extends VatRegSpec
-  with VatRegistrationFixture with S4LMockSugar {
+import scala.concurrent.Future
+
+class PpobControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object Controller extends PpobController(ds)(
     mockS4LService,
@@ -45,9 +48,12 @@ class PpobControllerSpec extends VatRegSpec
   s"GET ${routes.PpobController.show()}" should {
 
     "return HTML when there's nothing in S4L" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       mockKeystoreCache[Seq[ScrsAddress]]("PpobAddressList", dummyCacheMap)
       save4laterReturnsNoViewModel[PpobView]()
-      when(mockPPService.getPpobAddressList()(any())).thenReturn(Seq(address).pure)
+      when(mockPPService.getPpobAddressList()(any(), any())).thenReturn(Seq(address).pure)
 
       callAuthorised(Controller.show()) {
         _ includesText "Where will the company carry out most of its business activities"
@@ -55,9 +61,12 @@ class PpobControllerSpec extends VatRegSpec
     }
 
     "return HTML when view is present in S4L" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterReturnsViewModel(PpobView(addressId = address.id, address = Some(address)))()
       mockKeystoreCache[Seq[ScrsAddress]]("PpobAddressList", dummyCacheMap)
-      when(mockPPService.getPpobAddressList()(any())).thenReturn(Seq(address).pure)
+      when(mockPPService.getPpobAddressList()(any(), any())).thenReturn(Seq(address).pure)
 
       callAuthorised(Controller.show()) {
         _ includesText "Where will the company carry out most of its business activities"
@@ -67,15 +76,20 @@ class PpobControllerSpec extends VatRegSpec
   }
 
   s"POST ${routes.PpobController.submit()}" should {
-
     "return 400 with Empty data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("PpobAddressList", None)
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
 
     "return 303 with selected address" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterExpectsSave[PpobView]()
-      when(mockPPService.getPpobAddressList()(any())).thenReturn(Seq(address).pure)
+      when(mockPPService.getPpobAddressList()(any(), any())).thenReturn(Seq(address).pure)
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("PpobAddressList", Some(Seq(address)))
 
       submitAuthorised(Controller.submit(),
@@ -84,8 +98,11 @@ class PpobControllerSpec extends VatRegSpec
     }
 
     "return 303 with selected address but no address list in keystore" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterExpectsSave[PpobView]()
-      when(mockPPService.getPpobAddressList()(any())).thenReturn(Seq(address).pure)
+      when(mockPPService.getPpobAddressList()(any(), any())).thenReturn(Seq(address).pure)
       mockKeystoreFetchAndGet("PpobAddressList", Option.empty[Seq[ScrsAddress]])
 
       submitAuthorised(Controller.submit(),
@@ -94,6 +111,9 @@ class PpobControllerSpec extends VatRegSpec
     }
 
     "redirect the user to TxM address capture page with 'other address' selected" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       when(mockAddressLookupConnector.getOnRampUrl(any[Call])(any(), any())).thenReturn(Call("GET", "TxM").pure)
 
       submitAuthorised(Controller.submit(),
@@ -104,16 +124,17 @@ class PpobControllerSpec extends VatRegSpec
   }
 
   s"GET ${routes.PpobController.acceptFromTxm()}" should {
-
     "save an address and redirect to next page" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterExpectsSave[PpobView]()
       when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
       callAuthorised(Controller.acceptFromTxm("addressId")) {
         _ redirectsTo s"$contextRoot/company-contact-details"
       }
 
-      verify(mockS4LService).updateViewModel(any(), any())(any(), any(), any(), any())
+      verify(mockS4LService).updateViewModel(any(), any())(any(), any(), any(), any(), any())
     }
-
   }
 }

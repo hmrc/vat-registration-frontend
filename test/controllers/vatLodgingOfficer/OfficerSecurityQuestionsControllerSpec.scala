@@ -21,13 +21,17 @@ import java.time.LocalDate
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.ModelKeys.REGISTERING_OFFICER_KEY
 import models.api.{DateOfBirth, Name, VatScheme}
 import models.external.Officer
 import models.view.vatLodgingOfficer.OfficerSecurityQuestionsView
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
+
+import scala.concurrent.Future
 
 class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
@@ -39,7 +43,6 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
   val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show())
 
   s"GET ${routes.OfficerSecurityQuestionsController.show()}" should {
-
     "succeed for all possible Officer / OfficerSecurityQuestionsView combinations" in {
 
       val nameSame = Name(Some("forename"), None, "surname")
@@ -90,6 +93,9 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
 
     "return HTML and form populated" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterReturnsViewModel(OfficerSecurityQuestionsView(testDate, testNino, Some(officerName)))()
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
 
@@ -99,6 +105,9 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
     }
 
     "return HTML with empty form" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterReturnsNoViewModel[OfficerSecurityQuestionsView]()
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
 
@@ -111,26 +120,35 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
   s"POST ${routes.OfficerSecurityQuestionsController.submit()}" should {
     "return 400 with Empty data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
 
     val officer = Officer(Name(None, None, "surname"), "director", Some(DateOfBirth(12, 11, 1973)))
 
     "return 303 with officer in keystore" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterExpectsSave[OfficerSecurityQuestionsView]()
       mockKeystoreFetchAndGet[Officer](REGISTERING_OFFICER_KEY, Some(officer))
+
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> testNino)
       )(_ redirectsTo s"$contextRoot/changed-name")
     }
 
     "return 303 with no officer in keystore" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterExpectsSave[OfficerSecurityQuestionsView]()
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
+
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> testNino)
       )(_ redirectsTo s"$contextRoot/changed-name")
     }
   }
-
 }

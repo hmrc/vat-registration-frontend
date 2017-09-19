@@ -18,26 +18,31 @@ package controllers.vatLodgingOfficer
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
+
+import scala.concurrent.Future
 
 class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object Controller extends OfficerContactDetailsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
 
   s"GET ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show()}" should {
-
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[OfficerContactDetailsView]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(validVatScheme.pure)
-
+      when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(Controller.show()) {
         _ includesText "What are your contact details?"
       }
@@ -46,7 +51,8 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
 
     "return HTML when there's an answer in S4L" in {
       save4laterReturnsViewModel(validOfficerContactDetailsView)()
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(Controller.show) {
         _ includesText "What are your contact details?"
       }
@@ -54,8 +60,9 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[OfficerContactDetailsView]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
-
+      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(Controller.show) {
         _ includesText "What are your contact details?"
       }
@@ -63,8 +70,9 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
   }
 
   s"POST ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.submit()}" should {
-
     "return 400 with Empty data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
     }
@@ -72,15 +80,14 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
 
     "return 303 with valid Officer Contact Details entered" in {
       save4laterExpectsSave[OfficerContactDetailsView]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(emptyVatScheme.pure)
-
+      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com",
                                            "daytimePhone" -> "01234 567891",
                                            "mobile" -> "01234 567891")
       )(_ redirectsTo s"$contextRoot/your-home-address")
     }
-
   }
-
 }

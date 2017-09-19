@@ -23,11 +23,13 @@ import com.google.inject.ImplementedBy
 import config.WSHttp
 import models.external.CoHoCompanyProfile
 import play.api.Logger
+import play.api.libs.json.JsValue
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.http.ws.WSHttp
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Singleton
 class CompanyRegistrationConnector extends CompanyRegistrationConnect with ServicesConfig {
@@ -48,13 +50,11 @@ trait CompanyRegistrationConnect {
 
   val className = self.getClass.getSimpleName
 
-  def getCompanyRegistrationDetails(regId: String)(implicit hc: HeaderCarrier): OptionalResponse[CoHoCompanyProfile] = {
-    OptionT {
-      Logger.debug(s"$companyRegistrationUrl$companyRegistrationUri/$regId")
-      http.GET[CoHoCompanyProfile](s"$companyRegistrationUrl$companyRegistrationUri/$regId/corporation-tax-registration").map(Some(_)) recover {
-        case e: Exception => logResponse(e, className, "getCompanyRegistrationDetails")
-          Option.empty[CoHoCompanyProfile]
-      }
+  def getTransactionId(regId: String)(implicit hc: HeaderCarrier): Future[String] = {
+    http.GET[JsValue](s"$companyRegistrationUrl$companyRegistrationUri/$regId/corporation-tax-registration") map {
+      _.\("confirmationReferences").\("transaction-id").as[String]
+    } recover {
+      case e => throw e
     }
   }
 }

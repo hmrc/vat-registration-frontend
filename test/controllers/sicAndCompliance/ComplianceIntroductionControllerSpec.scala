@@ -19,7 +19,9 @@ package controllers.sicAndCompliance
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.CurrentProfile
 import models.view.test.SicStub
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 
@@ -29,11 +31,13 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
 
   object ComplianceIntroductionController extends ComplianceIntroductionController(mockS4LService, ds) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   s"GET ${sicAndCompliance.routes.ComplianceIntroductionController.show()}" should {
-
     "display the introduction page to a set of compliance questions" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(ComplianceIntroductionController.show) {
         _ includesText "Tell us more"
       }
@@ -41,10 +45,11 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
   }
 
   s"POST ${sicAndCompliance.routes.ComplianceIntroductionController.submit()}" should {
-
     "redirect the user to the next page in the flow" in {
-      when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(SicStub(Some("12345678"), None, None, None))))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(ComplianceIntroductionController.submit) {
         result =>
           result redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk"
@@ -52,7 +57,9 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
     }
 
     "redirect the user to the SIC code selection page" in {
-      when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(None))
+      when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any(), any())).thenReturn(Future.successful(None))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(ComplianceIntroductionController.submit) {
         result =>
           result redirectsTo "/sic-stub"
@@ -60,7 +67,9 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
     }
 
     "redirect the user to the first question about cultural compliance" in {
-      when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+      when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any(), any())).thenReturn(Future.successful(
         Some(SicStub(Some("90010123"), Some("90020123"), None, None))
       ))
       callAuthorised(ComplianceIntroductionController.submit) {
@@ -70,7 +79,9 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
     }
 
     "redirect the user to the first question about labour compliance" in {
-      when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+      when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any(), any())).thenReturn(Future.successful(
         Some(SicStub(Some("42110123"), Some("42910123"), None, None))
       ))
       callAuthorised(ComplianceIntroductionController.submit) {
@@ -80,7 +91,9 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
     }
 
     "redirect the user to the first question about financial compliance" in {
-      when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any())).thenReturn(Future.successful(
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+      when(mockS4LService.fetchAndGet[SicStub]()(any(), any(), any(), any())).thenReturn(Future.successful(
         Some(SicStub(Some("70221123"), Some("64921123"), None, None))
       ))
       callAuthorised(ComplianceIntroductionController.submit) {

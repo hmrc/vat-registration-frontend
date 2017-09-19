@@ -66,36 +66,49 @@ package controllers.vatTradingDetails.vatChoice {
   import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
   import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.REGISTER_NO
   import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration}
-  import models.{MonthYearModel, S4LTradingDetails}
+  import models.{CurrentProfile, MonthYearModel, S4LTradingDetails}
   import play.api.mvc._
-  import services.{CommonService, S4LService, VatRegistrationService}
+  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
   import uk.gov.hmrc.play.http.HeaderCarrier
 
   import scala.concurrent.Future
 
   class ThresholdSummaryController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with CommonService {
+    extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      for {
-        thresholdSummary <- getThresholdSummary()
-        dateOfIncorporation <- fetchDateOfIncorporation()
-      } yield Ok(features.tradingDetails.views.html.vatChoice.threshold_summary(
-        thresholdSummary,
-        MonthYearModel.FORMAT_DD_MMMM_Y.format(dateOfIncorporation))))
+    def show: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            val dateOfIncorporation = profile.incorporationDate
+              .getOrElse(throw new IllegalStateException("Date of Incorporation data expected to be found in Incorporation"))
 
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request => {
-      getVatThresholdPostIncorp().map(vatThresholdPostIncorp => vatThresholdPostIncorp match {
-        case VatThresholdPostIncorp(true, _) =>
-          save(VoluntaryRegistration(REGISTER_NO))
-          save(StartDateView(COMPANY_REGISTRATION_DATE))
-          Redirect(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
-        case _ => Redirect(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show())
-      })
-    })
+            getThresholdSummary() map {
+              thresholdSummary => Ok(features.tradingDetails.views.html.vatChoice.threshold_summary(
+                thresholdSummary,
+                MonthYearModel.FORMAT_DD_MMMM_Y.format(dateOfIncorporation))
+              )
+            }
+          }
+    }
 
-    def getThresholdSummary()(implicit hc: HeaderCarrier): Future[Summary] = {
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request => {
+          withCurrentProfile { implicit profile =>
+            getVatThresholdPostIncorp().map {
+              case VatThresholdPostIncorp(true, _) =>
+                save(VoluntaryRegistration(REGISTER_NO))
+                save(StartDateView(COMPANY_REGISTRATION_DATE))
+                Redirect(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
+              case _ => Redirect(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show())
+            }
+          }
+      }
+    }
+
+    def getThresholdSummary()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = {
       for {
         vatThresholdPostIncorp <- getVatThresholdPostIncorp()
       } yield thresholdToSummary(vatThresholdPostIncorp)
@@ -107,7 +120,7 @@ package controllers.vatTradingDetails.vatChoice {
       ))
     }
 
-    def getVatThresholdPostIncorp()(implicit hc: HeaderCarrier): Future[VatThresholdPostIncorp] = {
+    def getVatThresholdPostIncorp()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatThresholdPostIncorp] = {
       for {
         vatTradingDetails <- s4LService.fetchAndGet[S4LTradingDetails]()
         overThreshold <- vatTradingDetails.flatMap(_.overThreshold).pure

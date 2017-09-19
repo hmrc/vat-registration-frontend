@@ -55,6 +55,7 @@ package controllers.frs {
   import cats.syntax.FlatMapSyntax
   import connectors.ConfigConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import models.CurrentProfile
   import models.view.frs.BusinessSectorView
   import models.view.sicAndCompliance.MainBusinessActivityView
   import org.apache.commons.lang3.StringUtils
@@ -67,7 +68,7 @@ package controllers.frs {
                                                (implicit s4LService: S4LService, vrs: VatRegistrationService)
     extends VatRegistrationController(ds) with FlatMapSyntax {
 
-    protected def businessSectorView()(implicit headerCarrier: HeaderCarrier): Future[BusinessSectorView] =
+    protected def businessSectorView()(implicit headerCarrier: HeaderCarrier, profile: CurrentProfile): Future[BusinessSectorView] =
       viewModel[BusinessSectorView]().filter(view => StringUtils.isNotBlank(view.businessSector))
         .getOrElseF {
           viewModel[MainBusinessActivityView]()

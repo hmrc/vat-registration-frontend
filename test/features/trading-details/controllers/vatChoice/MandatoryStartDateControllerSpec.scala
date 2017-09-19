@@ -18,22 +18,30 @@ package controllers.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.CurrentProfile
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{verify, when}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
+import scala.concurrent.Future
+
 class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   object MandatoryStartDateController extends MandatoryStartDateController(mockS4LService, ds) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(routes.StartDateController.show())
 
   s"GET ${routes.MandatoryStartDateController.show()}" should {
-
     "display the mandatory start date confirmation page to the user" in {
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       callAuthorised(MandatoryStartDateController.show) {
         result =>
           status(result) mustBe OK
@@ -45,17 +53,19 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
   }
 
   s"POST ${routes.MandatoryStartDateController.submit()}" should {
-
     "redirect the user to the bank account page after clicking continue on the mandatory start date confirmation page" in {
 
-      when(mockVatRegistrationService.submitTradingDetails()(any())).thenReturn(validVatTradingDetails.pure)
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockVatRegistrationService.submitTradingDetails()(any(), any())).thenReturn(validVatTradingDetails.pure)
       callAuthorised(MandatoryStartDateController.submit) {
         result =>
           status(result) mustBe SEE_OTHER
           redirectLocation(result).getOrElse("") mustBe s"$contextRoot/business-bank-account"
       }
 
-      verify(mockVatRegistrationService).submitTradingDetails()(any())
+      verify(mockVatRegistrationService).submitTradingDetails()(any(), any())
     }
   }
 

@@ -23,11 +23,13 @@ import com.google.inject.ImplementedBy
 import config.WSHttp
 import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
 import play.api.Logger
+import play.api.libs.json.JsValue
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Singleton
 class IncorporationInformationConnector extends IncorporationInformationConnect with ServicesConfig {
@@ -60,4 +62,14 @@ trait IncorporationInformationConnect { self =>
         throw ex
     })
 
+  def getCompanyName(redId: String, transactionId: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
+    http.GET[JsValue](s"$incorpInfoUrl$incorpInfoUri/$transactionId/company-profile") recover {
+      case notFound: NotFoundException =>
+        Logger.error(s"[IncorporationInformationConnector] - [getCompanyName] - Could not find company name for regId $redId (txId: $transactionId)")
+        throw notFound
+      case e =>
+        Logger.error(s"[IncorporationInformationConnector] - [getCompanyName] - There was a problem getting company for regId $redId (txId: $transactionId)", e)
+        throw e
+    }
+  }
 }

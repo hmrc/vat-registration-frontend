@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package controllers.test
+package common.enums
 
-import javax.inject.Inject
+import play.api.libs.json.{Format, Reads, Writes}
 
-import connectors.test.TestRegistrationConnector
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc.{Action, AnyContent}
+object VatRegStatus extends Enumeration {
+  val DRAFT = Value
 
-class CurrentProfileController @Inject()(vatRegConnector: TestRegistrationConnector, ds: CommonPlayDependencies)
-  extends VatRegistrationController(ds) {
+  implicit val format: Format[VatRegStatus.Value] = Format(Reads.enumNameReads(VatRegStatus), Writes.enumNameWrites)
 
-  def currentProfileSetup(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    vatRegConnector.setupCurrentProfile().map(_ => Ok("Current profile setup"))
-  )
 }

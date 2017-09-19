@@ -57,29 +57,39 @@ package controllers.vatFinancials.vatAccountingPeriod {
   import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod
   import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
   import play.api.mvc.{Action, AnyContent}
-  import services.{CommonService, S4LService, VatRegistrationService}
+  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
 
   class AccountingPeriodController @Inject()(ds: CommonPlayDependencies)
                                             (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with CommonService {
+    extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
     val form = AccountingPeriodForm.form
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      viewModel[AccountingPeriod]().fold(form)(form.fill)
-        .map(f => Ok(features.financials.views.html.vatAccountingPeriod.accounting_period(f))))
+    def show: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            viewModel[AccountingPeriod]().fold(form)(form.fill)
+              .map(f => Ok(features.financials.views.html.vatAccountingPeriod.accounting_period(f)))
+          }
+    }
 
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      form.bindFromRequest().fold(
-        badForm => BadRequest(features.financials.views.html.vatAccountingPeriod.accounting_period(badForm)).pure,
-        data => for {
-          _ <- save(data)
-          voluntaryReg <- viewModel[VoluntaryRegistration]().fold(true)(reg => reg == VoluntaryRegistration.yes)
-        } yield Redirect(if (voluntaryReg) {
-          controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()
-        } else {
-          controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show()
-        })))
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            form.bindFromRequest().fold(
+              badForm => BadRequest(features.financials.views.html.vatAccountingPeriod.accounting_period(badForm)).pure,
+              data => for {
+                _ <- save(data)
+                voluntaryReg <- viewModel[VoluntaryRegistration]().fold(true)(reg => reg == VoluntaryRegistration.yes)
+              } yield Redirect(if (voluntaryReg) {
+                controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()
+              } else {
+                controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show()
+              }))
+          }
+    }
   }
 }
 

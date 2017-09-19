@@ -39,13 +39,13 @@ import scala.concurrent.Future
 @ImplementedBy(classOf[PrePopulationService])
 trait PrePopService {
 
-  def getCTActiveDate()(implicit hc: HeaderCarrier): OptionalResponse[LocalDate]
+  def getCTActiveDate()(implicit hc: HeaderCarrier, profile: CurrentProfile): OptionalResponse[LocalDate]
 
-  def getOfficerAddressList()(implicit hc: HeaderCarrier): Future[Seq[ScrsAddress]]
+  def getOfficerAddressList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]]
 
-  def getPpobAddressList()(implicit hc: HeaderCarrier): Future[Seq[ScrsAddress]]
+  def getPpobAddressList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]]
 
-  def getOfficerList()(implicit hc: HeaderCarrier): Future[Seq[Officer]]
+  def getOfficerList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[Officer]]
 
 }
 
@@ -55,34 +55,33 @@ class PrePopulationService @Inject()(ppConnector: PPConnector, iis: Incorporatio
 
   private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-  def getCTActiveDate()(implicit hc: HeaderCarrier): OptionalResponse[LocalDate] =
+  def getCTActiveDate()(implicit hc: HeaderCarrier, profile: CurrentProfile): OptionalResponse[LocalDate] =
     for {
-      regId <- OptionT.liftF(fetchRegistrationId)
-      ctReg <- ppConnector.getCompanyRegistrationDetails(regId)
+      ctReg <- ppConnector.getCompanyRegistrationDetails
       accountingDetails <- fromOption[Future](ctReg.accountingDetails)
       dateString <- fromOption[Future](accountingDetails.activeDate)
     } yield LocalDate.parse(dateString, formatter)
 
   private def getAddresses[T: S4LKey : Format]
   (s4lExtractor: T => Option[ScrsAddress])
-  (implicit mt: ApiModelTransformer[ScrsAddress], hc: HeaderCarrier): Future[Seq[ScrsAddress]] =
+  (implicit mt: ApiModelTransformer[ScrsAddress], hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] =
     List(
       iis.getRegisteredOfficeAddress(),
       OptionT(vrs.getVatScheme() map mt.toViewModel),
       OptionT(s4l.fetchAndGet[T]()).subflatMap(s4lExtractor)
     ).traverse(_.value).map(_.flatten.distinct)
 
-  override def getOfficerAddressList()(implicit hc: HeaderCarrier): Future[Seq[ScrsAddress]] = {
+  override def getOfficerAddressList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
     import ScrsAddress.modelTransformerOfficerHomeAddressView
     getAddresses((_: S4LVatLodgingOfficer).officerHomeAddress.flatMap(_.address))
   }
 
-  override def getPpobAddressList()(implicit hc: HeaderCarrier): Future[Seq[ScrsAddress]] = {
+  override def getPpobAddressList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
     import ScrsAddress.modelTransformerPpobView
     getAddresses((_: S4LVatContact).ppob.flatMap(_.address))
   }
 
-  override def getOfficerList()(implicit hc: HeaderCarrier): Future[Seq[Officer]] = {
+  override def getOfficerList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[Officer]] = {
     val officerListFromII = iis.getOfficerList()
     val officerFromS4L = OptionT(s4l.fetchAndGet[S4LVatLodgingOfficer]()).subflatMap(s4l =>
       for {

@@ -70,6 +70,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
     def apply[G]()
                 (implicit s4l: S4LService,
                  vrs: RegistrationService,
+                 currentProfile: CurrentProfile,
                  r: ViewModelFormat.Aux[T, G],
                  f: Format[G],
                  k: S4LKey[G],
@@ -84,6 +85,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
     */
   protected[controllers] def s4lContainer[G]()
                                             (implicit s4l: S4LService,
+                                             currentProfile: CurrentProfile,
                                              vrs: RegistrationService,
                                              f: Format[G],
                                              k: S4LKey[G],
@@ -94,7 +96,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
       vrs.getVatScheme() map s4lTransformer.toS4LModel)
 
 
-  def getFlatRateSchemeThreshold()(implicit s4l: S4LService, vrs: RegistrationService, hc: HeaderCarrier): Future[Long] =
+  def getFlatRateSchemeThreshold()(implicit s4l: S4LService, vrs: RegistrationService, profile: CurrentProfile, hc: HeaderCarrier): Future[Long] =
     viewModel[EstimateVatTurnover]()
       .map(_.vatTurnoverEstimate).fold(0L)(estimate => Math.round(estimate * 0.02))
 
@@ -105,6 +107,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
     def apply[G](data: T)
                 (implicit s4l: S4LService,
                  vrs: RegistrationService,
+                 currentProfile: CurrentProfile,
                  r: ViewModelFormat.Aux[T, G],
                  f: Format[G],
                  k: S4LKey[G],

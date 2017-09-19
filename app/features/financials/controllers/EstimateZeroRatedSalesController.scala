@@ -48,22 +48,32 @@ package controllers.vatFinancials {
   import forms.vatFinancials.EstimateZeroRatedSalesForm
   import models.view.vatFinancials.EstimateZeroRatedSales
   import play.api.mvc.{Action, AnyContent}
-  import services.{S4LService, VatRegistrationService}
+  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
 
   class EstimateZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
-                                                  (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+                                                  (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
     val form = EstimateZeroRatedSalesForm.form
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      viewModel[EstimateZeroRatedSales]().fold(form)(form.fill)
-        .map(f => Ok(features.financials.views.html.estimate_zero_rated_sales(f))))
+    def show: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile{ implicit profile =>
+            viewModel[EstimateZeroRatedSales]().fold(form)(form.fill)
+              .map(f => Ok(features.financials.views.html.estimate_zero_rated_sales(f)))
+          }
+    }
 
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      form.bindFromRequest().fold(
-        badForm => BadRequest(features.financials.views.html.estimate_zero_rated_sales(badForm)).pure,
-        view => save(view) map (_ => Redirect(controllers.vatFinancials.routes.VatChargeExpectancyController.show()))))
-
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            form.bindFromRequest().fold(
+              badForm => BadRequest(features.financials.views.html.estimate_zero_rated_sales(badForm)).pure,
+              view => save(view) map (_ => Redirect(controllers.vatFinancials.routes.VatChargeExpectancyController.show()))
+            )
+          }
+    }
   }
 }
 

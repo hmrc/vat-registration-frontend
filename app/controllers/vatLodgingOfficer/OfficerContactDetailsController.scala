@@ -19,27 +19,39 @@ package controllers.vatLodgingOfficer
 import javax.inject.Inject
 
 import cats.syntax.FlatMapSyntax
+import connectors.KeystoreConnector
 import controllers.vatTradingDetails.vatChoice.{routes => vatChoiceRoutes}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatLodgingOfficer.OfficerContactDetailsForm
 import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, VatRegistrationService}
+import services.{S4LService, SessionProfile, VatRegistrationService}
 
 class OfficerContactDetailsController @Inject()(ds: CommonPlayDependencies)
                                                (implicit s4l: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with FlatMapSyntax {
+  extends VatRegistrationController(ds) with FlatMapSyntax with SessionProfile {
 
   val form = OfficerContactDetailsForm.form
+  val keystoreConnector: KeystoreConnector = KeystoreConnector
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    viewModel[OfficerContactDetailsView]().fold(form)(form.fill)
-      .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_contact_details(f))))
+  def show: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          viewModel[OfficerContactDetailsView]().fold(form)(form.fill)
+            .map(f => Ok(views.html.pages.vatLodgingOfficer.officer_contact_details(f)))
+        }
+  }
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    form.bindFromRequest().fold(
-      copyGlobalErrorsToFields("email", "daytimePhone", "mobile")
-        .andThen(form => BadRequest(views.html.pages.vatLodgingOfficer.officer_contact_details(form)).pure),
-      data => save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show()))))
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          form.bindFromRequest().fold(
+            copyGlobalErrorsToFields("email", "daytimePhone", "mobile")
+              .andThen(form => BadRequest(views.html.pages.vatLodgingOfficer.officer_contact_details(form)).pure),
+            data => save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())))
+        }
+  }
 
 }

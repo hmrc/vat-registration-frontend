@@ -34,7 +34,9 @@ package controllers.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -46,16 +48,19 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
 
   object TestVoluntaryRegistrationController extends VoluntaryRegistrationController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(routes.VoluntaryRegistrationController.show())
 
   s"GET ${routes.VoluntaryRegistrationController.show()}" should {
-
     "return HTML Voluntary Registration  page with no Selection" in {
       val voluntaryRegistration = VoluntaryRegistration("")
 
       save4laterReturnsViewModel(voluntaryRegistration)()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(TestVoluntaryRegistrationController.show(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationRadio" -> ""
@@ -67,7 +72,10 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[VoluntaryRegistration]()
 
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestVoluntaryRegistrationController.show) {
@@ -78,7 +86,10 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[VoluntaryRegistration]()
 
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestVoluntaryRegistrationController.show) {
@@ -88,17 +99,22 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
   }
 
   s"POST ${routes.VoluntaryRegistrationController.submit()} with Empty data" should {
-
     "return 400" in {
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(TestVoluntaryRegistrationController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
   }
 
   s"POST ${routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected Yes" should {
-
     "return 303" in {
       save4laterExpectsSave[VoluntaryRegistration]()
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(TestVoluntaryRegistrationController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationRadio" -> VoluntaryRegistration.REGISTER_YES
@@ -107,18 +123,18 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
   }
 
   s"POST ${routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected No" should {
-
     "redirect to the welcome page" in {
-      when(mockS4LService.clear()(any[HeaderCarrier]())).thenReturn(Future.successful(validHttpResponse))
+      when(mockS4LService.clear()(any[HeaderCarrier](), any())).thenReturn(Future.successful(validHttpResponse))
       save4laterExpectsSave[VoluntaryRegistration]()
-      when(mockVatRegistrationService.deleteVatScheme()(any[HeaderCarrier]()))
+      when(mockVatRegistrationService.deleteVatScheme()(any[HeaderCarrier](), any()))
         .thenReturn(Future.successful(()))
+
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(TestVoluntaryRegistrationController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationRadio" -> VoluntaryRegistration.REGISTER_NO
       ))(_ redirectsTo contextRoot)
-
     }
   }
-
 }

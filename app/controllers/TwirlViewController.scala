@@ -18,16 +18,25 @@ package controllers
 
 import javax.inject.Inject
 
+import connectors.KeystoreConnector
 import play.api.mvc.{Action, AnyContent, Result}
+import services.SessionProfile
 
-class TwirlViewController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+import scala.concurrent.Future
 
-  def renderViewAuthorised(viewName: String): Action[AnyContent] = authorised(implicit user => implicit request =>
-    Some(viewName).collect {
-      case "use-this-service" => views.html.pages.vatEligibility.use_this_service()
-    }.fold[Result](NotFound)(Ok(_))
-  )
+class TwirlViewController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) with SessionProfile {
 
+  val keystoreConnector: KeystoreConnector = KeystoreConnector
 
-
+  def renderViewAuthorised(viewName: String): Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { _ =>
+          Future.successful(
+            Some(viewName).collect {
+              case "use-this-service" => views.html.pages.vatEligibility.use_this_service()
+            }.fold[Result](NotFound)(Ok(_))
+          )
+        }
+  }
 }

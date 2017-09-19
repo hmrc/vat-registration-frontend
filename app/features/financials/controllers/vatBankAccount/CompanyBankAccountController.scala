@@ -51,7 +51,6 @@ package controllers.vatFinancials.vatBankAccount {
   import javax.inject.Inject
 
   import cats.syntax.FlatMapSyntax
-  import cats.syntax.cartesian._
   import common.ConditionalFlatMap._
   import controllers.vatFinancials.EstimateVatTurnoverKey.lastKnownValueKey
   import controllers.{CommonPlayDependencies, VatRegistrationController}
@@ -60,39 +59,49 @@ package controllers.vatFinancials.vatBankAccount {
   import models.view.vatFinancials.EstimateVatTurnover
   import models.view.vatFinancials.vatBankAccount.CompanyBankAccount
   import play.api.mvc._
-  import services.{CommonService, S4LService, VatRegistrationService}
+  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
 
   class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
                                               (implicit s4l: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with FlatMapSyntax with CommonService {
+    extends VatRegistrationController(ds) with FlatMapSyntax with CommonService with SessionProfile {
 
     val joinThreshold: Long = conf.getLong("thresholds.frs.joinThreshold").get
 
     val form = CompanyBankAccountForm.form
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      viewModel[CompanyBankAccount]().fold(form)(form.fill)
-        .map(frm => Ok(features.financials.views.html.vatBankAccount.company_bank_account(frm))))
-
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      form.bindFromRequest().fold(
-        badForm => BadRequest(features.financials.views.html.vatBankAccount.company_bank_account(badForm)).pure,
-        data => save(data).map(_ => data.yesNo == CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES).ifM(
-          ifTrue = controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show().pure,
-          ifFalse = for {
-            originalTurnover <- keystoreConnector.fetchAndGet[Long](lastKnownValueKey)
-            container <- s4lContainer[S4LVatFinancials]()
-            _ <- s4l.save(container.copy(companyBankAccountDetails = None))
-            _ <- vrs.submitVatFinancials()
-            turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
-            _ <- s4l.save(S4LFlatRateScheme()).flatMap(
-              _ => vrs.submitVatFlatRateScheme()) onlyIf originalTurnover.getOrElse(0) != turnover
-          } yield if (turnover > joinThreshold) {
-            controllers.routes.SummaryController.show()
-          } else {
-            controllers.frs.routes.JoinFrsController.show()
+    def show: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            viewModel[CompanyBankAccount]().fold(form)(form.fill)
+              .map(frm => Ok(features.financials.views.html.vatBankAccount.company_bank_account(frm)))
           }
-        ).map(Redirect)))
+    }
+
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            form.bindFromRequest().fold(
+              badForm => BadRequest(features.financials.views.html.vatBankAccount.company_bank_account(badForm)).pure,
+              data => save(data).map(_ => data.yesNo == CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES).ifM(
+                ifTrue = controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show().pure,
+                ifFalse = for {
+                  originalTurnover <- keystoreConnector.fetchAndGet[Long](lastKnownValueKey)
+                  container <- s4lContainer[S4LVatFinancials]()
+                  _ <- s4l.save(container.copy(companyBankAccountDetails = None))
+                  _ <- vrs.submitVatFinancials()
+                  turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
+                  _ <- s4l.save(S4LFlatRateScheme()).flatMap(
+                    _ => vrs.submitVatFlatRateScheme()) onlyIf originalTurnover.getOrElse(0) != turnover
+                } yield if (turnover > joinThreshold) {
+                  controllers.routes.SummaryController.show()
+                } else {
+                  controllers.frs.routes.JoinFrsController.show()
+                }
+              ).map(Redirect))
+          }
+    }
   }
 }
 

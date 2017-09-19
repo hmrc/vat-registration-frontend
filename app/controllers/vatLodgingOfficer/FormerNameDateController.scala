@@ -24,24 +24,34 @@ import forms.vatLodgingOfficer.FormerNameDateForm
 import models.view.vatLodgingOfficer.{FormerNameDateView, FormerNameView}
 import play.api.data.Form
 import play.api.mvc._
-import services.{CommonService, S4LService, VatRegistrationService}
+import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
 
 class FormerNameDateController @Inject()(ds: CommonPlayDependencies)(implicit s4LService: S4LService, vrs: VatRegistrationService)
-extends VatRegistrationController(ds) with FlatMapSyntax with CommonService {
+extends VatRegistrationController(ds) with FlatMapSyntax with CommonService with SessionProfile {
 
   val form: Form[FormerNameDateView] = FormerNameDateForm.form
 
-  def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      for {
-        formerName <- viewModel[FormerNameView]().subflatMap(_.formerName).getOrElse("")
-        res <- viewModel[FormerNameDateView]().fold(form)(form.fill)
-      } yield Ok(views.html.pages.vatLodgingOfficer.former_name_date(res, formerName)))
+  def show: Action[AnyContent] = authorised.async{
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          for {
+            formerName <- viewModel[FormerNameView]().subflatMap(_.formerName).getOrElse("")
+            res <- viewModel[FormerNameDateView]().fold(form)(form.fill)
+          } yield Ok(views.html.pages.vatLodgingOfficer.former_name_date(res, formerName))
+        }
+  }
 
 
-  def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      form.bindFromRequest().fold(
-        badForm => viewModel[FormerNameView]().subflatMap(_.formerName).getOrElse("")
-          .map(formerName => BadRequest(views.html.pages.vatLodgingOfficer.former_name_date(badForm, formerName))) ,
-          data => save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show()))))
+  def submit: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          form.bindFromRequest().fold(
+            badForm => viewModel[FormerNameView]().subflatMap(_.formerName).getOrElse("")
+              .map(formerName => BadRequest(views.html.pages.vatLodgingOfficer.former_name_date(badForm, formerName))),
+            data => save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())))
+        }
+  }
 
 }

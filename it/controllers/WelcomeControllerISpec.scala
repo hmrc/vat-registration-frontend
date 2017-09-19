@@ -33,6 +33,7 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .user.isAuthorised
           .vatRegistrationFootprint.exists
           .corporationTaxRegistration.existsWithStatus("held")
+          .currentProfile.setup
           .company.isIncorporated
 
         whenReady(controller.start(request))(res => res.header.status mustBe 200)

@@ -18,7 +18,9 @@ package controllers.vatContact
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.CurrentProfile
 import models.view.vatContact.BusinessContactDetails
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -30,6 +32,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
 
   object TestBusinessContactDetailsController extends BusinessContactDetailsController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(controllers.vatContact.routes.BusinessContactDetailsController.show())
@@ -37,8 +40,11 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
   s"GET ${controllers.vatContact.routes.BusinessContactDetailsController.show()}" should {
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterReturnsNoViewModel[BusinessContactDetails]()
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestBusinessContactDetailsController.show()) {
@@ -53,6 +59,9 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
         mobile = Some("123"),
         website = None)
 
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterReturnsViewModel(businessContactDetails)()
 
       callAuthorised(TestBusinessContactDetailsController.show) {
@@ -61,9 +70,12 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterReturnsNoViewModel[BusinessContactDetails]()
 
-      when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestBusinessContactDetailsController.show) {
@@ -73,15 +85,20 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
   }
 
   s"POST ${controllers.vatContact.routes.BusinessContactDetailsController.submit()}" should {
-
     "return 400 with Empty data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       submitAuthorised(TestBusinessContactDetailsController.submit(), fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
     }
 
     "return 303 with a valid business contact entered" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+
       save4laterExpectsSave[BusinessContactDetails]()
-      when(mockVatRegistrationService.submitVatContact()(any())).thenReturn(validVatContact.pure)
+      when(mockVatRegistrationService.submitVatContact()(any(), any())).thenReturn(validVatContact.pure)
 
       submitAuthorised(
         TestBusinessContactDetailsController.submit(),
@@ -91,8 +108,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
           "mobile" -> "0123456789")
       )(_ redirectsTo s"$contextRoot/trading-name")
 
-      verify(mockVatRegistrationService).submitVatContact()(any())
+      verify(mockVatRegistrationService).submitVatContact()(any(), any())
     }
   }
-
 }

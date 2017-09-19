@@ -48,28 +48,38 @@ package controllers.vatFinancials {
   import forms.vatFinancials.EstimateVatTurnoverForm
   import models.view.vatFinancials.EstimateVatTurnover
   import play.api.mvc.{Action, AnyContent}
-  import services.{CommonService, S4LService, VatRegistrationService}
+  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
 
 
   class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
                                                (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with CommonService {
+    extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
     val form = EstimateVatTurnoverForm.form
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      viewModel[EstimateVatTurnover]().fold(form)(form.fill)
-        .map(f => Ok(features.financials.views.html.estimate_vat_turnover(f))))
+    def show: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            viewModel[EstimateVatTurnover]().fold(form)(form.fill)
+              .map(f => Ok(features.financials.views.html.estimate_vat_turnover(f)))
+          }
+    }
 
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      EstimateVatTurnoverForm.form.bindFromRequest().fold(
-        badForm => BadRequest(features.financials.views.html.estimate_vat_turnover(badForm)).pure,
-        view => for {
-          originalTurnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
-          _ <- keystoreConnector.cache[Long](EstimateVatTurnoverKey.lastKnownValueKey, originalTurnover)
-          _ <- save(view)
-        } yield Redirect(controllers.vatFinancials.routes.ZeroRatedSalesController.show())))
-
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            EstimateVatTurnoverForm.form.bindFromRequest().fold(
+              badForm => BadRequest(features.financials.views.html.estimate_vat_turnover(badForm)).pure,
+              view => for {
+                originalTurnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
+                _ <- keystoreConnector.cache[Long](EstimateVatTurnoverKey.lastKnownValueKey, originalTurnover)
+                _ <- save(view)
+              } yield Redirect(controllers.vatFinancials.routes.ZeroRatedSalesController.show())
+            )
+          }
+    }
   }
 
   object EstimateVatTurnoverKey {

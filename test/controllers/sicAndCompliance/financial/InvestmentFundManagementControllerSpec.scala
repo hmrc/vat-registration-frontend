@@ -18,8 +18,9 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LVatSicAndCompliance
+import models.{CurrentProfile, S4LVatSicAndCompliance}
 import models.view.sicAndCompliance.financial.InvestmentFundManagement
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -31,14 +32,16 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
   object InvestmentFundManagementController extends InvestmentFundManagementController(ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
+    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(routes.InvestmentFundManagementController.show())
 
   s"GET ${routes.InvestmentFundManagementController.show()}" should {
-
     "return HTML when there's a Investment Fund Management model in S4L" in {
       save4laterReturnsViewModel(InvestmentFundManagement(true))()
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(InvestmentFundManagementController.show(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> ""
       )) {
@@ -48,8 +51,9 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[InvestmentFundManagement]()
-      when(mockVatRegistrationService.getVatScheme()(any())).thenReturn(Future.successful(validVatScheme))
-
+      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(InvestmentFundManagementController.show) {
         _ includesText "Does the company provide investment fund management services?"
       }
@@ -57,8 +61,9 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[InvestmentFundManagement]()
-    when(mockVatRegistrationService.getVatScheme()(any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-
+    when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Some(currentProfile)))
       callAuthorised(InvestmentFundManagementController.show) {
         _ includesText "Does the company provide investment fund management services?"
       }
@@ -66,8 +71,9 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
   }
 
   s"POST ${routes.InvestmentFundManagementController.show()}" should {
-
     "return 400 with Empty data" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(InvestmentFundManagementController.submit(),
         fakeRequest.withFormUrlEncodedBody("bogus" -> "nonsense")) { result =>
         result isA 400
@@ -76,18 +82,20 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
     "return 303 with Investment Fund Management Yes selected" in {
       save4laterExpectsSave[InvestmentFundManagement]()
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/manages-funds-not-included-in-this-list")
     }
 
     "return 303 with Investment Fund Management No selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockS4LService.save(any())(any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterExpectsSave[InvestmentFundManagement]()
       save4laterReturns(S4LVatSicAndCompliance())
-
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")

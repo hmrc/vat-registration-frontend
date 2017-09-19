@@ -19,7 +19,14 @@ package connectors
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.external.CoHoCompanyProfile
+import org.mockito.Matchers
+import org.mockito.Mockito.when
+import play.api.http.Status.NOT_FOUND
+import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpReads, NotFoundException}
 import uk.gov.hmrc.play.http.ws.WSHttp
+
+import scala.concurrent.Future
 
 class CompanyRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -33,12 +40,14 @@ class CompanyRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFi
 
   "Calling getCompanyRegistrationDetails" should {
     "return a CoHoCompanyProfile successfully" in new Setup {
-      mockHttpGET[CoHoCompanyProfile]("tst-url", validCoHoProfile)
-      connector.getCompanyRegistrationDetails("id") returnsSome validCoHoProfile
+      mockHttpGET[JsValue]("tst-url", Json.toJson(validCoHoProfile))
+      await(connector.getTransactionId("id")) mustBe validCoHoProfile.transactionId
     }
     "return the correct response when an Internal Server Error occurs" in new Setup {
-      mockHttpFailedGET[CoHoCompanyProfile]("test-url", internalServiceException)
-      connector.getCompanyRegistrationDetails("id").returnsNone
+      when(mockWSHttp.GET[JsValue](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.failed(new NotFoundException(NOT_FOUND.toString)))
+
+      intercept[NotFoundException](await(connector.getTransactionId("id")))
     }
   }
 

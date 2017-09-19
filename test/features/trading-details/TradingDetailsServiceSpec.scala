@@ -52,7 +52,7 @@ class TradingDetailsServiceSpec extends VatRegSpec with VatRegistrationFixture w
   override def beforeEach() {
     super.beforeEach()
     mockFetchRegId(testRegId)
-    when(mockIIService.getIncorporationInfo()(any())).thenReturn(OptionT.none[Future, IncorporationInfo])
+    when(mockIIService.getIncorporationInfo(any())(any())).thenReturn(OptionT.none[Future, IncorporationInfo])
   }
 
   "Calling submitTradingDetails" should {

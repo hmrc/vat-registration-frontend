@@ -22,24 +22,23 @@ import scala.concurrent.Future
 package services {
 
   import common.ErrorUtil.fail
-  import models.S4LTradingDetails
+  import models.{CurrentProfile, S4LTradingDetails}
   import models.api.{VatScheme, VatTradingDetails}
 
   trait TradingDetailsService extends CommonService {
 
     self: RegistrationService =>
 
-    import cats.syntax.all._
-
-    def submitTradingDetails()(implicit hc: HeaderCarrier): Future[VatTradingDetails] = {
+    def submitTradingDetails()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatTradingDetails] = {
       def merge(fresh: Option[S4LTradingDetails], vs: VatScheme): VatTradingDetails =
         fresh.fold(
           vs.tradingDetails.getOrElse(throw fail("VatTradingDetails"))
         )(s4l => S4LTradingDetails.apiT.toApi(s4l))
 
       for {
-        (vs, vlo) <- (getVatScheme() |@| s4l[S4LTradingDetails]()).tupled
-        response <- vatRegConnector.upsertVatTradingDetails(vs.id, merge(vlo, vs))
+        vs       <- getVatScheme()
+        vlo      <- s4l[S4LTradingDetails]()
+        response <- vatRegConnector.upsertVatTradingDetails(profile.registrationId, merge(vlo, vs))
       } yield response
     }
   }

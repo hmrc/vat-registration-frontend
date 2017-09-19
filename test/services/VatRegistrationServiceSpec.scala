@@ -36,7 +36,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -52,7 +52,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   override def beforeEach() {
     super.beforeEach()
     mockFetchRegId(testRegId)
-    when(mockIIService.getIncorporationInfo()(any())).thenReturn(OptionT.none[Future, IncorporationInfo])
+    when(mockIIService.getIncorporationInfo(any())(any())).thenReturn(OptionT.none[Future, IncorporationInfo])
   }
 
 
@@ -76,28 +76,28 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   "Calling createNewRegistration" should {
     "return a success response when the Registration is successfully created" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockIIService.getIncorporationInfo()(any[HeaderCarrier]())).thenReturn(OptionT.liftF(Future.successful(testIncorporationInfo)))
+      when(mockIIService.getIncorporationInfo(any())(any[HeaderCarrier]())).thenReturn(OptionT.liftF(Future.successful(testIncorporationInfo)))
       when(mockRegConnector.createNewRegistration()(any(), any())).thenReturn(validVatScheme.pure)
       mockKeystoreCache[IncorporationInfo]("INCORPORATION_STATUS", CacheMap("INCORPORATION_STATUS", Map("INCORPORATION_STATUS" -> json)))
       mockKeystoreCache[String]("CompanyProfile", CacheMap("", Map.empty))
-      when(mockCompanyRegConnector.getCompanyRegistrationDetails(any())(any())).thenReturn(OptionT.some(validCoHoProfile))
+      when(mockCompanyRegConnector.getTransactionId(any())(any())).thenReturn(Future.successful(validCoHoProfile.transactionId))
 
-      service.createRegistrationFootprint() completedSuccessfully
+      await(service.createRegistrationFootprint()) mustBe (validVatScheme.id, "transactionId")
     }
   }
 
-  "Calling createNewRegistration" should {
-    "return a success response when the Registration is successfully created without finding a company profile" in new Setup {
-      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockIIService.getIncorporationInfo()(any[HeaderCarrier]())).thenReturn(OptionT.liftF(Future.successful(testIncorporationInfo)))
-      when(mockRegConnector.createNewRegistration()(any(), any())).thenReturn(validVatScheme.pure)
-      mockKeystoreCache[IncorporationInfo]("INCORPORATION_STATUS", CacheMap("INCORPORATION_STATUS", Map("INCORPORATION_STATUS" -> json)))
-      mockKeystoreCache[String]("CompanyProfile", CacheMap("", Map.empty))
-      when(mockCompanyRegConnector.getCompanyRegistrationDetails(any())(any())).thenReturn(OptionT.none[Future, CoHoCompanyProfile])
-
-      service.createRegistrationFootprint() completedSuccessfully
-    }
-  }
+//  "Calling createNewRegistration" should {
+//    "return a success response when the Registration is successfully created without finding a company profile" in new Setup {
+//      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+//      when(mockIIService.getIncorporationInfo(any())(any[HeaderCarrier]())).thenReturn(OptionT.liftF(Future.successful(testIncorporationInfo)))
+//      when(mockRegConnector.createNewRegistration()(any(), any())).thenReturn(validVatScheme.pure)
+//      mockKeystoreCache[IncorporationInfo]("INCORPORATION_STATUS", CacheMap("INCORPORATION_STATUS", Map("INCORPORATION_STATUS" -> json)))
+//      mockKeystoreCache[String]("CompanyProfile", CacheMap("", Map.empty))
+//      when(mockCompanyRegConnector.getTransactionId(any())(any())).thenReturn(Future.failed(throw new InternalServerException("")))
+//
+//      await(service.createRegistrationFootprint()) mustBe validVatScheme.id
+//    }
+//  }
 
   "Calling getAckRef" should {
     "retrieve Acknowledgement Reference (id) from the backend" in new Setup {

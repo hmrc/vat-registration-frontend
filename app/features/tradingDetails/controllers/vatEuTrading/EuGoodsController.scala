@@ -47,31 +47,45 @@ package controllers.vatTradingDetails.vatEuTrading {
 
   import javax.inject.Inject
 
+  import connectors.KeystoreConnector
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatTradingDetails.vatEuTrading.EuGoodsForm
   import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
   import play.api.mvc.{Action, AnyContent}
-  import services.{S4LService, VatRegistrationService}
+  import services.{S4LService, SessionProfile, VatRegistrationService}
 
   class EuGoodsController @Inject()(ds: CommonPlayDependencies)
-                                   (implicit s4LService: S4LService, vrs: VatRegistrationService) extends VatRegistrationController(ds) {
+                                   (implicit s4LService: S4LService, vrs: VatRegistrationService)
+    extends VatRegistrationController(ds) with SessionProfile {
 
     import cats.syntax.flatMap._
 
+    val keystoreConnector: KeystoreConnector = KeystoreConnector
+
     val form = EuGoodsForm.form
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      viewModel[EuGoods]().fold(form)(form.fill)
-        .map(f => Ok(features.tradingDetails.views.html.vatEuTrading.eu_goods(f))))
+    def show: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            viewModel[EuGoods]().fold(form)(form.fill)
+              .map(f => Ok(features.tradingDetails.views.html.vatEuTrading.eu_goods(f)))
+          }
+    }
 
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      form.bindFromRequest().fold(
-        badForm => BadRequest(features.tradingDetails.views.html.vatEuTrading.eu_goods(badForm)).pure,
-        goodForm => save(goodForm).map(_ => goodForm.yesNo == EuGoods.EU_GOODS_NO).ifM(
-          save(ApplyEori(ApplyEori.APPLY_EORI_NO)).map(_ =>
-            controllers.vatFinancials.routes.EstimateVatTurnoverController.show()),
-          controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show().pure
-        ).map(Redirect)))
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            form.bindFromRequest().fold(
+              badForm => BadRequest(features.tradingDetails.views.html.vatEuTrading.eu_goods(badForm)).pure,
+              goodForm => save(goodForm).map(_ => goodForm.yesNo == EuGoods.EU_GOODS_NO).ifM(
+                save(ApplyEori(ApplyEori.APPLY_EORI_NO)).map(_ =>
+                  controllers.vatFinancials.routes.EstimateVatTurnoverController.show()),
+                controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show().pure
+              ).map(Redirect))
+          }
+    }
   }
 }
 
