@@ -39,6 +39,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import org.mockito.Mockito.when
 import org.mockito.Matchers
 import play.api.libs.json.Json
+import utils.{BooleanFeatureSwitch, FeatureManager, VATRegFeatureSwitch}
 
 import scala.concurrent.{Await, Awaitable, Future}
 import scala.concurrent.duration._
@@ -87,6 +88,12 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
   // Use this if you want to configure the app
   // implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
   val ds: CommonPlayDependencies = app.injector.instanceOf[CommonPlayDependencies]
+
+  val mockVATFeatureSwitch = mock[VATRegFeatureSwitch]
+  val mockFeatureManager = mock[FeatureManager]
+
+  val disabledFeatureSwitch = BooleanFeatureSwitch("test",false)
+  val enabledFeatureSwitch = BooleanFeatureSwitch("test",true)
 
   def submitAuthorised(a: => Action[AnyContent], r: => FakeRequest[AnyContentAsFormUrlEncoded])
                       (test: Future[Result] => Assertion)

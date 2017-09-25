@@ -19,40 +19,63 @@ package controllers.builders
 import models.api.EligibilityQuestion._
 import models.api._
 import models.view.{SummaryRow, SummarySection}
+import play.api.mvc.Call
+import uk.gov.hmrc.play.config.ServicesConfig
 
-case class SummaryServiceEligibilitySectionBuilder(vatServiceEligibility: Option[VatServiceEligibility] = None)
-  extends SummarySectionBuilder {
+case class SummaryServiceEligibilitySectionBuilder(vatServiceEligibility: Option[VatServiceEligibility] = None, useEligibilityFrontend: Boolean = false)
+  extends SummarySectionBuilder with ServicesConfig {
 
   override val sectionId: String = "serviceCriteria"
+  val vrefeConf: String = "vat-registration-eligibility-frontend"
 
   val haveNinoRow: SummaryRow = yesNoRow(
     "nino",
     vatServiceEligibility.flatMap(_.haveNino),
-    controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(HaveNinoQuestion.name)
+    if (useEligibilityFrontend) {
+      getUrl(vrefeConf,"nino")
+    } else {
+      controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(HaveNinoQuestion.name)
+    }
   )
 
   val doingBusinessAbroadRow: SummaryRow = yesNoRow(
     "businessAbroad",
     vatServiceEligibility.flatMap(_.doingBusinessAbroad),
-    controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoingBusinessAbroadQuestion.name)
+    if (useEligibilityFrontend) {
+      getUrl(vrefeConf, "business-abroad")
+    }else{
+      controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoingBusinessAbroadQuestion.name)
+    }
   )
 
   val doAnyApplyToYouRow: SummaryRow = yesNoRow(
     "doAnyApplyToYou",
     vatServiceEligibility.flatMap(_.doAnyApplyToYou),
-    controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoAnyApplyToYouQuestion.name)
+    if (useEligibilityFrontend) {
+      getUrl(vrefeConf, "change-status")
+    }else{
+      controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoAnyApplyToYouQuestion.name)
+    }
   )
 
   val applyingForAnyOfRow: SummaryRow = yesNoRow(
     "applyingForAnyOf",
     vatServiceEligibility.flatMap(_.applyingForAnyOf),
-    controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(ApplyingForAnyOfQuestion.name)
+    if (useEligibilityFrontend){
+      getUrl(vrefeConf,"agric-flat-rate")
+    } else {
+      controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(ApplyingForAnyOfQuestion.name)
+    }
   )
 
   val companyWillDoAnyOfRow: SummaryRow = yesNoRow(
     "companyWillDoAnyOf",
     vatServiceEligibility.flatMap(_.companyWillDoAnyOf),
-    controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(CompanyWillDoAnyOfQuestion.name)
+    if (useEligibilityFrontend){
+      getUrl(vrefeConf,"apply-for-any")
+    } else {
+      controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(CompanyWillDoAnyOfQuestion.name)
+    }
   )
 
   val section: SummarySection = SummarySection(
@@ -66,4 +89,11 @@ case class SummaryServiceEligibilitySectionBuilder(vatServiceEligibility: Option
     ),
     vatServiceEligibility.isDefined
   )
+
+  def getUrl(serviceName: String, uri: String): Call = {
+    val basePath = baseUrl(serviceName)
+    val mainUri = getConfString(s"$serviceName.uri","/register-for-vat/")
+    val serviceUri = getConfString(s"$serviceName.uris.$uri",uri)
+    Call("Get", s"$basePath$mainUri$serviceUri")
+  }
 }

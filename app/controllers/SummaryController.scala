@@ -25,12 +25,15 @@ import models.view._
 import play.api.mvc._
 import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
 import uk.gov.hmrc.play.http.HeaderCarrier
+import utils.VATRegFeatureSwitch
 
 import scala.concurrent.Future
 
-class SummaryController @Inject()(ds: CommonPlayDependencies)
+class SummaryController @Inject()(ds: CommonPlayDependencies, vatRegFeatureSwitch: VATRegFeatureSwitch)
                                  (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with CommonService with SessionProfile {
+
+  def useEligibilityFrontend: Boolean = vatRegFeatureSwitch.vatRegistrationFrontend.enabled
 
   def show: Action[AnyContent] = authorised.async {
     implicit user =>
@@ -52,8 +55,8 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
 
   def registrationToSummary(vs: VatScheme): Summary =
     Summary(Seq(
-      SummaryServiceEligibilitySectionBuilder(vs.vatServiceEligibility).section,
-      SummaryVatDetailsSectionBuilder(vs.tradingDetails).section,
+      SummaryServiceEligibilitySectionBuilder(vs.vatServiceEligibility, useEligibilityFrontend).section,
+      SummaryVatDetailsSectionBuilder(vs.tradingDetails, useEligibilityFrontend).section,
       SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer).section,
       SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer).section,
       SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
@@ -65,5 +68,7 @@ class SummaryController @Inject()(ds: CommonPlayDependencies)
       SummaryAnnualAccountingSchemeSectionBuilder(vs.financials).section,
       SummaryFrsSectionBuilder(vs.vatFlatRateScheme).section
     ))
+
+
 
 }

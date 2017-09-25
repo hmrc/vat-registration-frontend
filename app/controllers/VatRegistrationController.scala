@@ -122,6 +122,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
         FormError(fe.args.head.asInstanceOf[String], fe.message, fe.args)
     })
 
+  //def useEligibilityFrontend: Boolean = conf.getBoolean("microservice.services.vat-registration-eligibility-frontend.enabled").getOrElse(false)
 }
 
 @Singleton
