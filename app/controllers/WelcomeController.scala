@@ -37,4 +37,5 @@ class WelcomeController @Inject()(vatRegistrationService: RegistrationService,
           _             <- currentProfileService.buildCurrentProfile(regId, txId)
         } yield Ok(welcome())
   }
+
 }

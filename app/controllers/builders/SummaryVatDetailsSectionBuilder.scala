@@ -16,26 +16,32 @@
 
 package controllers.builders
 
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-
 import models.api.VatChoice.NECESSITY_VOLUNTARY
 import models.api.{VatChoice, VatStartDate, VatTradingDetails}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 import models.view.{SummaryRow, SummarySection}
+import play.api.mvc.Call
+import uk.gov.hmrc.play.config.ServicesConfig
 
-case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingDetails] = None)
-  extends SummarySectionBuilder {
+
+case class SummaryVatDetailsSectionBuilder (vatTradingDetails: Option[VatTradingDetails] = None, useEligibilityFrontend: Boolean = false)
+  extends SummarySectionBuilder with ServicesConfig{
 
   override val sectionId: String = "vatDetails"
   val monthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
+  val serviceName = "vat-registration-eligibility-frontend"
 
   private val voluntaryRegistration = vatTradingDetails.exists(_.registeringVoluntarily)
 
   val taxableTurnoverRow: SummaryRow = SummaryRow(
     s"$sectionId.taxableTurnover",
     s"app.common.${if (voluntaryRegistration) "no" else "yes"}",
-    Some(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())
+    if (useEligibilityFrontend) {
+      Some(getUrl(serviceName,"sales-over-threshold"))
+    } else {
+      Some(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())
+    }
   )
 
   val overThresholdSelectionRow: SummaryRow = SummaryRow(
@@ -44,7 +50,11 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
       case true => "app.common.yes"
       case false => "app.common.no"
     }.getOrElse(""),
-    Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show())
+    if(useEligibilityFrontend){
+      Some(getUrl(serviceName,"turnover-over-threshold"))
+    } else {
+      Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show())
+    }
   )
 
   val overThresholdDateRow: SummaryRow = SummaryRow(
@@ -52,13 +62,25 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
     vatTradingDetails.flatMap(_.vatChoice.vatThresholdPostIncorp.map(_.overThresholdDate)).collect {
       case Some(date) => date.format(monthYearPresentationFormatter)
     }.getOrElse(""),
-    Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show())
+    if (useEligibilityFrontend) {
+      Some(getUrl(serviceName,"turnover-over-threshold"))
+    } else {
+      Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show())
+    }
   )
 
   val necessityRow: SummaryRow = SummaryRow(
     s"$sectionId.necessity",
     s"app.common.${if (voluntaryRegistration) "yes" else "no"}",
-    if (voluntaryRegistration) Some(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show()) else None
+    if (voluntaryRegistration) {
+      if (useEligibilityFrontend) {
+        Some(getUrl(serviceName, "register-voluntary"))
+      } else {
+        Some(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show())
+      }
+    } else {
+      None
+    }
   )
 
   val voluntaryReasonRow: SummaryRow = SummaryRow(
@@ -67,7 +89,11 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
       case VoluntaryRegistrationReason.SELLS => "pages.summary.voluntaryReason.sells"
       case VoluntaryRegistrationReason.INTENDS_TO_SELL => "pages.summary.voluntaryReason.intendsToSell"
     }.getOrElse("app.common.no"),
-    Some(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationReasonController.show())
+    if(useEligibilityFrontend){
+      Some(getUrl(serviceName,"registration-reason"))
+    } else {
+      Some(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationReasonController.show())
+    }
   )
 
   val startDateRow: SummaryRow = SummaryRow(
@@ -97,5 +123,13 @@ case class SummaryVatDetailsSectionBuilder(vatTradingDetails: Option[VatTradingD
         (tradingNameRow, true)
       )
     )
+
+  def getUrl(serviceName: String, uri: String): Call = {
+    val basePath = baseUrl(serviceName)
+    val mainUri = getConfString(s"$serviceName.uri","/register-for-vat/")
+    val serviceUri = getConfString(s"$serviceName.uris.$uri",uri)
+    Call("GET", s"$basePath$mainUri$serviceUri")
+  }
+
 
 }

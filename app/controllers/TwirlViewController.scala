@@ -19,14 +19,17 @@ package controllers
 import javax.inject.Inject
 
 import connectors.KeystoreConnector
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc._
 import services.SessionProfile
+import utils.VATRegFeatureSwitch
 
 import scala.concurrent.Future
 
-class TwirlViewController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) with SessionProfile {
+class TwirlViewController @Inject()(ds: CommonPlayDependencies, vatRegFeatureSwitch: VATRegFeatureSwitch)
+  extends VatRegistrationController(ds) with SessionProfile {
 
   val keystoreConnector: KeystoreConnector = KeystoreConnector
+  def useEligibilityFrontend: Boolean = vatRegFeatureSwitch.vatRegistrationFrontend.enabled
 
   def renderViewAuthorised(viewName: String): Action[AnyContent] = authorised.async {
     implicit user =>
@@ -34,9 +37,18 @@ class TwirlViewController @Inject()(ds: CommonPlayDependencies) extends VatRegis
         withCurrentProfile { _ =>
           Future.successful(
             Some(viewName).collect {
-              case "use-this-service" => views.html.pages.vatEligibility.use_this_service()
-            }.fold[Result](NotFound)(Ok(_))
+              case "use-this-service" => getEligibilityUrl
+            }.fold[Result](NotFound)(result => result)
           )
         }
   }
+
+  def getEligibilityUrl()(implicit request: Request[AnyContent]): Result =
+    if(useEligibilityFrontend) {
+      val url = conf.getString("microservice.services.vat-registration-eligibility-frontend.entry-url")
+        .getOrElse("http://localhost:9894/check-if-you-can-register-for-vat/use-this-service")
+      Redirect(Call("GET", url))
+    }else{
+      Ok(views.html.pages.vatEligibility.use_this_service())
+    }
 }
