@@ -24,6 +24,8 @@ import models.view.SummaryRow
 
 class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 
+  val serviceName = "vat-registration-eligibility-frontend"
+
   val defaultVatServiceEligibility = VatServiceEligibility(
                                     haveNino = Some(false),
                                     doingBusinessAbroad = Some(false),
@@ -37,7 +39,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
 
     "with haveNinoRow render" should {
 
-      " 'No' selected haveNinoRow " in {
+      " 'No' selected haveNinoRow" in {
         val builder = SummaryServiceEligibilitySectionBuilder()
         builder.haveNinoRow mustBe
           SummaryRow(
@@ -46,7 +48,6 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
             Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(HaveNinoQuestion.name))
           )
       }
-
 
       " 'YES' selected for haveNinoRow" in {
         val vatServiceEligibility = defaultVatServiceEligibility.copy(haveNino= Some(true))
@@ -58,11 +59,32 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
             Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(HaveNinoQuestion.name))
           )
       }
+
+      " 'No' selected haveNinoRow and point to eligibility-frontend with eligibility feature enabled" in {
+        val builder = SummaryServiceEligibilitySectionBuilder(useEligibilityFrontend = true)
+        builder.haveNinoRow mustBe
+          SummaryRow(
+            "serviceCriteria.nino",
+            "app.common.no",
+            Some(builder.getUrl(serviceName, "nino"))
+          )
+      }
+
+      " 'YES' selected for haveNinoRow and point to eligibility-frontend with eligibility feature enabled" in {
+        val vatServiceEligibility = defaultVatServiceEligibility.copy(haveNino= Some(true))
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility), useEligibilityFrontend = true)
+        builder.haveNinoRow mustBe
+          SummaryRow(
+            "serviceCriteria.nino",
+            "app.common.yes",
+            Some(builder.getUrl(serviceName, "nino"))
+          )
+      }
     }
 
     "with doingBusinessAbroadRow render" should {
 
-      " 'No' selected haveNinoRow " in {
+      " 'No' selected haveNinoRow" in {
         val builder = SummaryServiceEligibilitySectionBuilder()
         builder.doingBusinessAbroadRow mustBe
           SummaryRow(
@@ -71,7 +93,6 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
             Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoingBusinessAbroadQuestion.name))
           )
       }
-
 
       " 'YES' selected for doingBusinessAbroadRow" in {
         val vatServiceEligibility = defaultVatServiceEligibility.copy(doingBusinessAbroad = Some(true))
@@ -83,11 +104,32 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
             Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoingBusinessAbroadQuestion.name))
           )
       }
+
+      " 'No' selected haveNinoRow and point to eligibility-frontend with eligibility feature enabled" in {
+        val builder = SummaryServiceEligibilitySectionBuilder(useEligibilityFrontend = true)
+        builder.doingBusinessAbroadRow mustBe
+          SummaryRow(
+            "serviceCriteria.businessAbroad",
+            "app.common.no",
+            Some(builder.getUrl(serviceName, "business-abroad"))
+          )
+      }
+
+      " 'YES' selected for doingBusinessAbroadRow and point to eligibility-frontend with eligibility feature enabled" in {
+        val vatServiceEligibility = defaultVatServiceEligibility.copy(doingBusinessAbroad = Some(true))
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility), useEligibilityFrontend = true)
+        builder.doingBusinessAbroadRow mustBe
+          SummaryRow(
+            "serviceCriteria.businessAbroad",
+            "app.common.yes",
+            Some(builder.getUrl(serviceName, "business-abroad"))
+          )
+      }
     }
 
     "with doAnyApplyToYouRow render" should {
 
-      " 'No' selected doAnyApplyToYouRow " in {
+      " 'No' selected doAnyApplyToYouRow" in {
         val builder = SummaryServiceEligibilitySectionBuilder()
         builder.doAnyApplyToYouRow mustBe
           SummaryRow(
@@ -96,7 +138,6 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
             Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoAnyApplyToYouQuestion.name))
           )
       }
-
 
       " 'YES' selected for doAnyApplyToYouRow" in {
         val vatServiceEligibility = defaultVatServiceEligibility.copy(doAnyApplyToYou = Some(true))
@@ -108,11 +149,33 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
             Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(DoAnyApplyToYouQuestion.name))
           )
       }
+
+      " 'No' selected doAnyApplyToYouRow and point to eligibility-frontend with eligibility feature enabled" in {
+        val builder = SummaryServiceEligibilitySectionBuilder(useEligibilityFrontend = true)
+        builder.doAnyApplyToYouRow mustBe
+          SummaryRow(
+            "serviceCriteria.doAnyApplyToYou",
+            "app.common.no",
+            Some(builder.getUrl(serviceName, "change-status"))
+          )
+      }
+
+
+      " 'YES' selected for doAnyApplyToYouRow and point to eligibility-frontend with eligibility feature enabled" in {
+        val vatServiceEligibility = defaultVatServiceEligibility.copy(doAnyApplyToYou = Some(true))
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility), useEligibilityFrontend = true)
+        builder.doAnyApplyToYouRow mustBe
+          SummaryRow(
+            "serviceCriteria.doAnyApplyToYou",
+            "app.common.yes",
+            Some(builder.getUrl(serviceName, "change-status"))
+          )
+      }
     }
 
     "with applyingForAnyOfRow render" should {
 
-      " 'No' selected applyingForAnyOfRow " in {
+      " 'No' selected applyingForAnyOfRow" in {
         val builder = SummaryServiceEligibilitySectionBuilder()
         builder.applyingForAnyOfRow mustBe
           SummaryRow(
@@ -121,7 +184,6 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
             Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(ApplyingForAnyOfQuestion.name))
           )
       }
-
 
       " 'YES' selected for applyingForAnyOfRow" in {
         val vatServiceEligibility = defaultVatServiceEligibility.copy(applyingForAnyOf = Some(true))
@@ -133,12 +195,33 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
             Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(ApplyingForAnyOfQuestion.name))
           )
       }
+
+      " 'No' selected applyingForAnyOfRow and point to eligibility-frontend with eligibility feature enabled" in {
+        val builder = SummaryServiceEligibilitySectionBuilder(useEligibilityFrontend = true)
+        builder.applyingForAnyOfRow mustBe
+          SummaryRow(
+            "serviceCriteria.applyingForAnyOf",
+            "app.common.no",
+            Some(builder.getUrl(serviceName, "agric-flat-rate"))
+          )
+      }
+
+      " 'YES' selected for applyingForAnyOfRow and point to eligibility-frontend with eligibility feature enabled" in {
+        val vatServiceEligibility = defaultVatServiceEligibility.copy(applyingForAnyOf = Some(true))
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility), useEligibilityFrontend = true)
+        builder.applyingForAnyOfRow mustBe
+          SummaryRow(
+            "serviceCriteria.applyingForAnyOf",
+            "app.common.yes",
+            Some(builder.getUrl(serviceName, "agric-flat-rate"))
+          )
+      }
     }
 
 
     "with companyWillDoAnyOfRow render" should {
 
-      " 'No' selected companyWillDoAnyOfRow " in {
+      " 'No' selected companyWillDoAnyOfRow" in {
         val builder = SummaryServiceEligibilitySectionBuilder()
         builder.companyWillDoAnyOfRow mustBe
           SummaryRow(
@@ -158,10 +241,31 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
             Some(controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.show(CompanyWillDoAnyOfQuestion.name))
           )
       }
+
+      " 'No' selected companyWillDoAnyOfRow and point to eligibility-frontend with eligibility feature enabled" in {
+        val builder = SummaryServiceEligibilitySectionBuilder(useEligibilityFrontend = true)
+        builder.companyWillDoAnyOfRow mustBe
+          SummaryRow(
+            "serviceCriteria.companyWillDoAnyOf",
+            "app.common.no",
+            Some(builder.getUrl(serviceName, "apply-for-any"))
+          )
+      }
+
+      " 'YES' selected for companyWillDoAnyOfRow and point to eligibility-frontend with eligibility feature enabled" in {
+        val vatServiceEligibility = defaultVatServiceEligibility.copy(companyWillDoAnyOf = Some(true))
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility), useEligibilityFrontend = true)
+        builder.companyWillDoAnyOfRow mustBe
+          SummaryRow(
+            "serviceCriteria.companyWillDoAnyOf",
+            "app.common.yes",
+            Some(builder.getUrl(serviceName, "apply-for-any"))
+          )
+      }
     }
 
     "with section generate" should {
-      val builder = SummaryServiceEligibilitySectionBuilder(Some(defaultVatServiceEligibility))
+
       "a valid summary section" in {
         val builder = SummaryServiceEligibilitySectionBuilder(Some(defaultVatServiceEligibility))
         builder.section.id mustBe "serviceCriteria"

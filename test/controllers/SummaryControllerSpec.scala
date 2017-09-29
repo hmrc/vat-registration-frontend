@@ -25,12 +25,13 @@ import models.external.IncorporationInfo
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import utils.BooleanFeatureSwitch
 
 import scala.concurrent.Future
 
 class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  object TestSummaryController extends SummaryController(ds)(mockS4LService, mockVatRegistrationService) {
+  object TestSummaryController extends SummaryController(ds,mockVATFeatureSwitch)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
     override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
   }
@@ -42,6 +43,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
+      when(mockVATFeatureSwitch.vatRegistrationFrontend).thenReturn(disabledFeatureSwitch)
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
@@ -51,11 +53,13 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
+      when(mockVATFeatureSwitch.vatRegistrationFrontend).thenReturn(disabledFeatureSwitch)
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
     "getRegistrationSummary maps a valid VatScheme object to a Summary object" in {
       when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
+      when(mockVATFeatureSwitch.vatRegistrationFrontend).thenReturn(disabledFeatureSwitch)
       TestSummaryController.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)
     }
 
