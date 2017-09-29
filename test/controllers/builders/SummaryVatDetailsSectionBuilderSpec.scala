@@ -26,18 +26,31 @@ import models.view.vatTradingDetails.vatChoice.StartDateView
 
 class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 
+  val serviceName = "vat-registration-eligibility-frontend"
   "The section builder composing a vat details section" should {
 
     "with taxableTurnoverRow render" should {
 
       "a 'No' if it's a voluntary registration" in {
         val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails(VatChoice.NECESSITY_VOLUNTARY)))
-        builder.taxableTurnoverRow mustBe SummaryRow("vatDetails.taxableTurnover", "app.common.no", Some(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()))
+        builder.taxableTurnoverRow mustBe
+          SummaryRow("vatDetails.taxableTurnover", "app.common.no", Some(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()))
       }
 
-      "a 'Yes' if it's a mandatory registration" in {
+      "a 'Yes' if it's a mandatory" in {
         val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails(VatChoice.NECESSITY_OBLIGATORY)))
-        builder.taxableTurnoverRow mustBe SummaryRow("vatDetails.taxableTurnover", "app.common.yes", Some(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()))
+        builder.taxableTurnoverRow mustBe
+          SummaryRow("vatDetails.taxableTurnover", "app.common.yes", Some(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()))
+      }
+
+      "a 'No' if it's a voluntary registration and point to eligibility frontend if switch is on" in {
+        val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails(VatChoice.NECESSITY_VOLUNTARY)), useEligibilityFrontend = true)
+        builder.taxableTurnoverRow mustBe SummaryRow("vatDetails.taxableTurnover", "app.common.no", Some(builder.getUrl(serviceName,"sales-over-threshold")))
+      }
+
+      "a 'Yes' if it's a mandatory registration and point to eligibility frontend if switch is on" in {
+        val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails(VatChoice.NECESSITY_OBLIGATORY)), useEligibilityFrontend = true)
+        builder.taxableTurnoverRow mustBe SummaryRow("vatDetails.taxableTurnover", "app.common.yes", Some(builder.getUrl(serviceName,"sales-over-threshold")))
       }
     }
 
@@ -45,12 +58,18 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
       "a 'Yes' if it's a voluntary registration" in {
         val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails(VatChoice.NECESSITY_VOLUNTARY)))
-        builder.necessityRow mustBe SummaryRow("vatDetails.necessity", "app.common.yes", Some(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show()))
+        builder.necessityRow mustBe
+          SummaryRow("vatDetails.necessity", "app.common.yes", Some(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show()))
       }
 
       "a 'No' if it's a mandatory registration" in {
         val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails(VatChoice.NECESSITY_OBLIGATORY)))
         builder.necessityRow mustBe SummaryRow("vatDetails.necessity", "app.common.no", None)
+      }
+
+      "a 'Yes' if it's a voluntary registration registration and point to eligibility frontend if switch is on" in {
+        val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails(VatChoice.NECESSITY_VOLUNTARY)), useEligibilityFrontend = true)
+        builder.necessityRow mustBe SummaryRow("vatDetails.necessity", "app.common.yes", Some(builder.getUrl(serviceName,"register-voluntary")))
       }
     }
 
@@ -58,7 +77,13 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
       "a month and year displayed if a date is entered" in {
         val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(validVatTradingDetails))
-        builder.overThresholdDateRow mustBe SummaryRow("vatDetails.overThresholdDate", testDate.format(testMonthYearPresentationFormatter), Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show()))
+        builder.overThresholdDateRow mustBe
+          SummaryRow("vatDetails.overThresholdDate", testDate.format(testMonthYearPresentationFormatter), Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show()))
+      }
+
+      "a month and year displayed if a date is entered and point to eligibility frontend if switch is on" in {
+        val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(validVatTradingDetails), useEligibilityFrontend = true)
+        builder.overThresholdDateRow mustBe SummaryRow("vatDetails.overThresholdDate", testDate.format(testMonthYearPresentationFormatter), Some(builder.getUrl(serviceName,"turnover-over-threshold")))
       }
 
     }

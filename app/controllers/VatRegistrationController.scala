@@ -121,7 +121,6 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
       case fe if fe.args.headOption.exists(globalErrors.contains) =>
         FormError(fe.args.head.asInstanceOf[String], fe.message, fe.args)
     })
-
 }
 
 @Singleton

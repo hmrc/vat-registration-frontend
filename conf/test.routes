@@ -16,3 +16,5 @@ GET         /ct-registration                   controllers.test.TestCTController
 GET         /setup-vat-user                    controllers.test.IncorporationInformationStubsController.postTestData()
 
 GET         /incorp-company                    controllers.test.IncorporationInformationStubsController.incorpCompany()
+
+GET         /feature-flag/:name/:state         controllers.test.FeatureSwitchController.switcher(name:String,state: String)
