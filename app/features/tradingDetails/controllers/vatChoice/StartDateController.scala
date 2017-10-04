@@ -19,7 +19,7 @@ package models.view.vatTradingDetails.vatChoice {
   import java.time.LocalDate
 
   import models._
-  import models.api.{VatScheme, VatStartDate}
+  import models.api.{VatEligibilityChoice, VatScheme, VatStartDate}
   import play.api.libs.json.Json
 
   import scala.util.Try
@@ -58,8 +58,11 @@ package models.view.vatTradingDetails.vatChoice {
 
     // Returns a view model for a specific part of a given VatScheme API model
     implicit val modelTransformer = ApiModelTransformer[StartDateView] { vs: VatScheme =>
-      vs.tradingDetails.map(_.vatChoice.vatStartDate).collect {
-        case VatStartDate(dateType, d@_) => StartDateView(dateType, d)
+      vs.tradingDetails.map(_.vatChoice.vatStartDate) match {
+        case Some(VatStartDate(dateType, d@_)) => Some(StartDateView(dateType, d))
+        case None if vs.vatServiceEligibility.flatMap(_.vatEligibilityChoice.map(_.necessity)).contains(VatEligibilityChoice.NECESSITY_OBLIGATORY) =>
+          Some(StartDateView(COMPANY_REGISTRATION_DATE))
+        case _ => None
       }
     }
   }

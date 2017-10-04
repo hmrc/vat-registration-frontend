@@ -17,22 +17,25 @@
 package controllers.builders
 
 import java.time.format.DateTimeFormatter
-import models.api.VatChoice.NECESSITY_VOLUNTARY
-import models.api.{VatChoice, VatStartDate, VatTradingDetails}
+
+import models.api.VatEligibilityChoice.NECESSITY_VOLUNTARY
+import models.api.{VatChoice, VatEligibilityChoice, VatStartDate, VatTradingDetails}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 import models.view.{SummaryRow, SummarySection}
 import play.api.mvc.Call
 import uk.gov.hmrc.play.config.ServicesConfig
 
 
-case class SummaryVatDetailsSectionBuilder (vatTradingDetails: Option[VatTradingDetails] = None, useEligibilityFrontend: Boolean = false)
+case class SummaryVatDetailsSectionBuilder (vatTradingDetails: Option[VatTradingDetails] = None,
+                                            vatEligiblityChoice: Option[VatEligibilityChoice] = None,
+                                            useEligibilityFrontend: Boolean = false)
   extends SummarySectionBuilder with ServicesConfig{
 
   override val sectionId: String = "vatDetails"
   val monthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
   val serviceName = "vat-registration-eligibility-frontend"
 
-  private val voluntaryRegistration = vatTradingDetails.exists(_.registeringVoluntarily)
+  private val voluntaryRegistration = vatEligiblityChoice.exists(_.registeringVoluntarily)
 
   val taxableTurnoverRow: SummaryRow = SummaryRow(
     s"$sectionId.taxableTurnover",
@@ -46,7 +49,7 @@ case class SummaryVatDetailsSectionBuilder (vatTradingDetails: Option[VatTrading
 
   val overThresholdSelectionRow: SummaryRow = SummaryRow(
     s"$sectionId.overThresholdSelection",
-    vatTradingDetails.flatMap(_.vatChoice.vatThresholdPostIncorp.map(_.overThresholdSelection)).collect {
+    vatEligiblityChoice.flatMap(_.vatThresholdPostIncorp.map(_.overThresholdSelection)).collect {
       case true => "app.common.yes"
       case false => "app.common.no"
     }.getOrElse(""),
@@ -59,9 +62,9 @@ case class SummaryVatDetailsSectionBuilder (vatTradingDetails: Option[VatTrading
 
   val overThresholdDateRow: SummaryRow = SummaryRow(
     s"$sectionId.overThresholdDate",
-    vatTradingDetails.flatMap(_.vatChoice.vatThresholdPostIncorp.map(_.overThresholdDate)).collect {
-      case Some(date) => date.format(monthYearPresentationFormatter)
-    }.getOrElse(""),
+    vatEligiblityChoice.flatMap(_.vatThresholdPostIncorp.flatMap(_.overThresholdDate))
+      .map(_.format(monthYearPresentationFormatter))
+      .getOrElse(""),
     if (useEligibilityFrontend) {
       Some(getUrl(serviceName,"turnover-over-threshold"))
     } else {
@@ -85,7 +88,7 @@ case class SummaryVatDetailsSectionBuilder (vatTradingDetails: Option[VatTrading
 
   val voluntaryReasonRow: SummaryRow = SummaryRow(
     s"$sectionId.voluntaryRegistrationReason",
-    vatTradingDetails.flatMap(_.vatChoice.reason).collect {
+    vatEligiblityChoice.flatMap(_.reason).collect {
       case VoluntaryRegistrationReason.SELLS => "pages.summary.voluntaryReason.sells"
       case VoluntaryRegistrationReason.INTENDS_TO_SELL => "pages.summary.voluntaryReason.intendsToSell"
     }.getOrElse("app.common.no"),
@@ -99,7 +102,7 @@ case class SummaryVatDetailsSectionBuilder (vatTradingDetails: Option[VatTrading
   val startDateRow: SummaryRow = SummaryRow(
     s"$sectionId.startDate",
     vatTradingDetails.map(_.vatChoice).collect {
-      case VatChoice(NECESSITY_VOLUNTARY, VatStartDate(_, Some(date)), _, _) => date.format(presentationFormatter)
+      case VatChoice(VatStartDate(_, Some(date))) => date.format(presentationFormatter)
     }.getOrElse(s"pages.summary.$sectionId.mandatoryStartDate"),
     if (voluntaryRegistration) Some(controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()) else None
   )
@@ -114,9 +117,9 @@ case class SummaryVatDetailsSectionBuilder (vatTradingDetails: Option[VatTrading
     SummarySection(
       sectionId,
       rows = Seq(
-        (taxableTurnoverRow, !vatTradingDetails.flatMap(_.vatChoice.vatThresholdPostIncorp).isDefined),
-        (overThresholdSelectionRow, vatTradingDetails.flatMap(_.vatChoice.vatThresholdPostIncorp).isDefined),
-        (overThresholdDateRow, vatTradingDetails.flatMap(_.vatChoice.vatThresholdPostIncorp).flatMap(_.overThresholdDate).isDefined),
+        (taxableTurnoverRow, !vatEligiblityChoice.flatMap(_.vatThresholdPostIncorp).isDefined),
+        (overThresholdSelectionRow, vatEligiblityChoice.flatMap(_.vatThresholdPostIncorp).isDefined),
+        (overThresholdDateRow, vatEligiblityChoice.flatMap(_.vatThresholdPostIncorp).flatMap(_.overThresholdDate).isDefined),
         (necessityRow, voluntaryRegistration),
         (voluntaryReasonRow, voluntaryRegistration),
         (startDateRow, true),
@@ -126,8 +129,8 @@ case class SummaryVatDetailsSectionBuilder (vatTradingDetails: Option[VatTrading
 
   def getUrl(serviceName: String, uri: String): Call = {
     val basePath = baseUrl(serviceName)
-    val mainUri = getConfString(s"$serviceName.uri","/register-for-vat/")
-    val serviceUri = getConfString(s"$serviceName.uris.$uri",uri)
+    val mainUri = getConfString(s"$serviceName.uri","/register-for-vat")
+    val serviceUri = getConfString(s"$serviceName.uris.$uri",uri) //TODO: throw a Missing Configuration Exception instead of a default value
     Call("GET", s"$basePath$mainUri$serviceUri")
   }
 
