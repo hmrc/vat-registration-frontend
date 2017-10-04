@@ -78,7 +78,18 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
   val validStartDate = DateOfBirth(12, 11, 1990)
   val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", Some(validDob), None, None)
   val completionCapacity = CompletionCapacity(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director")
-  val validServiceEligibility = VatServiceEligibility(Some(true), Some(false), Some(false), Some(false), Some(false))
+  def validServiceEligibility(nes:String = VatEligibilityChoice.NECESSITY_VOLUNTARY) =
+      VatServiceEligibility(
+        Some(true),
+        Some(false),
+        Some(false),
+        Some(false),
+        Some(false),
+        Some(VatEligibilityChoice(
+          nes,
+          None,
+          None)))
+
   val officerName = Name(Some("Reddy"), None, "Yattapu", Some("Dr"))
   val validOfficerContactDetails = OfficerContactDetails(Some("test@test.com"), None, None)
   val changeOfName = ChangeOfName(true, None)
@@ -176,13 +187,15 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
                  vatTradingDetails: Option[VatTradingDetails] = None,
                  sicAndCompliance: Option[VatSicAndCompliance] = None,
                  contact: Option[VatContact] = None,
-                 vatFlatRateScheme: Option[VatFlatRateScheme] = None
+                 vatFlatRateScheme: Option[VatFlatRateScheme] = None,
+                 vatEligibility: Option[VatServiceEligibility] = None
                ): VatScheme = VatScheme(
     id = id,
     tradingDetails = vatTradingDetails,
     vatSicAndCompliance = sicAndCompliance,
     vatContact = contact,
-    vatFlatRateScheme = vatFlatRateScheme
+    vatFlatRateScheme = vatFlatRateScheme,
+    vatServiceEligibility = vatEligibility
   )
 
 }

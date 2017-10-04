@@ -20,7 +20,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import models.S4LKey
-import play.api.libs.json.Format
+import play.api.libs.json.{Format, Json}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.crypto.CompositeSymmetricCrypto.aes
@@ -325,11 +325,31 @@ trait StubUtils {
   (implicit builder: PreconditionBuilder) extends KeystoreStub {
 
     def exists: PreconditionBuilder = {
+      import models.ModelKeys.INCORPORATION_STATUS
+
       stubFor(
         post(urlPathEqualTo("/vatreg/new"))
           .willReturn(ok(
             s"""{ "registrationId" : "1" }"""
           )))
+
+      val json = s"""
+           |{
+           |  "IncorporationInfo":{
+           |    "IncorpSubscription":{
+           |      "callbackUrl":"http://localhost:9896/TODO-CHANGE-THIS"
+           |    },
+           |    "IncorpStatusEvent":{
+           |      "status":"accepted",
+           |      "crn":"90000001",
+           |      "description": "Some description",
+           |      "incorporationDate":1470438000000
+           |    }
+           |  }
+           |}
+        """.stripMargin
+
+      stubKeystorePut(INCORPORATION_STATUS, json)
 
       builder
     }

@@ -16,7 +16,7 @@
 
 package models.api {
 
-  import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
+
   import play.api.libs.json._
 
   case class VatTradingDetails(
@@ -24,7 +24,7 @@ package models.api {
                                 tradingName: TradingName,
                                 euTrading: VatEuTrading
                               ) {
-    def registeringVoluntarily: Boolean = vatChoice.necessity == NECESSITY_VOLUNTARY
+
   }
 
   object VatTradingDetails {
@@ -35,7 +35,7 @@ package models.api {
 package models {
 
   import common.ErrorUtil.fail
-  import models.api.VatChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
+  import models.api.VatEligibilityChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
   import models.api._
   import models.view.vatTradingDetails.TradingNameView
   import models.view.vatTradingDetails.TradingNameView.TRADING_NAME_YES
@@ -48,14 +48,10 @@ package models {
 
   final case class S4LTradingDetails
   (
-    taxableTurnover: Option[TaxableTurnover] = None,
     tradingName: Option[TradingNameView] = None,
     startDate: Option[StartDateView] = None,
-    voluntaryRegistration: Option[VoluntaryRegistration] = None,
-    voluntaryRegistrationReason: Option[VoluntaryRegistrationReason] = None,
     euGoods: Option[EuGoods] = None,
-    applyEori: Option[ApplyEori] = None,
-    overThreshold: Option[OverThresholdView] = None
+    applyEori: Option[ApplyEori] = None
   )
 
   object S4LTradingDetails {
@@ -66,14 +62,10 @@ package models {
       // map VatScheme to VatTradingDetails
       override def toS4LModel(vs: VatScheme): S4LTradingDetails =
         S4LTradingDetails(
-          taxableTurnover = ApiModelTransformer[TaxableTurnover].toViewModel(vs),
           tradingName = ApiModelTransformer[TradingNameView].toViewModel(vs),
           startDate = ApiModelTransformer[StartDateView].toViewModel(vs),
-          voluntaryRegistration = ApiModelTransformer[VoluntaryRegistration].toViewModel(vs),
-          voluntaryRegistrationReason = ApiModelTransformer[VoluntaryRegistrationReason].toViewModel(vs),
           euGoods = ApiModelTransformer[EuGoods].toViewModel(vs),
-          applyEori = ApiModelTransformer[ApplyEori].toViewModel(vs),
-          overThreshold = ApiModelTransformer[OverThresholdView].toViewModel(vs)
+          applyEori = ApiModelTransformer[ApplyEori].toViewModel(vs)
         )
     }
 
@@ -83,21 +75,10 @@ package models {
       // map S4LTradingDetails to VatTradingDetails
       override def toApi(c: S4LTradingDetails): VatTradingDetails =
         VatTradingDetails(
-          vatChoice = VatChoice(
-            necessity = c.voluntaryRegistration.map(vr =>
-              if (vr.yesNo == REGISTER_YES) NECESSITY_VOLUNTARY else NECESSITY_OBLIGATORY).getOrElse(NECESSITY_OBLIGATORY),
-            vatStartDate = c.startDate.map(sd => VatStartDate(
-              selection = sd.dateType,
-              startDate = if (sd.dateType == BUSINESS_START_DATE) sd.ctActiveDate else sd.date)
-            ).getOrElse(error),
-            reason = c.voluntaryRegistrationReason.map(_.reason),
-            vatThresholdPostIncorp = c.overThreshold.map(vtp =>
-              VatThresholdPostIncorp(
-                overThresholdSelection = vtp.selection,
-                overThresholdDate = vtp.date
-              )
-            )),
-
+          vatChoice = VatChoice(vatStartDate = c.startDate.map(sd => VatStartDate(
+          selection = sd.dateType,
+                        startDate = if (sd.dateType == BUSINESS_START_DATE) sd.ctActiveDate else sd.date)
+                      ).getOrElse(error)),
           tradingName = c.tradingName.map(tnv =>
             TradingName(tnv.yesNo == TRADING_NAME_YES, tnv.tradingName)).getOrElse(error),
 

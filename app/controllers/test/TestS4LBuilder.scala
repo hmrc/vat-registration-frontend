@@ -80,14 +80,10 @@ class TestS4LBuilder {
     val applyEori: Option[String] = data.vatTradingDetails.applyEori
 
     S4LTradingDetails(
-      taxableTurnover = taxableTurnover.map(TaxableTurnover(_)),
       startDate = Some(startDate),
-      voluntaryRegistration = voluntaryRegistration.map(VoluntaryRegistration(_)),
-      voluntaryRegistrationReason = voluntaryRegistrationReason.map(VoluntaryRegistrationReason(_)),
       tradingName = tradingName.map(t => TradingNameView(if (t.selection) TRADING_NAME_YES else TRADING_NAME_NO, t.tradingName)),
       euGoods = euGoods.map(EuGoods(_)),
-      applyEori = applyEori.map(a => ApplyEori(a.toBoolean)),
-      overThreshold = overThresholdView
+      applyEori = applyEori.map(a => ApplyEori(a.toBoolean))
     )
   }
 

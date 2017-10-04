@@ -18,16 +18,26 @@ package models.api
 
 import play.api.libs.json._
 
-case class VatChoice(necessity: String, // "obligatory" or "voluntary"
-                      vatStartDate: VatStartDate,
-                      reason: Option[String] = None,
-                      vatThresholdPostIncorp: Option[VatThresholdPostIncorp] = None)
+case class VatChoice(vatStartDate: VatStartDate)
 
-object VatChoice {
+import models.api.VatEligibilityChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
+case class VatEligibilityChoice(necessity: String, // "obligatory" or "voluntary"
+                                reason: Option[String] = None,
+                                vatThresholdPostIncorp: Option[VatThresholdPostIncorp] = None) {
+  def registeringVoluntarily: Boolean = necessity == NECESSITY_VOLUNTARY
+}
+
+object VatEligibilityChoice {
 
   val NECESSITY_OBLIGATORY = "obligatory"
   val NECESSITY_VOLUNTARY = "voluntary"
 
-  implicit val format: OFormat[VatChoice] = Json.format[VatChoice]
+  implicit val format: OFormat[VatEligibilityChoice] = Json.format[VatEligibilityChoice]
+
+
 
 }
+object VatChoice {
+  implicit val format: OFormat[VatChoice] = Json.format[VatChoice]
+}
+
