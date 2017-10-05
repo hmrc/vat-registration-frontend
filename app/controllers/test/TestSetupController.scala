@@ -41,6 +41,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
       implicit request =>
         withCurrentProfile { implicit profile =>
           for {
+            eligibilityChoice <- s4LService.fetchAndGet[S4LVatEligibilityChoice]()
             vatFinancials <- s4LService.fetchAndGet[S4LVatFinancials]()
             sicStub <- s4LService.fetchAndGet[SicStub]()
             vatSicAndCompliance <- s4LService.fetchAndGet[S4LVatSicAndCompliance]()
@@ -52,16 +53,16 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
 
             testSetup = TestSetup(
               VatChoiceTestSetup(
-                taxableTurnoverChoice = tradingDetails.flatMap(_.taxableTurnover).map(_.yesNo),
-                voluntaryChoice = tradingDetails.flatMap(_.voluntaryRegistration).map(_.yesNo),
-                voluntaryRegistrationReason = tradingDetails.flatMap(_.voluntaryRegistrationReason).map(_.reason),
+                taxableTurnoverChoice =   eligibilityChoice.flatMap(_.taxableTurnover.map(_.yesNo)),
+                voluntaryChoice = eligibilityChoice.flatMap(_.voluntaryRegistration).map(_.yesNo),
+                voluntaryRegistrationReason = eligibilityChoice.flatMap(_.voluntaryRegistrationReason).map(_.reason),
                 startDateChoice = tradingDetails.flatMap(_.startDate).map(_.dateType),
                 startDateDay = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getDayOfMonth.toString),
                 startDateMonth = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getMonthValue.toString),
                 startDateYear = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getYear.toString),
-                overThresholdSelection = tradingDetails.flatMap(_.overThreshold).map(_.selection.toString),
-                overThresholdMonth = tradingDetails.flatMap(_.overThreshold).flatMap(_.date).map(_.getMonthValue.toString),
-                overThresholdYear = tradingDetails.flatMap(_.overThreshold).flatMap(_.date).map(_.getYear.toString)
+                overThresholdSelection = eligibilityChoice.flatMap(_.overThreshold).map(_.selection.toString),
+                overThresholdMonth = eligibilityChoice.flatMap(_.overThreshold).flatMap(_.date).map(_.getMonthValue.toString),
+                overThresholdYear = eligibilityChoice.flatMap(_.overThreshold).flatMap(_.date).map(_.getYear.toString)
               ),
               VatTradingDetailsTestSetup(
                 tradingNameChoice = tradingDetails.flatMap(_.tradingName).map(_.yesNo),

@@ -25,7 +25,8 @@ final case class VatServiceEligibility(
                                         doingBusinessAbroad: Option[Boolean] = None,
                                         doAnyApplyToYou: Option[Boolean] = None,
                                         applyingForAnyOf: Option[Boolean] = None,
-                                        companyWillDoAnyOf: Option[Boolean] = None
+                                        companyWillDoAnyOf: Option[Boolean] = None,
+                                        vatEligibilityChoice: Option[VatEligibilityChoice] = None
                                       ) {
 
   def getAnswer(question: EligibilityQuestion): Option[Boolean] = question match {

@@ -20,9 +20,10 @@ import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.ModelKeys.INCORPORATION_STATUS
-import models.{CurrentProfile, S4LTradingDetails}
+import models.{CurrentProfile, S4LTradingDetails, S4LVatEligibilityChoice}
 import models.external.IncorporationInfo
-import models.view.vatTradingDetails.vatChoice.OverThresholdView
+import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
+import models.view.vatTradingDetails.vatChoice.{OverThresholdView, StartDateView}
 import org.mockito.Matchers
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
@@ -40,7 +41,7 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
 
   "Calling threshold summary to show the threshold summary page" should {
     "return HTML with a valid threshold summary view" in {
-      save4laterReturns(S4LTradingDetails(
+      save4laterReturns(S4LVatEligibilityChoice(
         overThreshold = Some(OverThresholdView(false, None))
       ))
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
@@ -52,7 +53,7 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
     }
 
     "getVatThresholdPostIncorp returns a valid VatThresholdPostIncorp" in {
-      save4laterReturns(S4LTradingDetails(
+      save4laterReturns(S4LVatEligibilityChoice(
         overThreshold = Some(OverThresholdView(false, None))
       ))
 
@@ -63,7 +64,7 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
     }
 
     "getThresholdSummary maps a valid VatThresholdSummary object to a Summary object" in {
-      save4laterReturns(S4LTradingDetails(
+      save4laterReturns(S4LVatEligibilityChoice(
         overThreshold = Some(OverThresholdView(false, None))
       ))
 
@@ -76,7 +77,7 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
 
   s"POST ${controllers.vatTradingDetails.vatChoice.routes.ThresholdSummaryController.submit()}" should {
     "redirect the user to the voluntary registration page if all answers to threshold questions are no" in {
-      save4laterReturns(S4LTradingDetails(
+      save4laterReturns(S4LVatEligibilityChoice(
         overThreshold = Some(OverThresholdView(false, None))
       ))
 
@@ -89,8 +90,12 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
     }
 
     "redirect the user to the completion capacity page if any answers to threshold questions are yes" in {
-      save4laterReturns(S4LTradingDetails(
+      save4laterReturns(S4LVatEligibilityChoice(
         overThreshold = Some(OverThresholdView(true, Some(testDate)))
+      ))
+
+      save4laterReturns(S4LTradingDetails(
+        startDate = Some(StartDateView(COMPANY_REGISTRATION_DATE))
       ))
 
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))

@@ -17,43 +17,57 @@
 package models.view.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatChoice, VatScheme}
+import models.api.{VatChoice, VatEligibilityChoice, VatScheme, VatServiceEligibility}
 import models.view.vatTradingDetails.vatChoice.TaxableTurnover._
-import models.{ApiModelTransformer, S4LTradingDetails}
+import models.{ApiModelTransformer, S4LTradingDetails, S4LVatEligibilityChoice}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
-    "convert a VatChoice (Obligatory) to view model" in {
-      val vatSchemeObligatory = vatScheme(vatTradingDetails = Some(tradingDetails(necessity = VatChoice.NECESSITY_OBLIGATORY)))
+    "convert a VatEligibilityChoice (Obligatory) to view model" in {
+      val vatSchemeObligatory = vatScheme(vatEligibility = Some(VatServiceEligibility(
+        haveNino = Some(true),
+        doingBusinessAbroad = Some(false),
+        doAnyApplyToYou = Some(false),
+        applyingForAnyOf = Some(false),
+        companyWillDoAnyOf = Some(false),
+        vatEligibilityChoice = Some(VatEligibilityChoice(necessity = VatEligibilityChoice.NECESSITY_OBLIGATORY, None, None))
+      )))
       ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeObligatory) shouldBe Some(TaxableTurnover(TAXABLE_YES))
     }
 
-    "convert a VatChoice (Voluntary) to view model" in {
-      val vatSchemeVoluntary = vatScheme(vatTradingDetails = Some(tradingDetails(necessity = VatChoice.NECESSITY_VOLUNTARY)))
+    "convert a VatEligibilityChoice (Voluntary) to view model" in {
+      val vatSchemeVoluntary = vatScheme(vatEligibility = Some(VatServiceEligibility(
+        haveNino = Some(true),
+        doingBusinessAbroad = Some(false),
+        doAnyApplyToYou = Some(false),
+        applyingForAnyOf = Some(false),
+        companyWillDoAnyOf = Some(false),
+        vatEligibilityChoice = Some(VatEligibilityChoice(necessity = VatEligibilityChoice.NECESSITY_VOLUNTARY, None, None))
+      )))
       ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe Some(TaxableTurnover(TAXABLE_NO))
     }
 
-    "convert a none VatChoice to empty view model" in {
+    "convert a none VatEligibilityChoice to empty view model" in {
       val vatSchemeVoluntary = VatScheme(testRegId)
       ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe None
     }
   }
 
   "ViewModelFormat" should {
-    val s4LTradingDetails: S4LTradingDetails = S4LTradingDetails(taxableTurnover = Some(validTaxableTurnover))
+    val s4LEligibilityChoice: S4LVatEligibilityChoice = S4LVatEligibilityChoice(taxableTurnover = Some(validTaxableTurnover))
 
     "extract taxableTurnover from vatTradingDetails" in {
-      TaxableTurnover.viewModelFormat.read(s4LTradingDetails) shouldBe Some(validTaxableTurnover)
+      TaxableTurnover.viewModelFormat.read(s4LEligibilityChoice) shouldBe Some(validTaxableTurnover)
     }
 
     "update empty vatContact with taxableTurnover" in {
-      TaxableTurnover.viewModelFormat.update(validTaxableTurnover, Option.empty[S4LTradingDetails]).taxableTurnover shouldBe Some(validTaxableTurnover)
+      TaxableTurnover.viewModelFormat.update(validTaxableTurnover, Option.empty[S4LVatEligibilityChoice]).taxableTurnover shouldBe Some(validTaxableTurnover)
     }
 
     "update non-empty vatContact with taxableTurnover" in {
-      TaxableTurnover.viewModelFormat.update(validTaxableTurnover, Some(s4LTradingDetails)).taxableTurnover shouldBe Some(validTaxableTurnover)
+      TaxableTurnover.viewModelFormat.update(validTaxableTurnover, Some(s4LEligibilityChoice)).taxableTurnover shouldBe Some(validTaxableTurnover)
     }
 
   }
