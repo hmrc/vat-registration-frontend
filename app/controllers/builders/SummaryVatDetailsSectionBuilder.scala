@@ -128,7 +128,7 @@ case class SummaryVatDetailsSectionBuilder (vatTradingDetails: Option[VatTrading
     )
 
   def getUrl(serviceName: String, uri: String): Call = {
-    val basePath = getConfString(s"$serviceName.www.host", throw new RuntimeException(s"Can't find host for $serviceName"))
+    val basePath = getConfString(s"$serviceName.www.host", "")
     val mainUri = getConfString(s"$serviceName.uri","/register-for-vat/")
     val serviceUri = getConfString(s"$serviceName.uris.$uri",uri)
     Call("Get", s"$basePath$mainUri$serviceUri")
