@@ -41,14 +41,14 @@ package models.view.vatTradingDetails.vatChoice {
     implicit val format = Json.format[OverThresholdView]
 
     implicit val viewModelFormat = ViewModelFormat(
-      readF = (group: S4LTradingDetails) => group.overThreshold,
-      updateF = (c: OverThresholdView, g: Option[S4LTradingDetails]) =>
-        g.getOrElse(S4LTradingDetails()).copy(overThreshold = Some(c))
+      readF = (group: S4LVatEligibilityChoice) => group.overThreshold,
+      updateF = (c: OverThresholdView, g: Option[S4LVatEligibilityChoice]) =>
+        g.getOrElse(S4LVatEligibilityChoice()).copy(overThreshold = Some(c))
     )
 
     // Returns a view model for a specific part of a given VatScheme API model
     implicit val modelTransformer = ApiModelTransformer[OverThresholdView] { vs: VatScheme =>
-      vs.tradingDetails.map(_.vatChoice.vatThresholdPostIncorp).collect {
+      vs.vatServiceEligibility.flatMap(_.vatEligibilityChoice.map(_.vatThresholdPostIncorp)).collect {
         case Some(VatThresholdPostIncorp(selection, d@_)) => OverThresholdView(selection, d)
       }
     }
@@ -66,7 +66,7 @@ package controllers.vatTradingDetails.vatChoice {
   import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
   import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.REGISTER_NO
   import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration}
-  import models.{CurrentProfile, MonthYearModel, S4LTradingDetails}
+  import models.{CurrentProfile, MonthYearModel, S4LTradingDetails, S4LVatEligibilityChoice}
   import play.api.mvc._
   import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
   import uk.gov.hmrc.play.http.HeaderCarrier
@@ -122,8 +122,8 @@ package controllers.vatTradingDetails.vatChoice {
 
     def getVatThresholdPostIncorp()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatThresholdPostIncorp] = {
       for {
-        vatTradingDetails <- s4LService.fetchAndGet[S4LTradingDetails]()
-        overThreshold <- vatTradingDetails.flatMap(_.overThreshold).pure
+        eligibilityChoice <- s4LService.fetchAndGet[S4LVatEligibilityChoice]()
+        overThreshold <- eligibilityChoice.flatMap(_.overThreshold).pure
       } yield overThreshold.map(o => VatThresholdPostIncorp(o.selection, o.date)).get
     }
   }

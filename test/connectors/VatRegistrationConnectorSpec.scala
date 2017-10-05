@@ -160,7 +160,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   "Calling upsertVatEligibility" should {
 
-    val vatEligibility = validServiceEligibility
+    val vatEligibility = validServiceEligibility()
 
     "return the correct VatResponse when the microservice completes and returns a VatServiceEligibility model" in new Setup {
       mockHttpPATCH[VatServiceEligibility, VatServiceEligibility]("tst-url", vatEligibility)

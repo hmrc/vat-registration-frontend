@@ -37,11 +37,13 @@ trait TradingDetailsFixture extends BaseFixture {
   val validEuTrading = VatEuTrading(selection = false, eoriApplication = None)
   val validTradingName = TradingName(selection = true, tradingName = Some(testTradingName))
 
-  val validVatChoice = VatChoice(
-    VatChoice.NECESSITY_VOLUNTARY,
-    vatStartDate,
+
+  val validEligibilityChoice = VatEligibilityChoice(
+    VatEligibilityChoice.NECESSITY_VOLUNTARY,
     vatThresholdPostIncorp = Some(VatThresholdPostIncorp(true, Some(testDate)))
   )
+
+  val validVatChoice = VatChoice(vatStartDate)
 
   val validVatTradingDetails = VatTradingDetails(
     vatChoice = validVatChoice,
@@ -50,22 +52,18 @@ trait TradingDetailsFixture extends BaseFixture {
   )
 
   def tradingDetails(
-                      necessity: String = VatChoice.NECESSITY_VOLUNTARY,
                       startDateSelection: String = StartDateView.COMPANY_REGISTRATION_DATE,
                       startDate: Option[LocalDate] = None,
                       tradingNameSelection: Boolean = true,
                       tradingName: Option[String] = Some("ACME Ltd."),
-                      reason: Option[String] = None,
                       euGoodsSelection: Boolean = true,
                       eoriApplication: Option[Boolean] = Some(true)
                     ): VatTradingDetails = VatTradingDetails(
     vatChoice = VatChoice(
-      necessity = necessity,
       vatStartDate = VatStartDate(
-        selection = startDateSelection,
-        startDate = startDate
-      ),
-      reason = reason
+                selection = startDateSelection,
+                startDate = startDate
+              )
     ),
     tradingName = TradingName(
       selection = tradingNameSelection,

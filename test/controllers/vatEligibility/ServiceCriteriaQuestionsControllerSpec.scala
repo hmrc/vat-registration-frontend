@@ -48,7 +48,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
-      save4laterReturnsViewModel[VatServiceEligibility](validServiceEligibility)()
+      save4laterReturnsViewModel[VatServiceEligibility](validServiceEligibility())()
 
       val eligibilityQuestions = Seq[(EligibilityQuestion, String)](
         HaveNinoQuestion -> "Do you have a National Insurance number?",
@@ -81,10 +81,10 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
-      when(mockVatRegistrationService.submitVatEligibility()(any(),any())).thenReturn(validServiceEligibility.pure)
+      when(mockVatRegistrationService.submitVatEligibility()(any(),any())).thenReturn(validServiceEligibility().pure)
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
-        save4laterReturnsViewModel(validServiceEligibility)()
+        save4laterReturnsViewModel(validServiceEligibility())()
         save4laterExpectsSave[VatServiceEligibility]()
 
         submitAuthorised(testController.submit(currentQuestion.name),
@@ -99,7 +99,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
-      when(mockVatRegistrationService.submitVatEligibility()(any(),any())).thenReturn(validServiceEligibility.pure)
+      when(mockVatRegistrationService.submitVatEligibility()(any(),any())).thenReturn(validServiceEligibility().pure)
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
         save4laterReturnsNoViewModel[VatServiceEligibility]()
@@ -118,8 +118,8 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
-      when(mockVatRegistrationService.submitVatEligibility()(any(),any())).thenReturn(validServiceEligibility.pure)
-      save4laterReturnsViewModel(validServiceEligibility)()
+      when(mockVatRegistrationService.submitVatEligibility()(any(),any())).thenReturn(validServiceEligibility().pure)
+      save4laterReturnsViewModel(validServiceEligibility())()
       save4laterExpectsSave[VatServiceEligibility]()
       when(mockKeystoreConnector.cache[String](any(), any())(any(), any())).thenReturn(CacheMap("id", Map()).pure)
 

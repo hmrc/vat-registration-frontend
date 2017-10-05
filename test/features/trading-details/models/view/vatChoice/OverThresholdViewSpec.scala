@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import fixtures.VatRegistrationFixture
 import models._
-import models.api.VatThresholdPostIncorp
+import models.api.{VatEligibilityChoice, VatServiceEligibility, VatThresholdPostIncorp}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -59,18 +59,18 @@ class OverThresholdViewSpec extends UnitSpec with VatRegistrationFixture with In
 
   "ViewModelFormat" should {
     val validOverThresholdView = OverThresholdView(false, None)
-    val s4LTradingDetails: S4LTradingDetails = S4LTradingDetails(overThreshold = Some(validOverThresholdView))
+    val s4LEligibility: S4LVatEligibilityChoice = S4LVatEligibilityChoice(overThreshold = Some(validOverThresholdView))
 
     "extract over threshold from vatTradingDetails" in {
-      OverThresholdView.viewModelFormat.read(s4LTradingDetails) shouldBe Some(validOverThresholdView)
+      OverThresholdView.viewModelFormat.read(s4LEligibility) shouldBe Some(validOverThresholdView)
     }
 
     "update empty vatTradingDetails with over threshold" in {
-      OverThresholdView.viewModelFormat.update(validOverThresholdView, Option.empty[S4LTradingDetails]).overThreshold shouldBe Some(validOverThresholdView)
+      OverThresholdView.viewModelFormat.update(validOverThresholdView, Option.empty[S4LVatEligibilityChoice]).overThreshold shouldBe Some(validOverThresholdView)
     }
 
     "update non-empty vatTradingDetails with over threshold" in {
-      OverThresholdView.viewModelFormat.update(validOverThresholdView, Some(s4LTradingDetails)).overThreshold shouldBe Some(validOverThresholdView)
+      OverThresholdView.viewModelFormat.update(validOverThresholdView, Some(s4LEligibility)).overThreshold shouldBe Some(validOverThresholdView)
     }
 
     "ApiModelTransformer" should {
@@ -82,20 +82,43 @@ class OverThresholdViewSpec extends UnitSpec with VatRegistrationFixture with In
       }
 
       "produce a view model from a vatScheme with an over threshold date set" in {
+        val thresholdPostIncorp = VatThresholdPostIncorp(overThresholdSelection = true, overThresholdDate = Some(date))
+        val eligibilityChoice = VatEligibilityChoice(
+          necessity = VatEligibilityChoice.NECESSITY_VOLUNTARY,
+          reason = None,
+          vatThresholdPostIncorp = Some(thresholdPostIncorp)
+        )
+
         val vm = ApiModelTransformer[OverThresholdView]
-          .toViewModel(vatScheme(vatTradingDetails = Some(validVatTradingDetails.copy(
-            vatChoice = validVatChoice.copy(vatThresholdPostIncorp =
-              Some(VatThresholdPostIncorp(overThresholdSelection = true, overThresholdDate = Some(date))))
+          .toViewModel(vatScheme(vatEligibility = Some(VatServiceEligibility(
+            haveNino = Some(true),
+            doingBusinessAbroad = Some(false),
+            doAnyApplyToYou = Some(false),
+            applyingForAnyOf = Some(false),
+            companyWillDoAnyOf = Some(false),
+            vatEligibilityChoice = Some(eligibilityChoice)
           ))))
         vm shouldBe Some(OverThresholdView(true, Some(date)))
       }
 
       "produce a view model from a vatScheme with no over threshold date" in {
+        val thresholdPostIncorp = VatThresholdPostIncorp(overThresholdSelection = false, overThresholdDate = None)
+        val eligibilityChoice = VatEligibilityChoice(
+          necessity = VatEligibilityChoice.NECESSITY_VOLUNTARY,
+          reason = None,
+          vatThresholdPostIncorp = Some(thresholdPostIncorp)
+        )
+
         val vm = ApiModelTransformer[OverThresholdView]
-          .toViewModel(vatScheme(vatTradingDetails = Some(validVatTradingDetails.copy(
-            vatChoice = validVatChoice.copy(vatThresholdPostIncorp =
-              Some(VatThresholdPostIncorp(overThresholdSelection = false, None)))
-          ))))
+          .toViewModel(vatScheme(
+            vatEligibility = Some(VatServiceEligibility(
+              haveNino = Some(true),
+              doingBusinessAbroad = Some(false),
+              doAnyApplyToYou = Some(false),
+              applyingForAnyOf = Some(false),
+              companyWillDoAnyOf = Some(false),
+              vatEligibilityChoice = Some(eligibilityChoice)
+            ))))
         vm shouldBe Some(OverThresholdView(false, None))
       }
 
