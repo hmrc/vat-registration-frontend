@@ -10,16 +10,16 @@
   <div class="grid-row">
     <div class="column-two-thirds">
 
+        @errorSummary(
+        Messages("app.common.errorSummaryLabel"),
+        overThresholdForm
+        )
+
         <header class="page-header">
             <h1 class="form-title heading-xlarge" id="pageHeading">
             @messages("pages.thresholdQuestion1.heading", dateOfIncorporation)
             </h1>
         </header>
-
-      @errorSummary(
-          Messages("app.common.errorSummaryLabel"),
-          overThresholdForm
-      )
 
         <p>@messages("pages.thresholdQuestion1.p1")</p>
 

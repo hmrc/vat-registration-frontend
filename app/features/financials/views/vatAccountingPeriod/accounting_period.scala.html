@@ -10,13 +10,13 @@
 
   <div class="column-one-third">
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.accounting.period.heading")</h1>
-
       @errorSummary(
-          Messages("app.common.errorSummaryLabel"),
-          accountingPeriodForm,
-          Seq("accountingPeriodRadio")
+      Messages("app.common.errorSummaryLabel"),
+      accountingPeriodForm,
+      Seq("accountingPeriodRadio")
       )
+
+      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.accounting.period.heading")</h1>
 
       <p>@Html(Messages("pages.accounting.period.para1"))</p>
 

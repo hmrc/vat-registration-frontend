@@ -7,12 +7,12 @@
 
   <div class="column-one-third">
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.officerContact.heading")</h1>
-
       @errorSummary(
-          messages("app.common.errorSummaryLabel"),
-          officerContactDetailsForm
+      messages("app.common.errorSummaryLabel"),
+      officerContactDetailsForm
       )
+
+      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.officerContact.heading")</h1>
 
       <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
           <p>@Html(messages("pages.officerContact.p1"))</p>

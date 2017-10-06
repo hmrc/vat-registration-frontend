@@ -10,12 +10,12 @@
   <div class="grid-row">
     <div class="column-two-thirds">
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.startDate.heading")</h1>
+        @errorSummary(
+        Messages("app.common.errorSummaryLabel"),
+        startDateForm
+        )
 
-      @errorSummary(
-          Messages("app.common.errorSummaryLabel"),
-          startDateForm
-      )
+      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.startDate.heading")</h1>
 
       <p>@messages("pages.startDate.para1")</p>
 

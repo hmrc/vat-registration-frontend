@@ -9,13 +9,14 @@
 
     <div class="column-one-third">
 
+        @errorSummary(
+        Messages("app.common.errorSummaryLabel"),
+        formerNameDateForm
+        )
+
         <header class="page-header">
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.formerNameDate.heading1") @formerName@messages("pages.formerNameDate.heading2")</h1>
+            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.formerNameDate.heading1") @formerName@messages("pages.formerNameDate.heading2")</h1>
         </header>
-            @errorSummary(
-          Messages("app.common.errorSummaryLabel"),
-          formerNameDateForm
-      )
 
         @govHelpers.form(action = controllers.vatLodgingOfficer.routes.FormerNameDateController.submit()) {
             <div class="form-group">
