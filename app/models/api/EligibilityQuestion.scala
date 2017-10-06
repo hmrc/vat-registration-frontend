@@ -28,13 +28,18 @@ object EligibilityQuestion {
 
   case object ApplyingForAnyOfQuestion extends EligibilityQuestion("applyingForAnyOf", exitAnswer = true)
 
+  case object ApplyingForVatExemptionQuestion extends EligibilityQuestion("applyingForVatExemption", exitAnswer = true)
+
   case object CompanyWillDoAnyOfQuestion extends EligibilityQuestion("companyWillDoAnyOf", exitAnswer = true)
 
-  private val questions = Seq(HaveNinoQuestion,
+  private val questions = Seq(
+    HaveNinoQuestion,
     DoingBusinessAbroadQuestion,
     DoAnyApplyToYouQuestion,
     ApplyingForAnyOfQuestion,
-    CompanyWillDoAnyOfQuestion)
+    ApplyingForVatExemptionQuestion,
+    CompanyWillDoAnyOfQuestion
+  )
 
   def apply(s: String): EligibilityQuestion = questions.find(_.name == s)
     .getOrElse(throw new IllegalArgumentException("unexpected question identifier!"))

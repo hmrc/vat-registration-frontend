@@ -28,7 +28,7 @@ import uk.gov.hmrc.play.config.ServicesConfig
 
 case class SummaryVatDetailsSectionBuilder (vatTradingDetails: Option[VatTradingDetails] = None,
                                             vatEligiblityChoice: Option[VatEligibilityChoice] = None,
-                                            useEligibilityFrontend: Boolean = false)
+                                            useEligibilityFrontend: Boolean = true)
   extends SummarySectionBuilder with ServicesConfig{
 
   override val sectionId: String = "vatDetails"
