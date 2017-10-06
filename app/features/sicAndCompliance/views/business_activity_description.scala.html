@@ -7,12 +7,14 @@
 
     <div class="column-two-thirds">
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.business.activity.description.heading")</h1>
         @errorSummary(
-            Messages("app.common.errorSummaryLabel"),
-            businessActivityDescriptionForm,
-            Seq("description")
+        Messages("app.common.errorSummaryLabel"),
+        businessActivityDescriptionForm,
+        Seq("description")
         )
+
+      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.business.activity.description.heading")</h1>
+
       <p>@Html(Messages("pages.business.activity.description.para1"))</p>
 
       @govHelpers.form(action = controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.submit()) {

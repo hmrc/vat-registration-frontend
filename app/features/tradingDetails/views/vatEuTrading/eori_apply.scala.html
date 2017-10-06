@@ -7,13 +7,13 @@
 
     <div class="column-one-third">
 
-        <h1 class="form-title heading-large" id="pageHeading">@messages("pages.applyEori.heading")</h1>
-
         @errorSummary(
-            Messages("app.common.errorSummaryLabel"),
-            applyEoriForm,
-            Seq("applyEori")
+        Messages("app.common.errorSummaryLabel"),
+        applyEoriForm,
+        Seq("applyEori")
         )
+
+        <h1 class="form-title heading-large" id="pageHeading">@messages("pages.applyEori.heading")</h1>
 
         <p>@messages("pages.applyEori.para1")</p>
         <h3 class="heading-medium">@messages("pages.applyEori.h3")</h3>

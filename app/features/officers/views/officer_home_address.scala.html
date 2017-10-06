@@ -8,14 +8,14 @@
 
   <div class="column-one-third">
 
+      @errorSummary(
+      messages("app.common.errorSummaryLabel"),
+      officerHomeAddressForm
+      )
+
       <header class="page-header">
           <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.officerHomeAddress.heading")</h1>
       </header>
-
-      @errorSummary(
-          messages("app.common.errorSummaryLabel"),
-          officerHomeAddressForm
-      )
 
       @govHelpers.form(action = controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.submit()) {
       <div class="form-group" id="homeAddressRadio">

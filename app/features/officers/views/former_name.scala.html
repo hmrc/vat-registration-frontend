@@ -11,13 +11,13 @@
     <div class="grid-row">
         <div class="column-two-thirds">
 
-            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.formerName.heading")</h1>
-
             @errorSummary(
-                Messages("app.common.errorSummaryLabel"),
-                formerNameForm,
-                Seq("formerName")
+            Messages("app.common.errorSummaryLabel"),
+            formerNameForm,
+            Seq("formerName")
             )
+
+            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.formerName.heading")</h1>
 
             @govHelpers.form(action = controllers.vatLodgingOfficer.routes.FormerNameController.submit()) {
                 <div class="form-group">
