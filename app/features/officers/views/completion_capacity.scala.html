@@ -8,14 +8,14 @@
 
     <div class="column-one-third">
 
+        @errorSummary(
+        messages("app.common.errorSummaryLabel"),
+        completionCapacityForm
+        )
+
         <header class="page-header">
             <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.completionCapacity.heading")</h1>
         </header>
-
-        @errorSummary(
-            messages("app.common.errorSummaryLabel"),
-            completionCapacityForm
-        )
 
         <p>@messages("pages.completionCapacity.p1")</p>
 

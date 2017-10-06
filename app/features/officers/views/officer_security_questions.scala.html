@@ -7,14 +7,15 @@
 
   <div class="column-one-third">
 
+      @errorSummary(
+      messages("app.common.errorSummaryLabel"),
+      securityQuestionsForm
+      )
+
       <header class="page-header">
           <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.security.questions.heading")</h1>
       </header>
 
-      @errorSummary(
-          messages("app.common.errorSummaryLabel"),
-          securityQuestionsForm
-      )
       <p>@messages("pages.security.questions.p1")</p>
       <h3 class="form-title heading-medium">@messages("pages.security.questions.date.of.birth.h3")</h3>
 

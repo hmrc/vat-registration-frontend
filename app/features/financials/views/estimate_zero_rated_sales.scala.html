@@ -10,13 +10,13 @@
 
   <div class="column-one-third">
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.estimate.zero.rated.sales.heading")</h1>
-
       @errorSummary(
-          Messages("app.common.errorSummaryLabel"),
-          estimateZeroRatedSalesForm,
-          Seq("zeroRatedTurnoverEstimate")
+      Messages("app.common.errorSummaryLabel"),
+      estimateZeroRatedSalesForm,
+      Seq("zeroRatedTurnoverEstimate")
       )
+
+      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.estimate.zero.rated.sales.heading")</h1>
 
       <div class="panel panel-indent" id="details-content-1" aria-hidden="false">
           <p>@messages("pages.estimate.zero.rated.sales.p1")</p>

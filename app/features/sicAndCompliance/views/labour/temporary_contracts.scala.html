@@ -7,12 +7,12 @@
 
     <div class="column-one-third">
 
-        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.labourCompliance.temporaryContracts.heading")</h1>
-
         @errorSummary(
-            Messages("app.common.errorSummaryLabel"),
-            temporaryContractsForm
+        Messages("app.common.errorSummaryLabel"),
+        temporaryContractsForm
         )
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.labourCompliance.temporaryContracts.heading")</h1>
 
         @govHelpers.form(action = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.submit()) {
             <div class="form-group">
