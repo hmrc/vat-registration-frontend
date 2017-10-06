@@ -78,16 +78,17 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
   val validStartDate = DateOfBirth(12, 11, 1990)
   val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", Some(validDob), None, None)
   val completionCapacity = CompletionCapacity(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director")
-  def validServiceEligibility(nes:String = VatEligibilityChoice.NECESSITY_VOLUNTARY) =
+  def validServiceEligibility(nes : String = VatEligibilityChoice.NECESSITY_VOLUNTARY, reason : Option[String] = None) =
       VatServiceEligibility(
         Some(true),
         Some(false),
         Some(false),
         Some(false),
         Some(false),
+        Some(false),
         Some(VatEligibilityChoice(
           nes,
-          None,
+          reason,
           None)))
 
   val officerName = Name(Some("Reddy"), None, "Yattapu", Some("Dr"))

@@ -22,6 +22,7 @@ case class VatServiceEligibilityTestSetup(haveNino: Option[String],
                                           doingBusinessAbroad: Option[String],
                                           doAnyApplyToYou: Option[String],
                                           applyingForAnyOf: Option[String],
+                                          applyingForVatExemption: Option[String],
                                           companyWillDoAnyOf: Option[String])
 
 object VatServiceEligibilityTestSetup {

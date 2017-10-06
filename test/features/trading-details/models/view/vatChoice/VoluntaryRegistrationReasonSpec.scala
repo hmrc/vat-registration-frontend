@@ -36,6 +36,7 @@ class VoluntaryRegistrationReasonSpec extends UnitSpec with Matchers with Inspec
           doingBusinessAbroad = Some(false),
           doAnyApplyToYou = Some(false),
           applyingForAnyOf = Some(false),
+          applyingForVatExemption = Some(false),
           companyWillDoAnyOf = Some(false),
           vatEligibilityChoice = Some(validEligibilityChoice)
         ))))
@@ -43,40 +44,22 @@ class VoluntaryRegistrationReasonSpec extends UnitSpec with Matchers with Inspec
     }
 
     "produce a view model from a vatScheme with voluntary registration reason (sells)" in {
-      val eligibilityChoice = VatEligibilityChoice(
-        necessity = VatEligibilityChoice.NECESSITY_VOLUNTARY,
-        reason = Some(SELLS)
-      )
-
       val vm = ApiModelTransformer[VoluntaryRegistrationReason]
         .toViewModel(vatScheme(
-          vatEligibility = Some(VatServiceEligibility(
-            haveNino = Some(true),
-            doingBusinessAbroad = Some(false),
-            doAnyApplyToYou = Some(false),
-            applyingForAnyOf = Some(false),
-            companyWillDoAnyOf = Some(false),
-            vatEligibilityChoice = Some(eligibilityChoice)
-          ))))
+          vatEligibility = Some(
+            validServiceEligibility(VatEligibilityChoice.NECESSITY_VOLUNTARY, Some(SELLS)))
+          )
+        )
       vm shouldBe Some(VoluntaryRegistrationReason.sells)
     }
 
     "produce a view model from a vatScheme with voluntary registration reason (intends to sell)" in {
-      val eligibilityChoice = VatEligibilityChoice(
-        necessity = VatEligibilityChoice.NECESSITY_VOLUNTARY,
-        reason = Some(INTENDS_TO_SELL)
-      )
-
       val vm = ApiModelTransformer[VoluntaryRegistrationReason]
         .toViewModel(vatScheme(
-            vatEligibility = Some(VatServiceEligibility(
-              haveNino = Some(true),
-              doingBusinessAbroad = Some(false),
-              doAnyApplyToYou = Some(false),
-              applyingForAnyOf = Some(false),
-              companyWillDoAnyOf = Some(false),
-              vatEligibilityChoice = Some(eligibilityChoice)
-            ))))
+          vatEligibility = Some(
+            validServiceEligibility(VatEligibilityChoice.NECESSITY_VOLUNTARY, Some(INTENDS_TO_SELL)))
+          )
+        )
       vm shouldBe Some(VoluntaryRegistrationReason.intendsToSell)
     }
 
