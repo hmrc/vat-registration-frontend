@@ -40,7 +40,7 @@ class TwirlViewControllerSpec extends VatRegSpec {
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
-      when(mockVATFeatureSwitch.vatRegistrationFrontend).thenReturn(disabledFeatureSwitch)
+      when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
 
       forAll(params) {
         case (input, expected) =>
@@ -50,13 +50,13 @@ class TwirlViewControllerSpec extends VatRegSpec {
       }
     }
 
-    "redirect to elegibility front end if feature switch is enabled" in {
+    "redirect to eligibility front end if feature switch is enabled" in {
       val params = List(("use-this-service", "Can you use this service?"))
 
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
-      when(mockVATFeatureSwitch.vatRegistrationFrontend).thenReturn(enabledFeatureSwitch)
+      when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(disabledFeatureSwitch)
 
       forAll(params) {
         case (input, expected) =>
@@ -71,7 +71,7 @@ class TwirlViewControllerSpec extends VatRegSpec {
         when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Some(currentProfile)))
 
-        when(mockVATFeatureSwitch.vatRegistrationFrontend).thenReturn(disabledFeatureSwitch)
+        when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
 
         callAuthorised(TestController.renderViewAuthorised("fake")) { result =>
           result isA Status.NOT_FOUND

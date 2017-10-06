@@ -17,35 +17,21 @@
 package models.view.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
-import models.api.{VatChoice, VatEligibilityChoice, VatScheme, VatServiceEligibility}
+import models.api.{VatEligibilityChoice, VatScheme}
 import models.view.vatTradingDetails.vatChoice.TaxableTurnover._
-import models.{ApiModelTransformer, S4LTradingDetails, S4LVatEligibilityChoice}
+import models.{ApiModelTransformer, S4LVatEligibilityChoice}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class TaxableTurnoverSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
     "convert a VatEligibilityChoice (Obligatory) to view model" in {
-      val vatSchemeObligatory = vatScheme(vatEligibility = Some(VatServiceEligibility(
-        haveNino = Some(true),
-        doingBusinessAbroad = Some(false),
-        doAnyApplyToYou = Some(false),
-        applyingForAnyOf = Some(false),
-        companyWillDoAnyOf = Some(false),
-        vatEligibilityChoice = Some(VatEligibilityChoice(necessity = VatEligibilityChoice.NECESSITY_OBLIGATORY, None, None))
-      )))
+      val vatSchemeObligatory = vatScheme(vatEligibility = Some(validServiceEligibility(VatEligibilityChoice.NECESSITY_OBLIGATORY)))
       ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeObligatory) shouldBe Some(TaxableTurnover(TAXABLE_YES))
     }
 
     "convert a VatEligibilityChoice (Voluntary) to view model" in {
-      val vatSchemeVoluntary = vatScheme(vatEligibility = Some(VatServiceEligibility(
-        haveNino = Some(true),
-        doingBusinessAbroad = Some(false),
-        doAnyApplyToYou = Some(false),
-        applyingForAnyOf = Some(false),
-        companyWillDoAnyOf = Some(false),
-        vatEligibilityChoice = Some(VatEligibilityChoice(necessity = VatEligibilityChoice.NECESSITY_VOLUNTARY, None, None))
-      )))
+      val vatSchemeVoluntary = vatScheme(vatEligibility = Some(validServiceEligibility()))
       ApiModelTransformer[TaxableTurnover].toViewModel(vatSchemeVoluntary) shouldBe Some(TaxableTurnover(TAXABLE_NO))
     }
 

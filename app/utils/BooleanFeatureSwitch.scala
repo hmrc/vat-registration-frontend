@@ -54,7 +54,7 @@ trait FeatureManager {
 
 @Singleton
 class VATRegFeatureSwitch @Inject()(injManager: FeatureSwitchManager) extends VATRegFeatureSwitches {
-  override val vatEligibilityUrl: String = "vatEligibilityFrontend"
+  override val vatEligibilityUrl: String = "disableEligibilityFrontend"
   override val manager: FeatureManager = injManager
 }
 
@@ -64,10 +64,10 @@ trait VATRegFeatureSwitches {
   val vatEligibilityUrl: String
   val manager: FeatureManager
 
-  def vatRegistrationFrontend: FeatureSwitch = manager.getProperty(vatEligibilityUrl)
+  def disableEligibilityFrontend: FeatureSwitch = manager.getProperty(vatEligibilityUrl)
 
   def apply(name: String): Option[FeatureSwitch] = name match {
-    case `vatEligibilityUrl` => Some(vatRegistrationFrontend)
+    case `vatEligibilityUrl` => Some(disableEligibilityFrontend)
     case _ => None
   }
 }
