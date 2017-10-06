@@ -8,14 +8,14 @@
 
   <div class="column-one-third">
 
+      @errorSummary(
+      messages("app.common.errorSummaryLabel"),
+      ppobform
+      )
+
       <header class="page-header">
           <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.ppob.heading")</h1>
       </header>
-
-      @errorSummary(
-          messages("app.common.errorSummaryLabel"),
-          ppobform
-      )
 
       <p>@Html(messages("pages.ppob.p1"))</p>
       <p>@Html(messages("pages.ppob.p2"))</p>

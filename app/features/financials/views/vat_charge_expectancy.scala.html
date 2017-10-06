@@ -7,12 +7,12 @@
 
   <div class="column-one-third">
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.vat.charge.expectancy.heading")</h1>
-
       @errorSummary(
-          Messages("app.common.errorSummaryLabel"),
-          vatChargeExpectancyForm
+      Messages("app.common.errorSummaryLabel"),
+      vatChargeExpectancyForm
       )
+
+      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.vat.charge.expectancy.heading")</h1>
 
       <p>@Html(Messages("pages.vat.charge.expectancy.para1"))</p>
       <p>@Html(Messages("pages.vat.charge.expectancy.para2"))</p>

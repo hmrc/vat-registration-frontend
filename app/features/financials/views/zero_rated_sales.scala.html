@@ -7,12 +7,12 @@
 
   <div class="column-one-third">
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.zero.rated.sales.heading")</h1>
-
       @errorSummary(
-          Messages("app.common.errorSummaryLabel"),
-          zeroRatedSalesForm
+      Messages("app.common.errorSummaryLabel"),
+      zeroRatedSalesForm
       )
+
+      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.zero.rated.sales.heading")</h1>
 
       <p>@Html(Messages("pages.zero.rated.sales.para1"))</p>
 

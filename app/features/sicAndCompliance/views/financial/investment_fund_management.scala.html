@@ -7,12 +7,12 @@
 
     <div class="column-one-third">
 
-        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.financialCompliance.investmentFundManagement.heading")</h1>
-
         @errorSummary(
-            Messages("app.common.errorSummaryLabel"),
-            investmentFundManagementForm
+        Messages("app.common.errorSummaryLabel"),
+        investmentFundManagementForm
         )
+
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.financialCompliance.investmentFundManagement.heading")</h1>
 
         @govHelpers.form(action = controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.submit()) {
             <div class="form-group">

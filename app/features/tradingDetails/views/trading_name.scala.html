@@ -11,13 +11,13 @@
     <div class="grid-row">
         <div class="column-two-thirds">
 
-            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.tradingName.heading")</h1>
-
             @errorSummary(
-                Messages("app.common.errorSummaryLabel"),
-                tradingNameForm,
-                Seq("tradingName")
+            Messages("app.common.errorSummaryLabel"),
+            tradingNameForm,
+            Seq("tradingName")
             )
+
+            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.tradingName.heading")</h1>
 
             @govHelpers.form(action = controllers.vatTradingDetails.routes.TradingNameController.submit()) {
                 <div class="form-group">
