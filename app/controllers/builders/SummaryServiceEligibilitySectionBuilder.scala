@@ -22,7 +22,7 @@ import models.view.{SummaryRow, SummarySection}
 import play.api.mvc.Call
 import uk.gov.hmrc.play.config.ServicesConfig
 
-case class SummaryServiceEligibilitySectionBuilder(vatServiceEligibility: Option[VatServiceEligibility] = None, useEligibilityFrontend: Boolean = false)
+case class SummaryServiceEligibilitySectionBuilder(vatServiceEligibility: Option[VatServiceEligibility] = None, useEligibilityFrontend: Boolean = true)
   extends SummarySectionBuilder with ServicesConfig {
 
   override val sectionId: String = "serviceCriteria"
@@ -68,6 +68,18 @@ case class SummaryServiceEligibilitySectionBuilder(vatServiceEligibility: Option
     }
   )
 
+  val applyingForVatExemptionRow: SummaryRow = yesNoRow(
+    "applyingForVatExemption",
+    vatServiceEligibility.flatMap(_.applyingForVatExemption),
+    getUrl(vrefeConf,"apply-exempt")
+  )
+
+  val applyingForVatExceptionRow: SummaryRow = yesNoRow(
+    "applyingForVatException",
+    vatServiceEligibility.flatMap(_.applyingForVatExemption),
+    getUrl(vrefeConf,"apply-exempt")
+  )
+
   val companyWillDoAnyOfRow: SummaryRow = yesNoRow(
     "companyWillDoAnyOf",
     vatServiceEligibility.flatMap(_.companyWillDoAnyOf),
@@ -85,6 +97,8 @@ case class SummaryServiceEligibilitySectionBuilder(vatServiceEligibility: Option
       (doingBusinessAbroadRow, vatServiceEligibility.exists(_.doingBusinessAbroad.isDefined)),
       (doAnyApplyToYouRow, vatServiceEligibility.exists(_.doAnyApplyToYou.isDefined)),
       (applyingForAnyOfRow, vatServiceEligibility.exists(_.applyingForAnyOf.isDefined)),
+      (applyingForVatExemptionRow, useEligibilityFrontend && vatServiceEligibility.exists(_.applyingForVatExemption.isDefined)),
+      (applyingForVatExceptionRow, useEligibilityFrontend && vatServiceEligibility.exists(_.applyingForVatExemption.isDefined)),
       (companyWillDoAnyOfRow, vatServiceEligibility.exists(_.companyWillDoAnyOf.isDefined))
     ),
     vatServiceEligibility.isDefined
@@ -93,7 +107,7 @@ case class SummaryServiceEligibilitySectionBuilder(vatServiceEligibility: Option
   def getUrl(serviceName: String, uri: String): Call = {
     val basePath = getConfString(s"$serviceName.www.host", "")
     val mainUri = getConfString(s"$serviceName.uri","/register-for-vat/")
-    val serviceUri = getConfString(s"$serviceName.uris.$uri",uri)
+    val serviceUri = getConfString(s"$serviceName.uris.$uri", throw new RuntimeException(s"Could not find config $serviceName.uris.$uri"))
     Call("Get", s"$basePath$mainUri$serviceUri")
   }
 }

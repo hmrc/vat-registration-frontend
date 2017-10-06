@@ -121,6 +121,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
                 doingBusinessAbroad = eligibility.flatMap(_.vatEligibility).map(_.doingBusinessAbroad.getOrElse("").toString),
                 doAnyApplyToYou = eligibility.flatMap(_.vatEligibility).map(_.doAnyApplyToYou.getOrElse("").toString),
                 applyingForAnyOf = eligibility.flatMap(_.vatEligibility).map(_.applyingForAnyOf.getOrElse("").toString),
+                applyingForVatExemption = eligibility.flatMap(_.vatEligibility).map(_.applyingForVatExemption.getOrElse("").toString),
                 companyWillDoAnyOf = eligibility.flatMap(_.vatEligibility).map(_.companyWillDoAnyOf.getOrElse("").toString)),
               officerHomeAddress = OfficerHomeAddressTestSetup(
                 line1 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).map(_.line1),
@@ -198,6 +199,7 @@ class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LServ
                       x.vatServiceEligibility.doingBusinessAbroad.map(_.toBoolean),
                       x.vatServiceEligibility.doAnyApplyToYou.map(_.toBoolean),
                       x.vatServiceEligibility.applyingForAnyOf.map(_.toBoolean),
+                      x.vatServiceEligibility.applyingForVatExemption.map(_.toBoolean),
                       x.vatServiceEligibility.companyWillDoAnyOf.map(_.toBoolean))))
                   })
 
