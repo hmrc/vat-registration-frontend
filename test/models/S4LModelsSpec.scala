@@ -444,6 +444,7 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
           doingBusinessAbroad = Some(false),
           doAnyApplyToYou = Some(false),
           applyingForAnyOf = Some(false),
+          applyingForVatExemption = Some(false),
           companyWillDoAnyOf = Some(false),
           vatEligibilityChoice = Some(VatEligibilityChoice(
             necessity = NECESSITY_VOLUNTARY,

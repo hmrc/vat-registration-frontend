@@ -31,6 +31,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
                                     doingBusinessAbroad = Some(false),
                                     doAnyApplyToYou = Some(false),
                                     applyingForAnyOf = Some(false),
+                                    applyingForVatExemption = Some(false),
                                     companyWillDoAnyOf = Some(false)
                                   )
 
@@ -40,7 +41,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
     "with haveNinoRow render" should {
 
       " 'No' selected haveNinoRow" in {
-        val builder = SummaryServiceEligibilitySectionBuilder()
+        val builder = SummaryServiceEligibilitySectionBuilder(useEligibilityFrontend = false)
         builder.haveNinoRow mustBe
           SummaryRow(
             "serviceCriteria.nino",
@@ -51,7 +52,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
 
       " 'YES' selected for haveNinoRow" in {
         val vatServiceEligibility = defaultVatServiceEligibility.copy(haveNino= Some(true))
-        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility))
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility), useEligibilityFrontend = false)
         builder.haveNinoRow mustBe
           SummaryRow(
             "serviceCriteria.nino",
@@ -61,7 +62,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
       }
 
       " 'No' selected haveNinoRow and point to eligibility-frontend with eligibility feature enabled" in {
-        val builder = SummaryServiceEligibilitySectionBuilder(useEligibilityFrontend = true)
+        val builder = SummaryServiceEligibilitySectionBuilder()
         builder.haveNinoRow mustBe
           SummaryRow(
             "serviceCriteria.nino",
@@ -72,7 +73,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
 
       " 'YES' selected for haveNinoRow and point to eligibility-frontend with eligibility feature enabled" in {
         val vatServiceEligibility = defaultVatServiceEligibility.copy(haveNino= Some(true))
-        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility), useEligibilityFrontend = true)
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility))
         builder.haveNinoRow mustBe
           SummaryRow(
             "serviceCriteria.nino",
@@ -85,7 +86,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
     "with doingBusinessAbroadRow render" should {
 
       " 'No' selected haveNinoRow" in {
-        val builder = SummaryServiceEligibilitySectionBuilder()
+        val builder = SummaryServiceEligibilitySectionBuilder(useEligibilityFrontend = false)
         builder.doingBusinessAbroadRow mustBe
           SummaryRow(
             "serviceCriteria.businessAbroad",
@@ -96,7 +97,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
 
       " 'YES' selected for doingBusinessAbroadRow" in {
         val vatServiceEligibility = defaultVatServiceEligibility.copy(doingBusinessAbroad = Some(true))
-        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility))
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility), useEligibilityFrontend = false)
         builder.doingBusinessAbroadRow mustBe
           SummaryRow(
             "serviceCriteria.businessAbroad",
@@ -106,7 +107,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
       }
 
       " 'No' selected haveNinoRow and point to eligibility-frontend with eligibility feature enabled" in {
-        val builder = SummaryServiceEligibilitySectionBuilder(useEligibilityFrontend = true)
+        val builder = SummaryServiceEligibilitySectionBuilder()
         builder.doingBusinessAbroadRow mustBe
           SummaryRow(
             "serviceCriteria.businessAbroad",
@@ -117,7 +118,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
 
       " 'YES' selected for doingBusinessAbroadRow and point to eligibility-frontend with eligibility feature enabled" in {
         val vatServiceEligibility = defaultVatServiceEligibility.copy(doingBusinessAbroad = Some(true))
-        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility), useEligibilityFrontend = true)
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility))
         builder.doingBusinessAbroadRow mustBe
           SummaryRow(
             "serviceCriteria.businessAbroad",
@@ -130,7 +131,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
     "with doAnyApplyToYouRow render" should {
 
       " 'No' selected doAnyApplyToYouRow" in {
-        val builder = SummaryServiceEligibilitySectionBuilder()
+        val builder = SummaryServiceEligibilitySectionBuilder(useEligibilityFrontend = false)
         builder.doAnyApplyToYouRow mustBe
           SummaryRow(
             "serviceCriteria.doAnyApplyToYou",
@@ -141,7 +142,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
 
       " 'YES' selected for doAnyApplyToYouRow" in {
         val vatServiceEligibility = defaultVatServiceEligibility.copy(doAnyApplyToYou = Some(true))
-        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility))
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility), useEligibilityFrontend = false)
         builder.doAnyApplyToYouRow mustBe
           SummaryRow(
             "serviceCriteria.doAnyApplyToYou",
@@ -151,7 +152,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
       }
 
       " 'No' selected doAnyApplyToYouRow and point to eligibility-frontend with eligibility feature enabled" in {
-        val builder = SummaryServiceEligibilitySectionBuilder(useEligibilityFrontend = true)
+        val builder = SummaryServiceEligibilitySectionBuilder()
         builder.doAnyApplyToYouRow mustBe
           SummaryRow(
             "serviceCriteria.doAnyApplyToYou",
@@ -163,7 +164,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
 
       " 'YES' selected for doAnyApplyToYouRow and point to eligibility-frontend with eligibility feature enabled" in {
         val vatServiceEligibility = defaultVatServiceEligibility.copy(doAnyApplyToYou = Some(true))
-        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility), useEligibilityFrontend = true)
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility))
         builder.doAnyApplyToYouRow mustBe
           SummaryRow(
             "serviceCriteria.doAnyApplyToYou",
@@ -176,7 +177,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
     "with applyingForAnyOfRow render" should {
 
       " 'No' selected applyingForAnyOfRow" in {
-        val builder = SummaryServiceEligibilitySectionBuilder()
+        val builder = SummaryServiceEligibilitySectionBuilder(useEligibilityFrontend = false)
         builder.applyingForAnyOfRow mustBe
           SummaryRow(
             "serviceCriteria.applyingForAnyOf",
@@ -187,7 +188,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
 
       " 'YES' selected for applyingForAnyOfRow" in {
         val vatServiceEligibility = defaultVatServiceEligibility.copy(applyingForAnyOf = Some(true))
-        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility))
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility), useEligibilityFrontend = false)
         builder.applyingForAnyOfRow mustBe
           SummaryRow(
             "serviceCriteria.applyingForAnyOf",
@@ -197,7 +198,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
       }
 
       " 'No' selected applyingForAnyOfRow and point to eligibility-frontend with eligibility feature enabled" in {
-        val builder = SummaryServiceEligibilitySectionBuilder(useEligibilityFrontend = true)
+        val builder = SummaryServiceEligibilitySectionBuilder()
         builder.applyingForAnyOfRow mustBe
           SummaryRow(
             "serviceCriteria.applyingForAnyOf",
@@ -208,7 +209,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
 
       " 'YES' selected for applyingForAnyOfRow and point to eligibility-frontend with eligibility feature enabled" in {
         val vatServiceEligibility = defaultVatServiceEligibility.copy(applyingForAnyOf = Some(true))
-        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility), useEligibilityFrontend = true)
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility))
         builder.applyingForAnyOfRow mustBe
           SummaryRow(
             "serviceCriteria.applyingForAnyOf",
@@ -218,11 +219,56 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
       }
     }
 
+    "with applyingForVatExemptionRow render" should {
+      " 'No' selected applyingForAnyOfRow and point to eligibility-frontend with eligibility feature enabled" in {
+        val builder = SummaryServiceEligibilitySectionBuilder()
+        builder.applyingForVatExemptionRow mustBe
+          SummaryRow(
+            "serviceCriteria.applyingForVatExemption",
+            "app.common.no",
+            Some(builder.getUrl(serviceName, "apply-exempt"))
+          )
+      }
+
+      " 'YES' selected for applyingForAnyOfRow and point to eligibility-frontend with eligibility feature enabled" in {
+        val vatServiceEligibility = defaultVatServiceEligibility.copy(applyingForVatExemption = Some(true))
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility))
+        builder.applyingForVatExemptionRow mustBe
+          SummaryRow(
+            "serviceCriteria.applyingForVatExemption",
+            "app.common.yes",
+            Some(builder.getUrl(serviceName, "apply-exempt"))
+          )
+      }
+    }
+
+    "with applyingForVatExceptionRow render" should {
+      " 'No' selected applyingForAnyOfRow and point to eligibility-frontend with eligibility feature enabled" in {
+        val builder = SummaryServiceEligibilitySectionBuilder()
+        builder.applyingForVatExceptionRow mustBe
+          SummaryRow(
+            "serviceCriteria.applyingForVatException",
+            "app.common.no",
+            Some(builder.getUrl(serviceName, "apply-exempt"))
+          )
+      }
+
+      " 'YES' selected for applyingForAnyOfRow and point to eligibility-frontend with eligibility feature enabled" in {
+        val vatServiceEligibility = defaultVatServiceEligibility.copy(applyingForVatExemption = Some(true))
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility))
+        builder.applyingForVatExceptionRow mustBe
+          SummaryRow(
+            "serviceCriteria.applyingForVatException",
+            "app.common.yes",
+            Some(builder.getUrl(serviceName, "apply-exempt"))
+          )
+      }
+    }
 
     "with companyWillDoAnyOfRow render" should {
 
       " 'No' selected companyWillDoAnyOfRow" in {
-        val builder = SummaryServiceEligibilitySectionBuilder()
+        val builder = SummaryServiceEligibilitySectionBuilder(useEligibilityFrontend = false)
         builder.companyWillDoAnyOfRow mustBe
           SummaryRow(
             "serviceCriteria.companyWillDoAnyOf",
@@ -233,7 +279,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
 
       " 'YES' selected for companyWillDoAnyOfRow" in {
         val vatServiceEligibility = defaultVatServiceEligibility.copy(companyWillDoAnyOf = Some(true))
-        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility))
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility), useEligibilityFrontend = false)
         builder.companyWillDoAnyOfRow mustBe
           SummaryRow(
             "serviceCriteria.companyWillDoAnyOf",
@@ -243,7 +289,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
       }
 
       " 'No' selected companyWillDoAnyOfRow and point to eligibility-frontend with eligibility feature enabled" in {
-        val builder = SummaryServiceEligibilitySectionBuilder(useEligibilityFrontend = true)
+        val builder = SummaryServiceEligibilitySectionBuilder()
         builder.companyWillDoAnyOfRow mustBe
           SummaryRow(
             "serviceCriteria.companyWillDoAnyOf",
@@ -254,7 +300,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
 
       " 'YES' selected for companyWillDoAnyOfRow and point to eligibility-frontend with eligibility feature enabled" in {
         val vatServiceEligibility = defaultVatServiceEligibility.copy(companyWillDoAnyOf = Some(true))
-        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility), useEligibilityFrontend = true)
+        val builder = SummaryServiceEligibilitySectionBuilder(Some(vatServiceEligibility))
         builder.companyWillDoAnyOfRow mustBe
           SummaryRow(
             "serviceCriteria.companyWillDoAnyOf",
@@ -269,7 +315,7 @@ class SummaryServiceEligibilitySectionBuilderSpec extends VatRegSpec with VatReg
       "a valid summary section" in {
         val builder = SummaryServiceEligibilitySectionBuilder(Some(defaultVatServiceEligibility))
         builder.section.id mustBe "serviceCriteria"
-        builder.section.rows.length mustEqual 5
+        builder.section.rows.length mustEqual 7
       }
     }
 

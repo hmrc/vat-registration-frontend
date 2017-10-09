@@ -25,6 +25,7 @@ final case class VatServiceEligibility(
                                         doingBusinessAbroad: Option[Boolean] = None,
                                         doAnyApplyToYou: Option[Boolean] = None,
                                         applyingForAnyOf: Option[Boolean] = None,
+                                        applyingForVatExemption: Option[Boolean] = None,
                                         companyWillDoAnyOf: Option[Boolean] = None,
                                         vatEligibilityChoice: Option[VatEligibilityChoice] = None
                                       ) {
@@ -34,6 +35,7 @@ final case class VatServiceEligibility(
     case DoingBusinessAbroadQuestion => doingBusinessAbroad
     case DoAnyApplyToYouQuestion => doAnyApplyToYou
     case ApplyingForAnyOfQuestion => applyingForAnyOf
+    case ApplyingForVatExemptionQuestion => applyingForVatExemption
     case CompanyWillDoAnyOfQuestion => companyWillDoAnyOf
   }
 
@@ -42,6 +44,7 @@ final case class VatServiceEligibility(
     case DoingBusinessAbroadQuestion => this.copy(doingBusinessAbroad = Some(answer))
     case DoAnyApplyToYouQuestion => this.copy(doAnyApplyToYou = Some(answer))
     case ApplyingForAnyOfQuestion => this.copy(applyingForAnyOf = Some(answer))
+    case ApplyingForVatExemptionQuestion => this.copy(applyingForVatExemption = Some(answer))
     case CompanyWillDoAnyOfQuestion => this.copy(companyWillDoAnyOf = Some(answer))
   }
 

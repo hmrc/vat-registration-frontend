@@ -161,6 +161,8 @@ pages.summary.serviceCriteria.companyWillDoAnyOf        = Will the company do an
 pages.summary.serviceCriteria.nino                      = Do you have a National Insurance number?
 pages.summary.serviceCriteria.businessAbroad            = Will the company do international business once it''s registered for VAT?
 pages.summary.serviceCriteria.doAnyApplyToYou           = Are you involved with more than one business or changing the legal status of your business?
+pages.summary.serviceCriteria.applyingForVatExemption   = Is the company applying for a VAT registration exemption?
+pages.summary.serviceCriteria.applyingForVatException   = Is the company applying for a VAT registration exception?
 pages.summary.serviceCriteria.applyingForAnyOf          = Is the company applying for either the Agricultural Flat Rate Scheme or the Annual Accounting Scheme?
 
 ## Start Date Page
