@@ -29,7 +29,7 @@ class TwirlViewController @Inject()(ds: CommonPlayDependencies, vatRegFeatureSwi
   extends VatRegistrationController(ds) with SessionProfile {
 
   val keystoreConnector: KeystoreConnector = KeystoreConnector
-  def useEligibilityFrontend: Boolean = vatRegFeatureSwitch.vatRegistrationFrontend.enabled
+  def useEligibilityFrontend: Boolean = !vatRegFeatureSwitch.disableEligibilityFrontend.enabled
 
   def renderViewAuthorised(viewName: String): Action[AnyContent] = authorised.async {
     implicit user =>

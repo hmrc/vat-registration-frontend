@@ -301,6 +301,7 @@ object S4LVatEligibility {
         doingBusinessAbroad = ve.doingBusinessAbroad,
         doAnyApplyToYou = ve.doAnyApplyToYou,
         applyingForAnyOf = ve.applyingForAnyOf,
+        applyingForVatExemption = ve.applyingForVatExemption,
         companyWillDoAnyOf = ve.companyWillDoAnyOf,
         vatEligibilityChoice = ve.vatEligibilityChoice
         )

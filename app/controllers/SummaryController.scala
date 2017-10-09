@@ -33,7 +33,7 @@ class SummaryController @Inject()(ds: CommonPlayDependencies, vatRegFeatureSwitc
                                  (implicit s4LService: S4LService, vrs: VatRegistrationService)
   extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
-  def useEligibilityFrontend: Boolean = vatRegFeatureSwitch.vatRegistrationFrontend.enabled
+  def useEligibilityFrontend: Boolean = !vatRegFeatureSwitch.disableEligibilityFrontend.enabled
 
   def show: Action[AnyContent] = authorised.async {
     implicit user =>
