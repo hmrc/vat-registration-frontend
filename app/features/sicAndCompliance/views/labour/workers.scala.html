@@ -5,6 +5,7 @@
 @fieldSetClasses = @{
     if(workersForm.hasErrors && (workersForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
+@import views.html.helpers.templates.vatInput
 
 @main_template(title = messages("pages.labourCompliance.workers.title")) {
 
@@ -26,7 +27,7 @@
                         @govHelpers.errorInline("numberOfWorkers", Messages(error.message))
                     }
 
-                    @govHelpers.input(
+                    @vatInput(
                         workersForm("numberOfWorkers"),
                         '_divClass -> "form-group",
                         '_inputClass -> "form-control",

@@ -5,6 +5,7 @@
 @fieldSetClasses = @{
     if(estimateVatTurnoverForm.hasErrors && (estimateVatTurnoverForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
+@import views.html.helpers.templates.vatInput
 
 @main_template(title = messages("pages.estimate.vat.turnover.title")) {
 
@@ -48,7 +49,7 @@
                       @govHelpers.errorInline("turnoverEstimate", messages(error.message))
                   }
 
-                  @govHelpers.input(
+                  @vatInput(
                       estimateVatTurnoverForm("turnoverEstimate"),
                       '_divClass -> "form-group",
                       '_inputClass -> "form-control",

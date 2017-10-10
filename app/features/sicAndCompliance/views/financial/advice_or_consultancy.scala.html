@@ -2,6 +2,7 @@
 @(adviceOrConsultancyForm: Form[AdviceOrConsultancy])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
+@import views.html.helpers.templates.vatInputRadioGroup
 
 @main_template(title = messages("pages.financialCompliance.adviceOrConsultancy.title")) {
 
@@ -19,7 +20,7 @@
                 <fieldset class="inline">
                     <span id="adviceOrConsultancyRadio"/>
 
-                    @govHelpers.inputRadioGroup(
+                    @vatInputRadioGroup(
                         field = adviceOrConsultancyForm("adviceOrConsultancyRadio"),
                         Seq(
                             "true" -> Messages("app.common.yes"),

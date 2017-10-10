@@ -5,6 +5,7 @@
 @fieldSetClasses = @{
     if(estimateZeroRatedSalesForm.hasErrors && (estimateZeroRatedSalesForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
+@import views.html.helpers.templates.vatInput
 
 @main_template(title = messages("pages.estimate.zero.rated.sales.title")) {
 
@@ -46,7 +47,7 @@
                       @govHelpers.errorInline("zeroRatedTurnoverEstimate", Messages(error.message))
                   }
 
-                      @govHelpers.input(
+                      @vatInput(
                           estimateZeroRatedSalesForm("zeroRatedTurnoverEstimate"),
                           '_divClass -> "form-group",
                           '_inputClass -> "form-control",

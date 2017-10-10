@@ -2,6 +2,7 @@
 @(officerContactDetailsForm: Form[OfficerContactDetailsView])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
+@import views.html.helpers.templates.vatInput
 
 @main_template(title = messages("pages.officerContact.title")) {
 
@@ -27,7 +28,7 @@
                       @govHelpers.errorInline("officerContactDetails", messages(error.message))
                   }
 
-                  @govHelpers.input(
+                  @vatInput(
                       officerContactDetailsForm("email"),
                       '_divClass -> "form-group",
                       '_inputClass -> "form-control",
@@ -37,7 +38,7 @@
                   )
 
 
-                  @govHelpers.input(
+                  @vatInput(
                       officerContactDetailsForm("mobile"),
                       '_type -> "text",
                       '_divClass -> "form-group",
@@ -47,7 +48,7 @@
                       '_label -> messages("pages.officerContact.mobile.label")
                   )
 
-                  @govHelpers.input(
+                  @vatInput(
                       officerContactDetailsForm("daytimePhone"),
                       '_type -> "text",
                       '_divClass -> "form-group",
