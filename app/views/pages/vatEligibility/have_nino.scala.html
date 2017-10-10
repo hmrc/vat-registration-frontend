@@ -2,6 +2,7 @@
 @(haveNinoForm: Form[YesOrNoQuestion])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
+@import views.html.helpers.templates.vatInputRadioGroup
 
 @main_template(title = messages("pages.eligibility.haveNino.title")) {
 
@@ -19,7 +20,7 @@
                 <fieldset class="inline">
                     <span id="haveNinoRadio"/>
 
-                    @govHelpers.inputRadioGroup(
+                    @vatInputRadioGroup(
                         field = haveNinoForm("haveNinoRadio"),
                         Seq(
                             "true" -> messages("app.common.yes"),

@@ -4,6 +4,7 @@
 @(overThresholdForm: Form[OverThresholdView], dateOfIncorporation: String)(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
+@import views.html.helpers.templates.{vatInputRadioGroup, vatInput}
 
 @main_template(title = messages("pages.thresholdQuestion1.title")) {
 
@@ -30,7 +31,7 @@
                         .ofLocalizedDate(java.time.format.FormatStyle.LONG)
                         .withLocale(java.util.Locale.UK)) { formatter =>
 
-                        @govHelpers.inputRadioGroup(
+                        @vatInputRadioGroup(
                             overThresholdForm("overThresholdRadio"),
                             Seq(
                                 "true" -> Messages("app.common.yes"),
@@ -62,7 +63,7 @@
                                         <input type="hidden" name="overThreshold" value="" id="overThreshold" class="hidden" />
                                     </label>
 
-                                    @govHelpers.input(
+                                    @vatInput(
                                         overThresholdForm("overThreshold.month"),
                                         '_divClass -> "form-group",
                                         '_inputClass -> "form-control",
@@ -71,7 +72,7 @@
                                         '_labelClass -> "form-label"
                                     )
 
-                                    @govHelpers.input(
+                                    @vatInput(
                                         overThresholdForm("overThreshold.year"),
                                         '_divClass -> "form-group form-group-year",
                                         '_inputClass -> "form-control",

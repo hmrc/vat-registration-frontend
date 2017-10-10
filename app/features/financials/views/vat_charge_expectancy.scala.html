@@ -2,6 +2,7 @@
 @(vatChargeExpectancyForm:  Form[VatChargeExpectancy])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
+@import views.html.helpers.templates.vatInputRadioGroup
 
 @main_template(title = messages("pages.vat.charge.expectancy.title")) {
 
@@ -21,7 +22,7 @@
       <div class="form-group">
         <fieldset class="block">
             <span id="vatChargeRadio"/>
-            @govHelpers.inputRadioGroup(
+            @vatInputRadioGroup(
                 field = vatChargeExpectancyForm("vatChargeRadio"),
                 Seq(
                   VatChargeExpectancy.VAT_CHARGE_YES -> Messages("pages.vat.charge.expectancy.radio.yes"),

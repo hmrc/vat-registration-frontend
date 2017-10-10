@@ -4,6 +4,7 @@
 @(frsStartDateForm: Form[FrsStartDateView])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.errorSummary
+@import views.html.helpers.templates.{vatInputRadioGroup, vatInput}
 
 @main_template(title = messages("pages.frs.startDate.title")) {
 
@@ -24,7 +25,7 @@
                         .ofLocalizedDate(java.time.format.FormatStyle.LONG)
                         .withLocale(java.util.Locale.UK)) { formatter =>
 
-                        @govHelpers.inputRadioGroup(
+                        @vatInputRadioGroup(
                             frsStartDateForm("frsStartDateRadio"),
                             Seq(
                                 Some(FrsStartDateView.VAT_REGISTRATION_DATE -> Messages("pages.frs.startDate.radio1")),
@@ -43,7 +44,7 @@
 
 
                         @defining(frsStartDateForm("frsStartDate").errors.nonEmpty) { errorPresent =>
-                            <div class="form-date @if(errorPresent) { form-field--error }">
+                            <div class="form-date @if(errorPresent) { form-group-error }">
 
                                 <fieldset id="frs-start-date">
                                     <legend></legend>
@@ -57,7 +58,7 @@
                                         <input type="hidden" name="frsStartDate" value="" id="frsStartDate" class="hidden" />
                                     </label>
 
-                                    @govHelpers.input(
+                                    @vatInput(
                                         frsStartDateForm("frsStartDate.day"),
                                         '_divClass -> "form-group",
                                         '_inputClass -> "form-control",
@@ -66,7 +67,7 @@
                                         '_labelClass -> "form-label"
                                     )
 
-                                    @govHelpers.input(
+                                    @vatInput(
                                         frsStartDateForm("frsStartDate.month"),
                                         '_divClass -> "form-group",
                                         '_inputClass -> "form-control",
@@ -75,7 +76,7 @@
                                         '_labelClass -> "form-label"
                                     )
 
-                                    @govHelpers.input(
+                                    @vatInput(
                                         frsStartDateForm("frsStartDate.year"),
                                         '_divClass -> "form-group form-group-year",
                                         '_inputClass -> "form-control",

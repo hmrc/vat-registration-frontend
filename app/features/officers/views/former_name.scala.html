@@ -5,6 +5,7 @@
 @fieldSetClasses = @{
     if(formerNameForm.hasErrors && (formerNameForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
+@import views.html.helpers.templates.{vatInputRadioGroup, vatInput}
 
 @main_template(title = messages("pages.formerName.title")) {
 
@@ -23,7 +24,8 @@
                 <div class="form-group">
                     <fieldset class="inline">
                         <span id="formerNameRadio"/>
-                        @govHelpers.inputRadioGroup(
+
+                        @vatInputRadioGroup(
                             field = formerNameForm("formerNameRadio"),
                             Seq(
                                 "true" -> Messages("app.common.yes"),
@@ -39,7 +41,7 @@
                                 @govHelpers.errorInline("formerName", Messages(error.message))
                             }
 
-                            @govHelpers.input(
+                            @vatInput(
                                 formerNameForm("formerName"),
                                 '_divClass -> "form-group",
                                 '_inputClass -> "form-control",
