@@ -3,8 +3,7 @@
 @import models.view.frs.FrsStartDateView
 @(frsStartDateForm: Form[FrsStartDateView])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
-@import views.html.helpers.templates.{vatInputRadioGroup, vatInput}
+@import views.html.helpers.templates.{vatInputRadioGroup, vatInput, errorSummary}
 
 @main_template(title = messages("pages.frs.startDate.title")) {
 

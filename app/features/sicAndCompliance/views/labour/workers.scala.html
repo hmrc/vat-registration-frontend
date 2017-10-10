@@ -1,11 +1,10 @@
 @import models.view.sicAndCompliance.labour.Workers
 @(workersForm: Form[Workers])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
 @fieldSetClasses = @{
     if(workersForm.hasErrors && (workersForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
-@import views.html.helpers.templates.vatInput
+@import views.html.helpers.templates.{vatInput, errorSummary}
 
 @main_template(title = messages("pages.labourCompliance.workers.title")) {
 
