@@ -1,8 +1,7 @@
 @import models.view.sicAndCompliance.BusinessActivityDescription
 @(businessActivityDescriptionForm:  Form[BusinessActivityDescription])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
-@import views.html.helpers.templates.vatTextArea
+@import views.html.helpers.templates.{vatTextArea, errorSummary}
 
 @main_template(title = messages("pages.business.activity.description.title")) {
     <div class="grid-row">

@@ -1,11 +1,10 @@
 @import models.view.vatTradingDetails.TradingNameView
 @(tradingNameForm: Form[TradingNameView])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
 @fieldSetClasses = @{
     if(tradingNameForm.hasErrors && (tradingNameForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
-@import views.html.helpers.templates.{vatInputRadioGroup, vatInput}
+@import views.html.helpers.templates.{vatInputRadioGroup, vatInput, errorSummary}
 
 @main_template(title = messages("pages.tradingName.title")) {
 
