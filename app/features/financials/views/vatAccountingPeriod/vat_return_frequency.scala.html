@@ -1,7 +1,7 @@
 @import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 @(vatReturnFrequencyForm: Form[VatReturnFrequency])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
+@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
 
 @main_template(title = messages("pages.vat.return.frequency.title")) {
 
@@ -19,14 +19,14 @@
       <div class="form-group">
         <fieldset>
           <span id="vatReturnFrequencyRadio"/>
-          @govHelpers.inputRadioGroup(
-            field = vatReturnFrequencyForm("vatReturnFrequencyRadio"),
-            Seq(
-              VatReturnFrequency.MONTHLY -> Messages("pages.vat.return.frequency.radio.monthly"),
-              VatReturnFrequency.QUARTERLY -> Messages("pages.vat.return.frequency.radio.quarterly")
-            ),
-            '_labelAfter -> true,
-            '_labelClass -> "block-label"
+          @vatInputRadioGroup(
+              field = vatReturnFrequencyForm("vatReturnFrequencyRadio"),
+              Seq(
+                VatReturnFrequency.MONTHLY -> Messages("pages.vat.return.frequency.radio.monthly"),
+                VatReturnFrequency.QUARTERLY -> Messages("pages.vat.return.frequency.radio.quarterly")
+              ),
+              '_labelAfter -> true,
+              '_labelClass -> "block-label"
           )
         </fieldset>
       </div>

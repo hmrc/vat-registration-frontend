@@ -3,7 +3,7 @@
 
 @(formerNameDateForm: Form[FormerNameDateView], formerName : String)(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
+@import views.html.helpers.templates.{vatInput, errorSummary}
 
 @main_template(title = messages("pages.formerNameDate.title")) {
 
@@ -30,7 +30,7 @@
 
 
                         @defining(formerNameDateForm("formerNameDate").errors.nonEmpty) { errorPresent =>
-                            <div class="form-date @if(errorPresent) { form-field--error }">
+                            <div class="form-date @if(errorPresent) { form-group-error }">
 
                                 <fieldset id="former-name-date">
                                     <legend></legend>
@@ -44,7 +44,7 @@
                                         <input type="hidden" name="formerNameDate" value="" id="formerNameDate" class="hidden" />
                                     </label>
 
-                                    @govHelpers.input(
+                                    @vatInput(
                                         formerNameDateForm("formerNameDate.day"),
                                         '_divClass -> "form-group",
                                         '_inputClass -> "form-control",
@@ -53,7 +53,7 @@
                                         '_labelClass -> "form-label"
                                     )
 
-                                    @govHelpers.input(
+                                    @vatInput(
                                         formerNameDateForm("formerNameDate.month"),
                                         '_divClass -> "form-group",
                                         '_inputClass -> "form-control",
@@ -62,7 +62,7 @@
                                         '_labelClass -> "form-label"
                                     )
 
-                                    @govHelpers.input(
+                                    @vatInput(
                                         formerNameDateForm("formerNameDate.year"),
                                         '_divClass -> "form-group form-group-year",
                                         '_inputClass -> "form-control",

@@ -1,7 +1,7 @@
 @import models.view.sicAndCompliance.financial.AdditionalNonSecuritiesWork
 @(additionalNonSecuritiesWorkForm: Form[AdditionalNonSecuritiesWork])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
+@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
 
 @main_template(title = messages("pages.financialCompliance.additionalNonSecuritiesWork.title")) {
 
@@ -23,7 +23,7 @@
                 <fieldset class="inline">
                     <span id="additionalNonSecuritiesWorkRadio"/>
 
-                    @govHelpers.inputRadioGroup(
+                    @vatInputRadioGroup(
                         field = additionalNonSecuritiesWorkForm("additionalNonSecuritiesWorkRadio"),
                         Seq(
                             "true" -> Messages("app.common.yes"),

@@ -1,7 +1,7 @@
 @import forms.vatFinancials.vatBankAccount.CompanyBankAccountDetailsForm
 @(bankDetailsForm: Form[CompanyBankAccountDetailsForm])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
+@import views.html.helpers.templates.{vatInput, errorSummary}
 
 @main_template(title = messages("pages.bankDetails.title")) {
 
@@ -28,7 +28,7 @@
                 <div class="form-group">
                     <div class="form-bank-details">
 
-                        @govHelpers.input(
+                        @vatInput(
                             bankDetailsForm("accountName"),
                             '_divClass -> "form-group",
                             '_inputClass -> "form-control",
@@ -39,7 +39,7 @@
                             '_autoComplete -> "off"
                         )
 
-                        @govHelpers.input(
+                        @vatInput(
                             bankDetailsForm("accountNumber"),
                             '_type -> "text",
                             '_divClass -> "form-group",
@@ -51,7 +51,7 @@
                         )
 
                         @defining(bankDetailsForm("sortCode").errors.nonEmpty) { sortCodeErrorPresent =>
-                            <div class="form-date @if(sortCodeErrorPresent) { form-field--error }">
+                            <div class="form-date @if(sortCodeErrorPresent) { form-group-error }">
 
                                 <fieldset id="sort-code">
 
@@ -66,7 +66,7 @@
                                         <input type="text" name="sortCode" value="" id="sortCode" class="hidden" />
                                     </label>
 
-                                    @govHelpers.input(
+                                    @vatInput(
                                         bankDetailsForm("sortCode.part1"),
                                         '_type -> "text",
                                         '_divClass -> "form-group",
@@ -78,7 +78,7 @@
                                         '_autoComplete -> "off"
                                     )
 
-                                    @govHelpers.input(
+                                    @vatInput(
                                         bankDetailsForm("sortCode.part2"),
                                         '_type -> "text",
                                         '_divClass -> "form-group",
@@ -90,7 +90,7 @@
                                         '_autoComplete -> "off"
                                     )
 
-                                    @govHelpers.input(
+                                    @vatInput(
                                         bankDetailsForm("sortCode.part3"),
                                         '_type -> "text",
                                         '_divClass -> "form-group",

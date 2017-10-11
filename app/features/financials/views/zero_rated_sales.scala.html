@@ -1,7 +1,7 @@
 @import models.view.vatFinancials.ZeroRatedSales
 @(zeroRatedSalesForm:  Form[ZeroRatedSales])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
+@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
 
 @main_template(title = messages("pages.zero.rated.sales.title")) {
 
@@ -39,7 +39,7 @@
       <div class="form-group">
         <fieldset class="inline">
             <span id="zeroRatedSalesRadio"/>
-            @govHelpers.inputRadioGroup(
+            @vatInputRadioGroup(
                 field = zeroRatedSalesForm("zeroRatedSalesRadio"),
                 Seq(
                   ZeroRatedSales.ZERO_RATED_SALES_YES -> Messages("app.common.yes"),

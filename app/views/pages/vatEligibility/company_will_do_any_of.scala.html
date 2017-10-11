@@ -1,7 +1,7 @@
 @import models.YesOrNoQuestion
 @(companyWillDoAnyOfForm: Form[YesOrNoQuestion])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
+@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
 
 @main_template(title = messages("pages.eligibility.companyWillDoAnyOf.title")) {
 
@@ -29,7 +29,7 @@
                 <fieldset class="inline">
                     <span id="companyWillDoAnyOfRadio"/>
 
-                    @govHelpers.inputRadioGroup(
+                    @vatInputRadioGroup(
                         field = companyWillDoAnyOfForm("companyWillDoAnyOfRadio"),
                         Seq(
                             "true" -> messages("app.common.yes"),

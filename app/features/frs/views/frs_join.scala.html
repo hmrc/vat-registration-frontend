@@ -1,7 +1,7 @@
 @import forms.genericForms.YesOrNoAnswer
 @(joinFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
+@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
 
 @main_template(title = messages("pages.frs.join.title")) {
 
@@ -32,7 +32,7 @@
             <div class="form-group">
                 <fieldset class="inline">
                     <span id="joinFrsRadio"></span>
-                    @govHelpers.inputRadioGroup(
+                    @vatInputRadioGroup(
                         field = joinFrsForm("joinFrsRadio"),
                         Seq(
                             "true" -> Messages("app.common.yes"),
