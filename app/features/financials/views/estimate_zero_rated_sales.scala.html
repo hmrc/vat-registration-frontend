@@ -1,10 +1,10 @@
 @import models.view.vatFinancials.EstimateZeroRatedSales
 @(estimateZeroRatedSalesForm: Form[EstimateZeroRatedSales])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
 @fieldSetClasses = @{
     if(estimateZeroRatedSalesForm.hasErrors && (estimateZeroRatedSalesForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
+@import views.html.helpers.templates.{vatInput, errorSummary}
 
 @main_template(title = messages("pages.estimate.zero.rated.sales.title")) {
 
@@ -46,7 +46,7 @@
                       @govHelpers.errorInline("zeroRatedTurnoverEstimate", Messages(error.message))
                   }
 
-                      @govHelpers.input(
+                      @vatInput(
                           estimateZeroRatedSalesForm("zeroRatedTurnoverEstimate"),
                           '_divClass -> "form-group",
                           '_inputClass -> "form-control",

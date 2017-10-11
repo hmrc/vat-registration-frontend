@@ -1,7 +1,7 @@
 @import models.view.frs.AnnualCostsLimitedView
 @(annualCostsInclusiveForm:  Form[AnnualCostsLimitedView], estimateVatTurnover : Long)(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
+@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
 
 @main_template(title = messages("pages.frs.costsLimited.title")) {
 
@@ -22,7 +22,7 @@
       <div class="form-group">
         <fieldset class="block">
             <span id="annualCostsLimitedRadio"/>
-            @govHelpers.inputRadioGroup(
+            @vatInputRadioGroup(
                 field = annualCostsInclusiveForm("annualCostsLimitedRadio"),
                 Seq(
                   AnnualCostsLimitedView.YES -> messages("app.common.yes"),

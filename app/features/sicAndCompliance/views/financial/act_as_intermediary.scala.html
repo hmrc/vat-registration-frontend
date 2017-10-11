@@ -1,7 +1,7 @@
 @import models.view.sicAndCompliance.financial.ActAsIntermediary
 @(actAsIntermediaryForm: Form[ActAsIntermediary])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
+@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
 
 @main_template(title = messages("pages.financialCompliance.actAsIntermediary.title")) {
 
@@ -23,7 +23,7 @@
                 <fieldset class="inline">
                     <span id="actAsIntermediaryRadio"/>
 
-                    @govHelpers.inputRadioGroup(
+                    @vatInputRadioGroup(
                         field = actAsIntermediaryForm("actAsIntermediaryRadio"),
                         Seq(
                             "true" -> messages("app.common.yes"),

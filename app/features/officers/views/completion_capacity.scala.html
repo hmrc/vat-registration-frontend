@@ -2,7 +2,7 @@
 @import models.view.vatLodgingOfficer.CompletionCapacityView
 @(completionCapacityForm: Form[CompletionCapacityView], officerList: Seq[Officer])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
+@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
 
 @main_template(title = messages("pages.completionCapacity.title")) {
 
@@ -32,7 +32,7 @@
         @govHelpers.form(action = controllers.vatLodgingOfficer.routes.CompletionCapacityController.submit()) {
             <div class="form-group" id="completionCapacityRadio">
 
-            @govHelpers.inputRadioGroup(
+            @vatInputRadioGroup(
                 field = completionCapacityForm("completionCapacityRadio"),
                 officerList.map(officer => (officer.name.id, officer.name.asLabel)),
                 '_labelAfter -> true,

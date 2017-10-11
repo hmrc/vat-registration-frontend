@@ -2,7 +2,7 @@
 @import models.view.sicAndCompliance.MainBusinessActivityView
 @(mainBusinessActivityForm: Form[MainBusinessActivityView], sicCodeList: Seq[SicCode])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.errorSummary
+@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
 
 @main_template(title = messages("pages.mainBusinessActivity.title")) {
 
@@ -23,7 +23,7 @@
         @govHelpers.form(action = controllers.sicAndCompliance.routes.MainBusinessActivityController.submit()) {
             <div class="form-group" id="mainBusinessActivityRadio">
 
-            @govHelpers.inputRadioGroup(
+            @vatInputRadioGroup(
                 field = mainBusinessActivityForm("mainBusinessActivityRadio"),
                 sicCodeList.map(sicCode => (sicCode.id, sicCode.description)),
                 '_labelAfter -> true,
