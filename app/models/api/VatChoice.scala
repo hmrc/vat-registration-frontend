@@ -20,10 +20,12 @@ import play.api.libs.json._
 
 case class VatChoice(vatStartDate: VatStartDate)
 
-import models.api.VatEligibilityChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
+import models.api.VatEligibilityChoice.NECESSITY_VOLUNTARY
+
 case class VatEligibilityChoice(necessity: String, // "obligatory" or "voluntary"
                                 reason: Option[String] = None,
-                                vatThresholdPostIncorp: Option[VatThresholdPostIncorp] = None) {
+                                vatThresholdPostIncorp: Option[VatThresholdPostIncorp] = None,
+                                vatExpectedThresholdPostIncorp: Option[VatExpectedThresholdPostIncorp] = None) {
   def registeringVoluntarily: Boolean = necessity == NECESSITY_VOLUNTARY
 }
 
