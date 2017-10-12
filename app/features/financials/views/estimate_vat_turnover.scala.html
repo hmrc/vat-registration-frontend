@@ -8,63 +8,58 @@
 
 @main_template(title = messages("pages.estimate.vat.turnover.title")) {
 
-  <div class="column-one-third">
+  @errorSummary(
+    messages("app.common.errorSummaryLabel"),
+    estimateVatTurnoverForm,
+    Seq("turnoverEstimate")
+  )
 
-      @errorSummary(
-      messages("app.common.errorSummaryLabel"),
-      estimateVatTurnoverForm,
-      Seq("turnoverEstimate")
-      )
+  <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.estimate.vat.turnover.heading")</h1>
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.estimate.vat.turnover.heading")</h1>
+  <div class="form-group">
+      <div class="panel indent">
+          <p>@messages("pages.estimate.vat.turnover.info")</p>
+      </div>
+  </div>
 
-      <div class="form-group">
-          <div class="panel indent">
-              <p>@messages("pages.estimate.vat.turnover.info")</p>
-          </div>
+  <details role="group">
+      <summary role="button" aria-controls="details-content-1" aria-expanded="false">
+          <span class="summary">
+            @Html(messages("pages.estimate.vat.turnover.include.title"))
+          </span>
+      </summary>
+      <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
+          <ul class="list list-bullet">
+              <li>@Html(messages("pages.estimate.vat.turnover.include.bullet1"))</li>
+              <li>@Html(messages("pages.estimate.vat.turnover.include.bullet2"))</li>
+              <li>@Html(messages("pages.estimate.vat.turnover.include.bullet3"))</li>
+              <li>@Html(messages("pages.estimate.vat.turnover.include.bullet4"))</li>
+          </ul>
+          <p>@Html(messages("pages.estimate.vat.turnover.include.para1"))</p>
+      </div>
+  </details>
+
+  @govHelpers.form(action = controllers.vatFinancials.routes.EstimateVatTurnoverController.submit()) {
+      <div class="form-group @fieldSetClasses">
+          <fieldset>
+              @estimateVatTurnoverForm.errors.find(_.args.contains("turnoverEstimate")).map { error =>
+                  @govHelpers.errorInline("turnoverEstimate", messages(error.message))
+              }
+
+              @vatInput(
+                  estimateVatTurnoverForm("turnoverEstimate"),
+                  '_divClass -> "form-group",
+                  '_inputClass -> "form-control",
+                  '_label -> messages("app.common.gbp.symbol"),
+                  '_labelClass -> "form-label"
+              )
+          </fieldset>
       </div>
 
-      <details role="group">
-          <summary role="button" aria-controls="details-content-1" aria-expanded="false">
-              <span class="summary">
-                @Html(messages("pages.estimate.vat.turnover.include.title"))
-              </span>
-          </summary>
-          <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
-              <ul class="list list-bullet">
-                  <li>@Html(messages("pages.estimate.vat.turnover.include.bullet1"))</li>
-                  <li>@Html(messages("pages.estimate.vat.turnover.include.bullet2"))</li>
-                  <li>@Html(messages("pages.estimate.vat.turnover.include.bullet3"))</li>
-                  <li>@Html(messages("pages.estimate.vat.turnover.include.bullet4"))</li>
-              </ul>
-              <p>@Html(messages("pages.estimate.vat.turnover.include.para1"))</p>
-          </div>
-      </details>
-
-      @govHelpers.form(action = controllers.vatFinancials.routes.EstimateVatTurnoverController.submit()) {
-          <div class="form-group @fieldSetClasses">
-              <fieldset>
-                  @estimateVatTurnoverForm.errors.find(_.args.contains("turnoverEstimate")).map { error =>
-                      @govHelpers.errorInline("turnoverEstimate", messages(error.message))
-                  }
-
-                  @vatInput(
-                      estimateVatTurnoverForm("turnoverEstimate"),
-                      '_divClass -> "form-group",
-                      '_inputClass -> "form-control",
-                      '_label -> messages("app.common.gbp.symbol"),
-                      '_labelClass -> "form-label"
-                  )
-              </fieldset>
-          </div>
-
-          <div class="form-group">
-              <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-          </div>
-      }
-
-    </div>
-
+      <div class="form-group">
+          <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+      </div>
+  }
 }
 
 <script type="text/javascript">

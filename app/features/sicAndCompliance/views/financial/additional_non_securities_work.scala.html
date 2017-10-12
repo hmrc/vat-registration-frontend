@@ -5,42 +5,37 @@
 
 @main_template(title = messages("pages.financialCompliance.additionalNonSecuritiesWork.title")) {
 
-    <div class="column-one-third">
+    @errorSummary(
+    Messages("app.common.errorSummaryLabel"),
+    additionalNonSecuritiesWorkForm
+    )
 
-        @errorSummary(
-        Messages("app.common.errorSummaryLabel"),
-        additionalNonSecuritiesWorkForm
-        )
+    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.financialCompliance.additionalNonSecuritiesWork.heading")</h1>
 
-        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.financialCompliance.additionalNonSecuritiesWork.heading")</h1>
+    <p>
+    @messages("pages.financialCompliance.additionalNonSecuritiesWork.para")
+    </p>
 
-        <p>
-        @messages("pages.financialCompliance.additionalNonSecuritiesWork.para")
-        </p>
+    @govHelpers.form(action = controllers.sicAndCompliance.financial.routes.AdditionalNonSecuritiesWorkController.submit()) {
+        <div class="form-group">
+            <fieldset class="inline">
+                <span id="additionalNonSecuritiesWorkRadio"/>
 
-        @govHelpers.form(action = controllers.sicAndCompliance.financial.routes.AdditionalNonSecuritiesWorkController.submit()) {
-            <div class="form-group">
-                <fieldset class="inline">
-                    <span id="additionalNonSecuritiesWorkRadio"/>
+                @vatInputRadioGroup(
+                    field = additionalNonSecuritiesWorkForm("additionalNonSecuritiesWorkRadio"),
+                    Seq(
+                        "true" -> Messages("app.common.yes"),
+                        "false" -> Messages("app.common.no")
+                    ),
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label"
+                )
+            </fieldset>
+        </div>
 
-                    @vatInputRadioGroup(
-                        field = additionalNonSecuritiesWorkForm("additionalNonSecuritiesWorkRadio"),
-                        Seq(
-                            "true" -> Messages("app.common.yes"),
-                            "false" -> Messages("app.common.no")
-                        ),
-                        '_labelAfter -> true,
-                        '_labelClass -> "block-label"
-                    )
-                </fieldset>
-            </div>
+        <div class="form-group">
+            <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.continue")</button>
+        </div>
 
-            <div class="form-group">
-                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.continue")</button>
-            </div>
-
-        }
-
-    </div>
-
+    }
 }

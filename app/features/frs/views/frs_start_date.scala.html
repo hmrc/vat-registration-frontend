@@ -7,96 +7,89 @@
 
 @main_template(title = messages("pages.frs.startDate.title")) {
 
-  <div class="grid-row">
-    <div class="column-two-thirds">
+    @errorSummary(
+       Messages("app.common.errorSummaryLabel"),
+       frsStartDateForm
+    )
 
-       @errorSummary(
-           Messages("app.common.errorSummaryLabel"),
-           frsStartDateForm
-       )
+    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.frs.startDate.heading")</h1>
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.frs.startDate.heading")</h1>
+    @govHelpers.form(action = controllers.frs.routes.FrsStartDateController.submit()) {
+        <div class="form-group">
 
-        @govHelpers.form(action = controllers.frs.routes.FrsStartDateController.submit()) {
-            <div class="form-group">
+            @defining(DateTimeFormatter
+                    .ofLocalizedDate(java.time.format.FormatStyle.LONG)
+                    .withLocale(java.util.Locale.UK)) { formatter =>
 
-                @defining(DateTimeFormatter
-                        .ofLocalizedDate(java.time.format.FormatStyle.LONG)
-                        .withLocale(java.util.Locale.UK)) { formatter =>
+                    @vatInputRadioGroup(
+                        frsStartDateForm("frsStartDateRadio"),
+                        Seq(
+                            Some(FrsStartDateView.VAT_REGISTRATION_DATE -> Messages("pages.frs.startDate.radio1")),
+                            Some(FrsStartDateView.DIFFERENT_DATE -> Messages("pages.frs.startDate.radio2"))
+                        ).flatten,
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label",
+                        '_legend -> ""
+                    )
+                }
 
-                        @vatInputRadioGroup(
-                            frsStartDateForm("frsStartDateRadio"),
-                            Seq(
-                                Some(FrsStartDateView.VAT_REGISTRATION_DATE -> Messages("pages.frs.startDate.radio1")),
-                                Some(FrsStartDateView.DIFFERENT_DATE -> Messages("pages.frs.startDate.radio2"))
-                            ).flatten,
-                            '_labelAfter -> true,
-                            '_labelClass -> "block-label",
-                            '_legend -> ""
-                        )
+                <div class="panel panel-indent hidden" id="different_date_panel">
+                    <p>@messages("pages.frs.startDate.para1")</p>
+
+                    <span class="form-hint">@messages("pages.frs.startDate.hint1")</span>
+
+
+                    @defining(frsStartDateForm("frsStartDate").errors.nonEmpty) { errorPresent =>
+                        <div class="form-date @if(errorPresent) { form-group-error }">
+
+                            <fieldset id="frs-start-date">
+                                <legend></legend>
+                                <label><span class="hidden">Frs Start date input</span>
+                                @frsStartDateForm.error("frsStartDate").map { error =>
+                                    <span class="error-notification" role="tooltip">
+                                        @messages(error.message, error.args: _*)
+                                    </span>
+                                }
+                                    @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
+                                    <input type="hidden" name="frsStartDate" value="" id="frsStartDate" class="hidden" />
+                                </label>
+
+                                @vatInput(
+                                    frsStartDateForm("frsStartDate.day"),
+                                    '_divClass -> "form-group",
+                                    '_inputClass -> "form-control",
+                                    '_maxlength -> 2,
+                                    '_label -> Messages("pages.frs.startDate.day"),
+                                    '_labelClass -> "form-label"
+                                )
+
+                                @vatInput(
+                                    frsStartDateForm("frsStartDate.month"),
+                                    '_divClass -> "form-group",
+                                    '_inputClass -> "form-control",
+                                    '_maxlength -> 2,
+                                    '_label -> Messages("pages.frs.startDate.month"),
+                                    '_labelClass -> "form-label"
+                                )
+
+                                @vatInput(
+                                    frsStartDateForm("frsStartDate.year"),
+                                    '_divClass -> "form-group form-group-year",
+                                    '_inputClass -> "form-control",
+                                    '_maxlength -> 4,
+                                    '_label -> Messages("pages.frs.startDate.year"),
+                                    '_labelClass -> "form-label"
+                                )
+                            </fieldset>
+                        </div>
                     }
+                </div>
+        </div>
 
-                    <div class="panel panel-indent hidden" id="different_date_panel">
-                        <p>@messages("pages.frs.startDate.para1")</p>
-
-                        <span class="form-hint">@messages("pages.frs.startDate.hint1")</span>
-
-
-                        @defining(frsStartDateForm("frsStartDate").errors.nonEmpty) { errorPresent =>
-                            <div class="form-date @if(errorPresent) { form-group-error }">
-
-                                <fieldset id="frs-start-date">
-                                    <legend></legend>
-                                    <label><span class="hidden">Frs Start date input</span>
-                                    @frsStartDateForm.error("frsStartDate").map { error =>
-                                        <span class="error-notification" role="tooltip">
-                                            @messages(error.message, error.args: _*)
-                                        </span>
-                                    }
-                                        @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
-                                        <input type="hidden" name="frsStartDate" value="" id="frsStartDate" class="hidden" />
-                                    </label>
-
-                                    @vatInput(
-                                        frsStartDateForm("frsStartDate.day"),
-                                        '_divClass -> "form-group",
-                                        '_inputClass -> "form-control",
-                                        '_maxlength -> 2,
-                                        '_label -> Messages("pages.frs.startDate.day"),
-                                        '_labelClass -> "form-label"
-                                    )
-
-                                    @vatInput(
-                                        frsStartDateForm("frsStartDate.month"),
-                                        '_divClass -> "form-group",
-                                        '_inputClass -> "form-control",
-                                        '_maxlength -> 2,
-                                        '_label -> Messages("pages.frs.startDate.month"),
-                                        '_labelClass -> "form-label"
-                                    )
-
-                                    @vatInput(
-                                        frsStartDateForm("frsStartDate.year"),
-                                        '_divClass -> "form-group form-group-year",
-                                        '_inputClass -> "form-control",
-                                        '_maxlength -> 4,
-                                        '_label -> Messages("pages.frs.startDate.year"),
-                                        '_labelClass -> "form-label"
-                                    )
-                                </fieldset>
-                            </div>
-                        }
-                    </div>
-            </div>
-
-            <div class="form-group">
-                <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-            </div>
-        }
-
-    </div>
-  </div>
-
+        <div class="form-group">
+            <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+        </div>
+    }
 }
 
 <script type="text/javascript">

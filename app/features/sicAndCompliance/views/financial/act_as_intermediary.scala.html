@@ -5,42 +5,37 @@
 
 @main_template(title = messages("pages.financialCompliance.actAsIntermediary.title")) {
 
-    <div class="column-one-third">
-
-        @errorSummary(
+    @errorSummary(
         messages("app.common.errorSummaryLabel"),
         actAsIntermediaryForm
-        )
+    )
 
-        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.financialCompliance.actAsIntermediary.heading")</h1>
+    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.financialCompliance.actAsIntermediary.heading")</h1>
 
-        <p>
-        @messages("pages.financialCompliance.actAsIntermediary.para")
-        </p>
+    <p>
+    @messages("pages.financialCompliance.actAsIntermediary.para")
+    </p>
 
-        @govHelpers.form(action = controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.submit()) {
-            <div class="form-group">
-                <fieldset class="inline">
-                    <span id="actAsIntermediaryRadio"/>
+    @govHelpers.form(action = controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.submit()) {
+        <div class="form-group">
+            <fieldset class="inline">
+                <span id="actAsIntermediaryRadio"/>
 
-                    @vatInputRadioGroup(
-                        field = actAsIntermediaryForm("actAsIntermediaryRadio"),
-                        Seq(
-                            "true" -> messages("app.common.yes"),
-                            "false" -> messages("app.common.no")
-                        ),
-                        '_labelAfter -> true,
-                        '_labelClass -> "block-label"
-                    )
-                </fieldset>
-            </div>
+                @vatInputRadioGroup(
+                    field = actAsIntermediaryForm("actAsIntermediaryRadio"),
+                    Seq(
+                        "true" -> messages("app.common.yes"),
+                        "false" -> messages("app.common.no")
+                    ),
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label"
+                )
+            </fieldset>
+        </div>
 
-            <div class="form-group">
-                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.continue")</button>
-            </div>
+        <div class="form-group">
+            <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.continue")</button>
+        </div>
 
-        }
-
-    </div>
-
+    }
 }
