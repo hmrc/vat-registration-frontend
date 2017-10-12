@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{VatChoice, VatEligibilityChoice}
+import models.api.{VatChoice, VatEligibilityChoice, VatExpectedThresholdPostIncorp}
 import models.view.SummaryRow
 import models.view.vatTradingDetails.vatChoice.StartDateView
 
@@ -113,6 +113,56 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
     }
 
+    "with expectedOverThresholdSelectionRow render" should {
+
+      "a 'No' if the expectedOverThresholdSelection is false" in {
+        val builder = SummaryVatDetailsSectionBuilder(
+          Some(tradingDetails()),
+          validServiceEligibility(expectedThreshold = validExpectedOverFalse).vatEligibilityChoice)
+
+        builder.expectedOverThresholdSelectionRow mustBe
+          SummaryRow("vatDetails.expectedOverThresholdSelection",
+            "app.common.no",
+            Some(builder.getUrl(serviceName,"thought-over-threshold")))
+      }
+
+      "a 'Yes' if the expectedOverThresholdSelection is true" in {
+        val builder = SummaryVatDetailsSectionBuilder(
+          Some(tradingDetails()),
+          validServiceEligibility(expectedThreshold = validExpectedOverTrue).vatEligibilityChoice)
+
+        builder.expectedOverThresholdSelectionRow mustBe
+          SummaryRow("vatDetails.expectedOverThresholdSelection",
+            "app.common.yes",
+            Some(builder.getUrl(serviceName,"thought-over-threshold")))
+      }
+    }
+
+    "with expectedOverThresholdDateRow render" should {
+
+      "a 'date' if the expectedOverThresholdDate is present" in {
+        val builder = SummaryVatDetailsSectionBuilder(
+          Some(tradingDetails()),
+          validServiceEligibility(expectedThreshold = validExpectedOverTrue).vatEligibilityChoice)
+
+        builder.expectedOverThresholdDateRow mustBe
+          SummaryRow("vatDetails.expectedOverThresholdDate",
+            testDate.format(testPresentationFormatter),
+            Some(builder.getUrl(serviceName,"thought-over-threshold")))
+      }
+
+      "date row with no 'date' if the expectedOverThresholdDate is present" in {
+        val builder = SummaryVatDetailsSectionBuilder(
+          Some(tradingDetails()),
+          validServiceEligibility(expectedThreshold = validExpectedOverTrueNoDate).vatEligibilityChoice)
+
+        builder.expectedOverThresholdDateRow mustBe
+          SummaryRow("vatDetails.expectedOverThresholdDate",
+            "",
+            Some(builder.getUrl(serviceName,"thought-over-threshold")))
+      }
+    }
+
     "with startDateRow render" should {
 
       "a date with format 'd MMMM y' if it's a voluntary registration" in {
@@ -174,7 +224,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
       "a valid summary section" in {
         val builder = SummaryVatDetailsSectionBuilder(vatTradingDetails = Some(tradingDetails()))
         builder.section.id mustBe "vatDetails"
-        builder.section.rows.length mustEqual 7
+        builder.section.rows.length mustEqual 9
       }
     }
 
