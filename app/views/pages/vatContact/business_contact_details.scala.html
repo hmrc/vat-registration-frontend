@@ -5,83 +5,77 @@
 
 @main_template(title = messages("pages.businessContactDetails.title")) {
 
-  <div class="column-one-third">
+  @errorSummary(
+  messages("app.common.errorSummaryLabel"),
+  businessContactDetailsForm
+  )
 
-      @errorSummary(
-      messages("app.common.errorSummaryLabel"),
-      businessContactDetailsForm
-      )
+  <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.businessContactDetails.heading")</h1>
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.businessContactDetails.heading")</h1>
+  <p>@Html(messages("pages.businessContactDetails.para1"))</p>
 
-      <p>@Html(messages("pages.businessContactDetails.para1"))</p>
+  @govHelpers.form(action = controllers.vatContact.routes.BusinessContactDetailsController.submit()) {
+      <div class="form-group">
+          <fieldset>
 
-      @govHelpers.form(action = controllers.vatContact.routes.BusinessContactDetailsController.submit()) {
-          <div class="form-group">
-              <fieldset>
+              <legend>@Html(messages("pages.businessContactDetails.para2"))</legend>
 
-                  <legend>@Html(messages("pages.businessContactDetails.para2"))</legend>
+              @businessContactDetailsForm.errors.find(_.args.contains("businessContactDetails")).map { error =>
+                  @govHelpers.errorInline("businessContactDetails", messages(error.message))
+              }
 
-                  @businessContactDetailsForm.errors.find(_.args.contains("businessContactDetails")).map { error =>
-                      @govHelpers.errorInline("businessContactDetails", messages(error.message))
-                  }
+              @vatInput(
+                  businessContactDetailsForm("email"),
+                  '_divClass -> "form-group",
+                  '_inputClass -> "form-control",
+                  '_labelClass -> "cascading",
+                  '_maxlength -> 70,
+                  '_label -> messages("pages.businessContactDetails.emailAddress.label")
+              )
 
-                  @vatInput(
-                      businessContactDetailsForm("email"),
-                      '_divClass -> "form-group",
-                      '_inputClass -> "form-control",
-                      '_labelClass -> "cascading",
-                      '_maxlength -> 70,
-                      '_label -> messages("pages.businessContactDetails.emailAddress.label")
-                  )
+              <div class="panel indent" id="details-content-0" aria-hidden="true">
+                  <p>@Html(messages("pages.businessContactDetails.para3"))</p>
+              </div>
+              <br />
 
-                  <div class="panel indent" id="details-content-0" aria-hidden="true">
-                      <p>@Html(messages("pages.businessContactDetails.para3"))</p>
-                  </div>
-                  <br />
+              @vatInput(
+                  businessContactDetailsForm("daytimePhone"),
+                  '_type -> "text",
+                  '_divClass -> "form-group",
+                  '_inputClass -> "form-control",
+                  '_labelClass -> "cascading",
+                  '_maxlength -> 20,
+                  '_label -> messages("pages.businessContactDetails.daytimePhone.label")
+              )
 
-                  @vatInput(
-                      businessContactDetailsForm("daytimePhone"),
-                      '_type -> "text",
-                      '_divClass -> "form-group",
-                      '_inputClass -> "form-control",
-                      '_labelClass -> "cascading",
-                      '_maxlength -> 20,
-                      '_label -> messages("pages.businessContactDetails.daytimePhone.label")
-                  )
-
-                  @vatInput(
-                      businessContactDetailsForm("mobile"),
-                      '_type -> "text",
-                      '_divClass -> "form-group",
-                      '_inputClass -> "form-control",
-                      '_labelClass -> "cascading",
-                      '_maxlength -> 20,
-                      '_label -> messages("pages.businessContactDetails.mobile.label")
-                  )
+              @vatInput(
+                  businessContactDetailsForm("mobile"),
+                  '_type -> "text",
+                  '_divClass -> "form-group",
+                  '_inputClass -> "form-control",
+                  '_labelClass -> "cascading",
+                  '_maxlength -> 20,
+                  '_label -> messages("pages.businessContactDetails.mobile.label")
+              )
 
 
-                  @vatInput(
-                      businessContactDetailsForm("website"),
-                      '_type -> "text",
-                      '_divClass -> "form-group",
-                      '_inputClass -> "form-control",
-                      '_labelClass -> "cascading",
-                      '_maxlength -> 255,
-                      '_label -> messages("pages.businessContactDetails.website.label")
-                  )
+              @vatInput(
+                  businessContactDetailsForm("website"),
+                  '_type -> "text",
+                  '_inputClass -> "form-control",
+                  '_labelClass -> "cascading",
+                  '_maxlength -> 255,
+                  '_label -> messages("pages.businessContactDetails.website.label")
+              )
 
-              </fieldset>
+          </fieldset>
 
-          </div>
+      </div>
 
-          <div class="form-group">
-              <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-          </div>
-      }
-
-    </div>
-
+      <div class="form-group">
+          <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+      </div>
+  }
 }
 
 <script type="text/javascript">

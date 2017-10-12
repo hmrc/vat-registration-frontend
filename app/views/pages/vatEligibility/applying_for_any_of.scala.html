@@ -5,41 +5,36 @@
 
 @main_template(title = messages("pages.eligibility.applyingForAnyOf.title")) {
 
-    <div class="column-two-thirds">
-
-        @errorSummary(
+    @errorSummary(
         messages("app.common.errorSummaryLabel"),
         applyingForAnyOfForm
-        )
+    )
 
-        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.eligibility.applyingForAnyOf.heading")</h1>
+    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.eligibility.applyingForAnyOf.heading")</h1>
 
-        <p>@messages("pages.eligibility.applyingForAnyOf.p1")</p>
-        <p>@messages("pages.eligibility.applyingForAnyOf.p2")</p>
+    <p>@messages("pages.eligibility.applyingForAnyOf.p1")</p>
+    <p>@messages("pages.eligibility.applyingForAnyOf.p2")</p>
 
-        @govHelpers.form(action = controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.submit("applyingForAnyOf")) {
-            <div class="form-group">
-                <fieldset class="inline">
-                    <span id="applyingForAnyOfRadio"/>
+    @govHelpers.form(action = controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.submit("applyingForAnyOf")) {
+        <div class="form-group">
+            <fieldset class="inline">
+                <span id="applyingForAnyOfRadio"/>
 
-                    @vatInputRadioGroup(
-                        field = applyingForAnyOfForm("applyingForAnyOfRadio"),
-                        Seq(
-                            "true" -> messages("app.common.yes"),
-                            "false" -> messages("app.common.no")
-                        ),
-                        '_labelAfter -> true,
-                        '_labelClass -> "block-label"
-                    )
-                </fieldset>
-            </div>
+                @vatInputRadioGroup(
+                    field = applyingForAnyOfForm("applyingForAnyOfRadio"),
+                    Seq(
+                        "true" -> messages("app.common.yes"),
+                        "false" -> messages("app.common.no")
+                    ),
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label"
+                )
+            </fieldset>
+        </div>
 
-            <div class="form-group">
-                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-            </div>
+        <div class="form-group">
+            <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+        </div>
 
-        }
-
-    </div>
-
+    }
 }

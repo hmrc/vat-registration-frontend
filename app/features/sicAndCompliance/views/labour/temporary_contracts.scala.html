@@ -5,38 +5,33 @@
 
 @main_template(title = messages("pages.labourCompliance.temporaryContracts.title")) {
 
-    <div class="column-one-third">
-
-        @errorSummary(
+    @errorSummary(
         Messages("app.common.errorSummaryLabel"),
         temporaryContractsForm
-        )
+    )
 
-        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.labourCompliance.temporaryContracts.heading")</h1>
+    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.labourCompliance.temporaryContracts.heading")</h1>
 
-        @govHelpers.form(action = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.submit()) {
-            <div class="form-group">
-                <fieldset class="inline">
-                    <span id="temporaryContractsRadio"/>
+    @govHelpers.form(action = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.submit()) {
+        <div class="form-group">
+            <fieldset class="inline">
+                <span id="temporaryContractsRadio"/>
 
-                    @vatInputRadioGroup(
-                        field = temporaryContractsForm("temporaryContractsRadio"),
-                        Seq(
-                            TemporaryContracts.TEMP_CONTRACTS_YES -> Messages("app.common.yes"),
-                            TemporaryContracts.TEMP_CONTRACTS_NO -> Messages("app.common.no")
-                        ),
-                        '_labelAfter -> true,
-                        '_labelClass -> "block-label"
-                    )
-                </fieldset>
-            </div>
+                @vatInputRadioGroup(
+                    field = temporaryContractsForm("temporaryContractsRadio"),
+                    Seq(
+                        TemporaryContracts.TEMP_CONTRACTS_YES -> Messages("app.common.yes"),
+                        TemporaryContracts.TEMP_CONTRACTS_NO -> Messages("app.common.no")
+                    ),
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label"
+                )
+            </fieldset>
+        </div>
 
-            <div class="form-group">
-                <button class="btn button" type="submit" id="save-and-continue">Continue</button>
-            </div>
+        <div class="form-group">
+            <button class="btn button" type="submit" id="save-and-continue">Continue</button>
+        </div>
 
-        }
-
-    </div>
-
+    }
 }

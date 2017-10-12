@@ -5,45 +5,40 @@
 
 @main_template(title = messages("pages.voluntary.registration.reason.title")) {
 
-  <div class="column-two-thirds">
+  @errorSummary(
+    Messages("app.common.errorSummaryLabel"),
+    voluntaryRegistrationForm
+  )
 
-      @errorSummary(
-      Messages("app.common.errorSummaryLabel"),
-      voluntaryRegistrationForm
-      )
+  <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.voluntary.registration.reason.heading")</h1>
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.voluntary.registration.reason.heading")</h1>
+  @govHelpers.form(action = controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationReasonController.submit()) {
+  <div class="form-group">
+    <fieldset class="inline">
+        <span id="voluntaryRegistrationReasonRadio"/>
+        @vatInputRadioGroup(
+            field = voluntaryRegistrationForm("voluntaryRegistrationReasonRadio"),
+            Seq(
+              VoluntaryRegistrationReason.SELLS -> Messages("pages.voluntary.registration.reason.radio.sells"),
+              VoluntaryRegistrationReason.INTENDS_TO_SELL -> Messages("pages.voluntary.registration.reason.radio.intendsToSell"),
+              VoluntaryRegistrationReason.NEITHER -> Messages("pages.voluntary.registration.reason.radio.neither")
+            ),
+            '_labelAfter -> true,
+            '_labelClass -> "block-label"
+        )
+    </fieldset>
 
-      @govHelpers.form(action = controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationReasonController.submit()) {
-      <div class="form-group">
-        <fieldset class="inline">
-            <span id="voluntaryRegistrationReasonRadio"/>
-            @vatInputRadioGroup(
-                field = voluntaryRegistrationForm("voluntaryRegistrationReasonRadio"),
-                Seq(
-                  VoluntaryRegistrationReason.SELLS -> Messages("pages.voluntary.registration.reason.radio.sells"),
-                  VoluntaryRegistrationReason.INTENDS_TO_SELL -> Messages("pages.voluntary.registration.reason.radio.intendsToSell"),
-                  VoluntaryRegistrationReason.NEITHER -> Messages("pages.voluntary.registration.reason.radio.neither")
-                ),
-                '_labelAfter -> true,
-                '_labelClass -> "block-label"
-            )
-        </fieldset>
-
-        <div class="panel panel-indent panel-border-narrow hidden" id="neither_panel">
-            <p>@messages("pages.voluntary.registration.reason.panels.neither.para")</p>
-        </div>
-
-      </div>
-
-      <div class="form-group">
-        <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-      </div>
-
-      }
-
+    <div class="panel panel-indent panel-border-narrow hidden" id="neither_panel">
+        <p>@messages("pages.voluntary.registration.reason.panels.neither.para")</p>
     </div>
 
+  </div>
+
+  <div class="form-group">
+    <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+  </div>
+
+  }
 }
 
 <script type="text/javascript">

@@ -5,38 +5,33 @@
 
 @main_template(title = messages("pages.euGoods.title")) {
 
-    <div class="column-one-third">
-
-        @errorSummary(
+    @errorSummary(
         Messages("app.common.errorSummaryLabel"),
         euGoodsForm
-        )
+    )
 
-        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.euGoods.heading")</h1>
+    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.euGoods.heading")</h1>
 
-        @govHelpers.form(action = controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.submit()) {
-            <div class="form-group">
-                <fieldset class="inline">
-                    <span id="euGoodsRadio"/>
+    @govHelpers.form(action = controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.submit()) {
+        <div class="form-group">
+            <fieldset class="inline">
+                <span id="euGoodsRadio"/>
 
-                    @vatInputRadioGroup(
-                        field = euGoodsForm("euGoodsRadio"),
-                        Seq(
-                            EuGoods.EU_GOODS_YES -> Messages("app.common.yes"),
-                            EuGoods.EU_GOODS_NO -> Messages("app.common.no")
-                        ),
-                        '_labelAfter -> true,
-                        '_labelClass -> "block-label"
-                    )
-                </fieldset>
-            </div>
+                @vatInputRadioGroup(
+                    field = euGoodsForm("euGoodsRadio"),
+                    Seq(
+                        EuGoods.EU_GOODS_YES -> Messages("app.common.yes"),
+                        EuGoods.EU_GOODS_NO -> Messages("app.common.no")
+                    ),
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label"
+                )
+            </fieldset>
+        </div>
 
-            <div class="form-group">
-                <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-            </div>
+        <div class="form-group">
+            <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+        </div>
 
-        }
-
-    </div>
-
+    }
 }

@@ -5,42 +5,37 @@
 
 @main_template(title = messages("pages.financialCompliance.discretionaryInvestmentManagementServices.title")) {
 
-    <div class="column-one-third">
-
-        @errorSummary(
+    @errorSummary(
         Messages("app.common.errorSummaryLabel"),
         discretionaryInvestmentManagementServicesForm
-        )
+    )
 
-        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.financialCompliance.discretionaryInvestmentManagementServices.heading")</h1>
+    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.financialCompliance.discretionaryInvestmentManagementServices.heading")</h1>
 
-        <p>
-        @messages("pages.financialCompliance.discretionaryInvestmentManagementServices.para")
-        </p>
+    <p>
+    @messages("pages.financialCompliance.discretionaryInvestmentManagementServices.para")
+    </p>
 
-        @govHelpers.form(action = controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.submit()) {
-            <div class="form-group">
-                <fieldset class="inline">
-                    <span id="discretionaryInvestmentManagementServicesRadio"/>
+    @govHelpers.form(action = controllers.sicAndCompliance.financial.routes.DiscretionaryInvestmentManagementServicesController.submit()) {
+        <div class="form-group">
+            <fieldset class="inline">
+                <span id="discretionaryInvestmentManagementServicesRadio"/>
 
-                    @vatInputRadioGroup(
-                        field = discretionaryInvestmentManagementServicesForm("discretionaryInvestmentManagementServicesRadio"),
-                        Seq(
-                            "true" -> Messages("app.common.yes"),
-                            "false" -> Messages("app.common.no")
-                        ),
-                        '_labelAfter -> true,
-                        '_labelClass -> "block-label"
-                    )
-                </fieldset>
-            </div>
+                @vatInputRadioGroup(
+                    field = discretionaryInvestmentManagementServicesForm("discretionaryInvestmentManagementServicesRadio"),
+                    Seq(
+                        "true" -> Messages("app.common.yes"),
+                        "false" -> Messages("app.common.no")
+                    ),
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label"
+                )
+            </fieldset>
+        </div>
 
-            <div class="form-group">
-                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.continue")</button>
-            </div>
+        <div class="form-group">
+            <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.continue")</button>
+        </div>
 
-        }
-
-    </div>
-
+    }
 }

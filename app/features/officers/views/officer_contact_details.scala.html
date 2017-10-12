@@ -5,69 +5,63 @@
 
 @main_template(title = messages("pages.officerContact.title")) {
 
-  <div class="column-one-third">
+  @errorSummary(
+  messages("app.common.errorSummaryLabel"),
+  officerContactDetailsForm
+  )
 
-      @errorSummary(
-      messages("app.common.errorSummaryLabel"),
-      officerContactDetailsForm
-      )
+  <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.officerContact.heading")</h1>
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.officerContact.heading")</h1>
+  <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
+      <p>@Html(messages("pages.officerContact.p1"))</p>
+  </div>
+  <br />
 
-      <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
-          <p>@Html(messages("pages.officerContact.p1"))</p>
+  @govHelpers.form(action = controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.submit()) {
+      <div class="form-group">
+          <fieldset>
+
+              @officerContactDetailsForm.errors.find(_.args.contains("officerContactDetails")).map { error =>
+                  @govHelpers.errorInline("officerContactDetails", messages(error.message))
+              }
+
+              @vatInput(
+                  officerContactDetailsForm("email"),
+                  '_divClass -> "form-group",
+                  '_inputClass -> "form-control",
+                  '_labelClass -> "cascading",
+                  '_maxlength -> 70,
+                  '_label -> messages("pages.officerContact.emailAddress.label")
+              )
+
+
+              @vatInput(
+                  officerContactDetailsForm("mobile"),
+                  '_type -> "text",
+                  '_divClass -> "form-group",
+                  '_inputClass -> "form-control",
+                  '_labelClass -> "cascading",
+                  '_maxlength -> 20,
+                  '_label -> messages("pages.officerContact.mobile.label")
+              )
+
+              @vatInput(
+                  officerContactDetailsForm("daytimePhone"),
+                  '_type -> "text",
+                  '_inputClass -> "form-control",
+                  '_labelClass -> "cascading",
+                  '_maxlength -> 20,
+                  '_label -> messages("pages.officerContact.daytimePhone.label")
+              )
+
+          </fieldset>
+
       </div>
-      <br />
 
-      @govHelpers.form(action = controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.submit()) {
-          <div class="form-group">
-              <fieldset>
-
-                  @officerContactDetailsForm.errors.find(_.args.contains("officerContactDetails")).map { error =>
-                      @govHelpers.errorInline("officerContactDetails", messages(error.message))
-                  }
-
-                  @vatInput(
-                      officerContactDetailsForm("email"),
-                      '_divClass -> "form-group",
-                      '_inputClass -> "form-control",
-                      '_labelClass -> "cascading",
-                      '_maxlength -> 70,
-                      '_label -> messages("pages.officerContact.emailAddress.label")
-                  )
-
-
-                  @vatInput(
-                      officerContactDetailsForm("mobile"),
-                      '_type -> "text",
-                      '_divClass -> "form-group",
-                      '_inputClass -> "form-control",
-                      '_labelClass -> "cascading",
-                      '_maxlength -> 20,
-                      '_label -> messages("pages.officerContact.mobile.label")
-                  )
-
-                  @vatInput(
-                      officerContactDetailsForm("daytimePhone"),
-                      '_type -> "text",
-                      '_divClass -> "form-group",
-                      '_inputClass -> "form-control",
-                      '_labelClass -> "cascading",
-                      '_maxlength -> 20,
-                      '_label -> messages("pages.officerContact.daytimePhone.label")
-                  )
-
-              </fieldset>
-
-          </div>
-
-          <div class="form-group">
-              <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-          </div>
-      }
-
-    </div>
-
+      <div class="form-group">
+          <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+      </div>
+  }
 }
 
 <script type="text/javascript">
