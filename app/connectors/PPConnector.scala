@@ -52,7 +52,6 @@ class PrePopConnector @Inject()(s4l: S4LService, vrs: VatRegistrationService) ex
 
   import cats.instances.future._
 
-  //$COVERAGE-OFF$
 //  val className = this.getClass.getSimpleName
 //  val companyRegUrl = baseUrl("pre-pop")
   val http: WSHttp = WSHttp
@@ -66,5 +65,4 @@ class PrePopConnector @Inject()(s4l: S4LService, vrs: VatRegistrationService) ex
       case VoluntaryRegistrationReason(INTENDS_TO_SELL) => CorporationTaxRegistration(
         Some(AccountingDetails("", Some(LocalDate.now.plusDays(7) format expectedFormat))))
     }
-  //$COVERAGE-ON$
 }

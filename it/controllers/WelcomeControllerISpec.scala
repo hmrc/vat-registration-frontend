@@ -16,6 +16,7 @@
 
 package controllers
 
+import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import support.AppAndStubs
@@ -31,10 +32,10 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
       "user is authenticated and authorised to access the app" in {
         given()
           .user.isAuthorised
-          .vatRegistrationFootprint.exists
+          .vatRegistrationFootprint.exists(Some(STARTED), Some("Vat Reg Footprint created"))
           .corporationTaxRegistration.existsWithStatus("held")
-          .currentProfile.setup
           .company.isIncorporated
+          .currentProfile.setup(Some("Vat Reg Footprint created"))
 
         whenReady(controller.start(request))(res => res.header.status mustBe 200)
       }

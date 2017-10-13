@@ -17,7 +17,7 @@
 package support
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock.{configureFor, reset}
+import com.github.tomakehurst.wiremock.client.WireMock.{configureFor, reset, resetAllScenarios}
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 import uk.gov.hmrc.play.it.Port.randomAvailable
@@ -39,6 +39,7 @@ trait StartAndStopWireMock extends BeforeAndAfterEach with BeforeAndAfterAll {
   }
 
   override def beforeEach() = {
+    resetAllScenarios()
     reset()
   }
 
