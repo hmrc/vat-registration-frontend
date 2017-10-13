@@ -48,12 +48,5 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
       }
     }
   }
-
-  "SIC and Compliance" should {
-    "successfully update the registration in backend" in {
-
-    }
-  }
-
 }
 
