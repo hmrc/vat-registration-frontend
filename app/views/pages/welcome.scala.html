@@ -3,46 +3,41 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 
 @main_template(title = messages("pages.welcome.title")) {
-    <div class="grid-row">
-        <div class="column-one-third">
 
-            <header class="page-header">
-                <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.welcome.heading")</h1>
-            </header>
+    <header class="page-header">
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.welcome.heading")</h1>
+    </header>
 
-            <p>@messages("pages.welcome.p1")</p>
+    <p>@messages("pages.welcome.p1")</p>
 
-            <div class="form-group">
-                <ul class="list list-bullet">
-                    <li>@messages("pages.welcome.bullet1")</li>
-                    <li>@messages("pages.welcome.bullet2")</li>
-                </ul>
-            </div>
-
-            <p>@messages("pages.welcome.p2")</p>
-            <p>@messages("pages.welcome.p3")</p>
-
-            <div class="form-group">
-            @form(action = controllers.routes.TwirlViewController.renderViewAuthorised()) {
-                <div class="form-group">
-                    <button class="button-get-started" role="button" id="start">@messages("pages.welcome.button.start")
-                    </button>
-                </div>
-            }
-            </div>
-
-            <p>@messages("pages.welcome.p4")</p>
-            <div class="form-group">
-                <ul class="list list-bullet">
-                    <li>@messages("pages.welcome.bullet3")</li>
-                    <li>@messages("pages.welcome.bullet4")</li>
-                    <li>@messages("pages.welcome.bullet5")</li>
-                    <li>@messages("pages.welcome.bullet6")</li>
-                </ul>
-            </div>
-            <p>@messages("pages.welcome.p5")</p>
-
-        </div>
-
+    <div class="form-group">
+        <ul class="list list-bullet">
+            <li>@messages("pages.welcome.bullet1")</li>
+            <li>@messages("pages.welcome.bullet2")</li>
+        </ul>
     </div>
+
+    <p>@messages("pages.welcome.p2")</p>
+    <p>@messages("pages.welcome.p3")</p>
+
+    <div class="form-group">
+    @form(action = controllers.routes.TwirlViewController.renderViewAuthorised()) {
+        <div class="form-group">
+            <button class="button-get-started" role="button" id="start">@messages("pages.welcome.button.start")
+            </button>
+        </div>
+    }
+    </div>
+
+    <p>@messages("pages.welcome.p4")</p>
+    <div class="form-group">
+        <ul class="list list-bullet">
+            <li>@messages("pages.welcome.bullet3")</li>
+            <li>@messages("pages.welcome.bullet4")</li>
+            <li>@messages("pages.welcome.bullet5")</li>
+            <li>@messages("pages.welcome.bullet6")</li>
+        </ul>
+    </div>
+    <p>@messages("pages.welcome.p5")</p>
+
 }

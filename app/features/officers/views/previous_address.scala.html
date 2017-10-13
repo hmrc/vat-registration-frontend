@@ -5,38 +5,33 @@
 
 @main_template(title = messages("pages.previousAddressQuestion.title")) {
 
-    <div class="column-one-third">
+    @errorSummary(
+    messages("app.common.errorSummaryLabel"),
+    previousAddressQuestionForm
+    )
 
-        @errorSummary(
-        messages("app.common.errorSummaryLabel"),
-        previousAddressQuestionForm
-        )
+    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.previousAddressQuestion.heading")</h1>
 
-        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.previousAddressQuestion.heading")</h1>
-        
-        @govHelpers.form(action = controllers.vatLodgingOfficer.routes.PreviousAddressController.submit()) {
-            <div class="form-group">
-                <fieldset class="inline">
-                    <span id="previousAddressQuestionRadio"/>
+    @govHelpers.form(action = controllers.vatLodgingOfficer.routes.PreviousAddressController.submit()) {
+        <div class="form-group">
+            <fieldset class="inline">
+                <span id="previousAddressQuestionRadio"/>
 
-                    @vatInputRadioGroup(
-                        field = previousAddressQuestionForm("previousAddressQuestionRadio"),
-                        Seq(
-                            "true" -> messages("app.common.yes"),
-                            "false" -> messages("app.common.no")
-                        ),
-                        '_labelAfter -> true,
-                        '_labelClass -> "block-label"
-                    )
-                </fieldset>
-            </div>
+                @vatInputRadioGroup(
+                    field = previousAddressQuestionForm("previousAddressQuestionRadio"),
+                    Seq(
+                        "true" -> messages("app.common.yes"),
+                        "false" -> messages("app.common.no")
+                    ),
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label"
+                )
+            </fieldset>
+        </div>
 
-            <div class="form-group">
-                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-            </div>
+        <div class="form-group">
+            <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+        </div>
 
-        }
-
-    </div>
-
+    }
 }

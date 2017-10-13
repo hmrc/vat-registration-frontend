@@ -7,81 +7,76 @@
 
 @main_template(title = messages("pages.formerNameDate.title")) {
 
-    <div class="column-one-third">
-
-        @errorSummary(
+    @errorSummary(
         Messages("app.common.errorSummaryLabel"),
         formerNameDateForm
-        )
+    )
 
-        <header class="page-header">
-            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.formerNameDate.heading1") @formerName@messages("pages.formerNameDate.heading2")</h1>
-        </header>
+    <header class="page-header">
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.formerNameDate.heading1") @formerName@messages("pages.formerNameDate.heading2")</h1>
+    </header>
 
-        @govHelpers.form(action = controllers.vatLodgingOfficer.routes.FormerNameDateController.submit()) {
-            <div class="form-group">
+    @govHelpers.form(action = controllers.vatLodgingOfficer.routes.FormerNameDateController.submit()) {
+        <div class="form-group">
 
-                @defining(DateTimeFormatter
-                        .ofLocalizedDate(java.time.format.FormatStyle.LONG)
-                        .withLocale(java.util.Locale.UK)) { formatter =>
-                        }
+            @defining(DateTimeFormatter
+                    .ofLocalizedDate(java.time.format.FormatStyle.LONG)
+                    .withLocale(java.util.Locale.UK)) { formatter =>
+                    }
 
-                        <span class="form-hint">@messages("pages.formerNameDate.hint1")</span>
+                    <span class="form-hint">@messages("pages.formerNameDate.hint1")</span>
 
 
-                        @defining(formerNameDateForm("formerNameDate").errors.nonEmpty) { errorPresent =>
-                            <div class="form-date @if(errorPresent) { form-group-error }">
+                    @defining(formerNameDateForm("formerNameDate").errors.nonEmpty) { errorPresent =>
+                        <div class="form-date @if(errorPresent) { form-group-error }">
 
-                                <fieldset id="former-name-date">
-                                    <legend></legend>
-                                    <label><span class="hidden">Former name date change</span>
-                                    @formerNameDateForm.error("formerNameDate").map { error =>
-                                        <span class="error-notification" role="tooltip">
-                                            @messages(error.message, error.args: _*)
-                                        </span>
-                                    }
-                                        @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
-                                        <input type="hidden" name="formerNameDate" value="" id="formerNameDate" class="hidden" />
-                                    </label>
+                            <fieldset id="former-name-date">
+                                <legend></legend>
+                                <label><span class="hidden">Former name date change</span>
+                                @formerNameDateForm.error("formerNameDate").map { error =>
+                                    <span class="error-notification" role="tooltip">
+                                        @messages(error.message, error.args: _*)
+                                    </span>
+                                }
+                                    @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
+                                    <input type="hidden" name="formerNameDate" value="" id="formerNameDate" class="hidden" />
+                                </label>
 
-                                    @vatInput(
-                                        formerNameDateForm("formerNameDate.day"),
-                                        '_divClass -> "form-group",
-                                        '_inputClass -> "form-control",
-                                        '_maxlength -> 2,
-                                        '_label -> Messages("validation.formerNameDate.day.invalid"),
-                                        '_labelClass -> "form-label"
-                                    )
+                                @vatInput(
+                                    formerNameDateForm("formerNameDate.day"),
+                                    '_divClass -> "form-group",
+                                    '_inputClass -> "form-control",
+                                    '_maxlength -> 2,
+                                    '_label -> Messages("validation.formerNameDate.day.invalid"),
+                                    '_labelClass -> "form-label"
+                                )
 
-                                    @vatInput(
-                                        formerNameDateForm("formerNameDate.month"),
-                                        '_divClass -> "form-group",
-                                        '_inputClass -> "form-control",
-                                        '_maxlength -> 2,
-                                        '_label -> Messages("validation.formerNameDate.month.invalid"),
-                                        '_labelClass -> "form-label"
-                                    )
+                                @vatInput(
+                                    formerNameDateForm("formerNameDate.month"),
+                                    '_divClass -> "form-group",
+                                    '_inputClass -> "form-control",
+                                    '_maxlength -> 2,
+                                    '_label -> Messages("validation.formerNameDate.month.invalid"),
+                                    '_labelClass -> "form-label"
+                                )
 
-                                    @vatInput(
-                                        formerNameDateForm("formerNameDate.year"),
-                                        '_divClass -> "form-group form-group-year",
-                                        '_inputClass -> "form-control",
-                                        '_maxlength -> 4,
-                                        '_label -> Messages("validation.formerNameDate.year.invalid"),
-                                        '_labelClass -> "form-label"
-                                    )
-                                </fieldset>
-                            </div>
-                        }
-            </div>
-            <div class="form-group">
-                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-            </div>
+                                @vatInput(
+                                    formerNameDateForm("formerNameDate.year"),
+                                    '_divClass -> "form-group form-group-year",
+                                    '_inputClass -> "form-control",
+                                    '_maxlength -> 4,
+                                    '_label -> Messages("validation.formerNameDate.year.invalid"),
+                                    '_labelClass -> "form-label"
+                                )
+                            </fieldset>
+                        </div>
+                    }
+        </div>
+        <div class="form-group">
+            <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+        </div>
 
-        }
-
-    </div>
-
+    }
 }
 
 <script type="text/javascript">

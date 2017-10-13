@@ -5,37 +5,32 @@
 
 @main_template(title = messages("pages.eligibility.haveNino.title")) {
 
-    <div class="column-one-third">
-
-        @errorSummary(
+    @errorSummary(
         messages("app.common.errorSummaryLabel"),
         haveNinoForm
-        )
+    )
 
-        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.eligibility.haveNino.heading")</h1>
+    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.eligibility.haveNino.heading")</h1>
 
-        @govHelpers.form(action = controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.submit("haveNino")) {
-            <div class="form-group">
-                <fieldset class="inline">
-                    <span id="haveNinoRadio"/>
-                    @vatInputRadioGroup(
-                        field = haveNinoForm("haveNinoRadio"),
-                        Seq(
-                            "true" -> messages("app.common.yes"),
-                            "false" -> messages("app.common.no")
-                        ),
-                        '_labelAfter -> true,
-                        '_labelClass -> "block-label"
-                    )
-                </fieldset>
-            </div>
+    @govHelpers.form(action = controllers.vatEligibility.routes.ServiceCriteriaQuestionsController.submit("haveNino")) {
+        <div class="form-group">
+            <fieldset class="inline">
+                <span id="haveNinoRadio"/>
+                @vatInputRadioGroup(
+                    field = haveNinoForm("haveNinoRadio"),
+                    Seq(
+                        "true" -> messages("app.common.yes"),
+                        "false" -> messages("app.common.no")
+                    ),
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label"
+                )
+            </fieldset>
+        </div>
 
-            <div class="form-group">
-                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-            </div>
+        <div class="form-group">
+            <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+        </div>
 
-        }
-
-    </div>
-
+    }
 }

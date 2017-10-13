@@ -8,42 +8,37 @@
 
 @main_template(title = messages("pages.labourCompliance.workers.title")) {
 
-    <div class="column-one-third">
-
-        @errorSummary(
+    @errorSummary(
         Messages("app.common.errorSummaryLabel"),
         workersForm,
         Seq("numberOfWorkers")
-        )
+    )
 
-        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.labourCompliance.workers.heading")</h1>
+    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.labourCompliance.workers.heading")</h1>
 
-        @govHelpers.form(action = controllers.sicAndCompliance.labour.routes.WorkersController.submit()) {
-            <div class="form-group @fieldSetClasses">
-                <fieldset>
+    @govHelpers.form(action = controllers.sicAndCompliance.labour.routes.WorkersController.submit()) {
+        <div class="form-group @fieldSetClasses">
+            <fieldset>
 
-                    @workersForm.errors.find(_.args.contains("numberOfWorkers")).map { error =>
-                        @govHelpers.errorInline("numberOfWorkers", Messages(error.message))
-                    }
+                @workersForm.errors.find(_.args.contains("numberOfWorkers")).map { error =>
+                    @govHelpers.errorInline("numberOfWorkers", Messages(error.message))
+                }
 
-                    @vatInput(
-                        workersForm("numberOfWorkers"),
-                        '_divClass -> "form-group",
-                        '_inputClass -> "form-control",
-                        '_label -> Messages("pages.labourCompliance.workers.numberOfWorkers"),
-                        '_labelClass -> "cascading"
-                    )
+                @vatInput(
+                    workersForm("numberOfWorkers"),
+                    '_divClass -> "form-group",
+                    '_inputClass -> "form-control",
+                    '_label -> Messages("pages.labourCompliance.workers.numberOfWorkers"),
+                    '_labelClass -> "cascading"
+                )
 
-                </fieldset>
-            </div>
+            </fieldset>
+        </div>
 
-            <div class="form-group">
-                <button class="btn button" type="submit" id="save-and-continue">Continue</button>
-            </div>
-        }
-
-    </div>
-
+        <div class="form-group">
+            <button class="btn button" type="submit" id="save-and-continue">Continue</button>
+        </div>
+    }
 }
 
 <script type="text/javascript">
