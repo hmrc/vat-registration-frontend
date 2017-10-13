@@ -8,57 +8,50 @@
 
 @main_template(title = messages("pages.tradingName.title")) {
 
-    <div class="grid-row">
-        <div class="column-two-thirds">
+    @errorSummary(
+    Messages("app.common.errorSummaryLabel"),
+    tradingNameForm,
+    Seq("tradingName")
+    )
 
-            @errorSummary(
-            Messages("app.common.errorSummaryLabel"),
-            tradingNameForm,
-            Seq("tradingName")
-            )
+    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.tradingName.heading")</h1>
 
-            <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.tradingName.heading")</h1>
+    @govHelpers.form(action = controllers.vatTradingDetails.routes.TradingNameController.submit()) {
+        <div class="form-group">
+            <fieldset class="inline">
+                <span id="tradingNameRadio"/>
+                @vatInputRadioGroup(
+                    field = tradingNameForm("tradingNameRadio"),
+                    Seq(
+                        TradingNameView.TRADING_NAME_YES -> Messages("app.common.yes"),
+                        TradingNameView.TRADING_NAME_NO -> Messages("app.common.no")
+                    ),
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label"
+                )
 
-            @govHelpers.form(action = controllers.vatTradingDetails.routes.TradingNameController.submit()) {
-                <div class="form-group">
-                    <fieldset class="inline">
-                        <span id="tradingNameRadio"/>
-                        @vatInputRadioGroup(
-                            field = tradingNameForm("tradingNameRadio"),
-                            Seq(
-                                TradingNameView.TRADING_NAME_YES -> Messages("app.common.yes"),
-                                TradingNameView.TRADING_NAME_NO -> Messages("app.common.no")
-                            ),
-                            '_labelAfter -> true,
-                            '_labelClass -> "block-label"
-                        )
+                <div class="panel panel-indent hidden @fieldSetClasses" id="trading_name_panel">
 
-                        <div class="panel panel-indent hidden @fieldSetClasses" id="trading_name_panel">
+                    @tradingNameForm.errors.find(_.args.contains("tradingName")).map { error =>
+                        @govHelpers.errorInline("tradingName", Messages(error.message))
+                    }
 
-                            @tradingNameForm.errors.find(_.args.contains("tradingName")).map { error =>
-                                @govHelpers.errorInline("tradingName", Messages(error.message))
-                            }
+                    @vatInput(
+                        tradingNameForm("tradingName"),
+                        '_divClass -> "form-group",
+                        '_inputClass -> "form-control",
+                        '_label -> Messages("pages.tradingName.panels.tradingName"),
+                        '_labelClass -> "form-label"
+                    )
 
-                            @vatInput(
-                                tradingNameForm("tradingName"),
-                                '_divClass -> "form-group",
-                                '_inputClass -> "form-control",
-                                '_label -> Messages("pages.tradingName.panels.tradingName"),
-                                '_labelClass -> "form-label"
-                            )
-
-                        </div>
-                    </fieldset>
                 </div>
-
-                <div class="form-group">
-                    <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-                </div>
-            }
-
+            </fieldset>
         </div>
-    </div>
 
+        <div class="form-group">
+            <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+        </div>
+    }
 }
 
 <script type="text/javascript">

@@ -4,44 +4,36 @@
 @import views.html.helpers.templates.{vatTextArea, errorSummary}
 
 @main_template(title = messages("pages.business.activity.description.title")) {
-    <div class="grid-row">
 
-    <div class="column-two-thirds">
+  @errorSummary(
+    Messages("app.common.errorSummaryLabel"),
+    businessActivityDescriptionForm,
+    Seq("description")
+  )
 
-        @errorSummary(
-        Messages("app.common.errorSummaryLabel"),
-        businessActivityDescriptionForm,
-        Seq("description")
-        )
+  <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.business.activity.description.heading")</h1>
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.business.activity.description.heading")</h1>
+  <p>@Html(Messages("pages.business.activity.description.para1"))</p>
 
-      <p>@Html(Messages("pages.business.activity.description.para1"))</p>
+  @govHelpers.form(action = controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.submit()) {
+      <div class="form-group">
+          <fieldset>
+            <style>
+                textarea { height: 5em }
+                label.form-hint p { margin-bottom: 0 }
+            </style>
+            @vatTextArea(
+                    businessActivityDescriptionForm("description"),
+                    '_divClass -> "form-group",
+                    '_labelClass -> "form-label",
+                    '_inputClass -> "form-control fill-width",
+                    '_label -> messages("pages.business.activity.description.label")
+            )
+          </fieldset>
+      </div>
 
-      @govHelpers.form(action = controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.submit()) {
-          <div class="form-group">
-              <fieldset>
-                  <style>
-                      textarea { height: 5em }
-                      label.form-hint p { margin-bottom: 0 }
-                  </style>
-                  @vatTextArea(
-                          businessActivityDescriptionForm("description"),
-                          '_divClass -> "form-group",
-                          '_labelClass -> "form-label",
-                          '_inputClass -> "form-control fill-width",
-                          '_label -> messages("pages.business.activity.description.label")
-              )
-
-              </fieldset>
-
-          </div>
-
-          <div class="form-group">
-              <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-          </div>
-      }
-
-    </div>
-</div>
+      <div class="form-group">
+          <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+      </div>
+  }
 }

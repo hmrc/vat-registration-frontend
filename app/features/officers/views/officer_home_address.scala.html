@@ -6,37 +6,31 @@
 
 @main_template(title = messages("pages.officerHomeAddress.title")) {
 
-  <div class="column-one-third">
+  @errorSummary(
+  messages("app.common.errorSummaryLabel"),
+  officerHomeAddressForm
+  )
 
-      @errorSummary(
-      messages("app.common.errorSummaryLabel"),
-      officerHomeAddressForm
-      )
+  <header class="page-header">
+      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.officerHomeAddress.heading")</h1>
+  </header>
 
-      <header class="page-header">
-          <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.officerHomeAddress.heading")</h1>
-      </header>
+  @govHelpers.form(action = controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.submit()) {
+    <div class="form-group" id="homeAddressRadio">
 
-      @govHelpers.form(action = controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.submit()) {
-      <div class="form-group" id="homeAddressRadio">
-
-          @vatInputRadioGroup(
-              field = officerHomeAddressForm("homeAddressRadio"),
-              addresses.map( a => (a.id, a.asLabel)) :+
-                      ("other" -> messages("pages.officerHomeAddress.different.address")),
-              '_legend -> messages("pages.officerHomeAddress.heading"),
-              '_legendClass -> "hidden",
-              '_labelAfter -> true,
-              '_labelClass -> "block-label"
-          )
-
-      </div>
-          <div class="form-group">
-        <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-      </div>
-
-      }
+        @vatInputRadioGroup(
+            field = officerHomeAddressForm("homeAddressRadio"),
+            addresses.map( a => (a.id, a.asLabel)) :+
+                    ("other" -> messages("pages.officerHomeAddress.different.address")),
+            '_legend -> messages("pages.officerHomeAddress.heading"),
+            '_legendClass -> "hidden",
+            '_labelAfter -> true,
+            '_labelClass -> "block-label"
+        )
 
     </div>
-
+    <div class="form-group">
+      <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+    </div>
+  }
 }

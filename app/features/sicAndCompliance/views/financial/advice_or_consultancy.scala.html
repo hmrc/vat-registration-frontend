@@ -5,38 +5,33 @@
 
 @main_template(title = messages("pages.financialCompliance.adviceOrConsultancy.title")) {
 
-    <div class="column-one-third">
-
-        @errorSummary(
+    @errorSummary(
         Messages("app.common.errorSummaryLabel"),
         adviceOrConsultancyForm
-        )
+    )
 
-        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.financialCompliance.adviceOrConsultancy.heading")</h1>
+    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.financialCompliance.adviceOrConsultancy.heading")</h1>
 
-        @govHelpers.form(action = controllers.sicAndCompliance.financial.routes.AdviceOrConsultancyController.submit()) {
-            <div class="form-group">
-                <fieldset class="inline">
-                    <span id="adviceOrConsultancyRadio"/>
+    @govHelpers.form(action = controllers.sicAndCompliance.financial.routes.AdviceOrConsultancyController.submit()) {
+        <div class="form-group">
+            <fieldset class="inline">
+                <span id="adviceOrConsultancyRadio"/>
 
-                    @vatInputRadioGroup(
-                        field = adviceOrConsultancyForm("adviceOrConsultancyRadio"),
-                        Seq(
-                            "true" -> Messages("app.common.yes"),
-                            "false" -> Messages("app.common.no")
-                        ),
-                        '_labelAfter -> true,
-                        '_labelClass -> "block-label"
-                    )
-                </fieldset>
-            </div>
+                @vatInputRadioGroup(
+                    field = adviceOrConsultancyForm("adviceOrConsultancyRadio"),
+                    Seq(
+                        "true" -> Messages("app.common.yes"),
+                        "false" -> Messages("app.common.no")
+                    ),
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label"
+                )
+            </fieldset>
+        </div>
 
-            <div class="form-group">
-                <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.continue")</button>
-            </div>
+        <div class="form-group">
+            <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.continue")</button>
+        </div>
 
-        }
-
-    </div>
-
+    }
 }

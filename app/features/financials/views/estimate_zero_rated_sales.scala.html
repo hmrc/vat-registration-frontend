@@ -8,65 +8,60 @@
 
 @main_template(title = messages("pages.estimate.zero.rated.sales.title")) {
 
-  <div class="column-one-third">
+  @errorSummary(
+    Messages("app.common.errorSummaryLabel"),
+    estimateZeroRatedSalesForm,
+    Seq("zeroRatedTurnoverEstimate")
+  )
 
-      @errorSummary(
-      Messages("app.common.errorSummaryLabel"),
-      estimateZeroRatedSalesForm,
-      Seq("zeroRatedTurnoverEstimate")
-      )
+  <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.estimate.zero.rated.sales.heading")</h1>
 
-      <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.estimate.zero.rated.sales.heading")</h1>
-
-      <div class="panel panel-indent" id="details-content-1" aria-hidden="false">
-          <p>@messages("pages.estimate.zero.rated.sales.p1")</p>
+  <div class="panel panel-indent" id="details-content-1" aria-hidden="false">
+      <p>@messages("pages.estimate.zero.rated.sales.p1")</p>
+  </div>
+  <details role="group">
+      <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
+      @Html(messages("pages.estimate.zero.rated.sales.include.title"))
+      </span></summary>
+      <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
+          <p>@messages("pages.estimate.zero.rated.sales.include.para1")</p>
+          <p>@messages("pages.estimate.zero.rated.sales.include.para2")</p>
+          <ul class="list list-bullet">
+              <li>@messages("pages.estimate.zero.rated.sales.include.bullet1")</li>
+              <li>@messages("pages.estimate.zero.rated.sales.include.bullet2")</li>
+              <li>@messages("pages.estimate.zero.rated.sales.include.bullet3")</li>
+              <li>@messages("pages.estimate.zero.rated.sales.include.bullet4")</li>
+              <li>@messages("pages.estimate.zero.rated.sales.include.bullet5")</li>
+          </ul>
+          <p>@Html(Messages("pages.estimate.zero.rated.sales.include.para3"))</p>
       </div>
-      <details role="group">
-          <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
-          @Html(messages("pages.estimate.zero.rated.sales.include.title"))
-          </span></summary>
-          <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
-              <p>@messages("pages.estimate.zero.rated.sales.include.para1")</p>
-              <p>@messages("pages.estimate.zero.rated.sales.include.para2")</p>
-              <ul class="list list-bullet">
-                  <li>@messages("pages.estimate.zero.rated.sales.include.bullet1")</li>
-                  <li>@messages("pages.estimate.zero.rated.sales.include.bullet2")</li>
-                  <li>@messages("pages.estimate.zero.rated.sales.include.bullet3")</li>
-                  <li>@messages("pages.estimate.zero.rated.sales.include.bullet4")</li>
-                  <li>@messages("pages.estimate.zero.rated.sales.include.bullet5")</li>
-              </ul>
-              <p>@Html(Messages("pages.estimate.zero.rated.sales.include.para3"))</p>
-          </div>
-      </details>
-      @govHelpers.form(action = controllers.vatFinancials.routes.EstimateZeroRatedSalesController.submit()) {
-          <div class="form-group @fieldSetClasses">
-              <fieldset>
+  </details>
+  @govHelpers.form(action = controllers.vatFinancials.routes.EstimateZeroRatedSalesController.submit()) {
+      <div class="form-group @fieldSetClasses">
+          <fieldset>
 
-                  @estimateZeroRatedSalesForm.errors.find(_.args.contains("zeroRatedTurnoverEstimate")).map { error =>
-                      @govHelpers.errorInline("zeroRatedTurnoverEstimate", Messages(error.message))
-                  }
+              @estimateZeroRatedSalesForm.errors.find(_.args.contains("zeroRatedTurnoverEstimate")).map { error =>
+                  @govHelpers.errorInline("zeroRatedTurnoverEstimate", Messages(error.message))
+              }
 
-                      @vatInput(
-                          estimateZeroRatedSalesForm("zeroRatedTurnoverEstimate"),
-                          '_divClass -> "form-group",
-                          '_inputClass -> "form-control",
-                          '_label -> Messages("app.common.gbp.symbol"),
-                          '_labelClass -> "form-label"
-                      )
+                  @vatInput(
+                      estimateZeroRatedSalesForm("zeroRatedTurnoverEstimate"),
+                      '_divClass -> "form-group",
+                      '_inputClass -> "form-control",
+                      '_label -> Messages("app.common.gbp.symbol"),
+                      '_labelClass -> "form-label"
+                  )
 
 
-              </fieldset>
+          </fieldset>
 
 
-          </div>
+      </div>
 
-          <div class="form-group">
-              <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-          </div>
-      }
-
-    </div>
-
+      <div class="form-group">
+          <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+      </div>
+  }
 }
 
 <script type="text/javascript">

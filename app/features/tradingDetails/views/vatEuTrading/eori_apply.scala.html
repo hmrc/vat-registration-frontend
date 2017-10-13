@@ -5,42 +5,37 @@
 
 @main_template(title = messages("pages.applyEori.title")) {
 
-    <div class="column-one-third">
-
-        @errorSummary(
+    @errorSummary(
         Messages("app.common.errorSummaryLabel"),
         applyEoriForm,
         Seq("applyEori")
-        )
+    )
 
-        <h1 class="form-title heading-large" id="pageHeading">@messages("pages.applyEori.heading")</h1>
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.applyEori.heading")</h1>
 
-        <p>@messages("pages.applyEori.para1")</p>
-        <h3 class="heading-medium">@messages("pages.applyEori.h3")</h3>
-        <p>@messages("pages.applyEori.para2")</p>
+    <p>@messages("pages.applyEori.para1")</p>
+    <h3 class="heading-medium">@messages("pages.applyEori.h3")</h3>
+    <p>@messages("pages.applyEori.para2")</p>
 
-        @govHelpers.form(action = controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.submit()) {
-            <div class="form-group">
-                <fieldset>
-                    <span id="applyEoriRadio"/>
-                    @vatInputRadioGroup(
-                        field = applyEoriForm("applyEoriRadio"),
-                        Seq(
-                            String.valueOf(ApplyEori.APPLY_EORI_YES) -> Messages("pages.applyEori.number.yes"),
-                            String.valueOf(ApplyEori.APPLY_EORI_NO) -> Messages("pages.applyEori.number.no")
-                        ),
-                        '_labelAfter -> true,
-                        '_labelClass -> "block-label"
-                    )
-                </fieldset>
-            </div>
+    @govHelpers.form(action = controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.submit()) {
+        <div class="form-group">
+            <fieldset>
+                <span id="applyEoriRadio"/>
+                @vatInputRadioGroup(
+                    field = applyEoriForm("applyEoriRadio"),
+                    Seq(
+                        String.valueOf(ApplyEori.APPLY_EORI_YES) -> Messages("pages.applyEori.number.yes"),
+                        String.valueOf(ApplyEori.APPLY_EORI_NO) -> Messages("pages.applyEori.number.no")
+                    ),
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label"
+                )
+            </fieldset>
+        </div>
 
-            <div class="form-group">
-                <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-            </div>
-        }
-
-    </div>
-
+        <div class="form-group">
+            <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+        </div>
+    }
 }
 
