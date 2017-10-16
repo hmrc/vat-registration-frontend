@@ -21,10 +21,13 @@ import org.scalatest.concurrent.{IntegrationPatience, PatienceConfiguration}
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{Suite, TestSuite}
 import org.scalatestplus.play.OneServerPerSuite
+import play.api.http.HeaderNames
+import play.api.libs.ws.WS
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.{FakeApplication, FakeRequest}
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.it.Port
+import support.SessionBuilder.getSessionCookie
 
 trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerSuite with IntegrationPatience with PatienceConfiguration {
   me: Suite with TestSuite =>
@@ -41,6 +44,10 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerS
       interval = Span(50, Millis))
 
   override lazy val port: Int = Port.randomAvailable
+
+  def buildClient(path: String)(implicit headers:(String,String) = HeaderNames.COOKIE -> getSessionCookie()) = {
+    WS.url(s"http://localhost:$port/register-for-vat$path").withFollowRedirects(false).withHeaders(headers,"Csrf-Token" -> "nocheck")
+  }
 
   override implicit lazy val app: FakeApplication = FakeApplication(
     //override app config here, chaning hosts and ports to point app at Wiremock
@@ -63,7 +70,11 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerS
       configMap + (
         s"microservice.services.$service.host" -> wiremockHost,
         s"microservice.services.$service.port" -> wiremockPort)
-    }
+    } +
+      (s"auditing.consumer.baseUri.host" -> wiremockHost, s"auditing.consumer.baseUri.port" -> wiremockPort) +
+      ("play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck") +
+      ("microservice.services.vat-registration-eligibility-frontend.www.host" -> "") +
+      ("microservice.services.vat-registration-eligibility-frontend.uri" -> "/vat-eligibility-uri")
 
 }
 

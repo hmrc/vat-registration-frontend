@@ -27,9 +27,6 @@ trait Now[T] {
 }
 
 object Now {
-
-  // $COVERAGE-OFF$
-
   def apply[T]()(implicit now: Now[T]) = now
 
   def apply[T](value: => T): Now[T] = new Now[T] {
@@ -51,7 +48,4 @@ object Now {
   implicit object LocalDateTimeNow extends Now[LocalDateTime] {
     override def apply(): LocalDateTime = LocalDateTime.now()
   }
-
-  // $COVERAGE-ON$
-
 }

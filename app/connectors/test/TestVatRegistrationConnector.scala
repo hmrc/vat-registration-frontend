@@ -45,8 +45,6 @@ trait TestRegistrationConnector {
 }
 
 class TestVatRegistrationConnector extends TestRegistrationConnector with ServicesConfig {
-
-  //$COVERAGE-OFF$
   val vatRegUrl = baseUrl("vat-registration")
   val http = WSHttp
 
@@ -76,7 +74,4 @@ class TestVatRegistrationConnector extends TestRegistrationConnector with Servic
     http.PUT[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data", Json.parse("{}")) recover {
       case e: Exception => throw logResponse(e, "TestVatRegistrationConnector", s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data")
     }
-
-  //$COVERAGE-ON$
-
 }

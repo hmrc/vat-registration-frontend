@@ -43,11 +43,9 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
 
   implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
 
-  //$COVERAGE-OFF$
   lazy val conf: Configuration = ds.conf
   implicit lazy val messagesApi: MessagesApi = ds.messagesApi
   override val authConnector: AuthConnector = FrontendAuthConnector
-  //$COVERAGE-ON$
 
   /**
     * Use this to obtain an [[uk.gov.hmrc.play.frontend.auth.UserActions.AuthenticatedBy]] action builder.

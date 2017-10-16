@@ -31,7 +31,7 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
     "work wihtout problems" when {
       "a registration is already present in the backend" in {
         given()
-          .vatRegistrationFootprint.exists
+          .vatRegistrationFootprint.exists()
 
         await(vatregConnector.createNewRegistration()) shouldBe VatScheme(id="1")
       }
@@ -48,6 +48,5 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
       }
     }
   }
-
 }
 

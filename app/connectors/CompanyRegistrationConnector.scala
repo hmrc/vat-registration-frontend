@@ -33,11 +33,9 @@ import scala.concurrent.Future
 
 @Singleton
 class CompanyRegistrationConnector extends CompanyRegistrationConnect with ServicesConfig {
-  //$COVERAGE-OFF$
   val companyRegistrationUrl: String = baseUrl("company-registration")
   val companyRegistrationUri: String = getConfString("company-registration.uri", "")
   val http: WSHttp = WSHttp
-  //$COVERAGE-ON$
 }
 
 @ImplementedBy(classOf[CompanyRegistrationConnector])

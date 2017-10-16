@@ -33,11 +33,9 @@ import scala.concurrent.Future
 
 @Singleton
 class IncorporationInformationConnector extends IncorporationInformationConnect with ServicesConfig {
-  //$COVERAGE-OFF$
   val incorpInfoUrl = baseUrl("incorporation-information")
   val incorpInfoUri = getConfString("incorporation-information.uri", "")
   val http: WSHttp = WSHttp
-  //$COVERAGE-ON$
 }
 
 @ImplementedBy(classOf[IncorporationInformationConnector])

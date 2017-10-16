@@ -33,10 +33,8 @@ import scala.concurrent.Future
 
 @Singleton
 class VatRegistrationConnector extends RegistrationConnector with ServicesConfig {
-  //$COVERAGE-OFF$
   val vatRegUrl = baseUrl("vat-registration")
   val http: WSHttp = WSHttp
-  //$COVERAGE-ON$
 }
 
 @ImplementedBy(classOf[VatRegistrationConnector])
