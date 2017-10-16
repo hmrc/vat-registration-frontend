@@ -201,24 +201,17 @@ package models {
         VatLodgingOfficer(
           currentAddress = c.officerHomeAddress.flatMap(_.address).getOrElse(error),
           dob = c.officerSecurityQuestions.map(d => DateOfBirth(d.dob)).getOrElse(error),
-          //$COVERAGE-OFF$
           nino = c.officerSecurityQuestions.map(n => n.nino).getOrElse(error),
-          //$COVERAGE-ON$
           role = c.completionCapacity.flatMap(_.completionCapacity.map(_.role)).getOrElse(error),
-          //$COVERAGE-OFF$
           name = c.completionCapacity.flatMap(_.completionCapacity.map(_.name)).getOrElse(error),
-          //$COVERAGE-ON$
-
           changeOfName = c.formerName.map((fnv: FormerNameView) =>
             ChangeOfName(nameHasChanged = fnv.yesNo,
               formerName = fnv.formerName.map(fn =>
                 FormerName(formerName = fn,
                   dateOfNameChange = c.formerNameDate.map(_.date))))).getOrElse(error),
-
           currentOrPreviousAddress = c.previousAddress.map(cpav =>
             CurrentOrPreviousAddress(currentAddressThreeYears = cpav.yesNo,
               previousAddress = cpav.address)).getOrElse(error),
-
           contact = c.officerContactDetails.map(ocd =>
             OfficerContactDetails(email = ocd.email, tel = ocd.daytimePhone, mobile = ocd.mobile)).getOrElse(error)
         )

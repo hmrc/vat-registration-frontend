@@ -25,7 +25,6 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, RegistrationService, SessionProfile}
 
-//$COVERAGE-OFF$
 class IncorporationInformationStubsController @Inject()(vatRegistrationService: RegistrationService,
                                                         vatRegConnector: TestRegistrationConnector,
                                                         ds: CommonPlayDependencies)
@@ -144,5 +143,3 @@ class IncorporationInformationStubsController @Inject()(vatRegistrationService: 
         """.stripMargin)
 
 }
-
-//$COVERAGE-ON$

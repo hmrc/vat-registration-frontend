@@ -62,8 +62,6 @@ trait S4LService extends CommonService {
 }
 
 class PersistenceService extends S4LService {
-  //$COVERAGE-OFF$
   override val s4LConnector = S4LConnector
   override val keystoreConnector = KeystoreConnector
-  //$COVERAGE-ON$
 }
