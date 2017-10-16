@@ -72,7 +72,8 @@ trait VatRegistrationFixture {
   val eligibilityChoiceIncorporated = VatEligibilityChoice(
     necessity = VatEligibilityChoice.NECESSITY_OBLIGATORY,
     reason = None,
-    vatThresholdPostIncorp = Some(VatThresholdPostIncorp(true, Some(LocalDate.of(2016, 9, 30))))
+    vatThresholdPostIncorp = Some(VatThresholdPostIncorp(true, Some(LocalDate.of(2016, 9, 30)))),
+    vatExpectedThresholdPostIncorp = Some(VatExpectedThresholdPostIncorp(true, Some(LocalDate.of(2016, 9, 30))))
   )
 
   val eligibility = VatServiceEligibility(

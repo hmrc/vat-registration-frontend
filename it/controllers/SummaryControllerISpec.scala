@@ -88,6 +88,10 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           document.getElementById("vatDetails.overThresholdSelectionChangeLink").attr("href") mustBe "/vat-eligibility-uri/vat-taxable-turnover-gone-over"
           document.getElementById("vatDetails.overThresholdDateAnswer").text mustBe "September 2016"
           document.getElementById("vatDetails.overThresholdDateChangeLink").attr("href") mustBe "/vat-eligibility-uri/vat-taxable-turnover-gone-over"
+          document.getElementById("vatDetails.expectedOverThresholdSelectionAnswer").text mustBe "Yes"
+          document.getElementById("vatDetails.expectedOverThresholdSelectionChangeLink").attr("href") mustBe "/vat-eligibility-uri/go-over-vat-threshold-period"
+          document.getElementById("vatDetails.expectedOverThresholdDateAnswer").text mustBe "30 September 2016"
+          document.getElementById("vatDetails.expectedOverThresholdDateChangeLink").attr("href") mustBe "/vat-eligibility-uri/go-over-vat-threshold-period"
         }
       }
     }
