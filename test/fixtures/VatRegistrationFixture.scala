@@ -59,6 +59,7 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
   val testBusinessActivityDescription = "description"
   val testRegId = "VAT123456"
   val testMonthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
+  val testPresentationFormatter = DateTimeFormatter.ofPattern("d MMMM y")
 
   //View models
   val validOfficerContactDetailsView = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
@@ -77,8 +78,11 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
   val validDob = DateOfBirth(12, 11, 1973)
   val validStartDate = DateOfBirth(12, 11, 1990)
   val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", Some(validDob), None, None)
+  val validExpectedOverTrue = Some(VatExpectedThresholdPostIncorp(true,Some(testDate)))
+  val validExpectedOverTrueNoDate = Some(VatExpectedThresholdPostIncorp(true,None))
+  val validExpectedOverFalse = Some(VatExpectedThresholdPostIncorp(false,None))
   val completionCapacity = CompletionCapacity(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director")
-  def validServiceEligibility(nes : String = VatEligibilityChoice.NECESSITY_VOLUNTARY, reason : Option[String] = None) =
+  def validServiceEligibility(nes : String = VatEligibilityChoice.NECESSITY_VOLUNTARY, reason : Option[String] = None, expectedThreshold: Option[VatExpectedThresholdPostIncorp] = None) =
       VatServiceEligibility(
         Some(true),
         Some(false),
@@ -87,9 +91,7 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
         Some(false),
         Some(false),
         Some(VatEligibilityChoice(
-          nes,
-          reason,
-          None)))
+          nes, reason, None, expectedThreshold)))
 
   val officerName = Name(Some("Reddy"), None, "Yattapu", Some("Dr"))
   val validOfficerContactDetails = OfficerContactDetails(Some("test@test.com"), None, None)
