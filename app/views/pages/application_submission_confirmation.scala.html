@@ -8,10 +8,13 @@
 
 @main_template(title = Messages("pages.application.submission.confirmation.title"), scriptElem = Some(pageScripts), backEnabled = false) {
 
-    <div class="transaction-banner--complete">
-        <h1 id="heading-application-submitted" class="transaction-banner__heading white--color">@messages("pages.application.submission.confirmation.heading")</h1>
-        <p class="white--color">@messages("pages.application.submission.confirmation.reference.number")</p>
-        <p class="white--color"><strong class="heading-medium">@refNo</strong></p>
+    <div class="govuk-box-highlight">
+        <h1 id="heading-application-submitted" class="heading-xlarge">@messages("pages.application.submission.confirmation.heading")</h1>
+        <p class="font-large">
+            @messages("pages.application.submission.confirmation.reference.number")
+            <br>
+            <strong class="heading-medium">@refNo</strong>
+        </p>
     </div>
 
 
