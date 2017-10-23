@@ -1,0 +1,13 @@
+@()(implicit request: Request[_], messagesApi: MessagesApi, messages: Messages)
+
+@main_template(title = messagesApi("pages.timeout.title")) {
+    <header class="page-header">
+        <h1 class="form-title heading-xlarge" id="main-heading">@messagesApi("pages.timeout.heading")</h1>
+    </header>
+
+    <p>@messagesApi("pages.timeout.body.one")</p>
+
+    <div class="form-group">
+        <p>@Html(messagesApi("pages.timeout.body.url", controllers.callbacks.routes.SignInOutController.postSignIn.url))</p>
+    </div>
+}
