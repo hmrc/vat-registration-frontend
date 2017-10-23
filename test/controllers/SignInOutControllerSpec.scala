@@ -18,6 +18,8 @@ package controllers
 
 import controllers.callbacks.SignInOutController
 import helpers.VatRegSpec
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 
 class SignInOutControllerSpec extends VatRegSpec {
 
@@ -41,4 +43,33 @@ class SignInOutControllerSpec extends VatRegSpec {
     }
   }
 
+  "renewSession" should {
+    "return 200 when hit with Authorised User" in {
+      callAuthorised(TestController.renewSession()){ a =>
+        status(a) mustBe 200
+        contentType(a) mustBe Some("image")
+        await(a).body.dataStream.toString.contains("""public/images/renewSession.jpg""")  mustBe true
+      }
+    }
+  }
+
+  "destroySession" should {
+    "return redirect to timeout show and get rid of headers" in {
+
+      val fr = FakeRequest().withHeaders(("playFoo","no more"))
+
+      val res = TestController.destroySession()(fr)
+      status(res) mustBe 303
+      headers(res).contains("playFoo") mustBe false
+
+      redirectLocation(res) mustBe Some(controllers.callbacks.routes.SignInOutController.timeoutShow().url)
+    }
+  }
+
+  "timeoutShow" should {
+    "return 200" in {
+      val res = TestController.timeoutShow()(FakeRequest())
+      status(res) mustBe 200
+    }
+  }
 }

@@ -38,7 +38,6 @@ import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.http.HeaderCarrier
 import org.mockito.Mockito.when
 import org.mockito.Matchers
-import play.api.libs.json.Json
 import utils.{BooleanFeatureSwitch, FeatureManager, VATRegFeatureSwitch}
 
 import scala.concurrent.{Await, Awaitable, Future}
