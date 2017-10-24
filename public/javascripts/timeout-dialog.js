@@ -248,6 +248,8 @@ String.prototype.format = function () {
                 window.location = settings.logout_url
             }
         }
-        TimeoutDialog.init()
+        if($("#signOut").length) {
+            TimeoutDialog.init()
+        }
     }
 }(window.jQuery)
