@@ -16,6 +16,12 @@ error.required                          = Select an option
 error.unknown                           = Invalid input
 validation.numeric                      = Enter a numeric value
 
+#Timeout Page
+pages.timeout.title                                     = Your session has timed out
+pages.timeout.heading                                   = Your session has timed out due to inactivity
+pages.timeout.body.one                                  = Your answers have been saved.
+pages.timeout.body.url                                  = Sign in to <a href="{0}">continue registration</a>.
+
 ## Welcome Page
 pages.welcome.title                                     = Before you start
 pages.welcome.heading                                   = Register for VAT
