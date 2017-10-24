@@ -16,11 +16,15 @@
 
 package controllers.callbacks
 
+import java.io.File
 import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.config.ServicesConfig
+import views.html.pages.error.TimeoutView
+
+import scala.concurrent.Future
 
 class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) with ServicesConfig {
 
@@ -35,4 +39,19 @@ class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegis
     Redirect(s"$compRegFEURL$compRegFEURI/questionnaire").withNewSession
   }
 
+  def renewSession: Action[AnyContent] = authorised {
+    implicit user =>
+      implicit request =>
+        Ok.sendFile(new File("public/images/renewSession.jpg")).as("image")
+  }
+
+  def destroySession: Action[AnyContent] = Action.async {
+    implicit request =>
+      Future.successful(Redirect(routes.SignInOutController.timeoutShow()).withNewSession)
+  }
+
+  def timeoutShow = Action.async {
+    implicit request =>
+      Future.successful(Ok(TimeoutView()))
+  }
 }
