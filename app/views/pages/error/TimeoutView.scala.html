@@ -1,6 +1,6 @@
 @()(implicit request: Request[_], messagesApi: MessagesApi, messages: Messages)
 
-@main_template(title = messagesApi("pages.timeout.title")) {
+@main_template(title = messagesApi("pages.timeout.title"), backEnabled = false) {
     <header class="page-header">
         <h1 class="form-title heading-xlarge" id="main-heading">@messagesApi("pages.timeout.heading")</h1>
     </header>
