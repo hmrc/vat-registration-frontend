@@ -47,7 +47,7 @@ class SignInOutControllerSpec extends VatRegSpec {
     "return 200 when hit with Authorised User" in {
       callAuthorised(TestController.renewSession()){ a =>
         status(a) mustBe 200
-        contentType(a) mustBe Some("image")
+        contentType(a) mustBe Some("image/jpeg")
         await(a).body.dataStream.toString.contains("""public/images/renewSession.jpg""")  mustBe true
       }
     }
