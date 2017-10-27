@@ -21,6 +21,7 @@ import com.google.inject.name.Names
 import com.google.inject.{AbstractModule, Scopes, TypeLiteral}
 import common.Now
 import connectors.{BankHolidaysConnector, FallbackBankHolidaysConnector, WSBankHolidaysConnector}
+import services.{PrePopService, PrePopulationService}
 import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
 import uk.gov.hmrc.play.http.hooks.HttpHook
 import uk.gov.hmrc.play.http.ws.WSHttp
@@ -49,6 +50,8 @@ class Module extends AbstractModule {
       .to(classOf[FallbackBankHolidaysConnector])
     bind(classOf[BankHolidaysConnector])
       .to(classOf[WSBankHolidaysConnector])
+
+    bind(classOf[PrePopService]) to classOf[PrePopulationService]
 
     bind(classOf[ServicesConfig]).to(classOf[DefaultServicesConfig])
   }
