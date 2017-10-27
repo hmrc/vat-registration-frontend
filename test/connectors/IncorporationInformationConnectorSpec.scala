@@ -18,13 +18,15 @@ package connectors
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
+import models.api.Name
+import models.external.{CoHoRegisteredOfficeAddress, Officer, OfficerList}
+import org.joda.time.DateTime
 import uk.gov.hmrc.play.http.ws.WSHttp
 
-class IncorporationInformationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
+class IncorporationInformationConnectorSpec extends VatRegSpec {
 
   class Setup {
-    val connector = new IncorporationInformationConnector {
+    val connector = new IncorporationInformationConnect {
       override val incorpInfoUrl: String = "tst-url"
       override val incorpInfoUri: String = "tst-url"
       override val http: WSHttp = mockWSHttp
@@ -50,22 +52,29 @@ class IncorporationInformationConnectorSpec extends VatRegSpec with VatRegistrat
 
 
   "Calling getOfficerList" should {
+    val officerName = Name(None, None, "TestName")
+    val testDateTime = DateTime.parse("2017-3-21")
+
+    def director(retired: Boolean = false) = Officer(officerName, "director", resignedOn = if(retired) Some(testDateTime) else None)
+    def secretary(retired: Boolean = false) = Officer(officerName, "secretary", resignedOn = if(retired) Some(testDateTime) else None)
+
+    val officerList = OfficerList(Seq(director(retired = true), director(), secretary(), secretary(retired = true)))
+    val filteredList = OfficerList(Seq(director(), secretary()))
+    val emptyList = OfficerList(Seq.empty)
 
     "return an non-empty OfficerList" in new Setup {
-      val nonEmptyList = OfficerList(Seq(officer))
-      mockHttpGET[OfficerList]("tst-url", nonEmptyList)
-      connector.getOfficerList("id") returnsSome nonEmptyList
+      mockHttpGET[OfficerList]("tst-url", officerList)
+      connector.getOfficerList("id") returnsSome filteredList
     }
 
     "return an empty OfficerList" in new Setup {
-      val emptyList = OfficerList(Seq.empty)
       mockHttpGET[OfficerList]("tst-url", emptyList)
       connector.getOfficerList("id") returnsSome emptyList
     }
 
     "return empty OfficerList when remote service responds with 404" in new Setup {
       mockHttpFailedGET[OfficerList]("test-url", notFound)
-      connector.getOfficerList("id") returnsSome OfficerList(Seq.empty)
+      connector.getOfficerList("id") returnsSome emptyList
     }
 
     "fail with exception when an Internal Server Error occurs calling remote service" in new Setup {

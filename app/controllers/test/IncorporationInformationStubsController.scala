@@ -107,7 +107,8 @@ class IncorporationInformationStubsController @Inject()(vatRegistrationService: 
          |                  "country" : "England",
          |                  "postal_code" : "NE1 4BB"
          |              },
-         |              "officer_role" : "director"
+         |              "officer_role" : "secretary",
+         |              "resigned_on" : "2017-10-10"
          |          },
          |          {
          |              "name_elements" : {
@@ -126,7 +127,7 @@ class IncorporationInformationStubsController @Inject()(vatRegistrationService: 
          |                  "country" : "England",
          |                  "postal_code" : "AA1 4AA"
          |              },
-         |              "officer_role" : "director"
+         |              "officer_role" : "secretary"
          |          }
          |      ],
          |      "sic_codes" : [

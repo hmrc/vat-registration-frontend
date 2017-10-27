@@ -21,7 +21,7 @@ import javax.inject.Singleton
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
-import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
+import models.external.{CoHoRegisteredOfficeAddress, Officer, OfficerList}
 import play.api.Logger
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -54,11 +54,19 @@ trait IncorporationInformationConnect { self =>
     })
 
   def getOfficerList(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[OfficerList] =
-    OptionT( http.GET[OfficerList](s"$incorpInfoUrl$incorpInfoUri/$transactionId/officer-list").map(Some(_)).recover{
+    OptionT( http.GET[OfficerList](s"$incorpInfoUrl$incorpInfoUri/$transactionId/officer-list").map( res =>
+      Some(filterRelevantOfficers(res))
+    ).recover{
       case notFoundException: NotFoundException => Some(OfficerList(items = Nil))
       case ex => logResponse(ex, className, "getOfficerList")
         throw ex
     })
+
+  private def filterRelevantOfficers(ol: OfficerList): OfficerList = {
+    OfficerList(ol.items filter ( o =>
+        (o.role.equals("director") || o.role.equals("secretary")) && o.resignedOn.isEmpty
+      ))
+  }
 
   def getCompanyName(redId: String, transactionId: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
     http.GET[JsValue](s"$incorpInfoUrl$incorpInfoUri/$transactionId/company-profile") recover {
