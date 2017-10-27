@@ -24,6 +24,7 @@ import cats.data.OptionT
 import cats.data.OptionT.fromOption
 import cats.instances.ListInstances
 import cats.syntax.TraverseSyntax
+import com.google.inject.ImplementedBy
 import connectors.{OptionalResponse, PPConnector}
 import models._
 import models.api._
@@ -34,22 +35,24 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+@ImplementedBy(classOf[PrePopulationService])
+trait PrePopService {
+  def getCTActiveDate()(implicit hc: HeaderCarrier, profile: CurrentProfile): OptionalResponse[LocalDate]
+  def getOfficerAddressList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]]
+  def getPpobAddressList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]]
+  def getOfficerList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[Officer]]
+}
+
 @Singleton
 class PrePopulationService @Inject()(ppc: PPConnector, iis: IncorporationInformationService, s4l: S4LService)
-                                    (implicit vrs: VatRegistrationService) extends PrePopService {
+                                    (implicit vrs: VatRegistrationService)
+  extends PrePopService with CommonService with TraverseSyntax with ListInstances {
+
+  private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
   val ppConnector = ppc
   val incorpInfoService = iis
   val save4later = s4l
   val vatRegService = vrs
-}
-
-trait PrePopService extends CommonService with TraverseSyntax with ListInstances {
-
-  private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-  val ppConnector: PPConnector
-  val incorpInfoService: IncorporationInformationService
-  val save4later: S4LService
-  val vatRegService: VatRegistrationService
 
   def getCTActiveDate()(implicit hc: HeaderCarrier, profile: CurrentProfile): OptionalResponse[LocalDate] =
     for {
@@ -80,6 +83,4 @@ trait PrePopService extends CommonService with TraverseSyntax with ListInstances
   def getOfficerList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[Officer]] = {
     incorpInfoService.getOfficerList() map (_.distinct)
   }
-
-
 }

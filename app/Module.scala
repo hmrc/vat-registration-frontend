@@ -51,8 +51,6 @@ class Module extends AbstractModule {
     bind(classOf[BankHolidaysConnector])
       .to(classOf[WSBankHolidaysConnector])
 
-    bind(classOf[PrePopService]) to classOf[PrePopulationService]
-
     bind(classOf[ServicesConfig]).to(classOf[DefaultServicesConfig])
   }
 
