@@ -48,7 +48,7 @@ class SignInOutControllerSpec extends VatRegSpec {
       callAuthorised(TestController.renewSession()){ a =>
         status(a) mustBe 200
         contentType(a) mustBe Some("image/jpeg")
-        await(a).body.dataStream.toString.contains("""public/images/renewSession.jpg""")  mustBe true
+        await(a).body.dataStream.toString.contains("""renewSession.jpg""")  mustBe true
       }
     }
   }
