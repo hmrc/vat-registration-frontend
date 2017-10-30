@@ -14,34 +14,25 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.test
 
 import javax.inject.Singleton
 
+import common.enums.IVResult
 import config.WSHttp
 import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.http.ws.WSHttp
-import common.enums.IVResult
-import play.api.Logger
-import play.api.libs.json.JsValue
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class IdentityVerificationConnector extends ServicesConfig {
+class BusinessRegDynamicStubConnector extends ServicesConfig {
   val brdsUrl = baseUrl("business-registration-dynamic-stub")
   val brdsUri = getConfString("business-registration-dynamic-stub.uri", "")
 
   val http: WSHttp = WSHttp
 
-  def getJourneyOutcome(journeyId: String)(implicit hc: HeaderCarrier): Future[IVResult.Value] =
-    http.GET[JsValue](s"$brdsUrl$brdsUri/mdtp/journey/journeyId/$journeyId") map {
-      _.\("result").as[IVResult.Value]
-    } recover {
-      case e =>
-        Logger.error(s"[IdentityVerificationConnector] - [getJourneyOutcome] - There was a problem getting the IV journey outcome for journeyId $journeyId", e)
-        throw e
-    }
+  def setupIVOutcome(journeyId: String, outcome: IVResult.Value)(implicit hc: HeaderCarrier): Future[HttpResponse] =
+    http.POST[String, HttpResponse](s"$brdsUrl$brdsUri/setup-iv-outcome/$journeyId/$outcome", "")
 }

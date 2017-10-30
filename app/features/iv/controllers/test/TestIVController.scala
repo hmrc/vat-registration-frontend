@@ -18,6 +18,8 @@ package controllers.test
 
 import javax.inject.Inject
 
+import common.enums.IVResult
+import connectors.test.BusinessRegDynamicStubConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.test.TestIVForm
 import play.api.mvc.{Action, AnyContent}
@@ -25,7 +27,8 @@ import services.{CommonService, SessionProfile}
 
 import scala.concurrent.Future
 
-class TestIVController @Inject()(ds: CommonPlayDependencies)
+class TestIVController @Inject()(ds: CommonPlayDependencies,
+                                 busRegDynStub: BusinessRegDynamicStubConnector)
   extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
   def show: Action[AnyContent] = authorised.async {
@@ -44,7 +47,13 @@ class TestIVController @Inject()(ds: CommonPlayDependencies)
             badForm =>
               Future.successful(BadRequest(features.iv.views.html.test.testIVResponse(badForm))),
             success =>
-              Future.successful(Ok(s"Test IV Response redirect somewhere with journeyId: ${success.journeyId} and result: ${success.ivResult}"))
+              busRegDynStub.setupIVOutcome(success.journeyId, success.ivResult) map { _ =>
+                if (success.ivResult == IVResult.Success) {
+                  Redirect(controllers.iv.routes.IdentityVerificationController.completedIVJourney())
+                } else {
+                  Redirect(controllers.iv.routes.IdentityVerificationController.failedIVJourney(success.journeyId))
+                }
+              }
           )
         }
   }

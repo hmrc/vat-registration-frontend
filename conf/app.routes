@@ -14,6 +14,9 @@ GET         /couldnt-confirm-identity                                           
 GET         /locked-out                                                                        controllers.IdentityVerificationController.lockedOutIv
 GET         /incomplete-identity-check                                                         controllers.IdentityVerificationController.userAborted
 
+GET         /ivComplete                                                                        controllers.iv.IdentityVerificationController.completedIVJourney
+GET         /ivFailure                                                                         controllers.iv.IdentityVerificationController.failedIVJourney(journeyId: String)
+
 ## WELCOME PAGE
 GET         /                                                                                  controllers.WelcomeController.show
 GET         /before-you-register-for-vat                                                       controllers.WelcomeController.start
@@ -253,4 +256,3 @@ POST        /gone-over-threshold                                                
 ## Threshold summary
 GET         /check-confirm-answers                                                             controllers.vatTradingDetails.vatChoice.ThresholdSummaryController.show
 POST        /check-confirm-answers                                                             controllers.vatTradingDetails.vatChoice.ThresholdSummaryController.submit
-

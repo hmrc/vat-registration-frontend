@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.iv
 
 import javax.inject.Inject
 
+import common.enums.IVResult
+import connectors.IdentityVerificationConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
+import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, SessionProfile}
 
 import scala.concurrent.Future
 
-class IdentityVerificationController @Inject()(ds: CommonPlayDependencies)
+class IdentityVerificationController @Inject()(ds: CommonPlayDependencies,
+                                               ivConnector: IdentityVerificationConnector)
   extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
-  def timeoutIV = authorised.async {
+  def timeoutIV: Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request =>
         withCurrentProfile { _ =>
@@ -34,7 +38,7 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies)
         }
   }
 
-  def unableToConfirmIdentity = authorised.async {
+  def unableToConfirmIdentity: Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request =>
         withCurrentProfile { _ =>
@@ -67,4 +71,22 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies)
         }
   }
 
+  def completedIVJourney: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { _ =>
+          Future.successful(Redirect(controllers.vatLodgingOfficer.routes.FormerNameController.show()))
+        }
+  }
+
+  def failedIVJourney(journeyId: String): Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { _ =>
+          ivConnector.getJourneyOutcome(journeyId) map {
+            case IVResult.Timeout => Redirect(controllers.iv.routes.IdentityVerificationController.timeoutIV())
+            case IVResult.InsufficientEvidence => Redirect(controllers.iv.routes.IdentityVerificationController.unableToConfirmIdentity())
+          }
+        }
+  }
 }
