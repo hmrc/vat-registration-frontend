@@ -17,26 +17,57 @@ error.unknown                           = Invalid input
 validation.numeric                      = Enter a numeric value
 
 #Timeout Page
-pages.timeout.title                                     = Your session has timed out
-pages.timeout.heading                                   = Your session has timed out due to inactivity
-pages.timeout.body.one                                  = Your answers have been saved.
-pages.timeout.body.url                                  = Sign in to <a href="{0}">continue registration</a>.
+pages.timeout.title                     = Your session has timed out
+pages.timeout.heading                   = Your session has timed out due to inactivity
+pages.timeout.body.one                  = Your answers have been saved.
+pages.timeout.body.url                  = Sign in to <a href="{0}">continue registration</a>.
+
+#Timeoutiv page
+pages.timeoutiv.title                   = Your session has timed out
+pages.timeoutiv.heading                 = Your session has timed out due to inactivity
+pages.timeoutiv.body.url                = You need to <a href="{0}">restart the identity check</a>.
+
+## Unable to confirm identity page
+pages.cantconfirmidentity.title         = We can''t confirm your identity
+pages.cantconfirmidentity.heading       = We can''t confirm your identity
+pages.cantconfirmidentity.body.one      = We don''t hold enough information about you to check your identity.
+pages.cantconfirmidentity.body.url      = If you have the company''s name and registration date, you can <a href="{0}">use another HMRC service</a>.
+
+## Failediv
+pages.failediv.title                   = We couldn''t confirm your identity
+pages.failediv.heading                 = We couldn''t confirm your identity
+pages.failediv.body.one                = The information you provided doesn''t match the details HMRC holds on you.
+pages.failediv.body.url                = You''ll need to try again, or you can <a href="{0}">use another HMRC service</a>.
+pages.failediv.button.try              = Try again
+
+## Lockedoutiv
+pages.lockedoutiv.title                = You''ve been locked out
+pages.lockedoutiv.heading              = You''ve been locked out
+pages.lockedoutiv.body.one             = You''ve made too many attempts to confirm your identity.
+pages.lockedoutiv.body1.url            = You''ll have to try again after 24 hours by <a href="{0}">logging back into the service from GOV.UK</a>.
+pages.lockedoutiv.body2.url            = If you have the company''s name and the registration date, you can <a href="{0}">use another HMRC service</a>.
+
+## Useraborted
+pages.useraborted.title                = You haven''t completed the identity check
+pages.useraborted.heading              = You haven''t completed the identity check
+pages.useraborted.body1.url            = You need to <a href="{0}">restart the identity check</a>.
+pages.useraborted.body2.url            = If you have the company''s name and registration date, you can <a href="{0}">use another HMRC service</a>.
 
 ## Welcome Page
-pages.welcome.title                                     = Before you start
-pages.welcome.heading                                   = Register for VAT
-pages.welcome.p1                                        = Use this service to register the company if:
-pages.welcome.bullet1                                   = its VAT taxable sales were more than the VAT registration threshold in any 12-month period
-pages.welcome.bullet2                                   = you thought its VAT taxable sales would be more than the VAT registration threshold in any 30-day period (including the next 30 days)
-pages.welcome.p2                                        = The current VAT registration threshold is £85,000.
-pages.welcome.p3                                        = If the company doesn''t meet these criteria, you can register it voluntarily so long as the company sells or intends to sell VAT taxable goods or services. You''ll be able to reclaim VAT on any business-related purchases.
-pages.welcome.button.start                              = Start now
-pages.welcome.p4                                        = Before you start you''ll need:
-pages.welcome.bullet3                                   = to be a company director or secretary
-pages.welcome.bullet4                                   = personal information we can use to identify you (for example, details from a UK passport, a P60 or payslips)
-pages.welcome.bullet5                                   = your UK National Insurance number
-pages.welcome.bullet6                                   = estimates of the company''s total VAT taxable sales for the next 12 months
-pages.welcome.p5                                        = Your answers should reflect your current business details. You''ll need to tell HM Revenue and Customs (HMRC) about any changes to the company in the future.
+pages.welcome.title                     = Before you start
+pages.welcome.heading                   = Register for VAT
+pages.welcome.p1                        = Use this service to register the company if:
+pages.welcome.bullet1                   = its VAT taxable sales were more than the VAT registration threshold in any 12-month period
+pages.welcome.bullet2                   = you thought its VAT taxable sales would be more than the VAT registration threshold in any 30-day period (including the next 30 days)
+pages.welcome.p2                        = The current VAT registration threshold is £85,000.
+pages.welcome.p3                        = If the company doesn''t meet these criteria, you can register it voluntarily so long as the company sells or intends to sell VAT taxable goods or services. You''ll be able to reclaim VAT on any business-related purchases.
+pages.welcome.button.start              = Start now
+pages.welcome.p4                        = Before you start you''ll need:
+pages.welcome.bullet3                   = to be a company director or secretary
+pages.welcome.bullet4                   = personal information we can use to identify you (for example, details from a UK passport, a P60 or payslips)
+pages.welcome.bullet5                   = your UK National Insurance number
+pages.welcome.bullet6                   = estimates of the company''s total VAT taxable sales for the next 12 months
+pages.welcome.p5                        = Your answers should reflect your current business details. You''ll need to tell HM Revenue and Customs (HMRC) about any changes to the company in the future.
 
 ## Service Criteria Questions (VAT Service Eligibility)
 ## Service Criteria Success
