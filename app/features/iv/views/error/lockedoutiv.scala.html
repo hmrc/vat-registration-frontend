@@ -1,0 +1,13 @@
+@()(implicit request: Request[_], messagesApi: MessagesApi, messages: Messages)
+
+@main_template(title = messagesApi("pages.lockedoutiv.title"), backEnabled = false) {
+    <header class="page-header">
+        <h1 class="form-title heading-xlarge" id="main-heading">@messagesApi("pages.lockedoutiv.heading")</h1>
+    </header>
+
+     <p>@messagesApi("pages.lockedoutiv.body.one")</p>
+    <div class="form-group">
+        <p>@Html(messagesApi("pages.lockedoutiv.body1.url", "https://www.gov.uk/vat-registration/how-to-register"))</p>
+        <p>@Html(messagesApi("pages.lockedoutiv.body2.url", "https://online.hmrc.gov.uk/registration/newbusiness/business-allowed"))</p>
+    </div>
+}

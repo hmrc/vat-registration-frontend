@@ -1,0 +1,12 @@
+@()(implicit request: Request[_], messagesApi: MessagesApi, messages: Messages)
+
+@main_template(title = messagesApi("pages.cantconfirmidentity.title"), backEnabled = false) {
+    <header class="page-header">
+        <h1 class="form-title heading-xlarge" id="main-heading">@messagesApi("pages.cantconfirmidentity.heading")</h1>
+    </header>
+
+     <p>@messagesApi("pages.cantconfirmidentity.body.one")</p>
+    <div class="form-group">
+        <p>@Html(messagesApi("pages.cantconfirmidentity.body.url", "https://online.hmrc.gov.uk/registration/newbusiness/business-allowed"))</p>
+    </div>
+}

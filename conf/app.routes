@@ -5,7 +5,17 @@ GET         /assets/*file                                                       
 ##SESSION
 GET         /renew-session                                                                     controllers.callbacks.SignInOutController.renewSession
 GET         /error/destroy-session                                                             controllers.callbacks.SignInOutController.destroySession
-GET         /error/timeout                                                                     controllers.callbacks.SignInOutController.timeoutShow()
+GET         /session-timed-out                                                                 controllers.callbacks.SignInOutController.timeoutShow()
+
+##IDENTITY VERIFICATION
+GET         /timed-out-inactivity                                                              controllers.iv.IdentityVerificationController.timeoutIV
+GET         /cant-confirm-identity                                                             controllers.iv.IdentityVerificationController.unableToConfirmIdentity
+GET         /couldnt-confirm-identity                                                          controllers.iv.IdentityVerificationController.failedIV
+GET         /locked-out                                                                        controllers.iv.IdentityVerificationController.lockedOut
+GET         /incomplete-identity-check                                                         controllers.iv.IdentityVerificationController.userAborted
+
+GET         /ivComplete                                                                        controllers.iv.IdentityVerificationController.completedIVJourney
+GET         /ivFailure                                                                         controllers.iv.IdentityVerificationController.failedIVJourney(journeyId: String)
 
 ## WELCOME PAGE
 GET         /                                                                                  controllers.WelcomeController.show
