@@ -1,0 +1,30 @@
+@import models.view.test.TestIVResponse
+@import common.enums.IVResult
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.templates.{vatInput, vatInputRadioGroup}
+
+@(testForm: Form[TestIVResponse])(implicit request: Request[_], messages: Messages)
+
+<h1 class="form-title heading-xlarge" id="pageHeading">Test IV Response</h1>
+
+@govHelpers.form(action = controllers.test.routes.TestIVController.submit()) {
+    <div class="form-group">
+        <fieldset>
+            <p>@vatInput(testForm("journeyId"), '_label -> "Journey Id")</p>
+            <p>
+                @vatInputRadioGroup(
+                    field = testForm("ivResult"),
+                    IVResult.values.toSeq.map(v => (v.toString , v.toString)),
+                    '_legend -> "IV Result",
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label"
+                )
+            </p>
+        </fieldset>
+
+    </div>
+
+    <div class="form-group">
+        <button class="btn button" type="submit" id="submit">Submit</button>
+    </div>
+}
