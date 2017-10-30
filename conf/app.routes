@@ -5,7 +5,11 @@ GET         /assets/*file                                                       
 ##SESSION
 GET         /renew-session                                                                     controllers.callbacks.SignInOutController.renewSession
 GET         /error/destroy-session                                                             controllers.callbacks.SignInOutController.destroySession
-GET         /error/timeout                                                                     controllers.callbacks.SignInOutController.timeoutShow()
+GET         /session-timed-out                                                                 controllers.callbacks.SignInOutController.timeoutShow()
+
+##IDENTITY VERIFICATION
+GET         /timed-out-inactivity                                                              controllers.IdentityVerificationController.timeoutIV
+GET         /cant-confirm-identity                                                             controllers.IdentityVerificationController.unabletoconfirmidentity
 
 ## WELCOME PAGE
 GET         /                                                                                  controllers.WelcomeController.show
@@ -246,3 +250,4 @@ POST        /gone-over-threshold                                                
 ## Threshold summary
 GET         /check-confirm-answers                                                             controllers.vatTradingDetails.vatChoice.ThresholdSummaryController.show
 POST        /check-confirm-answers                                                             controllers.vatTradingDetails.vatChoice.ThresholdSummaryController.submit
+
