@@ -9,7 +9,10 @@ GET         /session-timed-out                                                  
 
 ##IDENTITY VERIFICATION
 GET         /timed-out-inactivity                                                              controllers.IdentityVerificationController.timeoutIV
-GET         /cant-confirm-identity                                                             controllers.IdentityVerificationController.unabletoconfirmidentity
+GET         /cant-confirm-identity                                                             controllers.IdentityVerificationController.unableToConfirmIdentity
+GET         /couldnt-confirm-identity                                                          controllers.IdentityVerificationController.failedIv
+GET         /locked-out                                                                        controllers.IdentityVerificationController.lockedOutIv
+GET         /incomplete-identity-check                                                         controllers.IdentityVerificationController.userAborted
 
 ## WELCOME PAGE
 GET         /                                                                                  controllers.WelcomeController.show

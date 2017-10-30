@@ -33,6 +33,26 @@ pages.cantconfirmidentity.heading       = We can''t confirm your identity
 pages.cantconfirmidentity.body.one      = We don''t hold enough information about you to check your identity.
 pages.cantconfirmidentity.body.url      = If you have the company''s name and registration date, you can <a href="{0}">use another HMRC service</a>.
 
+## Failediv
+pages.failediv.title                   = We couldn''t confirm your identity
+pages.failediv.heading                 = We couldn''t confirm your identity
+pages.failediv.body.one                = The information you provided doesn''t match the details HMRC holds on you.
+pages.failediv.body.url                = You''ll need to try again, or you can <a href="{0}">use another HMRC service</a>.
+pages.failediv.button.try              = Try again
+
+## Lockedoutiv
+pages.lockedoutiv.title                = You''ve been locked out
+pages.lockedoutiv.heading              = You''ve been locked out
+pages.lockedoutiv.body.one             = You''ve made too many attempts to confirm your identity.
+pages.lockedoutiv.body1.url            = You''ll have to try again after 24 hours by <a href="{0}">logging back into the service from GOV.UK</a>.
+pages.lockedoutiv.body2.url            = If you have the company''s name and the registration date, you can <a href="{0}">use another HMRC service</a>.
+
+## Useraborted
+pages.useraborted.title                = You haven''t completed the identity check
+pages.useraborted.heading              = You haven''t completed the identity check
+pages.useraborted.body1.url            = You need to <a href="{0}">restart the identity check</a>.
+pages.useraborted.body2.url            = If you have the company''s name and registration date, you can <a href="{0}">use another HMRC service</a>.
+
 ## Welcome Page
 pages.welcome.title                     = Before you start
 pages.welcome.heading                   = Register for VAT

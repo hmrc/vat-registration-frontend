@@ -26,7 +26,7 @@ import scala.concurrent.Future
 class IdentityVerificationController @Inject()(ds: CommonPlayDependencies)
   extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
-  val timeoutIV = authorised.async {
+  def timeoutIV = authorised.async {
     implicit user =>
       implicit request =>
         withCurrentProfile { _ =>
@@ -34,11 +34,37 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies)
         }
   }
 
-  val unabletoconfirmidentity = authorised.async {
+  def unableToConfirmIdentity = authorised.async {
     implicit user =>
       implicit request =>
         withCurrentProfile { _ =>
           Future.successful(Ok(features.iv.views.html.error.unabletoconfirmidentity()))
         }
   }
+
+  def failedIv = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { _ =>
+          Future.successful(Ok(features.iv.views.html.error.failediv()))
+        }
+
+  }
+
+  def lockedOutIv = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { _ =>
+          Future.successful(Ok(features.iv.views.html.error.lockedoutiv()))
+        }
+  }
+
+  def userAborted = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { _ =>
+          Future.successful(Ok(features.iv.views.html.error.useraborted()))
+        }
+  }
+
 }
