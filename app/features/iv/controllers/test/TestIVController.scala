@@ -16,12 +16,14 @@
 
 package controllers.test
 
+import java.util.UUID
 import javax.inject.Inject
 
 import common.enums.IVResult
 import connectors.test.BusinessRegDynamicStubConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.test.TestIVForm
+import models.view.test.TestIVResponse
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, SessionProfile}
 
@@ -35,7 +37,8 @@ class TestIVController @Inject()(ds: CommonPlayDependencies,
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          Future.successful(Ok(features.iv.views.html.test.testIVResponse(TestIVForm.form)))
+          val testIVResponse = TestIVResponse(UUID.randomUUID.toString, IVResult.Success)
+          Future.successful(Ok(features.iv.views.html.test.testIVResponse(TestIVForm.form.fill(testIVResponse))))
         }
   }
 
