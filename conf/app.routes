@@ -8,11 +8,11 @@ GET         /error/destroy-session                                              
 GET         /session-timed-out                                                                 controllers.callbacks.SignInOutController.timeoutShow()
 
 ##IDENTITY VERIFICATION
-GET         /timed-out-inactivity                                                              controllers.IdentityVerificationController.timeoutIV
-GET         /cant-confirm-identity                                                             controllers.IdentityVerificationController.unableToConfirmIdentity
-GET         /couldnt-confirm-identity                                                          controllers.IdentityVerificationController.failedIv
-GET         /locked-out                                                                        controllers.IdentityVerificationController.lockedOutIv
-GET         /incomplete-identity-check                                                         controllers.IdentityVerificationController.userAborted
+GET         /timed-out-inactivity                                                              controllers.iv.IdentityVerificationController.timeoutIV
+GET         /cant-confirm-identity                                                             controllers.iv.IdentityVerificationController.unableToConfirmIdentity
+GET         /couldnt-confirm-identity                                                          controllers.iv.IdentityVerificationController.failedIV
+GET         /locked-out                                                                        controllers.iv.IdentityVerificationController.lockedOut
+GET         /incomplete-identity-check                                                         controllers.iv.IdentityVerificationController.userAborted
 
 GET         /ivComplete                                                                        controllers.iv.IdentityVerificationController.completedIVJourney
 GET         /ivFailure                                                                         controllers.iv.IdentityVerificationController.failedIVJourney(journeyId: String)

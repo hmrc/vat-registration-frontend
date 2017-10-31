@@ -46,7 +46,7 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies,
         }
   }
 
-  def failedIv = authorised.async {
+  def failedIV: Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request =>
         withCurrentProfile { _ =>
@@ -55,7 +55,7 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies,
 
   }
 
-  def lockedOutIv = authorised.async {
+  def lockedOut: Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request =>
         withCurrentProfile { _ =>
@@ -63,7 +63,7 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies,
         }
   }
 
-  def userAborted = authorised.async {
+  def userAborted: Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request =>
         withCurrentProfile { _ =>
@@ -86,6 +86,9 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies,
           ivConnector.getJourneyOutcome(journeyId) map {
             case IVResult.Timeout => Redirect(controllers.iv.routes.IdentityVerificationController.timeoutIV())
             case IVResult.InsufficientEvidence => Redirect(controllers.iv.routes.IdentityVerificationController.unableToConfirmIdentity())
+            case IVResult.FailedIV => Redirect(controllers.iv.routes.IdentityVerificationController.failedIV())
+            case IVResult.LockedOut => Redirect(controllers.iv.routes.IdentityVerificationController.lockedOut())
+            case IVResult.UserAborted => Redirect(controllers.iv.routes.IdentityVerificationController.userAborted())
           }
         }
   }

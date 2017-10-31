@@ -41,7 +41,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
   }
 
   "GET Failed IV Journey" should {
-    "redirect to correct error page" in {
+    "redirect to correct Timeout error page" in {
       val journeyId = "12345"
 
       given()
@@ -54,6 +54,70 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.iv.routes.IdentityVerificationController.timeoutIV().url)
+      }
+    }
+
+    "redirect to correct Unable to confirm identity error page" in {
+      val journeyId = "12345"
+
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
+        .audit.writesAudit()
+        .iv.outcome(journeyId, IVResult.InsufficientEvidence)
+
+      val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
+      whenReady(response) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.iv.routes.IdentityVerificationController.unableToConfirmIdentity().url)
+      }
+    }
+
+    "redirect to correct Failed IV error page" in {
+      val journeyId = "12345"
+
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
+        .audit.writesAudit()
+        .iv.outcome(journeyId, IVResult.FailedIV)
+
+      val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
+      whenReady(response) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.iv.routes.IdentityVerificationController.failedIV().url)
+      }
+    }
+
+    "redirect to correct Locked out error page" in {
+      val journeyId = "12345"
+
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
+        .audit.writesAudit()
+        .iv.outcome(journeyId, IVResult.LockedOut)
+
+      val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
+      whenReady(response) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.iv.routes.IdentityVerificationController.lockedOut().url)
+      }
+    }
+
+    "redirect to correct User aborted error page" in {
+      val journeyId = "12345"
+
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
+        .audit.writesAudit()
+        .iv.outcome(journeyId, IVResult.UserAborted)
+
+      val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
+      whenReady(response) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.iv.routes.IdentityVerificationController.userAborted().url)
       }
     }
   }
