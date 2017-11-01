@@ -19,7 +19,7 @@ package support
 import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern
-import common.enums.VatRegStatus
+import common.enums.{IVResult, VatRegStatus}
 import models.S4LKey
 import models.api.VatScheme
 import play.api.libs.json.{Format, JsObject, Json}
@@ -66,6 +66,8 @@ trait StubUtils {
 
     def keystore = new KeystoreStubWrapper()
     def keystoreInScenario = new KeystoreStubScenarioWrapper()
+
+    def iv = IVStub()
   }
 
   def given(): PreconditionBuilder = {
@@ -567,6 +569,18 @@ trait StubUtils {
 
     def failsToWriteAudit() = {
       writesAudit(404)
+    }
+  }
+
+  case class IVStub()(implicit builder: PreconditionBuilder) {
+    def outcome(journeyId: String, result: IVResult.Value) = {
+      stubFor(get(urlMatching(s"/iv-uri/mdtp/journey/journeyId/$journeyId"))
+        .willReturn(aResponse()
+          .withStatus(200)
+          .withBody(s"""{"result": "$result", "token": "aaa-bbb-ccc"}""")
+        )
+      )
+      builder
     }
   }
 }
