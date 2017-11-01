@@ -61,7 +61,8 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerS
       "incorporation-frontend-stub",
       "incorporation-information",
       "cachable.short-lived-cache",
-      "cachable.session-cache"
+      "cachable.session-cache",
+      "business-registration-dynamic-stub"
     ))
   )
 
@@ -74,7 +75,8 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerS
       (s"auditing.consumer.baseUri.host" -> wiremockHost, s"auditing.consumer.baseUri.port" -> wiremockPort) +
       ("play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck") +
       ("microservice.services.vat-registration-eligibility-frontend.www.host" -> "") +
-      ("microservice.services.vat-registration-eligibility-frontend.uri" -> "/vat-eligibility-uri")
+      ("microservice.services.vat-registration-eligibility-frontend.uri" -> "/vat-eligibility-uri") +
+      ("microservice.services.business-registration-dynamic-stub.uri" -> "/iv-uri")
 
 }
 
