@@ -176,17 +176,23 @@ pages.startDate.title                                 = What do you want your VA
 pages.startDate.heading                               = What do you want your VAT start date to be?
 pages.startDate.para1                                 = You can choose the date the company becomes VAT registered when you register voluntarily.
 pages.startDate.radio.whenRegistered                  = The date the company is registered with Companies House
+pages.startDate.radio.wasRegistered                   = The date the company was registered: {0}
 pages.startDate.radio.whenTrading                     = The date the company starts doing business: {0}
 pages.startDate.radio.specificDate                    = A different date
 pages.startDate.panels.specificDate.para1             = This must be:
 pages.startDate.panels.specificDate.bullet.2days      = more than 2 working days in the future
 pages.startDate.panels.specificDate.bullet.3months    = within the next 3 months
+pages.startDate.panels.specificDate.bullet.onafter    = on or after the date the company was registered
+pages.startDate.panels.specificDate.bullet.3monthsf   = no more than 3 months in the future
+pages.startDate.panels.specificDate.bullet.4yearspa   = no more than 4 years in the past
 pages.startDate.panels.specificDate.hint              = For example, 30 6 2017
 pages.startDate.panels.specificDate.inputField.day    = Day
 pages.startDate.panels.specificDate.inputField.month  = Month
 pages.startDate.panels.specificDate.inputField.year   = Year
 validation.startDate.choice.missing                   = Tell us when you want your VAT start date to be
 validation.startDate.range.below                      = Date must be more than 2 working days in the future
+validation.startDate.range.below4y                    = Enter a date which is no more than 4 years in the past
+validation.startDate.range.belowIncorp                = Enter a date which is not before the date of incorporation
 validation.startDate.range.above                      = Date must be within the next 3 months
 validation.startDate.invalid                          = Enter a valid date
 validation.startDate.missing                          = Enter a date
@@ -232,6 +238,19 @@ pages.start.date.confirmation.para1                          = Your VAT start da
 pages.start.date.confirmation.para2                          = You must apply to register if you expect your VAT taxable turnover to go over the £85,000 threshold within the next 30 days.
 pages.start.date.confirmation.para3                          = If you register late, you must pay what you owe from the date you should''ve registered.
 pages.start.date.confirmation.warning                        = You may get a penalty depending on how much you owe and how late your registration is.
+
+## Mandatory Start Date Incorp page
+pages.start.date.incorp.title                                = What do you want your VAT start date to be?
+pages.start.date.incorp.heading                              = You must register for VAT by {0}
+pages.start.date.incorp.para1                                = I want my VAT registration date to be:
+pages.start.date.incorp.earlierDate                          = An earlier date
+pages.start.date.incorp.earlierHead                          = This must be:
+pages.start.date.incorp.bullet1                              = on or after the date of incorporation
+pages.start.date.incorp.bullet2                              = within the last 4 years
+pages.start.date.incorp.earlierHint                          = For example, 30 6 2017
+validation.startDateManIncorp.range.below4y                  = Enter a date which is no more than 4 years in the past
+validation.startDateManIncorp.range.belowIncorp              = Enter a date which is not before the date of incorporation
+validation.startDateManIncorp.range.above                    = Enter a date which is not after {0}
 
 ## Estimate Vat Turnover Page
 pages.estimate.vat.turnover.title                           = Estimate value of sales
