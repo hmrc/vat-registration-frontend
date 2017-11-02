@@ -58,4 +58,3 @@ http://localhost/register-for-vat/
 
 [Documentation of TEST endpoints](test-endpoints.md)
 
-
