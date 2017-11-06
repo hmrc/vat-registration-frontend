@@ -28,12 +28,13 @@ import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
+import uk.gov.hmrc.play.http.Upstream5xxResponse
 
 import scala.concurrent.Future
 
 class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object Controller extends CompanyBankAccountDetailsController(ds)(mockS4LService, mockVatRegistrationService) {
+  object Controller extends CompanyBankAccountDetailsController(mockBankAccountReputationService, ds)(mockS4LService, mockVatRegistrationService) {
     override val authConnector = mockAuthConnector
     override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
   }
@@ -117,6 +118,8 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       save4laterReturns(S4LVatFinancials())
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
+      when(mockBankAccountReputationService.bankDetailsModulusCheck(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
         _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
@@ -133,6 +136,8 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       save4laterReturns(S4LVatFinancials())
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
+      when(mockBankAccountReputationService.bankDetailsModulusCheck(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
         _ redirectsTo s"$contextRoot/check-your-answers"
@@ -150,6 +155,8 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       save4laterReturns(S4LVatFinancials())
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
+      when(mockBankAccountReputationService.bankDetailsModulusCheck(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
         _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
@@ -162,6 +169,28 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(invalidFormData: _*))(_ isA 400)
+    }
+
+    "return 400 with invalid Company Bank Account Details entered" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+      when(mockBankAccountReputationService.bankDetailsModulusCheck(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(false))
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
+        _ isA 400
+      }
+    }
+
+    "an upstream5xxexception should be encountered if a 500 is recieved from BARS" in {
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(currentProfile)))
+      when(mockBankAccountReputationService.bankDetailsModulusCheck(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.failed(Upstream5xxResponse("",500,500)))
+      submitAuthorised(Controller.submit(),
+        fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
+        _ failedWith classOf[Upstream5xxResponse]
+      }
     }
   }
 }
