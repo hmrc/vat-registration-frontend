@@ -16,22 +16,17 @@
 
 package controllers.vatFinancials.vatAccountingPeriod
 
-import java.time.LocalDate
-
 import connectors.KeystoreConnector
 import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.CurrentProfile
-import models.api.{VatEligibilityChoice, VatExpectedThresholdPostIncorp, VatServiceEligibility}
 import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import play.api.test.Helpers.status
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -43,17 +38,6 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   }
 
   val fakeRequest = FakeRequest(vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show())
-
-  val expectedThresholdDate = LocalDate.of(2017, 6, 21)
-  val expectedThreshold = Some(VatExpectedThresholdPostIncorp(expectedOverThresholdSelection = true, Some(expectedThresholdDate)))
-
-  val mandatoryEligibilityThreshold: Option[VatServiceEligibility] = Some(
-    validServiceEligibility(
-      VatEligibilityChoice.NECESSITY_OBLIGATORY,
-      None,
-      expectedThreshold
-    )
-  )
 
   s"GET ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show()}" should {
     "return HTML when there's a Accounting Period model in S4L" in {
@@ -106,8 +90,6 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
       "voluntary registration is no" in {
         when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Some(currentProfile)))
-        when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
-          .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
         forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
           accountingPeriod =>
@@ -124,9 +106,6 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
       "voluntary registration is yes" in {
         when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Some(currentProfile)))
-        when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
-          .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = Some(validServiceEligibility()))))
-
         forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
           accountingPeriod =>
             save4laterReturnsViewModel(VoluntaryRegistration.yes)()
@@ -139,15 +118,18 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
         }
       }
 
-      "no eligibility choice exists" in {
+      "no voluntary registration view model exists" in {
         when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Some(currentProfile)))
         forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
           accountingPeriod =>
-            intercept[RuntimeException] { submitAuthorised(Controller.submit(),
+            when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+            save4laterExpectsSave[AccountingPeriod]()
+            save4laterReturnsNoViewModel[VoluntaryRegistration]()
+
+            submitAuthorised(Controller.submit(),
               fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
-                _ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be"
-              }
+              _ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be"
             }
         }
       }

@@ -16,10 +16,8 @@
 
 package controllers.builders
 
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-import models.CurrentProfile
 import models.api.VatEligibilityChoice.NECESSITY_VOLUNTARY
 import models.api.{VatChoice, VatEligibilityChoice, VatStartDate, VatTradingDetails}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
@@ -30,8 +28,7 @@ import uk.gov.hmrc.play.config.ServicesConfig
 
 case class SummaryVatDetailsSectionBuilder (vatTradingDetails: Option[VatTradingDetails] = None,
                                             vatEligiblityChoice: Option[VatEligibilityChoice] = None,
-                                            useEligibilityFrontend: Boolean = true,
-                                            incorpDate: Option[LocalDate] = None)
+                                            useEligibilityFrontend: Boolean = true)
   extends SummarySectionBuilder with ServicesConfig{
 
   override val sectionId: String = "vatDetails"
@@ -119,15 +116,12 @@ case class SummaryVatDetailsSectionBuilder (vatTradingDetails: Option[VatTrading
     }
   )
 
-  def startDateRow: SummaryRow = SummaryRow(
+  val startDateRow: SummaryRow = SummaryRow(
     s"$sectionId.startDate",
     vatTradingDetails.map(_.vatChoice).collect {
       case VatChoice(VatStartDate(_, Some(date))) => date.format(presentationFormatter)
     }.getOrElse(s"pages.summary.$sectionId.mandatoryStartDate"),
-    if (voluntaryRegistration) Some(controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()) else incorpDate match {
-      case Some(_) => Some(controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show())
-      case None => None
-    }
+    if (voluntaryRegistration) Some(controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()) else None
   )
 
   val tradingNameRow: SummaryRow = SummaryRow(

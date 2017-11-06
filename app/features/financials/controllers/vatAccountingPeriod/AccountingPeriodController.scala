@@ -54,7 +54,6 @@ package controllers.vatFinancials.vatAccountingPeriod {
 
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatFinancials.vatAccountingPeriod.AccountingPeriodForm
-  import models.api.{VatEligibilityChoice, VatScheme}
   import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod
   import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
   import play.api.mvc.{Action, AnyContent}
@@ -75,11 +74,6 @@ package controllers.vatFinancials.vatAccountingPeriod {
           }
     }
 
-    private[controllers] def extractEligiblityChoice(vs : VatScheme) : Boolean = {
-      vs.vatServiceEligibility.flatMap(_.vatEligibilityChoice).map(_.necessity.contains(VatEligibilityChoice.NECESSITY_VOLUNTARY))
-        .fold(throw new RuntimeException(""))(contains => contains)
-    }
-
     def submit: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
@@ -88,8 +82,8 @@ package controllers.vatFinancials.vatAccountingPeriod {
               badForm => BadRequest(features.financials.views.html.vatAccountingPeriod.accounting_period(badForm)).pure,
               data => for {
                 _ <- save(data)
-                vs <- vrs.getVatScheme
-              } yield Redirect(if (extractEligiblityChoice(vs)) {
+                voluntaryReg <- viewModel[VoluntaryRegistration]().fold(true)(reg => reg == VoluntaryRegistration.yes)
+              } yield Redirect(if (voluntaryReg) {
                 controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()
               } else {
                 controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show()
