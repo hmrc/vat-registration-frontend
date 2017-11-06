@@ -52,8 +52,6 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
   implicit val currentProfile = CurrentProfile("Test Me", testRegId, "000-434-1",
     VatRegStatus.DRAFT,Some(LocalDate.of(2017, 12, 21)))
 
-  val currentNonincorpProfile: CurrentProfile = currentProfile.copy(incorporationDate = None)
-
   when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
     .thenReturn(Future.successful(Some(currentProfile)))
 

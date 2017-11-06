@@ -53,10 +53,10 @@ class SummaryController @Inject()(ds: CommonPlayDependencies, vatRegFeatureSwitc
   def getRegistrationSummary()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] =
     vrs.getVatScheme().map(registrationToSummary)
 
-  def registrationToSummary(vs: VatScheme)(implicit profile : CurrentProfile): Summary =
+  def registrationToSummary(vs: VatScheme): Summary =
     Summary(Seq(
       SummaryServiceEligibilitySectionBuilder(vs.vatServiceEligibility, useEligibilityFrontend).section,
-      SummaryVatDetailsSectionBuilder(vs.tradingDetails, vs.vatServiceEligibility.flatMap(_.vatEligibilityChoice), useEligibilityFrontend, profile.incorporationDate).section,
+      SummaryVatDetailsSectionBuilder(vs.tradingDetails, vs.vatServiceEligibility.flatMap(_.vatEligibilityChoice), useEligibilityFrontend).section,
       SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer).section,
       SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer).section,
       SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
