@@ -62,7 +62,8 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerS
       "incorporation-information",
       "cachable.short-lived-cache",
       "cachable.session-cache",
-      "business-registration-dynamic-stub"
+      "business-registration-dynamic-stub",
+      "bank-account-reputation"
     ))
   )
 

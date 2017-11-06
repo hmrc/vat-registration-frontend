@@ -29,6 +29,8 @@ package services {
 
     self: RegistrationService =>
 
+
+
     def submitVatFinancials()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatFinancials] = {
       def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =
         fresh.fold(
@@ -57,9 +59,10 @@ package connectors {
     self: RegistrationConnector =>
 
     def upsertVatFinancials(regId: String, vatFinancials: VatFinancials)
-                           (implicit hc: HeaderCarrier, rds: HttpReads[VatFinancials]): Future[VatFinancials] =
-      http.PATCH[VatFinancials, VatFinancials](s"$vatRegUrl/vatreg/$regId/vat-financials", vatFinancials).recover{
+                           (implicit hc: HeaderCarrier, rds: HttpReads[VatFinancials]): Future[VatFinancials] = {
+      http.PATCH[VatFinancials, VatFinancials](s"$vatRegUrl/vatreg/$regId/vat-financials", vatFinancials).recover {
         case e: Exception => throw logResponse(e, className, "upsertVatFinancials")
       }
+    }
   }
 }

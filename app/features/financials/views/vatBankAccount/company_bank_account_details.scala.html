@@ -36,70 +36,83 @@
                     '_autoComplete -> "off"
                 )
 
-                @vatInput(
-                    bankDetailsForm("accountNumber"),
-                    '_type -> "text",
-                    '_divClass -> "form-group",
-                    '_inputClass -> "form-control",
-                    '_labelClass -> "cascading",
-                    '_maxlength -> 8,
-                    '_label -> messages("pages.bankDetails.accountNumber.label"),
-                    '_autoComplete -> "off"
-                )
+                @defining(bankDetailsForm("sortCodeAndAccountGroup").errors.nonEmpty) { invalidCombinationErrorFound =>
+                <div id="sortCodeAndAccountGroup" class="@if(invalidCombinationErrorFound) { form-group-error }">
 
-                @defining(bankDetailsForm("sortCode").errors.nonEmpty) { sortCodeErrorPresent =>
-                    <div class="form-date @if(sortCodeErrorPresent) { form-group-error }">
+                    <label>
+                        @bankDetailsForm("sortCodeAndAccountGroup").errors.map { error =>
+                        <span class="error-notification" role="tooltip">
+                            @messages(error.message, error.args: _*)
+                        </span>
+                        }
+                    </label>
 
-                        <fieldset id="sort-code">
+                    @vatInput(
+                        bankDetailsForm("accountNumber"),
+                        '_type -> "text",
+                        '_divClass -> "form-group",
+                        '_inputClass -> "form-control",
+                        '_labelClass -> "cascading",
+                        '_maxlength -> 8,
+                        '_label -> messages("pages.bankDetails.accountNumber.label"),
+                        '_autoComplete -> "off"
+                    )
 
-                            <label>
-                                @bankDetailsForm("sortCode").errors.map { error =>
-                                    <span class="error-notification" role="tooltip">
-                                        @messages(error.message, error.args: _*)
-                                    </span>
-                                }
-                                @messages("pages.bankDetails.sortCode.label")
-                                @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
-                                <input type="text" name="sortCode" value="" id="sortCode" class="hidden" />
-                            </label>
+                    @defining(bankDetailsForm("sortCode").errors.nonEmpty) { sortCodeErrorPresent =>
+                        <div class="form-date @if(sortCodeErrorPresent) { form-group-error }">
 
-                            @vatInput(
-                                bankDetailsForm("sortCode.part1"),
-                                '_type -> "text",
-                                '_divClass -> "form-group",
-                                '_inputClass -> "form-control",
-                                '_label -> "first two digits",
-                                '_maxlength -> 2,
-                                '_labelTextClass -> "hidden",
-                                '_error_id -> "sort-code-legend",
-                                '_autoComplete -> "off"
-                            )
+                            <fieldset id="sort-code">
 
-                            @vatInput(
-                                bankDetailsForm("sortCode.part2"),
-                                '_type -> "text",
-                                '_divClass -> "form-group",
-                                '_inputClass -> "form-control",
-                                '_label -> "second two digits",
-                                '_maxlength -> 2,
-                                '_labelTextClass -> "hidden",
-                                '_error_id -> "sort-code-legend",
-                                '_autoComplete -> "off"
-                            )
+                                <label>
+                                    @bankDetailsForm("sortCode").errors.map { error =>
+                                        <span class="error-notification" role="tooltip">
+                                            @messages(error.message, error.args: _*)
+                                        </span>
+                                    }
+                                    @messages("pages.bankDetails.sortCode.label")
+                                    @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
+                                    <input type="text" name="sortCode" value="" id="sortCode" class="hidden" />
+                                </label>
 
-                            @vatInput(
-                                bankDetailsForm("sortCode.part3"),
-                                '_type -> "text",
-                                '_divClass -> "form-group",
-                                '_inputClass -> "form-control",
-                                '_label -> "last two digits",
-                                '_maxlength -> 2,
-                                '_labelTextClass -> "hidden",
-                                '_error_id -> "sort-code-legend",
-                                '_autoComplete -> "off"
-                            )
-                        </fieldset>
-                    </div>
+                                @vatInput(
+                                    bankDetailsForm("sortCode.part1"),
+                                    '_type -> "text",
+                                    '_divClass -> "form-group",
+                                    '_inputClass -> "form-control",
+                                    '_label -> "first two digits",
+                                    '_maxlength -> 2,
+                                    '_labelTextClass -> "hidden",
+                                    '_error_id -> "sort-code-legend",
+                                    '_autoComplete -> "off"
+                                )
+
+                                @vatInput(
+                                    bankDetailsForm("sortCode.part2"),
+                                    '_type -> "text",
+                                    '_divClass -> "form-group",
+                                    '_inputClass -> "form-control",
+                                    '_label -> "second two digits",
+                                    '_maxlength -> 2,
+                                    '_labelTextClass -> "hidden",
+                                    '_error_id -> "sort-code-legend",
+                                    '_autoComplete -> "off"
+                                )
+
+                                @vatInput(
+                                    bankDetailsForm("sortCode.part3"),
+                                    '_type -> "text",
+                                    '_divClass -> "form-group",
+                                    '_inputClass -> "form-control",
+                                    '_label -> "last two digits",
+                                    '_maxlength -> 2,
+                                    '_labelTextClass -> "hidden",
+                                    '_error_id -> "sort-code-legend",
+                                    '_autoComplete -> "off"
+                                )
+                            </fieldset>
+                        </div>
+                    }
+                </div>
                 }
             </div>
         </div>
