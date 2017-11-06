@@ -19,6 +19,7 @@ package support
 import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern
+
 import common.enums.{IVResult, VatRegStatus}
 import models.S4LKey
 import models.api.VatScheme
@@ -58,6 +59,8 @@ trait StubUtils {
     def currentProfile = CurrentProfile()
 
     def company = IncorporationStub()
+
+    def bankAccountReputation = BankAccountReputationServiceStub()
 
     def s4lContainer[C: S4LKey]: ViewModelStub[C] = new ViewModelStub[C]()
     def s4lContainerInScenario[C: S4LKey]: ViewModelScenarioStub[C] = new ViewModelScenarioStub[C]()
@@ -572,6 +575,7 @@ trait StubUtils {
     }
   }
 
+
   case class IVStub()(implicit builder: PreconditionBuilder) {
     def outcome(journeyId: String, result: IVResult.Value) = {
       stubFor(get(urlMatching(s"/iv-uri/mdtp/journey/journeyId/$journeyId"))
@@ -580,6 +584,45 @@ trait StubUtils {
           .withBody(s"""{"result": "$result", "token": "aaa-bbb-ccc"}""")
         )
       )
+      builder
+    }
+  }
+
+  case class BankAccountReputationServiceStub()(implicit builder: PreconditionBuilder){
+    def passes: PreconditionBuilder = {
+      stubFor(post(urlMatching("/modcheck"))
+        .willReturn(
+          aResponse().withStatus(200).withBody(
+            s"""
+               |{
+               |  "accountNumberWithSortCodeIsValid": true,
+               |  "nonStandardAccountDetailsRequiredForBacs": "no"
+               |}
+              """.stripMargin)
+        ))
+
+      builder
+    }
+
+    def fails: PreconditionBuilder = {
+      stubFor(post(urlMatching("/modcheck"))
+        .willReturn(
+          aResponse().withStatus(200).withBody(
+            s"""
+               |{
+               |  "accountNumberWithSortCodeIsValid": false,
+               |  "nonStandardAccountDetailsRequiredForBacs": "no"
+               |}
+              """.stripMargin)
+        ))
+      builder
+    }
+
+    def isDown: PreconditionBuilder = {
+      stubFor(post(urlMatching("/modcheck"))
+        .willReturn(
+          serverError()
+        ))
       builder
     }
   }

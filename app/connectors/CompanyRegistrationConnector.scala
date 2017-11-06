@@ -52,7 +52,8 @@ trait CompanyRegistrationConnect {
     http.GET[JsValue](s"$companyRegistrationUrl$companyRegistrationUri/$regId/corporation-tax-registration") map {
       _.\("confirmationReferences").\("transaction-id").as[String]
     } recover {
-      case e => throw e
+      case e => logResponse(e, "CompanyRegistrationConnector", "getTransactionID")
+        throw e
     }
   }
 }

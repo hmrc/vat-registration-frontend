@@ -47,4 +47,7 @@ trait VatMocks
   implicit lazy val mockDateService = mock[DateService]
   implicit lazy val mockIncorpInfoService = mock[IncorpInfoService]
   implicit lazy val mockIdentityVerificationConnector = mock[IdentityVerificationConnector]
+  implicit lazy val mockBankAccountReputationService = mock[BankAccountReputationService]
+  implicit lazy val mockBankAccountReputationConnector = mock[BankAccountReputationConnector]
+
 }

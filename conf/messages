@@ -493,6 +493,7 @@ validation.companyBankAccount.number.missing = Enter a business account number
 validation.companyBankAccount.number.invalid = Enter a valid business account number
 validation.companyBankAccount.sortCode.missing = Enter a sort code
 validation.companyBankAccount.sortCode.invalid = Enter a valid sort code
+validation.companyBankAccount.invalidCombination = Enter a valid bank account number and sort code
 
 ## Main Business Activity
 pages.mainBusinessActivity.heading                        = Which business activity is the company''s main source of income?
