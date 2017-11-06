@@ -26,8 +26,10 @@ import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatContact.BusinessContactDetails
+import models.view.vatFinancials.vatBankAccount.ModulusCheckAccount
 import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import play.api.http.Status._
+import play.api.libs.json.Json
 import uk.gov.hmrc.play.http._
 
 trait BaseFixture {
@@ -60,6 +62,25 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
   val testRegId = "VAT123456"
   val testMonthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
   val testPresentationFormatter = DateTimeFormatter.ofPattern("d MMMM y")
+  val validBankCheckJsonResponseString =
+    s"""
+       |{
+       |  "accountNumberWithSortCodeIsValid": true,
+       |  "nonStandardAccountDetailsRequiredForBacs": "no"
+       |}
+     """.stripMargin
+
+  val validBankCheckJsonResponse = Json.parse(validBankCheckJsonResponseString)
+
+  val invalidBankCheckJsonResponseString =
+    s"""
+       |{
+       |  "accountNumberWithSortCodeIsValid": false,
+       |  "nonStandardAccountDetailsRequiredForBacs": "no"
+       |}
+     """.stripMargin
+
+  val invalidBankCheckJsonResponse = Json.parse(invalidBankCheckJsonResponseString)
 
   //View models
   val validOfficerContactDetailsView = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
@@ -72,6 +93,7 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
   val validActAsIntermediary = ActAsIntermediary(true)
   val validBusinessActivityDescription = BusinessActivityDescription(testBusinessActivityDescription)
   val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
+  val validBankAccountDetailsForModulusCheck = ModulusCheckAccount(validBankAccountDetails)
 
   //Api models
   val sicCode = SicCode("88888888", "description", "displayDetails")

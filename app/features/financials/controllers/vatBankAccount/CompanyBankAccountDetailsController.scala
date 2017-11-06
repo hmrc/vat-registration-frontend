@@ -18,7 +18,7 @@ package models.view.vatFinancials.vatBankAccount {
 
   import models.api.VatScheme
   import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat}
-  import play.api.libs.json.Json
+  import play.api.libs.json.{Json, OFormat}
 
   case class CompanyBankAccountDetails(accountName: String, accountNumber: String, sortCode: String)
 
@@ -41,6 +41,14 @@ package models.view.vatFinancials.vatBankAccount {
         ))
     }
   }
+
+  case class ModulusCheckAccount(account: CompanyBankAccountDetails)
+
+  object ModulusCheckAccount {
+
+    implicit val format:OFormat[ModulusCheckAccount] = Json.format[ModulusCheckAccount]
+
+  }
 }
 
 package controllers.vatFinancials.vatBankAccount {
@@ -52,13 +60,18 @@ package controllers.vatFinancials.vatBankAccount {
   import controllers.vatFinancials.EstimateVatTurnoverKey.lastKnownValueKey
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatFinancials.vatBankAccount.{CompanyBankAccountDetailsForm, SortCode}
-  import models.S4LFlatRateScheme
+  import models.{CurrentProfile, S4LFlatRateScheme}
   import models.view.vatFinancials.EstimateVatTurnover
-  import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
+  import models.view.vatFinancials.vatBankAccount.{CompanyBankAccountDetails, ModulusCheckAccount}
   import play.api.mvc._
-  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
+  import services._
+  import uk.gov.hmrc.play.http.{HeaderCarrier, InternalServerException, Upstream5xxResponse}
+  import views.html.pages.error.restart
 
-  class CompanyBankAccountDetailsController @Inject()(ds: CommonPlayDependencies)
+  import scala.concurrent.Future
+
+
+  class CompanyBankAccountDetailsController @Inject()(bars: BankAccountReputationService, ds: CommonPlayDependencies)
                                                      (implicit s4l: S4LService, vrs: VatRegistrationService)
     extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
@@ -86,23 +99,34 @@ package controllers.vatFinancials.vatBankAccount {
           withCurrentProfile { implicit profile =>
             form.bindFromRequest().fold(
               badForm => BadRequest(features.financials.views.html.vatBankAccount.company_bank_account_details(badForm)).pure,
-              view => for {
-                originalTurnover <- keystoreConnector.fetchAndGet[Long](lastKnownValueKey)
-                _ <- save(CompanyBankAccountDetails(
+              view => {
+
+                val companyBankDetails = CompanyBankAccountDetails(
                   accountName = view.accountName.trim,
                   accountNumber = view.accountNumber,
-                  sortCode = Show[SortCode].show(view.sortCode)))
-                _ <- vrs.submitVatFinancials()
-                turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
-                _ <- s4l.save(S4LFlatRateScheme()).flatMap(
-                  _ => vrs.submitVatFlatRateScheme()) onlyIf originalTurnover.getOrElse(0) != turnover
-              } yield if (turnover > joinThreshold) {
-                Redirect(controllers.routes.SummaryController.show())
-              } else {
-                Redirect(controllers.frs.routes.JoinFrsController.show())
-            })
-          }
+                  sortCode = view.sortCode.toString)
+
+                bars.bankDetailsModulusCheck(ModulusCheckAccount(companyBankDetails)).flatMap {
+                  case true => processCompanyBankDetails(companyBankDetails,view.sortCode).map {
+                    case turnover if turnover > joinThreshold => Redirect(controllers.routes.SummaryController.show())
+                    case _ => Redirect(controllers.frs.routes.JoinFrsController.show())
+                  }
+                  case _ => val badForm = form.withError("sortCodeAndAccountGroup" , "validation.companyBankAccount.invalidCombination").fill(view)
+                    BadRequest(features.financials.views.html.vatBankAccount.company_bank_account_details(badForm)).pure
+                }
+        })
     }
+    }
+
+    def processCompanyBankDetails(companyBankDetails: CompanyBankAccountDetails, sortCode: SortCode)
+                                 (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Long] = for {
+        originalTurnover <- keystoreConnector.fetchAndGet[Long](lastKnownValueKey)
+        _ <- save(companyBankDetails.copy(sortCode = Show[SortCode].show(sortCode)))
+        _ <- vrs.submitVatFinancials()
+        turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
+        _ <- s4l.save(S4LFlatRateScheme()).flatMap(
+          _ => vrs.submitVatFlatRateScheme()) onlyIf originalTurnover.getOrElse(0) != turnover
+      } yield turnover
   }
 }
 
@@ -127,13 +151,17 @@ package forms.vatFinancials.vatBankAccount {
           "part1" -> text,
           "part2" -> text,
           "part3" -> text
-        )(SortCode.apply)(SortCode.unapply).verifying(accountSortCode(ACCOUNT_TYPE))
-      )(CompanyBankAccountDetailsForm.apply)(CompanyBankAccountDetailsForm.unapply)
+        )
+        (SortCode.apply)(SortCode.unapply).verifying(accountSortCode(ACCOUNT_TYPE))
+      )
+      (CompanyBankAccountDetailsForm.apply)(CompanyBankAccountDetailsForm.unapply)
     )
 
   }
 
-  case class SortCode(part1: String, part2: String, part3: String)
+  case class SortCode(part1: String, part2: String, part3: String){
+    override def toString = s"${part1.trim}${part2.trim}${part3.trim}"
+  }
 
   object SortCode {
 
