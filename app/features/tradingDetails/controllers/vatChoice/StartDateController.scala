@@ -17,23 +17,19 @@
 package models.view.vatTradingDetails.vatChoice {
 
   import java.time.LocalDate
-
   import models._
   import models.api.{VatEligibilityChoice, VatScheme, VatStartDate}
   import play.api.libs.json.Json
-
   import scala.util.Try
 
   case class StartDateView(dateType: String = "", date: Option[LocalDate] = None, ctActiveDate: Option[LocalDate] = None) {
-
     def withCtActiveDateOption(d: LocalDate): StartDateView = this.copy(ctActiveDate = Some(d))
-
   }
 
   object StartDateView {
 
-    def bind(dateType: String, dateModel: Option[DateModel]): StartDateView =
-      StartDateView(dateType, dateModel.flatMap(_.toLocalDate))
+    def bind(dateType: String, dateModel: Option[DateModel])(implicit defaultDate : Option[LocalDate] = None): StartDateView =
+      StartDateView(dateType, if (dateType == COMPANY_REGISTRATION_DATE) defaultDate else dateModel.flatMap(_.toLocalDate))
 
     def unbind(startDate: StartDateView): Option[(String, Option[DateModel])] =
       Try {
@@ -82,29 +78,34 @@ package controllers.vatTradingDetails.vatChoice {
   import play.api.mvc._
   import services.{PrePopService, S4LService, SessionProfile, VatRegistrationService}
   import uk.gov.hmrc.play.http.HeaderCarrier
-  import features.tradingDetails.views.html.vatChoice.start_date
+  import features.tradingDetails.views.html.vatChoice.{start_date, start_date_incorp}
   import models.CurrentProfile
 
   import scala.concurrent.Future
 
-  class StartDateController @Inject()(startDateFormFactory: StartDateFormFactory, iis: PrePopService, ds: CommonPlayDependencies)
+  class StartDateController @Inject()(startDateFormFactory: StartDateFormFactory, prepopService: PrePopService, playDep: CommonPlayDependencies)
                                      (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with SessionProfile {
+    extends VatRegistrationController(playDep) with SessionProfile {
 
     val keystoreConnector: KeystoreConnector = KeystoreConnector
-
     val form: Form[StartDateView] = startDateFormFactory.form()
 
     protected[controllers]
     def populateCtActiveDate(vm: StartDateView)(implicit hc: HeaderCarrier, profile: CurrentProfile, today: Now[LocalDate]): Future[StartDateView] =
-      iis.getCTActiveDate().filter(today().plusMonths(3).isAfter).fold(vm)(vm.withCtActiveDateOption)
+      prepopService.getCTActiveDate().filter(today().plusMonths(3).isAfter).fold(vm)(vm.withCtActiveDateOption)
 
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[StartDateView]().getOrElse(StartDateView())
-              .flatMap(populateCtActiveDate).map(f => Ok(start_date(form.fill(f))))
+            viewModel[StartDateView]().getOrElse(StartDateView()).map (viewModel =>
+              (profile.incorporationDate, viewModel.date) match {
+                case (Some(incorpDate), Some(date)) if incorpDate != date => viewModel.copy(dateType = StartDateView.SPECIFIC_DATE)
+                case _ => viewModel
+              }
+            ).flatMap(populateCtActiveDate).map(f =>
+              Ok(profile.incorporationDate.fold(start_date(form.fill(f))) {date => start_date_incorp(form.fill(f), date)})
+            )
           }
     }
 
@@ -112,8 +113,10 @@ package controllers.vatTradingDetails.vatChoice {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            startDateFormFactory.form().bindFromRequest().fold(
-              badForm => BadRequest(start_date(badForm)).pure,
+            startDateFormFactory.form(profile.incorporationDate).bindFromRequest().fold(
+              badForm => profile.incorporationDate.fold(BadRequest(start_date(badForm)).pure) {date =>
+                BadRequest(start_date_incorp(badForm, date)).pure
+              },
               goodForm => populateCtActiveDate(goodForm).flatMap(vm => save(vm)).map(_ =>
                 vrs.submitTradingDetails()).map(_ =>
                 Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())))
@@ -129,13 +132,22 @@ package forms.vatTradingDetails.vatChoice {
 
   import common.Now
   import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
-  import forms.FormValidation.{inRange, textMapping}
+  import forms.FormValidation.{ErrorCode, textMapping}
   import models.DateModel
   import models.view.vatTradingDetails.vatChoice.StartDateView
+  import play.api.Logger
   import play.api.data.Form
   import play.api.data.Forms._
+  import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
   import services.DateService
   import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
+
+  trait MinimumDateValidation {
+    val date : LocalDate
+  }
+  case class ToIncorpMinimumFutureDate(date : LocalDate) extends MinimumDateValidation
+  case class FourYearsSinceIncorporatedDate(date : LocalDate) extends MinimumDateValidation
+  case class StandardIncorporatedDate(date : LocalDate) extends MinimumDateValidation
 
   class StartDateFormFactory @Inject()(dateService: DateService, today: Now[LocalDate]) {
 
@@ -145,11 +157,33 @@ package forms.vatTradingDetails.vatChoice {
 
     val RADIO_INPUT_NAME = "startDateRadio"
 
-    def form(): Form[StartDateView] = {
+    def form(incorpDate : Option[LocalDate] = None): Form[StartDateView] = {
 
-      val minDate: LocalDate = dateService.addWorkingDays(today(), 2)
+      val minDateValidation = incorpDate.fold[MinimumDateValidation](ToIncorpMinimumFutureDate(dateService.addWorkingDays(today(), 2))) {date =>
+        val fouryears = today().minusYears(4)
+        if (fouryears.isAfter(date)) FourYearsSinceIncorporatedDate(fouryears) else StandardIncorporatedDate(date)
+      }
       val maxDate: LocalDate = today().plusMonths(3)
       implicit val specificErrorCode: String = "startDate"
+      implicit val incDate = incorpDate
+
+      def inRangeCustom()(implicit ordering: Ordering[LocalDate], e: ErrorCode): Constraint[LocalDate] =
+        Constraint[LocalDate] { (t: LocalDate) =>
+          val minValue: LocalDate = minDateValidation.date
+
+          Logger.info(s"Checking constraint for value $t in the range of [$minValue, $maxDate]")
+          (ordering.compare(t, minValue).signum, ordering.compare(t, maxDate).signum) match {
+            case (1, -1) | (0, _) | (_, 0) => Valid
+            case (_, 1) => Invalid(ValidationError(s"validation.$e.range.above", maxDate))
+            case (-1, _) =>
+              Invalid(minDateValidation match {
+                case ToIncorpMinimumFutureDate(_) => ValidationError(s"validation.$e.range.below", minValue)
+                case FourYearsSinceIncorporatedDate(_) => ValidationError(s"validation.$e.range.below4y", minValue)
+                case StandardIncorporatedDate(_) => ValidationError(s"validation.$e.range.belowIncorp", minValue)
+              }
+            )
+          }
+        }
 
       Form(
         mapping(
@@ -161,7 +195,7 @@ package forms.vatTradingDetails.vatChoice {
               "month" -> text,
               "year" -> text
             )(DateModel.apply)(DateModel.unapply).verifying(
-              nonEmptyDateModel(validDateModel(inRange(minDate, maxDate))))
+              nonEmptyDateModel(validDateModel(inRangeCustom())))
           )
         )(StartDateView.bind)(StartDateView.unbind)
       )
