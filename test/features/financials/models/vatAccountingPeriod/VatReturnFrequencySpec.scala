@@ -16,6 +16,7 @@
 
 package models.view.vatFinancials.vatAccountingPeriod
 
+import common.enums.VatRegStatus
 import fixtures.VatRegistrationFixture
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.{MONTHLY, QUARTERLY}
@@ -38,7 +39,7 @@ class VatReturnFrequencySpec extends UnitSpec with VatRegistrationFixture {
     accountingPeriods = VatAccountingPeriod(frequency = QUARTERLY)
   )
 
-  val vatScheme = VatScheme(testRegId)
+  val vatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
 
   "apply" should {
     "convert VatFinancials with MONTHLY vat return frequency to view model" in {

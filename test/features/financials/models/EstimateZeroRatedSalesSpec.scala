@@ -16,6 +16,7 @@
 
 package models.view.vatFinancials
 
+import common.enums.VatRegStatus
 import fixtures.VatRegistrationFixture
 import models.api.{VatFinancials, VatScheme}
 import models.{ApiModelTransformer, S4LVatFinancials}
@@ -36,12 +37,12 @@ class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
     "convert a VatFinancials to a view model" in {
-      val vatScheme = VatScheme(id = testRegId, financials = Some(vatFinancials))
+      val vatScheme = VatScheme(id = testRegId, status = VatRegStatus.draft, financials = Some(vatFinancials))
       ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vatScheme) shouldBe Some(estimateZeroRatedSales)
     }
 
     "convert a VatScheme without a VatFinancials to an empty view model" in {
-      val vatScheme = VatScheme(id = testRegId)
+      val vatScheme = VatScheme(id = testRegId, status = VatRegStatus.draft)
       ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vatScheme) shouldBe None
     }
   }

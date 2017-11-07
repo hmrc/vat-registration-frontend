@@ -19,7 +19,7 @@ package common.enums
 import play.api.libs.json.{Format, Reads, Writes}
 
 object VatRegStatus extends Enumeration {
-  val DRAFT = Value
+  val draft = Value
 
   implicit val format: Format[VatRegStatus.Value] = Format(Reads.enumNameReads(VatRegStatus), Writes.enumNameWrites)
 

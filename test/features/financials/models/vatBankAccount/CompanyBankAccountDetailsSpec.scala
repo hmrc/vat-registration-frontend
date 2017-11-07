@@ -16,6 +16,7 @@
 
 package models.view.vatFinancials.vatBankAccount
 
+import common.enums.VatRegStatus
 import fixtures.VatRegistrationFixture
 import models.api.{VatBankAccount, VatFinancials, VatScheme}
 import models.{ApiModelTransformer, S4LVatFinancials}
@@ -24,7 +25,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 class CompanyBankAccountDetailsSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
-    val vatScheme = VatScheme(testRegId)
+    val vatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
     val someBankAccount = VatBankAccount(accountName = "test", accountNumber = "12345678", accountSortCode = "12-12-12")
 
     "convert VatFinancials with bank account to view model" in {

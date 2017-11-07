@@ -16,6 +16,7 @@
 
 package models.view.vatFinancials
 
+import common.enums.VatRegStatus
 import fixtures.VatRegistrationFixture
 import models.api.{VatFinancials, VatScheme}
 import models.view.vatFinancials.VatChargeExpectancy.{VAT_CHARGE_NO, VAT_CHARGE_YES}
@@ -42,7 +43,7 @@ class VatChargeExpectancySpec extends UnitSpec with VatRegistrationFixture {
   )
 
   "apply" should {
-    val vatScheme = VatScheme(testRegId)
+    val vatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
 
     "convert VatFinancials with vat charge expectancy yes to view model" in {
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithReclaimTrue))

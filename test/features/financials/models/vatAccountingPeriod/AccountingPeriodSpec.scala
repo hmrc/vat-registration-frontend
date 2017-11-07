@@ -16,6 +16,7 @@
 
 package models.view.vatFinancials.vatAccountingPeriod
 
+import common.enums.VatRegStatus
 import fixtures.VatRegistrationFixture
 import models.api.{VatAccountingPeriod, VatFinancials, VatScheme}
 import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod.{FEB_MAY_AUG_NOV, JAN_APR_JUL_OCT, MAR_JUN_SEP_DEC}
@@ -47,7 +48,7 @@ class AccountingPeriodSpec extends UnitSpec with VatRegistrationFixture {
     accountingPeriods = accountingPeriods3
   )
 
-  val vatScheme = VatScheme(testRegId)
+  val vatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
 
   "apply" should {
 
