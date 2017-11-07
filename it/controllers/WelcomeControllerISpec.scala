@@ -17,6 +17,7 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
+import common.enums.VatRegStatus
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import support.AppAndStubs
@@ -35,7 +36,7 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .vatRegistrationFootprint.exists(Some(STARTED), Some("Vat Reg Footprint created"))
           .corporationTaxRegistration.existsWithStatus("held")
           .company.isIncorporated
-          .currentProfile.setup(Some("Vat Reg Footprint created"))
+          .currentProfile.setup(currentState = Some("Vat Reg Footprint created"))
 
         whenReady(controller.start(request))(res => res.header.status mustBe 200)
       }

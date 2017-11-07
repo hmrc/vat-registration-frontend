@@ -20,6 +20,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ofPattern
 
 import cats.data.OptionT
+import common.enums.VatRegStatus
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
@@ -67,7 +68,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
   }
 
   "getOfficerAddressList" must {
-    val emptyVatScheme = VatScheme("123")
+    val emptyVatScheme = VatScheme("123", status = VatRegStatus.draft)
 
     "be non-empty when companyProfile, addressDB and addressS4L are present" in new Setup {
       val scsrAddress = ScrsAddress("premises address_line_1", "address_line_2 po_box", Some("locality"), Some("region"), Some("postal_code"), Some("country"))
@@ -82,7 +83,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
       val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
-      val vatSchemeWithAddress = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(
+      val vatSchemeWithAddress = VatScheme("123", status = VatRegStatus.draft).copy(lodgingOfficer = Some(VatLodgingOfficer(
         address, validDob, "", "director", officerName, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)))
 
       when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
@@ -103,7 +104,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
   }
 
   "getPpobAddressList" must {
-    val emptyVatScheme = VatScheme("123")
+    val emptyVatScheme = VatScheme("123", status = VatRegStatus.draft)
     val scsrAddress = ScrsAddress("premises address_line_1", "address_line_2 po_box", Some("locality"), Some("region"), Some("postal_code"), Some("country"))
 
     "be non-empty when companyProfile, addressDB and addressS4L are present" in new Setup {
@@ -118,7 +119,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
       val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
-      val vatSchemeWithAddress = VatScheme("123").copy(vatContact = Some(validVatContact.copy(ppob = scsrAddress)))
+      val vatSchemeWithAddress = VatScheme("123", status = VatRegStatus.draft).copy(vatContact = Some(validVatContact.copy(ppob = scsrAddress)))
 
       when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
       when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(address))
@@ -142,7 +143,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
     // S4L
     val completeCapacityView = CompletionCapacityView(completionCapacity.name.id, Some(completionCapacity))
     // BE
-    val emptyVatScheme = VatScheme("123")
+    val emptyVatScheme = VatScheme("123", status = VatRegStatus.draft)
     val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
 
     "be non-empty when OfficerList is present and nothing in S4L" in new Setup {
@@ -168,7 +169,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
       val testRole = "director"
       val testDob = DateOfBirth(1, 2, 1984)
       val testName = officerName
-      val vatSchemeWithOfficer = VatScheme("123").copy(lodgingOfficer = Some(VatLodgingOfficer(
+      val vatSchemeWithOfficer = VatScheme("123", status = VatRegStatus.draft).copy(lodgingOfficer = Some(VatLodgingOfficer(
         address, testDob, "nino", testRole, testName, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)))
 
       when(mockIIService.getOfficerList()).thenReturn(Seq.empty[Officer].pure)

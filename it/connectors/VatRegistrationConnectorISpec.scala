@@ -16,6 +16,7 @@
 
 package connectors
 
+import common.enums.VatRegStatus
 import models.api.VatScheme
 import play.api.mvc.Call
 import support.AppAndStubs
@@ -33,7 +34,7 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
         given()
           .vatRegistrationFootprint.exists()
 
-        await(vatregConnector.createNewRegistration()) shouldBe VatScheme(id="1")
+        await(vatregConnector.createNewRegistration()) shouldBe VatScheme(id="1", status = VatRegStatus.draft)
       }
     }
 

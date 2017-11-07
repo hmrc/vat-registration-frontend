@@ -35,7 +35,7 @@ class WelcomeControllerSpec extends VatRegSpec {
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.show())
 
-  val testCurrentProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.DRAFT, None)
+  val testCurrentProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.draft, None)
 
   "GET /before-you-register-for-vat" should {
     "return HTML when user is authorized to access" in {

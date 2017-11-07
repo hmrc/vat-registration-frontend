@@ -50,7 +50,7 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
   implicit val hc = HeaderCarrier()
 
   implicit val currentProfile = CurrentProfile("Test Me", testRegId, "000-434-1",
-    VatRegStatus.DRAFT,Some(LocalDate.of(2017, 12, 21)))
+    VatRegStatus.draft,Some(LocalDate.of(2017, 12, 21)))
 
   val currentNonincorpProfile: CurrentProfile = currentProfile.copy(incorporationDate = None)
 
