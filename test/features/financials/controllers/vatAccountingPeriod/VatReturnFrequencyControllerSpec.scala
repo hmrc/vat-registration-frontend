@@ -16,11 +16,14 @@
 
 package controllers.vatFinancials.vatAccountingPeriod
 
+import java.time.LocalDate
+
 import connectors.KeystoreConnector
 import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
 import forms.vatFinancials.vatAccountingPeriod.VatReturnFrequencyForm
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.api.{VatEligibilityChoice, VatExpectedThresholdPostIncorp, VatServiceEligibility}
 import models.{CurrentProfile, S4LVatFinancials}
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
@@ -28,6 +31,7 @@ import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -39,6 +43,17 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
   }
 
   val fakeRequest = FakeRequest(vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show())
+
+  val expectedThresholdDate = LocalDate.of(2017, 6, 21)
+  val expectedThreshold = Some(VatExpectedThresholdPostIncorp(expectedOverThresholdSelection = true, Some(expectedThresholdDate)))
+
+  val mandatoryEligibilityThreshold: Option[VatServiceEligibility] = Some(
+    validServiceEligibility(
+      VatEligibilityChoice.NECESSITY_OBLIGATORY,
+      None,
+      expectedThreshold
+    )
+  )
 
   s"GET ${vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show()}" should {
 
@@ -94,6 +109,8 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       "voluntary registration is no" in {
         when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Some(currentProfile)))
+        when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+          .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
         save4laterReturnsViewModel(VoluntaryRegistration.no)()
         save4laterExpectsSave[VatReturnFrequency]()
@@ -109,6 +126,8 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       "voluntary registration is yes" in {
         when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Some(currentProfile)))
+        when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+          .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = Some(validServiceEligibility()))))
 
         save4laterReturnsViewModel(VoluntaryRegistration.yes)()
         save4laterExpectsSave[VatReturnFrequency]()
@@ -121,7 +140,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
         }
       }
 
-      "no voluntary registration view model exists" in {
+      "no eligiblity choice exists" in {
         when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Some(currentProfile)))
 
@@ -131,9 +150,11 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
         when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
         save4laterReturns(S4LVatFinancials())
 
-        submitAuthorised(Controller.submit(),
-          fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
-          _ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be"
+        intercept[RuntimeException] {
+          submitAuthorised(Controller.submit(),
+            fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
+            _ redirectsTo s"$contextRoot/vat-start-date"
+          }
         }
       }
 
