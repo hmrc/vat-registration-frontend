@@ -165,7 +165,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
     "with startDateRow render" should {
 
-      "a date with format 'd MMMM y' if it's a voluntary registration" in {
+      "a date with format 'd MMMM y' if it's a voluntary registration where they are not incorped" in {
         val builder = SummaryVatDetailsSectionBuilder(
           vatTradingDetails = Some(tradingDetails(
             startDateSelection = StartDateView.SPECIFIC_DATE,
@@ -182,7 +182,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
         builder.startDateRow mustBe expectedRow
       }
 
-      "a Companies House incorporation date message, if it's a voluntary registration and the date is a default date" in {
+      "a Companies House incorporation date message, if it's a voluntary registration and the date is a default date and they are not incorped" in {
         val builder = SummaryVatDetailsSectionBuilder(
         Some(tradingDetails()),
           validServiceEligibility(VatEligibilityChoice.NECESSITY_VOLUNTARY).vatEligibilityChoice
@@ -196,11 +196,63 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
         builder.startDateRow mustBe expectedRow
       }
 
-      "a Companies House incorporation date message, if it's a mandatory registration" in {
+      "a Companies House incorporation date message, if it's a mandatory registration and they are not incorped" in {
         val builder = SummaryVatDetailsSectionBuilder(
           Some(tradingDetails()),
           validServiceEligibility(VatEligibilityChoice.NECESSITY_OBLIGATORY).vatEligibilityChoice)
         builder.startDateRow mustBe SummaryRow("vatDetails.startDate", "pages.summary.vatDetails.mandatoryStartDate", None)
+      }
+
+      "a date with format 'd MMMM y' if it's a voluntary registration where they are incorped" in {
+        val builder = SummaryVatDetailsSectionBuilder(
+          vatTradingDetails = Some(tradingDetails(
+            startDateSelection = StartDateView.SPECIFIC_DATE,
+            startDate = Some(LocalDate.of(2017, 3, 21)))),
+          vatEligiblityChoice = Some(validEligibilityChoice),
+          incorpDate = Some(LocalDate.of(2017, 1, 21))
+        )
+
+        val expectedRow = SummaryRow(
+          "vatDetails.startDate",
+          "21 March 2017",
+          Some(controllers.vatTradingDetails.vatChoice.routes.StartDateController.show())
+        )
+
+        builder.startDateRow mustBe expectedRow
+      }
+
+      "a date with format 'd MMMM y' if it's a mandatory registration where they are incorped and picked an earlier date" in {
+        val builder = SummaryVatDetailsSectionBuilder(
+          vatTradingDetails = Some(tradingDetails(
+            startDateSelection = StartDateView.SPECIFIC_DATE,
+            startDate = Some(LocalDate.of(2017, 4, 26)))),
+          vatEligiblityChoice = validServiceEligibility(VatEligibilityChoice.NECESSITY_OBLIGATORY).vatEligibilityChoice,
+          incorpDate = Some(LocalDate.of(2017, 3, 21))
+        )
+
+        val expectedRow = SummaryRow(
+          "vatDetails.startDate",
+          "26 April 2017",
+          Some(controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show())
+        )
+
+        builder.startDateRow mustBe expectedRow
+      }
+
+      "a date with format 'd MMMM y' if it's a mandatory registration where they are incorped and picked the latest date possible" in {
+        val builder = SummaryVatDetailsSectionBuilder(
+          vatTradingDetails = Some(tradingDetails(
+            startDateSelection = StartDateView.COMPANY_REGISTRATION_DATE
+          )),
+          vatEligiblityChoice = validServiceEligibility(VatEligibilityChoice.NECESSITY_OBLIGATORY).vatEligibilityChoice,
+          incorpDate = Some(LocalDate.of(2017, 3, 21))
+        )
+
+        builder.startDateRow mustBe SummaryRow(
+          "vatDetails.startDate",
+          "pages.summary.vatDetails.mandatoryStartDate",
+          Some(controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show())
+        )
       }
     }
     "with tradingNameRow render" should {

@@ -56,6 +56,11 @@ class StartDateViewSpec extends UnitSpec with VatRegistrationFixture with Inside
     "create StartDate when DateModel is NOT present" in {
       StartDateView.bind("any", None) shouldBe StartDateView("any", None)
     }
+    "create StartDate with the incorp date if it is present and selected" in {
+      implicit val incorpDate = Some(date)
+
+      StartDateView.bind(StartDateView.COMPANY_REGISTRATION_DATE, None) shouldBe StartDateView(StartDateView.COMPANY_REGISTRATION_DATE, Some(date))
+    }
   }
 
   "ViewModelFormat" should {
