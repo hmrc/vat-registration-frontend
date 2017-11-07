@@ -30,7 +30,8 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Singleton
-class CurrentProfileService @Inject()(val incorpInfoService: IncorpInfoService) extends CurrentProfileSrv {
+class CurrentProfileService @Inject()(val incorpInfoService: IncorpInfoService,
+                                      val vatRegistrationService: VatRegistrationService) extends CurrentProfileSrv {
   val keystoreConnector = KeystoreConnector
 }
 
@@ -38,17 +39,19 @@ trait CurrentProfileSrv {
 
   val incorpInfoService: IncorpInfoService
   val keystoreConnector: KeystoreConnector
+  val vatRegistrationService: VatRegistrationService
 
   def buildCurrentProfile(regId: String, txId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
     for {
       companyName           <- incorpInfoService.getCompanyName(regId, txId)
       incorpInfo            <- incorpInfoService.getIncorporationInfo(txId).value
+      status                <- vatRegistrationService.getStatus(regId)
       incorpDate            =  if(incorpInfo.isDefined) incorpInfo.get.statusEvent.incorporationDate else None
       profile               =  CurrentProfile(
         companyName           = companyName,
         registrationId        = regId,
         transactionId         = txId,
-        vatRegistrationStatus = VatRegStatus.DRAFT,
+        vatRegistrationStatus = status,
         incorporationDate     = incorpDate
       )
       _                     <- keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile)

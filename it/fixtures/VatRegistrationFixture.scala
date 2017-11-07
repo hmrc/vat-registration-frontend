@@ -18,6 +18,7 @@ package it.fixtures
 
 import java.time.LocalDate
 
+import common.enums.VatRegStatus
 import models.api._
 import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.QUARTERLY
@@ -90,6 +91,7 @@ trait VatRegistrationFixture {
 
   val vatReg = VatScheme(
     id = "1",
+    status = VatRegStatus.draft,
     tradingDetails = Some(tradingDetails),
     lodgingOfficer = Some(lodgingOfficer),
     financials = Some(financials),
@@ -101,6 +103,7 @@ trait VatRegistrationFixture {
 
   val vatRegIncorporated = VatScheme(
     id = "1",
+    status =VatRegStatus.draft,
     tradingDetails = Some(tradingDetails),
     lodgingOfficer = Some(lodgingOfficer),
     financials = Some(financials),

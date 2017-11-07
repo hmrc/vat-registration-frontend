@@ -16,6 +16,7 @@
 
 package controllers
 
+import common.enums.VatRegStatus
 import controllers.builders.SummaryComplianceSectionBuilder
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
@@ -26,25 +27,25 @@ class SummaryComplianceSectionBuilderSpec extends VatRegSpec with VatRegistratio
   "Correct compliance section should be rendered" when {
 
     "labour questions have been answered by user" in {
-      val vs = VatScheme("ID", vatSicAndCompliance = Some(VatSicAndCompliance("TEST", labourCompliance = Some(validVatLabourCompliance), mainBusinessActivity = sicCode)))
+      val vs = VatScheme("ID",status = VatRegStatus.draft, vatSicAndCompliance = Some(VatSicAndCompliance("TEST", labourCompliance = Some(validVatLabourCompliance), mainBusinessActivity = sicCode)))
       val summarySection = SummaryComplianceSectionBuilder(vatSicAndCompliance = vs.vatSicAndCompliance)
       summarySection.section.id mustBe "labourCompliance"
     }
 
     "cultural questions have been answered by user" in {
-      val vs = VatScheme("ID", vatSicAndCompliance = Some(VatSicAndCompliance("TEST", culturalCompliance = Some(validVatCulturalCompliance), mainBusinessActivity = sicCode)))
+      val vs = VatScheme("ID",status = VatRegStatus.draft, vatSicAndCompliance = Some(VatSicAndCompliance("TEST", culturalCompliance = Some(validVatCulturalCompliance), mainBusinessActivity = sicCode)))
       val summarySection = SummaryComplianceSectionBuilder(vatSicAndCompliance = vs.vatSicAndCompliance)
       summarySection.section.id mustBe "culturalCompliance"
     }
 
     "financial questions have been answered by user" in {
-      val vs = VatScheme("ID", vatSicAndCompliance = Some(VatSicAndCompliance("TEST", financialCompliance = Some(validVatFinancialCompliance), mainBusinessActivity = sicCode)))
+      val vs = VatScheme("ID", status = VatRegStatus.draft, vatSicAndCompliance = Some(VatSicAndCompliance("TEST", financialCompliance = Some(validVatFinancialCompliance), mainBusinessActivity = sicCode)))
       val summarySection = SummaryComplianceSectionBuilder(vatSicAndCompliance = vs.vatSicAndCompliance)
       summarySection.section.id mustBe "financialCompliance"
     }
 
     "No compliance questions have been answered by user" in {
-      val vs = VatScheme("ID", vatSicAndCompliance = None)
+      val vs = VatScheme("ID", status = VatRegStatus.draft, vatSicAndCompliance = None)
       val summarySection = SummaryComplianceSectionBuilder(vatSicAndCompliance = vs.vatSicAndCompliance)
       summarySection.section.id mustBe "none"
     }

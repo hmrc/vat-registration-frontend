@@ -19,6 +19,7 @@ package fixtures
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+import common.enums.VatRegStatus
 import models.api._
 import models.external.{IncorporationInfo, _}
 import models.view.sicAndCompliance.BusinessActivityDescription
@@ -126,7 +127,8 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
   val validVatFinancialCompliance = VatComplianceFinancial(adviceOrConsultancyOnly = false, actAsIntermediary = false)
   val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
 
-  val emptyVatScheme = VatScheme(testRegId)
+  val emptyVatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
+
   val validLodgingOfficer = VatLodgingOfficer(
     currentAddress = ScrsAddress("", ""),
     dob = validDob,
@@ -156,9 +158,11 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
     vatContact = Some(validVatContact),
     lodgingOfficer = Some(validLodgingOfficer),
     vatSicAndCompliance = Some(validSicAndCompliance),
-    vatFlatRateScheme = Some(validVatFlatRateScheme)
+    vatFlatRateScheme = Some(validVatFlatRateScheme),
+    status = VatRegStatus.draft
   )
   val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
+    status = VatRegStatus.draft,
     id = testRegId,
     vatSicAndCompliance = Some(validSicAndCompliance),
     financials = Some(
@@ -220,7 +224,8 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
     vatSicAndCompliance = sicAndCompliance,
     vatContact = contact,
     vatFlatRateScheme = vatFlatRateScheme,
-    vatServiceEligibility = vatEligibility
+    vatServiceEligibility = vatEligibility,
+    status = VatRegStatus.draft
   )
 
 }
