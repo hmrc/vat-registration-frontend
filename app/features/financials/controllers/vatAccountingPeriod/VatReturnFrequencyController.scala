@@ -55,11 +55,14 @@ package controllers.vatFinancials.vatAccountingPeriod {
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatFinancials.vatAccountingPeriod.VatReturnFrequencyForm
   import models.S4LVatFinancials
+  import models.api.{VatEligibilityChoice, VatScheme}
   import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
   import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.MONTHLY
   import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
   import play.api.mvc._
   import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
+
+  import scala.concurrent.Future
 
   class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
                                               (implicit s4l: S4LService, vrs: VatRegistrationService)
@@ -78,6 +81,11 @@ package controllers.vatFinancials.vatAccountingPeriod {
           }
     }
 
+    private[controllers] def extractEligiblityChoice(vs : VatScheme) : Boolean = {
+      vs.vatServiceEligibility.flatMap(_.vatEligibilityChoice).map(_.necessity.contains(VatEligibilityChoice.NECESSITY_VOLUNTARY))
+        .fold(throw new RuntimeException(""))(contains => contains)
+    }
+
     def submit: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
@@ -88,8 +96,8 @@ package controllers.vatFinancials.vatAccountingPeriod {
                 ifTrue = for {
                   container <- s4lContainer[S4LVatFinancials]()
                   _ <- s4l.save(container.copy(accountingPeriod = None))
-                  voluntaryReg <- viewModel[VoluntaryRegistration]().fold(true)(reg => reg == VoluntaryRegistration.yes)
-                } yield if (voluntaryReg) {
+                  vs <- vrs.getVatScheme
+                } yield if (extractEligiblityChoice(vs)) {
                   controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()
                 } else {
                   controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show()
