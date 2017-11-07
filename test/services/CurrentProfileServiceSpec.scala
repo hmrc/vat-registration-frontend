@@ -34,6 +34,7 @@ import scala.concurrent.Future
 class CurrentProfileServiceSpec extends VatRegSpec {
 
   val testService = new CurrentProfileSrv {
+    override val vatRegistrationService = mockVatRegistrationService
     override val keystoreConnector = mockKeystoreConnector
     override val incorpInfoService = mockIIService
   }
@@ -44,7 +45,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
     companyName           = "testCompanyName",
     registrationId        = "testRegId",
     transactionId         = "testTxId",
-    vatRegistrationStatus = VatRegStatus.DRAFT,
+    vatRegistrationStatus = VatRegStatus.draft,
     incorporationDate     = Some(now)
   )
 
@@ -65,6 +66,9 @@ class CurrentProfileServiceSpec extends VatRegSpec {
             IncorpSubscription("","","",""),
             IncorpStatusEvent("", None, Some(now), None)
           ))))
+
+        when(mockVatRegistrationService.getStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
+          .thenReturn(Future.successful(VatRegStatus.draft))
 
         when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map())))

@@ -16,6 +16,7 @@
 
 package models.view.vatFinancials
 
+import common.enums.VatRegStatus
 import fixtures.VatRegistrationFixture
 import models.api.{VatFinancials, VatScheme}
 import models.{ApiModelTransformer, S4LVatFinancials}
@@ -24,7 +25,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
 
   "apply" should {
-    val vatScheme = VatScheme(testRegId)
+    val vatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
 
     "convert VatFinancials with zero rated sales to view model" in {
       val vatFinancialsWithZeroRated = VatFinancials(

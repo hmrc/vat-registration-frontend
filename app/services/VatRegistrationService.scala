@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 import com.google.inject.ImplementedBy
 import common.ErrorUtil.fail
+import common.enums.VatRegStatus
 import connectors.{CompanyRegistrationConnector, OptionalResponse, VatRegistrationConnector}
 import models.ModelKeys._
 import models._
@@ -133,5 +134,8 @@ trait LegacyServiceToBeRefactored {
       response <- vatRegConnector.upsertVatLodgingOfficer(profile.registrationId, merge(vlo, vs))
     } yield response
   }
+
+  def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] =
+    vatRegConnector.getStatus(regId)
 
 }
