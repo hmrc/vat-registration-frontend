@@ -46,8 +46,15 @@ trait S4LService extends CommonService {
       cm <- s4LConnector.save(profile.registrationId, k.key, vmf.update(data, Some(group)))
     } yield cm
 
+  def saveNoAux[T](data: T, s4LKey: S4LKey[T])(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
+    s4LConnector.save(profile.registrationId, s4LKey.key, data)
+  }
+
   def fetchAndGet[T: S4LKey]()(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
     s4LConnector.fetchAndGet[T](profile.registrationId, S4LKey[T].key)
+
+  def fetchAndGetNoAux[T](key: S4LKey[T])(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
+    s4LConnector.fetchAndGet[T](profile.registrationId, key.key)
 
   def getViewModel[T, G](container: Future[G])
                         (implicit r: ViewModelFormat.Aux[T, G], f: Format[G]): OptionalResponse[T] =

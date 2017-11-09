@@ -16,20 +16,20 @@
 
 package models.view.frs {
 
-  import models._
+  import models.ApiModelTransformer
   import models.api.VatScheme
   import play.api.libs.json.Json
 
-  final case class JoinFrsView(selection: Boolean)
+  case class JoinFrsView(selection: Boolean)
 
   object JoinFrsView {
     implicit val format = Json.format[JoinFrsView]
 
-    implicit val viewModelFormat = ViewModelFormat(
-      readF = (_: S4LFlatRateScheme).joinFrs,
-      updateF = (c: JoinFrsView, g: Option[S4LFlatRateScheme]) =>
-        g.getOrElse(S4LFlatRateScheme()).copy(joinFrs = Some(c))
-    )
+//    implicit val viewModelFormat = ViewModelFormat(
+//      readF = (_: S4LFlatRateScheme).joinFrs,
+//      updateF = (c: JoinFrsView, g: Option[S4LFlatRateScheme]) =>
+//        g.getOrElse(S4LFlatRateScheme()).copy(joinFrs = Some(c))
+//    )
 
     implicit val modelTransformer = ApiModelTransformer[JoinFrsView] { (vs: VatScheme) =>
       vs.vatFlatRateScheme.map(_.joinFrs).map(JoinFrsView(_))
@@ -41,51 +41,107 @@ package controllers.frs {
 
   import javax.inject.Inject
 
-  import cats.syntax.FlatMapSyntax
+  import models.{S4LFlatRateScheme, S4LKey, S4LModelTransformer}
+  import play.api.data.Form
+
+//  import cats.data.OptionT
+//  import cats.syntax.FlatMapSyntax
   import connectors.KeystoreConnector
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
-  import models._
   import models.view.frs.JoinFrsView
   import play.api.mvc.{Action, AnyContent}
   import services.{S4LService, SessionProfile, VatRegistrationService}
 
-  class JoinFrsController @Inject()(ds: CommonPlayDependencies, formFactory: YesOrNoFormFactory)
-                                   (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with FlatMapSyntax with SessionProfile {
+  import scala.concurrent.Future
+
+  class JoinFrsController @Inject()(ds: CommonPlayDependencies,
+                                    formFactory: YesOrNoFormFactory,
+                                    s4LService: S4LService,
+                                    vrs: VatRegistrationService)
+    extends VatRegistrationController(ds) with SessionProfile {
 
     val keystoreConnector: KeystoreConnector = KeystoreConnector
+    val form: Form[YesOrNoAnswer] = formFactory.form("joinFrs")("frs.join")
+    val s4lFRSKey: S4LKey[S4LFlatRateScheme] = S4LFlatRateScheme.vatFlatRateScheme
+    val apiToS4LViewTransformer: S4LModelTransformer[S4LFlatRateScheme] = S4LFlatRateScheme.modelT
 
-    val form = formFactory.form("joinFrs")("frs.join")
+
+//    def show: Action[AnyContent] = authorised.async {
+//      implicit user =>
+//        implicit request =>
+//          withCurrentProfile { implicit profile =>
+//            viewModel[JoinFrsView]().map(vm => YesOrNoAnswer(vm.selection)).fold(form)(form.fill)
+//              .map(f => Ok(features.frs.views.html.frs_join(f)))
+//          }
+//    }
 
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            ivPassedCheck {
-              viewModel[JoinFrsView]().map(vm => YesOrNoAnswer(vm.selection)).fold(form)(form.fill)
-                .map(f => Ok(features.frs.views.html.frs_join(f)))
-            }
+
+            val fetchedS4LFlatRatScheme = s4LService.fetchAndGetNoAux(s4lFRSKey)
+
+            val s4lFlatRateSchemeLogicalBlock = fetchedS4LFlatRatScheme.flatMap(_.fold(
+              vrs.getVatScheme map apiToS4LViewTransformer.toS4LModel
+            )(s4LFlatRateScheme => Future.successful(s4LFlatRateScheme)))
+
+            val joinFrsViewOpt = s4lFlatRateSchemeLogicalBlock.map(_.joinFrs) //old ViewModelFormat readF
+
+            val yesOrNoAnswerForm = joinFrsViewOpt.map(_.fold(form)(joinFrsView => form.fill(YesOrNoAnswer(joinFrsView.selection))))
+
+            yesOrNoAnswerForm.map(f => Ok(features.frs.views.html.frs_join(f)))
           }
     }
+
+//    def submit: Action[AnyContent] = authorised.async {
+//      implicit user =>
+//        implicit request =>
+//          withCurrentProfile { implicit profile =>
+//            form.bindFromRequest().fold(
+//              badForm => Future.successful(BadRequest(features.frs.views.html.frs_join(badForm))),
+//              view => (if (view.answer) {
+//                save(JoinFrsView(view.answer)).map(_ =>
+//                  controllers.frs.routes.AnnualCostsInclusiveController.show())
+//              } else {
+//                for {
+//                  _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(false))))
+//                  _ <- vrs.submitVatFlatRateScheme()
+//                } yield controllers.routes.SummaryController.show()
+//              }).map(Redirect))
+//          }
+//    }
 
     def submit: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            ivPassedCheck {
-              form.bindFromRequest().fold(
-                badForm => BadRequest(features.frs.views.html.frs_join(badForm)).pure,
-                view => (if (view.answer) {
-                  save(JoinFrsView(view.answer)).map(_ =>
-                    controllers.frs.routes.AnnualCostsInclusiveController.show())
-                } else {
-                  for {
-                    _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(false))))
-                    _ <- vrs.submitVatFlatRateScheme()
-                  } yield controllers.routes.SummaryController.show()
-                }).map(Redirect))
-            }
+            form.bindFromRequest().fold(
+              badForm => Future.successful(BadRequest(features.frs.views.html.frs_join(badForm))),
+              view => if (view.answer) {
+
+                val newJoinFRSView = JoinFrsView(view.answer)
+
+                val s4lFRSLogicalBlock = s4LService.fetchAndGetNoAux(s4lFRSKey)
+                  .flatMap(_.fold(vrs.getVatScheme map apiToS4LViewTransformer.toS4LModel)(s => Future.successful(s)))
+
+                val updatedS4LFRSLogicalBlock =
+                  s4lFRSLogicalBlock.map(_.copy(joinFrs = Some(newJoinFRSView))) // old ViewModelFormat updateF
+
+                val savedNewLogicalBlock = updatedS4LFRSLogicalBlock flatMap { newFrsLogicalBlock =>
+                  s4LService.saveNoAux(newFrsLogicalBlock, s4lFRSKey)
+                }
+
+                savedNewLogicalBlock.map(_ => Redirect(controllers.frs.routes.AnnualCostsInclusiveController.show()))
+
+              } else {
+                for {
+                  _ <- s4LService.saveNoAux(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(false))), s4lFRSKey)
+                  _ <- vrs.submitVatFlatRateScheme()
+                } yield Redirect(controllers.routes.SummaryController.show())
+              }
+            )
           }
     }
   }
