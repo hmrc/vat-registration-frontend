@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package auth
+package controllers
 
-import uk.gov.hmrc.play.config.{RunMode, ServicesConfig}
+import auth.VatTaxRegime
+import play.api.i18n.I18nSupport
+import uk.gov.hmrc.play.frontend.auth.Actions
+import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-object VatExternalUrls extends RunMode with ServicesConfig {
+trait VatRegistrationControllerNoAux extends FrontendController with I18nSupport with Actions {
 
-  private[VatExternalUrls] lazy val companyAuthHost = getConfString("auth.company-auth.url", "")
-  private[VatExternalUrls] lazy val loginCallback = getConfString("auth.login-callback.url", "")
-  private[VatExternalUrls] lazy val loginPath = getConfString("auth.login_path", "")
-
-  lazy val loginUrl = s"$companyAuthHost$loginPath"
-  lazy val continueUrl = s"$loginCallback${controllers.callbacks.routes.SignInOutController.postSignIn()}"
-
+  def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
 }

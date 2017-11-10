@@ -22,13 +22,41 @@ import scala.concurrent.Future
 package services {
 
   import common.ErrorUtil.fail
-  import models.{CurrentProfile, S4LFlatRateScheme}
+  import models._
   import models.api.{VatFlatRateScheme, VatScheme}
+  import models.view.frs._
 
   trait FlatRateService extends CommonService {
-
     self: RegistrationService =>
 
+    val flatRateSchemeS4LKey: S4LKey[S4LFlatRateScheme] = S4LFlatRateScheme.vatFlatRateScheme
+
+    type SavedFlatRateScheme = Either[S4LFlatRateScheme, VatFlatRateScheme]
+
+    def fetchFlatRateScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[S4LFlatRateScheme] = {
+      fetchFRSFromS4L flatMap {
+        case Some(frs) => Future.successful(frs)
+        case None => getVatScheme map { vatScheme =>
+          vatScheme.vatFlatRateScheme match {
+            case Some(_) => apiToView(vatScheme)
+            case None => S4LFlatRateScheme()
+          }
+        }
+      }
+    }
+
+    def saveJoinFRS(joinFRSView: JoinFrsView)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
+      if (joinFRSView.selection) {
+        fetchFlatRateScheme flatMap { frs =>
+          saveFRS(frs.copy(joinFrs = Some(joinFRSView)))
+        }
+      } else {
+        saveFRStoAPI(viewToApi(S4LFlatRateScheme(joinFrs = Some(joinFRSView)))) map Right.apply
+      }
+    }
+
+    @Deprecated
+    // TODO other FRS controllers still use this
     def submitVatFlatRateScheme()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatFlatRateScheme] = {
       def merge(fresh: Option[S4LFlatRateScheme], vs: VatScheme): VatFlatRateScheme =
         fresh.fold(
@@ -42,6 +70,52 @@ package services {
       } yield response
     }
 
+    private[services] def apiToView(vs: VatScheme): S4LFlatRateScheme =
+      S4LFlatRateScheme(
+        joinFrs = ApiModelTransformer[JoinFrsView].toViewModel(vs),
+        annualCostsInclusive = ApiModelTransformer[AnnualCostsInclusiveView].toViewModel(vs),
+        annualCostsLimited = ApiModelTransformer[AnnualCostsLimitedView].toViewModel(vs),
+        registerForFrs = ApiModelTransformer[RegisterForFrsView].toViewModel(vs),
+        frsStartDate = ApiModelTransformer[FrsStartDateView].toViewModel(vs),
+        categoryOfBusiness = ApiModelTransformer[BusinessSectorView].toViewModel(vs)
+      )
+
+    private[services] def viewToApi(view: S4LFlatRateScheme): VatFlatRateScheme = {
+      VatFlatRateScheme(
+        joinFrs = view.joinFrs.map(_.selection).getOrElse(false),
+        annualCostsInclusive = view.annualCostsInclusive.map(_.selection),
+        annualCostsLimited = view.annualCostsLimited.map(_.selection),
+        doYouWantToUseThisRate = view.registerForFrs.map(_.selection),
+        whenDoYouWantToJoinFrs = view.frsStartDate.map(_.dateType),
+        startDate = view.frsStartDate.flatMap(_.date),
+        categoryOfBusiness = view.categoryOfBusiness.map(_.businessSector),
+        percentage = view.categoryOfBusiness.map(_.flatRatePercentage)
+      )
+    }
+
+    private[services] def fetchFRSFromS4L(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Option[S4LFlatRateScheme]] = {
+      s4LService.fetchAndGetNoAux(flatRateSchemeS4LKey)
+    }
+
+    private[services] def fetchFRSFromAPI(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Option[VatFlatRateScheme]] = {
+      getVatScheme() map (_.vatFlatRateScheme)
+    }
+
+    private[services] def saveFRS(frs: S4LFlatRateScheme)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
+      // TODO defaulting to S4L
+      // TODO check needed to determine whether block is full is unreliable - awaiting API changes
+      // TODO (options with no way of identifying whether they should be populated)
+      // TODO on save to backend, wipe S4L for safety like PAYE?
+      saveFRSToS4L(frs) map Left.apply
+    }
+
+    private[services] def saveFRSToS4L(frsView: S4LFlatRateScheme)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[S4LFlatRateScheme] = {
+      s4LService.saveNoAux[S4LFlatRateScheme](frsView, flatRateSchemeS4LKey) map (_ => frsView)
+    }
+
+    private[services] def saveFRStoAPI(frs: VatFlatRateScheme)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatFlatRateScheme] = {
+      vatRegConnector.upsertVatFlatRateScheme(profile.registrationId, frs)
+    }
   }
 }
 

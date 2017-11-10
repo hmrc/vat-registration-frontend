@@ -41,7 +41,7 @@ trait BaseFixture {
   val testAccountNumber = "12345678"
 }
 
-trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture with FinancialsFixture {
+trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture with FinancialsFixture {
 
   //Responses
   val IM_A_TEAPOT = 418

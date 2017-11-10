@@ -23,9 +23,9 @@ package models.api {
   case class VatFlatRateScheme(joinFrs: Boolean = false,
                                annualCostsInclusive: Option[String] = None,
                                annualCostsLimited: Option[String] = None,
-                               doYouWantToUseThisRate: Option[Boolean] = None,
+                               doYouWantToUseThisRate: Option[Boolean] = None, //mandatory if joinFrs yes
                                whenDoYouWantToJoinFrs: Option[String] = None,
-                               startDate: Option[LocalDate] = None,
+                               startDate: Option[LocalDate] = None, // if doYouWantToUseThisRate is true this is mandatory
                                categoryOfBusiness: Option[String] = None,
                                percentage: Option[BigDecimal] = None)
 
@@ -77,7 +77,8 @@ package models {
           whenDoYouWantToJoinFrs = c.frsStartDate.map(_.dateType),
           startDate = c.frsStartDate.flatMap(_.date),
           categoryOfBusiness = c.categoryOfBusiness.map(_.businessSector),
-          percentage = c.categoryOfBusiness.map(_.flatRatePercentage))
+          percentage = c.categoryOfBusiness.map(_.flatRatePercentage)
+        )
     }
   }
 }

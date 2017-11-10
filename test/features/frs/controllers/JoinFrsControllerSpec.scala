@@ -18,31 +18,37 @@ package controllers.frs
 
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
-import forms.genericForms.YesOrNoFormFactory
-import helpers.{S4LMockSugar, VatRegSpec}
+import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
+import helpers.{ControllerSpec, MockMessages}
 import models.{CurrentProfile, S4LFlatRateScheme}
-import models.api.VatFlatRateScheme
-import models.view.frs.JoinFrsView
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
+import play.api.data.Form
+import play.api.i18n.MessagesApi
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.VatRegistrationService
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
-class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+class JoinFrsControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages {
 
   trait Setup {
-    val controller: JoinFrsController = new JoinFrsController(ds, new YesOrNoFormFactory, mockS4LService, mockVatRegistrationService) {
+    val controller: JoinFrsController = new JoinFrsController{
+      override val form: Form[YesOrNoAnswer] = (new YesOrNoFormFactory).form("joinFrs")("frs.join")
       override val authConnector: AuthConnector = mockAuthConnector
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      override val service: VatRegistrationService = mockVatRegistrationService
+      override val messagesApi: MessagesApi = mockMessagesAPI
     }
   }
 
   val fakeRequest = FakeRequest(routes.JoinFrsController.show())
+
+  mockAllMessages
 
   s"GET ${routes.JoinFrsController.show()}" should {
 
@@ -50,46 +56,33 @@ class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
 
       "visited for the first time" in new Setup {
 
-        mockGetCurrentProfile()
+        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some(currentProfile)))
 
-        when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
-          .thenReturn(Future.successful(None))
-
-        when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(emptyVatScheme))
+        when(mockVatRegistrationService.fetchFlatRateScheme(any(), any()))
+          .thenReturn(Future.successful(S4LFlatRateScheme()))
 
         callAuthorised(controller.show()) { result =>
           status(result) mustBe 200
-          result includesText "Do you want to join the Flat Rate Scheme?"
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("mocked message")
         }
       }
 
       "user has already answered this question" in new Setup {
 
-        mockGetCurrentProfile()
-
-        when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
-          .thenReturn(Future.successful(Some(validS4LFlatRateScheme)))
-
-        when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(emptyVatScheme))
-
-        callAuthorised(controller.show) { result =>
-          status(result) mustBe 200
-          result includesText "Do you want to join the Flat Rate Scheme?"
-        }
-      }
-
-      "user's answer has already been submitted to backend" in new Setup {
         when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Some(currentProfile())))
+          .thenReturn(Future.successful(Some(currentProfile)))
 
-        when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
-          .thenReturn(Future.successful(None))
-
-        when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
+        when(mockVatRegistrationService.fetchFlatRateScheme(any(), any()))
+          .thenReturn(Future.successful(validS4LFlatRateScheme))
 
         callAuthorised(controller.show) { result =>
           status(result) mustBe 200
-          result includesText "Do you want to join the Flat Rate Scheme?"
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) must include("mocked message")
         }
       }
     }
@@ -100,7 +93,7 @@ class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "return 400 with Empty data" in new Setup {
 
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile())))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody())(result =>
         status(result) mustBe 400
@@ -110,15 +103,10 @@ class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "return 303 with Join Flat Rate Scheme selected Yes" in new Setup {
 
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile())))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
-      when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
-        .thenReturn(Future.successful(None))
-
-      when(mockS4LService.saveNoAux[S4LFlatRateScheme](any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.saveJoinFRS(any())(any(), any()))
+        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "joinFrsRadio" -> "true"
@@ -132,23 +120,18 @@ class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "return 303 with Join Flat Rate Scheme selected No" in new Setup {
 
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile())))
+        .thenReturn(Future.successful(Some(currentProfile)))
 
-      when(mockS4LService.saveNoAux[S4LFlatRateScheme](any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any()))
-        .thenReturn(Future.successful(VatFlatRateScheme()))
+      when(mockVatRegistrationService.saveJoinFRS(any())(any(), any()))
+        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "joinFrsRadio" -> "false"
       )
 
       submitAuthorised(controller.submit(), request){ result =>
-        result redirectsTo s"$contextRoot/check-your-answers"
+        redirectLocation(result) mustBe Some(s"$contextRoot/check-your-answers")
       }
-
-      verify(mockVatRegistrationService).submitVatFlatRateScheme()(any(), any())
     }
   }
 }

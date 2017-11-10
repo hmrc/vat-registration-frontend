@@ -39,6 +39,13 @@ trait AuthBuilder {
     }
   }
 
+  def requestWithAuthorisedUser(action: Action[AnyContent], mockAuthConnector: AuthConnector)(test: Future[Result] => Any) {
+    val userId = "testUserId"
+    mockAuthorisedUser(userId)(mockAuthConnector)
+    val result = action(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
   def withAuthorisedUser(action: Action[AnyContent])(test: Future[Result] => Any)(implicit mockAuthConnector: AuthConnector) {
     val userId = "testUserId"
     mockAuthorisedUser(userId)
@@ -46,10 +53,25 @@ trait AuthBuilder {
     test(result)
   }
 
+  def submitWithUnauthorisedUser(action: Action[AnyContent], request: FakeRequest[AnyContentAsFormUrlEncoded], mockAuthConnector: AuthConnector)
+                                (test: Future[Result] => Any) {
+    when(mockAuthConnector.currentAuthority(Matchers.any())).thenReturn(Future.successful(None))
+    val result = action.apply(SessionBuilder.updateRequestFormWithSession(request, ""))
+    test(result)
+  }
+
   def submitWithUnauthorisedUser(action: Action[AnyContent], request: FakeRequest[AnyContentAsFormUrlEncoded])
                                 (test: Future[Result] => Any)(implicit mockAuthConnector: AuthConnector) {
     when(mockAuthConnector.currentAuthority(Matchers.any())).thenReturn(Future.successful(None))
     val result = action.apply(SessionBuilder.updateRequestFormWithSession(request, ""))
+    test(result)
+  }
+
+  def submitWithAuthorisedUser(action: Action[AnyContent], request: FakeRequest[AnyContentAsFormUrlEncoded], mockAuthConnector: AuthConnector)
+                              (test: Future[Result] => Any) {
+    val userId = "testUserId"
+    AuthBuilder.mockAuthorisedUser(userId)(mockAuthConnector)
+    val result = action.apply(SessionBuilder.updateRequestFormWithSession(request, userId))
     test(result)
   }
 
