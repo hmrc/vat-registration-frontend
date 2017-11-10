@@ -40,6 +40,12 @@ package models.view.frs {
         g.getOrElse(S4LFlatRateScheme()).copy(annualCostsInclusive = Some(c))
     )
 
+    def from(vatFlatRateScheme: VatFlatRateScheme): Option[AnnualCostsInclusiveView] = {
+      vatFlatRateScheme.annualCostsInclusive collect {
+        case choice@(YES | YES_WITHIN_12_MONTHS | NO) => AnnualCostsInclusiveView(choice)
+      }
+    }
+
     implicit val modelTransformer = ApiModelTransformer[AnnualCostsInclusiveView] { vs: VatScheme =>
       vs.vatFlatRateScheme.flatMap(_.annualCostsInclusive).collect {
         case YES => AnnualCostsInclusiveView(YES)
