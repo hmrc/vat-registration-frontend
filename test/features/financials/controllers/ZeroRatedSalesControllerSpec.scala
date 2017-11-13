@@ -42,8 +42,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
     "return HTML when there's a Zero Rated Sales model in S4L" in {
       save4laterReturnsViewModel(ZeroRatedSales(ZERO_RATED_SALES_YES))()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(Controller.show(), fakeRequest.withFormUrlEncodedBody("zeroRatedSalesRadio" -> "")) {
         _ includesText "Will the company sell any zero-rated goods or services in the next 12 months?"
@@ -54,8 +53,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       save4laterReturnsNoViewModel[ZeroRatedSales]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(Controller.show) {
         _ includesText "Will the company sell any zero-rated goods or services in the next 12 months?"
@@ -66,8 +64,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       save4laterReturnsNoViewModel[ZeroRatedSales]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(Controller.show) {
         _ includesText "Will the company sell any zero-rated goods or services in the next 12 months?"
@@ -78,8 +75,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
   s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
@@ -87,8 +83,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
     "return 303 with Zero Rated Sales selected Yes" in {
       save4laterExpectsSave[ZeroRatedSales]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("zeroRatedSalesRadio" -> ZERO_RATED_SALES_YES)) {
@@ -102,8 +97,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
       when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(dummyCacheMap.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("zeroRatedSalesRadio" -> ZERO_RATED_SALES_NO)) {

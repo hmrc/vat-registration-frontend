@@ -42,8 +42,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
     "return HTML Estimate Vat Turnover page" in {
       save4laterReturnsViewModel(EstimateVatTurnover(100L))()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(Controller.show()) {
         _ includesText "What will the company&#x27;s VAT taxable turnover be during the next 12 months?"
@@ -55,8 +54,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       save4laterReturnsNoViewModel[EstimateVatTurnover]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(Controller.show) {
         _ includesText "What will the company&#x27;s VAT taxable turnover be during the next 12 months?"
@@ -67,9 +65,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       save4laterReturnsNoViewModel[EstimateVatTurnover]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       callAuthorised(Controller.show) {
         _ includesText "What will the company&#x27;s VAT taxable turnover be during the next 12 months?"
       }
@@ -78,8 +74,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
 
   s"POST ${vatFinancials.routes.EstimateVatTurnoverController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
@@ -89,9 +84,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       save4laterExpectsSave[EstimateVatTurnover]()
       mockKeystoreCache[Long](EstimateVatTurnoverKey.lastKnownValueKey, dummyCacheMap)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody("turnoverEstimate" -> "50000")) {
         _ redirectsTo s"$contextRoot/sell-zero-rated-items-next-12-months"
       }
@@ -102,8 +95,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       save4laterExpectsSave[EstimateVatTurnover]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       mockKeystoreCache[Long](EstimateVatTurnoverKey.lastKnownValueKey, dummyCacheMap)
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody("turnoverEstimate" -> "50000")) {

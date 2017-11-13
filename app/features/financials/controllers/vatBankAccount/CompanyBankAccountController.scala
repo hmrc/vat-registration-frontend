@@ -73,8 +73,10 @@ package controllers.vatFinancials.vatBankAccount {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[CompanyBankAccount]().fold(form)(form.fill)
-              .map(frm => Ok(features.financials.views.html.vatBankAccount.company_bank_account(frm)))
+            ivPassedCheck {
+              viewModel[CompanyBankAccount]().fold(form)(form.fill)
+                .map(frm => Ok(features.financials.views.html.vatBankAccount.company_bank_account(frm)))
+            }
           }
     }
 
@@ -82,24 +84,26 @@ package controllers.vatFinancials.vatBankAccount {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.financials.views.html.vatBankAccount.company_bank_account(badForm)).pure,
-              data => save(data).map(_ => data.yesNo == CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES).ifM(
-                ifTrue = controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show().pure,
-                ifFalse = for {
-                  originalTurnover <- keystoreConnector.fetchAndGet[Long](lastKnownValueKey)
-                  container <- s4lContainer[S4LVatFinancials]()
-                  _ <- s4l.save(container.copy(companyBankAccountDetails = None))
-                  _ <- vrs.submitVatFinancials()
-                  turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
-                  _ <- s4l.save(S4LFlatRateScheme()).flatMap(
-                    _ => vrs.submitVatFlatRateScheme()) onlyIf originalTurnover.getOrElse(0) != turnover
-                } yield if (turnover > joinThreshold) {
-                  controllers.routes.SummaryController.show()
-                } else {
-                  controllers.frs.routes.JoinFrsController.show()
-                }
-              ).map(Redirect))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.financials.views.html.vatBankAccount.company_bank_account(badForm)).pure,
+                data => save(data).map(_ => data.yesNo == CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES).ifM(
+                  ifTrue = controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show().pure,
+                  ifFalse = for {
+                    originalTurnover <- keystoreConnector.fetchAndGet[Long](lastKnownValueKey)
+                    container <- s4lContainer[S4LVatFinancials]()
+                    _ <- s4l.save(container.copy(companyBankAccountDetails = None))
+                    _ <- vrs.submitVatFinancials()
+                    turnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
+                    _ <- s4l.save(S4LFlatRateScheme()).flatMap(
+                      _ => vrs.submitVatFlatRateScheme()) onlyIf originalTurnover.getOrElse(0) != turnover
+                  } yield if (turnover > joinThreshold) {
+                    controllers.routes.SummaryController.show()
+                  } else {
+                    controllers.frs.routes.JoinFrsController.show()
+                  }
+                ).map(Redirect))
+            }
           }
     }
   }

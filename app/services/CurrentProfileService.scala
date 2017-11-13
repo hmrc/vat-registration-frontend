@@ -18,12 +18,9 @@ package services
 
 import javax.inject.{Inject, Singleton}
 
-
-
 import common.enums.VatRegStatus
 import connectors.KeystoreConnector
 import models.CurrentProfile
-import models.external.CoHoCompanyProfile
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
@@ -39,6 +36,7 @@ trait CurrentProfileSrv {
 
   val incorpInfoService: IncorpInfoService
   val keystoreConnector: KeystoreConnector
+
   val vatRegistrationService: VatRegistrationService
 
   def buildCurrentProfile(regId: String, txId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
@@ -54,8 +52,18 @@ trait CurrentProfileSrv {
         vatRegistrationStatus = status,
         incorporationDate     = incorpDate
       )
-      _                     <- keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile)
-    } yield profile
+      profileWithIV         <- getIVStatusFromVRServiceAndUpdateCurrentProfile(profile)
+    } yield profileWithIV
+  }
+
+  def getIVStatusFromVRServiceAndUpdateCurrentProfile(cp:CurrentProfile)(implicit hc:HeaderCarrier):Future[CurrentProfile] = {
+    vatRegistrationService.getVatScheme()(cp,hc).map(_.lodgingOfficer.map(_.ivPassed)).flatMap(a => updateIVStatusInCurrentProfile(a.getOrElse(false))(hc,cp))
+  }
+
+
+  def updateIVStatusInCurrentProfile(passed: Boolean)(implicit hc:HeaderCarrier,cp:CurrentProfile):Future[CurrentProfile] = {
+    val updatedCurrentProfile = cp.copy(ivPassed = passed)
+    keystoreConnector.cache[CurrentProfile]("CurrentProfile", updatedCurrentProfile) map(_ => updatedCurrentProfile)
   }
 }
 

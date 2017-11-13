@@ -38,8 +38,10 @@ package controllers.sicAndCompliance.cultural {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[NotForProfit]().fold(form)(form.fill)
-              .map(f => Ok(features.sicAndCompliance.views.html.cultural.not_for_profit(f)))
+            ivPassedCheck {
+              viewModel[NotForProfit]().fold(form)(form.fill)
+                .map(f => Ok(features.sicAndCompliance.views.html.cultural.not_for_profit(f)))
+            }
           }
     }
 
@@ -47,14 +49,16 @@ package controllers.sicAndCompliance.cultural {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.sicAndCompliance.views.html.cultural.not_for_profit(badForm)).pure,
-              view => for {
-                container <- s4lContainer[S4LVatSicAndCompliance]()
-                _ <- s4lService.save(culturalOnly(container.copy(notForProfit = Some(view))))
-                _ <- vrs.submitSicAndCompliance()
-              } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
-            )
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.sicAndCompliance.views.html.cultural.not_for_profit(badForm)).pure,
+                view => for {
+                  container <- s4lContainer[S4LVatSicAndCompliance]()
+                  _ <- s4lService.save(culturalOnly(container.copy(notForProfit = Some(view))))
+                  _ <- vrs.submitSicAndCompliance()
+                } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
+              )
+            }
           }
     }
 

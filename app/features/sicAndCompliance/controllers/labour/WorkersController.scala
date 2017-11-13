@@ -39,8 +39,10 @@ package controllers.sicAndCompliance.labour {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[Workers]().fold(form)(form.fill)
-              .map(f => Ok(features.sicAndCompliance.views.html.labour.workers(f)))
+            ivPassedCheck {
+              viewModel[Workers]().fold(form)(form.fill)
+                .map(f => Ok(features.sicAndCompliance.views.html.labour.workers(f)))
+            }
           }
     }
 
@@ -48,16 +50,18 @@ package controllers.sicAndCompliance.labour {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.sicAndCompliance.views.html.labour.workers(badForm)).pure,
-              data => save(data).map(_ => data.numberOfWorkers >= 8).ifM(
-                ifTrue = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show().pure,
-                ifFalse = for {
-                  container <- s4lContainer[S4LVatSicAndCompliance]()
-                  _ <- s4lService.save(dropFromWorkers(container))
-                  _ <- vrs.submitSicAndCompliance()
-                } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
-              ).map(Redirect))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.sicAndCompliance.views.html.labour.workers(badForm)).pure,
+                data => save(data).map(_ => data.numberOfWorkers >= 8).ifM(
+                  ifTrue = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show().pure,
+                  ifFalse = for {
+                    container <- s4lContainer[S4LVatSicAndCompliance]()
+                    _ <- s4lService.save(dropFromWorkers(container))
+                    _ <- vrs.submitSicAndCompliance()
+                  } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
+                ).map(Redirect))
+            }
           }
     }
 

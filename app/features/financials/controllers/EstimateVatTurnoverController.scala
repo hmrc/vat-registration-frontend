@@ -61,8 +61,10 @@ package controllers.vatFinancials {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[EstimateVatTurnover]().fold(form)(form.fill)
-              .map(f => Ok(features.financials.views.html.estimate_vat_turnover(f)))
+            ivPassedCheck {
+              viewModel[EstimateVatTurnover]().fold(form)(form.fill)
+                .map(f => Ok(features.financials.views.html.estimate_vat_turnover(f)))
+            }
           }
     }
 
@@ -70,14 +72,16 @@ package controllers.vatFinancials {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            EstimateVatTurnoverForm.form.bindFromRequest().fold(
-              badForm => BadRequest(features.financials.views.html.estimate_vat_turnover(badForm)).pure,
-              view => for {
-                originalTurnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
-                _ <- keystoreConnector.cache[Long](EstimateVatTurnoverKey.lastKnownValueKey, originalTurnover)
-                _ <- save(view)
-              } yield Redirect(controllers.vatFinancials.routes.ZeroRatedSalesController.show())
-            )
+            ivPassedCheck {
+              EstimateVatTurnoverForm.form.bindFromRequest().fold(
+                badForm => BadRequest(features.financials.views.html.estimate_vat_turnover(badForm)).pure,
+                view => for {
+                  originalTurnover <- viewModel[EstimateVatTurnover]().fold[Long](0)(_.vatTurnoverEstimate)
+                  _ <- keystoreConnector.cache[Long](EstimateVatTurnoverKey.lastKnownValueKey, originalTurnover)
+                  _ <- save(view)
+                } yield Redirect(controllers.vatFinancials.routes.ZeroRatedSalesController.show())
+              )
+            }
           }
     }
   }

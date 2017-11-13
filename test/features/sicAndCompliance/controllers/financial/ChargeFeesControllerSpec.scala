@@ -43,8 +43,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     "return HTML when there's a Charge Fees model in S4L" in {
       save4laterReturnsViewModel(ChargeFees(true))()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(ChargeFeesController.show(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> ""
@@ -56,8 +55,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[ChargeFees]()
       when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatScheme))
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(ChargeFeesController.show) {
        _ includesText "Does the company charge fees for introducing clients to financial service providers?"
       }
@@ -66,8 +64,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[ChargeFees]()
     when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Some(currentProfile)))
+    mockGetCurrentProfile()
       callAuthorised(ChargeFeesController.show) {
         _ includesText "Does the company charge fees for introducing clients to financial service providers?"
       }
@@ -76,8 +73,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
   s"POST ${routes.ChargeFeesController.show()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result => status(result) mustBe Status.BAD_REQUEST
@@ -87,8 +83,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     "return 303 with charge fees Yes" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[ChargeFees]()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> "true"
       )) {
@@ -100,8 +95,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     "return 303 with charge fees No" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[ChargeFees]()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "chargeFeesRadio" -> "false"
       )) {

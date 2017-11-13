@@ -45,8 +45,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
 
       save4laterReturnsViewModel(euGoods)()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(EuGoodsController.show(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> ""
@@ -58,8 +57,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[EuGoods]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any(), any()))
         .thenReturn(Future.successful(validVatScheme))
@@ -72,8 +70,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[EuGoods]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any(), any()))
         .thenReturn(Future.successful(emptyVatScheme))
@@ -87,8 +84,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
   s"POST ${vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()}" should {
     "return 400 with Empty data" in {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
@@ -100,8 +96,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "return 303 with Eu Goods Yes selected" in {
       save4laterExpectsSave[EuGoods]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> EuGoods.EU_GOODS_YES
@@ -115,8 +110,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
       save4laterExpectsSave[EuGoods]()
       save4laterExpectsSave[ApplyEori]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(EuGoodsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> EuGoods.EU_GOODS_NO

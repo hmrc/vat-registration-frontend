@@ -48,14 +48,16 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
   with ScalaFutures with ApplicativeSyntax with FutureInstances with BeforeAndAfterEach with FutureAssertions with VatRegistrationFixture {
 
   implicit val hc = HeaderCarrier()
+  implicit val cp = currentProfile()
+   def currentProfile(ivPassed:Boolean = true) = CurrentProfile("Test Me", testRegId, "000-434-1",
+    VatRegStatus.draft,Some(LocalDate.of(2017, 12, 21)),ivPassed)
 
-  implicit val currentProfile = CurrentProfile("Test Me", testRegId, "000-434-1",
-    VatRegStatus.draft,Some(LocalDate.of(2017, 12, 21)))
 
-  val currentNonincorpProfile: CurrentProfile = currentProfile.copy(incorporationDate = None)
+  val currentNonincorpProfile: CurrentProfile = currentProfile().copy(incorporationDate = None)
 
+  def mockGetCurrentProfile(cp: Option[CurrentProfile] = Some(currentProfile())) =
   when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-    .thenReturn(Future.successful(Some(currentProfile)))
+    .thenReturn(Future.successful(cp))
 
   override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Seconds), interval = Span(50, Millis))
 
@@ -83,6 +85,8 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
     reset(mockAddressLookupConnector)
     reset(mockWSHttp)
     reset(mockCurrentProfile)
+    reset(mockIdentityVerificationConnector)
+    reset(mockIVService)
   }
 
   // Placeholder for custom configuration

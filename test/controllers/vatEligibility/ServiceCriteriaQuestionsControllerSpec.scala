@@ -45,8 +45,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
   "GET ServiceCriteriaQuestionsController.show()" should {
     "return HTML for relevant page with no data in the form" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsViewModel[VatServiceEligibility](validServiceEligibility())()
 
@@ -78,8 +77,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
     )
 
     "redirect to next screen when user is eligible to register for VAT using this service" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockVatRegistrationService.submitVatEligibility()(any(),any())).thenReturn(validServiceEligibility().pure)
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
@@ -96,8 +94,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
     }
 
     "redirect to next screen when eligible and nothing in s4l or backend" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockVatRegistrationService.submitVatEligibility()(any(),any())).thenReturn(validServiceEligibility().pure)
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
@@ -115,8 +112,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
     }
 
     "redirect to ineligible screen when user is NOT eligible to register for VAT using this service" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockVatRegistrationService.submitVatEligibility()(any(),any())).thenReturn(validServiceEligibility().pure)
       save4laterReturnsViewModel(validServiceEligibility())()
@@ -139,8 +135,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
     }
 
     "400 for malformed requests" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       forAll(questions) { case (q, _) =>
         submitAuthorised(testController.submit(q.name),
@@ -155,8 +150,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
     "return HTML for relevant ineligibility page" in {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       //below the "" empty css class indicates that the section is showing (not "hidden")
       val eligibilityQuestions = Seq[(EligibilityQuestion, String)](
@@ -182,8 +176,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
         """id="company-will-do-any-of-text" class="hidden""""
       )
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockKeystoreConnector.fetchAndGet[String](Matchers.eq(testController.INELIGIBILITY_REASON_KEY))(any(), any()))
         .thenReturn(Option.empty[String].pure)

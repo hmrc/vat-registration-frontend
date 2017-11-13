@@ -56,14 +56,14 @@ class FormerNameDateViewSpec extends UnitSpec with VatRegistrationFixture with I
   "apiModelTransformer" should {
     "convert VatScheme with VatLodgingOfficer details into a FormerNameDateView" in {
       val vatLodgingOfficer = VatLodgingOfficer(
-        currentAddress = address,
-        dob = validDob,
-        nino = "",
-        role = "director",
-        name = officerName,
-        changeOfName = changeOfName,
-        currentOrPreviousAddress = currentOrPreviousAddress,
-        contact = validOfficerContactDetails)
+        currentAddress = Some(address),
+        dob = Some(validDob),
+        nino = Some(""),
+        role = Some("director"),
+        name = Some(officerName),
+        changeOfName = Some(changeOfName),
+        currentOrPreviousAddress = Some(currentOrPreviousAddress),
+        contact = Some(validOfficerContactDetails))
 
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 

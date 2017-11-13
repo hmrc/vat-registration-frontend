@@ -100,7 +100,6 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
 
       service.getViewModel[BusinessContactDetails, S4LVatContact](Future.successful(container)) returnsSome contactDetails
     }
-
   }
 
   "updating a View Model in Save 4 Later" should {

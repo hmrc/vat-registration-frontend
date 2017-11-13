@@ -60,7 +60,6 @@ trait LegacyServiceToBeRefactored {
 
   self : RegistrationService =>
 
-  import cats.syntax.all._
 
   private[services] def s4l[T: Format : S4LKey]()(implicit hc: HeaderCarrier, profile: CurrentProfile) =
     s4LService.fetchAndGet[T]()

@@ -19,9 +19,11 @@ package it.fixtures
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
+import models.S4LVatLodgingOfficer
 import models.api._
-import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.QUARTERLY
+import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerSecurityQuestionsView}
+import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 
 trait VatRegistrationFixture {
@@ -34,14 +36,14 @@ trait VatRegistrationFixture {
   )
 
   val lodgingOfficer = VatLodgingOfficer(
-    currentAddress = address,
-    dob = DateOfBirth(31, 12, 1980),
-    nino = "SR123456C",
-    role = "Director",
-    name = Name(forename = Some("Firstname"), surname = "lastname", otherForenames = None),
-    changeOfName = ChangeOfName(nameHasChanged = false),
-    currentOrPreviousAddress = CurrentOrPreviousAddress(true),
-    contact = OfficerContactDetails(Some("test@test.com"), None, None)
+    currentAddress = Some(address),
+    dob = Some(DateOfBirth(31, 12, 1980)),
+    nino = Some("SR123456C"),
+    role = Some("Director"),
+    name = Some(Name(forename = Some("Firstname"), surname = "lastname", otherForenames = None)),
+    changeOfName = Some(ChangeOfName(nameHasChanged = false)),
+    currentOrPreviousAddress = Some(CurrentOrPreviousAddress(true)),
+    contact = Some(OfficerContactDetails(Some("test@test.com"), None, None))
   )
 
   val financials = VatFinancials(
@@ -112,4 +114,10 @@ trait VatRegistrationFixture {
     vatServiceEligibility = Some(eligibility.copy(vatEligibilityChoice = Some(eligibilityChoiceIncorporated))),
     vatFlatRateScheme = Some(flatRateScheme)
   )
+val validName = Name(Some("foo"),Some("bar"),"fizz",Some("bang"))
+  val nameId = validName.id
+  val validS4LLodgingOfficer = S4LVatLodgingOfficer(
+    completionCapacity = Some(CompletionCapacityView(nameId,Some(CompletionCapacity(validName,"bar")))),
+    officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.of(2017,11,5),"nino",Some(validName))))
+
 }

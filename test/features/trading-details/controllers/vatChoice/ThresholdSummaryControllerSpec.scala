@@ -46,8 +46,7 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
       ))
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(TestThresholdSummaryController.show)(_ includesText "Check and confirm your answers")
     }
@@ -57,9 +56,8 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
         overThreshold = Some(OverThresholdView(false, None))
       ))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
+      implicit val cp = currentProfile()
       TestThresholdSummaryController.getVatThresholdPostIncorp() returns validVatThresholdPostIncorp
     }
 
@@ -68,9 +66,8 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
         overThreshold = Some(OverThresholdView(false, None))
       ))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
+      implicit val cp = currentProfile()
       TestThresholdSummaryController.getThresholdSummary().map(summary => summary.sections.length mustEqual 1)
     }
   }
@@ -81,8 +78,7 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
         overThreshold = Some(OverThresholdView(false, None))
       ))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(TestThresholdSummaryController.submit) {
         _ redirectsTo s"$contextRoot/do-you-want-to-register-voluntarily"
@@ -98,8 +94,7 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
         startDate = Some(StartDateView(COMPANY_REGISTRATION_DATE))
       ))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(TestThresholdSummaryController.submit) {
         _ redirectsTo s"$contextRoot/who-is-registering-the-company-for-vat"

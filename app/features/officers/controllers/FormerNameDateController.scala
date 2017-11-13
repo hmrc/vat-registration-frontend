@@ -42,8 +42,13 @@ package models.view.vatLodgingOfficer {
 
     // Returns a view model for a specific part of a given VatScheme API model
     implicit val modelTransformer = ApiModelTransformer[FormerNameDateView] { vs: VatScheme =>
-      vs.lodgingOfficer.flatMap(_.changeOfName.formerName).collect {
-        case FormerName(_, Some(d)) => FormerNameDateView(d)
+      vs.lodgingOfficer match{
+        case Some(VatLodgingOfficer(_,_,_,_,_,Some(a),_,_,_)) =>
+          a.formerName match {
+            case Some(FormerName(_,Some(b))) => Some(FormerNameDateView(b))
+            case _ => None
+          }
+        case _ => None
       }
     }
   }
@@ -70,10 +75,12 @@ package controllers.vatLodgingOfficer {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            for {
-              formerName <- viewModel[FormerNameView]().subflatMap(_.formerName).getOrElse("")
-              res <- viewModel[FormerNameDateView]().fold(form)(form.fill)
-            } yield Ok(features.officers.views.html.former_name_date(res, formerName))
+            ivPassedCheck {
+              for {
+                formerName <- viewModel[FormerNameView]().subflatMap(_.formerName).getOrElse("")
+                res <- viewModel[FormerNameDateView]().fold(form)(form.fill)
+              } yield Ok(features.officers.views.html.former_name_date(res, formerName))
+            }
           }
     }
 
@@ -82,10 +89,13 @@ package controllers.vatLodgingOfficer {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => viewModel[FormerNameView]().subflatMap(_.formerName).getOrElse("")
-                .map(formerName => BadRequest(features.officers.views.html.former_name_date(badForm, formerName))),
-              data => save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => viewModel[FormerNameView]().subflatMap(_.formerName).getOrElse("")
+                  .map(formerName => BadRequest(features.officers.views.html.former_name_date(badForm, formerName))),
+                data => save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show()))
+              )
+            }
           }
     }
 

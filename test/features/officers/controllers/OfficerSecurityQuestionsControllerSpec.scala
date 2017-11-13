@@ -93,9 +93,7 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
 
     "return HTML and form populated" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       save4laterReturnsViewModel(OfficerSecurityQuestionsView(testDate, testNino, Some(officerName)))()
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
 
@@ -105,9 +103,7 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
     }
 
     "return HTML with empty form" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       save4laterReturnsNoViewModel[OfficerSecurityQuestionsView]()
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
 
@@ -120,35 +116,32 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
   s"POST ${routes.OfficerSecurityQuestionsController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
 
     val officer = Officer(Name(None, None, "surname"), "director", Some(DateOfBirth(12, 11, 1973)))
 
     "return 303 with officer in keystore" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterExpectsSave[OfficerSecurityQuestionsView]()
       mockKeystoreFetchAndGet[Officer](REGISTERING_OFFICER_KEY, Some(officer))
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> testNino)
-      )(_ redirectsTo s"$contextRoot/changed-name")
+      )(_ redirectsTo s"$contextRoot/start-iv-journey")
     }
 
     "return 303 with no officer in keystore" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterExpectsSave[OfficerSecurityQuestionsView]()
       mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> testNino)
-      )(_ redirectsTo s"$contextRoot/changed-name")
+      )(_ redirectsTo s"$contextRoot/start-iv-journey")
     }
   }
 }

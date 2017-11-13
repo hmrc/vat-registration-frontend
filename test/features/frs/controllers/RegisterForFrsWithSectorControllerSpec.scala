@@ -49,8 +49,7 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
   s"GET ${routes.RegisterForFrsWithSectorController.show()}" should {
     "render page" when {
       "visited for the first time" in {
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Some(currentProfile)))
+        mockGetCurrentProfile()
 
         when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
         save4laterReturnsNoViewModel[BusinessSectorView]()
@@ -68,8 +67,7 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
       }
 
       "user's answer has already been submitted to backend" in {
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Some(currentProfile)))
+        mockGetCurrentProfile()
 
         save4laterReturnsNoViewModel[BusinessSectorView]()
         save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
@@ -85,8 +83,7 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
 
   s"POST ${routes.RegisterForFrsWithSectorController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[MainBusinessActivityView]()
       save4laterReturnsNoViewModel[RegisterForFrsView]()
@@ -98,8 +95,7 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
     }
 
     "return 303 with RegisterFor Flat Rate Scheme selected Yes" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[MainBusinessActivityView]()
       save4laterReturnsNoViewModel[RegisterForFrsView]()
@@ -116,8 +112,7 @@ class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistra
     }
 
     "return 303 with RegisterFor Flat Rate Scheme selected No" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
       save4laterReturnsNoViewModel[BusinessSectorView]()

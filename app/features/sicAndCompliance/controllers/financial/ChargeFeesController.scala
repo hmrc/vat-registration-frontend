@@ -36,8 +36,10 @@ package controllers.sicAndCompliance.financial {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[ChargeFees]().fold(form)(form.fill)
-              .map(f => Ok(features.sicAndCompliance.views.html.financial.charge_fees(f)))
+            ivPassedCheck {
+              viewModel[ChargeFees]().fold(form)(form.fill)
+                .map(f => Ok(features.sicAndCompliance.views.html.financial.charge_fees(f)))
+            }
           }
     }
 
@@ -45,10 +47,12 @@ package controllers.sicAndCompliance.financial {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.sicAndCompliance.views.html.financial.charge_fees(badForm)).pure,
-              view => save(view).map(_ =>
-                Redirect(controllers.sicAndCompliance.financial.routes.AdditionalNonSecuritiesWorkController.show())))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.sicAndCompliance.views.html.financial.charge_fees(badForm)).pure,
+                view => save(view).map(_ =>
+                  Redirect(controllers.sicAndCompliance.financial.routes.AdditionalNonSecuritiesWorkController.show())))
+            }
           }
     }
 

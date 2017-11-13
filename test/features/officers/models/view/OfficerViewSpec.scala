@@ -39,14 +39,14 @@ class OfficerViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
       val emptyOfficer = OfficerContactDetails(None, None, None)
 
       val vatLodgingOfficer = VatLodgingOfficer(
-        currentAddress = address,
-        dob = testDOB,
-        nino = "",
-        role = testRole,
-        name = testName,
-        changeOfName = changeOfName,
-        currentOrPreviousAddress = currentOrPreviousAddress,
-        contact = emptyOfficer)
+        currentAddress = Some(address),
+        dob = Some(testDOB),
+        nino = Some(""),
+        role = Some(testRole),
+        name = Some(testName),
+        changeOfName = Some(changeOfName),
+        currentOrPreviousAddress = Some(currentOrPreviousAddress),
+        contact = Some(emptyOfficer))
 
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 

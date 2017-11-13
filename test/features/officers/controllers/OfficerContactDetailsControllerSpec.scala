@@ -41,8 +41,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[OfficerContactDetailsView]()
       when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(Controller.show()) {
         _ includesText "What are your contact details?"
       }
@@ -51,8 +50,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
 
     "return HTML when there's an answer in S4L" in {
       save4laterReturnsViewModel(validOfficerContactDetailsView)()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(Controller.show) {
         _ includesText "What are your contact details?"
       }
@@ -61,8 +59,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[OfficerContactDetailsView]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(Controller.show) {
         _ includesText "What are your contact details?"
       }
@@ -71,8 +68,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
 
   s"POST ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
     }
@@ -81,8 +77,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
     "return 303 with valid Officer Contact Details entered" in {
       save4laterExpectsSave[OfficerContactDetailsView]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com",
                                            "daytimePhone" -> "01234 567891",

@@ -68,8 +68,10 @@ package controllers.vatTradingDetails.vatEuTrading {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[EuGoods]().fold(form)(form.fill)
-              .map(f => Ok(features.tradingDetails.views.html.vatEuTrading.eu_goods(f)))
+            ivPassedCheck {
+              viewModel[EuGoods]().fold(form)(form.fill)
+                .map(f => Ok(features.tradingDetails.views.html.vatEuTrading.eu_goods(f)))
+            }
           }
     }
 
@@ -77,13 +79,15 @@ package controllers.vatTradingDetails.vatEuTrading {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.tradingDetails.views.html.vatEuTrading.eu_goods(badForm)).pure,
-              goodForm => save(goodForm).map(_ => goodForm.yesNo == EuGoods.EU_GOODS_NO).ifM(
-                save(ApplyEori(ApplyEori.APPLY_EORI_NO)).map(_ =>
-                  controllers.vatFinancials.routes.EstimateVatTurnoverController.show()),
-                controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show().pure
-              ).map(Redirect))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.tradingDetails.views.html.vatEuTrading.eu_goods(badForm)).pure,
+                goodForm => save(goodForm).map(_ => goodForm.yesNo == EuGoods.EU_GOODS_NO).ifM(
+                  save(ApplyEori(ApplyEori.APPLY_EORI_NO)).map(_ =>
+                    controllers.vatFinancials.routes.EstimateVatTurnoverController.show()),
+                  controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show().pure
+                ).map(Redirect))
+            }
           }
     }
   }

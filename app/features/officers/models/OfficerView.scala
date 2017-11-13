@@ -37,9 +37,9 @@ object OfficerView {
   implicit val modelTransformer = ApiModelTransformer[OfficerView] { vs: VatScheme =>
     vs.lodgingOfficer.map {
       lodgingOfficer => OfficerView(Officer(
-        name = lodgingOfficer.name,
-        role = lodgingOfficer.role,
-        dateOfBirth = Some(lodgingOfficer.dob)))
+        name = lodgingOfficer.name.get,
+        role = lodgingOfficer.role.get,
+        dateOfBirth = Some(lodgingOfficer.dob.get)))
     }
   }
 

@@ -46,20 +46,22 @@ package controllers.frs {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => businessSectorView().map(view => BadRequest(features.frs.views.html.frs_your_flat_rate(view, badForm))),
-              view => (for {
-                sector <- businessSectorView()
-                _ <- save(sector)
-                _ <- save(RegisterForFrsView(view.answer))
-              } yield view.answer).ifM(
-                ifTrue = controllers.frs.routes.FrsStartDateController.show().pure,
-                ifFalse = for {
-                  frs <- s4lContainer[S4LFlatRateScheme]()
-                  _ <- s4LService.save(frs.copy(frsStartDate = None))
-                  _ <- vrs.submitVatFlatRateScheme()
-                } yield controllers.routes.SummaryController.show()
-              ).map(Redirect))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => businessSectorView().map(view => BadRequest(features.frs.views.html.frs_your_flat_rate(view, badForm))),
+                view => (for {
+                  sector <- businessSectorView()
+                  _ <- save(sector)
+                  _ <- save(RegisterForFrsView(view.answer))
+                } yield view.answer).ifM(
+                  ifTrue = controllers.frs.routes.FrsStartDateController.show().pure,
+                  ifFalse = for {
+                    frs <- s4lContainer[S4LFlatRateScheme]()
+                    _ <- s4LService.save(frs.copy(frsStartDate = None))
+                    _ <- vrs.submitVatFlatRateScheme()
+                  } yield controllers.routes.SummaryController.show()
+                ).map(Redirect))
+            }
           }
     }
   }

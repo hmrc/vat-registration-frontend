@@ -35,14 +35,14 @@ class OfficerContactDetailsViewSpec extends UnitSpec with VatRegistrationFixture
       val emptyName = Name(None, None, "", None)
 
       val vatLodgingOfficer = VatLodgingOfficer(
-        currentAddress = address,
-        dob = validDob,
-        nino = "",
-        role = "",
-        name = emptyName,
-        changeOfName = changeOfName,
-        currentOrPreviousAddress = currentOrPreviousAddress,
-        contact = officerContactDetails)
+        currentAddress = Some(address),
+        dob = Some(validDob),
+        nino = Some(""),
+        role = Some(""),
+        name = Some(emptyName),
+        changeOfName = Some(changeOfName),
+        currentOrPreviousAddress = Some(currentOrPreviousAddress),
+        contact = Some(officerContactDetails))
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       ApiModelTransformer[OfficerContactDetailsView].toViewModel(vs) shouldBe Some(officerContactDetailsView)

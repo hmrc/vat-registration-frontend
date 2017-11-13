@@ -48,11 +48,13 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          for {
-            addresses <- prePopService.getPpobAddressList()
-            _ <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
-            res <- viewModel[PpobView]().fold(form)(form.fill)
-          } yield Ok(views.html.pages.vatContact.ppob.ppob(res, addresses))
+          ivPassedCheck {
+            for {
+              addresses <- prePopService.getPpobAddressList()
+              _ <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
+              res <- viewModel[PpobView]().fold(form)(form.fill)
+            } yield Ok(views.html.pages.vatContact.ppob.ppob(res, addresses))
+          }
         }
   }
 
@@ -61,17 +63,19 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          form.bindFromRequest().fold(
-            badForm => fetchAddressList().getOrElse(Seq()).map(
-              addressList => BadRequest(views.html.pages.vatContact.ppob.ppob(badForm, addressList))),
-            data => (data.addressId == "other").pure.ifM(
-              ifTrue = alfConnector.getOnRampUrl(routes.PpobController.acceptFromTxm()),
-              ifFalse = for {
-                addressList <- fetchAddressList().getOrElse(Seq())
-                address = addressList.find(_.id == data.addressId)
-                _ <- save(PpobView(data.addressId, address))
-              } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
-            ).map(Redirect))
+          ivPassedCheck {
+            form.bindFromRequest().fold(
+              badForm => fetchAddressList().getOrElse(Seq()).map(
+                addressList => BadRequest(views.html.pages.vatContact.ppob.ppob(badForm, addressList))),
+              data => (data.addressId == "other").pure.ifM(
+                ifTrue = alfConnector.getOnRampUrl(routes.PpobController.acceptFromTxm()),
+                ifFalse = for {
+                  addressList <- fetchAddressList().getOrElse(Seq())
+                  address = addressList.find(_.id == data.addressId)
+                  _ <- save(PpobView(data.addressId, address))
+                } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
+              ).map(Redirect))
+          }
         }
   }
 
@@ -79,10 +83,12 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          for {
-            address <- alfConnector.getAddress(id)
-            _ <- save(PpobView(address.id, Some(address)))
-          } yield Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())
+          ivPassedCheck {
+            for {
+              address <- alfConnector.getAddress(id)
+              _ <- save(PpobView(address.id, Some(address)))
+            } yield Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())
+          }
         }
   }
 

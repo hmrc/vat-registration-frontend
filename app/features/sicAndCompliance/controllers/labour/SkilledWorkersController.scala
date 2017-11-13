@@ -35,8 +35,10 @@ package controllers.sicAndCompliance.labour {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[SkilledWorkers]().fold(form)(form.fill)
-              .map(f => Ok(features.sicAndCompliance.views.html.labour.skilled_workers(f)))
+            ivPassedCheck {
+              viewModel[SkilledWorkers]().fold(form)(form.fill)
+                .map(f => Ok(features.sicAndCompliance.views.html.labour.skilled_workers(f)))
+            }
           }
     }
 

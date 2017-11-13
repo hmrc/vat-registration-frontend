@@ -33,4 +33,6 @@ trait InternalExceptions {
   )
 
   class ApiConversionException(msg: String) extends Exception(msg)
+
+  class ElementNotFoundException(msg: String) extends Exception(msg)
 }

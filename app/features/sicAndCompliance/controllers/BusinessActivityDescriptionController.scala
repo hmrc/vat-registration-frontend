@@ -39,8 +39,10 @@ package controllers.sicAndCompliance {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[BusinessActivityDescription]().fold(form)(form.fill)
-              .map(f => Ok(features.sicAndCompliance.views.html.business_activity_description(f)))
+            ivPassedCheck {
+              viewModel[BusinessActivityDescription]().fold(form)(form.fill)
+                .map(f => Ok(features.sicAndCompliance.views.html.business_activity_description(f)))
+            }
           }
     }
 
@@ -49,10 +51,12 @@ package controllers.sicAndCompliance {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.sicAndCompliance.views.html.business_activity_description(badForm)).pure,
-              data => save(data.copy(description = data.description.trim)).map(_ =>
-                Redirect(controllers.test.routes.SicStubController.show())))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.sicAndCompliance.views.html.business_activity_description(badForm)).pure,
+                data => save(data.copy(description = data.description.trim)).map(_ =>
+                  Redirect(controllers.test.routes.SicStubController.show())))
+            }
           }
     }
 

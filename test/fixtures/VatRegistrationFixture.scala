@@ -130,14 +130,14 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
   val emptyVatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
 
   val validLodgingOfficer = VatLodgingOfficer(
-    currentAddress = ScrsAddress("", ""),
-    dob = validDob,
-    nino = "",
-    role = "director",
-    name = officerName,
-    changeOfName = changeOfName,
-    currentOrPreviousAddress = currentOrPreviousAddress,
-    contact = validOfficerContactDetails
+    currentAddress = Some(ScrsAddress("", "")),
+    dob = Some(validDob),
+    nino = Some(""),
+    role = Some("director"),
+    name = Some(officerName),
+    changeOfName = Some(changeOfName),
+    currentOrPreviousAddress = Some(currentOrPreviousAddress),
+    contact = Some(validOfficerContactDetails)
   )
   val validSicAndCompliance = VatSicAndCompliance(
     businessDescription = testBusinessActivityDescription,

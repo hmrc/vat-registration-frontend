@@ -17,14 +17,18 @@
 package helpers
 
 import cats.data.OptionT
+import connectors.S4LConnector
 import models.{S4LKey, ViewModelFormat}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import org.mockito.stubbing.OngoingStubbing
+import play.api.libs.json.{Format, JsValue, Json}
 import services.S4LService
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 trait S4LMockSugar {
   self: VatRegSpec =>

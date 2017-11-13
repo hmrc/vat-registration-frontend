@@ -61,7 +61,7 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors wit
 
       val scrsAddress = ScrsAddress("premises address_line_1", "address_line_2 po_box", Some("locality"), Some("region"), Some("postal_code"), Some("country"))
 
-      when(mockIIConnector.getRegisteredOfficeAddress(currentProfile.transactionId)).thenReturn(OptionT.pure(coHoRegisteredOfficeAddress))
+      when(mockIIConnector.getRegisteredOfficeAddress(currentProfile().transactionId)).thenReturn(OptionT.pure(coHoRegisteredOfficeAddress))
 
       service.getRegisteredOfficeAddress() returnsSome scrsAddress
     }
@@ -70,21 +70,21 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors wit
   "getOfficerList" must {
     "return a list of officers" in new Setup {
       mockKeystoreFetchAndGet("CompanyProfile", Some(CoHoCompanyProfile("status", "transactionId")))
-      when(mockIIConnector.getOfficerList(currentProfile.transactionId)).thenReturn(OptionT.pure(OfficerList(Seq(officer))))
+      when(mockIIConnector.getOfficerList(currentProfile().transactionId)).thenReturn(OptionT.pure(OfficerList(Seq(officer))))
 
       service.getOfficerList() returns Seq(officer)
     }
 
     "return am empty sequence when no OfficerList in keystore" in new Setup {
-      when(mockIIConnector.getOfficerList(currentProfile.transactionId)).thenReturn(OptionT.pure(OfficerList(Seq())))
+      when(mockIIConnector.getOfficerList(currentProfile().transactionId)).thenReturn(OptionT.pure(OfficerList(Seq())))
       service.getOfficerList() returns Seq.empty[Officer]
     }
   }
 
   "getIncorporationInfo" must {
     "return an incorporation info object" in new Setup {
-      when(mockRegConnector.getIncorporationInfo(currentProfile.transactionId)).thenReturn(OptionT.pure(testIncorporationInfo))
-      service.getIncorporationInfo(currentProfile.transactionId) returnsSome testIncorporationInfo
+      when(mockRegConnector.getIncorporationInfo(currentProfile().transactionId)).thenReturn(OptionT.pure(testIncorporationInfo))
+      service.getIncorporationInfo(currentProfile().transactionId) returnsSome testIncorporationInfo
     }
   }
 }

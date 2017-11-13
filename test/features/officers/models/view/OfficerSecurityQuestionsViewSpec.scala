@@ -32,7 +32,15 @@ class OfficerSecurityQuestionsViewSpec extends UnitSpec with VatRegistrationFixt
 
     "convert VatScheme with VatLodgingOfficer details into a OfficerSecurityQuestionsView" in {
       val emptyOfficer = OfficerContactDetails(None, None, None)
-      val vatLodgingOfficer = VatLodgingOfficer(address, testDOB, testNino, "", emptyName, changeOfName, currentOrPreviousAddress, emptyOfficer)
+      val vatLodgingOfficer = VatLodgingOfficer(
+        Some(address),
+        Some(testDOB),
+        Some(testNino),
+        Some(""),
+        Some(emptyName),
+        Some(changeOfName),
+        Some(currentOrPreviousAddress),
+        Some(emptyOfficer))
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       ApiModelTransformer[OfficerSecurityQuestionsView].toViewModel(vs) shouldBe Some(officerSecurityQuestions)
