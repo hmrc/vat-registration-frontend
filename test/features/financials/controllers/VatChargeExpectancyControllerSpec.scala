@@ -43,8 +43,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
     "return HTML when there's a Vat Charge Expectancy model in S4L" in {
       save4laterReturnsViewModel(VatChargeExpectancy.yes)()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(Controller.show()) {
         _ includesText "Do you expect to reclaim more VAT than you charge?"
@@ -55,8 +54,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       save4laterReturnsNoViewModel[VatChargeExpectancy]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(Controller.show) {
         _ includesText "Do you expect to reclaim more VAT than you charge?"
@@ -66,9 +64,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[VatChargeExpectancy]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
-
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(Controller.show) {
         _ includesText "Do you expect to reclaim more VAT than you charge?"
@@ -78,8 +74,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
 
   s"POST ${vatFinancials.routes.VatChargeExpectancyController.submit()} with Empty data" should {
     "return 400" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
@@ -89,8 +84,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
     "return 303" in {
       save4laterExpectsSave[VatChargeExpectancy]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_YES)) {
@@ -105,8 +99,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
       save4laterExpectsSave[VatChargeExpectancy]()
       save4laterExpectsSave[VatReturnFrequency]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_NO)) {

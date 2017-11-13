@@ -44,8 +44,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture w
 
       save4laterReturnsViewModel(tradingName)()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
@@ -62,8 +61,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture w
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[TradingNameView]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
@@ -80,8 +78,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture w
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[TradingNameView]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
@@ -99,8 +96,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture w
   s"POST ${vatTradingDetails.routes.TradingNameController.submit()} with Empty data" should {
     "return 400" in {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
@@ -114,8 +110,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture w
     "return 303" in {
       save4laterExpectsSave[TradingNameView]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "tradingNameRadio" -> TradingNameView.TRADING_NAME_NO
@@ -131,8 +126,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture w
     "return 303" in {
       save4laterExpectsSave[TradingNameView]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+    mockGetCurrentProfile()
 
       submitAuthorised(TestTradingNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "tradingNameRadio" -> TradingNameView.TRADING_NAME_YES,

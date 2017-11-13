@@ -83,8 +83,18 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
       val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
-      val vatSchemeWithAddress = VatScheme("123", status = VatRegStatus.draft).copy(lodgingOfficer = Some(VatLodgingOfficer(
-        address, validDob, "", "director", officerName, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)))
+
+      val vatSchemeWithAddress = VatScheme("123",status = VatRegStatus.draft).copy(lodgingOfficer = Some(VatLodgingOfficer(
+        Some(address),
+        Some(validDob),
+        Some(""),
+        Some("director"),
+        Some(officerName),
+        Some(changeOfName),
+        Some(currentOrPreviousAddress),
+        Some(validOfficerContactDetails)
+      )))
+
 
       when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
       when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(address))
@@ -169,8 +179,16 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
       val testRole = "director"
       val testDob = DateOfBirth(1, 2, 1984)
       val testName = officerName
-      val vatSchemeWithOfficer = VatScheme("123", status = VatRegStatus.draft).copy(lodgingOfficer = Some(VatLodgingOfficer(
-        address, testDob, "nino", testRole, testName, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)))
+      val vatSchemeWithOfficer = VatScheme("123", status = VatRegStatus.draft).copy(lodgingOfficer =
+        Some(VatLodgingOfficer(
+          Some(address),
+          Some(testDob),
+          Some("nino"),
+          Some(testRole),
+          Some(testName),
+          Some(changeOfName),
+          Some(currentOrPreviousAddress),
+          Some(validOfficerContactDetails))))
 
       when(mockIIService.getOfficerList()).thenReturn(Seq.empty[Officer].pure)
       when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithOfficer.pure)

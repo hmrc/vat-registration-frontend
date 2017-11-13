@@ -35,6 +35,7 @@ class VatRegistrationControllerSpec extends VatRegSpec with S4LMockSugar {
   object TestController extends VatRegistrationController(ds) {
     override val authConnector = mockAuthConnector
     def authorisedActionGenerator: Action[AnyContent] = authorised { u => r => NoContent }
+
   }
 
   val testConstraint: Constraint[TestClass] = Constraint {

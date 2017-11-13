@@ -59,8 +59,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
 
       save4laterReturnsViewModel(voluntaryRegistrationReason)()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.show(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> ""
@@ -75,8 +74,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
       when(mockVatRegistrationService.getVatScheme()(any(), any()))
         .thenReturn(Future.successful(validVatScheme))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(TestVoluntaryRegistrationReasonController.show) {
         _ includesText "Which one applies to the company?"
@@ -89,8 +87,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
       when(mockVatRegistrationService.getVatScheme()(any(), any()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(TestVoluntaryRegistrationReasonController.show) {
         _ includesText "Which one applies to the company?"
@@ -101,8 +98,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
   s"POST ${routes.VoluntaryRegistrationReasonController.submit()} with Empty data" should {
     "return 400" in {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
@@ -113,8 +109,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
     "return 303" in {
       save4laterExpectsSave[VoluntaryRegistrationReason]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> VoluntaryRegistrationReason.SELLS
@@ -126,8 +121,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
     "return 303" in {
       save4laterExpectsSave[VoluntaryRegistrationReason]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> VoluntaryRegistrationReason.SELLS
@@ -141,8 +135,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
       save4laterExpectsSave[VoluntaryRegistrationReason]()
       when(mockVatRegistrationService.deleteVatScheme()(any(), any())).thenReturn(Future.successful(()))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(TestVoluntaryRegistrationReasonController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationReasonRadio" -> VoluntaryRegistrationReason.NEITHER

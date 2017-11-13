@@ -34,7 +34,11 @@ package models.view.vatLodgingOfficer {
 
     // Returns a view model for a specific part of a given VatScheme API model
     implicit val modelTransformer = ApiModelTransformer[PreviousAddressView] { vs: VatScheme =>
-      vs.lodgingOfficer.map(_.currentOrPreviousAddress).map(p => PreviousAddressView(p.currentAddressThreeYears, p.previousAddress))
+      vs.lodgingOfficer match {
+        case Some(VatLodgingOfficer(_, _, _, _, _, _, Some(a), _, _)) => Some(PreviousAddressView(a.currentAddressThreeYears, a.previousAddress))
+        case _ => None
+      }
+
     }
 
   }
@@ -70,8 +74,10 @@ package controllers.vatLodgingOfficer {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[PreviousAddressView]().fold(form)(form.fill)
-              .map(f => Ok(features.officers.views.html.previous_address(f)))
+            ivPassedCheck {
+              viewModel[PreviousAddressView]().fold(form)(form.fill)
+                .map(f => Ok(features.officers.views.html.previous_address(f)))
+            }
           }
     }
 
@@ -79,16 +85,18 @@ package controllers.vatLodgingOfficer {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.officers.views.html.previous_address(badForm)).pure,
-              data => (!data.yesNo).pure.ifM(
-                ifTrue = alfConnector.getOnRampUrl(routes.PreviousAddressController.acceptFromTxm()),
-                ifFalse = for {
-                  _ <- save(PreviousAddressView(true))
-                  _ <- vrs.submitVatLodgingOfficer()
-                } yield controllers.vatContact.ppob.routes.PpobController.show()
-              ).map(Redirect)
-            )
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.officers.views.html.previous_address(badForm)).pure,
+                data => (!data.yesNo).pure.ifM(
+                  ifTrue = alfConnector.getOnRampUrl(routes.PreviousAddressController.acceptFromTxm()),
+                  ifFalse = for {
+                    _ <- save(PreviousAddressView(true))
+                    _ <- vrs.submitVatLodgingOfficer()
+                  } yield controllers.vatContact.ppob.routes.PpobController.show()
+                ).map(Redirect)
+              )
+            }
           }
     }
 
@@ -96,19 +104,23 @@ package controllers.vatLodgingOfficer {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            for {
-              address <- alfConnector.getAddress(id)
-              _ <- save(PreviousAddressView(false, Some(address)))
-              _ <- vrs.submitVatLodgingOfficer()
-            } yield Redirect(controllers.vatContact.ppob.routes.PpobController.show())
+            ivPassedCheck {
+              for {
+                address <- alfConnector.getAddress(id)
+                _ <- save(PreviousAddressView(false, Some(address)))
+                _ <- vrs.submitVatLodgingOfficer()
+              } yield Redirect(controllers.vatContact.ppob.routes.PpobController.show())
+            }
           }
     }
 
     def changeAddress: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
-          withCurrentProfile { _ =>
-            alfConnector.getOnRampUrl(routes.PreviousAddressController.acceptFromTxm()).map(Redirect)
+          withCurrentProfile { implicit profile =>
+            ivPassedCheck {
+              alfConnector.getOnRampUrl(routes.PreviousAddressController.acceptFromTxm()).map(Redirect)
+            }
           }
     }
   }

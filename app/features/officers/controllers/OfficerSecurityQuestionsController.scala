@@ -42,8 +42,8 @@ package models.view.vatLodgingOfficer {
 
     // return a view model from a VatScheme instance
     implicit val modelTransformer = ApiModelTransformer[OfficerSecurityQuestionsView] { vs: VatScheme =>
-      vs.lodgingOfficer.map {
-        lodgingOfficer => OfficerSecurityQuestionsView(lodgingOfficer.dob, lodgingOfficer.nino, Some(lodgingOfficer.name))
+      vs.lodgingOfficer.collect {
+        case VatLodgingOfficer(_,Some(a),Some(b),_,Some(c),_,_,_,_) => OfficerSecurityQuestionsView(a, b, Some(c))
       }
     }
   }
@@ -76,10 +76,11 @@ package controllers.vatLodgingOfficer {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            for {
-              officer <- fetchOfficer()
-              view <- viewModel[OfficerSecurityQuestionsView]().value
-            } yield Ok(features.officers.views.html.officer_security_questions(getView(officer, view).fold(form)(form.fill)))
+              for {
+                officer <- fetchOfficer()
+                view <- viewModel[OfficerSecurityQuestionsView]().value
+              } yield Ok(features.officers.views.html.officer_security_questions(getView(officer, view).fold(form)(form.fill)))
+
           }
     }
 
@@ -103,7 +104,7 @@ package controllers.vatLodgingOfficer {
               data => for {
                 officer <- fetchOfficer()
                 _ <- save(officer.fold(data)(officer => data.copy(officerName = Some(officer.name))))
-              } yield Redirect(controllers.vatLodgingOfficer.routes.FormerNameController.show()))
+              } yield Redirect(controllers.iv.routes.IdentityVerificationController.redirectToIV()))
           }
     }
   }

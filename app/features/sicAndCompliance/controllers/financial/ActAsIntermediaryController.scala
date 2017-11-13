@@ -41,8 +41,10 @@ package controllers.sicAndCompliance.financial {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[ActAsIntermediary]().fold(form)(form.fill)
-              .map(f => Ok(features.sicAndCompliance.views.html.financial.act_as_intermediary(f)))
+            ivPassedCheck {
+              viewModel[ActAsIntermediary]().fold(form)(form.fill)
+                .map(f => Ok(features.sicAndCompliance.views.html.financial.act_as_intermediary(f)))
+            }
           }
     }
 
@@ -50,16 +52,18 @@ package controllers.sicAndCompliance.financial {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.sicAndCompliance.views.html.financial.act_as_intermediary(badForm)).pure,
-              view => save(view).map(_ => view.yesNo).ifM(
-                ifTrue = for {
-                  container <- s4lContainer[S4LVatSicAndCompliance]()
-                  _ <- s4lService.save(dropFromActAsIntermediary(container))
-                  _ <- vrs.submitSicAndCompliance()
-                } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show(),
-                ifFalse = controllers.sicAndCompliance.financial.routes.ChargeFeesController.show().pure
-              ).map(Redirect))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.sicAndCompliance.views.html.financial.act_as_intermediary(badForm)).pure,
+                view => save(view).map(_ => view.yesNo).ifM(
+                  ifTrue = for {
+                    container <- s4lContainer[S4LVatSicAndCompliance]()
+                    _ <- s4lService.save(dropFromActAsIntermediary(container))
+                    _ <- vrs.submitSicAndCompliance()
+                  } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show(),
+                  ifFalse = controllers.sicAndCompliance.financial.routes.ChargeFeesController.show().pure
+                ).map(Redirect))
+            }
           }
     }
 

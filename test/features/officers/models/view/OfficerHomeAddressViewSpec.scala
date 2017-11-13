@@ -36,7 +36,15 @@ class OfficerHomeAddressViewSpec extends UnitSpec with VatRegistrationFixture wi
     "convert VatScheme with VatLodgingOfficer section to view model" in {
       val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
       val vatLodgingOfficer =
-        VatLodgingOfficer(address, validDob, "", "director", officerName, changeOfName, currentOrPreviousAddress, validOfficerContactDetails)
+        VatLodgingOfficer(
+          Some(address),
+          Some(validDob),
+          Some(""),
+          Some("director"),
+          Some(officerName),
+          Some(changeOfName),
+          Some(currentOrPreviousAddress),
+          Some(validOfficerContactDetails))
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
       val expectedOfficerHomeAddressView = OfficerHomeAddressView(address.id, Some(address))

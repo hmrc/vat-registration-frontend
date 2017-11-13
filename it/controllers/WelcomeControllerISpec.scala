@@ -17,14 +17,12 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
-import common.enums.VatRegStatus
+import it.fixtures.VatRegistrationFixture
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import support.AppAndStubs
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
-class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures {
+class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with VatRegistrationFixture {
 
   def controller: WelcomeController = app.injector.instanceOf(classOf[WelcomeController])
 
@@ -37,6 +35,7 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .corporationTaxRegistration.existsWithStatus("held")
           .company.isIncorporated
           .currentProfile.setup(currentState = Some("Vat Reg Footprint created"))
+          .vatScheme.contains(vatRegIncorporated.copy(lodgingOfficer = Some(lodgingOfficer.copy(ivPassed = true))))
 
         whenReady(controller.start(request))(res => res.header.status mustBe 200)
       }

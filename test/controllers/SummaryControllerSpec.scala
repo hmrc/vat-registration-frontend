@@ -41,8 +41,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockS4LService.clear()(any(), any())).thenReturn(validHttpResponse.pure)
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
       when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
@@ -51,14 +50,14 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockS4LService.clear()(any(),any())).thenReturn(validHttpResponse.pure)
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, None)
       when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
     "getRegistrationSummary maps a valid VatScheme object to a Summary object" in {
       when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
+      implicit val cp = currentProfile()
       when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
       TestSummaryController.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)
     }

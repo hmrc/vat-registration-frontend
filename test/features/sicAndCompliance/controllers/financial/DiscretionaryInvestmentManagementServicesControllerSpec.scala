@@ -41,8 +41,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
   s"GET ${routes.DiscretionaryInvestmentManagementServicesController.show()}" should {
     "return HTML when there's a DiscretionaryInvestmentManagementServices model in S4L" in {
       save4laterReturnsViewModel(DiscretionaryInvestmentManagementServices(true))()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.show(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> ""
       )) {
@@ -53,8 +52,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[DiscretionaryInvestmentManagementServices]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(DiscretionaryInvestmentManagementServicesController.show) {
         _ includesText "Does the company provide discretionary investment management services, or introduce clients to companies who do?"
       }
@@ -63,8 +61,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[DiscretionaryInvestmentManagementServices]()
     when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Some(currentProfile)))
+    mockGetCurrentProfile()
       callAuthorised(DiscretionaryInvestmentManagementServicesController.show) {
         _ includesText "Does the company provide discretionary investment management services, or introduce clients to companies who do?"
       }
@@ -73,8 +70,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
 
   s"POST ${routes.DiscretionaryInvestmentManagementServicesController.show()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
@@ -84,8 +80,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
       save4laterReturns(S4LVatSicAndCompliance())
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
@@ -93,8 +88,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
 
     "return 303 with Provide Discretionary Investment Management Services No selected" in {
       save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/involved-in-leasing-vehicles-or-equipment")

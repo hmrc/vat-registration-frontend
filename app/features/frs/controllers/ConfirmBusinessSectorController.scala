@@ -33,7 +33,9 @@ package controllers.frs {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            businessSectorView().map(view => Ok(features.frs.views.html.frs_confirm_business_sector(view)))
+            ivPassedCheck {
+              businessSectorView().map(view => Ok(features.frs.views.html.frs_confirm_business_sector(view)))
+            }
           }
     }
 
@@ -41,7 +43,9 @@ package controllers.frs {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            businessSectorView().flatMap(save(_).map(_ => Redirect(controllers.frs.routes.RegisterForFrsWithSectorController.show())))
+            ivPassedCheck {
+              businessSectorView().flatMap(save(_).map(_ => Redirect(controllers.frs.routes.RegisterForFrsWithSectorController.show())))
+            }
           }
     }
   }

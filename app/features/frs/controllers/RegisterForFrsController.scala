@@ -63,8 +63,10 @@ package controllers.frs {
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
-          withCurrentProfile { _ =>
-            Ok(features.frs.views.html.frs_register_for(form)).pure
+          withCurrentProfile { implicit profile =>
+            ivPassedCheck {
+              Ok(features.frs.views.html.frs_register_for(form)).pure
+            }
           }
     }
 
@@ -72,19 +74,21 @@ package controllers.frs {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.frs.views.html.frs_register_for(badForm)).pure,
-              view => (for {
-                _ <- save(RegisterForFrsView(view.answer))
-                _ <- save(BusinessSectorView("", defaultFlatRate))
-              } yield view.answer).ifM(
-                ifTrue = controllers.frs.routes.FrsStartDateController.show().pure,
-                ifFalse = for {
-                  frs <- s4lContainer[S4LFlatRateScheme]()
-                  _ <- s4LService.save(frs.copy(frsStartDate = None))
-                  _ <- vrs.submitVatFlatRateScheme()
-                } yield controllers.routes.SummaryController.show()
-              ).map(Redirect))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.frs.views.html.frs_register_for(badForm)).pure,
+                view => (for {
+                  _ <- save(RegisterForFrsView(view.answer))
+                  _ <- save(BusinessSectorView("", defaultFlatRate))
+                } yield view.answer).ifM(
+                  ifTrue = controllers.frs.routes.FrsStartDateController.show().pure,
+                  ifFalse = for {
+                    frs <- s4lContainer[S4LFlatRateScheme]()
+                    _ <- s4LService.save(frs.copy(frsStartDate = None))
+                    _ <- vrs.submitVatFlatRateScheme()
+                  } yield controllers.routes.SummaryController.show()
+                ).map(Redirect))
+            }
           }
     }
   }

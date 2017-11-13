@@ -34,5 +34,10 @@ class BusinessRegDynamicStubConnector extends ServicesConfig {
   val http: WSHttp = WSHttp
 
   def setupIVOutcome(journeyId: String, outcome: IVResult.Value)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    http.POST[String, HttpResponse](s"$brdsUrl$brdsUri/setup-iv-outcome/$journeyId/$outcome", "")
+    http.POST[String, HttpResponse](constructUrl(journeyId,outcome), "")
+
+  def constructUrl(journeyId: String, outcome: IVResult.Value):String = {
+    s"$brdsUrl$brdsUri/setup-iv-outcome/$journeyId/$outcome"
+  }
+
 }

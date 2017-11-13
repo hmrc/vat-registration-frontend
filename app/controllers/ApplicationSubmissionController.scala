@@ -33,10 +33,12 @@ class ApplicationSubmissionController @Inject()(ds: CommonPlayDependencies)
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          for {
-            vs           <- vrs.getVatScheme()
-            Some(ackRef) <- vrs.getAckRef(profile.registrationId).value
-          } yield Ok(application_submission_confirmation(ackRef, vs.financials))
+          ivPassedCheck {
+            for {
+              vs <- vrs.getVatScheme()
+              Some(ackRef) <- vrs.getAckRef(profile.registrationId).value
+            } yield Ok(application_submission_confirmation(ackRef, vs.financials))
+          }
         }
   }
 

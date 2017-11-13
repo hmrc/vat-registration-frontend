@@ -42,7 +42,7 @@ package models.view.vatLodgingOfficer {
 
     implicit val modelTransformer = ApiModelTransformer[OfficerContactDetailsView] { (vs: VatScheme) =>
       vs.lodgingOfficer.map(_.contact).collect {
-        case OfficerContactDetails(e, t, m) =>
+        case Some(OfficerContactDetails(e, t, m)) =>
           OfficerContactDetailsView(email = e, daytimePhone = t, mobile = m)
       }
     }
@@ -73,8 +73,10 @@ package controllers.vatLodgingOfficer {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[OfficerContactDetailsView]().fold(form)(form.fill)
-              .map(f => Ok(features.officers.views.html.officer_contact_details(f)))
+            ivPassedCheck {
+              viewModel[OfficerContactDetailsView]().fold(form)(form.fill)
+                .map(f => Ok(features.officers.views.html.officer_contact_details(f)))
+            }
           }
     }
 

@@ -75,8 +75,10 @@ package controllers.vatFinancials {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[VatChargeExpectancy]().fold(form)(form.fill)
-              .map(f => Ok(features.financials.views.html.vat_charge_expectancy(f)))
+            ivPassedCheck {
+              viewModel[VatChargeExpectancy]().fold(form)(form.fill)
+                .map(f => Ok(features.financials.views.html.vat_charge_expectancy(f)))
+            }
           }
     }
 
@@ -84,14 +86,16 @@ package controllers.vatFinancials {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.financials.views.html.vat_charge_expectancy(badForm)).pure,
-              view => save(view).map(_ => view.yesNo == VAT_CHARGE_YES).ifM(
-                ifTrue = controllers.vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show().pure,
-                ifFalse = save(VatReturnFrequency(VatReturnFrequency.QUARTERLY))
-                  .map(_ => controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show())
-              ).map(Redirect)
-            )
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.financials.views.html.vat_charge_expectancy(badForm)).pure,
+                view => save(view).map(_ => view.yesNo == VAT_CHARGE_YES).ifM(
+                  ifTrue = controllers.vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show().pure,
+                  ifFalse = save(VatReturnFrequency(VatReturnFrequency.QUARTERLY))
+                    .map(_ => controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show())
+                ).map(Redirect)
+              )
+            }
           }
     }
   }

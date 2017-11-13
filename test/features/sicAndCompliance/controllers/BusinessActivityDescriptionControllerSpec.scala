@@ -42,8 +42,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
   s"GET ${routes.BusinessActivityDescriptionController.show()}" should {
     "return HTML Business Activity Description page with no data in the form" in {
       save4laterReturnsViewModel(BusinessActivityDescription(DESCRIPTION))()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(TestController.show(), fakeRequest.withFormUrlEncodedBody(
         "description" -> ""
       ))(_ includesText "Describe what the company does")
@@ -53,8 +52,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[BusinessActivityDescription]()
       when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(validVatScheme))
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(TestController.show) {
         _ includesText "Describe what the company does"
       }
@@ -63,8 +61,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[BusinessActivityDescription]()
       when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(TestController.show) {
         _ includesText "Describe what the company does"
       }
@@ -73,15 +70,13 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
 
   s"POST ${routes.BusinessActivityDescriptionController.submit()} with Empty data" should {
     "return 400" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(TestController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
 
     "return 303" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       save4laterExpectsSave[BusinessActivityDescription]()
       submitAuthorised(TestController.submit(), fakeRequest.withFormUrlEncodedBody("description" -> DESCRIPTION)) {
         _ redirectsTo "/sic-stub"

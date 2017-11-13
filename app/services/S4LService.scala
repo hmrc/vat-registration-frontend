@@ -20,7 +20,7 @@ import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import connectors.{KeystoreConnector, OptionalResponse, S4LConnector}
 import models.{CurrentProfile, S4LKey, ViewModelFormat}
-import play.api.libs.json.Format
+import play.api.libs.json._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 
@@ -59,6 +59,13 @@ trait S4LService extends CommonService {
   def fetchAll()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[CacheMap]] =
     s4LConnector.fetchAll(profile.registrationId)
 
+  def saveIv(json:JsValue)(implicit hc: HeaderCarrier, cp: CurrentProfile) = {
+    s4LConnector.save[JsValue] (cp.registrationId, "IVJourneyID", json)
+  }
+
+  def fetchIv()(implicit hc: HeaderCarrier, cp: CurrentProfile):Future[Option[String]] = {
+    s4LConnector.fetchAndGet[String](cp.registrationId,"IVJourneyID")
+  }
 }
 
 class PersistenceService extends S4LService {

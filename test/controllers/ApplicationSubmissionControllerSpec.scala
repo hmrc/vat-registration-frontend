@@ -38,8 +38,7 @@ class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistratio
 
   s"GET ${routes.ApplicationSubmissionController.show()}" should {
     "display the submission confirmation page to the user" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
       when(mockVatRegistrationService.getAckRef(Matchers.eq(validVatScheme.id))(any())).thenReturn(OptionT.some("testAckRef"))
 
@@ -47,18 +46,6 @@ class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistratio
         _ includesText "Application submitted"
       }
     }
-
-    //TODO: Should this be a fail scenario?
-//    "should fail to complete if no ackRef number can be retrieved for current registration" in {
-//      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(Some(currentProfile)))
-//      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
-//      when(mockVatRegistrationService.getAckRef(Matchers.eq(currentProfile.registrationId))(any())).thenReturn(OptionT.none[Future,String])
-//
-//      callAuthorised(Controller.show) {
-//        _ isA 500
-//      }
-//    }
   }
 
 }

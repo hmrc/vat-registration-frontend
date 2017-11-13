@@ -59,8 +59,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
 
       save4laterReturnsViewModel(voluntaryRegistration)()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(TestVoluntaryRegistrationController.show(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationRadio" -> ""
@@ -72,8 +71,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[VoluntaryRegistration]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
@@ -86,8 +84,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[VoluntaryRegistration]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
@@ -101,9 +98,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
   s"POST ${routes.VoluntaryRegistrationController.submit()} with Empty data" should {
     "return 400" in {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       submitAuthorised(TestVoluntaryRegistrationController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
@@ -113,9 +108,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
     "return 303" in {
       save4laterExpectsSave[VoluntaryRegistration]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       submitAuthorised(TestVoluntaryRegistrationController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationRadio" -> VoluntaryRegistration.REGISTER_YES
       ))(_ redirectsTo s"$contextRoot/reason-for-registering")
@@ -129,8 +122,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
       when(mockVatRegistrationService.deleteVatScheme()(any[HeaderCarrier](), any()))
         .thenReturn(Future.successful(()))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(TestVoluntaryRegistrationController.submit(), fakeRequest.withFormUrlEncodedBody(
         "voluntaryRegistrationRadio" -> VoluntaryRegistration.REGISTER_NO

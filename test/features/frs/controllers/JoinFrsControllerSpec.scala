@@ -42,8 +42,7 @@ class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
   s"GET ${routes.JoinFrsController.show()}" should {
     "render page" when {
       "visited for the first time" in {
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Some(currentProfile)))
+        mockGetCurrentProfile()
 
         save4laterReturnsNoViewModel[JoinFrsView]()
         when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
@@ -54,8 +53,7 @@ class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
       }
 
       "user has already answered this question" in {
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Some(currentProfile)))
+        mockGetCurrentProfile()
 
         save4laterReturnsViewModel(JoinFrsView(true))()
         when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
@@ -66,8 +64,7 @@ class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
       }
 
       "user's answer has already been submitted to backend" in {
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Some(currentProfile)))
+        mockGetCurrentProfile()
 
         save4laterReturnsNoViewModel[JoinFrsView]()
         when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
@@ -81,17 +78,14 @@ class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
 
   s"POST ${routes.JoinFrsController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
 
     "return 303 with Join Flat Rate Scheme selected Yes" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       save4laterExpectsSave[JoinFrsView]()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -100,8 +94,7 @@ class JoinFrsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     }
 
     "return 303 with Join Flat Rate Scheme selected No" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(VatFlatRateScheme(false).pure)

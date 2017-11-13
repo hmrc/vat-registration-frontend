@@ -41,8 +41,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
   s"GET ${sicAndCompliance.labour.routes.CompanyProvideWorkersController.show()}" should {
     "return HTML when there's a Company Provide Workers model in S4L" in {
       save4laterReturnsViewModel(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO))()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(CompanyProvideWorkersController.show(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> ""
       )) {
@@ -53,8 +52,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[CompanyProvideWorkers]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(CompanyProvideWorkersController.show) {
         _ includesText "Does the company provide workers to other employers?"
       }
@@ -63,8 +61,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[CompanyProvideWorkers]()
     when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Some(currentProfile)))
+    mockGetCurrentProfile()
       callAuthorised(CompanyProvideWorkersController.show) {
         _ includesText "Does the company provide workers to other employers?"
       }
@@ -73,8 +70,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
 
   s"POST ${sicAndCompliance.labour.routes.CompanyProvideWorkersController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
@@ -82,8 +78,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
     "return 303 with company provide workers Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       save4laterReturns(S4LVatSicAndCompliance())
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -94,8 +89,7 @@ class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistratio
     "return 303 with company provide workers No selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       save4laterReturns(S4LVatSicAndCompliance())
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(

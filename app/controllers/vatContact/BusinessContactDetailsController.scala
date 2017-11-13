@@ -36,8 +36,10 @@ class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies)
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          viewModel[BusinessContactDetails]().fold(form)(form.fill)
-            .map(f => Ok(views.html.pages.vatContact.business_contact_details(f)))
+          ivPassedCheck {
+            viewModel[BusinessContactDetails]().fold(form)(form.fill)
+              .map(f => Ok(views.html.pages.vatContact.business_contact_details(f)))
+          }
         }
   }
 
@@ -45,13 +47,15 @@ class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies)
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          form.bindFromRequest().fold(
-            copyGlobalErrorsToFields("daytimePhone", "mobile")
-              .andThen(form => BadRequest(views.html.pages.vatContact.business_contact_details(form)).pure),
-            contactDetails => for {
-              _ <- save(contactDetails)
-              _ <- vrs.submitVatContact()
-            } yield Redirect(controllers.vatTradingDetails.routes.TradingNameController.show()))
+          ivPassedCheck {
+            form.bindFromRequest().fold(
+              copyGlobalErrorsToFields("daytimePhone", "mobile")
+                .andThen(form => BadRequest(views.html.pages.vatContact.business_contact_details(form)).pure),
+              contactDetails => for {
+                _ <- save(contactDetails)
+                _ <- vrs.submitVatContact()
+              } yield Redirect(controllers.vatTradingDetails.routes.TradingNameController.show()))
+          }
         }
   }
 

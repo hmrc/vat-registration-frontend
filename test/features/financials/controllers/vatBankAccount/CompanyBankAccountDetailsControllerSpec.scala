@@ -54,8 +54,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
     "return HTML when there's a CompanyBankAccountDetails model in S4L" in {
       save4laterReturnsViewModel(validCompanyBankAccountDetails)()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(Controller.show()) {
         _ includesText "What are your business bank account details?"
@@ -65,8 +64,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
     "return HTML when there's invalid sort code stored in S4L" in {
       save4laterReturnsViewModel(validCompanyBankAccountDetails.copy(sortCode = "foo--bar"))()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(Controller.show()) {
         _ includesText "What are your business bank account details?"
@@ -77,8 +75,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       save4laterReturnsNoViewModel[CompanyBankAccountDetails]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(Controller.show) {
         _ includesText "What are your business bank account details?"
@@ -90,8 +87,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       save4laterReturnsNoViewModel[CompanyBankAccountDetails]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(Controller.show) {
         _ includesText "What are your business bank account details?"
@@ -102,8 +98,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
 
   s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(_ isA 400)
     }
@@ -116,10 +111,9 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(validVatFlatRateScheme.pure)
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatFinancials())
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
       when(mockBankAccountReputationService.bankDetailsModulusCheck(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
+      mockGetCurrentProfile()
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
         _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
@@ -134,10 +128,9 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(validVatFlatRateScheme.pure)
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatFinancials())
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
       when(mockBankAccountReputationService.bankDetailsModulusCheck(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
+      mockGetCurrentProfile()
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
         _ redirectsTo s"$contextRoot/check-your-answers"
@@ -153,10 +146,9 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(validVatFlatRateScheme.pure)
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatFinancials())
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
       when(mockBankAccountReputationService.bankDetailsModulusCheck(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
+      mockGetCurrentProfile()
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
         _ redirectsTo s"$contextRoot/join-flat-rate-scheme"
@@ -166,14 +158,12 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
     "return 400 with invalid Company Bank Account Details" in {
       save4laterExpectsSave[CompanyBankAccountDetails]()
       val invalidFormData = validBankAccountFormData.drop(1)
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(invalidFormData: _*))(_ isA 400)
     }
 
     "return 400 with invalid Company Bank Account Details entered" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+     mockGetCurrentProfile()
       when(mockBankAccountReputationService.bankDetailsModulusCheck(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(false))
       submitAuthorised(Controller.submit(),
@@ -183,8 +173,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
     }
 
     "an upstream5xxexception should be encountered if a 500 is recieved from BARS" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       when(mockBankAccountReputationService.bankDetailsModulusCheck(Matchers.any())(Matchers.any()))
         .thenReturn(Future.failed(Upstream5xxResponse("",500,500)))
       submitAuthorised(Controller.submit(),

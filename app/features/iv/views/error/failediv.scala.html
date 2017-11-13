@@ -1,3 +1,4 @@
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @()(implicit request: Request[_], messagesApi: MessagesApi, messages: Messages)
 
 @main_template(title = messagesApi("pages.failediv.title"), backEnabled = false) {
@@ -10,8 +11,9 @@
         <p>@Html(messagesApi("pages.failediv.body.url", "https://online.hmrc.gov.uk/registration/newbusiness/business-allowed"))</p>
     </div>
 
-
  <div class="form-group">
-    <button class="button-get-started" role="button" id="save-and-continue">@messages("pages.failediv.button.try")</button>
+ @govHelpers.form(action = controllers.iv.routes.IdentityVerificationController.redirectToIV()) {
+         <button class="button-get-started" role="submit" id="save-and-continue">@messages("pages.failediv.button.try")</button>
+ }
  </div>
 }

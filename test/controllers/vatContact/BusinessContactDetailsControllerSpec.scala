@@ -40,8 +40,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
   s"GET ${controllers.vatContact.routes.BusinessContactDetailsController.show()}" should {
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[BusinessContactDetails]()
       when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
@@ -59,8 +58,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
         mobile = Some("123"),
         website = None)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsViewModel(businessContactDetails)()
 
@@ -70,8 +68,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[BusinessContactDetails]()
 
@@ -86,16 +83,14 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
 
   s"POST ${controllers.vatContact.routes.BusinessContactDetailsController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(TestBusinessContactDetailsController.submit(), fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
     }
 
     "return 303 with a valid business contact entered" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterExpectsSave[BusinessContactDetails]()
       when(mockVatRegistrationService.submitVatContact()(any(), any())).thenReturn(validVatContact.pure)

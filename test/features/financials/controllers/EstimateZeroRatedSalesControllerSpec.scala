@@ -42,8 +42,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
     "return HTML Estimate Zero Rated Sales page with no data in the form" in {
       save4laterReturnsViewModel(EstimateZeroRatedSales(100L))()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(Controller.show()) {
         _ includesText "How much will the company take in sales of zero-rated goods and services over the next 12 months?"
@@ -54,8 +53,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
       save4laterReturnsNoViewModel[EstimateZeroRatedSales]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(Controller.show) {
         _ includesText "How much will the company take in sales of zero-rated goods and services over the next 12 months?"
@@ -66,8 +64,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
       save4laterReturnsNoViewModel[EstimateZeroRatedSales]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(Controller.show) {
         _ includesText "How much will the company take in sales of zero-rated goods and services over the next 12 months?"
@@ -79,8 +76,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
 
   s"POST ${vatFinancials.routes.EstimateZeroRatedSalesController.submit()} with Empty data" should {
     "return 400" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
@@ -90,8 +86,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
     "return 303" in {
       save4laterExpectsSave[EstimateZeroRatedSales]()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody("zeroRatedTurnoverEstimate" -> "60000")) {
         _ redirectsTo s"$contextRoot/expect-to-reclaim-more-vat-than-you-charge"

@@ -62,8 +62,10 @@ package controllers.frs {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[JoinFrsView]().map(vm => YesOrNoAnswer(vm.selection)).fold(form)(form.fill)
-              .map(f => Ok(features.frs.views.html.frs_join(f)))
+            ivPassedCheck {
+              viewModel[JoinFrsView]().map(vm => YesOrNoAnswer(vm.selection)).fold(form)(form.fill)
+                .map(f => Ok(features.frs.views.html.frs_join(f)))
+            }
           }
     }
 
@@ -71,17 +73,19 @@ package controllers.frs {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.frs.views.html.frs_join(badForm)).pure,
-              view => (if (view.answer) {
-                save(JoinFrsView(view.answer)).map(_ =>
-                  controllers.frs.routes.AnnualCostsInclusiveController.show())
-              } else {
-                for {
-                  _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(false))))
-                  _ <- vrs.submitVatFlatRateScheme()
-                } yield controllers.routes.SummaryController.show()
-              }).map(Redirect))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.frs.views.html.frs_join(badForm)).pure,
+                view => (if (view.answer) {
+                  save(JoinFrsView(view.answer)).map(_ =>
+                    controllers.frs.routes.AnnualCostsInclusiveController.show())
+                } else {
+                  for {
+                    _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(false))))
+                    _ <- vrs.submitVatFlatRateScheme()
+                  } yield controllers.routes.SummaryController.show()
+                }).map(Redirect))
+            }
           }
     }
   }

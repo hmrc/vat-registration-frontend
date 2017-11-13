@@ -41,8 +41,7 @@ class ConfirmBusinessSectorControllerSpec extends VatRegSpec with VatRegistratio
   s"GET ${routes.ConfirmBusinessSectorController.show()}" should {
     "render page" when {
       "visited for the first time" in {
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Some(currentProfile)))
+        mockGetCurrentProfile()
 
         when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
         save4laterReturnsNoViewModel[BusinessSectorView]()
@@ -56,8 +55,7 @@ class ConfirmBusinessSectorControllerSpec extends VatRegSpec with VatRegistratio
       }
 
       "user has already answered this question" in {
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Some(currentProfile)))
+        mockGetCurrentProfile()
 
         save4laterReturnsViewModel(validBusinessSectorView)()
         when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
@@ -69,9 +67,7 @@ class ConfirmBusinessSectorControllerSpec extends VatRegSpec with VatRegistratio
       }
 
       "user's answer has already been submitted to backend" in {
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Some(currentProfile)))
-
+        mockGetCurrentProfile()
         save4laterReturnsNoViewModel[BusinessSectorView]()
         save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
         when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
@@ -88,9 +84,7 @@ class ConfirmBusinessSectorControllerSpec extends VatRegSpec with VatRegistratio
 
   s"POST ${routes.ConfirmBusinessSectorController.submit()}" should {
     "works with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       save4laterReturnsViewModel(validBusinessSectorView)()
       save4laterExpectsSave[BusinessSectorView]()
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(

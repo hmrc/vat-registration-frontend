@@ -70,8 +70,10 @@ package controllers.vatFinancials.vatAccountingPeriod {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[AccountingPeriod]().fold(form)(form.fill)
-              .map(f => Ok(features.financials.views.html.vatAccountingPeriod.accounting_period(f)))
+            ivPassedCheck {
+              viewModel[AccountingPeriod]().fold(form)(form.fill)
+                .map(f => Ok(features.financials.views.html.vatAccountingPeriod.accounting_period(f)))
+            }
           }
     }
 
@@ -84,21 +86,22 @@ package controllers.vatFinancials.vatAccountingPeriod {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.financials.views.html.vatAccountingPeriod.accounting_period(badForm)).pure,
-              data => for {
-                _ <- save(data)
-                vs <- vrs.getVatScheme
-              } yield Redirect(if (extractEligiblityChoice(vs)) {
-                controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()
-              } else {
-                controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show()
-              }))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.financials.views.html.vatAccountingPeriod.accounting_period(badForm)).pure,
+                data => for {
+                  _ <- save(data)
+                  vs <- vrs.getVatScheme
+                } yield Redirect(if (extractEligiblityChoice(vs)) {
+                  controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()
+                } else {
+                  controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show()
+                }))
+            }
           }
     }
   }
 }
-
 package forms.vatFinancials.vatAccountingPeriod {
 
   import forms.FormValidation._

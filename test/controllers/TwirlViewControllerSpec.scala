@@ -37,8 +37,7 @@ class TwirlViewControllerSpec extends VatRegSpec {
     "return HTML when user is authorized to access" in {
       val params = List(("use-this-service", "Can you use this service?"))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
 
@@ -53,8 +52,7 @@ class TwirlViewControllerSpec extends VatRegSpec {
     "redirect to eligibility front end if feature switch is enabled" in {
       val params = List(("use-this-service", "Can you use this service?"))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(disabledFeatureSwitch)
 
@@ -68,8 +66,7 @@ class TwirlViewControllerSpec extends VatRegSpec {
 
     "return 404" when {
       "requested twirl template does not exist" in {
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Some(currentProfile)))
+        mockGetCurrentProfile()
 
         when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
 

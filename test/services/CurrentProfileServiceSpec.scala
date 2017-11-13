@@ -46,7 +46,9 @@ class CurrentProfileServiceSpec extends VatRegSpec {
     registrationId        = "testRegId",
     transactionId         = "testTxId",
     vatRegistrationStatus = VatRegStatus.draft,
-    incorporationDate     = Some(now)
+    incorporationDate     = Some(now),
+    ivPassed              = false
+
   )
 
   "buildCurrentProfile" should {
@@ -69,6 +71,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
 
         when(mockVatRegistrationService.getStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful(VatRegStatus.draft))
+        when(mockVatRegistrationService.getVatScheme()(Matchers.any(),Matchers.any())).thenReturn(Future.successful(validVatScheme))
 
         when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
@@ -76,6 +79,25 @@ class CurrentProfileServiceSpec extends VatRegSpec {
         val result = await(testService.buildCurrentProfile("testRegId", "testTxId"))
         result mustBe testCurrentProfile
       }
+    }
+  }
+  "updateIVStatusInCurrentProfile" should {
+    "update current profile and return new cp if ivPassed = true" in {
+      when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
+
+      val result = await(testService.updateIVStatusInCurrentProfile(true)(hc,testCurrentProfile))
+        result mustBe testCurrentProfile.copy(ivPassed = true)
+    }
+  }
+
+  "getIVStatusFromVRServiceAndUpdateCurrentProfile" should {
+    "getIV status from vr backend and return a current profile modified" in {
+      when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
+      when(mockVatRegistrationService.getVatScheme()(Matchers.any(),Matchers.any())).thenReturn(Future.successful(validVatScheme.copy(lodgingOfficer = Some(validLodgingOfficer.copy(ivPassed = true)))))
+      val result = await(testService.getIVStatusFromVRServiceAndUpdateCurrentProfile(testCurrentProfile))
+      result mustBe testCurrentProfile.copy(ivPassed = true)
     }
   }
 }

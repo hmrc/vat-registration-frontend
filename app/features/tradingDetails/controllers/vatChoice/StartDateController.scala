@@ -98,28 +98,31 @@ package controllers.vatTradingDetails.vatChoice {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[StartDateView]().getOrElse(StartDateView()).map (viewModel =>
-              (profile.incorporationDate, viewModel.date) match {
-                case (Some(incorpDate), Some(date)) if incorpDate != date => viewModel.copy(dateType = StartDateView.SPECIFIC_DATE)
-                case _ => viewModel
-              }
-            ).flatMap(populateCtActiveDate).map(f =>
-              Ok(profile.incorporationDate.fold(start_date(form.fill(f))) {date => start_date_incorp(form.fill(f), date)})
-            )
+            ivPassedCheck {
+              viewModel[StartDateView]().getOrElse(StartDateView()).map(viewModel =>
+                (profile.incorporationDate, viewModel.date) match {
+                  case (Some(incorpDate), Some(date)) if incorpDate != date => viewModel.copy(dateType = StartDateView.SPECIFIC_DATE)
+                  case _ => viewModel
+                }
+              ).flatMap(populateCtActiveDate).map(f =>
+                Ok(profile.incorporationDate.fold(start_date(form.fill(f))) { date => start_date_incorp(form.fill(f), date) })
+              )
+            }
           }
     }
-
     def submit: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            startDateFormFactory.form(profile.incorporationDate).bindFromRequest().fold(
-              badForm => profile.incorporationDate.fold(BadRequest(start_date(badForm)).pure) {date =>
-                BadRequest(start_date_incorp(badForm, date)).pure
-              },
-              goodForm => populateCtActiveDate(goodForm).flatMap(vm => save(vm)).map(_ =>
-                vrs.submitTradingDetails()).map(_ =>
-                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())))
+            ivPassedCheck {
+              startDateFormFactory.form(profile.incorporationDate).bindFromRequest().fold(
+                badForm => profile.incorporationDate.fold(BadRequest(start_date(badForm)).pure) { date =>
+                  BadRequest(start_date_incorp(badForm, date)).pure
+                },
+                goodForm => populateCtActiveDate(goodForm).flatMap(vm => save(vm)).map(_ =>
+                  vrs.submitTradingDetails()).map(_ =>
+                  Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())))
+            }
           }
     }
   }

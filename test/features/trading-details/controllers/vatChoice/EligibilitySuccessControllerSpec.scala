@@ -41,9 +41,7 @@ class EligibilitySuccessControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return HTML when there's a eligibility success view in S4L" in {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       callAuthorised(TestEligibilitySuccessController.show) {
         _ includesText "You can register for VAT using this service"
       }
@@ -53,9 +51,7 @@ class EligibilitySuccessControllerSpec extends VatRegSpec with VatRegistrationFi
 
   s"POST ${routes.EligibilitySuccessController.submit()}" should {
     "return 303 with valid data - Company NOT INCORPORATED" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, None)
 
       submitAuthorised(TestEligibilitySuccessController.submit(), fakeRequest.withFormUrlEncodedBody()) {
@@ -67,9 +63,7 @@ class EligibilitySuccessControllerSpec extends VatRegSpec with VatRegistrationFi
 
   s"POST ${routes.EligibilitySuccessController.submit()}" should {
     "return 303 with valid data - Company INCORPORATED" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
 
       submitAuthorised(TestEligibilitySuccessController.submit(), fakeRequest.withFormUrlEncodedBody()) {

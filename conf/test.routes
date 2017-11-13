@@ -19,5 +19,7 @@ GET         /incorp-company                    controllers.test.IncorporationInf
 
 GET         /feature-flag/:name/:state         controllers.test.FeatureSwitchController.switcher(name:String,state: String)
 
-GET         /test-iv-response                  controllers.test.TestIVController.show()
+GET         /test-iv-response/:journeyId       controllers.test.TestIVController.show(journeyId: String)
 POST        /test-iv-response                  controllers.test.TestIVController.submit()
+
+GET         /iv-passed/:ivPassed               controllers.test.TestIVController.setIVStatus(ivPassed: String)
