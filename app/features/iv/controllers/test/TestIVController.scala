@@ -16,28 +16,44 @@
 
 package controllers.test
 
-import java.util.UUID
 import javax.inject.Inject
 
 import common.enums.IVResult
 import connectors.test.BusinessRegDynamicStubConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
+import features.iv.services.IdentityVerificationService
 import forms.test.TestIVForm
 import models.view.test.TestIVResponse
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, SessionProfile}
+import services.{CommonService, CurrentProfileService, SessionProfile}
 
 import scala.concurrent.Future
 
 class TestIVController @Inject()(ds: CommonPlayDependencies,
-                                 busRegDynStub: BusinessRegDynamicStubConnector)
+                                 busRegDynStub: BusinessRegDynamicStubConnector,
+                                 ivService:IdentityVerificationService,
+                                 cpService:CurrentProfileService)
   extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
-  def show: Action[AnyContent] = authorised.async {
+  def setIVStatus(ivPassed:String):Action[AnyContent] = authorised.async{
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          val testIVResponse = TestIVResponse(UUID.randomUUID.toString, IVResult.Success)
+          val ivp = ivPassed.toBoolean
+          for {
+            _ <- ivService.setIvStatus(if(ivp) IVResult.Success else IVResult.FailedIV)
+            _ <- cpService.updateIVStatusInCurrentProfile(passed = ivp)
+          } yield Ok("ivPassed set to true, the current Profile has been refreshed with this data")
+        }
+  }
+
+
+  def show(journeyId:String): Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        withCurrentProfile { implicit profile =>
+          val testIVResponse = TestIVResponse(journeyId, IVResult.Success)
           Future.successful(Ok(features.iv.views.html.test.testIVResponse(TestIVForm.form.fill(testIVResponse))))
         }
   }
@@ -49,14 +65,13 @@ class TestIVController @Inject()(ds: CommonPlayDependencies,
           TestIVForm.form.bindFromRequest().fold(
             badForm =>
               Future.successful(BadRequest(features.iv.views.html.test.testIVResponse(badForm))),
-            success =>
-              busRegDynStub.setupIVOutcome(success.journeyId, success.ivResult) map { _ =>
-                if (success.ivResult == IVResult.Success) {
-                  Redirect(controllers.iv.routes.IdentityVerificationController.completedIVJourney())
-                } else {
-                  Redirect(controllers.iv.routes.IdentityVerificationController.failedIVJourney(success.journeyId))
-                }
-              }
+            success => for {
+              _ <- busRegDynStub.setupIVOutcome(success.journeyId, success.ivResult)
+              _ <- ivService.saveJourneyID(JsObject(Map("journeyLink" -> Json.toJson(s"""/${success.journeyId}"""))))
+            } yield success.ivResult match {
+              case IVResult.Success => Redirect(controllers.iv.routes.IdentityVerificationController.completedIVJourney())
+              case _                => Redirect(controllers.iv.routes.IdentityVerificationController.failedIVJourney(success.journeyId))
+            }
           )
         }
   }

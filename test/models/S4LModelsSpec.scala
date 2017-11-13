@@ -399,41 +399,21 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
     "transform complete s4l container to API" in {
 
       val expected = VatLodgingOfficer(
-        currentAddress = address,
-        dob = DateOfBirth(date),
-        nino = testNino,
-        role = testRole,
-        name = name,
-        changeOfName = ChangeOfName(nameHasChanged = true,
-          formerName = Some(FormerName(formerName = "formerName", dateOfNameChange = Some(date)))),
-        currentOrPreviousAddress = CurrentOrPreviousAddress(currentAddressThreeYears = false, previousAddress = Some(prevAddress)),
-        contact = OfficerContactDetails(Some("email"), Some("daytimePhone"), Some("mobile"))
+        currentAddress = Some(address),
+        dob = Some(DateOfBirth(date)),
+        nino = Some(testNino),
+        role = Some(testRole),
+        name = Some(name),
+        changeOfName =
+          Some(ChangeOfName(
+            nameHasChanged = true,
+            formerName = Some(FormerName(formerName = "formerName", dateOfNameChange = Some(date))))),
+        currentOrPreviousAddress = Some(CurrentOrPreviousAddress(currentAddressThreeYears = false, previousAddress = Some(prevAddress))),
+        contact = Some(OfficerContactDetails(Some("email"), Some("daytimePhone"), Some("mobile")))
       )
 
       S4LVatLodgingOfficer.apiT.toApi(s4l) shouldBe expected
     }
-
-    "transform s4l container with incomplete data error" in {
-      val s4lNoHomeAddress = s4l.copy(officerHomeAddress = None)
-      an[IllegalStateException] should be thrownBy S4LVatLodgingOfficer.apiT.toApi(s4lNoHomeAddress)
-
-      val s4lNoSecurityQs = s4l.copy(officerSecurityQuestions = None)
-      an[IllegalStateException] should be thrownBy S4LVatLodgingOfficer.apiT.toApi(s4lNoSecurityQs)
-
-      val s4lNoCompletionCapacity = s4l.copy(completionCapacity = None)
-      an[IllegalStateException] should be thrownBy S4LVatLodgingOfficer.apiT.toApi(s4lNoCompletionCapacity)
-
-      val s4lNoFormerName = s4l.copy(formerName = None)
-      an[IllegalStateException] should be thrownBy S4LVatLodgingOfficer.apiT.toApi(s4lNoFormerName)
-
-      val s4lNoPreviousAddress = s4l.copy(previousAddress = None)
-      an[IllegalStateException] should be thrownBy S4LVatLodgingOfficer.apiT.toApi(s4lNoPreviousAddress)
-
-      val s4lNoOfficerContactDetails = s4l.copy(officerContactDetails = None)
-      an[IllegalStateException] should be thrownBy S4LVatLodgingOfficer.apiT.toApi(s4lNoOfficerContactDetails)
-
-    }
-
   }
 
   "S4LVatEligibilityChoice.S4LModelTransformer.toS4LModel" should {

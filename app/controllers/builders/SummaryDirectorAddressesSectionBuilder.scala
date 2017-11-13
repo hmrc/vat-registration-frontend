@@ -26,30 +26,29 @@ case class SummaryDirectorAddressesSectionBuilder(vatLodgingOfficer: Option[VatL
 
   val homeAddress: SummaryRow = SummaryRow(
     s"$sectionId.homeAddress",
-    vatLodgingOfficer.map( vlo => ScrsAddress.normalisedSeq(vlo.currentAddress)).getOrElse(Seq("")),
+    vatLodgingOfficer.flatMap( vlo => vlo.currentAddress.map(a => ScrsAddress.normalisedSeq(a))).getOrElse(Seq.empty),
     Some(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())
   )
 
   val currentAddressThreeYears: SummaryRow = yesNoRow(
     "currentAddressThreeYears",
-    vatLodgingOfficer.map(_.currentOrPreviousAddress.currentAddressThreeYears),
+    vatLodgingOfficer.flatMap(_.currentOrPreviousAddress.map(_.currentAddressThreeYears)),
     controllers.vatLodgingOfficer.routes.PreviousAddressController.show()
   )
-
   val previousAddress: SummaryRow = SummaryRow(
     s"$sectionId.previousAddress",
-    vatLodgingOfficer.map(_.currentOrPreviousAddress.previousAddress).collect {
+    vatLodgingOfficer.flatMap(_.currentOrPreviousAddress).map(_.previousAddress).collect {
       case Some(address) => ScrsAddress.normalisedSeq(address)
-    }.getOrElse(Seq("")),
+    }.getOrElse(Seq.empty),
     Some(controllers.vatLodgingOfficer.routes.PreviousAddressController.changeAddress())
   )
 
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
-      (homeAddress, true),
+      (homeAddress, vatLodgingOfficer.exists(_.currentAddress.isDefined)),
       (currentAddressThreeYears, true),
-      (previousAddress, vatLodgingOfficer.exists(_.currentOrPreviousAddress.previousAddress.isDefined))
+      (previousAddress, vatLodgingOfficer.exists(_.currentOrPreviousAddress.exists(_.previousAddress.isDefined)))
     )
   )
 }

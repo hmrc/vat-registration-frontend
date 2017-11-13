@@ -40,8 +40,10 @@ package controllers.sicAndCompliance.financial {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[InvestmentFundManagement]().fold(form)(form.fill)
-              .map(f => Ok(features.sicAndCompliance.views.html.financial.investment_fund_management(f)))
+            ivPassedCheck {
+              viewModel[InvestmentFundManagement]().fold(form)(form.fill)
+                .map(f => Ok(features.sicAndCompliance.views.html.financial.investment_fund_management(f)))
+            }
           }
     }
 
@@ -49,16 +51,18 @@ package controllers.sicAndCompliance.financial {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.sicAndCompliance.views.html.financial.investment_fund_management(badForm)).pure,
-              data => save(data).map(_ => data.yesNo).ifM(
-                ifTrue = controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show().pure,
-                ifFalse = for {
-                  container <- s4lContainer[S4LVatSicAndCompliance]()
-                  _ <- s4lService.save(dropFromInvFundManagement(container))
-                  _ <- vrs.submitSicAndCompliance()
-                } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
-              ).map(Redirect))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.sicAndCompliance.views.html.financial.investment_fund_management(badForm)).pure,
+                data => save(data).map(_ => data.yesNo).ifM(
+                  ifTrue = controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show().pure,
+                  ifFalse = for {
+                    container <- s4lContainer[S4LVatSicAndCompliance]()
+                    _ <- s4lService.save(dropFromInvFundManagement(container))
+                    _ <- vrs.submitSicAndCompliance()
+                  } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
+                ).map(Redirect))
+            }
           }
     }
 

@@ -37,14 +37,15 @@ package models.api {
     implicit val format: OFormat[ChangeOfName] = Json.format[ChangeOfName]
   }
 
-  case class VatLodgingOfficer(currentAddress: ScrsAddress,
-                               dob: DateOfBirth,
-                               nino: String,
-                               role: String,
-                               name: Name,
-                               changeOfName: ChangeOfName,
-                               currentOrPreviousAddress: CurrentOrPreviousAddress,
-                               contact: OfficerContactDetails)
+  case class VatLodgingOfficer(currentAddress: Option[ScrsAddress],
+                               dob: Option[DateOfBirth],
+                               nino: Option[String],
+                               role: Option[String],
+                               name: Option[Name],
+                               changeOfName: Option[ChangeOfName],
+                               currentOrPreviousAddress: Option[CurrentOrPreviousAddress],
+                               contact: Option[OfficerContactDetails],
+                               ivPassed:Boolean = false)
 
   object VatLodgingOfficer {
     implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
@@ -155,13 +156,11 @@ package models.api {
       implicit val inline = show((name: Name) => normalisedSeq(name).mkString(" "))
     }
 
-
   }
 }
 
 package models {
 
-  import common.ErrorUtil.fail
   import models.api._
   import models.view.vatLodgingOfficer._
   import play.api.libs.json.{Json, OFormat}
@@ -174,7 +173,8 @@ package models {
     officerContactDetails: Option[OfficerContactDetailsView] = None,
     formerName: Option[FormerNameView] = None,
     formerNameDate: Option[FormerNameDateView] = None,
-    previousAddress: Option[PreviousAddressView] = None
+    previousAddress: Option[PreviousAddressView] = None,
+    ivPassed: Boolean = false
   )
 
   object S4LVatLodgingOfficer {
@@ -190,30 +190,30 @@ package models {
           officerContactDetails = ApiModelTransformer[OfficerContactDetailsView].toViewModel(vs),
           formerName = ApiModelTransformer[FormerNameView].toViewModel(vs),
           formerNameDate = ApiModelTransformer[FormerNameDateView].toViewModel(vs),
-          previousAddress = ApiModelTransformer[PreviousAddressView].toViewModel(vs)
+          previousAddress = ApiModelTransformer[PreviousAddressView].toViewModel(vs),
+          ivPassed = vs.lodgingOfficer.exists(_.ivPassed)
         )
     }
-
-    def error = throw fail("VatLodgingOfficer")
 
     implicit val apiT = new S4LApiTransformer[S4LVatLodgingOfficer, VatLodgingOfficer] {
       override def toApi(c: S4LVatLodgingOfficer): VatLodgingOfficer =
         VatLodgingOfficer(
-          currentAddress = c.officerHomeAddress.flatMap(_.address).getOrElse(error),
-          dob = c.officerSecurityQuestions.map(d => DateOfBirth(d.dob)).getOrElse(error),
-          nino = c.officerSecurityQuestions.map(n => n.nino).getOrElse(error),
-          role = c.completionCapacity.flatMap(_.completionCapacity.map(_.role)).getOrElse(error),
-          name = c.completionCapacity.flatMap(_.completionCapacity.map(_.name)).getOrElse(error),
-          changeOfName = c.formerName.map((fnv: FormerNameView) =>
-            ChangeOfName(nameHasChanged = fnv.yesNo,
-              formerName = fnv.formerName.map(fn =>
-                FormerName(formerName = fn,
-                  dateOfNameChange = c.formerNameDate.map(_.date))))).getOrElse(error),
+          currentAddress = c.officerHomeAddress.flatMap(_.address),
+          dob = c.officerSecurityQuestions.map(d => DateOfBirth(d.dob)),
+          nino = c.officerSecurityQuestions.map(n => n.nino),
+          role = c.completionCapacity.flatMap(_.completionCapacity.map(_.role)),
+          name = c.completionCapacity.flatMap(_.completionCapacity.map(_.name)),
+          changeOfName =
+            c.formerName.map((fnv: FormerNameView) =>
+              ChangeOfName(
+                nameHasChanged = fnv.yesNo,
+                formerName = fnv.formerName.map(fn =>
+                    FormerName(formerName = fn, dateOfNameChange = c.formerNameDate.map(_.date))))),
           currentOrPreviousAddress = c.previousAddress.map(cpav =>
-            CurrentOrPreviousAddress(currentAddressThreeYears = cpav.yesNo,
-              previousAddress = cpav.address)).getOrElse(error),
+              CurrentOrPreviousAddress(currentAddressThreeYears = cpav.yesNo, previousAddress = cpav.address)),
           contact = c.officerContactDetails.map(ocd =>
-            OfficerContactDetails(email = ocd.email, tel = ocd.daytimePhone, mobile = ocd.mobile)).getOrElse(error)
+              OfficerContactDetails(email = ocd.email, tel = ocd.daytimePhone, mobile = ocd.mobile)),
+          ivPassed = c.ivPassed
         )
     }
   }

@@ -59,8 +59,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       save4laterReturnsViewModel(startDate)()
       when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(TestStartDateController.show) {
         result =>
@@ -79,7 +78,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(
-          currentProfile.copy(incorporationDate = Some(validPastRegIncorpDate)))
+          currentProfile().copy(incorporationDate = Some(validPastRegIncorpDate)))
         ))
 
       callAuthorised(TestStartDateController.show) {
@@ -116,8 +115,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
         .thenReturn(Future.successful(validVatScheme))
       when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(TestStartDateController.show) {
         result =>
@@ -154,8 +152,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
         .thenReturn(Future.successful(emptyVatScheme))
       when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(TestStartDateController.show) {
         result =>
@@ -189,9 +186,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
   s"POST ${routes.StartDateController.submit()}" should {
     "return 400 when no data posted" in {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       submitAuthorised(
         TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody()) {
         status(_) mustBe Status.BAD_REQUEST
@@ -200,9 +195,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
     "return 400 when partial data is posted" in {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       submitAuthorised(
         TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
           "startDateRadio" -> StartDateView.SPECIFIC_DATE,
@@ -216,8 +209,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
     "return 400 when the company was incorporated and the specific date is 3 months in the future" in {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(
         TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -233,7 +225,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
     "return 400 when the company was incorporated and the specific date is 4 years in the past" in {
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(
-          currentProfile.copy(incorporationDate = Some(veryOldRegIncorpDate)))
+          currentProfile().copy(incorporationDate = Some(veryOldRegIncorpDate)))
         ))
 
       submitAuthorised(
@@ -252,8 +244,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
       when(mockVatRegistrationService.submitTradingDetails()(any(), any())).thenReturn(validVatTradingDetails.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.COMPANY_REGISTRATION_DATE,
@@ -274,8 +265,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
       when(mockVatRegistrationService.submitTradingDetails()(any(), any())).thenReturn(validVatTradingDetails.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.BUSINESS_START_DATE
@@ -294,10 +284,8 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
       when(mockVatRegistrationService.submitTradingDetails()(any(), any())).thenReturn(validVatTradingDetails.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(
-          currentProfile.copy(incorporationDate = Some(validPastRegIncorpDate)))
-        ))
+  mockGetCurrentProfile(Some(
+    currentProfile().copy(incorporationDate = Some(validPastRegIncorpDate))))
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.SPECIFIC_DATE,
@@ -318,9 +306,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
       when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
       when(mockVatRegistrationService.submitTradingDetails()(any(), any())).thenReturn(validVatTradingDetails.pure)
-
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentNonincorpProfile)))
+      mockGetCurrentProfile((Some(currentNonincorpProfile)))
 
       submitAuthorised(TestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> StartDateView.SPECIFIC_DATE,

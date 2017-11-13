@@ -58,9 +58,11 @@ package controllers.vatFinancials {
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
-          withCurrentProfile{ implicit profile =>
-            viewModel[EstimateZeroRatedSales]().fold(form)(form.fill)
-              .map(f => Ok(features.financials.views.html.estimate_zero_rated_sales(f)))
+          withCurrentProfile { implicit profile =>
+            ivPassedCheck {
+              viewModel[EstimateZeroRatedSales]().fold(form)(form.fill)
+                .map(f => Ok(features.financials.views.html.estimate_zero_rated_sales(f)))
+            }
           }
     }
 
@@ -68,10 +70,12 @@ package controllers.vatFinancials {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.financials.views.html.estimate_zero_rated_sales(badForm)).pure,
-              view => save(view) map (_ => Redirect(controllers.vatFinancials.routes.VatChargeExpectancyController.show()))
-            )
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.financials.views.html.estimate_zero_rated_sales(badForm)).pure,
+                view => save(view) map (_ => Redirect(controllers.vatFinancials.routes.VatChargeExpectancyController.show()))
+              )
+            }
           }
     }
   }

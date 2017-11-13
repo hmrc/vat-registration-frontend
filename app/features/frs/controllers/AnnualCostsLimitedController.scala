@@ -74,10 +74,12 @@ package controllers.frs {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            for {
-              estimateVatTurnover <- getFlatRateSchemeThreshold()
-              annualCostsLimitedForm <- viewModel[AnnualCostsLimitedView]().fold(defaultForm)(defaultForm.fill)
-            } yield Ok(features.frs.views.html.annual_costs_limited(annualCostsLimitedForm, estimateVatTurnover))
+            ivPassedCheck {
+              for {
+                estimateVatTurnover <- getFlatRateSchemeThreshold()
+                annualCostsLimitedForm <- viewModel[AnnualCostsLimitedView]().fold(defaultForm)(defaultForm.fill)
+              } yield Ok(features.frs.views.html.annual_costs_limited(annualCostsLimitedForm, estimateVatTurnover))
+            }
           }
     }
 
@@ -85,25 +87,26 @@ package controllers.frs {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            getFlatRateSchemeThreshold().flatMap(turnover =>
-              AnnualCostsLimitedFormFactory.form(Seq(turnover)).bindFromRequest().fold(
-                badForm => BadRequest(features.frs.views.html.annual_costs_limited(badForm, turnover)).pure,
-                view => (if (view.selection == AnnualCostsLimitedView.NO) {
-                  save(view).map(_ => controllers.frs.routes.ConfirmBusinessSectorController.show())
-                } else {
-                  for {
-                  // save this view and delete later elements
-                    frs <- s4lContainer[S4LFlatRateScheme]()
-                    _ <- s4LService.save(frs.copy(
-                      annualCostsLimited = Some(view),
-                      frsStartDate = None,
-                      categoryOfBusiness = None
-                    ))
-                  } yield controllers.frs.routes.RegisterForFrsController.show()
-                }).map(Redirect)))
+            ivPassedCheck {
+              getFlatRateSchemeThreshold().flatMap(turnover =>
+                AnnualCostsLimitedFormFactory.form(Seq(turnover)).bindFromRequest().fold(
+                  badForm => BadRequest(features.frs.views.html.annual_costs_limited(badForm, turnover)).pure,
+                  view => (if (view.selection == AnnualCostsLimitedView.NO) {
+                    save(view).map(_ => controllers.frs.routes.ConfirmBusinessSectorController.show())
+                  } else {
+                    for {
+                    // save this view and delete later elements
+                      frs <- s4lContainer[S4LFlatRateScheme]()
+                      _ <- s4LService.save(frs.copy(
+                        annualCostsLimited = Some(view),
+                        frsStartDate = None,
+                        categoryOfBusiness = None
+                      ))
+                    } yield controllers.frs.routes.RegisterForFrsController.show()
+                  }).map(Redirect)))
+            }
           }
     }
-
   }
 }
 

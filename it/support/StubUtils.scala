@@ -16,6 +16,8 @@
 
 package support
 
+import javax.inject.{Inject, Singleton}
+
 import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern
@@ -54,6 +56,7 @@ trait StubUtils {
 
     def vatScheme = VatSchemeStub()
 
+
     def corporationTaxRegistration = CorporationTaxRegistrationStub()
 
     def currentProfile = CurrentProfile()
@@ -64,13 +67,13 @@ trait StubUtils {
 
     def s4lContainer[C: S4LKey]: ViewModelStub[C] = new ViewModelStub[C]()
     def s4lContainerInScenario[C: S4LKey]: ViewModelScenarioStub[C] = new ViewModelScenarioStub[C]()
-
     def audit = AuditStub()
 
     def keystore = new KeystoreStubWrapper()
     def keystoreInScenario = new KeystoreStubScenarioWrapper()
-
     def iv = IVStub()
+    def setIvStatus = setIVStatusInVat()
+    def getS4LJourneyID = S4LGETIVJourneyID()
   }
 
   def given(): PreconditionBuilder = {
@@ -197,7 +200,46 @@ trait StubUtils {
       delete(urlPathMatching("/save4later/vat-registration-frontend/1")).willReturn(ok(""))
   }
 
+  case class S4LGETIVJourneyID(scenario: String = "S4L Scenario")
+                              (implicit builder: PreconditionBuilder, format:Format[String]) extends S4LStub  {
+    def stubS4LPutIV(journeyId: String = "1234", currentState: Option[String] = None, nextState: Option[String] = None) = {
+      val mappingBuilderScenarioPUT = stubS4LPut("IVJourneyID",encrypt(format.writes(journeyId).toString())).inScenario(scenario)
+      val mappingBuilderPUT = currentState.fold(mappingBuilderScenarioPUT)(mappingBuilderScenarioPUT.whenScenarioStateIs)
 
+      stubFor(nextState.fold(mappingBuilderPUT)(mappingBuilderPUT.willSetStateTo))
+      builder
+    }
+
+    def stubS4LGetIV(journeyID: String = "12345", currentState: Option[String] = None, nextState: Option[String] = None)
+                    (implicit format: Format[String]): PreconditionBuilder = {
+      val mappingBuilderScenarioGET = get(urlPathMatching("/save4later/vat-registration-frontend/1"))
+       .willReturn(
+         aResponse()
+           .withStatus(200)
+           .withBody(
+             s"""
+                |{
+                |  "atomicId": { "$$oid": "598830cf5e00005e00b3401e" },
+                |  "data": {
+                |    "IVJourneyID":"${encrypt(format.writes(journeyID).toString())}"
+                |  },
+                |  "id": "1",
+                |  "modifiedDetails": {
+                |    "createdAt": { "$$date": 1502097615710 },
+                |    "lastUpdated": { "$$date": 1502189409725 }
+                |  }
+                |}
+          """.stripMargin
+           )
+       ).inScenario(scenario)
+
+      val mappingBuilderGET = currentState.fold(mappingBuilderScenarioGET)(mappingBuilderScenarioGET.whenScenarioStateIs)
+
+      stubFor(nextState.fold(mappingBuilderGET)(mappingBuilderGET.willSetStateTo))
+
+      builder
+    }
+}
   class ViewModelStub[C]()(implicit builder: PreconditionBuilder, s4LKey: S4LKey[C]) extends S4LStub with KeystoreStub {
 
     def contains[T](t: T)(implicit fmt: Format[T]): PreconditionBuilder = {
@@ -357,7 +399,8 @@ trait StubUtils {
                              | "companyName" : "testCompanyName",
                              | "registrationID" : "1",
                              | "transactionID" : "000-434-1",
-                             | "vatRegistrationStatus" : "draft"
+                             | "vatRegistrationStatus" : "draft",
+                             | "ivPassed": true
                              |}
                            """.stripMargin
 
@@ -369,17 +412,18 @@ trait StubUtils {
       builder
     }
 
-    def withProfileAndIncorpDate(currentState: Option[String] = None, nextState: Option[String] = None) = withProfileInclIncorp(true, currentState, nextState)
-    def withProfile(currentState: Option[String] = None, nextState: Option[String] = None) = withProfileInclIncorp(false, currentState, nextState)
+    def withProfileAndIncorpDate(currentState: Option[String] = None, nextState: Option[String] = None, ivPassed:Boolean = true) = withProfileInclIncorp(true, currentState, nextState, ivPassed)
+    def withProfile(currentState: Option[String] = None, nextState: Option[String] = None, ivPassed:Boolean = true) = withProfileInclIncorp(false, currentState, nextState, ivPassed)
 
-    private val withProfileInclIncorp = (withIncorporationDate: Boolean, currentState: Option[String], nextState: Option[String]) => {
+    private val withProfileInclIncorp = (withIncorporationDate: Boolean, currentState: Option[String], nextState: Option[String],ivPassed:Boolean) => {
       val incorporationDate = Json.parse("""{"incorporationDate": "2016-08-05"}""").as[JsObject]
       val js = Json.parse(s"""
                              |{
                              | "companyName" : "testCompanyName",
                              | "registrationID" : "1",
                              | "transactionID" : "000-434-1",
-                             | "vatRegistrationStatus" : "draft"
+                             | "vatRegistrationStatus" : "${VatRegStatus.draft}",
+                             | "ivPassed": ${ivPassed}
                              |}
         """.stripMargin).as[JsObject]
 
@@ -581,6 +625,17 @@ trait StubUtils {
 
 
   case class IVStub()(implicit builder: PreconditionBuilder) {
+    def startJourney(status:Int = 200) = {
+      stubFor(post(urlMatching(s"/identity-verification-proxy/journey/start"))
+        .willReturn(
+          aResponse().
+            withStatus(status).
+            withBody(
+              """{"link":"/foo/bar/and/wizz",
+                |"journeyLink":"/foo/bar/and/wizz/and/pop"}""".stripMargin)
+        )
+      )
+    }
     def outcome(journeyId: String, result: IVResult.Value) = {
       stubFor(get(urlMatching(s"/iv-uri/mdtp/journey/journeyId/$journeyId"))
         .willReturn(aResponse()
@@ -592,7 +647,7 @@ trait StubUtils {
     }
   }
 
-  case class BankAccountReputationServiceStub()(implicit builder: PreconditionBuilder){
+  case class BankAccountReputationServiceStub()(implicit builder: PreconditionBuilder) {
     def passes: PreconditionBuilder = {
       stubFor(post(urlMatching("/modcheck"))
         .willReturn(
@@ -627,6 +682,14 @@ trait StubUtils {
         .willReturn(
           serverError()
         ))
+      builder
+    }
+  }
+  case class setIVStatusInVat(implicit builder:PreconditionBuilder){
+    def setStatus(regId:String = "1",ivPassed:Boolean = true, status:Int = 200) = {
+      stubFor(
+        patch(urlPathMatching(s"/vatreg/${regId}/update-iv-status"))
+          .willReturn(aResponse().withStatus(status).withBody(s"""{"ivPassed":${ivPassed}}""")))
       builder
     }
   }

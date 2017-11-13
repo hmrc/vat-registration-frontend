@@ -72,8 +72,10 @@ package controllers.vatTradingDetails {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[TradingNameView]().fold(form)(form.fill)
-              .map(f => Ok(features.tradingDetails.views.html.trading_name(f)))
+            ivPassedCheck {
+              viewModel[TradingNameView]().fold(form)(form.fill)
+                .map(f => Ok(features.tradingDetails.views.html.trading_name(f)))
+            }
           }
     }
 
@@ -81,10 +83,12 @@ package controllers.vatTradingDetails {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.tradingDetails.views.html.trading_name(badForm)).pure,
-              goodForm => save(goodForm).map(_ =>
-                Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.tradingDetails.views.html.trading_name(badForm)).pure,
+                goodForm => save(goodForm).map(_ =>
+                  Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())))
+            }
           }
     }
   }

@@ -66,20 +66,22 @@ class MandatoryStartDateController @Inject()(ds: CommonPlayDependencies)
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          profile.incorporationDate.fold(Future.successful(Ok(mandatory_start_date_confirmation()))) {date =>
-            mandatoryStartDate.flatMap(calculatedDate =>
-              viewModel[StartDateView]().getOrElse(StartDateView()).map {vm =>
-                val viewModel = (calculatedDate, vm.date) match {
-                  case (Some(calcDate), Some(dt)) if calcDate != dt => vm.copy(dateType = StartDateView.SPECIFIC_DATE)
-                  case _ => vm
+          ivPassedCheck {
+            profile.incorporationDate.fold(Future.successful(Ok(mandatory_start_date_confirmation()))) { date =>
+              mandatoryStartDate.flatMap(calculatedDate =>
+                viewModel[StartDateView]().getOrElse(StartDateView()).map { vm =>
+                  val viewModel = (calculatedDate, vm.date) match {
+                    case (Some(calcDate), Some(dt)) if calcDate != dt => vm.copy(dateType = StartDateView.SPECIFIC_DATE)
+                    case _ => vm
+                  }
+                  val calculatedDateValue = calculatedDate.getOrElse(throw new RuntimeException(""))
+                  Ok(mandatory_start_date_incorp(
+                    MandatoryStartDateForm.form(date, calculatedDateValue).fill(viewModel),
+                    calculatedDateValue.format(MonthYearModel.FORMAT_D_MMMM_Y)
+                  ))
                 }
-                val calculatedDateValue = calculatedDate.getOrElse(throw new RuntimeException(""))
-                Ok(mandatory_start_date_incorp(
-                  MandatoryStartDateForm.form(date, calculatedDateValue).fill(viewModel),
-                  calculatedDateValue.format(MonthYearModel.FORMAT_D_MMMM_Y)
-                ))
-              }
-            )
+              )
+            }
           }
         }
   }
@@ -88,24 +90,26 @@ class MandatoryStartDateController @Inject()(ds: CommonPlayDependencies)
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          profile.incorporationDate match {
-            case Some(incorpDate) =>
-              mandatoryStartDate.flatMap {calculatedDate =>
-                val calculatedDateValue = calculatedDate.getOrElse(throw new RuntimeException(""))
-                MandatoryStartDateForm.form(incorpDate, calculatedDateValue).bindFromRequest().fold(
-                  badForm => BadRequest(mandatory_start_date_incorp(
-                    badForm,
-                    calculatedDateValue.format(MonthYearModel.FORMAT_D_MMMM_Y)
-                  )).pure,
-                  goodForm => save(goodForm).flatMap { _ =>
-                    vrs.submitTradingDetails().map(_ =>
-                      Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
-                    )
-                  }
-                )
+          ivPassedCheck {
+            profile.incorporationDate match {
+              case Some(incorpDate) =>
+                mandatoryStartDate.flatMap { calculatedDate =>
+                  val calculatedDateValue = calculatedDate.getOrElse(throw new RuntimeException(""))
+                  MandatoryStartDateForm.form(incorpDate, calculatedDateValue).bindFromRequest().fold(
+                    badForm => BadRequest(mandatory_start_date_incorp(
+                      badForm,
+                      calculatedDateValue.format(MonthYearModel.FORMAT_D_MMMM_Y)
+                    )).pure,
+                    goodForm => save(goodForm).flatMap { _ =>
+                      vrs.submitTradingDetails().map(_ =>
+                        Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+                      )
+                    }
+                  )
+                }
+              case None => vrs.submitTradingDetails().map { _ =>
+                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
               }
-            case None => vrs.submitTradingDetails().map { _ =>
-              Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
             }
           }
         }

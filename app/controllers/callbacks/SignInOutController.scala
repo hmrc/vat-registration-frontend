@@ -54,4 +54,8 @@ class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegis
     implicit request =>
       Future.successful(Ok(TimeoutView()))
   }
+  def errorShow = Action.async{
+    implicit request =>
+      Future.successful(InternalServerError(views.html.pages.error.restart()))
+  }
 }

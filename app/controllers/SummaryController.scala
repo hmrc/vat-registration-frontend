@@ -39,14 +39,16 @@ class SummaryController @Inject()(ds: CommonPlayDependencies, vatRegFeatureSwitc
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          for {
-            summary             <- getRegistrationSummary()
-            _                   <- s4LService.clear()
-            dateOfIncorporation = profile.incorporationDate.fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y))
-          } yield Ok(views.html.pages.summary(
-            summary,
-            dateOfIncorporation
-          ))
+          ivPassedCheck {
+            for {
+              summary <- getRegistrationSummary()
+              _ <- s4LService.clear()
+              dateOfIncorporation = profile.incorporationDate.fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y))
+            } yield Ok(views.html.pages.summary(
+              summary,
+              dateOfIncorporation
+            ))
+          }
         }
   }
 

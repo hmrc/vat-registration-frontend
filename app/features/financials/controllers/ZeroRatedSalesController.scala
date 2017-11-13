@@ -74,8 +74,10 @@ package controllers.vatFinancials {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[ZeroRatedSales]().fold(form)(form.fill)
-              .map(f => Ok(features.financials.views.html.zero_rated_sales(f)))
+            ivPassedCheck {
+              viewModel[ZeroRatedSales]().fold(form)(form.fill)
+                .map(f => Ok(features.financials.views.html.zero_rated_sales(f)))
+            }
           }
     }
 
@@ -83,17 +85,19 @@ package controllers.vatFinancials {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.financials.views.html.zero_rated_sales(badForm)).pure,
-              view => save(view).map(_ => view.yesNo == ZeroRatedSales.ZERO_RATED_SALES_YES).ifM(
-                ifTrue = financialRoutes.EstimateZeroRatedSalesController.show().pure,
-                // delete any previous zeroRatedTurnoverEstimate by updating the container with None
-                ifFalse =
-                  OptionT(s4lService.fetchAndGet[S4LVatFinancials]())
-                    .semiflatMap(container => s4lService.save(container.copy(zeroRatedTurnoverEstimate = None))).value
-                    .map(_ => financialRoutes.VatChargeExpectancyController.show())
-              ).map(Redirect)
-            )
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.financials.views.html.zero_rated_sales(badForm)).pure,
+                view => save(view).map(_ => view.yesNo == ZeroRatedSales.ZERO_RATED_SALES_YES).ifM(
+                  ifTrue = financialRoutes.EstimateZeroRatedSalesController.show().pure,
+                  // delete any previous zeroRatedTurnoverEstimate by updating the container with None
+                  ifFalse =
+                    OptionT(s4lService.fetchAndGet[S4LVatFinancials]())
+                      .semiflatMap(container => s4lService.save(container.copy(zeroRatedTurnoverEstimate = None))).value
+                      .map(_ => financialRoutes.VatChargeExpectancyController.show())
+                ).map(Redirect)
+              )
+            }
           }
     }
   }

@@ -55,7 +55,6 @@ class SignInOutControllerSpec extends VatRegSpec {
 
   "destroySession" should {
     "return redirect to timeout show and get rid of headers" in {
-
       val fr = FakeRequest().withHeaders(("playFoo","no more"))
 
       val res = TestController.destroySession()(fr)
@@ -70,6 +69,12 @@ class SignInOutControllerSpec extends VatRegSpec {
     "return 200" in {
       val res = TestController.timeoutShow()(FakeRequest())
       status(res) mustBe 200
+    }
+  }
+  "errorShow" should {
+    "return 500" in {
+      val res = TestController.errorShow()(FakeRequest())
+      status(res) mustBe 500
     }
   }
 }

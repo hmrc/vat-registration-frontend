@@ -40,8 +40,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
   s"GET ${routes.AnnualCostsInclusiveController.show()}" should {
     "return HTML Annual Costs Inclusive page with no Selection" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsViewModel(AnnualCostsInclusiveView(""))()
 
@@ -51,8 +50,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[AnnualCostsInclusiveView]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
@@ -63,9 +61,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       save4laterReturnsNoViewModel[AnnualCostsInclusiveView]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
 
@@ -77,16 +73,13 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
 
   s"POST ${routes.AnnualCostsInclusiveController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
 
     "return 303 with Annual Costs Inclusive selected Yes" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
 
@@ -96,9 +89,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
 
     "return 303 with Annual Costs Inclusive selected No - but within 12 months" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -107,9 +98,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
 
     "skip next question if 2% of estimated taxable turnover <= 1K and NO answered" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       save4laterExpectsSave[AnnualCostsInclusiveView]()
       save4laterReturnsViewModel(EstimateVatTurnover(25000L))()
 
@@ -119,8 +108,7 @@ class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistration
     }
 
     "redirect to next question if 2% of estimated taxable turnover > 1K and NO answered" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterExpectsSave[AnnualCostsInclusiveView]()
       save4laterReturnsViewModel(EstimateVatTurnover(75000L))()

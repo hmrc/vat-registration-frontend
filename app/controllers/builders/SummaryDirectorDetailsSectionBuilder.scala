@@ -26,54 +26,60 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLod
 
   val completionCapacity: SummaryRow = SummaryRow(
     s"$sectionId.completionCapacity",
-    vatLodgingOfficer.map(_.name.asLabel).getOrElse(""),
+    vatLodgingOfficer.flatMap(_.name.map(_.asLabel)).getOrElse(""),
     Some(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
   )
 
 
   val formerName: SummaryRow = SummaryRow(
     s"$sectionId.formerName",
-    vatLodgingOfficer.map(_.changeOfName.nameHasChanged).collect {
-      case true => vatLodgingOfficer.flatMap(_.changeOfName.formerName).map(_.formerName).getOrElse("")
+    vatLodgingOfficer.flatMap(_.changeOfName.map(_.nameHasChanged)).collect {
+      case true => vatLodgingOfficer.flatMap(
+        _.changeOfName
+          .flatMap(_.formerName
+            .map(_.formerName))).getOrElse("")
     }.getOrElse(s"pages.summary.$sectionId.noFormerName"),
     Some(controllers.vatLodgingOfficer.routes.FormerNameController.show())
   )
-
   val formerNameDate: SummaryRow = SummaryRow(
     s"$sectionId.formerNameDate",
-    vatLodgingOfficer.map(_.changeOfName.nameHasChanged).collect {
-      case true => vatLodgingOfficer.flatMap(_.changeOfName.formerName).flatMap(_.dateOfNameChange).map(_.format(presentationFormatter)).getOrElse("")
+    vatLodgingOfficer.flatMap(_.changeOfName.map(_.nameHasChanged)).collect {
+      case true => vatLodgingOfficer.flatMap(
+        _.changeOfName
+          .flatMap(_.formerName
+            .flatMap(_.dateOfNameChange
+              .map(_.format(presentationFormatter))))).getOrElse("")
     }.getOrElse(""),
     Some(controllers.vatLodgingOfficer.routes.FormerNameDateController.show())
   )
 
-    val dob: SummaryRow = SummaryRow(
+  val dob: SummaryRow = SummaryRow(
     s"$sectionId.dob",
-    vatLodgingOfficer.map(_.dob.format(presentationFormatter)).getOrElse(""),
+    vatLodgingOfficer.flatMap(_.dob.map(_.format(presentationFormatter))).getOrElse(""),
     Some(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show())
   )
 
   val nino: SummaryRow = SummaryRow(
     s"$sectionId.nino",
-    vatLodgingOfficer.map(_.nino).getOrElse(""),
+    vatLodgingOfficer.flatMap(_.nino).getOrElse(""),
     Some(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show())
   )
 
   val email: SummaryRow = SummaryRow(
     s"$sectionId.email",
-    vatLodgingOfficer.flatMap(_.contact.email).getOrElse(""),
+    vatLodgingOfficer.flatMap(_.contact.flatMap(_.email)).getOrElse(""),
     Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
   )
 
   val daytimePhone: SummaryRow = SummaryRow(
     s"$sectionId.daytimePhone",
-    vatLodgingOfficer.flatMap(_.contact.tel).getOrElse(""),
+    vatLodgingOfficer.flatMap(_.contact.flatMap(_.tel)).getOrElse(""),
     Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
   )
 
   val mobile: SummaryRow = SummaryRow(
     s"$sectionId.mobile",
-    vatLodgingOfficer.flatMap(_.contact.mobile).getOrElse(""),
+    vatLodgingOfficer.flatMap(_.contact.flatMap(_.mobile)).getOrElse(""),
     Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
   )
 
@@ -82,12 +88,14 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLod
     Seq(
       (completionCapacity, true),
       (formerName, true),
-      (formerNameDate, vatLodgingOfficer.exists(_.changeOfName.nameHasChanged)),
+      (formerNameDate,
+        vatLodgingOfficer.flatMap(
+          _.changeOfName).map(_.nameHasChanged).getOrElse(false)),
       (dob, true),
       (nino, true),
-      (email, vatLodgingOfficer.exists(_.contact.email.isDefined)),
-      (daytimePhone, vatLodgingOfficer.exists(_.contact.tel.isDefined)),
-      (mobile, vatLodgingOfficer.exists(_.contact.mobile.isDefined))
+      (email, vatLodgingOfficer.flatMap(_.contact.map(_.email.isDefined)).getOrElse(false)),
+      (daytimePhone, vatLodgingOfficer.flatMap(_.contact.map(_.tel.isDefined)).getOrElse(false)),
+      (mobile, vatLodgingOfficer.flatMap(_.contact.map(_.mobile.isDefined)).getOrElse(false))
     )
   )
 }

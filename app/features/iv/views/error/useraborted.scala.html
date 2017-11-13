@@ -6,7 +6,7 @@
     </header>
 
     <div class="form-group">
-        <p>@Html(messagesApi("pages.useraborted.body1.url", controllers.callbacks.routes.SignInOutController.postSignIn.url))</p>
+        <p>@Html(messagesApi("pages.useraborted.body1.url", controllers.iv.routes.IdentityVerificationController.redirectToIV().url))</p>
         <p>@Html(messagesApi("pages.useraborted.body2.url", "https://online.hmrc.gov.uk/registration/newbusiness/business-allowed"))</p>
     </div>
 }

@@ -98,7 +98,6 @@ class WorkingDaysServiceSpec extends UnitSpec with MockFactory with Inspectors {
       service.addWorkingDays(date, 1) shouldBe d(2017, 3, 28)
     }
 
-
     "should call bank holiday connector when nothing found in cache and failed to download file from Web" in new Setup {
 
       /*

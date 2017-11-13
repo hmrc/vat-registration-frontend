@@ -38,8 +38,10 @@ package controllers.sicAndCompliance.labour {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[CompanyProvideWorkers]().fold(form)(form.fill)
-              .map(f => Ok(features.sicAndCompliance.views.html.labour.company_provide_workers(f)))
+            ivPassedCheck {
+              viewModel[CompanyProvideWorkers]().fold(form)(form.fill)
+                .map(f => Ok(features.sicAndCompliance.views.html.labour.company_provide_workers(f)))
+            }
           }
     }
 
@@ -47,20 +49,22 @@ package controllers.sicAndCompliance.labour {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.sicAndCompliance.views.html.labour.company_provide_workers(badForm)).pure,
-              view => (if (PROVIDE_WORKERS_YES == view.yesNo) {
-                for {
-                  container <- s4lContainer[S4LVatSicAndCompliance]()
-                  _ <- s4lService.save(labourOnly(container.copy(companyProvideWorkers = Some(view))))
-                } yield controllers.sicAndCompliance.labour.routes.WorkersController.show()
-              } else {
-                for {
-                  container <- s4lContainer[S4LVatSicAndCompliance]()
-                  _ <- s4lService.save(dropFromCompanyProvideWorkers(labourOnly(container.copy(companyProvideWorkers = Some(view)))))
-                  _ <- vrs.submitSicAndCompliance()
-                } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
-              }).map(Redirect))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.sicAndCompliance.views.html.labour.company_provide_workers(badForm)).pure,
+                view => (if (PROVIDE_WORKERS_YES == view.yesNo) {
+                  for {
+                    container <- s4lContainer[S4LVatSicAndCompliance]()
+                    _ <- s4lService.save(labourOnly(container.copy(companyProvideWorkers = Some(view))))
+                  } yield controllers.sicAndCompliance.labour.routes.WorkersController.show()
+                } else {
+                  for {
+                    container <- s4lContainer[S4LVatSicAndCompliance]()
+                    _ <- s4lService.save(dropFromCompanyProvideWorkers(labourOnly(container.copy(companyProvideWorkers = Some(view)))))
+                    _ <- vrs.submitSicAndCompliance()
+                  } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
+                }).map(Redirect))
+            }
           }
     }
   }

@@ -37,9 +37,11 @@ package models.view.vatLodgingOfficer {
 
     // Returns a view model for a specific part of a given VatScheme API model
     implicit val modelTransformer = ApiModelTransformer[FormerNameView] { vs: VatScheme =>
-      vs.lodgingOfficer.map(_.changeOfName).map(changeOfName => FormerNameView(changeOfName.nameHasChanged, changeOfName.formerName.map(_.formerName)))
+      vs.lodgingOfficer match {
+        case Some(VatLodgingOfficer(_,_,_,_,_,Some(a),_,_,_)) =>  Some(FormerNameView(a.nameHasChanged, a.formerName.map(_.formerName)))
+        case _ => None
+      }
     }
-
   }
 }
 
@@ -69,8 +71,10 @@ package controllers.vatLodgingOfficer {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[FormerNameView]().fold(form)(form.fill)
-              .map(f => Ok(features.officers.views.html.former_name(f)))
+            ivPassedCheck {
+              viewModel[FormerNameView]().fold(form)(form.fill)
+                .map(f => Ok(features.officers.views.html.former_name(f)))
+            }
           }
     }
 
@@ -78,11 +82,13 @@ package controllers.vatLodgingOfficer {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.officers.views.html.former_name(badForm)).pure,
-              data => data.yesNo.pure.ifM(
-                ifTrue = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.FormerNameDateController.show())),
-                ifFalse = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show()))))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.officers.views.html.former_name(badForm)).pure,
+                data => data.yesNo.pure.ifM(
+                  ifTrue = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.FormerNameDateController.show())),
+                  ifFalse = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show()))))
+            }
           }
     }
 

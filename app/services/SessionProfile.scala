@@ -18,8 +18,11 @@ package services
 
 import connectors.KeystoreConnector
 import models.CurrentProfile
+import play.api.Logger
+import play.api.i18n.Messages
+import play.api.libs.json.Json
 import play.api.mvc.{Request, Result}
-import play.api.mvc.Results.{Redirect, Conflict}
+import play.api.mvc.Results._
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
@@ -36,5 +39,9 @@ trait SessionProfile {
       case Some(profile) => f(profile)
       case None          => Future.successful(Conflict)
     }
+  }
+
+  def ivPassedCheck(f: => Future[Result])(implicit cp:CurrentProfile,request: Request[_],messages:Messages):Future[Result] = {
+    if(!cp.ivPassed) Future.successful(InternalServerError(views.html.pages.error.restart())) else f
   }
 }

@@ -43,8 +43,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
     "return HTML when there's a Not For Profit model in S4L" in {
       save4laterReturnsViewModel(NotForProfit(NotForProfit.NOT_PROFIT_NO))()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(NotForProfitController.show(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> ""
@@ -61,8 +60,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturnsNoViewModel[NotForProfit]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(NotForProfitController.show) {
         result =>
@@ -78,9 +76,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
 
     when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
 
-    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Some(currentProfile)))
-
+    mockGetCurrentProfile()
       callAuthorised(NotForProfitController.show) {
         result =>
           status(result) mustBe OK
@@ -93,8 +89,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
 
   s"POST ${sicAndCompliance.cultural.routes.NotForProfitController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody()) {
         result => result isA 400
@@ -105,8 +100,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> NotForProfit.NOT_PROFIT_YES
       ))(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
@@ -117,8 +111,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> NotForProfit.NOT_PROFIT_NO
       ))(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")

@@ -76,12 +76,14 @@ package controllers.vatFinancials.vatAccountingPeriod {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[VatReturnFrequency]().fold(form)(form.fill)
-              .map(frm => Ok(features.financials.views.html.vatAccountingPeriod.vat_return_frequency(frm)))
+            ivPassedCheck {
+              viewModel[VatReturnFrequency]().fold(form)(form.fill)
+                .map(frm => Ok(features.financials.views.html.vatAccountingPeriod.vat_return_frequency(frm)))
+            }
           }
     }
 
-    private[controllers] def extractEligiblityChoice(vs : VatScheme) : Boolean = {
+    private[controllers] def extractEligiblityChoice(vs: VatScheme): Boolean = {
       vs.vatServiceEligibility.flatMap(_.vatEligibilityChoice).map(_.necessity.contains(VatEligibilityChoice.NECESSITY_VOLUNTARY))
         .fold(throw new RuntimeException(""))(contains => contains)
     }
@@ -90,20 +92,22 @@ package controllers.vatFinancials.vatAccountingPeriod {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.financials.views.html.vatAccountingPeriod.vat_return_frequency(badForm)).pure,
-              view => save(view).map(_ => view.frequencyType == MONTHLY).ifM(
-                ifTrue = for {
-                  container <- s4lContainer[S4LVatFinancials]()
-                  _ <- s4l.save(container.copy(accountingPeriod = None))
-                  vs <- vrs.getVatScheme
-                } yield if (extractEligiblityChoice(vs)) {
-                  controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()
-                } else {
-                  controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show()
-                },
-                ifFalse = controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show().pure
-              ).map(Redirect))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.financials.views.html.vatAccountingPeriod.vat_return_frequency(badForm)).pure,
+                view => save(view).map(_ => view.frequencyType == MONTHLY).ifM(
+                  ifTrue = for {
+                    container <- s4lContainer[S4LVatFinancials]()
+                    _ <- s4l.save(container.copy(accountingPeriod = None))
+                    vs <- vrs.getVatScheme
+                  } yield if (extractEligiblityChoice(vs)) {
+                    controllers.vatTradingDetails.vatChoice.routes.StartDateController.show()
+                  } else {
+                    controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.show()
+                  },
+                  ifFalse = controllers.vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show().pure
+                ).map(Redirect))
+            }
           }
     }
   }
