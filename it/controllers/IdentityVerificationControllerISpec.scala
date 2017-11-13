@@ -16,72 +16,144 @@
 
 package controllers
 
+import javax.inject.Inject
+
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
-import common.enums.IVResult
+import common.enums.{IVResult, VatRegStatus}
 import helpers.RequestsFinder
+import it.fixtures.VatRegistrationFixture
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
+import play.api.libs.json.Json
 import support.AppAndStubs
+import models.{S4LVatLodgingOfficer, CurrentProfile => cp}
+import utils.VATRegFeatureSwitch
 
-class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder {
+class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with VatRegistrationFixture {
+
+  val featureSwitch: VATRegFeatureSwitch = app.injector.instanceOf[VATRegFeatureSwitch]
+
   "GET Complete IV Journey" should {
     "redirect to 'Have you ever changed your name?' page" in {
+      featureSwitch.manager.enable(featureSwitch.useIvStub)
+      val journeyId = "12345"
       given()
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
-
+        .getS4LJourneyID.stubS4LGetIV()
+        .iv.outcome(journeyId, IVResult.Success)
+        .setIvStatus.setStatus()
+        .currentProfile.putKeyStoreValue("CurrentProfile", Json.toJson(cp("foo", "bar", "fizz", VatRegStatus.draft, None, true)).toString())
+        val response = buildClient(s"/ivComplete").get()
+        whenReady(response) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatLodgingOfficer.routes.FormerNameController.show().url)
+        }
+      }
+    "return 500 if VAT Backend does not return a 200 status when saving ivPassed" in {
+      featureSwitch.manager.enable(featureSwitch.useIvStub)
+      val journeyId = "12345"
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
+        .audit.writesAudit()
+        .getS4LJourneyID.stubS4LGetIV()
+        .iv.outcome(journeyId, IVResult.Success)
+        .setIvStatus.setStatus(status = 404)
       val response = buildClient(s"/ivComplete").get()
       whenReady(response) { res =>
-        res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatLodgingOfficer.routes.FormerNameController.show().url)
+        res.status mustBe 500
+        res.header(HeaderNames.LOCATION) mustBe None
       }
+    }
+  }
+  "GET Redirect IV" should {
+    "redirect to the link returned from IV Proxy" in {
+      featureSwitch.manager.disable(featureSwitch.useIvStub)
+      given()
+        .user.isAuthorised
+        .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficer, Some(STARTED), Some("Lodging Officer retrieved from S4L"))
+        .currentProfile.withProfile(Some(STARTED), Some("Current Profile"), ivPassed =  false)
+        .getS4LJourneyID.stubS4LPutIV(currentState = Some("Lodging Officer retrieved from S4L"), nextState = Some("IV updated in S4L"))
+        .getS4LJourneyID.stubS4LGetIV(currentState = Some("IV updated in S4L"), nextState = Some("IV retrieved from S4L"))
+        .audit.writesAudit()
+        .iv.startJourney(200)
+
+        val response = buildClient(s"/start-iv-journey").get()
+        whenReady(response){res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION).get.contains("""http://""") mustBe true
+          res.header(HeaderNames.LOCATION).get.contains("""/foo/bar/and/wizz""") mustBe true
+        }
+    }
+    "redirect to the link returned from IV stub" in {
+      featureSwitch.manager.enable(featureSwitch.useIvStub)
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile(Some(STARTED), Some("Current Profile"), ivPassed =  false)
+
+        .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficer, Some(STARTED), Some("Lodging Officer retrieved from S4L"))
+        .getS4LJourneyID.stubS4LPutIV(currentState = Some("Lodging Officer retrieved from S4L"), nextState = Some("IV updated in S4L"))
+        .getS4LJourneyID.stubS4LGetIV(currentState = Some("IV updated in S4L"), nextState = Some("IV retrieved from S4L"))
+        .audit.writesAudit()
+        val response = buildClient(s"/start-iv-journey").get()
+        whenReady(response){res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION).get.contains("""test-iv-response""") mustBe true
+        }
     }
   }
 
   "GET Failed IV Journey" should {
     "redirect to correct Timeout error page" in {
+      featureSwitch.manager.enable(featureSwitch.useIvStub)
       val journeyId = "12345"
-
       given()
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
+        .getS4LJourneyID.stubS4LGetIV()
         .iv.outcome(journeyId, IVResult.Timeout)
-
-      val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
-      whenReady(response) { res =>
-        res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.iv.routes.IdentityVerificationController.timeoutIV().url)
+        .setIvStatus.setStatus(ivPassed = false)
+        .currentProfile.putKeyStoreValue("CurrentProfile", Json.toJson(cp("foo", "bar", "fizz", VatRegStatus.draft, None, false)).toString())
+        val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
+        whenReady(response) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.iv.routes.IdentityVerificationController.timeoutIV().url)
       }
     }
 
     "redirect to correct Unable to confirm identity error page" in {
       val journeyId = "12345"
-
+      featureSwitch.manager.enable(featureSwitch.useIvStub)
       given()
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
         .iv.outcome(journeyId, IVResult.InsufficientEvidence)
-
-      val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
-      whenReady(response) { res =>
-        res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.iv.routes.IdentityVerificationController.unableToConfirmIdentity().url)
-      }
+        .getS4LJourneyID.stubS4LGetIV()
+        .setIvStatus.setStatus(ivPassed = false)
+        .currentProfile.putKeyStoreValue("CurrentProfile", Json.toJson(cp("foo", "bar", "fizz", VatRegStatus.draft, None, false)).toString())
+        val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
+        whenReady(response) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.iv.routes.IdentityVerificationController.unableToConfirmIdentity().url)
+        }
     }
 
     "redirect to correct Failed IV error page" in {
       val journeyId = "12345"
-
+      featureSwitch.manager.enable(featureSwitch.useIvStub)
       given()
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
+        .getS4LJourneyID.stubS4LGetIV()
         .iv.outcome(journeyId, IVResult.FailedIV)
-
+        .setIvStatus.setStatus(ivPassed = false)
+        .currentProfile.putKeyStoreValue("CurrentProfile", Json.toJson(cp("foo", "bar", "fizz", VatRegStatus.draft, None, false)).toString())
       val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
       whenReady(response) { res =>
         res.status mustBe 303
@@ -89,36 +161,40 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
       }
     }
 
-    "redirect to correct Locked out error page" in {
-      val journeyId = "12345"
-
-      given()
-        .user.isAuthorised
-        .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
-        .audit.writesAudit()
-        .iv.outcome(journeyId, IVResult.LockedOut)
-
-      val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
-      whenReady(response) { res =>
-        res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.iv.routes.IdentityVerificationController.lockedOut().url)
+      "redirect to correct Locked out error page" in {
+        val journeyId = "12345"
+        featureSwitch.manager.enable(featureSwitch.useIvStub)
+        given()
+          .user.isAuthorised
+          .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
+          .audit.writesAudit()
+          .getS4LJourneyID.stubS4LGetIV()
+          .iv.outcome(journeyId, IVResult.LockedOut)
+          .setIvStatus.setStatus(ivPassed = false)
+          .currentProfile.putKeyStoreValue("CurrentProfile", Json.toJson(cp("foo", "bar", "fizz", VatRegStatus.draft, None, false)).toString())
+        val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
+        whenReady(response) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.iv.routes.IdentityVerificationController.lockedOut().url)
+        }
       }
-    }
 
     "redirect to correct User aborted error page" in {
       val journeyId = "12345"
-
+      featureSwitch.manager.enable(featureSwitch.useIvStub)
       given()
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
+        .getS4LJourneyID.stubS4LGetIV()
         .iv.outcome(journeyId, IVResult.UserAborted)
-
-      val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
-      whenReady(response) { res =>
-        res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.iv.routes.IdentityVerificationController.userAborted().url)
+        .setIvStatus.setStatus(ivPassed = false)
+        .currentProfile.putKeyStoreValue("CurrentProfile",Json.toJson(cp("foo","bar","fizz",VatRegStatus.draft,None,false)).toString())
+        val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
+        whenReady(response) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe Some("/register-for-vat/incomplete-identity-check")
+        }
       }
-    }
-  }
-}
+
+}}

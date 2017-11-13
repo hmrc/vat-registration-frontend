@@ -49,10 +49,12 @@ package controllers.sicAndCompliance {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            for {
-              sicCodeList <- fetchSicCodeList
-              res <- viewModel[MainBusinessActivityView]().fold(form)(form.fill)
-            } yield Ok(features.sicAndCompliance.views.html.main_business_activity(res, sicCodeList))
+            ivPassedCheck {
+              for {
+                sicCodeList <- fetchSicCodeList
+                res <- viewModel[MainBusinessActivityView]().fold(form)(form.fill)
+              } yield Ok(features.sicAndCompliance.views.html.main_business_activity(res, sicCodeList))
+            }
           }
     }
 
@@ -60,19 +62,21 @@ package controllers.sicAndCompliance {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => fetchSicCodeList().map(sicCodeList =>
-                BadRequest(features.sicAndCompliance.views.html.main_business_activity(badForm, sicCodeList))),
-              view => fetchSicCodeList().flatMap(sicCodeList =>
-                sicCodeList.find(_.id == view.id).fold(
-                  BadRequest(features.sicAndCompliance.views.html.main_business_activity(form, sicCodeList)).pure
-                )(selected => for {
-                  mainSic <- viewModel[MainBusinessActivityView]().value
-                  selectionChanged = mainSic.exists(_.id != selected.id)
-                  _ <- s4l.save(S4LFlatRateScheme()).flatMap(_ => vrs.submitVatFlatRateScheme()) onlyIf selectionChanged
-                  _ <- save(MainBusinessActivityView(selected))
-                  result <- selectNextPage(sicCodeList)
-                } yield result)))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => fetchSicCodeList().map(sicCodeList =>
+                  BadRequest(features.sicAndCompliance.views.html.main_business_activity(badForm, sicCodeList))),
+                view => fetchSicCodeList().flatMap(sicCodeList =>
+                  sicCodeList.find(_.id == view.id).fold(
+                    BadRequest(features.sicAndCompliance.views.html.main_business_activity(form, sicCodeList)).pure
+                  )(selected => for {
+                    mainSic <- viewModel[MainBusinessActivityView]().value
+                    selectionChanged = mainSic.exists(_.id != selected.id)
+                    _ <- s4l.save(S4LFlatRateScheme()).flatMap(_ => vrs.submitVatFlatRateScheme()) onlyIf selectionChanged
+                    _ <- save(MainBusinessActivityView(selected))
+                    result <- selectNextPage(sicCodeList)
+                  } yield result)))
+            }
           }
     }
 
@@ -80,9 +84,11 @@ package controllers.sicAndCompliance {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            fetchSicCodeList().flatMap {
-              case Nil => selectNextPage(Nil)
-              case sicCodeList@(head :: _) => save(MainBusinessActivityView(head)).flatMap(_ => selectNextPage(sicCodeList))
+            ivPassedCheck {
+              fetchSicCodeList().flatMap {
+                case Nil => selectNextPage(Nil)
+                case sicCodeList@(head :: _) => save(MainBusinessActivityView(head)).flatMap(_ => selectNextPage(sicCodeList))
+              }
             }
           }
     }

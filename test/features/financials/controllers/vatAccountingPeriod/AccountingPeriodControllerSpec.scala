@@ -57,8 +57,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
 
   s"GET ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.show()}" should {
     "return HTML when there's a Accounting Period model in S4L" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsViewModel(AccountingPeriod(""))()
 
@@ -69,8 +68,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     }
 
     "return HTML when there's nothing in S4L and vatScheme contain data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[AccountingPeriod]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
@@ -81,8 +79,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
     }
 
     "return HTML when there's nothing in S4L and vatScheme contain no data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[AccountingPeriod]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(emptyVatScheme))
@@ -95,8 +92,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
 
   s"POST ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.submit()} with Empty data" should {
     "return 400" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(_ isA 400)
     }
   }
@@ -104,11 +100,11 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
   s"POST ${vatFinancials.vatAccountingPeriod.routes.AccountingPeriodController.submit()} with any accounting period selected" should {
     "redirect to mandatory start date page" when {
       "voluntary registration is no" in {
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Some(currentProfile)))
+
         when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
+        mockGetCurrentProfile()
         forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
           accountingPeriod =>
             save4laterReturnsViewModel(VoluntaryRegistration.no)()
@@ -122,10 +118,9 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
       }
 
       "voluntary registration is yes" in {
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Some(currentProfile)))
         when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = Some(validServiceEligibility()))))
+        mockGetCurrentProfile()
 
         forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
           accountingPeriod =>
@@ -139,9 +134,9 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
         }
       }
 
+
       "no eligibility choice exists" in {
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Some(currentProfile)))
+         mockGetCurrentProfile()
         forAll(Seq(AccountingPeriod.FEB_MAY_AUG_NOV, AccountingPeriod.JAN_APR_JUL_OCT, AccountingPeriod.MAR_JUN_SEP_DEC)) {
           accountingPeriod =>
             intercept[RuntimeException] { submitAuthorised(Controller.submit(),

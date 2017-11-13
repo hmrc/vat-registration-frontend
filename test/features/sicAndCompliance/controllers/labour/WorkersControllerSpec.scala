@@ -43,8 +43,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
   s"GET ${sicAndCompliance.labour.routes.WorkersController.show()}" should {
     "return HTML when there's a Workers model in S4L" in {
       save4laterReturnsViewModel(Workers(5))()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(WorkersController.show(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
@@ -59,8 +58,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[Workers]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(WorkersController.show) {
         result =>
           status(result) mustBe OK
@@ -73,8 +71,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[Workers]()
     when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Some(currentProfile)))
+    mockGetCurrentProfile()
       callAuthorised(WorkersController.show) {
         result =>
           status(result) mustBe OK
@@ -87,8 +84,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
 
   s"POST ${sicAndCompliance.labour.routes.WorkersController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result => status(result) mustBe Status.BAD_REQUEST
@@ -100,8 +96,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterExpectsSave[Workers]()
       save4laterReturns(S4LVatSicAndCompliance())
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
@@ -113,8 +108,7 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
     "return 303 with 8 or more workers entered" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[Workers]()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "8"
       )) {

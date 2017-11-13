@@ -88,8 +88,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
 
       when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       intercept[RuntimeException] {
         callAuthorised(MandatoryStartDateController.show) { result =>
           status(result) mustBe OK
@@ -102,9 +101,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
 
       when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       callAuthorised(MandatoryStartDateController.show) {
         result =>
           status(result) mustBe OK
@@ -122,8 +119,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       callAuthorised(MandatoryStartDateController.show) {
         result =>
@@ -138,8 +134,8 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
   s"POST ${routes.MandatoryStartDateController.submit()}" should {
     "redirect the user to the bank account page after clicking continue on the mandatory start date confirmation page if they are not incorped" in {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentNonincorpProfile)))
+
+      mockGetCurrentProfile(Some(currentNonincorpProfile))
 
       when(mockVatRegistrationService.submitTradingDetails()(any(), any())).thenReturn(validVatTradingDetails.pure)
       callAuthorised(MandatoryStartDateController.submit) {
@@ -152,9 +148,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "be a bad request if they're incorped and the form has no data" in {
-
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
@@ -166,8 +160,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "be a bad request if they're incorped and the form has partial data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
@@ -184,9 +177,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "be a bad request if they're incorped and the form date is 3 months in the future" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
@@ -202,9 +193,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "be a bad request if they're incorped and the form date is 4 years in the past" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
@@ -220,8 +209,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "be a bad request if they're incorped and the form date is after the calculated date" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
@@ -241,10 +229,8 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
       save4laterExpectsSave[StartDateView]()
       when(mockVatRegistrationService.submitTradingDetails()(any(), any())).thenReturn(validVatTradingDetails.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(
-          currentProfile.copy(incorporationDate = Some(validPastRegIncorpDate)))
-        ))
+      mockGetCurrentProfile(Some(
+          currentProfile().copy(incorporationDate = Some(validPastRegIncorpDate))))
 
       when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
@@ -267,11 +253,8 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
       save4laterExpectsSave[StartDateView]()
       when(mockVatRegistrationService.submitTradingDetails()(any(), any())).thenReturn(validVatTradingDetails.pure)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(
-          currentProfile.copy(incorporationDate = Some(validPastRegIncorpDate)))
-        ))
-
+      mockGetCurrentProfile(Some(
+          currentProfile().copy(incorporationDate = Some(validPastRegIncorpDate))))
       when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
@@ -295,9 +278,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       await(MandatoryStartDateController.mandatoryStartDate(Matchers.any[CurrentProfile], Matchers.any[HeaderCarrier])) mustBe Some(expectedThresholdDate)
     }
 
@@ -305,9 +286,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       await(MandatoryStartDateController.mandatoryStartDate(Matchers.any[CurrentProfile], Matchers.any[HeaderCarrier])) mustBe None
     }
   }
@@ -333,6 +312,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return the calculated start date if an known threshold being in November" in {
+
       MandatoryStartDateController.calculateMandatoryStartDate(knownThresholdNov, None) mustBe
         Some(knownThresholdDateNovember.withDayOfMonth(1).plusMonths(2))
     }

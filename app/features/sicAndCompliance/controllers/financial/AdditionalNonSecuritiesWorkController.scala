@@ -39,9 +39,11 @@ class AdditionalNonSecuritiesWorkController @Inject()(ds: CommonPlayDependencies
   def show: Action[AnyContent] = authorised.async{
     implicit user =>
       implicit request =>
-        withCurrentProfile{ implicit profile =>
-          viewModel[AdditionalNonSecuritiesWork]().fold(form)(form.fill)
-            .map(f => Ok(features.sicAndCompliance.views.html.financial.additional_non_securities_work(f)))
+        withCurrentProfile { implicit profile =>
+          ivPassedCheck {
+            viewModel[AdditionalNonSecuritiesWork]().fold(form)(form.fill)
+              .map(f => Ok(features.sicAndCompliance.views.html.financial.additional_non_securities_work(f)))
+          }
         }
   }
 

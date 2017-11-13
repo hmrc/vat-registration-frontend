@@ -48,9 +48,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
 
   s"GET ${routes.OfficerHomeAddressController.show()}" should {
     "return HTML when there's nothing in S4L" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       save4laterReturnsNoViewModel[OfficerHomeAddressView]()
       mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", dummyCacheMap)
       when(mockPPService.getOfficerAddressList()(any(),any())).thenReturn(Seq(address).pure)
@@ -61,8 +59,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsViewModel(OfficerHomeAddressView(scrsAddress.id, Some(scrsAddress)))()
       mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", dummyCacheMap)
@@ -76,15 +73,13 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
 
   s"POST ${routes.OfficerHomeAddressController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", None)
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
 
     "return 303 with selected address" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterExpectsSave[OfficerHomeAddressView]()
       when(mockPPService.getOfficerAddressList()(any(),any())).thenReturn(Seq(address).pure)
@@ -96,8 +91,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
     }
 
     "return 303 with selected address but no address list in keystore" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterExpectsSave[OfficerHomeAddressView]()
       when(mockPPService.getOfficerAddressList()(any(),any())).thenReturn(Seq(address).pure)
@@ -109,8 +103,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
     }
 
     "redirect the user to TxM address capture page with 'other address' selected" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockAddressLookupConnector.getOnRampUrl(any[Call])(any(), any())).thenReturn(Call("GET", "TxM").pure)
 
@@ -122,9 +115,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
 
   s"GET ${routes.OfficerHomeAddressController.acceptFromTxm()}" should {
     "save an address and redirect to next page" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       save4laterExpectsSave[OfficerHomeAddressView]()
       when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
 

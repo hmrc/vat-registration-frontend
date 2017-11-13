@@ -36,8 +36,10 @@ package controllers.sicAndCompliance {
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
-          withCurrentProfile { _ =>
-            Future.successful(Ok(features.sicAndCompliance.views.html.compliance_introduction()))
+          withCurrentProfile { implicit profile =>
+            ivPassedCheck {
+              Future.successful(Ok(features.sicAndCompliance.views.html.compliance_introduction()))
+            }
           }
     }
 
@@ -45,10 +47,12 @@ package controllers.sicAndCompliance {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            OptionT(s4LService.fetchAndGet[SicStub]()).map(
-              ss =>
-                ComplianceQuestions(ss.sicCodes.toArray))
-              .fold(controllers.test.routes.SicStubController.show())(_.firstQuestion).map(Redirect)
+            ivPassedCheck {
+              OptionT(s4LService.fetchAndGet[SicStub]()).map(
+                ss =>
+                  ComplianceQuestions(ss.sicCodes.toArray))
+                .fold(controllers.test.routes.SicStubController.show())(_.firstQuestion).map(Redirect)
+            }
           }
     }
 

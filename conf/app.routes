@@ -7,7 +7,11 @@ GET         /renew-session                                                      
 GET         /error/destroy-session                                                             controllers.callbacks.SignInOutController.destroySession
 GET         /session-timed-out                                                                 controllers.callbacks.SignInOutController.timeoutShow()
 
+##GenericError
+GET /error                                                                                     controllers.callbacks.SignInOutController.errorShow
+
 ##IDENTITY VERIFICATION
+GET         /start-iv-journey                                                                  controllers.iv.IdentityVerificationController.redirectToIV
 GET         /timed-out-inactivity                                                              controllers.iv.IdentityVerificationController.timeoutIV
 GET         /cant-confirm-identity                                                             controllers.iv.IdentityVerificationController.unableToConfirmIdentity
 GET         /couldnt-confirm-identity                                                          controllers.iv.IdentityVerificationController.failedIV

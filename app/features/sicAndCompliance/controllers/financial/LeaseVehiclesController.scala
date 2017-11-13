@@ -41,8 +41,10 @@ package controllers.sicAndCompliance.financial {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[LeaseVehicles]().fold(form)(form.fill)
-              .map(f => Ok(features.sicAndCompliance.views.html.financial.lease_vehicles(f)))
+            ivPassedCheck {
+              viewModel[LeaseVehicles]().fold(form)(form.fill)
+                .map(f => Ok(features.sicAndCompliance.views.html.financial.lease_vehicles(f)))
+            }
           }
     }
 

@@ -44,8 +44,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
 
   s"GET ${routes.CompletionCapacityController.show()}" should {
     "return HTML when there's no view in S4L" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[CompletionCapacityView]()
       when(mockPPService.getOfficerList()(any(), any())).thenReturn(Seq(officer).pure)
@@ -57,8 +56,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return HTML when view is present in S4L" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsViewModel(CompletionCapacityView("id", Some(completionCapacity)))()
       when(mockPPService.getOfficerList()(any(), any())).thenReturn(Seq(officer).pure)
@@ -72,9 +70,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
 
   s"POST ${routes.CompletionCapacityController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       mockKeystoreFetchAndGet[Seq[Officer]]("OfficerList", None)
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody()
@@ -82,9 +78,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return 303  with selected completionCapacity but no completionCapacity list in keystore" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       save4laterExpectsSave[CompletionCapacityView]()
       mockKeystoreFetchAndGet("OfficerList", Option.empty[Seq[Officer]])
       mockKeystoreCache[Officer](REGISTERING_OFFICER_KEY, dummyCacheMap)
@@ -96,8 +90,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return 303 with selected completionCapacity" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockPPService.getOfficerList()(any(), any())).thenReturn(Seq(officer).pure)
       save4laterExpectsSave[CompletionCapacityView]()

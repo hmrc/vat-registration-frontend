@@ -25,6 +25,7 @@ import common.enums.VatRegStatus
 import config.WSHttp
 import models.api._
 import models.external.IncorporationInfo
+
 import play.api.libs.json.{JsObject, JsValue}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
@@ -111,6 +112,11 @@ trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnect
       case e: Exception => throw logResponse(e, className, "getStatus")
     }
 
-
+  def updateIVStatus(regId:String,ivData:JsValue)(implicit hc:HeaderCarrier):Future[HttpResponse] = {
+    http.PATCH[JsValue, HttpResponse](s"$vatRegUrl/vatreg/$regId/update-iv-status", ivData)
+      .recover {
+        case e: Exception => throw logResponse(e, className, "updateIVStatus")
+      }
+  }
 }
 

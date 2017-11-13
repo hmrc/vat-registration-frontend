@@ -25,9 +25,9 @@ import play.api.http.HeaderNames
 import play.api.libs.ws.WS
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.{FakeApplication, FakeRequest}
+import support.SessionBuilder.getSessionCookie
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.it.Port
-import support.SessionBuilder.getSessionCookie
 
 trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerSuite with IntegrationPatience with PatienceConfiguration {
   me: Suite with TestSuite =>
@@ -40,7 +40,7 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerS
 
   abstract override implicit val patienceConfig: PatienceConfig =
     PatienceConfig(
-      timeout = Span(2, Seconds),
+      timeout = Span(4, Seconds),
       interval = Span(50, Millis))
 
   override lazy val port: Int = Port.randomAvailable
@@ -63,7 +63,9 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerS
       "cachable.short-lived-cache",
       "cachable.session-cache",
       "business-registration-dynamic-stub",
-      "bank-account-reputation"
+      "bank-account-reputation",
+      "identity-verification-proxy",
+      "identity-verification-frontend"
     ))
   )
 
@@ -77,7 +79,15 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerS
       ("play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck") +
       ("microservice.services.vat-registration-eligibility-frontend.www.host" -> "") +
       ("microservice.services.vat-registration-eligibility-frontend.uri" -> "/vat-eligibility-uri") +
-      ("microservice.services.business-registration-dynamic-stub.uri" -> "/iv-uri")
-
+      ("microservice.services.business-registration-dynamic-stub.uri" -> "/iv-uri") +
+      ("microservice.services.iv.identity-verification.host" -> wiremockHost) +
+      ("microservice.services.iv.identity-verification.port" -> wiremockPort) +
+  ("microservice.services.iv.identity-verification-proxy.host" -> wiremockHost) +
+    ("microservice.services.iv.identity-verification-proxy.port" -> wiremockPort)+
+      ("microservice.services.iv.identity-verification-frontend.host" -> wiremockHost) +
+      ("microservice.services.iv.identity-verification-frontend.port" -> wiremockPort)
 }
+
+
+
 

@@ -17,7 +17,8 @@
 package mocks
 
 import connectors._
-import models.CurrentProfile
+
+import features.iv.services.IdentityVerificationService
 import org.scalatest.mockito.MockitoSugar
 import services._
 import uk.gov.hmrc.http.cache.client.SessionCache
@@ -49,5 +50,5 @@ trait VatMocks
   implicit lazy val mockIdentityVerificationConnector = mock[IdentityVerificationConnector]
   implicit lazy val mockBankAccountReputationService = mock[BankAccountReputationService]
   implicit lazy val mockBankAccountReputationConnector = mock[BankAccountReputationConnector]
-
+  implicit lazy val mockIVService = mock[IdentityVerificationService]
 }

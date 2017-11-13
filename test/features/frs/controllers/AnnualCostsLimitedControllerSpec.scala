@@ -41,8 +41,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
 
   s"GET ${routes.AnnualCostsLimitedController.show()}" should {
     "return HTML Annual Costs Limited page with no Selection" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       val annualCostsLimitedView = AnnualCostsLimitedView("")
       save4laterReturnsViewModel(annualCostsLimitedView)()
@@ -54,8 +53,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[AnnualCostsLimitedView]()
       save4laterReturnsViewModel(estimateVatTurnover)()
@@ -68,8 +66,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return HTML when there's not AnnualCostsLimitedView in S4L and vatScheme contains no data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[AnnualCostsLimitedView]()
       save4laterReturnsViewModel(estimateVatTurnover)()
@@ -82,8 +79,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return HTML when there's both AnnualCostsLimitedView and EstimateVatTurnover in S4L and vatScheme no data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[AnnualCostsLimitedView]()
       save4laterReturnsViewModel(EstimateVatTurnover(0))()
@@ -99,8 +95,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
 
   s"POST ${routes.AnnualCostsLimitedController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsViewModel(estimateVatTurnover)()
 
@@ -109,8 +104,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return 303 with Annual Costs Limited selected Yes" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturnsViewModel(estimateVatTurnover)()
@@ -122,8 +116,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return 303 with Annual Costs Limited selected No - but within 12 months" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturnsViewModel(estimateVatTurnover)()
@@ -135,8 +128,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "redirect to confirm business sector with Annual Costs Limited selected No" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterExpectsSave[AnnualCostsLimitedView]()
       save4laterReturnsViewModel(estimateVatTurnover)()
@@ -147,8 +139,7 @@ class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "redirect to confirm business sector with Annual Costs Limited selected No and EstimateVatTurnover is Null in S4l and Database" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterExpectsSave[AnnualCostsLimitedView]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)

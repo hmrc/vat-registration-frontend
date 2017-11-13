@@ -36,14 +36,14 @@ class PreviousAddressViewSpec extends UnitSpec with VatRegistrationFixture with 
     "convert VatScheme with VatLodgingOfficer details into a PreviousAddressView" in {
       val vatLodgingOfficer =
         VatLodgingOfficer(
-          currentAddress = address,
-          dob = validDob,
-          nino = "",
-          role = "director",
-          name = officerName,
-          changeOfName = changeOfName,
-          currentOrPreviousAddress = testPreviousAddress,
-          contact = validOfficerContactDetails)
+          currentAddress = Some(address),
+          dob = Some(validDob),
+          nino = Some(""),
+          role = Some("director"),
+          name = Some(officerName),
+          changeOfName = Some(changeOfName),
+          currentOrPreviousAddress = Some(testPreviousAddress),
+          contact = Some(validOfficerContactDetails))
 
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 

@@ -17,20 +17,25 @@
 package connectors
 
 import common.enums.IVResult
+import features.iv.models.{IVSetup, UserData}
 import helpers.VatRegSpec
-import play.api.libs.json.{JsResultException, JsValue, Json}
+import play.api.libs.json.{JsObject, JsResultException, JsValue, Json}
 import uk.gov.hmrc.play.http.ws.WSHttp
+import org.mockito.Mockito._
 
 class IdentityVerificationConnectorSpec extends VatRegSpec {
   class Setup {
-    val connector = new IdentityVerificationConnector {
+    val connector = new IdentityVerificationConnector(mockVATFeatureSwitch) {
       override val brdsUrl: String = "tst-url"
       override val brdsUri: String = "tst-url"
+      override val ivFeUrl:String = "iv"
       override val http: WSHttp = mockWSHttp
     }
   }
 
+
   "Calling getJourneyOutcome" should {
+    when(mockVATFeatureSwitch.useIvStub).thenReturn(enabledFeatureSwitch)
     val jsonValidResultSuccess = Json.parse(
       """
         | {
@@ -73,6 +78,13 @@ class IdentityVerificationConnectorSpec extends VatRegSpec {
     "return an exception when the Http call returns an exception" in new Setup {
       mockHttpFailedGET[JsValue]("test-url", internalServiceException)
       connector.getJourneyOutcome("testJourneyId") failedWith internalServiceException
+    }
+  }
+  "setupIVJourney" should{
+    "return link with ivfe base url attached to it" in new Setup {
+      mockHttpPOST[IVSetup,JsValue]("test-url",JsObject(Map("link" -> Json.toJson("/myLink"),"journeyLink" -> Json.toJson("foo"))).as[JsValue])
+      val res =  await(connector.setupIVJourney(IVSetup("origin","completion","fail",1,UserData("foo","bar","fudge","wizz"))))
+      res mustBe JsObject(Map("link" -> Json.toJson("iv/myLink"),"journeyLink" -> Json.toJson("foo"))).as[JsValue]
     }
   }
 }

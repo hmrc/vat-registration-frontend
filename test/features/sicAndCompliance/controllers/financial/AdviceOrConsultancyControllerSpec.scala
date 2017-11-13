@@ -41,8 +41,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
     "return HTML when there's a Advice Or Consultancy model in S4L" in {
       save4laterReturnsViewModel(AdviceOrConsultancy(true))()
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       submitAuthorised(AdviceOrConsultancyController.show(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> ""
@@ -54,8 +53,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[AdviceOrConsultancy]()
       when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatScheme))
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(AdviceOrConsultancyController.show) {
         _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
       }
@@ -64,8 +62,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[AdviceOrConsultancy]()
     when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Some(currentProfile)))
+    mockGetCurrentProfile()
       callAuthorised(AdviceOrConsultancyController.show) {
         _ includesText "Does the company provide &#x27;advice only&#x27; or consultancy services?"
       }
@@ -74,8 +71,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
 
   s"POST ${routes.AdviceOrConsultancyController.show()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) (result => result isA 400)
     }
@@ -84,8 +80,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "true"
       )) {
@@ -97,8 +92,7 @@ class AdviceOrConsultancyControllerSpec extends VatRegSpec with VatRegistrationF
       when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(AdviceOrConsultancyController.submit(), fakeRequest.withFormUrlEncodedBody(
         "adviceOrConsultancyRadio" -> "false"
       )) {

@@ -16,7 +16,7 @@
 
 package models.view.vatLodgingOfficer {
 
-  import models.api.{CompletionCapacity, VatScheme}
+  import models.api.{CompletionCapacity, VatLodgingOfficer, VatScheme}
   import models.{ApiModelTransformer, _}
   import play.api.libs.json.Json
 
@@ -36,7 +36,10 @@ package models.view.vatLodgingOfficer {
 
     // return a view model from a VatScheme instance
     implicit val modelTransformer = ApiModelTransformer[CompletionCapacityView] { vs: VatScheme =>
-      vs.lodgingOfficer.map(cc => CompletionCapacityView(cc.name.id, Some(CompletionCapacity(cc.name, cc.role))))
+      vs.lodgingOfficer match{
+        case Some(VatLodgingOfficer(_,_,_,Some(b),Some(a),_,_,_,_)) => Some(CompletionCapacityView(a.id, Some(CompletionCapacity(a, b))))
+        case _ => None
+      }
     }
 
   }

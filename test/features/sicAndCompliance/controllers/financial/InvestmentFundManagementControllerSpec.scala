@@ -40,8 +40,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
   s"GET ${routes.InvestmentFundManagementController.show()}" should {
     "return HTML when there's a Investment Fund Management model in S4L" in {
       save4laterReturnsViewModel(InvestmentFundManagement(true))()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(InvestmentFundManagementController.show(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> ""
       )) {
@@ -52,8 +51,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[InvestmentFundManagement]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(InvestmentFundManagementController.show) {
         _ includesText "Does the company provide investment fund management services?"
       }
@@ -62,8 +60,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[InvestmentFundManagement]()
     when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Some(currentProfile)))
+    mockGetCurrentProfile()
       callAuthorised(InvestmentFundManagementController.show) {
         _ includesText "Does the company provide investment fund management services?"
       }
@@ -72,8 +69,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
   s"POST ${routes.InvestmentFundManagementController.show()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(InvestmentFundManagementController.submit(),
         fakeRequest.withFormUrlEncodedBody("bogus" -> "nonsense")) { result =>
         result isA 400
@@ -82,8 +78,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
     "return 303 with Investment Fund Management Yes selected" in {
       save4laterExpectsSave[InvestmentFundManagement]()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "true"
       ))(_ redirectsTo s"$contextRoot/manages-funds-not-included-in-this-list")
@@ -94,8 +89,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterExpectsSave[InvestmentFundManagement]()
       save4laterReturns(S4LVatSicAndCompliance())
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "false"
       ))(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")

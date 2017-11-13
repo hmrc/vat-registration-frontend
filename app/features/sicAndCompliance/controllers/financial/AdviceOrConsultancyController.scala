@@ -39,8 +39,10 @@ package controllers.sicAndCompliance.financial {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[AdviceOrConsultancy]().fold(form)(form.fill)
-              .map(f => Ok(features.sicAndCompliance.views.html.financial.advice_or_consultancy(f)))
+            ivPassedCheck {
+              viewModel[AdviceOrConsultancy]().fold(form)(form.fill)
+                .map(f => Ok(features.sicAndCompliance.views.html.financial.advice_or_consultancy(f)))
+            }
           }
     }
 
@@ -49,12 +51,14 @@ package controllers.sicAndCompliance.financial {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.sicAndCompliance.views.html.financial.advice_or_consultancy(badForm)).pure,
-              view => for {
-                container <- s4lContainer[S4LVatSicAndCompliance]()
-                _ <- s4lService.save(financeOnly(container.copy(adviceOrConsultancy = Some(view))))
-              } yield Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show()))
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.sicAndCompliance.views.html.financial.advice_or_consultancy(badForm)).pure,
+                view => for {
+                  container <- s4lContainer[S4LVatSicAndCompliance]()
+                  _ <- s4lService.save(financeOnly(container.copy(adviceOrConsultancy = Some(view))))
+                } yield Redirect(controllers.sicAndCompliance.financial.routes.ActAsIntermediaryController.show()))
+            }
           }
     }
 

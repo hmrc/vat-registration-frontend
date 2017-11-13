@@ -43,8 +43,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
   s"GET ${sicAndCompliance.labour.routes.SkilledWorkersController.show()}" should {
     "return HTML when there's a Company Provide Skilled Workers model in S4L" in {
       save4laterReturnsViewModel(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO))()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(SkilledWorkersController.show(), fakeRequest.withFormUrlEncodedBody(
         "skilledWorkersRadio" -> ""
       )) {
@@ -59,8 +58,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[SkilledWorkers]()
       when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(SkilledWorkersController.show) {
         result =>
           status(result) mustBe OK
@@ -73,8 +71,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[SkilledWorkers]()
     when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Some(currentProfile)))
+    mockGetCurrentProfile()
       callAuthorised(SkilledWorkersController.show) {
         result =>
           status(result) mustBe OK
@@ -87,8 +84,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
   s"POST ${sicAndCompliance.labour.routes.SkilledWorkersController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(SkilledWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result => status(result) mustBe Status.BAD_REQUEST
@@ -98,8 +94,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
     "return 303 with company provide Skilled workers Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[SkilledWorkers]()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(SkilledWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "skilledWorkersRadio" -> SkilledWorkers.SKILLED_WORKERS_YES
       )) {
@@ -112,8 +107,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
     "return 303 with company provide Skilled workers No selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[SkilledWorkers]()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(SkilledWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "skilledWorkersRadio" -> SkilledWorkers.SKILLED_WORKERS_NO
       )) {

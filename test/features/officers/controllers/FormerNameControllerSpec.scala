@@ -42,8 +42,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     "return HTML when there's a former name in S4L" in {
       save4laterReturnsViewModel(FormerNameView(yesNo = true, formerName = Some("Smooth Handler")))()
       when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(TestFormerNameController.show) {
         _ includesText "Have you ever changed your name?"
       }
@@ -52,8 +51,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[FormerNameView]()
       when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(TestFormerNameController.show) {
         _ includesText "Have you ever changed your name?"
       }
@@ -62,8 +60,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[FormerNameView]()
       when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(emptyVatScheme.pure)
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(TestFormerNameController.show) {
         _ includesText "Have you ever changed your name?"
       }
@@ -72,8 +69,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
   s"POST ${vatLodgingOfficer.routes.FormerNameController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(TestFormerNameController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result => result isA 400
@@ -83,8 +79,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     "return 303 with valid data no former name" in {
       save4laterExpectsSave[FormerNameView]()
       mockKeystoreCache[String](FORMER_NAME, dummyCacheMap)
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(TestFormerNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "formerNameRadio" -> "false"
       )) {
@@ -95,8 +90,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     "return 303 with valid data with former name" in {
       save4laterExpectsSave[FormerNameView]()
       mockKeystoreCache[String](FORMER_NAME, dummyCacheMap)
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(TestFormerNameController.submit(), fakeRequest.withFormUrlEncodedBody(
         "formerNameRadio" -> "true",
         "formerName" -> "some name"

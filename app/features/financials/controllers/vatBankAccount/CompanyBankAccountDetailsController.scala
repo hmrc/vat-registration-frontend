@@ -82,14 +82,16 @@ package controllers.vatFinancials.vatBankAccount {
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
-          withCurrentProfile{ implicit profile =>
-            viewModel[CompanyBankAccountDetails]().map(vm =>
-              CompanyBankAccountDetailsForm(
-                accountName = vm.accountName.trim,
-                accountNumber = "",
-                sortCode = SortCode.parse(vm.sortCode).getOrElse(SortCode("", "", ""))))
-              .fold(form)(form.fill)
-              .map(frm => Ok(features.financials.views.html.vatBankAccount.company_bank_account_details(frm)))
+          withCurrentProfile { implicit profile =>
+            ivPassedCheck {
+              viewModel[CompanyBankAccountDetails]().map(vm =>
+                CompanyBankAccountDetailsForm(
+                  accountName = vm.accountName.trim,
+                  accountNumber = "",
+                  sortCode = SortCode.parse(vm.sortCode).getOrElse(SortCode("", "", ""))))
+                .fold(form)(form.fill)
+                .map(frm => Ok(features.financials.views.html.vatBankAccount.company_bank_account_details(frm)))
+            }
           }
     }
 
@@ -97,25 +99,29 @@ package controllers.vatFinancials.vatBankAccount {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => BadRequest(features.financials.views.html.vatBankAccount.company_bank_account_details(badForm)).pure,
-              view => {
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.financials.views.html.vatBankAccount.company_bank_account_details(badForm)).pure,
+                view => {
+                  val companyBankDetails = CompanyBankAccountDetails(
+                    accountName   = view.accountName.trim,
+                    accountNumber = view.accountNumber,
+                    sortCode      = view.sortCode.toString
+                  )
 
-                val companyBankDetails = CompanyBankAccountDetails(
-                  accountName = view.accountName.trim,
-                  accountNumber = view.accountNumber,
-                  sortCode = view.sortCode.toString)
-
-                bars.bankDetailsModulusCheck(ModulusCheckAccount(companyBankDetails)).flatMap {
-                  case true => processCompanyBankDetails(companyBankDetails,view.sortCode).map {
-                    case turnover if turnover > joinThreshold => Redirect(controllers.routes.SummaryController.show())
-                    case _ => Redirect(controllers.frs.routes.JoinFrsController.show())
+                  bars.bankDetailsModulusCheck(ModulusCheckAccount(companyBankDetails)).flatMap {
+                    case true => processCompanyBankDetails(companyBankDetails,view.sortCode).map {
+                      case turnover if turnover > joinThreshold => Redirect(controllers.routes.SummaryController.show())
+                      case _                                    => Redirect(controllers.frs.routes.JoinFrsController.show())
+                    }
+                    case _ =>
+                      val badForm = form.withError("sortCodeAndAccountGroup" , "validation.companyBankAccount.invalidCombination").fill(view)
+                      BadRequest(features.financials.views.html.vatBankAccount.company_bank_account_details(badForm)).pure
                   }
-                  case _ => val badForm = form.withError("sortCodeAndAccountGroup" , "validation.companyBankAccount.invalidCombination").fill(view)
-                    BadRequest(features.financials.views.html.vatBankAccount.company_bank_account_details(badForm)).pure
                 }
-        })
-    }
+              )
+            }
+          }
     }
 
     def processCompanyBankDetails(companyBankDetails: CompanyBankAccountDetails, sortCode: SortCode)

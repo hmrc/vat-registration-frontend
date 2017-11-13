@@ -36,8 +36,10 @@ package controllers.sicAndCompliance.financial {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            viewModel[ManageAdditionalFunds]().fold(form)(form.fill)
-              .map(f => Ok(features.sicAndCompliance.views.html.financial.manage_additional_funds(f)))
+            ivPassedCheck {
+              viewModel[ManageAdditionalFunds]().fold(form)(form.fill)
+                .map(f => Ok(features.sicAndCompliance.views.html.financial.manage_additional_funds(f)))
+            }
           }
     }
 

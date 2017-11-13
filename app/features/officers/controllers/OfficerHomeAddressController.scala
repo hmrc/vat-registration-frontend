@@ -35,7 +35,7 @@ package models.view.vatLodgingOfficer {
     // return a view model from a VatScheme instance
     implicit val modelTransformer = ApiModelTransformer[OfficerHomeAddressView] { vs: VatScheme =>
       vs.lodgingOfficer.map(_.currentAddress).collect {
-        case address => OfficerHomeAddressView(address.id, Some(address))
+        case address => OfficerHomeAddressView(address.map(_.id).getOrElse(""), address)
       }
     }
 
@@ -78,11 +78,13 @@ package controllers.vatLodgingOfficer {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            for {
-              addresses <- prePopService.getOfficerAddressList()
-              _ <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
-              res <- viewModel[OfficerHomeAddressView]().fold(form)(form.fill)
-            } yield Ok(features.officers.views.html.officer_home_address(res, addresses))
+            ivPassedCheck {
+              for {
+                addresses <- prePopService.getOfficerAddressList()
+                _ <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
+                res <- viewModel[OfficerHomeAddressView]().fold(form)(form.fill)
+              } yield Ok(features.officers.views.html.officer_home_address(res, addresses))
+            }
           }
     }
 

@@ -43,8 +43,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
   s"GET ${sicAndCompliance.labour.routes.TemporaryContractsController.show()}" should {
     "return HTML when there's a Temporary Contracts model in S4L" in {
       save4laterReturnsViewModel(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO))()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(TemporaryContractsController.show(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> ""
       )) {
@@ -60,8 +59,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[TemporaryContracts]()
       when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(Future.successful(validVatScheme))
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       callAuthorised(TemporaryContractsController.show) {
         result =>
           status(result) mustBe OK
@@ -74,8 +72,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[TemporaryContracts]()
     when(mockVatRegistrationService.getVatScheme()(any(),any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Some(currentProfile)))
+    mockGetCurrentProfile()
       callAuthorised(TemporaryContractsController.show) {
         result =>
           status(result) mustBe OK
@@ -88,8 +85,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
 
   s"POST ${sicAndCompliance.labour.routes.TemporaryContractsController.submit()}" should {
     "return 400 with Empty data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result => status(result) mustBe Status.BAD_REQUEST
@@ -99,8 +95,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
     "return 303 with TemporaryContracts Yes selected" in {
       when(mockVatRegistrationService.submitSicAndCompliance()(any(),any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[TemporaryContracts]()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> TemporaryContracts.TEMP_CONTRACTS_YES
       )) {
@@ -115,8 +110,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterExpectsSave[TemporaryContracts]()
       save4laterReturns(S4LVatSicAndCompliance())
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
       submitAuthorised(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> TemporaryContracts.TEMP_CONTRACTS_NO
       )) {

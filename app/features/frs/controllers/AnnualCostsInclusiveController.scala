@@ -73,27 +73,33 @@ package controllers.frs {
 
     def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
       withCurrentProfile { implicit profile =>
-        viewModel[AnnualCostsInclusiveView]().fold(form)(form.fill)
-          .map(f => Ok(features.frs.views.html.annual_costs_inclusive(f)))
-      })
+        ivPassedCheck {
+          viewModel[AnnualCostsInclusiveView]().fold(form)(form.fill)
+            .map(f => Ok(features.frs.views.html.annual_costs_inclusive(f)))
+      }})
 
-    def submit: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      withCurrentProfile { implicit profile =>
-        form.bindFromRequest().fold(
-          badForm => BadRequest(features.frs.views.html.annual_costs_inclusive(badForm)).pure,
-          view => (if (view.selection == NO) {
-            save(view).flatMap(_ =>
-              getFlatRateSchemeThreshold().map {
-                case n if n > PREVIOUS_QUESTION_THRESHOLD => controllers.frs.routes.AnnualCostsLimitedController.show()
-                case _ => controllers.frs.routes.ConfirmBusinessSectorController.show()
-              })
-          } else {
-            for {
-            // save annualCostsInclusive and delete all later elements
-              _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)), annualCostsInclusive = Some(view)))
-            } yield controllers.frs.routes.RegisterForFrsController.show()
-          }).map(Redirect))
-      })
+    def submit: Action[AnyContent] = authorised.async{
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            ivPassedCheck {
+              form.bindFromRequest().fold(
+                badForm => BadRequest(features.frs.views.html.annual_costs_inclusive(badForm)).pure,
+                view => (if (view.selection == NO) {
+                  save(view).flatMap(_ =>
+                    getFlatRateSchemeThreshold().map {
+                      case n if n > PREVIOUS_QUESTION_THRESHOLD => controllers.frs.routes.AnnualCostsLimitedController.show()
+                      case _ => controllers.frs.routes.ConfirmBusinessSectorController.show()
+                    })
+                } else {
+                  for {
+                  // save annualCostsInclusive and delete all later elements
+                    _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)), annualCostsInclusive = Some(view)))
+                  } yield controllers.frs.routes.RegisterForFrsController.show()
+                }).map(Redirect))
+            }
+          }
+    }
   }
 }
 

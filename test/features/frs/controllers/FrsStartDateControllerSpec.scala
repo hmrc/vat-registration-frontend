@@ -57,8 +57,7 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
     "return HTML when there's a frs start date in S4L" in {
       val frsStartDate = FrsStartDateView(FrsStartDateView.DIFFERENT_DATE, Some(LocalDate.now))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsViewModel(frsStartDate)()
 
@@ -68,9 +67,7 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       save4laterReturnsNoViewModel[FrsStartDateView]()
 
       when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
@@ -82,9 +79,7 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       save4laterReturnsNoViewModel[FrsStartDateView]()
 
       when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
@@ -98,8 +93,7 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
 
   s"POST ${routes.FrsStartDateController.submit()}" should {
     "return 400 when no data posted" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
 
@@ -110,9 +104,7 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "return 400 when partial data is posted" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
 
       submitAuthorised(
@@ -127,9 +119,7 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "return 400 with Different Date selected and date that is less than 2 working days in the future" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       save4laterExpectsSave[FrsStartDateView]()
       save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
 
@@ -144,9 +134,7 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "return 303 with VAT Registration Date selected" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
+      mockGetCurrentProfile()
       save4laterExpectsSave[FrsStartDateView]()
       save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
 
@@ -163,8 +151,7 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
 
       val minDate: LocalDate = today.plusDays(30)
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterExpectsSave[FrsStartDateView]()
       save4laterReturnsViewModel(FrsStartDateView(FrsStartDateView.DIFFERENT_DATE, Some(LocalDate.now)))()
@@ -185,8 +172,7 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "return 303 with Vat Registration Date selected" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
       save4laterExpectsSave[FrsStartDateView]()
@@ -202,8 +188,7 @@ class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture 
     }
 
     "return 303 with Vat Choice Start Date is Null " in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
+      mockGetCurrentProfile()
 
       save4laterExpectsSave[FrsStartDateView]()
       save4laterReturnsNoViewModel[StartDateView]()
