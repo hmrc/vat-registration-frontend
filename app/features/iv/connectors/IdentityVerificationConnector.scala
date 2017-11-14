@@ -34,17 +34,18 @@ import scala.concurrent.Future
 @Singleton
 class IdentityVerificationConnector @Inject()(vatRegFeatureSwitch: VATRegFeatureSwitch) extends ServicesConfig with ivConnect {
   val brdsUrl = baseUrl("business-registration-dynamic-stub")
-  val brdsUri = getConfString("business-registration-dynamic-stub.uri", "")
+  val brdsUri = getConfString("business-registration-dynamic-stub.uri", throw new Exception)
   val ivProxyUrl: String = baseUrl("iv.identity-verification-proxy")
-  val ivProxyUri: String = getConfString("iv.identity-verification-proxy.uri", "")
-  val ivFeUrl = getConfString("iv.identity-verification-frontend.www.url", "")
+  val ivProxyUri: String = getConfString("iv.identity-verification-proxy.uri", throw new Exception)
+  val ivFeUrl = getConfString("iv.identity-verification-frontend.www.url", throw new Exception)
+  val ivBase =  baseUrl("iv.identity-verification-frontend")
 
   def useIvStub = vatRegFeatureSwitch.useIvStub.enabled
 
   val http: WSHttp = WSHttp
 
   def getJourneyOutcome(journeyId: String)(implicit hc: HeaderCarrier): Future[IVResult.Value] = {
-    val url = if (useIvStub) (brdsUrl + brdsUri) else ivFeUrl
+    val url = if (useIvStub) (brdsUrl + brdsUri) else ivBase
     http.GET[JsValue](s"${url}/mdtp/journey/journeyId/${journeyId}") map {
       _.\("result").as[IVResult.Value]
     } recover {
