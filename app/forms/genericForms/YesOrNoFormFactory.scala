@@ -22,7 +22,9 @@ import play.api.data.Forms._
 
 final case class YesOrNoAnswer(answer: Boolean)
 
-final class YesOrNoFormFactory {
+object YesOrNoFormFactory extends YesOrNoFormFactory
+
+class YesOrNoFormFactory {
 
   def form(name: String)(implicit errorCode: ErrorCode): Form[YesOrNoAnswer] = {
     val OPTION: String = s"${name}Radio"

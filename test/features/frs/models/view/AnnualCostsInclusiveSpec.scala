@@ -74,23 +74,23 @@ class AnnualCostsInclusiveSpec extends UnitSpec with Matchers with Inspectors wi
 
   }
 
-  "ViewModelFormat" should {
-    val validAnnualCostsInclusiveView = AnnualCostsInclusiveView(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS)
-    val s4LTradingDetails: S4LFlatRateScheme = S4LFlatRateScheme(annualCostsInclusive = Some(validAnnualCostsInclusiveView))
-
-    "extract annualCostsInclusive from vatTradingDetails" in {
-      AnnualCostsInclusiveView.viewModelFormat.read(s4LTradingDetails) shouldBe Some(validAnnualCostsInclusiveView)
-    }
-
-    "update empty vatFlatRateScheme with annualCostsInclusive" in {
-      AnnualCostsInclusiveView.viewModelFormat.update(validAnnualCostsInclusiveView, Option.empty[S4LFlatRateScheme]).annualCostsInclusive shouldBe Some(validAnnualCostsInclusiveView)
-    }
-
-    "update non-empty vatFlatRateScheme with annualCostsInclusive" in {
-      AnnualCostsInclusiveView.viewModelFormat.update(validAnnualCostsInclusiveView, Some(s4LTradingDetails)).annualCostsInclusive shouldBe Some(validAnnualCostsInclusiveView)
-    }
-
-  }
+//  "ViewModelFormat" should {
+//    val validAnnualCostsInclusiveView = AnnualCostsInclusiveView(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS)
+//    val s4LTradingDetails: S4LFlatRateScheme = S4LFlatRateScheme(annualCostsInclusive = Some(validAnnualCostsInclusiveView))
+//
+//    "extract annualCostsInclusive from vatTradingDetails" in {
+//      AnnualCostsInclusiveView.viewModelFormat.read(s4LTradingDetails) shouldBe Some(validAnnualCostsInclusiveView)
+//    }
+//
+//    "update empty vatFlatRateScheme with annualCostsInclusive" in {
+//      AnnualCostsInclusiveView.viewModelFormat.update(validAnnualCostsInclusiveView, Option.empty[S4LFlatRateScheme]).annualCostsInclusive shouldBe Some(validAnnualCostsInclusiveView)
+//    }
+//
+//    "update non-empty vatFlatRateScheme with annualCostsInclusive" in {
+//      AnnualCostsInclusiveView.viewModelFormat.update(validAnnualCostsInclusiveView, Some(s4LTradingDetails)).annualCostsInclusive shouldBe Some(validAnnualCostsInclusiveView)
+//    }
+//
+//  }
 
 
 }

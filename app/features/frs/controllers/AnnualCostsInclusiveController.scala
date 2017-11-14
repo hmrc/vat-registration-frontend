@@ -17,9 +17,9 @@
 import javax.inject.Inject
 
 package models.view.frs {
-
-  import models._
-  import models.api.{VatFlatRateScheme, VatScheme}
+  
+  import models.ApiModelTransformer
+  import models.api.VatScheme
   import play.api.libs.json.Json
 
   case class AnnualCostsInclusiveView(selection: String)
@@ -34,23 +34,15 @@ package models.view.frs {
 
     implicit val format = Json.format[AnnualCostsInclusiveView]
 
-    implicit val viewModelFormat = ViewModelFormat(
-      readF = (group: S4LFlatRateScheme) => group.annualCostsInclusive,
-      updateF = (c: AnnualCostsInclusiveView, g: Option[S4LFlatRateScheme]) =>
-        g.getOrElse(S4LFlatRateScheme()).copy(annualCostsInclusive = Some(c))
-    )
-
-    def from(vatFlatRateScheme: VatFlatRateScheme): Option[AnnualCostsInclusiveView] = {
-      vatFlatRateScheme.annualCostsInclusive collect {
-        case choice@(YES | YES_WITHIN_12_MONTHS | NO) => AnnualCostsInclusiveView(choice)
-      }
-    }
+//    implicit val viewModelFormat = ViewModelFormat(
+//      readF = (group: S4LFlatRateScheme) => group.annualCostsInclusive,
+//      updateF = (c: AnnualCostsInclusiveView, g: Option[S4LFlatRateScheme]) =>
+//        g.getOrElse(S4LFlatRateScheme()).copy(annualCostsInclusive = Some(c))
+//    )
 
     implicit val modelTransformer = ApiModelTransformer[AnnualCostsInclusiveView] { vs: VatScheme =>
       vs.vatFlatRateScheme.flatMap(_.annualCostsInclusive).collect {
-        case YES => AnnualCostsInclusiveView(YES)
-        case YES_WITHIN_12_MONTHS => AnnualCostsInclusiveView(YES_WITHIN_12_MONTHS)
-        case NO => AnnualCostsInclusiveView(NO)
+        case choice@(YES | YES_WITHIN_12_MONTHS | NO) => AnnualCostsInclusiveView(choice)
       }
     }
   }
@@ -58,52 +50,77 @@ package models.view.frs {
 
 package controllers.frs {
 
-  import cats.syntax.FlatMapSyntax
+  import config.FrontendAuthConnector
   import connectors.KeystoreConnector
-  import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import controllers.VatRegistrationControllerNoAux
   import forms.frs.AnnualCostsInclusiveForm
-  import models.S4LFlatRateScheme
   import models.view.frs.AnnualCostsInclusiveView.NO
-  import models.view.frs.{AnnualCostsInclusiveView, JoinFrsView}
+  import models.view.frs.AnnualCostsInclusiveView
+  import play.api.data.Form
+  import play.api.i18n.MessagesApi
   import play.api.mvc.{Action, AnyContent}
   import services.{S4LService, SessionProfile, VatRegistrationService}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  class AnnualCostsInclusiveController @Inject()(ds: CommonPlayDependencies)
-                                                (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with FlatMapSyntax with SessionProfile {
+  import scala.concurrent.Future
 
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
+  class AnnualCostsInclusiveControllerImpl @Inject()(val messagesApi: MessagesApi,
+                                                     val service: VatRegistrationService) extends AnnualCostsInclusiveController {
+    override val authConnector: AuthConnector = FrontendAuthConnector
+    override val keystoreConnector: KeystoreConnector = KeystoreConnector
+  }
 
-    val PREVIOUS_QUESTION_THRESHOLD = 1000L
-    val form = AnnualCostsInclusiveForm.form
+  trait AnnualCostsInclusiveController extends VatRegistrationControllerNoAux with SessionProfile {
 
-    def show: Action[AnyContent] = authorised.async(implicit user => implicit request =>
-      withCurrentProfile { implicit profile =>
-        ivPassedCheck {
-          viewModel[AnnualCostsInclusiveView]().fold(form)(form.fill)
-            .map(f => Ok(features.frs.views.html.annual_costs_inclusive(f)))
-      }})
+    val service: VatRegistrationService
 
-    def submit: Action[AnyContent] = authorised.async{
+    val annualCostsInclusiveForm: Form[AnnualCostsInclusiveView] = AnnualCostsInclusiveForm.form
+
+    def show: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            ivPassedCheck {
-              form.bindFromRequest().fold(
-                badForm => BadRequest(features.frs.views.html.annual_costs_inclusive(badForm)).pure,
-                view => (if (view.selection == NO) {
-                  save(view).flatMap(_ =>
-                    getFlatRateSchemeThreshold().map {
-                      case n if n > PREVIOUS_QUESTION_THRESHOLD => controllers.frs.routes.AnnualCostsLimitedController.show()
-                      case _ => controllers.frs.routes.ConfirmBusinessSectorController.show()
-                    })
-                } else {
-                  for {
-                  // save annualCostsInclusive and delete all later elements
-                    _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)), annualCostsInclusive = Some(view)))
-                  } yield controllers.frs.routes.RegisterForFrsController.show()
-                }).map(Redirect))
+            service.fetchFlatRateScheme.map { flatRateScheme =>
+              val form = flatRateScheme.annualCostsInclusive match {
+                case Some(view) => annualCostsInclusiveForm.fill(view)
+                case None       => annualCostsInclusiveForm
+              }
+              Ok(features.frs.views.html.annual_costs_inclusive(form))
             }
+          }
+    }
+
+    def submit: Action[AnyContent] = authorised.async {
+      implicit user =>
+        implicit request =>
+          withCurrentProfile { implicit profile =>
+            annualCostsInclusiveForm.bindFromRequest().fold(
+              badForm => Future.successful(BadRequest(features.frs.views.html.annual_costs_inclusive(badForm))),
+              view =>
+                if (view.selection == NO) {
+                  service.isOverLimitedCostTraderThreshold map {
+                    case true  => Redirect(controllers.frs.routes.AnnualCostsLimitedController.show())
+                    case false => Redirect(controllers.frs.routes.ConfirmBusinessSectorController.show())
+                  }
+                } else {
+                  service.saveAnnualCostsInclusive(view) map { _ =>
+                    Redirect(controllers.frs.routes.RegisterForFrsController.show())
+                  }
+                }
+            )
+
+//                if (view.selection == NO) {
+//                save(view).flatMap(_ =>
+//                  getFlatRateSchemeThreshold().map {
+//                    case n if n > PREVIOUS_QUESTION_THRESHOLD => controllers.frs.routes.AnnualCostsLimitedController.show()
+//                    case _ => controllers.frs.routes.ConfirmBusinessSectorController.show()
+//                  })
+//              } else {
+//                for {
+//                // save annualCostsInclusive and delete all later elements
+//                  _ <- s4LService.save(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)), annualCostsInclusive = Some(view)))
+//                } yield controllers.frs.routes.RegisterForFrsController.show()
+//              }
           }
     }
   }
