@@ -44,7 +44,7 @@ class IdentityVerificationService @Inject()(ivConnector: IdentityVerificationCon
                                             vatRegFeatureSwitch: VATRegFeatureSwitch) extends ServicesConfig with ivService  {
 
   private val ORIGIN           = getString("appName")
-  val vrfeBaseUrl              = baseUrl("vat-registration-frontend")
+  val vrfeBaseUrl              = getConfString("vat-registration-frontend.host","")
   val vrfeBaseUri              = getConfString("vat-registration-frontend.uri","")
   private val CONFIDENCE_LEVEL = 200
   def useIVStub: Boolean       = vatRegFeatureSwitch.useIvStub.enabled

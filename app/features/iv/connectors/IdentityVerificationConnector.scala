@@ -37,7 +37,7 @@ class IdentityVerificationConnector @Inject()(vatRegFeatureSwitch: VATRegFeature
   val brdsUri = getConfString("business-registration-dynamic-stub.uri", "")
   val ivProxyUrl: String = baseUrl("iv.identity-verification-proxy")
   val ivProxyUri: String = getConfString("iv.identity-verification-proxy.uri", "")
-  val ivFeUrl = baseUrl("iv.identity-verification-frontend")
+  val ivFeUrl = getConfString("iv.identity-verification-frontend.host","")
   val ivFeUri = getConfString("iv.identity-verification-frontend.uri", "")
 
   def useIvStub = vatRegFeatureSwitch.useIvStub.enabled
