@@ -16,10 +16,13 @@
 
 package fixtures
 
+import models.S4LVatFinancials
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.api.{VatAccountingPeriod, VatBankAccount, VatFinancials}
+import models.view.vatFinancials.ZeroRatedSales.ZERO_RATED_SALES_YES
+import models.view.vatFinancials.vatBankAccount.CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES
 
 trait FinancialsFixture extends BaseFixture {
 
@@ -46,5 +49,16 @@ trait FinancialsFixture extends BaseFixture {
     zeroRatedTurnoverEstimate = Some(testEstimatedSales),
     reclaimVatOnMostReturns = true,
     accountingPeriods = monthlyAccountingPeriod
+  )
+
+  val validS4LVatFinancials = S4LVatFinancials(
+    estimateVatTurnover = Some(validEstimateVatTurnover),
+    zeroRatedTurnover = Some(ZeroRatedSales(ZERO_RATED_SALES_YES)),
+    zeroRatedTurnoverEstimate = Some(validEstimateZeroRatedSales),
+    vatChargeExpectancy = Some(validVatChargeExpectancy),
+    vatReturnFrequency = Some(validVatReturnFrequency),
+    accountingPeriod = Some(validAccountingPeriod),
+    companyBankAccount = Some(CompanyBankAccount(COMPANY_BANK_ACCOUNT_YES)),
+    companyBankAccountDetails = Some(validBankAccountDetails)
   )
 }

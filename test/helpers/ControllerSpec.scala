@@ -22,6 +22,7 @@ import builders.AuthBuilder
 import common.enums.VatRegStatus
 import connectors.KeystoreConnector
 import models.CurrentProfile
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
@@ -57,6 +58,11 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite {
 
   def callAuthorised(a: Action[AnyContent])(test: Future[Result] => Assertion): Unit =
     AuthBuilder.withAuthorisedUser(a)(test)
+
+  def mockWithCurrentProfile(currentProfile: Option[CurrentProfile]): OngoingStubbing[Future[Option[CurrentProfile]]] = {
+    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](any())(any(), any()))
+      .thenReturn(Future.successful(currentProfile))
+  }
 }
 
 trait MockMessages {
@@ -66,11 +72,13 @@ trait MockMessages {
   val lang = Lang("en")
   val messages = Messages(lang, mockMessagesAPI)
 
+  val MOCKED_MESSAGE = "mocked message"
+
   def mockAllMessages: OngoingStubbing[String] = {
     when(mockMessagesAPI.preferred(any[RequestHeader]()))
       .thenReturn(messages)
 
     when(mockMessagesAPI.apply(any[String](), any())(any()))
-      .thenReturn("mocked message")
+      .thenReturn(MOCKED_MESSAGE)
   }
 }

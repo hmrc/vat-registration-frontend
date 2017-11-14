@@ -29,16 +29,28 @@ package services {
   trait FlatRateService extends CommonService {
     self: RegistrationService =>
 
-    val flatRateSchemeS4LKey: S4LKey[S4LFlatRateScheme] = S4LFlatRateScheme.vatFlatRateScheme
+    private val flatRateSchemeS4LKey: S4LKey[S4LFlatRateScheme] = S4LFlatRateScheme.vatFlatRateScheme
+    private val LIMITED_COST_TRADER_THRESHOLD = 1000L
 
     type SavedFlatRateScheme = Either[S4LFlatRateScheme, VatFlatRateScheme]
+
+    def getFlatRateSchemeThreshold()(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Long] = {
+      fetchFinancials map {
+        _.estimateVatTurnover match {
+          case Some(estimate) => Math.round(estimate.vatTurnoverEstimate * 0.02)
+          case None => 0L
+        }
+      }
+//      viewModel[EstimateVatTurnover]()
+//        .map(_.vatTurnoverEstimate).fold(0L)(estimate => Math.round(estimate * 0.02))
+    }
 
     def fetchFlatRateScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[S4LFlatRateScheme] = {
       fetchFRSFromS4L flatMap {
         case Some(frs) => Future.successful(frs)
         case None => getVatScheme map { vatScheme =>
           vatScheme.vatFlatRateScheme match {
-            case Some(_) => apiToView(vatScheme)
+            case Some(_) => frsApiToView(vatScheme)
             case None => S4LFlatRateScheme()
           }
         }
@@ -51,8 +63,17 @@ package services {
           saveFRS(frs.copy(joinFrs = Some(joinFRSView)))
         }
       } else {
-        saveFRStoAPI(viewToApi(S4LFlatRateScheme(joinFrs = Some(joinFRSView)))) map Right.apply
+        saveFRStoAPI(frsViewToApi(S4LFlatRateScheme(joinFrs = Some(joinFRSView)))) map Right.apply
       }
+    }
+
+    def saveAnnualCostsInclusive(annualCostsInclusive: AnnualCostsInclusiveView)
+                                (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
+      saveFRS(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)), annualCostsInclusive = Some(annualCostsInclusive)))
+    }
+
+    def isOverLimitedCostTraderThreshold(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Boolean] = {
+      getFlatRateSchemeThreshold map (_ > LIMITED_COST_TRADER_THRESHOLD)
     }
 
     @Deprecated
@@ -70,7 +91,7 @@ package services {
       } yield response
     }
 
-    private[services] def apiToView(vs: VatScheme): S4LFlatRateScheme =
+    private[services] def frsApiToView(vs: VatScheme): S4LFlatRateScheme =
       S4LFlatRateScheme(
         joinFrs = ApiModelTransformer[JoinFrsView].toViewModel(vs),
         annualCostsInclusive = ApiModelTransformer[AnnualCostsInclusiveView].toViewModel(vs),
@@ -80,7 +101,7 @@ package services {
         categoryOfBusiness = ApiModelTransformer[BusinessSectorView].toViewModel(vs)
       )
 
-    private[services] def viewToApi(view: S4LFlatRateScheme): VatFlatRateScheme = {
+    private[services] def frsViewToApi(view: S4LFlatRateScheme): VatFlatRateScheme = {
       VatFlatRateScheme(
         joinFrs = view.joinFrs.map(_.selection).getOrElse(false),
         annualCostsInclusive = view.annualCostsInclusive.map(_.selection),
