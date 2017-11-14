@@ -84,7 +84,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         val response = buildClient(s"/start-iv-journey").get()
         whenReady(response){res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION).get.contains("""localhost/foo/bar/and/wizz""") mustBe true
+          res.header(HeaderNames.LOCATION).get.contains("""/foo/bar/and/wizz""") mustBe true
         }
     }
     "redirect to the link returned from IV stub" in {
