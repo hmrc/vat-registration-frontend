@@ -2,6 +2,7 @@
 @(zeroRatedSalesForm:  Form[ZeroRatedSales])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
+@import views.html.helpers.templates.newWindowLink
 
 @main_template(title = messages("pages.zero.rated.sales.title")) {
 
@@ -28,7 +29,8 @@
                   <li>@Html(Messages("pages.zero.rated.sales.examples.bullet3"))</li>
                   <li>@Html(Messages("pages.zero.rated.sales.examples.bullet4"))</li>
               </ul>
-              <p>@Html(Messages("pages.zero.rated.sales.examples.p3"))</p>
+              <p>@Messages("pages.zero.rated.sales.examples.p3")
+                  @newWindowLink("https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services", Messages("pages.zero.rated.sales.examples.p3.1"))</p>
           </div>
       </details>
   </div>
