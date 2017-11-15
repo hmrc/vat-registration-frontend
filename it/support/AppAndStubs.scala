@@ -80,10 +80,8 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerS
       ("microservice.services.vat-registration-eligibility-frontend.www.host" -> "") +
       ("microservice.services.vat-registration-eligibility-frontend.uri" -> "/vat-eligibility-uri") +
       ("microservice.services.business-registration-dynamic-stub.uri" -> "/iv-uri") +
-      ("microservice.services.iv.identity-verification.host" -> wiremockHost) +
-      ("microservice.services.iv.identity-verification.port" -> wiremockPort) +
-  ("microservice.services.iv.identity-verification-proxy.host" -> wiremockHost) +
-    ("microservice.services.iv.identity-verification-proxy.port" -> wiremockPort)+
+      ("microservice.services.iv.identity-verification-proxy.host" -> wiremockHost) +
+      ("microservice.services.iv.identity-verification-proxy.port" -> wiremockPort)+
       ("microservice.services.iv.identity-verification-frontend.host" -> wiremockHost) +
       ("microservice.services.iv.identity-verification-frontend.port" -> wiremockPort)
 }
