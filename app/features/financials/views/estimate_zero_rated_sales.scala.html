@@ -5,6 +5,7 @@
     if(estimateZeroRatedSalesForm.hasErrors && (estimateZeroRatedSalesForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
 @import views.html.helpers.templates.{vatInput, errorSummary}
+@import views.html.helpers.templates.newWindowLink
 
 @main_template(title = messages("pages.estimate.zero.rated.sales.title")) {
 
@@ -33,7 +34,8 @@
               <li>@messages("pages.estimate.zero.rated.sales.include.bullet4")</li>
               <li>@messages("pages.estimate.zero.rated.sales.include.bullet5")</li>
           </ul>
-          <p>@Html(Messages("pages.estimate.zero.rated.sales.include.para3"))</p>
+          <p>@Messages("pages.estimate.zero.rated.sales.include.para3")
+              @newWindowLink("https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services", Messages("pages.estimate.zero.rated.sales.include.para3.1"))</p>
       </div>
   </details>
   @govHelpers.form(action = controllers.vatFinancials.routes.EstimateZeroRatedSalesController.submit()) {

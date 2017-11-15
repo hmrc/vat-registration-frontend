@@ -2,6 +2,7 @@
 @import models.view.vatLodgingOfficer.CompletionCapacityView
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
+@import views.html.helpers.templates.newWindowLink
 
 @(completionCapacityForm: Form[CompletionCapacityView], officerList: Seq[Officer])(implicit request: Request[_], messages: Messages)
 
@@ -24,7 +25,8 @@
             <span class="summary">@messages("pages.completionCapacity.panel.title")</span>
         </summary>
         <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
-            <p>@Html(messages("pages.completionCapacity.panel.p1"))</p>
+            <p>@messages("pages.completionCapacity.panel.p1")
+                @newWindowLink("https://online.hmrc.gov.uk/registration/newbusiness/business-allowed", messages("pages.completionCapacity.panel.p1.1"))</p>
             <p>@Html(messages("pages.completionCapacity.panel.p2"))</p>
         </div>
     </details>
