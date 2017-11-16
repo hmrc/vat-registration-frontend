@@ -49,7 +49,7 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite {
 
   val regId = "VAT123456"
 
-  val currentProfile = CurrentProfile("Test Company", regId, "000-434-1", VatRegStatus.draft,Some(LocalDate.of(2017, 12, 21)))
+  val currentProfile = CurrentProfile("Test Company", regId, "000-434-1", VatRegStatus.draft,Some(LocalDate.of(2017, 12, 21)), true)
 
   def submitAuthorised(a: => Action[AnyContent], r: => FakeRequest[AnyContentAsFormUrlEncoded])
                       (test: Future[Result] => Assertion)

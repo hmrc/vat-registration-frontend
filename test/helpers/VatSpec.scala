@@ -22,6 +22,7 @@ import common.enums.VatRegStatus
 import fixtures.VatRegistrationFixture
 import mocks.VatMocks
 import models.CurrentProfile
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
@@ -29,12 +30,22 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 trait VatSpec extends PlaySpec with MockitoSugar with VatRegistrationFixture with VatMocks
-  with FutureAwaits with DefaultAwaitTimeout {
+  with FutureAwaits with DefaultAwaitTimeout with BeforeAndAfterEach {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  implicit val currentProfile: CurrentProfile = CurrentProfile("Test Me", testRegId, "000-434-1",
-    VatRegStatus.draft,Some(LocalDate.of(2017, 12, 21)))
+  implicit val currentProfile: CurrentProfile = CurrentProfile(
+    companyName = "Test Me",
+    registrationId = testRegId,
+    transactionId = "000-434-1",
+    vatRegistrationStatus = VatRegStatus.draft,
+    incorporationDate = Some(LocalDate.of(2017, 12, 21)),
+    ivPassed = true
+  )
 
   val dummyCacheMap: CacheMap = CacheMap("", Map.empty)
+
+  override protected def beforeEach() {
+    resetMocks()
+  }
 }

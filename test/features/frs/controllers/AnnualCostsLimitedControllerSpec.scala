@@ -16,138 +16,135 @@
 
 package controllers.frs
 
+import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
-import helpers.{S4LMockSugar, VatRegSpec}
-import models.{CurrentProfile, S4LFlatRateScheme}
+import helpers.{ControllerSpec, MockMessages}
+import models.S4LFlatRateScheme
+import play.api.test.Helpers._
 import models.view.frs.AnnualCostsLimitedView
 import models.view.vatFinancials.EstimateVatTurnover
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
+import play.api.i18n.MessagesApi
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
+import services.VatRegistrationService
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
-class AnnualCostsLimitedControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+class AnnualCostsLimitedControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages {
 
-  object Controller
-    extends AnnualCostsLimitedController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
+  trait Setup {
+    val controller = new AnnualCostsLimitedController {
+      override val authConnector: AuthConnector = mockAuthConnector
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      override val service: VatRegistrationService = mockVatRegistrationService
+      override val messagesApi: MessagesApi = mockMessagesAPI
+    }
+
+    mockAllMessages
   }
 
-  val fakeRequest = FakeRequest(routes.AnnualCostsLimitedController.show())
-  val estimateVatTurnover = EstimateVatTurnover(1000000L)
+    val fakeRequest = FakeRequest(routes.AnnualCostsLimitedController.show())
+    val estimateVatTurnover = EstimateVatTurnover(1000000L)
 
-  s"GET ${routes.AnnualCostsLimitedController.show()}" should {
-    "return HTML Annual Costs Limited page with no Selection" in {
-      mockGetCurrentProfile()
+    val s4LFlatRateSchemeNoAnnualCostsLimited: S4LFlatRateScheme = validS4LFlatRateScheme.copy(annualCostsLimited = None)
 
-      val annualCostsLimitedView = AnnualCostsLimitedView("")
-      save4laterReturnsViewModel(annualCostsLimitedView)()
-      save4laterReturnsViewModel(estimateVatTurnover)()
+    s"GET ${routes.AnnualCostsLimitedController.show()}" should {
 
-      callAuthorised(Controller.show()) {
-        _ includesText "Will the company spend more than £20,000"
+      "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is not found on the vat scheme" in new Setup {
+
+        mockWithCurrentProfile(Some(currentProfile))
+
+        when(mockVatRegistrationService.fetchFlatRateScheme(any(), any()))
+          .thenReturn(Future.successful(s4LFlatRateSchemeNoAnnualCostsLimited))
+
+        when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any(), any()))
+          .thenReturn(Future.successful(1000L))
+
+        callAuthorised(controller.show()) { result =>
+          status(result) mustBe 200
+          contentAsString(result) must include(MOCKED_MESSAGE)
+        }
+      }
+
+      "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is found on the vat scheme" in new Setup {
+        mockWithCurrentProfile(Some(currentProfile))
+
+        when(mockVatRegistrationService.fetchFlatRateScheme(any(), any()))
+          .thenReturn(Future.successful(validS4LFlatRateScheme))
+
+        when(mockVatRegistrationService.getFlatRateSchemeThreshold()(any(), any()))
+          .thenReturn(Future.successful(1000L))
+
+        callAuthorised(controller.show()) { result =>
+          status(result) mustBe 200
+          contentAsString(result) must include(MOCKED_MESSAGE)
+        }
       }
     }
 
-    "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      mockGetCurrentProfile()
+    s"POST ${routes.AnnualCostsLimitedController.submit()}" should {
 
-      save4laterReturnsNoViewModel[AnnualCostsLimitedView]()
-      save4laterReturnsViewModel(estimateVatTurnover)()
+      "return a 400 when the request is empty" in new Setup {
 
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
+        mockWithCurrentProfile(Some(currentProfile))
 
-      callAuthorised(Controller.show) {
-        _ includesText "Will the company spend more than £20,000"
+        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
+
+        submitAuthorised(controller.submit(), request){ result =>
+          status(result) mustBe 400
+        }
       }
-    }
 
-    "return HTML when there's not AnnualCostsLimitedView in S4L and vatScheme contains no data" in {
-      mockGetCurrentProfile()
+      "return a 303 when AnnualCostsLimitedView.selected is Yes" in new Setup{
+        mockWithCurrentProfile(Some(currentProfile))
 
-      save4laterReturnsNoViewModel[AnnualCostsLimitedView]()
-      save4laterReturnsViewModel(estimateVatTurnover)()
+        when(mockVatRegistrationService.saveAnnualCostsLimited(any())(any(), any()))
+          .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
 
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+          "annualCostsLimitedRadio" -> AnnualCostsLimitedView.YES
+        )
 
-      callAuthorised(Controller.show) {
-        _ includesText "Will the company spend more than £20,000"
+        submitAuthorised(controller.submit(), request){ result =>
+          status(result) mustBe 303
+          redirectLocation(result) mustBe Some("/register-for-vat/use-limited-cost-business-flat-rate")
+        }
       }
-    }
 
-    "return HTML when there's both AnnualCostsLimitedView and EstimateVatTurnover in S4L and vatScheme no data" in {
-      mockGetCurrentProfile()
+      "return 303 when AnnualCostsLimitedView.selected is Yes within 12 months" in new Setup {
+        mockWithCurrentProfile(Some(currentProfile))
 
-      save4laterReturnsNoViewModel[AnnualCostsLimitedView]()
-      save4laterReturnsViewModel(EstimateVatTurnover(0))()
+        when(mockVatRegistrationService.saveAnnualCostsLimited(any())(any(), any()))
+          .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
 
-      when(mockVatRegistrationService.getVatScheme()(any(), any()))
-        .thenReturn(emptyVatScheme.pure)
+        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+          "annualCostsLimitedRadio" -> AnnualCostsLimitedView.YES_WITHIN_12_MONTHS
+        )
 
-      callAuthorised(Controller.show) {
-        _ includesText "Will the company spend more than £0"
+        submitAuthorised(controller.submit(), request){ result =>
+          status(result) mustBe 303
+          redirectLocation(result) mustBe Some("/register-for-vat/use-limited-cost-business-flat-rate")
+        }
+      }
+
+      "return a 303 and redirect to confirm business sector with Annual Costs Limited selected No" in new Setup {
+        mockWithCurrentProfile(Some(currentProfile))
+
+        when(mockVatRegistrationService.saveAnnualCostsLimited(any())(any(), any()))
+          .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+
+        private val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+          "annualCostsLimitedRadio" -> AnnualCostsLimitedView.NO
+        )
+
+        submitAuthorised(controller.submit(), request){ result =>
+          status(result) mustBe 303
+          redirectLocation(result) mustBe Some("/register-for-vat/confirm-business-type")
+        }
       }
     }
   }
 
-  s"POST ${routes.AnnualCostsLimitedController.submit()}" should {
-    "return 400 with Empty data" in {
-      mockGetCurrentProfile()
-
-      save4laterReturnsViewModel(estimateVatTurnover)()
-
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
-      ))(result => result isA 400)
-    }
-
-    "return 303 with Annual Costs Limited selected Yes" in {
-      mockGetCurrentProfile()
-
-      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterReturnsViewModel(estimateVatTurnover)()
-      save4laterReturns(S4LFlatRateScheme())
-
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
-        "annualCostsLimitedRadio" -> AnnualCostsLimitedView.YES
-      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
-    }
-
-    "return 303 with Annual Costs Limited selected No - but within 12 months" in {
-      mockGetCurrentProfile()
-
-      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterReturnsViewModel(estimateVatTurnover)()
-      save4laterReturns(S4LFlatRateScheme())
-
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
-        "annualCostsLimitedRadio" -> AnnualCostsLimitedView.YES_WITHIN_12_MONTHS
-      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
-    }
-
-    "redirect to confirm business sector with Annual Costs Limited selected No" in {
-      mockGetCurrentProfile()
-
-      save4laterExpectsSave[AnnualCostsLimitedView]()
-      save4laterReturnsViewModel(estimateVatTurnover)()
-
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
-        "annualCostsLimitedRadio" -> AnnualCostsLimitedView.NO
-      ))(_ redirectsTo s"$contextRoot/confirm-business-type")
-    }
-
-    "redirect to confirm business sector with Annual Costs Limited selected No and EstimateVatTurnover is Null in S4l and Database" in {
-      mockGetCurrentProfile()
-
-      save4laterExpectsSave[AnnualCostsLimitedView]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
-      save4laterReturnsViewModel(estimateVatTurnover)()
-
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
-        "annualCostsLimitedRadio" -> AnnualCostsLimitedView.NO
-      ))(_ redirectsTo s"$contextRoot/confirm-business-type")
-    }
-  }
-}

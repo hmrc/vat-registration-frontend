@@ -25,7 +25,7 @@ import models.view.vatFinancials.EstimateVatTurnover
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import uk.gov.hmrc.play.http.HeaderCarrier
-import AnnualCostsInclusiveView.YES
+import AnnualCostsInclusiveView.{YES, NO}
 
 import scala.concurrent.Future
 
@@ -107,13 +107,51 @@ class FlatRateServiceSpec extends VatSpec {
 
   "saveAnnualCostsInclusive" should {
 
-    "return a S4LFlatRateScheme after saving AnnualCostsInclusive to " in new Setup {
+    "return a S4LFlatRateScheme after saving AnnualCostsInclusiveView to S4L" in new Setup {
       when(mockS4LService.saveNoAux[S4LFlatRateScheme](any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
+
+      when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(validS4LFlatRateScheme)))
 
       val expected = S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)), annualCostsInclusive = Some(AnnualCostsInclusiveView(YES)))
 
       val result: Either[S4LFlatRateScheme, _] = await(service.saveAnnualCostsInclusive(AnnualCostsInclusiveView(YES)))
+
+      result mustBe Left(expected)
+    }
+  }
+
+  "saveAnnualCostsLimited" should {
+
+    "return a S4LFlatRateScheme when AnnualCostsLimitedView.selection is No to S4L" in new Setup {
+      when(mockS4LService.saveNoAux[S4LFlatRateScheme](any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(validS4LFlatRateScheme)))
+
+      val expected: S4LFlatRateScheme = validS4LFlatRateScheme.copy(annualCostsLimited = Some(AnnualCostsLimitedView(NO)))
+
+      val result: Either[S4LFlatRateScheme, _] = await(service.saveAnnualCostsLimited(AnnualCostsLimitedView(NO)))
+
+      result mustBe Left(expected)
+    }
+
+    "return a S4LFlatRateScheme when AnnualCostsLimitedView.selection is Yes to S4L" in new Setup {
+      when(mockS4LService.saveNoAux[S4LFlatRateScheme](any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(validS4LFlatRateScheme)))
+
+      val expected: S4LFlatRateScheme = validS4LFlatRateScheme.copy(
+        annualCostsLimited = Some(AnnualCostsLimitedView(YES)),
+        frsStartDate = None,
+        categoryOfBusiness = None
+      )
+
+      val result: Either[S4LFlatRateScheme, _] = await(service.saveAnnualCostsLimited(AnnualCostsLimitedView(YES)))
 
       result mustBe Left(expected)
     }
