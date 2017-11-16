@@ -25,6 +25,7 @@ package services {
   import models._
   import models.api.{VatFlatRateScheme, VatScheme}
   import models.view.frs._
+  import models.view.frs.AnnualCostsLimitedView.{NO, YES_WITHIN_12_MONTHS, YES}
 
   trait FlatRateService extends CommonService {
     self: RegistrationService =>
@@ -41,8 +42,6 @@ package services {
           case None => 0L
         }
       }
-//      viewModel[EstimateVatTurnover]()
-//        .map(_.vatTurnoverEstimate).fold(0L)(estimate => Math.round(estimate * 0.02))
     }
 
     def fetchFlatRateScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[S4LFlatRateScheme] = {
@@ -70,6 +69,17 @@ package services {
     def saveAnnualCostsInclusive(annualCostsInclusive: AnnualCostsInclusiveView)
                                 (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
       saveFRS(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)), annualCostsInclusive = Some(annualCostsInclusive)))
+    }
+
+    def saveAnnualCostsLimited(annualCostsLimitedView: AnnualCostsLimitedView)
+                              (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
+      fetchFlatRateScheme flatMap { frs =>
+        annualCostsLimitedView.selection match {
+          case NO => saveFRS(frs.copy(annualCostsLimited = Some(annualCostsLimitedView)))
+          case YES | YES_WITHIN_12_MONTHS =>
+            saveFRS(frs.copy(annualCostsLimited = Some(annualCostsLimitedView), frsStartDate = None, categoryOfBusiness = None))
+        }
+      }
     }
 
     def isOverLimitedCostTraderThreshold(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Boolean] = {

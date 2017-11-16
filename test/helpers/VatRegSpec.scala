@@ -65,30 +65,6 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
 
   def await[T](future : Awaitable[T]) : T = Await.result(future, duration)
 
-  override def beforeEach() {
-    reset(mockVatRegistrationService)
-    reset(mockS4LConnector)
-    reset(mockS4LService)
-    reset(mockKeystoreConnector)
-    reset(mockAuthConnector)
-    reset(mockSessionCache)
-    reset(mockAudit)
-    reset(mockVatRegistrationService)
-    reset(mockRegConnector)
-    reset(mockCompanyRegConnector)
-    reset(mockPPConnector)
-    reset(mockPPService)
-    reset(mockDateService)
-    reset(mockIIConnector)
-    reset(mockConfigConnector)
-    reset(mockIIService)
-    reset(mockAddressLookupConnector)
-    reset(mockWSHttp)
-    reset(mockCurrentProfile)
-    reset(mockIdentityVerificationConnector)
-    reset(mockIVService)
-  }
-
   // Placeholder for custom configuration
   // Use this if you want to configure the app
   // implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
@@ -107,5 +83,9 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
 
   def callAuthorised(a: Action[AnyContent])(test: Future[Result] => Assertion): Unit =
     AuthBuilder.withAuthorisedUser(a)(test)
+
+  override protected def beforeEach(): Unit = {
+    resetMocks()
+  }
 
 }

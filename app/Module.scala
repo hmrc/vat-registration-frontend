@@ -61,6 +61,6 @@ class Module extends AbstractModule {
     // FRS
     bind(classOf[JoinFrsController]).to(classOf[JoinFrsControllerImpl])
     bind(classOf[AnnualCostsInclusiveController]).to(classOf[AnnualCostsInclusiveControllerImpl])
+    bind(classOf[AnnualCostsLimitedController]).to(classOf[AnnualCostsLimitedControllerImpl])
   }
-
 }
