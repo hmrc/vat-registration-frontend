@@ -11,6 +11,7 @@ app.common.confirmAndContinue           = Confirm and continue
 app.common.errorSummaryLabel            = This page has errors
 app.common.change                       = Change
 app.common.gbp.symbol                   = £
+app.common.newHiddenHelperText          = (link opens in a new tab)
 app.common.back                         = Back
 error.required                          = Select an option
 error.unknown                           = Invalid input
@@ -31,27 +32,32 @@ pages.timeoutiv.body.url                = You need to <a href="{0}">restart the 
 pages.cantconfirmidentity.title         = We can''t confirm your identity
 pages.cantconfirmidentity.heading       = We can''t confirm your identity
 pages.cantconfirmidentity.body.one      = We don''t hold enough information about you to check your identity.
-pages.cantconfirmidentity.body.url      = If you have the company''s name and registration date, you can <a href="{0}">use another HMRC service</a>.
+pages.cantconfirmidentity.body.two      = If you have the company''s name and registration date, you can
+pages.cantconfirmidentity.body.link     = use another HMRC service.
 
 ## Failediv
 pages.failediv.title                   = We couldn''t confirm your identity
 pages.failediv.heading                 = We couldn''t confirm your identity
 pages.failediv.body.one                = The information you provided doesn''t match the details HMRC holds on you.
-pages.failediv.body.url                = You''ll need to try again, or you can <a href="{0}">use another HMRC service</a>.
+pages.failediv.body.url                = You''ll need to try again, or you can
+pages.failediv.body.link               = use another HMRC service.
 pages.failediv.button.try              = Try again
 
 ## Lockedoutiv
 pages.lockedoutiv.title                = You''ve been locked out
 pages.lockedoutiv.heading              = You''ve been locked out
 pages.lockedoutiv.body.one             = You''ve made too many attempts to confirm your identity.
-pages.lockedoutiv.body1.url            = You''ll have to try again after 24 hours by <a href="{0}">logging back into the service from GOV.UK</a>.
-pages.lockedoutiv.body2.url            = If you have the company''s name and the registration date, you can <a href="{0}">use another HMRC service</a>.
+pages.lockedoutiv.body1.url            = You''ll have to try again after 24 hours by
+pages.lockedoutiv.body1.link           = logging back into the service from GOV.UK.
+pages.lockedoutiv.body2.url            = If you have the company''s name and the registration date, you can
+pages.lockedoutiv.body2.link           = use another HMRC service.
 
 ## Useraborted
 pages.useraborted.title                = You haven''t completed the identity check
 pages.useraborted.heading              = You haven''t completed the identity check
 pages.useraborted.body1.url            = You need to <a href="{0}">restart the identity check</a>.
-pages.useraborted.body2.url            = If you have the company''s name and registration date, you can <a href="{0}">use another HMRC service</a>.
+pages.useraborted.body2.url            = If you have the company''s name and registration date, you can
+pages.useraborted.body2.link           = use another HMRC service.
 
 ## Welcome Page
 pages.welcome.title                     = Before you start
@@ -372,7 +378,9 @@ pages.application.submission.confirmation.whileWait.sub.heading     = While you 
 pages.application.submission.confirmation.whileWait.para1           = You can''t charge VAT until you get your VAT number, but you''ll still have to pay the VAT to HMRC for this period.
 pages.application.submission.confirmation.whileWait.para2           = You should increase your prices to allow for this and tell your customers why.
 pages.application.submission.confirmation.whileWait.example         = Example
-pages.application.submission.confirmation.whileWait.example.para1   = If you would''ve charged £100 for something that''s subject to the standard <a href="https://www.gov.uk/vat-rates">rate of VAT</a> (20%), increase the price by the 20% and charge £120.
+pages.application.submission.confirmation.whileWait.example.para1   = If you would''ve charged £100 for something that''s subject to the standard
+pages.application.submission.confirmation.whileWait.example.para1.link = rate of VAT
+pages.application.submission.confirmation.whileWait.example.para1.1 = (20%), increase the price by the 20% and charge £120.
 pages.application.submission.confirmation.whileWait.para3           = Once you''ve got your VAT number you can then reissue invoices showing the VAT.
 pages.application.submission.confirmation.button                    = Your business registration overview
 
