@@ -82,6 +82,31 @@ package services {
       }
     }
 
+    def saveBusinessSector(businessSectorView: BusinessSectorView)
+                          (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
+      fetchFlatRateScheme flatMap { frs =>
+        saveFRS(frs.copy(categoryOfBusiness = Some(businessSectorView)))
+      }
+    }
+
+    def saveRegisterForFRS(registerForFrsView: RegisterForFrsView)
+                          (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
+      fetchFlatRateScheme flatMap { frs =>
+        if(registerForFrsView.selection){
+          saveFRS(frs.copy(registerForFrs = Some(registerForFrsView)))
+        } else {
+          saveFRS(frs.copy(registerForFrs = None))
+        }
+      }
+    }
+
+    def saveFRSStartDate(frsStartDateView: Option[FrsStartDateView])
+                        (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
+      fetchFlatRateScheme flatMap { frs =>
+        saveFRS(frs.copy(frsStartDate = frsStartDateView))
+      }
+    }
+
     def isOverLimitedCostTraderThreshold(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Boolean] = {
       getFlatRateSchemeThreshold map (_ > LIMITED_COST_TRADER_THRESHOLD)
     }
