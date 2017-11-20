@@ -1,4 +1,5 @@
 @()(implicit request: Request[_], messagesApi: MessagesApi, messages: Messages)
+@import views.html.helpers.templates.newWindowLink
 
 @main_template(title = messagesApi("pages.useraborted.title"), backEnabled = false) {
     <header class="page-header">
@@ -7,6 +8,7 @@
 
     <div class="form-group">
         <p>@Html(messagesApi("pages.useraborted.body1.url", controllers.iv.routes.IdentityVerificationController.redirectToIV().url))</p>
-        <p>@Html(messagesApi("pages.useraborted.body2.url", "https://online.hmrc.gov.uk/registration/newbusiness/business-allowed"))</p>
+        <p>@messagesApi("pages.useraborted.body2.url")
+            @newWindowLink("https://online.hmrc.gov.uk/registration/newbusiness/business-allowed", messages("pages.useraborted.body2.link"))</p>
     </div>
 }

@@ -18,15 +18,18 @@ package controllers.test
 
 import javax.inject.Inject
 
+import connectors.VatRegistrationConnector
 import connectors.test.TestRegistrationConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import models.external.CoHoCompanyProfile
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import services.{CommonService, RegistrationService, SessionProfile}
 
-class IncorporationInformationStubsController @Inject()(vatRegistrationService: RegistrationService,
+class IncorporationInformationStubsController @Inject()(
+                                                         vatRegistrationService: RegistrationService,
                                                         vatRegConnector: TestRegistrationConnector,
+                                                        vr:VatRegistrationConnector,
+
                                                         ds: CommonPlayDependencies)
   extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
@@ -38,6 +41,7 @@ class IncorporationInformationStubsController @Inject()(vatRegistrationService: 
           (regId, _) <- vatRegistrationService.createRegistrationFootprint()
           _          <- vatRegConnector.wipeTestData
           _          <- vatRegConnector.postTestData(defaultTestData(regId))
+          _          <- vr.updateIVStatus(regId,JsObject(Map("ivPassed" -> Json.toJson(true))))
         } yield Ok("Data inserted")
   }
 

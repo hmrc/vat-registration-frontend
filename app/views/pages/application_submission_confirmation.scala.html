@@ -1,6 +1,7 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import models.api.VatFinancials
 @(refNo: String, vatFinancials: Option[VatFinancials])(implicit request: Request[_], messages: Messages)
+@import views.html.helpers.templates.newWindowLink
 
 @pageScripts = {
     <script type="text/javascript" src='@routes.Assets.at("javascripts/VatGAEvent.js")'></script>
@@ -29,7 +30,9 @@
         <p>@messages("pages.application.submission.confirmation.whileWait.para2")</p>
         <div class="panel panel-indent" id="details-content-2" aria-hidden="false">
             <h3 class="heading-small">@messages("pages.application.submission.confirmation.whileWait.example")</h3>
-            <p>@Html(messages("pages.application.submission.confirmation.whileWait.example.para1"))</p>
+            <p>@messages("pages.application.submission.confirmation.whileWait.example.para1")
+                @newWindowLink("https://www.gov.uk/vat-rates", messages("pages.application.submission.confirmation.whileWait.example.para1.link"))
+                @messages("pages.application.submission.confirmation.whileWait.example.para1.1")</p>
         </div>
         <p>@messages("pages.application.submission.confirmation.whileWait.para3")</p>
 

@@ -1,4 +1,5 @@
 @()(implicit request: Request[_], messagesApi: MessagesApi, messages: Messages)
+@import views.html.helpers.templates.newWindowLink
 
 @main_template(title = messagesApi("pages.lockedoutiv.title"), backEnabled = false) {
     <header class="page-header">
@@ -7,7 +8,9 @@
 
      <p>@messagesApi("pages.lockedoutiv.body.one")</p>
     <div class="form-group">
-        <p>@Html(messagesApi("pages.lockedoutiv.body1.url", "https://www.gov.uk/vat-registration/how-to-register"))</p>
-        <p>@Html(messagesApi("pages.lockedoutiv.body2.url", "https://online.hmrc.gov.uk/registration/newbusiness/business-allowed"))</p>
+        <p>@messagesApi("pages.lockedoutiv.body1.url")
+            @newWindowLink("https://www.gov.uk/vat-registration/how-to-register", messages("pages.lockedoutiv.body1.link"))</p>
+        <p>@messagesApi("pages.lockedoutiv.body2.url")
+            @newWindowLink("https://online.hmrc.gov.uk/registration/newbusiness/business-allowed", messages("pages.lockedoutiv.body2.link"))</p>
     </div>
 }
