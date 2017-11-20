@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import builders.AuthBuilder
 import common.enums.VatRegStatus
-import connectors.KeystoreConnector
+import connectors.{ConfigConnector, KeystoreConnector}
 import models.CurrentProfile
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -46,10 +46,18 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite {
   val mockVatRegistrationService: VatRegistrationService = mock[VatRegistrationService]
   val mockKeystoreConnector: KeystoreConnector = mock[KeystoreConnector]
   val mockMessagesAPI: MessagesApi = mock[MessagesApi]
+  val mockConfigConnector: ConfigConnector = mock[ConfigConnector]
 
   val regId = "VAT123456"
 
-  val currentProfile = CurrentProfile("Test Company", regId, "000-434-1", VatRegStatus.draft,Some(LocalDate.of(2017, 12, 21)), true)
+  implicit val currentProfile: CurrentProfile = CurrentProfile(
+    companyName = "Test Company",
+    registrationId = regId,
+    transactionId = "000-434-1",
+    vatRegistrationStatus = VatRegStatus.draft,
+    incorporationDate = Some(LocalDate.of(2017, 12, 21)),
+    ivPassed = true
+  )
 
   def submitAuthorised(a: => Action[AnyContent], r: => FakeRequest[AnyContentAsFormUrlEncoded])
                       (test: Future[Result] => Assertion)

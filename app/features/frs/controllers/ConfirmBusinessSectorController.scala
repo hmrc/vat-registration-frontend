@@ -18,14 +18,22 @@ package controllers.frs {
 
   import javax.inject.Inject
 
+  import config.FrontendAuthConnector
   import connectors.{ConfigConnect, KeystoreConnector}
-  import controllers.CommonPlayDependencies
+  import play.api.i18n.MessagesApi
   import play.api.mvc.{Action, AnyContent}
-  import services.{S4LService, SessionProfile, VatRegistrationService}
+  import services.{SessionProfile, VatRegistrationService}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  class ConfirmBusinessSectorController @Inject()(ds: CommonPlayDependencies, configConnector: ConfigConnect)
-                                                 (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends BusinessSectorAwareController(ds, configConnector) with SessionProfile {
+
+  class ConfirmBusinessSectorControllerImpl @Inject()(val messagesApi: MessagesApi,
+                                                      val configConnect: ConfigConnect,
+                                                      val service: VatRegistrationService) extends ConfirmBusinessSectorController {
+
+    override val authConnector: AuthConnector = FrontendAuthConnector
+  }
+
+  trait ConfirmBusinessSectorController extends BusinessSectorAwareController with SessionProfile {
 
     val keystoreConnector: KeystoreConnector = KeystoreConnector
 
@@ -34,7 +42,9 @@ package controllers.frs {
         implicit request =>
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
-              businessSectorView().map(view => Ok(features.frs.views.html.frs_confirm_business_sector(view)))
+              businessSectorView() map { view =>
+                Ok(features.frs.views.html.frs_confirm_business_sector(view))
+              }
             }
           }
     }
@@ -44,7 +54,11 @@ package controllers.frs {
         implicit request =>
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
-              businessSectorView().flatMap(save(_).map(_ => Redirect(controllers.frs.routes.RegisterForFrsWithSectorController.show())))
+              businessSectorView() flatMap {
+                service.saveBusinessSector(_) map { _ =>
+                  Redirect(controllers.frs.routes.RegisterForFrsWithSectorController.show())
+                }
+              }
             }
           }
     }

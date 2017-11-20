@@ -25,7 +25,7 @@ import connectors.{CompanyRegistrationConnector, OptionalResponse, VatRegistrati
 import models.ModelKeys._
 import models._
 import models.api._
-import models.external.{CoHoCompanyProfile, IncorporationInfo}
+import models.external.IncorporationInfo
 import play.api.libs.json.Format
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -47,7 +47,8 @@ class VatRegistrationService @Inject()(injS4LService: S4LService,
 }
 
 @ImplementedBy(classOf[VatRegistrationService])
-trait RegistrationService extends FlatRateService with TradingDetailsService with FinancialsService with LegacyServiceToBeRefactored{
+trait RegistrationService extends FlatRateService with TradingDetailsService with FinancialsService
+  with LegacyServiceToBeRefactored with SicAndComplianceService {
 
   val s4LService: S4LService
   val vatRegConnector: VatRegistrationConnector
