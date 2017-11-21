@@ -68,7 +68,7 @@ package controllers.frs {
 
     val service: VatRegistrationService
 
-    val annualCostsInclusiveForm: Form[AnnualCostsInclusiveView] = AnnualCostsInclusiveForm.form
+    val form: Form[AnnualCostsInclusiveView] = AnnualCostsInclusiveForm.form
 
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
@@ -76,11 +76,8 @@ package controllers.frs {
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
               service.fetchFlatRateScheme.map { flatRateScheme =>
-                val form = flatRateScheme.annualCostsInclusive match {
-                  case Some(view) => annualCostsInclusiveForm.fill(view)
-                  case None       => annualCostsInclusiveForm
-                }
-                Ok(features.frs.views.html.annual_costs_inclusive(form))
+                val viewForm = flatRateScheme.annualCostsInclusive.fold(form)(form.fill)
+                Ok(features.frs.views.html.annual_costs_inclusive(viewForm))
               }
             }
           }
@@ -91,7 +88,7 @@ package controllers.frs {
         implicit request =>
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
-              annualCostsInclusiveForm.bindFromRequest().fold(
+              form.bindFromRequest().fold(
                 badForm => Future.successful(BadRequest(features.frs.views.html.annual_costs_inclusive(badForm))),
                 view =>
                   if (view.selection == NO) {

@@ -73,24 +73,4 @@ class AnnualCostsLimitedSpec extends UnitSpec with Matchers with Inspectors with
     }
 
   }
-
-  "ViewModelFormat" should {
-    val validAnnualCostsLimitedView = AnnualCostsLimitedView(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS)
-    val s4LTradingDetails: S4LFlatRateScheme = S4LFlatRateScheme(annualCostsLimited = Some(validAnnualCostsLimitedView))
-
-    "extract annualCostsLimited from vatTradingDetails" in {
-      AnnualCostsLimitedView.viewModelFormat.read(s4LTradingDetails) shouldBe Some(validAnnualCostsLimitedView)
-    }
-
-    "update empty vatFlatRateScheme with annualCostsLimited" in {
-      AnnualCostsLimitedView.viewModelFormat.update(validAnnualCostsLimitedView, Option.empty[S4LFlatRateScheme]).annualCostsLimited shouldBe Some(validAnnualCostsLimitedView)
-    }
-
-    "update non-empty vatFlatRateScheme with annualCostsLimited" in {
-      AnnualCostsLimitedView.viewModelFormat.update(validAnnualCostsLimitedView, Some(s4LTradingDetails)).annualCostsLimited shouldBe Some(validAnnualCostsLimitedView)
-    }
-
-  }
-
-
 }

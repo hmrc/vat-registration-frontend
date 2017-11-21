@@ -21,13 +21,11 @@ package controllers.frs {
   import config.FrontendAuthConnector
   import connectors.{ConfigConnect, KeystoreConnector}
   import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
-  import models.view.frs.RegisterForFrsView
   import play.api.data.Form
   import play.api.i18n.MessagesApi
   import play.api.mvc.{Action, AnyContent}
   import services.{SessionProfile, VatRegistrationService}
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-
 
   class RegisterForFrsWithSectorControllerImpl @Inject()(val messagesApi: MessagesApi,
                                                          val configConnect: ConfigConnect,
@@ -64,9 +62,8 @@ package controllers.frs {
                 view =>
                   for {
                     sector <- businessSectorView
-                    _ <- service.saveBusinessSector(sector)
-                    _ <- service.saveRegisterForFRS(RegisterForFrsView(view.answer))
-                  } yield  {
+                    _ <- service.saveRegisterForFRS(view.answer, Some(sector))
+                  } yield {
                     if(view.answer){
                       Redirect(controllers.frs.routes.FrsStartDateController.show())
                     } else {
@@ -74,21 +71,6 @@ package controllers.frs {
                     }
                   }
               )
-
-//              form.bindFromRequest().fold(
-//                badForm => businessSectorView().map(view => BadRequest(features.frs.views.html.frs_your_flat_rate(view, badForm))),
-//                view => (for {
-//                  sector <- businessSectorView()
-//                  _ <- save(sector)
-//                  _ <- save(RegisterForFrsView(view.answer))
-//                } yield view.answer).ifM(
-//                  ifTrue = controllers.frs.routes.FrsStartDateController.show().pure,
-//                  ifFalse = for {
-//                    frs <- s4lContainer[S4LFlatRateScheme]()
-//                    _ <- s4LService.save(frs.copy(frsStartDate = None))
-//                    _ <- vrs.submitVatFlatRateScheme()
-//                  } yield controllers.routes.SummaryController.show()
-//                ).map(Redirect))
             }
           }
     }

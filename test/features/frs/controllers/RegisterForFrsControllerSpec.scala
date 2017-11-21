@@ -72,7 +72,7 @@ class RegisterForFrsControllerSpec extends ControllerSpec with VatRegistrationFi
     "return 303 with RegisterFor Flat Rate Scheme selected Yes" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockVatRegistrationService.saveRegisterForFRS(any())(any(), any()))
+      when(mockVatRegistrationService.saveRegisterForFRS(any(), any())(any(), any()))
         .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
 
       when(mockVatRegistrationService.saveBusinessSector(any())(any(), any()))
@@ -91,7 +91,7 @@ class RegisterForFrsControllerSpec extends ControllerSpec with VatRegistrationFi
     "return 303 with RegisterFor Flat Rate Scheme selected No" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockVatRegistrationService.saveRegisterForFRS(any())(any(), any()))
+      when(mockVatRegistrationService.saveRegisterForFRS(any(), any())(any(), any()))
         .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
 
       when(mockVatRegistrationService.saveBusinessSector(any())(any(), any()))

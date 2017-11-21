@@ -21,10 +21,11 @@ import scala.concurrent.Future
 
 package services {
 
+  import java.time.LocalDate
+
   import common.ErrorUtil.fail
   import models.{ApiModelTransformer, CurrentProfile, S4LKey, S4LTradingDetails}
   import models.api.{VatScheme, VatTradingDetails}
-  import models.view.frs.FrsStartDateView
   import models.view.vatTradingDetails.TradingNameView
   import models.view.vatTradingDetails.vatChoice.StartDateView
   import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
@@ -46,14 +47,8 @@ package services {
       }
     }
 
-    def saveFRSStartDateAsVatRegistrationDate(frsStartDate: FrsStartDateView)
-                                            (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
-      fetchTradingDetails flatMap {
-        _.startDate match {
-          case Some(vatStartDate) => saveFRSStartDate(Some(frsStartDate.copy(date = vatStartDate.date)))
-          case None => throw new IllegalStateException("VAT start date should exist here") // TODO should be here
-        }
-      }
+    def fetchVatStartDate(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Option[LocalDate]] = {
+      fetchTradingDetails map (_.startDate flatMap (_.date))
     }
 
     def submitTradingDetails()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatTradingDetails] = {

@@ -45,12 +45,6 @@ package models.view.frs {
 
     implicit val format = Json.format[FrsStartDateView]
 
-    implicit val viewModelFormat = ViewModelFormat(
-      readF = (group: S4LFlatRateScheme) => group.frsStartDate,
-      updateF = (c: FrsStartDateView, g: Option[S4LFlatRateScheme]) =>
-        g.getOrElse(S4LFlatRateScheme()).copy(frsStartDate = Some(c))
-    )
-
     // Returns a view model for a specific part of a given VatScheme API model
     implicit val modelTransformer = ApiModelTransformer[FrsStartDateView] { vs: VatScheme =>
       vs.vatFlatRateScheme.collect {
@@ -96,27 +90,12 @@ package controllers.frs {
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
               service.fetchFlatRateScheme map { flatRateScheme =>
-                val viewForm = flatRateScheme.frsStartDate match {
-                  case Some(view) => startDateForm.fill(view)
-                  case None       => startDateForm
-                }
+                val viewForm = flatRateScheme.frsStartDate.fold(startDateForm)(startDateForm.fill)
                 Ok(features.frs.views.html.frs_start_date(viewForm))
               }
             }
           }
     }
-
-//
-//    def show: Action[AnyContent] = authorised.async {
-//      implicit user =>
-//        implicit request =>
-//          withCurrentProfile { implicit profile =>
-//            ivPassedCheck {
-//            viewModel[FrsStartDateView]().getOrElse(FrsStartDateView())
-//              .map(f => Ok(features.frs.views.html.frs_start_date(frsStartDateFormFactory.form().fill(f))))
-//            }
-//          }
-//    }
 
     def submit: Action[AnyContent] = authorised.async {
       implicit user =>
@@ -125,29 +104,13 @@ package controllers.frs {
             ivPassedCheck {
               startDateForm.bindFromRequest().fold(
                 badForm => Future.successful(BadRequest(features.frs.views.html.frs_start_date(badForm))),
-                view => if(view.dateType == FrsStartDateView.VAT_REGISTRATION_DATE){
-                  service.saveFRSStartDateAsVatRegistrationDate(view) map { _ =>
-                    Redirect(controllers.routes.SummaryController.show())
-                  }
-                } else {
-                  service.saveFRSStartDate(Some(view)) map { _ =>
-                    Redirect(controllers.routes.SummaryController.show())
-                  }
+                view => service.saveFRSStartDate(view) map { _ =>
+                  Redirect(controllers.routes.SummaryController.show())
                 }
               )
             }
           }
     }
-
-//    private def setVatRegistrationDateToForm(view: FrsStartDateView)
-//                                            (implicit headerCarrier: HeaderCarrier, profile: CurrentProfile): Future[FrsStartDateView] =
-//      viewModel[StartDateView]().fold(view)(startDateView => view.copy(date = startDateView.date))
-
-//    private def saveForm(view: FrsStartDateView)(implicit headerCarrier: HeaderCarrier, profile: CurrentProfile): Future[Result] =
-//      save(view).flatMap(_ =>
-//        vrs.submitVatFlatRateScheme().map(_ =>
-//          Redirect(controllers.routes.SummaryController.show())))
-
   }
 }
 
@@ -176,7 +139,7 @@ package forms.frs {
 
     def form(): Form[FrsStartDateView] = {
 
-      val minDate: LocalDate = (dateService.addWorkingDays(today(), 2))
+      val minDate: LocalDate = dateService.addWorkingDays(today(), 2)
 
       implicit val specificErrorCode: String = "frs.startDate"
 

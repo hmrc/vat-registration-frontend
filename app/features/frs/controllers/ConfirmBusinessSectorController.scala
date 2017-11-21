@@ -25,11 +25,9 @@ package controllers.frs {
   import services.{SessionProfile, VatRegistrationService}
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-
   class ConfirmBusinessSectorControllerImpl @Inject()(val messagesApi: MessagesApi,
                                                       val configConnect: ConfigConnect,
                                                       val service: VatRegistrationService) extends ConfirmBusinessSectorController {
-
     override val authConnector: AuthConnector = FrontendAuthConnector
   }
 

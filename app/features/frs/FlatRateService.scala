@@ -32,6 +32,7 @@ package services {
 
     private val flatRateSchemeS4LKey: S4LKey[S4LFlatRateScheme] = S4LFlatRateScheme.vatFlatRateScheme
     private val LIMITED_COST_TRADER_THRESHOLD = 1000L
+    private val defaultFlatRate: BigDecimal = 16.5
 
     type SavedFlatRateScheme = Either[S4LFlatRateScheme, VatFlatRateScheme]
 
@@ -68,6 +69,9 @@ package services {
 
     def saveAnnualCostsInclusive(annualCostsInclusive: AnnualCostsInclusiveView)
                                 (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
+      if(annualCostsInclusive.selection == NO) {
+
+      }
       saveFRS(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)), annualCostsInclusive = Some(annualCostsInclusive)))
     }
 
@@ -89,21 +93,37 @@ package services {
       }
     }
 
-    def saveRegisterForFRS(registerForFrsView: RegisterForFrsView)
+    def saveRegisterForFRS(registerForFrs: Boolean, sector: Option[BusinessSectorView] = None)
                           (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
-      fetchFlatRateScheme flatMap { frs =>
-        if(registerForFrsView.selection){
-          saveFRS(frs.copy(registerForFrs = Some(registerForFrsView)))
+
+      val businessSector = sector.fold(BusinessSectorView("", defaultFlatRate))(identity)
+
+      def buildRegisterForFRS(frs: S4LFlatRateScheme) = {
+        if(registerForFrs) {
+          saveFRS(frs.copy(registerForFrs = Some(RegisterForFrsView(true))))
         } else {
-          saveFRS(frs.copy(registerForFrs = None))
+          saveFRS(frs.copy(registerForFrs = None, frsStartDate = None))
         }
       }
+
+      for {
+        frs      <- fetchFlatRateScheme
+        _        <- saveBusinessSector(businessSector)
+        savedFRS <- buildRegisterForFRS(frs)
+      } yield savedFRS
     }
 
-    def saveFRSStartDate(frsStartDateView: Option[FrsStartDateView])
+    def saveFRSStartDate(frsStartDateView: FrsStartDateView)
                         (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
+
       fetchFlatRateScheme flatMap { frs =>
-        saveFRS(frs.copy(frsStartDate = frsStartDateView))
+        if(frsStartDateView.dateType == FrsStartDateView.VAT_REGISTRATION_DATE){
+          fetchVatStartDate flatMap { vatStartDate =>
+            saveFRS(frs.copy(frsStartDate = Some(frsStartDateView.copy(date = vatStartDate))))
+          }
+        } else {
+          saveFRS(frs.copy(frsStartDate = Some(frsStartDateView)))
+        }
       }
     }
 

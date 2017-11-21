@@ -131,10 +131,10 @@ class FrsStartDateControllerSpec extends ControllerSpec with VatRegistrationFixt
       }
     }
 
-    "return 303 with VAT Registration Date selected" in new Setup{
+    "return 303 with VAT Registration Date selected" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockVatRegistrationService.saveFRSStartDateAsVatRegistrationDate(any())(any(), any()))
+      when(mockVatRegistrationService.saveFRSStartDate(any())(any(), any()))
         .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
