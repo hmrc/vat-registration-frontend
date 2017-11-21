@@ -39,22 +39,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           res.status mustBe 200
           val document = Jsoup.parse(res.body)
           document.title() mustBe "Summary"
-
-          document.getElementById("serviceCriteria.ninoAnswer").text mustBe "Yes"
-          document.getElementById("serviceCriteria.ninoChangeLink").attr("href") mustBe "/vat-eligibility-uri/national-insurance-number"
-          document.getElementById("serviceCriteria.businessAbroadAnswer").text mustBe "No"
-          document.getElementById("serviceCriteria.businessAbroadChangeLink").attr("href") mustBe "/vat-eligibility-uri/international-business"
-          document.getElementById("serviceCriteria.doAnyApplyToYouAnswer").text mustBe "No"
-          document.getElementById("serviceCriteria.doAnyApplyToYouChangeLink").attr("href") mustBe "/vat-eligibility-uri/involved-more-business-changing-status"
-          document.getElementById("serviceCriteria.applyingForAnyOfAnswer").text mustBe "No"
-          document.getElementById("serviceCriteria.applyingForAnyOfChangeLink").attr("href") mustBe "/vat-eligibility-uri/agricultural-flat-rate"
-          document.getElementById("serviceCriteria.applyingForVatExemptionAnswer").text mustBe "No"
-          document.getElementById("serviceCriteria.applyingForVatExemptionChangeLink").attr("href") mustBe "/vat-eligibility-uri/apply-exception-exemption"
-          document.getElementById("serviceCriteria.applyingForVatExceptionAnswer").text mustBe "No"
-          document.getElementById("serviceCriteria.applyingForVatExceptionChangeLink").attr("href") mustBe "/vat-eligibility-uri/apply-exception-exemption"
-          document.getElementById("serviceCriteria.companyWillDoAnyOfAnswer").text mustBe "No"
-          document.getElementById("serviceCriteria.companyWillDoAnyOfChangeLink").attr("href") mustBe "/vat-eligibility-uri/apply-for-any"
-
+          
           a[NullPointerException] mustBe thrownBy(document.getElementById("threshold.overThresholdSelectionQuestion").text)
           document.getElementById("vatDetails.taxableTurnoverAnswer").text mustBe "No"
           document.getElementById("vatDetails.taxableTurnoverChangeLink").attr("href") mustBe "/vat-eligibility-uri/vat-taxable-sales-over-threshold"
