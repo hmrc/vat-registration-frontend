@@ -85,7 +85,7 @@ class RegisterForFrsWithSectorControllerSpec extends ControllerSpec with VatRegi
       when(mockVatRegistrationService.saveBusinessSector(any())(any(), any()))
         .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
 
-      when(mockVatRegistrationService.saveRegisterForFRS(any())(any(), any()))
+      when(mockVatRegistrationService.saveRegisterForFRS(any(), any())(any(), any()))
         .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -104,7 +104,7 @@ class RegisterForFrsWithSectorControllerSpec extends ControllerSpec with VatRegi
       when(mockVatRegistrationService.saveBusinessSector(any())(any(), any()))
         .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
 
-      when(mockVatRegistrationService.saveRegisterForFRS(any())(any(), any()))
+      when(mockVatRegistrationService.saveRegisterForFRS(any(), any())(any(), any()))
         .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(

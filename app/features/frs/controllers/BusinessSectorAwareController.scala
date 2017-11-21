@@ -32,12 +32,6 @@ package models.view.frs {
 
     implicit val format = Json.format[BusinessSectorView]
 
-    implicit val viewModelFormat = ViewModelFormat(
-      readF = (_: S4LFlatRateScheme).categoryOfBusiness,
-      updateF = (c: BusinessSectorView, g: Option[S4LFlatRateScheme]) =>
-        g.getOrElse(S4LFlatRateScheme()).copy(categoryOfBusiness = Some(c))
-    )
-
     implicit val modelTransformer = ApiModelTransformer[BusinessSectorView] { (vs: VatScheme) =>
       for {
         frs <- vs.vatFlatRateScheme
@@ -79,24 +73,6 @@ package controllers.frs {
           }
         }
       }
-
-//            viewModel[BusinessSectorView]().filter(view => StringUtils.isNotBlank(view.businessSector))
-//              .getOrElseF {
-//                viewModel[MainBusinessActivityView]()
-//                  .subflatMap(mbaView => mbaView.mainBusinessActivity)
-//                  .map(sicCode => configConnect.getBusinessSectorDetails(sicCode.id))
-//                  .getOrElse(throw new IllegalStateException("Can't determine main business activity"))
-//              }
     }
   }
-//
-//  class Test @Inject()(ds: CommonPlayDependencies, configConnect: ConfigConnect) extends VatRegistrationController(ds) {
-//    viewModel[BusinessSectorView]().filter(view => StringUtils.isNotBlank(view.businessSector))
-//      .getOrElseF {
-//        viewModel[MainBusinessActivityView]()
-//          .subflatMap(mbaView => mbaView.mainBusinessActivity)
-//          .map(sicCode => configConnect.getBusinessSectorDetails(sicCode.id))
-//          .getOrElse(throw new IllegalStateException("Can't determine main business activity"))
-//      }
-//  }
 }

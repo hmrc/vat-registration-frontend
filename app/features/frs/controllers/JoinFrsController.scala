@@ -25,10 +25,6 @@ package models.view.frs {
   object JoinFrsView {
     implicit val format = Json.format[JoinFrsView]
 
-    def from(vatFlatRateScheme: VatFlatRateScheme): JoinFrsView = {
-      JoinFrsView(vatFlatRateScheme.joinFrs)
-    }
-
     implicit val modelTransformer = ApiModelTransformer[JoinFrsView] { (vs: VatScheme) =>
       vs.vatFlatRateScheme.map(_.joinFrs).map(JoinFrsView(_))
     }
