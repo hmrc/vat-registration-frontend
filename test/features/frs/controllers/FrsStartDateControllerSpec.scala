@@ -18,191 +18,154 @@ package controllers.frs
 
 
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit.DAYS
 
 import common.Now
+import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import forms.frs.FrsStartDateFormFactory
-import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
-import models.api.VatFlatRateScheme
+import helpers.{ControllerSpec, MockMessages}
 import models.view.frs.FrsStartDateView
-import models.view.vatTradingDetails.vatChoice.StartDateView
-import org.mockito.Matchers
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import play.api.http.Status
+import play.api.data.Form
+import play.api.i18n.MessagesApi
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HeaderCarrier
+import services.VatRegistrationService
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
-class FrsStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+class FrsStartDateControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages {
 
   val today: LocalDate = LocalDate.of(2017, 3, 21)
   val frsStartDateFormFactory = new FrsStartDateFormFactory(mockDateService, Now[LocalDate](today))
-  implicit val localDateOrdering = frsStartDateFormFactory.LocalDateOrdering
 
-  object FrsTestStartDateController extends FrsStartDateController(frsStartDateFormFactory, ds)(mockS4LService, mockVatRegistrationService) {
-    implicit val fixedToday = Now[LocalDate](today)
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
+  //implicit val localDateOrdering = frsStartDateFormFactory.LocalDateOrdering
+
+  implicit val fixedToday: Now[LocalDate] = Now[LocalDate](today)
+
+  trait Setup {
+    val controller: FrsStartDateController = new FrsStartDateController{
+      override val service: VatRegistrationService = mockVatRegistrationService
+      override val startDateForm: Form[FrsStartDateView] = frsStartDateFormFactory.form()
+      override val messagesApi: MessagesApi = mockMessagesAPI
+      override val authConnector: AuthConnector = mockAuthConnector
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+    }
+
+    mockAllMessages
   }
 
   val fakeRequest = FakeRequest(routes.FrsStartDateController.show())
 
   s"GET ${routes.FrsStartDateController.show()}" should {
 
-    "return HTML when there's a frs start date in S4L" in {
+    "return HTML when there's a frs start date in S4L" in new Setup {
+      mockWithCurrentProfile(Some(currentProfile))
+
+      when(mockVatRegistrationService.fetchFlatRateScheme(any(), any()))
+        .thenReturn(Future.successful(validS4LFlatRateScheme))
+
       val frsStartDate = FrsStartDateView(FrsStartDateView.DIFFERENT_DATE, Some(LocalDate.now))
 
-      mockGetCurrentProfile()
-
-      save4laterReturnsViewModel(frsStartDate)()
-
-      callAuthorised(FrsTestStartDateController.show) {
-        _ includesText ("When do you want to join the Flat Rate Scheme?")
+      callAuthorised(controller.show) { result =>
+        status(result) mustBe 200
+        contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
 
-    "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      mockGetCurrentProfile()
-      save4laterReturnsNoViewModel[FrsStartDateView]()
+    "return HTML when there's nothing in S4L and vatScheme contains data" in new Setup {
+      mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
-        .thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.fetchFlatRateScheme(any(), any()))
+        .thenReturn(Future.successful(validS4LFlatRateScheme.copy(frsStartDate = None)))
 
-      callAuthorised(FrsTestStartDateController.show) {
-        _ includesText ("When do you want to join the Flat Rate Scheme?")
-      }
-    }
-
-    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      mockGetCurrentProfile()
-      save4laterReturnsNoViewModel[FrsStartDateView]()
-
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
-        .thenReturn(Future.successful(emptyVatScheme))
-
-      callAuthorised(FrsTestStartDateController.show) {
-        _ includesText ("When do you want to join the Flat Rate Scheme?")
+      callAuthorised(controller.show) { result =>
+        status(result) mustBe 200
+        contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
   }
 
   s"POST ${routes.FrsStartDateController.submit()}" should {
-    "return 400 when no data posted" in {
-      mockGetCurrentProfile()
 
-      save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
+    "return 400 when no data posted" in new Setup {
+      mockWithCurrentProfile(Some(currentProfile))
 
-      submitAuthorised(
-        FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody()) {
-        status(_) mustBe Status.BAD_REQUEST
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
+
+      submitAuthorised(controller.submit(), request) { result =>
+        status(result) mustBe BAD_REQUEST
       }
     }
 
-    "return 400 when partial data is posted" in {
-      mockGetCurrentProfile()
-      save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
+    "return 400 when partial data is posted" in new Setup {
+      mockWithCurrentProfile(Some(currentProfile))
 
-      submitAuthorised(
-        FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
-          "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
-          "frsStartDate.day" -> "1",
-          "frsStartDate.month" -> "",
-          "frsStartDate.year" -> "2017"
-        )) {
-        status(_) mustBe Status.BAD_REQUEST
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+        "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
+        "frsStartDate.day" -> "1",
+        "frsStartDate.month" -> "",
+        "frsStartDate.year" -> "2017"
+      )
+
+      submitAuthorised(controller.submit(), request) { result =>
+        status(result) mustBe BAD_REQUEST
       }
     }
 
-    "return 400 with Different Date selected and date that is less than 2 working days in the future" in {
-      mockGetCurrentProfile()
-      save4laterExpectsSave[FrsStartDateView]()
-      save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
+    "return 400 with Different Date selected and date that is less than 2 working days in the future" in new Setup {
+      mockWithCurrentProfile(Some(currentProfile))
 
-      submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
         "frsStartDate.day" -> "20",
         "frsStartDate.month" -> "3",
         "frsStartDateDate.year" -> "2017"
-      )) {
-        status(_) mustBe Status.BAD_REQUEST
+      )
+
+      submitAuthorised(controller.submit(), request) { result =>
+        status(result) mustBe BAD_REQUEST
       }
     }
 
-    "return 303 with VAT Registration Date selected" in {
-      mockGetCurrentProfile()
-      save4laterExpectsSave[FrsStartDateView]()
-      save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
+    "return 303 with VAT Registration Date selected" in new Setup{
+      mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(VatFlatRateScheme(true).pure)
+      when(mockVatRegistrationService.saveFRSStartDateAsVatRegistrationDate(any())(any(), any()))
+        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
 
-      submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "frsStartDateRadio" -> FrsStartDateView.VAT_REGISTRATION_DATE
-      )) {
-        _ redirectsTo s"$contextRoot/check-your-answers"
+      )
+
+      submitAuthorised(controller.submit(), request) { result =>
+        status(result) mustBe 303
+        redirectLocation(result) mustBe Some("/register-for-vat/check-your-answers")
       }
     }
 
-    "return 303 with Different Date entered" in {
-
-      val minDate: LocalDate = today.plusDays(30)
-
-      mockGetCurrentProfile()
-
-      save4laterExpectsSave[FrsStartDateView]()
-      save4laterReturnsViewModel(FrsStartDateView(FrsStartDateView.DIFFERENT_DATE, Some(LocalDate.now)))()
-
-      when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
-      when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(VatFlatRateScheme(true).pure)
-
-      submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
-        "frsStartDate.day" -> minDate.getDayOfMonth.toString,
-        "frsStartDate.month" -> minDate.getMonthValue.toString,
-        "frsStartDate.year" -> minDate.getYear.toString
-
-      )) {
-        _ redirectsTo s"$contextRoot/check-your-answers"
-      }
-
-    }
-
-    "return 303 with Vat Registration Date selected" in {
-      mockGetCurrentProfile()
-
-      save4laterReturnsViewModel(StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.now)))()
-      save4laterExpectsSave[FrsStartDateView]()
-      when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(VatFlatRateScheme(true).pure)
-
-      submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "frsStartDateRadio" -> FrsStartDateView.VAT_REGISTRATION_DATE
-
-      )) {
-        _ redirectsTo s"$contextRoot/check-your-answers"
-      }
-
-    }
-
-    "return 303 with Vat Choice Start Date is Null " in {
-      mockGetCurrentProfile()
-
-      save4laterExpectsSave[FrsStartDateView]()
-      save4laterReturnsNoViewModel[StartDateView]()
-      when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(VatFlatRateScheme(true).pure)
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
-
-      submitAuthorised(FrsTestStartDateController.submit(), fakeRequest.withFormUrlEncodedBody(
-        "frsStartDateRadio" -> FrsStartDateView.VAT_REGISTRATION_DATE
-
-      )) {
-        _ redirectsTo s"$contextRoot/check-your-answers"
-      }
-
-    }
-
+//    "return 303 with Different Date entered" in new Setup {
+//
+//      mockWithCurrentProfile(Some(currentProfile))
+//
+////      when(mockDateService.addWorkingDays(any(), any())).thenReturn(fixedToday())
+//
+//      val minDate: LocalDate = LocalDate.now().plusDays(30)
+//
+//      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+//        "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
+//        "frsStartDate.day" -> minDate.getDayOfMonth.toString,
+//        "frsStartDate.month" -> minDate.getMonthValue.toString,
+//        "frsStartDate.year" -> minDate.getYear.toString
+//      )
+//
+//      submitAuthorised(controller.submit(), request) { result =>
+//        status(result) mustBe 303
+//        redirectLocation(result) mustBe Some("/register-for-vat/check-your-answers")
+//      }
+//    }
   }
 }

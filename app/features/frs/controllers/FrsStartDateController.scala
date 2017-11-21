@@ -54,7 +54,7 @@ package models.view.frs {
     // Returns a view model for a specific part of a given VatScheme API model
     implicit val modelTransformer = ApiModelTransformer[FrsStartDateView] { vs: VatScheme =>
       vs.vatFlatRateScheme.collect {
-        case VatFlatRateScheme(_, _, _, _, Some(dateType), d@_, _, _) => FrsStartDateView(dateType, d) //TODO review if such collect necessary
+        case VatFlatRateScheme(_, _, _, _, Some(dateType), date, _, _) => FrsStartDateView(dateType, date) //TODO review if such collect necessary
       }
     }
   }
@@ -64,61 +64,89 @@ package controllers.frs {
 
   import javax.inject.Inject
 
-  import cats.syntax.FlatMapSyntax
+  import config.FrontendAuthConnector
   import connectors.KeystoreConnector
-  import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import controllers.VatRegistrationControllerNoAux
   import forms.frs.FrsStartDateFormFactory
-  import models.CurrentProfile
   import models.view.frs.FrsStartDateView
-  import models.view.vatTradingDetails.vatChoice.StartDateView
+  import play.api.data.Form
+  import play.api.i18n.MessagesApi
   import play.api.mvc._
-  import services.{S4LService, SessionProfile, VatRegistrationService}
-  import uk.gov.hmrc.play.http.HeaderCarrier
+  import services.{SessionProfile, VatRegistrationService}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
   import scala.concurrent.Future
 
-  class FrsStartDateController @Inject()(frsStartDateFormFactory: FrsStartDateFormFactory, ds: CommonPlayDependencies)
-                                        (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with FlatMapSyntax with SessionProfile {
+  class FrsStartDateControllerImpl @Inject()(frsStartDateFormFactory: FrsStartDateFormFactory,
+                                             val messagesApi: MessagesApi,
+                                             val service: VatRegistrationService) extends FrsStartDateController {
+    override val keystoreConnector: KeystoreConnector = KeystoreConnector
+    override val authConnector: AuthConnector = FrontendAuthConnector
+    val startDateForm: Form[FrsStartDateView] = frsStartDateFormFactory.form()
+  }
 
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
+  trait FrsStartDateController extends VatRegistrationControllerNoAux with SessionProfile {
+
+    val service: VatRegistrationService
+    val startDateForm: Form[FrsStartDateView]
 
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
-            viewModel[FrsStartDateView]().getOrElse(FrsStartDateView())
-              .map(f => Ok(features.frs.views.html.frs_start_date(frsStartDateFormFactory.form().fill(f))))
+              service.fetchFlatRateScheme map { flatRateScheme =>
+                val viewForm = flatRateScheme.frsStartDate match {
+                  case Some(view) => startDateForm.fill(view)
+                  case None       => startDateForm
+                }
+                Ok(features.frs.views.html.frs_start_date(viewForm))
+              }
             }
           }
     }
+
+//
+//    def show: Action[AnyContent] = authorised.async {
+//      implicit user =>
+//        implicit request =>
+//          withCurrentProfile { implicit profile =>
+//            ivPassedCheck {
+//            viewModel[FrsStartDateView]().getOrElse(FrsStartDateView())
+//              .map(f => Ok(features.frs.views.html.frs_start_date(frsStartDateFormFactory.form().fill(f))))
+//            }
+//          }
+//    }
 
     def submit: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
-              frsStartDateFormFactory.form().bindFromRequest().fold(
-                badForm => BadRequest(features.frs.views.html.frs_start_date(badForm)).pure,
-                view => if (view.dateType == FrsStartDateView.VAT_REGISTRATION_DATE) {
-                  val updateVatStartDate = setVatRegistrationDateToForm(view)
-                  updateVatStartDate.flatMap(frsStartDateView => saveForm(frsStartDateView))
+              startDateForm.bindFromRequest().fold(
+                badForm => Future.successful(BadRequest(features.frs.views.html.frs_start_date(badForm))),
+                view => if(view.dateType == FrsStartDateView.VAT_REGISTRATION_DATE){
+                  service.saveFRSStartDateAsVatRegistrationDate(view) map { _ =>
+                    Redirect(controllers.routes.SummaryController.show())
+                  }
                 } else {
-                  saveForm(view)
-                })
+                  service.saveFRSStartDate(Some(view)) map { _ =>
+                    Redirect(controllers.routes.SummaryController.show())
+                  }
+                }
+              )
             }
           }
     }
 
-    private def setVatRegistrationDateToForm(view: FrsStartDateView)
-                                            (implicit headerCarrier: HeaderCarrier, profile: CurrentProfile): Future[FrsStartDateView] =
-      viewModel[StartDateView]().fold(view)(startDateView => view.copy(date = startDateView.date))
+//    private def setVatRegistrationDateToForm(view: FrsStartDateView)
+//                                            (implicit headerCarrier: HeaderCarrier, profile: CurrentProfile): Future[FrsStartDateView] =
+//      viewModel[StartDateView]().fold(view)(startDateView => view.copy(date = startDateView.date))
 
-    private def saveForm(view: FrsStartDateView)(implicit headerCarrier: HeaderCarrier, profile: CurrentProfile): Future[Result] =
-      save(view).flatMap(_ =>
-        vrs.submitVatFlatRateScheme().map(_ =>
-          Redirect(controllers.routes.SummaryController.show())))
+//    private def saveForm(view: FrsStartDateView)(implicit headerCarrier: HeaderCarrier, profile: CurrentProfile): Future[Result] =
+//      save(view).flatMap(_ =>
+//        vrs.submitVatFlatRateScheme().map(_ =>
+//          Redirect(controllers.routes.SummaryController.show())))
 
   }
 }
