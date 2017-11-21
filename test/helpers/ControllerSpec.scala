@@ -32,7 +32,7 @@ import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc._
 import play.api.test.FakeRequest
-import services.VatRegistrationService
+import services.{DateService, VatRegistrationService}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -47,6 +47,7 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite {
   val mockKeystoreConnector: KeystoreConnector = mock[KeystoreConnector]
   val mockMessagesAPI: MessagesApi = mock[MessagesApi]
   val mockConfigConnector: ConfigConnector = mock[ConfigConnector]
+  val mockDateService: DateService = mock[DateService]
 
   val regId = "VAT123456"
 

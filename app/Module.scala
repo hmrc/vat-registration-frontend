@@ -65,5 +65,6 @@ class Module extends AbstractModule {
     bind(classOf[RegisterForFrsWithSectorController]).to(classOf[RegisterForFrsWithSectorControllerImpl])
     bind(classOf[RegisterForFrsController]).to(classOf[RegisterForFrsControllerImpl])
     bind(classOf[ConfirmBusinessSectorController]).to(classOf[ConfirmBusinessSectorControllerImpl])
+    bind(classOf[FrsStartDateController]).to(classOf[FrsStartDateControllerImpl])
   }
 }
