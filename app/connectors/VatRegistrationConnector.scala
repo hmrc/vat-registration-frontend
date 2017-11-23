@@ -16,7 +16,7 @@
 
 package connectors
 
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
 import cats.data.OptionT
 import cats.instances.FutureInstances
@@ -25,9 +25,8 @@ import common.enums.VatRegStatus
 import config.WSHttp
 import models.api._
 import models.external.IncorporationInfo
-
 import play.api.libs.json.{JsObject, JsValue}
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
 
@@ -35,8 +34,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class VatRegistrationConnector extends RegistrationConnector with ServicesConfig {
-  val vatRegUrl = baseUrl("vat-registration")
+class VatRegistrationConnector @Inject()(config: ServicesConfig) extends RegistrationConnector {
+  val vatRegUrl = config.baseUrl("vat-registration")
   val http: WSHttp = WSHttp
 }
 

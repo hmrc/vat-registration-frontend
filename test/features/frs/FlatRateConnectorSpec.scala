@@ -25,7 +25,7 @@ package connectors {
   class FlatRateConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
     class Setup {
-      val connector: FlatRateConnector = new VatRegistrationConnector {
+      val connector: FlatRateConnector = new RegistrationConnector {
         override val vatRegUrl: String = "tst-url"
         override val http: WSHttp = mockWSHttp
       }

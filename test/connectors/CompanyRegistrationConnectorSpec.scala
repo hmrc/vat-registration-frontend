@@ -31,7 +31,7 @@ import scala.concurrent.Future
 class CompanyRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
   class Setup {
-    val connector = new CompanyRegistrationConnector {
+    val connector = new CompanyRegistrationConnect {
       override val companyRegistrationUrl: String = "tst-url"
       override val companyRegistrationUri: String = "tst-url"
       override val http: WSHttp = mockWSHttp

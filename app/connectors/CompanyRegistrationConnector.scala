@@ -16,25 +16,22 @@
 
 package connectors
 
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
-import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
-import models.external.CoHoCompanyProfile
-import play.api.Logger
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.play.config.inject.ServicesConfig
+import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.ws.WSHttp
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class CompanyRegistrationConnector extends CompanyRegistrationConnect with ServicesConfig {
-  val companyRegistrationUrl: String = baseUrl("company-registration")
-  val companyRegistrationUri: String = getConfString("company-registration.uri", "")
+class CompanyRegistrationConnector @Inject()(config: ServicesConfig) extends CompanyRegistrationConnect {
+  val companyRegistrationUrl: String = config.baseUrl("company-registration")
+  val companyRegistrationUri: String = config.getConfString("company-registration.uri", "")
   val http: WSHttp = WSHttp
 }
 

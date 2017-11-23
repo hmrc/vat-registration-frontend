@@ -16,15 +16,15 @@
 
 package connectors
 
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
 import cats.data.OptionT
 import com.google.inject.ImplementedBy
 import config.WSHttp
-import models.external.{CoHoRegisteredOfficeAddress, Officer, OfficerList}
+import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
 import play.api.Logger
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.WSHttp
 
@@ -32,9 +32,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class IncorporationInformationConnector extends IncorporationInformationConnect with ServicesConfig {
-  val incorpInfoUrl = baseUrl("incorporation-information")
-  val incorpInfoUri = getConfString("incorporation-information.uri", "")
+class IncorporationInformationConnector @Inject()(config: ServicesConfig) extends IncorporationInformationConnect {
+  val incorpInfoUrl = config.baseUrl("incorporation-information")
+  val incorpInfoUri = config.getConfString("incorporation-information.uri", "")
   val http: WSHttp = WSHttp
 }
 

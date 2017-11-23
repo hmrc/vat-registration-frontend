@@ -26,7 +26,7 @@ import scala.language.postfixOps
 class FinancialsConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
   class Setup {
-    val connector: FinancialsConnector = new VatRegistrationConnector {
+    val connector: FinancialsConnector = new RegistrationConnector {
       override val vatRegUrl: String = "tst-url"
       override val http: WSHttp = mockWSHttp
     }
