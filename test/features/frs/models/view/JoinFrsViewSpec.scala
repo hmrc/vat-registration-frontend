@@ -41,22 +41,22 @@ class JoinFrsViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
   }
 
-  "ViewModelFormat" should {
-    val s4LFlatRateScheme: S4LFlatRateScheme = S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)))
-
-    "extract JoinFrsView from lodgingOfficer" in {
-      JoinFrsView.viewModelFormat.read(s4LFlatRateScheme) shouldBe Some(JoinFrsView(true))
-    }
-
-    "update empty lodgingOfficer with JoinFrsView" in {
-      JoinFrsView.viewModelFormat.update(JoinFrsView(true), Option.empty[S4LFlatRateScheme])
-        .joinFrs shouldBe Some(JoinFrsView(true))
-    }
-
-    "update non-empty lodgingOfficer with JoinFrsView" in {
-      JoinFrsView.viewModelFormat.update(JoinFrsView(false), Some(s4LFlatRateScheme))
-        .joinFrs shouldBe Some(JoinFrsView(false))
-    }
-  }
+//  "ViewModelFormat" should {
+//    val s4LFlatRateScheme: S4LFlatRateScheme = S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)))
+//
+//    "extract JoinFrsView from lodgingOfficer" in {
+//      JoinFrsView.viewModelFormat.read(s4LFlatRateScheme) shouldBe Some(JoinFrsView(true))
+//    }
+//
+//    "update empty lodgingOfficer with JoinFrsView" in {
+//      JoinFrsView.viewModelFormat.update(JoinFrsView(true), Option.empty[S4LFlatRateScheme])
+//        .joinFrs shouldBe Some(JoinFrsView(true))
+//    }
+//
+//    "update non-empty lodgingOfficer with JoinFrsView" in {
+//      JoinFrsView.viewModelFormat.update(JoinFrsView(false), Some(s4LFlatRateScheme))
+//        .joinFrs shouldBe Some(JoinFrsView(false))
+//    }
+//  }
 
 }

@@ -65,18 +65,6 @@ class FrsStartDateViewSpec extends UnitSpec with VatRegistrationFixture with Ins
     val validFrsStartDateView = FrsStartDateView(FrsStartDateView.VAT_REGISTRATION_DATE)
     val s4LFlatRateScheme: S4LFlatRateScheme = S4LFlatRateScheme(frsStartDate = Some(validFrsStartDateView))
 
-    "extract startDate from vatTradingDetails" in {
-      FrsStartDateView.viewModelFormat.read(s4LFlatRateScheme) shouldBe Some(validFrsStartDateView)
-    }
-
-    "update empty vatContact with startDate" in {
-      FrsStartDateView.viewModelFormat.update(validFrsStartDateView, Option.empty[S4LFlatRateScheme]).frsStartDate shouldBe Some(validFrsStartDateView)
-    }
-
-    "update non-empty vatContact with startDate" in {
-      FrsStartDateView.viewModelFormat.update(validFrsStartDateView, Some(s4LFlatRateScheme)).frsStartDate shouldBe Some(validFrsStartDateView)
-    }
-
     "ApiModelTransformer" should {
 
       "produce empty view model from an empty frs start date" in {

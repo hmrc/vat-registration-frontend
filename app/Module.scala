@@ -21,7 +21,7 @@ import com.google.inject.name.Names
 import com.google.inject.{AbstractModule, Scopes, TypeLiteral}
 import common.Now
 import connectors._
-import services.{PrePopService, PrePopulationService}
+import controllers.frs._
 import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
 import uk.gov.hmrc.play.http.hooks.HttpHook
 import uk.gov.hmrc.play.http.ws.WSHttp
@@ -53,7 +53,18 @@ class Module extends AbstractModule {
 
 
     bind(classOf[ServicesConfig]).to(classOf[DefaultServicesConfig])
+
+    bindControllers()
   }
 
-
+  def bindControllers() {
+    // FRS
+    bind(classOf[JoinFrsController]).to(classOf[JoinFrsControllerImpl])
+    bind(classOf[AnnualCostsInclusiveController]).to(classOf[AnnualCostsInclusiveControllerImpl])
+    bind(classOf[AnnualCostsLimitedController]).to(classOf[AnnualCostsLimitedControllerImpl])
+    bind(classOf[RegisterForFrsWithSectorController]).to(classOf[RegisterForFrsWithSectorControllerImpl])
+    bind(classOf[RegisterForFrsController]).to(classOf[RegisterForFrsControllerImpl])
+    bind(classOf[ConfirmBusinessSectorController]).to(classOf[ConfirmBusinessSectorControllerImpl])
+    bind(classOf[FrsStartDateController]).to(classOf[FrsStartDateControllerImpl])
+  }
 }

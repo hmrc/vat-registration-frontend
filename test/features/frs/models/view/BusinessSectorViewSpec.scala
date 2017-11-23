@@ -54,23 +54,4 @@ class BusinessSectorViewSpec extends UnitSpec with VatRegistrationFixture with I
     }
 
   }
-
-  "ViewModelFormat" should {
-    val s4LFlatRateScheme: S4LFlatRateScheme = S4LFlatRateScheme(categoryOfBusiness = Some(BusinessSectorView("Foo", 1)))
-
-    "extract BusinessSectorView from VatFlatRateScheme" in {
-      BusinessSectorView.viewModelFormat.read(s4LFlatRateScheme) shouldBe Some(BusinessSectorView("Foo", 1))
-    }
-
-    "update empty vatFlatRateScheme with BusinessSectorView" in {
-      BusinessSectorView.viewModelFormat.update(BusinessSectorView("Foo", 1), Option.empty[S4LFlatRateScheme])
-        .categoryOfBusiness shouldBe Some(BusinessSectorView("Foo", 1))
-    }
-
-    "update non-empty vatFlatRateScheme with BusinessSectorView" in {
-      BusinessSectorView.viewModelFormat.update(BusinessSectorView("Foo", 1), Some(s4LFlatRateScheme))
-        .categoryOfBusiness shouldBe Some(BusinessSectorView("Foo", 1))
-    }
-  }
-
 }

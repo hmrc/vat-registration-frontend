@@ -32,12 +32,6 @@ package models.view.frs {
 
     implicit val format = Json.format[BusinessSectorView]
 
-    implicit val viewModelFormat = ViewModelFormat(
-      readF = (_: S4LFlatRateScheme).categoryOfBusiness,
-      updateF = (c: BusinessSectorView, g: Option[S4LFlatRateScheme]) =>
-        g.getOrElse(S4LFlatRateScheme()).copy(categoryOfBusiness = Some(c))
-    )
-
     implicit val modelTransformer = ApiModelTransformer[BusinessSectorView] { (vs: VatScheme) =>
       for {
         frs <- vs.vatFlatRateScheme
@@ -50,31 +44,35 @@ package models.view.frs {
 
 package controllers.frs {
 
-  import javax.inject.Inject
-
-  import cats.syntax.FlatMapSyntax
   import connectors.ConfigConnect
-  import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import controllers.VatRegistrationControllerNoAux
   import models.CurrentProfile
   import models.view.frs.BusinessSectorView
-  import models.view.sicAndCompliance.MainBusinessActivityView
   import org.apache.commons.lang3.StringUtils
-  import services.{S4LService, VatRegistrationService}
+  import services.VatRegistrationService
   import uk.gov.hmrc.play.http.HeaderCarrier
 
   import scala.concurrent.Future
 
-  class BusinessSectorAwareController @Inject()(ds: CommonPlayDependencies, configConnect: ConfigConnect)
-                                               (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with FlatMapSyntax {
+  // TODO refactor this - controller being treated like a service by RegisterForFrsWithSector
+  trait BusinessSectorAwareController extends VatRegistrationControllerNoAux {
 
-    protected def businessSectorView()(implicit headerCarrier: HeaderCarrier, profile: CurrentProfile): Future[BusinessSectorView] =
-      viewModel[BusinessSectorView]().filter(view => StringUtils.isNotBlank(view.businessSector))
-        .getOrElseF {
-          viewModel[MainBusinessActivityView]()
-            .subflatMap(mbaView => mbaView.mainBusinessActivity)
-            .map(sicCode => configConnect.getBusinessSectorDetails(sicCode.id))
-            .getOrElse(throw new IllegalStateException("Can't determine main business activity"))
+    val service: VatRegistrationService
+    val configConnect: ConfigConnect
+
+    def businessSectorView()(implicit headerCarrier: HeaderCarrier,profile: CurrentProfile): Future[BusinessSectorView] = {
+      service.fetchFlatRateScheme flatMap { flatRateScheme =>
+        //TODO StringUtils.isNotBlank(???) - use ???.trim.nonEmpty ?
+        flatRateScheme.categoryOfBusiness match {
+          case Some(categoryOfBusiness) if StringUtils.isNotBlank(categoryOfBusiness.businessSector) => Future.successful(categoryOfBusiness)
+          case _ => service.fetchSicAndCompliance map { sicAndCompliance =>
+            sicAndCompliance.mainBusinessActivity match {
+              case Some(mainBusinessActivity) => configConnect.getBusinessSectorDetails(mainBusinessActivity.id)
+              case None => throw new IllegalStateException("Can't determine main business activity")
+            }
+          }
         }
+      }
+    }
   }
 }

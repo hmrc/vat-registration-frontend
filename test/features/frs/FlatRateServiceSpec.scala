@@ -14,58 +14,325 @@
  * limitations under the License.
  */
 
-package services {
+package services
 
-  import cats.data.OptionT
-  import connectors.KeystoreConnector
-  import helpers.{S4LMockSugar, VatRegSpec}
-  import models.S4LFlatRateScheme
-  import models.external.IncorporationInfo
-  import models.view.frs._
-  import org.mockito.Matchers
-  import org.mockito.Matchers.any
-  import org.mockito.Mockito._
+import connectors.{CompanyRegistrationConnector, KeystoreConnector, VatRegistrationConnector}
+import helpers.VatSpec
+import models.{CurrentProfile, S4LFlatRateScheme, S4LVatFinancials}
+import models.api.VatFlatRateScheme
+import models.view.frs._
+import models.view.vatFinancials.EstimateVatTurnover
+import org.mockito.Matchers.any
+import org.mockito.Mockito._
+import uk.gov.hmrc.play.http.HeaderCarrier
+import AnnualCostsInclusiveView.{YES, NO}
 
-  import scala.concurrent.Future
-  import scala.language.postfixOps
+import scala.concurrent.Future
 
-  class FlateRateServiceSpec extends VatRegSpec with S4LMockSugar {
-    class Setup {
-      val service: FlatRateService = new RegistrationService {
-        override val s4LService = mockS4LService
-        override val vatRegConnector = mockRegConnector
-        override val compRegConnector = mockCompanyRegConnector
-        override val incorporationService = mockIIService
-        override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-      }
+class FlatRateServiceSpec extends VatSpec {
+
+  class Setup {
+    val service: RegistrationService = new RegistrationService {
+      override val s4LService: S4LService = mockS4LService
+      override val vatRegConnector: VatRegistrationConnector = mockRegConnector
+      override val compRegConnector: CompanyRegistrationConnector = mockCompanyRegConnector
+      override val incorporationService: IncorporationInformationService = mockIIService
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+    }
+  }
+
+  class SetupWithFRSThreshold(threshold: Long) {
+    val service: RegistrationService = new RegistrationService {
+      override val s4LService: S4LService = mockS4LService
+      override val vatRegConnector: VatRegistrationConnector = mockRegConnector
+      override val compRegConnector: CompanyRegistrationConnector = mockCompanyRegConnector
+      override val incorporationService: IncorporationInformationService = mockIIService
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+
+      override def getFlatRateSchemeThreshold()(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Long] =
+        Future.successful(threshold)
+    }
+  }
+
+
+  // TODO old tests - look to change
+//  "When this is the first time the user starts a journey and we're persisting to the backend" should {
+//    "submitVatFlatRateScheme should process the submission even if VatScheme does not contain VatFlatRateScheme" in new Setup {
+//      when(mockRegConnector.getRegistration(Matchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+//      when(mockRegConnector.upsertVatFlatRateScheme(any(), any())(any(), any())).thenReturn(validVatFlatRateScheme.pure)
+//      save4laterReturns(S4LFlatRateScheme(
+//        joinFrs = Some(JoinFrsView(true)),
+//        annualCostsInclusive = Some(AnnualCostsInclusiveView("yes")),
+//        annualCostsLimited = Some(AnnualCostsLimitedView("yes")),
+//        registerForFrs = Some(RegisterForFrsView(true)),
+//        frsStartDate = Some(FrsStartDateView(FrsStartDateView.VAT_REGISTRATION_DATE))
+//      ))
+//      service.submitVatFlatRateScheme() returns validVatFlatRateScheme
+//    }
+//
+//    "submitVatFlatRateScheme should fail if there's no VatFlatRateScheme in backend or S4L" in new Setup {
+//      when(mockRegConnector.getRegistration(Matchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+//      save4laterReturnsNothing[S4LFlatRateScheme]()
+//
+//      service.submitVatFlatRateScheme() failedWith classOf[IllegalStateException]
+//    }
+//  }
+
+  "getFlatRateSchemeThreshold" should {
+
+    "return 2000L when the estimated Vat turnover is 100000 (rounded 2%)" in new Setup {
+
+      val financialsWithEstimateVatTurnoverIs100000: S4LVatFinancials =
+        validS4LVatFinancials.copy(estimateVatTurnover = Some(EstimateVatTurnover(100000L)))
+
+      when(mockS4LService.fetchAndGetNoAux[S4LVatFinancials](any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(financialsWithEstimateVatTurnoverIs100000)))
+
+      val flatRateThreshold: Long = await(service.getFlatRateSchemeThreshold())
+      flatRateThreshold mustBe 2000L
+
     }
 
-    override def beforeEach() {
-      super.beforeEach()
-      mockFetchRegId(testRegId)
-      when(mockIIService.getIncorporationInfo(any())(any())).thenReturn(OptionT.none[Future, IncorporationInfo])
+    "return 0L if there is no EstimateVatTurnover in the S4LVatFinancials" in new Setup {
+
+      val financialsWithNoEstimateVatTurnover: S4LVatFinancials = validS4LVatFinancials.copy(estimateVatTurnover = None)
+
+      when(mockS4LService.fetchAndGetNoAux[S4LVatFinancials](any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(financialsWithNoEstimateVatTurnover)))
+
+      val flatRateThreshold: Long = await(service.getFlatRateSchemeThreshold())
+      flatRateThreshold mustBe 0L
+    }
+  }
+
+  "saveAnnualCostsInclusive" should {
+
+    "return a S4LFlatRateScheme after saving AnnualCostsInclusiveView to S4L" in new Setup {
+      when(mockS4LService.saveNoAux[S4LFlatRateScheme](any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(validS4LFlatRateScheme)))
+
+      val expected = S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)), annualCostsInclusive = Some(AnnualCostsInclusiveView(YES)))
+
+      val result: Either[S4LFlatRateScheme, _] = await(service.saveAnnualCostsInclusive(AnnualCostsInclusiveView(YES)))
+
+      result mustBe Left(expected)
+    }
+  }
+
+  "saveAnnualCostsLimited" should {
+
+    "return a S4LFlatRateScheme when AnnualCostsLimitedView.selection is No to S4L" in new Setup {
+      when(mockS4LService.saveNoAux[S4LFlatRateScheme](any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(validS4LFlatRateScheme)))
+
+      val expected: S4LFlatRateScheme = validS4LFlatRateScheme.copy(annualCostsLimited = Some(AnnualCostsLimitedView(NO)))
+
+      val result: Either[S4LFlatRateScheme, _] = await(service.saveAnnualCostsLimited(AnnualCostsLimitedView(NO)))
+
+      result mustBe Left(expected)
     }
 
-    "When this is the first time the user starts a journey and we're persisting to the backend" should {
-      "submitVatFlatRateScheme should process the submission even if VatScheme does not contain VatFlatRateScheme" in new Setup {
-        when(mockRegConnector.getRegistration(Matchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-        when(mockRegConnector.upsertVatFlatRateScheme(any(), any())(any(), any())).thenReturn(validVatFlatRateScheme.pure)
-        save4laterReturns(S4LFlatRateScheme(
-          joinFrs = Some(JoinFrsView(true)),
-          annualCostsInclusive = Some(AnnualCostsInclusiveView("yes")),
-          annualCostsLimited = Some(AnnualCostsLimitedView("yes")),
-          registerForFrs = Some(RegisterForFrsView(true)),
-          frsStartDate = Some(FrsStartDateView(FrsStartDateView.VAT_REGISTRATION_DATE))
-        ))
-        service.submitVatFlatRateScheme() returns validVatFlatRateScheme
-      }
+    "return a S4LFlatRateScheme when AnnualCostsLimitedView.selection is Yes to S4L" in new Setup {
+      when(mockS4LService.saveNoAux[S4LFlatRateScheme](any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
 
-      "submitVatFlatRateScheme should fail if there's no VatFlatRateScheme in backend or S4L" in new Setup {
-        when(mockRegConnector.getRegistration(Matchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-        save4laterReturnsNothing[S4LFlatRateScheme]()
+      when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(validS4LFlatRateScheme)))
 
-        service.submitVatFlatRateScheme() failedWith classOf[IllegalStateException]
-      }
+      val expected: S4LFlatRateScheme = validS4LFlatRateScheme.copy(
+        annualCostsLimited = Some(AnnualCostsLimitedView(YES)),
+        frsStartDate = None,
+        categoryOfBusiness = None
+      )
+
+      val result: Either[S4LFlatRateScheme, _] = await(service.saveAnnualCostsLimited(AnnualCostsLimitedView(YES)))
+
+      result mustBe Left(expected)
+    }
+  }
+
+  "isOverLimitedCostTraderThreshold" should {
+
+    val underThreshold = 500L
+    val overThreshold = 2000L
+
+    "return true when the calculated flat rate scheme threshold is over 1000" in new SetupWithFRSThreshold(overThreshold) {
+      val result: Boolean = await(service.isOverLimitedCostTraderThreshold)
+      result mustBe true
+    }
+
+    "return false when the calculated flat rate scheme threshold is below 1000" in new SetupWithFRSThreshold(underThreshold) {
+      val result: Boolean = await(service.isOverLimitedCostTraderThreshold)
+      result mustBe false
+    }
+  }
+
+  "frsViewToApi" should {
+
+    "transform a S4LFlatRateScheme into a VatFlatRateScheme" in new Setup {
+      service.frsViewToApi(validS4LFlatRateScheme) mustBe validVatFlatRateScheme
+    }
+  }
+
+  "frsApiToView" should {
+
+    "transform a VatScheme into a S4LFlatRateScheme if a VatFlatRateScheme exists" in new Setup {
+      service.frsApiToView(validVatScheme) mustBe validS4LFlatRateScheme
+    }
+
+    "return an empty S4LFlatRateScheme if the supplied VatScheme does not contain a VatFlatRateScheme" in new Setup {
+      service.frsApiToView(emptyVatScheme) mustBe S4LFlatRateScheme()
+    }
+  }
+
+  "fetchFlatRateScheme" should {
+
+    "return a S4LFlatRateScheme if one is found in Save 4 Later" in new Setup {
+      when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(validS4LFlatRateScheme)))
+
+      val result: S4LFlatRateScheme = await(service.fetchFlatRateScheme)
+
+      result mustBe validS4LFlatRateScheme
+    }
+
+    "return a S4LFlatRateScheme if nothing is found in Save 4 Later but one is found in Vat Registration" in new Setup {
+      when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockRegConnector.getRegistration(any())(any(), any()))
+        .thenReturn(Future.successful(validVatScheme))
+
+      val result: S4LFlatRateScheme = await(service.fetchFlatRateScheme)
+
+      result mustBe validS4LFlatRateScheme
+    }
+
+    "return an empty S4LFlatRateScheme if nothing is found in either Save 4 Later or Vat Registration" in new Setup {
+      when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockRegConnector.getRegistration(any())(any(), any()))
+        .thenReturn(Future.successful(emptyVatScheme))
+
+      val result: S4LFlatRateScheme = await(service.fetchFlatRateScheme)
+
+      result mustBe S4LFlatRateScheme()
+    }
+  }
+
+  "fetchFRSFromS4L" should {
+
+    "return a S4LFlatRateScheme if one is found in Save 4 Later" in new Setup {
+
+      when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(validS4LFlatRateScheme)))
+
+      val result: Option[S4LFlatRateScheme] = await(service.fetchFRSFromS4L)
+
+      result mustBe Some(validS4LFlatRateScheme)
+    }
+
+    "return None if a S4LFlatRateScheme is not found in Save 4 Later" in new Setup {
+
+      when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
+        .thenReturn(Future.successful(None))
+
+      val result: Option[S4LFlatRateScheme] = await(service.fetchFRSFromS4L)
+
+      result mustBe None
+    }
+  }
+
+  "fetchFRSFromAPI" should {
+
+    "return a VatFlatRateScheme if a VatScheme is found containing one" in new Setup {
+      when(mockRegConnector.getRegistration(any())(any(), any()))
+        .thenReturn(Future.successful(validVatScheme))
+
+      val result: Option[VatFlatRateScheme] = await(service.fetchFRSFromAPI)
+
+      result mustBe Some(validVatFlatRateScheme)
+    }
+
+    "return None when a VatFlatRateScheme is not found in the returned VatScheme" in new Setup {
+      when(mockRegConnector.getRegistration(any())(any(), any()))
+        .thenReturn(Future.successful(emptyVatScheme))
+
+      val result: Option[VatFlatRateScheme] = await(service.fetchFRSFromAPI)
+
+      result mustBe None
+    }
+  }
+
+  "saveJoinFRS" should {
+
+    "save JoinFrsView To S4L if the logical block is incomplete" in new Setup {
+      // TODO this function can only save to S4L at the moment
+      when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(validS4LFlatRateScheme)))
+
+      when(mockS4LService.saveNoAux[S4LFlatRateScheme](any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      val result: Either[S4LFlatRateScheme, _] = await(service.saveJoinFRS(JoinFrsView(true)))
+
+      result mustBe Left(validS4LFlatRateScheme)
+    }
+
+    "save a FlatRateScheme directly to Vat Registration if JoinFrsView.selection is false" in new Setup {
+
+      when(mockRegConnector.upsertVatFlatRateScheme(any(), any())(any(), any()))
+        .thenReturn(Future.successful(vatFlatRateSchemeNotJoiningFRS))
+
+      val result: Either[_, VatFlatRateScheme] = await(service.saveJoinFRS(JoinFrsView(false)))
+
+      result mustBe Right(vatFlatRateSchemeNotJoiningFRS)
+    }
+  }
+
+  "saveFRS" should {
+
+    "save to S4L" in new Setup {
+
+      when(mockS4LService.saveNoAux[S4LFlatRateScheme](any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      val result: Either[S4LFlatRateScheme, _] = await(service.saveFRS(validS4LFlatRateScheme))
+
+      result mustBe Left(validS4LFlatRateScheme)
+    }
+  }
+
+  "saveFRSToS4L" should {
+
+    "return a VatFlatRateScheme that has been saved in Vat Registration" in new Setup {
+
+      when(mockS4LService.saveNoAux[S4LFlatRateScheme](any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      val result: S4LFlatRateScheme = await(service.saveFRSToS4L(validS4LFlatRateScheme))
+
+      result mustBe validS4LFlatRateScheme
+    }
+  }
+
+  "saveFRStoAPI" should {
+
+    "return a VatFlatRateScheme that has been saved in Vat Registration" in new Setup {
+
+      when(mockRegConnector.upsertVatFlatRateScheme(any(), any())(any(), any()))
+        .thenReturn(Future.successful(validVatFlatRateScheme))
+
+      val result: VatFlatRateScheme = await(service.saveFRStoAPI(validVatFlatRateScheme))
+
+      result mustBe validVatFlatRateScheme
     }
   }
 }

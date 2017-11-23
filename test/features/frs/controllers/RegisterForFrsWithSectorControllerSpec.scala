@@ -16,119 +16,105 @@
 
 package controllers.frs
 
+import connectors.{ConfigConnector, KeystoreConnector}
 import fixtures.VatRegistrationFixture
-import forms.genericForms.YesOrNoFormFactory
-import helpers.{S4LMockSugar, VatRegSpec}
-import models.{CurrentProfile, S4LFlatRateScheme}
-import models.api.VatFlatRateScheme
-import models.view.frs.{BusinessSectorView, RegisterForFrsView}
-import models.view.sicAndCompliance.MainBusinessActivityView
-import org.mockito.Matchers
+import helpers.{ControllerSpec, MockMessages}
+import models.CurrentProfile
+import models.view.frs.BusinessSectorView
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
+import play.api.i18n.MessagesApi
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
+import play.api.test.Helpers._
+import services.VatRegistrationService
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class RegisterForFrsWithSectorControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+class RegisterForFrsWithSectorControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages {
 
-  object Controller
-    extends RegisterForFrsWithSectorController(
-      ds,
-      new YesOrNoFormFactory,
-      mockConfigConnector
-    )(
-      mockS4LService,
-      mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
+  val defaultBusinessSectorView: BusinessSectorView = BusinessSectorView("test", 1)
+
+  class SetupWithBusinessSector(businessSector: BusinessSectorView = defaultBusinessSectorView) {
+    val controller: RegisterForFrsWithSectorController = new RegisterForFrsWithSectorController {
+      override val service: VatRegistrationService = mockVatRegistrationService
+      override val configConnect: ConfigConnector = mockConfigConnector
+      override val messagesApi: MessagesApi = mockMessagesAPI
+      override val authConnector: AuthConnector = mockAuthConnector
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+
+      override def businessSectorView()(implicit headerCarrier: HeaderCarrier, profile: CurrentProfile): Future[BusinessSectorView] = {
+        Future.successful(businessSector)
+      }
+    }
+
+    mockAllMessages
   }
 
   val fakeRequest = FakeRequest(routes.RegisterForFrsWithSectorController.show())
 
   s"GET ${routes.RegisterForFrsWithSectorController.show()}" should {
-    "render page" when {
-      "visited for the first time" in {
-        mockGetCurrentProfile()
 
-        when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
-        save4laterReturnsNoViewModel[BusinessSectorView]()
-        save4laterReturnsNoViewModel[MainBusinessActivityView]()
-        save4laterReturnsNoViewModel[RegisterForFrsView]()
-        save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
-        when(mockConfigConnector.getBusinessSectorDetails(sicCode.id)).thenReturn(validBusinessSectorView)
+    "return a 200 and render the page" in new SetupWithBusinessSector {
+      mockWithCurrentProfile(Some(currentProfile))
 
-        save4laterReturnsNoViewModel[RegisterForFrsView]()
-        when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
-
-        callAuthorised(Controller.show()) {
-          _ includesText "Your flat rate"
-        }
-      }
-
-      "user's answer has already been submitted to backend" in {
-        mockGetCurrentProfile()
-
-        save4laterReturnsNoViewModel[BusinessSectorView]()
-        save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
-        when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
-        when(mockConfigConnector.getBusinessSectorDetails(sicCode.id)).thenReturn(validBusinessSectorView)
-
-        callAuthorised(Controller.show) {
-          _ includesText "Your flat rate"
-        }
+      callAuthorised(controller.show()){ result =>
+        status(result) mustBe 200
+        contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
   }
 
   s"POST ${routes.RegisterForFrsWithSectorController.submit()}" should {
-    "return 400 with Empty data" in {
-      mockGetCurrentProfile()
 
-      save4laterReturnsNoViewModel[MainBusinessActivityView]()
-      save4laterReturnsNoViewModel[RegisterForFrsView]()
-      save4laterReturnsViewModel(validBusinessSectorView)()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
+    "return 400 with Empty data" in new SetupWithBusinessSector {
+      mockWithCurrentProfile(Some(currentProfile))
 
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
-      ))(result => result isA 400)
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
+
+      submitAuthorised(controller.submit(), request){ result =>
+        status(result) mustBe 400
+      }
     }
 
-    "return 303 with RegisterFor Flat Rate Scheme selected Yes" in {
-      mockGetCurrentProfile()
+    "return 303 with RegisterFor Flat Rate Scheme selected Yes" in new SetupWithBusinessSector {
+      mockWithCurrentProfile(Some(currentProfile))
 
-      save4laterReturnsNoViewModel[MainBusinessActivityView]()
-      save4laterReturnsNoViewModel[RegisterForFrsView]()
+      when(mockVatRegistrationService.saveBusinessSector(any())(any(), any()))
+        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
 
-      save4laterReturnsViewModel(validBusinessSectorView)()
+      when(mockVatRegistrationService.saveRegisterForFRS(any(), any())(any(), any()))
+        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
 
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
-      save4laterExpectsSave[RegisterForFrsView]()
-      save4laterExpectsSave[BusinessSectorView]()
-
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "registerForFrsWithSectorRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/flat-rate-scheme-join-date")
+      )
+
+      submitAuthorised(controller.submit(), request){ result =>
+        status(result) mustBe 303
+        redirectLocation(result) mustBe Some("/register-for-vat/flat-rate-scheme-join-date")
+      }
     }
 
-    "return 303 with RegisterFor Flat Rate Scheme selected No" in {
-      mockGetCurrentProfile()
+    "return 303 with RegisterFor Flat Rate Scheme selected No" in new SetupWithBusinessSector {
+      mockWithCurrentProfile(Some(currentProfile))
 
-      save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
-      save4laterReturnsNoViewModel[BusinessSectorView]()
-      save4laterExpectsSave[RegisterForFrsView]()
-      save4laterExpectsSave[BusinessSectorView]()
-      when(mockConfigConnector.getBusinessSectorDetails(sicCode.id)).thenReturn(validBusinessSectorView)
-      when(mockS4LService.fetchAndGet[S4LFlatRateScheme]()(any(), any(), any(), any())).thenReturn(Option.empty.pure)
-      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
-      when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(VatFlatRateScheme(false).pure)
+      when(mockVatRegistrationService.saveBusinessSector(any())(any(), any()))
+        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
 
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      when(mockVatRegistrationService.saveRegisterForFRS(any(), any())(any(), any()))
+        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "registerForFrsWithSectorRadio" -> "false"
-      ))(_ redirectsTo s"$contextRoot/check-your-answers")
+      )
 
-      verify(mockVatRegistrationService).submitVatFlatRateScheme()(any(), any())
+      submitAuthorised(controller.submit(), request){ result =>
+        status(result) mustBe 303
+        redirectLocation(result) mustBe Some("/register-for-vat/check-your-answers")
+      }
     }
   }
 }

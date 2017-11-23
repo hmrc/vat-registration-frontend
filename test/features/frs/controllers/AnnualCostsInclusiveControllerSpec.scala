@@ -16,107 +16,139 @@
 
 package controllers.frs
 
+import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
-import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
+import helpers.{ControllerSpec, MockMessages}
+import models.S4LFlatRateScheme
 import models.view.frs.AnnualCostsInclusiveView
-import models.view.vatFinancials.EstimateVatTurnover
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
+import play.api.i18n.MessagesApi
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
+import play.api.test.Helpers._
+import services.VatRegistrationService
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
-class AnnualCostsInclusiveControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+class AnnualCostsInclusiveControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages {
 
   val fakeRequest = FakeRequest(routes.AnnualCostsInclusiveController.show())
 
-  object Controller
-    extends AnnualCostsInclusiveController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
+  trait Setup {
+    val controller: AnnualCostsInclusiveController = new AnnualCostsInclusiveController {
+      override val authConnector: AuthConnector = mockAuthConnector
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      override val service: VatRegistrationService = mockVatRegistrationService
+      override val messagesApi: MessagesApi = mockMessagesAPI
+    }
+
+    mockAllMessages
   }
 
   s"GET ${routes.AnnualCostsInclusiveController.show()}" should {
-    "return HTML Annual Costs Inclusive page with no Selection" in {
-      mockGetCurrentProfile()
 
-      save4laterReturnsViewModel(AnnualCostsInclusiveView(""))()
+    "return a 200 when a previously completed S4LFlatRateScheme is returned" in new Setup {
+      mockWithCurrentProfile(Some(currentProfile))
 
-      callAuthorised(Controller.show()) {
-        _ includesText "Will the company spend more than £1,000 a year (including VAT) on business goods?"
+      when(mockVatRegistrationService.fetchFlatRateScheme(any(), any()))
+        .thenReturn(Future.successful(validS4LFlatRateScheme))
+
+      callAuthorised(controller.show()) { result =>
+        status(result) mustBe 200
+        contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
 
-    "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      mockGetCurrentProfile()
+    "return a 200 when an empty S4LFlatRateScheme is returned from the service" in new Setup {
+      mockWithCurrentProfile(Some(currentProfile))
 
-      save4laterReturnsNoViewModel[AnnualCostsInclusiveView]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.fetchFlatRateScheme(any(), any()))
+        .thenReturn(Future.successful(S4LFlatRateScheme()))
 
-      callAuthorised(Controller.show) {
-        _ includesText "Will the company spend more than £1,000 a year (including VAT) on business goods?"
-      }
-    }
-
-    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      mockGetCurrentProfile()
-      save4laterReturnsNoViewModel[AnnualCostsInclusiveView]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
-
-      callAuthorised(Controller.show) {
-        _ includesText "Will the company spend more than £1,000 a year (including VAT) on business goods?"
+      callAuthorised(controller.show) { result =>
+        status(result) mustBe 200
+        contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
   }
 
   s"POST ${routes.AnnualCostsInclusiveController.submit()}" should {
-    "return 400 with Empty data" in {
-      mockGetCurrentProfile()
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
-      ))(result => result isA 400)
+
+    "return 400 with Empty data" in new Setup {
+      mockWithCurrentProfile(Some(currentProfile))
+
+      val emptyRequest: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
+
+      submitAuthorised(controller.submit(), emptyRequest){ result =>
+        status(result) mustBe 400
+      }
     }
 
-    "return 303 with Annual Costs Inclusive selected Yes" in {
-      mockGetCurrentProfile()
+    "return 303 with Annual Costs Inclusive selected Yes" in new Setup {
 
-      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
+      mockWithCurrentProfile(Some(currentProfile))
 
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      when(mockVatRegistrationService.saveAnnualCostsInclusive(any())(any(), any()))
+        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES
-      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
+      )
+
+      submitAuthorised(controller.submit(), request){ result =>
+        status(result) mustBe 303
+        redirectLocation(result) mustBe Some("/register-for-vat/use-limited-cost-business-flat-rate")
+      }
     }
 
-    "return 303 with Annual Costs Inclusive selected No - but within 12 months" in {
-      mockGetCurrentProfile()
-      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
+    "return 303 with Annual Costs Inclusive selected within 12 months" in new Setup {
+      mockWithCurrentProfile(Some(currentProfile))
 
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      when(mockVatRegistrationService.saveAnnualCostsInclusive(any())(any(), any()))
+        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS
-      ))(_ redirectsTo s"$contextRoot/use-limited-cost-business-flat-rate")
+      )
+
+      submitAuthorised(controller.submit(), request){ result =>
+        status(result) mustBe 303
+        redirectLocation(result) mustBe Some("/register-for-vat/use-limited-cost-business-flat-rate")
+      }
     }
 
-    "skip next question if 2% of estimated taxable turnover <= 1K and NO answered" in {
-      mockGetCurrentProfile()
-      save4laterExpectsSave[AnnualCostsInclusiveView]()
-      save4laterReturnsViewModel(EstimateVatTurnover(25000L))()
+    "skip next question if 2% of estimated taxable turnover <= 1K and NO answered" in new Setup {
+      mockWithCurrentProfile(Some(currentProfile))
 
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      when(mockVatRegistrationService.isOverLimitedCostTraderThreshold(any(), any()))
+        .thenReturn(Future.successful(false))
+
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.NO
-      ))(_ redirectsTo s"$contextRoot/confirm-business-type")
+      )
+
+      submitAuthorised(controller.submit(), request){ result =>
+        status(result) mustBe 303
+        redirectLocation(result) mustBe Some("/register-for-vat/confirm-business-type")
+      }
     }
 
-    "redirect to next question if 2% of estimated taxable turnover > 1K and NO answered" in {
-      mockGetCurrentProfile()
+    "redirect to next question if 2% of estimated taxable turnover > 1K and NO answered" in new Setup {
+      mockWithCurrentProfile(Some(currentProfile))
 
-      save4laterExpectsSave[AnnualCostsInclusiveView]()
-      save4laterReturnsViewModel(EstimateVatTurnover(75000L))()
+      when(mockVatRegistrationService.isOverLimitedCostTraderThreshold(any(), any()))
+        .thenReturn(Future.successful(true))
 
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.NO
-      ))(_ redirectsTo s"$contextRoot/spends-less-than-two-percent-of-turnover-a-year-on-goods")
+      )
+
+      submitAuthorised(controller.submit(), request){ result =>
+        status(result) mustBe 303
+        redirectLocation(result) mustBe Some("/register-for-vat/spends-less-than-two-percent-of-turnover-a-year-on-goods")
+      }
     }
   }
-
 }
