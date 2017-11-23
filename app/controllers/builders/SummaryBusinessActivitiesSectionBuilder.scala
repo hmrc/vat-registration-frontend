@@ -23,7 +23,6 @@ import org.apache.commons.lang3.StringUtils
 case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[VatSicAndCompliance] = None)
   extends SummarySectionBuilder {
 
-
   override val sectionId: String = "businessActivities"
 
   val companyBusinessDescriptionRow: SummaryRow = SummaryRow(
@@ -33,6 +32,7 @@ case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[V
     }.getOrElse("app.common.no"),
     Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
   )
+
   val companyMainBusinessActivityRow: SummaryRow = SummaryRow(
     s"$sectionId.mainBusinessActivity",
     vatSicAndCompliance.collect {
@@ -41,6 +41,7 @@ case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[V
     }.getOrElse("app.common.no"),
     Some(controllers.sicAndCompliance.routes.MainBusinessActivityController.show())
   )
+
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(

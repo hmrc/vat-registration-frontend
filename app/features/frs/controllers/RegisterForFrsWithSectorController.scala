@@ -18,21 +18,29 @@ package controllers.frs {
 
   import javax.inject.Inject
 
+  import config.FrontendAuthConnector
   import connectors.{ConfigConnect, KeystoreConnector}
-  import controllers.CommonPlayDependencies
-  import forms.genericForms.YesOrNoFormFactory
-  import models.S4LFlatRateScheme
-  import models.view.frs.RegisterForFrsView
+  import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
+  import play.api.data.Form
+  import play.api.i18n.MessagesApi
   import play.api.mvc.{Action, AnyContent}
-  import services.{S4LService, SessionProfile, VatRegistrationService}
+  import services.{SessionProfile, VatRegistrationService}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  class RegisterForFrsWithSectorController @Inject()(ds: CommonPlayDependencies, formFactory: YesOrNoFormFactory, configConnector: ConfigConnect)
-                                                    (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends BusinessSectorAwareController(ds, configConnector) with SessionProfile {
+  class RegisterForFrsWithSectorControllerImpl @Inject()(val messagesApi: MessagesApi,
+                                                         val configConnect: ConfigConnect,
+                                                         val service: VatRegistrationService) extends RegisterForFrsWithSectorController {
 
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
+    override val authConnector: AuthConnector = FrontendAuthConnector
+    override val keystoreConnector: KeystoreConnector = KeystoreConnector
+  }
 
-    val form = formFactory.form("registerForFrsWithSector")("frs.registerForWithSector")
+  trait RegisterForFrsWithSectorController extends BusinessSectorAwareController with SessionProfile {
+
+    val service: VatRegistrationService
+    val formFactory: YesOrNoFormFactory = YesOrNoFormFactory
+
+    val form: Form[YesOrNoAnswer] = formFactory.form("registerForFrsWithSector")("frs.registerForWithSector")
 
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
@@ -48,19 +56,21 @@ package controllers.frs {
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
               form.bindFromRequest().fold(
-                badForm => businessSectorView().map(view => BadRequest(features.frs.views.html.frs_your_flat_rate(view, badForm))),
-                view => (for {
-                  sector <- businessSectorView()
-                  _ <- save(sector)
-                  _ <- save(RegisterForFrsView(view.answer))
-                } yield view.answer).ifM(
-                  ifTrue = controllers.frs.routes.FrsStartDateController.show().pure,
-                  ifFalse = for {
-                    frs <- s4lContainer[S4LFlatRateScheme]()
-                    _ <- s4LService.save(frs.copy(frsStartDate = None))
-                    _ <- vrs.submitVatFlatRateScheme()
-                  } yield controllers.routes.SummaryController.show()
-                ).map(Redirect))
+                badForm => businessSectorView map { view =>
+                  BadRequest(features.frs.views.html.frs_your_flat_rate(view, badForm))
+                },
+                view =>
+                  for {
+                    sector <- businessSectorView
+                    _ <- service.saveRegisterForFRS(view.answer, Some(sector))
+                  } yield {
+                    if(view.answer){
+                      Redirect(controllers.frs.routes.FrsStartDateController.show())
+                    } else {
+                      Redirect(controllers.routes.SummaryController.show())
+                    }
+                  }
+              )
             }
           }
     }

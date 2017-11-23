@@ -19,17 +19,31 @@ import scala.concurrent.ExecutionContext.Implicits.global
 package services {
 
   import common.ErrorUtil.fail
-  import models.{CurrentProfile, S4LVatFinancials}
+  import models._
   import models.api.{VatFinancials, VatScheme}
+  import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, VatChargeExpectancy, ZeroRatedSales}
+  import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
+  import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
   import uk.gov.hmrc.play.http.HeaderCarrier
 
   import scala.concurrent.Future
 
   trait FinancialsService extends CommonService {
-
     self: RegistrationService =>
 
+    private val financialsS4LKey: S4LKey[S4LVatFinancials] = S4LVatFinancials.vatFinancials
 
+    def fetchFinancials(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[S4LVatFinancials] = {
+      fetchFinancialsFromS4L flatMap {
+        case Some(financials) => Future.successful(financials)
+        case None => getVatScheme map { vatScheme =>
+          vatScheme.financials match {
+            case Some(_) => apiToView(vatScheme)
+            case None => S4LVatFinancials()
+          }
+        }
+      }
+    }
 
     def submitVatFinancials()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatFinancials] = {
       def merge(fresh: Option[S4LVatFinancials], vs: VatScheme): VatFinancials =
@@ -44,6 +58,22 @@ package services {
       } yield response
     }
 
+    private[services] def apiToView(vs: VatScheme): S4LVatFinancials = {
+      S4LVatFinancials(
+        estimateVatTurnover = ApiModelTransformer[EstimateVatTurnover].toViewModel(vs),
+        zeroRatedTurnover = ApiModelTransformer[ZeroRatedSales].toViewModel(vs),
+        zeroRatedTurnoverEstimate = ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vs),
+        vatChargeExpectancy = ApiModelTransformer[VatChargeExpectancy].toViewModel(vs),
+        vatReturnFrequency = ApiModelTransformer[VatReturnFrequency].toViewModel(vs),
+        accountingPeriod = ApiModelTransformer[AccountingPeriod].toViewModel(vs),
+        companyBankAccount = ApiModelTransformer[CompanyBankAccount].toViewModel(vs),
+        companyBankAccountDetails = ApiModelTransformer[CompanyBankAccountDetails].toViewModel(vs)
+      )
+    }
+
+    private[services] def fetchFinancialsFromS4L(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Option[S4LVatFinancials]] = {
+      s4LService.fetchAndGetNoAux(financialsS4LKey)
+    }
   }
 }
 

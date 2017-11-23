@@ -16,55 +16,89 @@
 
 package controllers.frs
 
+import config.FrontendAuthConnector
+import connectors.ConfigConnect
 import fixtures.VatRegistrationFixture
-import helpers.{S4LMockSugar, VatRegSpec}
-import models.api.SicCode
+import helpers.{ControllerSpec, MockMessages}
+import play.api.test.Helpers._
 import models.view.frs.BusinessSectorView
-import models.view.sicAndCompliance.MainBusinessActivityView
 import org.mockito.Mockito._
-import uk.gov.hmrc.play.http.HeaderCarrier
+import org.mockito.Matchers._
+import play.api.i18n.MessagesApi
+import services.VatRegistrationService
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class BusinessSectorAwareControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+import scala.concurrent.Future
+
+class BusinessSectorAwareControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages {
 
   val testBusinessSectorView = BusinessSectorView("test business sector", 4.33)
   val limitedCostCompanyRate = BusinessSectorView("", 16.5)
 
+  trait Setup {
+    val controller: BusinessSectorAwareController = new BusinessSectorAwareController {
+      override val service: VatRegistrationService = mockVatRegistrationService
+      override val configConnect: ConfigConnect = mockConfigConnector
+      override val messagesApi: MessagesApi = mockMessagesAPI
+      override val authConnector: AuthConnector = FrontendAuthConnector
+    }
+
+    mockAllMessages
+  }
+
   "BusinessSectorAwareController" should {
-    "retrieve a businessSectorView if one is saved" in
-      new BusinessSectorAwareController(ds, mockConfigConnector) {
-        implicit val hc = HeaderCarrier()
-        save4laterReturnsViewModel(testBusinessSectorView)()
-        businessSectorView() returns testBusinessSectorView
-      }
 
-    "determine a businessSectorView if a limited cost company rate is saved" in
-      new BusinessSectorAwareController(ds, mockConfigConnector) {
-        implicit val hc = HeaderCarrier()
-        save4laterReturnsViewModel(limitedCostCompanyRate)()
-        save4laterReturnsViewModel(MainBusinessActivityView(SicCode("12345678", "description", "displayDetails")))()
-        when(mockConfigConnector.getBusinessSectorDetails("12345678")).thenReturn(testBusinessSectorView)
-        businessSectorView() returns testBusinessSectorView
-      }
+    val s4LFlatRateSchemeNoBusinessSector = validS4LFlatRateScheme.copy(categoryOfBusiness = None)
+    val s4LFlatRateSchemeBusinessSectorIsBlank = validS4LFlatRateScheme.copy(categoryOfBusiness = Some(BusinessSectorView("", 1)))
 
-    "determine a businessSectorView if none is saved but main business activity is known" in
-      new BusinessSectorAwareController(ds, mockConfigConnector) {
-        implicit val hc = HeaderCarrier()
-        when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
-        save4laterReturnsNoViewModel[BusinessSectorView]()
-        save4laterReturnsViewModel(MainBusinessActivityView(SicCode("12345678", "description", "displayDetails")))()
-        when(mockConfigConnector.getBusinessSectorDetails("12345678")).thenReturn(testBusinessSectorView)
-        businessSectorView() returns testBusinessSectorView
-      }
+    val s4LVatSicAndComplianceNoMainBusinessActivity = s4LVatSicAndCompliance.copy(mainBusinessActivity = None)
 
+    "retrieve a businessSectorView if one is saved" in new Setup {
+      when(mockVatRegistrationService.fetchFlatRateScheme(any(), any()))
+        .thenReturn(Future.successful(validS4LFlatRateScheme))
 
-    "fail if no BusinessSectorView is saved and main business activity is not known" in
-      new BusinessSectorAwareController(ds, mockConfigConnector) {
-        implicit val hc = HeaderCarrier()
-        when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
-        save4laterReturnsNoViewModel[BusinessSectorView]()
-        save4laterReturnsNoViewModel[MainBusinessActivityView]()
-        businessSectorView() failedWith classOf[IllegalStateException]
-      }
+      await(controller.businessSectorView()) mustBe validBusinessSectorView
+    }
 
+    "determine a businessSectorView if none is saved but main business activity is known" in new Setup {
+      when(mockVatRegistrationService.fetchFlatRateScheme(any(), any()))
+        .thenReturn(Future.successful(s4LFlatRateSchemeNoBusinessSector))
+
+      when(mockVatRegistrationService.fetchSicAndCompliance(any(), any()))
+        .thenReturn(Future.successful(s4LVatSicAndCompliance))
+
+      when(mockConfigConnector.getBusinessSectorDetails(any()))
+        .thenReturn(validBusinessSectorView)
+
+      await(controller.businessSectorView()) mustBe validBusinessSectorView
+    }
+
+    "determine a businessSectorView if business sector is blank but main business activity is known" in new Setup {
+      when(mockVatRegistrationService.fetchFlatRateScheme(any(), any()))
+        .thenReturn(Future.successful(s4LFlatRateSchemeBusinessSectorIsBlank))
+
+      when(mockVatRegistrationService.fetchSicAndCompliance(any(), any()))
+        .thenReturn(Future.successful(s4LVatSicAndCompliance))
+
+      when(mockConfigConnector.getBusinessSectorDetails(any()))
+        .thenReturn(validBusinessSectorView)
+
+      await(controller.businessSectorView()) mustBe validBusinessSectorView
+    }
+
+    "fail if no BusinessSectorView is saved and main business activity is not known" in new Setup {
+      when(mockVatRegistrationService.fetchFlatRateScheme(any(), any()))
+        .thenReturn(Future.successful(s4LFlatRateSchemeNoBusinessSector))
+
+      when(mockVatRegistrationService.fetchSicAndCompliance(any(), any()))
+        .thenReturn(Future.successful(s4LVatSicAndComplianceNoMainBusinessActivity))
+
+      when(mockConfigConnector.getBusinessSectorDetails(any()))
+        .thenReturn(validBusinessSectorView)
+
+      val exception: IllegalStateException = intercept[IllegalStateException](await(controller.businessSectorView()))
+
+      exception.getMessage mustBe "Can't determine main business activity"
+    }
   }
 }

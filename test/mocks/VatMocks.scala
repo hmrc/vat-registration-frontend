@@ -17,8 +17,8 @@
 package mocks
 
 import connectors._
-
 import features.iv.services.IdentityVerificationService
+import org.mockito.Mockito.reset
 import org.scalatest.mockito.MockitoSugar
 import services._
 import uk.gov.hmrc.http.cache.client.SessionCache
@@ -31,6 +31,7 @@ trait VatMocks
     with WSHTTPMock {
 
   this: MockitoSugar =>
+
   implicit lazy val mockAuthConnector = mock[AuthConnector]
   implicit lazy val mockSessionCache = mock[SessionCache]
   implicit lazy val mockAudit = mock[Audit]
@@ -51,4 +52,31 @@ trait VatMocks
   implicit lazy val mockBankAccountReputationService = mock[BankAccountReputationService]
   implicit lazy val mockBankAccountReputationConnector = mock[BankAccountReputationConnector]
   implicit lazy val mockIVService = mock[IdentityVerificationService]
+
+  def resetMocks() {
+    reset(
+      mockVatRegistrationService,
+      mockS4LConnector,
+      mockS4LConnector,
+      mockS4LService,
+      mockKeystoreConnector,
+      mockAuthConnector,
+      mockSessionCache,
+      mockAudit,
+      mockVatRegistrationService,
+      mockRegConnector,
+      mockCompanyRegConnector,
+      mockPPConnector,
+      mockPPService,
+      mockDateService,
+      mockIIConnector,
+      mockConfigConnector,
+      mockIIService,
+      mockAddressLookupConnector,
+      mockWSHttp,
+      mockCurrentProfile,
+      mockIdentityVerificationConnector,
+      mockIVService
+    )
+  }
 }

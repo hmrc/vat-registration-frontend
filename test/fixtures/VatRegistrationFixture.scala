@@ -20,9 +20,10 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import common.enums.VatRegStatus
+import models.S4LVatSicAndCompliance
 import models.api._
 import models.external.{IncorporationInfo, _}
-import models.view.sicAndCompliance.BusinessActivityDescription
+import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
@@ -41,7 +42,10 @@ trait BaseFixture {
   val testAccountNumber = "12345678"
 }
 
-trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture with FinancialsFixture {
+trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
+  with FinancialsFixture {
+
+  val sicCode = SicCode("88888888", "description", "displayDetails")
 
   //Responses
   val IM_A_TEAPOT = 418
@@ -83,6 +87,33 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
 
   val invalidBankCheckJsonResponse = Json.parse(invalidBankCheckJsonResponseString)
 
+
+  val validSicAndCompliance = VatSicAndCompliance(
+    businessDescription = testBusinessActivityDescription,
+    culturalCompliance = Some(VatComplianceCultural(notForProfit = false)),
+    labourCompliance = None,
+    financialCompliance = None,
+    mainBusinessActivity = sicCode
+  )
+
+  val s4LVatSicAndCompliance = S4LVatSicAndCompliance(
+    description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
+    mainBusinessActivity = Some(MainBusinessActivityView(sicCode.id, Some(sicCode))),
+    notForProfit = Some(NotForProfit(NotForProfit.NOT_PROFIT_NO)),
+    companyProvideWorkers = None,
+    workers = None,
+    temporaryContracts = None,
+    skilledWorkers = None,
+    adviceOrConsultancy = None,
+    actAsIntermediary = None,
+    chargeFees = None,
+    leaseVehicles = None,
+    additionalNonSecuritiesWork = None,
+    discretionaryInvestmentManagementServices = None,
+    investmentFundManagement = None,
+    manageAdditionalFunds = None
+  )
+
   //View models
   val validOfficerContactDetailsView = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
   val validNotForProfit = NotForProfit(NotForProfit.NOT_PROFIT_NO)
@@ -97,7 +128,6 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
   val validBankAccountDetailsForModulusCheck = ModulusCheckAccount(validBankAccountDetails)
 
   //Api models
-  val sicCode = SicCode("88888888", "description", "displayDetails")
   val validDob = DateOfBirth(12, 11, 1973)
   val validStartDate = DateOfBirth(12, 11, 1990)
   val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", Some(validDob), None, None)
@@ -139,13 +169,15 @@ trait VatRegistrationFixture extends FlatRateFixture with TradingDetailsFixture 
     currentOrPreviousAddress = Some(currentOrPreviousAddress),
     contact = Some(validOfficerContactDetails)
   )
-  val validSicAndCompliance = VatSicAndCompliance(
-    businessDescription = testBusinessActivityDescription,
-    culturalCompliance = Some(VatComplianceCultural(notForProfit = false)),
-    labourCompliance = None,
-    financialCompliance = None,
-    mainBusinessActivity = sicCode
-  )
+
+//  val validSicAndCompliance = VatSicAndCompliance(
+//    businessDescription = testBusinessActivityDescription,
+//    culturalCompliance = Some(VatComplianceCultural(notForProfit = false)),
+//    labourCompliance = None,
+//    financialCompliance = None,
+//    mainBusinessActivity = sicCode
+//  )
+
   val validVatContact = VatContact(
     digitalContact = VatDigitalContact(email = "asd@com", tel = Some("123"), mobile = None),
     website = None,
