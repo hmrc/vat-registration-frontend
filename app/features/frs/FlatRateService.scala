@@ -69,9 +69,6 @@ package services {
 
     def saveAnnualCostsInclusive(annualCostsInclusive: AnnualCostsInclusiveView)
                                 (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
-      if(annualCostsInclusive.selection == NO) {
-
-      }
       saveFRS(S4LFlatRateScheme(joinFrs = Some(JoinFrsView(true)), annualCostsInclusive = Some(annualCostsInclusive)))
     }
 
