@@ -29,8 +29,6 @@ class CompanyBankAccountDetailsControllerISpec extends PlaySpec with AppAndStubs
     "sortCode.part3" -> "56"
   )
 
-
-
   val s4lVatFinancialsNoBankDetails = S4LVatFinancials(
     estimateVatTurnover = Some(EstimateVatTurnover(vatTurnoverEstimate = 120000L)),
     zeroRatedTurnover = Some(ZeroRatedSales(yesNo = "yes")),

@@ -41,28 +41,26 @@ package controllers.frs {
 
   import javax.inject.Inject
 
-  import config.FrontendAuthConnector
-  import connectors.KeystoreConnector
+  import connectors.KeystoreConnect
   import controllers.VatRegistrationControllerNoAux
   import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
   import play.api.data.Form
   import play.api.i18n.MessagesApi
   import play.api.mvc.{Action, AnyContent}
-  import services.{SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, SessionProfile}
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
   import scala.concurrent.Future
 
   class RegisterForFrsControllerImpl @Inject()(val messagesApi: MessagesApi,
-                                               val service: VatRegistrationService) extends RegisterForFrsController {
-    override val authConnector: AuthConnector = FrontendAuthConnector
-  }
+                                               val service: RegistrationService,
+                                               val authConnector: AuthConnector,
+                                               val keystoreConnector: KeystoreConnect) extends RegisterForFrsController
 
   trait RegisterForFrsController extends VatRegistrationControllerNoAux with SessionProfile {
 
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
     val formFactory: YesOrNoFormFactory = YesOrNoFormFactory
-    val service: VatRegistrationService
+    val service: RegistrationService
 
     val form: Form[YesOrNoAnswer] = formFactory.form("registerForFrs")("frs.registerFor")
 

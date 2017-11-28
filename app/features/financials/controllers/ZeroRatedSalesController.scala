@@ -52,21 +52,27 @@ package models.view.vatFinancials {
 
 package controllers.vatFinancials {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
   import cats.data.OptionT
   import cats.syntax.FlatMapSyntax
+  import connectors.KeystoreConnect
   import controllers.vatFinancials.{routes => financialRoutes}
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatFinancials.ZeroRatedSalesForm
   import models.S4LVatFinancials
   import models.view.vatFinancials.ZeroRatedSales
   import play.api.mvc.{Action, AnyContent}
-  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  class ZeroRatedSalesController @Inject()(ds: CommonPlayDependencies)
-                                          (implicit s4lService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with FlatMapSyntax with CommonService with SessionProfile {
+  @Singleton
+  class ZeroRatedSalesController @Inject()(ds: CommonPlayDependencies,
+                                           implicit val s4lService: S4LService,
+                                           val keystoreConnector: KeystoreConnect,
+                                           val authConnector: AuthConnector,
+                                           implicit val vrs: RegistrationService)
+    extends VatRegistrationController(ds) with FlatMapSyntax with SessionProfile {
 
     val form = ZeroRatedSalesForm.form
 
@@ -92,7 +98,7 @@ package controllers.vatFinancials {
                   ifTrue = financialRoutes.EstimateZeroRatedSalesController.show().pure,
                   // delete any previous zeroRatedTurnoverEstimate by updating the container with None
                   ifFalse =
-                    OptionT(s4lService.fetchAndGet[S4LVatFinancials]())
+                    OptionT(s4lService.fetchAndGet[S4LVatFinancials])
                       .semiflatMap(container => s4lService.save(container.copy(zeroRatedTurnoverEstimate = None))).value
                       .map(_ => financialRoutes.VatChargeExpectancyController.show())
                 ).map(Redirect)

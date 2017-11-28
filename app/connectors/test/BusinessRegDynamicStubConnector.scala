@@ -16,28 +16,22 @@
 
 package connectors.test
 
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
 import common.enums.IVResult
 import config.WSHttp
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.http.ws.WSHttp
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.config.inject.ServicesConfig
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
 @Singleton
-class BusinessRegDynamicStubConnector extends ServicesConfig {
-  val brdsUrl = baseUrl("business-registration-dynamic-stub")
-  val brdsUri = getConfString("business-registration-dynamic-stub.uri", "")
+class BusinessRegDynamicStubConnector @Inject()(config: ServicesConfig, http: WSHttp) {
+  val brdsUrl = config.baseUrl("business-registration-dynamic-stub")
+  val brdsUri = config.getConfString("business-registration-dynamic-stub.uri", "")
 
-  val http: WSHttp = WSHttp
-
-  def setupIVOutcome(journeyId: String, outcome: IVResult.Value)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    http.POST[String, HttpResponse](constructUrl(journeyId,outcome), "")
-
-  def constructUrl(journeyId: String, outcome: IVResult.Value):String = {
-    s"$brdsUrl$brdsUri/setup-iv-outcome/$journeyId/$outcome"
+  def setupIVOutcome(journeyId: String, outcome: IVResult.Value)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    http.POST[String, HttpResponse](s"$brdsUrl$brdsUri/setup-iv-outcome/$journeyId/$outcome", "")
   }
-
 }

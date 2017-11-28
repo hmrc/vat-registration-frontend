@@ -56,18 +56,24 @@ package models.view.vatLodgingOfficer {
 
 package controllers.vatLodgingOfficer {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
   import cats.syntax.FlatMapSyntax
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatLodgingOfficer.FormerNameDateForm
   import models.view.vatLodgingOfficer.{FormerNameDateView, FormerNameView}
   import play.api.data.Form
   import play.api.mvc._
-  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  class FormerNameDateController @Inject()(ds: CommonPlayDependencies)(implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with FlatMapSyntax with CommonService with SessionProfile {
+  @Singleton
+  class FormerNameDateController @Inject()(ds: CommonPlayDependencies,
+                                           val keystoreConnector: KeystoreConnect,
+                                           val authConnector: AuthConnector,
+                                           implicit val s4LService: S4LService,
+                                           implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with FlatMapSyntax with SessionProfile {
 
     val form: Form[FormerNameDateView] = FormerNameDateForm.form
 

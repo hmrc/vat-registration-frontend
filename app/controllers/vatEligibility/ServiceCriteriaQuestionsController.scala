@@ -16,10 +16,10 @@
 
 package controllers.vatEligibility
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import cats.data.OptionT
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import controllers.vatEligibility.{routes => eligibilityRoutes}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatEligibility.ServiceCriteriaFormFactory
@@ -29,13 +29,15 @@ import models.api.{EligibilityQuestion, VatServiceEligibility}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, Call, Request}
 import services.{RegistrationService, S4LService, SessionProfile}
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
+@Singleton
 class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies,
                                                    formFactory: ServiceCriteriaFormFactory,
+                                                   val keystoreConnector: KeystoreConnect,
+                                                   val authConnector: AuthConnector,
                                                    implicit val vrs: RegistrationService,
                                                    implicit val s4LService: S4LService) extends VatRegistrationController(ds) with SessionProfile {
-
-  val keystoreConnector: KeystoreConnector = KeystoreConnector
 
   val INELIGIBILITY_REASON_KEY: String = "ineligibility-reason"
 
@@ -81,7 +83,7 @@ class ServiceCriteriaQuestionsController @Inject()(ds: CommonPlayDependencies,
               _ <- save(vatEligibility.setAnswer(question, data.answer))
               exit = data.answer == question.exitAnswer
               _ <- keystoreConnector.cache(INELIGIBILITY_REASON_KEY, question.name) onlyIf exit
-              _ <- vrs.submitVatEligibility() onlyIf question == CompanyWillDoAnyOfQuestion
+              _ <- vrs.submitVatEligibility onlyIf question == CompanyWillDoAnyOfQuestion
             } yield Redirect(if(exit) eligibilityRoutes.ServiceCriteriaQuestionsController.ineligible() else nextQuestion(question)))
         }
   }

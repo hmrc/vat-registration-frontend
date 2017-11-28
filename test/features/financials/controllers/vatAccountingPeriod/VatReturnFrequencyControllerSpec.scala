@@ -27,20 +27,23 @@ import models.api.{VatEligibilityChoice, VatExpectedThresholdPostIncorp, VatServ
 import models.{CurrentProfile, S4LVatFinancials}
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object Controller extends VatReturnFrequencyController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-  }
+  object Controller extends VatReturnFrequencyController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show())
 
@@ -71,7 +74,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       mockGetCurrentProfile()
       save4laterReturnsNoViewModel[VatReturnFrequency]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(Controller.show) {
         _ includesText "How often do you want to submit VAT Returns?"
@@ -82,7 +85,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
       mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[VatReturnFrequency]()
-      when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {
         _ includesText "How often do you want to submit VAT Returns?"
@@ -103,7 +106,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
     "redirect to mandatory start date page" when {
       "voluntary registration is no" in {
 
-        when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+        when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
         mockGetCurrentProfile()
@@ -119,7 +122,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
         }
       }
       "voluntary registration is yes" in {
-        when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+        when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = Some(validServiceEligibility()))))
 
         mockGetCurrentProfile()
@@ -140,7 +143,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
         mockGetCurrentProfile()
 
-        when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+        when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
         save4laterExpectsSave[VatReturnFrequency]()
         save4laterReturnsNoViewModel[VoluntaryRegistration]()
         when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)

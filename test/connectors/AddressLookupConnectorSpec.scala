@@ -24,15 +24,15 @@ import play.api.http.HttpVerbs.GET
 import play.api.http.Status.{OK, PERMANENT_REDIRECT}
 import play.api.libs.json.JsObject
 import play.api.mvc.Call
-import uk.gov.hmrc.play.http.ws.WSHttp
-import uk.gov.hmrc.play.http.{HttpResponse, InternalServerException}
+import config.WSHttp
+import uk.gov.hmrc.http.{ HttpResponse, InternalServerException }
 
 class AddressLookupConnectorSpec extends VatRegSpec with VatRegistrationFixture {
   import models.AddressLookupJourneyId.homeAddressJourneyId
 
   class Setup {
 
-    val connector = new AddressLookupConnector {
+    val connector = new AddressLookupConnect {
       override val addressLookupFrontendUrl: String = "tst-url"
       override val addressLookupContinueUrl: String = "test-url"
       override val http: WSHttp = mockWSHttp

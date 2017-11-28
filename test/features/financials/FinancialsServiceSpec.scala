@@ -24,8 +24,8 @@ import models.S4LVatFinancials
 import models.api.{VatAccountingPeriod, VatFinancials}
 import models.external.IncorporationInfo
 import models.view.vatFinancials.ZeroRatedSales
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 
 import scala.concurrent.Future
@@ -70,14 +70,14 @@ class FinancialsServiceSpec extends VatRegSpec with VatRegistrationFixture with 
         companyBankAccount = Some(validCompanyBankAccount),
         companyBankAccountDetails = Some(validBankAccountDetails)))
 
-      when(mockRegConnector.getRegistration(Matchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       when(mockRegConnector.upsertVatFinancials(any(), any())(any(), any())).thenReturn(validVatFinancials.pure)
 
       service.submitVatFinancials() returns mergedVatFinancials
     }
 
     "submitVatFinancials should fail if there's not trace of VatFinancials in neither backend nor S4L" in new Setup {
-      when(mockRegConnector.getRegistration(Matchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       save4laterReturnsNothing[S4LVatFinancials]()
 
       service.submitVatFinancials() failedWith classOf[IllegalStateException]

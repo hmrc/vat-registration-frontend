@@ -25,7 +25,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.Logger
 import support.AppAndStubs
 
-import scala.concurrent.ExecutionContext.Implicits.global
+
 
 class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures {
 

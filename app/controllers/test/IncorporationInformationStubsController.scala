@@ -16,29 +16,30 @@
 
 package controllers.test
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-import connectors.VatRegistrationConnector
 import connectors.test.TestRegistrationConnector
+import connectors.{KeystoreConnect, RegistrationConnector}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, RegistrationService, SessionProfile}
+import services.{RegistrationService, SessionProfile}
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class IncorporationInformationStubsController @Inject()(
-                                                         vatRegistrationService: RegistrationService,
+@Singleton
+class IncorporationInformationStubsController @Inject()(vatRegistrationService: RegistrationService,
                                                         vatRegConnector: TestRegistrationConnector,
-                                                        vr:VatRegistrationConnector,
-
-                                                        ds: CommonPlayDependencies)
-  extends VatRegistrationController(ds) with CommonService with SessionProfile {
+                                                        vr: RegistrationConnector,
+                                                        ds: CommonPlayDependencies,
+                                                        val authConnector: AuthConnector,
+                                                        val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
 
   def postTestData(): Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request =>
         for {
-          _          <- vatRegConnector.setupCurrentProfile()
-          (regId, _) <- vatRegistrationService.createRegistrationFootprint()
+          _          <- vatRegConnector.setupCurrentProfile
+          (regId, _) <- vatRegistrationService.createRegistrationFootprint
           _          <- vatRegConnector.wipeTestData
           _          <- vatRegConnector.postTestData(defaultTestData(regId))
           _          <- vr.updateIVStatus(regId,JsObject(Map("ivPassed" -> Json.toJson(true))))
@@ -49,7 +50,7 @@ class IncorporationInformationStubsController @Inject()(
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          vatRegConnector.incorpCompany(profile.transactionId).map {
+          vatRegConnector.incorpCompany.map {
             _=> Ok("Company incorporated")
           }
         }
@@ -145,6 +146,7 @@ class IncorporationInformationStubsController @Inject()(
          |          }
          |      ]
          |  }
-        """.stripMargin)
+        """.stripMargin
+    )
 
 }

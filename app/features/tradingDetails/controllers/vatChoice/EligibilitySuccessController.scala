@@ -16,22 +16,26 @@
 
 package controllers.vatTradingDetails.vatChoice
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import cats.data.OptionT
-import org.apache.commons.lang3.StringUtils
+import connectors.KeystoreConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import models.ModelKeys._
 import models.external.IncorporationInfo
+import org.apache.commons.lang3.StringUtils
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, SessionProfile}
-import uk.gov.hmrc.play.http.HeaderCarrier
+import services.SessionProfile
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
 // TODO re-check why this is in trading details rather than vatEligibility
-class EligibilitySuccessController @Inject()(ds: CommonPlayDependencies)
-  extends VatRegistrationController(ds) with CommonService with SessionProfile {
+@Singleton
+class EligibilitySuccessController @Inject()(ds: CommonPlayDependencies,
+                                             val authConnector: AuthConnector,
+                                             val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
 
   def show: Action[AnyContent] = authorised.async {
     implicit user =>
@@ -52,9 +56,7 @@ class EligibilitySuccessController @Inject()(ds: CommonPlayDependencies)
         }
   }
 
-
   private def fetchIncorporationInfo()(implicit headerCarrier: HeaderCarrier) =
     OptionT(keystoreConnector.fetchAndGet[IncorporationInfo](INCORPORATION_STATUS))
-
 }
 

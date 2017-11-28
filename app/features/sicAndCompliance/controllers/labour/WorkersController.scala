@@ -16,20 +16,24 @@
 
 package controllers.sicAndCompliance.labour {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
-  import controllers.sicAndCompliance.ComplianceExitController
   import forms.sicAndCompliance.labour.WorkersForm
   import models.S4LVatSicAndCompliance
   import models.S4LVatSicAndCompliance.dropFromWorkers
   import models.view.sicAndCompliance.labour.Workers
   import play.api.mvc.{Action, AnyContent}
-  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-
-  class WorkersController @Inject()(ds: CommonPlayDependencies)(implicit s4lService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with CommonService with SessionProfile {
+  @Singleton
+  class WorkersController @Inject()(ds: CommonPlayDependencies,
+                                    val keystoreConnector: KeystoreConnect,
+                                    val authConnector: AuthConnector,
+                                    implicit val s4lService: S4LService,
+                                    implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     import cats.syntax.flatMap._
 
@@ -57,8 +61,8 @@ package controllers.sicAndCompliance.labour {
                   ifTrue = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show().pure,
                   ifFalse = for {
                     container <- s4lContainer[S4LVatSicAndCompliance]()
-                    _ <- s4lService.save(dropFromWorkers(container))
-                    _ <- vrs.submitSicAndCompliance()
+                    _         <- s4lService.save(dropFromWorkers(container))
+                    _         <- vrs.submitSicAndCompliance
                   } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
                 ).map(Redirect))
             }
@@ -71,8 +75,7 @@ package controllers.sicAndCompliance.labour {
 
 package forms.sicAndCompliance.labour {
 
-  import forms.FormValidation._
-  import forms.FormValidation.mandatoryNumericText
+  import forms.FormValidation.{mandatoryNumericText, _}
   import models.view.sicAndCompliance.labour.Workers
   import play.api.data.Form
   import play.api.data.Forms._

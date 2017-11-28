@@ -16,21 +16,23 @@
 
 package services
 
+import javax.inject.Inject
+
 import cats.data.OptionT
-import com.google.inject.ImplementedBy
-import connectors.{KeystoreConnector, OptionalResponse, S4LConnector}
+import connectors._
 import models.{CurrentProfile, S4LKey, ViewModelFormat}
 import play.api.libs.json._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@ImplementedBy(classOf[PersistenceService])
+class PersistenceService @Inject()(val s4LConnector: S4LConnect, val keystoreConnector: KeystoreConnect) extends S4LService
+
 trait S4LService extends CommonService {
 
-  private[services] val s4LConnector: S4LConnector
+  val s4LConnector: S4LConnect
 
   def save[T: S4LKey](data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[CacheMap] =
     s4LConnector.save[T](profile.registrationId, S4LKey[T].key, data)
@@ -40,8 +42,7 @@ trait S4LService extends CommonService {
                             profile: CurrentProfile,
                             vmf: ViewModelFormat.Aux[T, G],
                             f: Format[G],
-                            k: S4LKey[G]): Future[CacheMap] =
-    for {
+                            k: S4LKey[G]): Future[CacheMap] = for {
       group <- container
       cm <- s4LConnector.save(profile.registrationId, k.key, vmf.update(data, Some(group)))
     } yield cm
@@ -50,32 +51,27 @@ trait S4LService extends CommonService {
     s4LConnector.save(profile.registrationId, s4LKey.key, data)
   }
 
-  def fetchAndGet[T: S4LKey]()(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
+  def fetchAndGet[T: S4LKey](implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
     s4LConnector.fetchAndGet[T](profile.registrationId, S4LKey[T].key)
 
   def fetchAndGetNoAux[T](key: S4LKey[T])(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
     s4LConnector.fetchAndGet[T](profile.registrationId, key.key)
 
-  def getViewModel[T, G](container: Future[G])
-                        (implicit r: ViewModelFormat.Aux[T, G], f: Format[G]): OptionalResponse[T] =
+  def getViewModel[T, G](container: Future[G])(implicit r: ViewModelFormat.Aux[T, G], f: Format[G], hc: HeaderCarrier): OptionalResponse[T] = {
     OptionT(container.map(r.read))
+  }
 
-  def clear()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[HttpResponse] =
+  def clear(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[HttpResponse] =
     s4LConnector.clear(profile.registrationId)
 
-  def fetchAll()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[CacheMap]] =
+  def fetchAll(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[CacheMap]] =
     s4LConnector.fetchAll(profile.registrationId)
 
   def saveIv(json:JsValue)(implicit hc: HeaderCarrier, cp: CurrentProfile) = {
     s4LConnector.save[JsValue] (cp.registrationId, "IVJourneyID", json)
   }
 
-  def fetchIv()(implicit hc: HeaderCarrier, cp: CurrentProfile):Future[Option[String]] = {
+  def fetchIv(implicit hc: HeaderCarrier, cp: CurrentProfile):Future[Option[String]] = {
     s4LConnector.fetchAndGet[String](cp.registrationId,"IVJourneyID")
   }
-}
-
-class PersistenceService extends S4LService {
-  override val s4LConnector = S4LConnector
-  override val keystoreConnector = KeystoreConnector
 }

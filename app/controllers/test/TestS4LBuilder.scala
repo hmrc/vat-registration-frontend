@@ -18,6 +18,7 @@ package controllers.test
 
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
+import javax.inject.Singleton
 
 import models._
 import models.api._
@@ -38,6 +39,7 @@ import models.view.vatTradingDetails.TradingNameView._
 import models.view.vatTradingDetails.vatChoice._
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 
+@Singleton
 class TestS4LBuilder {
 
   def tradingDetailsFromData(data: TestSetup): S4LTradingDetails = {

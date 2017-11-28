@@ -16,8 +16,9 @@
 
 package controllers.test
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
+import connectors.KeystoreConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.test.TestSetupForm
 import models.ModelKeys.REGISTERING_OFFICER_KEY
@@ -27,30 +28,33 @@ import models.view.test._
 import models.{S4LKey, S4LVatContact, S4LVatFinancials, S4LVatLodgingOfficer, S4LVatSicAndCompliance, _}
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
+import services.{RegistrationService, S4LService, SessionProfile}
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
-class TestSetupController @Inject()(ds: CommonPlayDependencies)(implicit s4LService: S4LService,
-                                                                vatRegistrationService: VatRegistrationService,
-                                                                s4LBuilder: TestS4LBuilder)
-  extends VatRegistrationController(ds) with CommonService with SessionProfile {
+@Singleton
+class TestSetupController @Inject()(implicit val s4LService: S4LService,
+                                    vatRegistrationService: RegistrationService,
+                                    s4LBuilder: TestS4LBuilder,
+                                    ds: CommonPlayDependencies,
+                                    val authConnector: AuthConnector,
+                                    val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
 
   def show: Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
           for {
-            eligibilityChoice <- s4LService.fetchAndGet[S4LVatEligibilityChoice]()
-            vatFinancials <- s4LService.fetchAndGet[S4LVatFinancials]()
-            sicStub <- s4LService.fetchAndGet[SicStub]()
-            vatSicAndCompliance <- s4LService.fetchAndGet[S4LVatSicAndCompliance]()
-            tradingDetails <- s4LService.fetchAndGet[S4LTradingDetails]()
-            vatContact <- s4LService.fetchAndGet[S4LVatContact]()
-            vatLodgingOfficer <- s4LService.fetchAndGet[S4LVatLodgingOfficer]()
-            eligibility <- s4LService.fetchAndGet[S4LVatEligibility]()
-            frs <- s4LService.fetchAndGet[S4LFlatRateScheme]()
-
+            eligibilityChoice <- s4LService.fetchAndGet[S4LVatEligibilityChoice]
+            vatFinancials <- s4LService.fetchAndGet[S4LVatFinancials]
+            sicStub <- s4LService.fetchAndGet[SicStub]
+            vatSicAndCompliance <- s4LService.fetchAndGet[S4LVatSicAndCompliance]
+            tradingDetails <- s4LService.fetchAndGet[S4LTradingDetails]
+            vatContact <- s4LService.fetchAndGet[S4LVatContact]
+            vatLodgingOfficer <- s4LService.fetchAndGet[S4LVatLodgingOfficer]
+            eligibility <- s4LService.fetchAndGet[S4LVatEligibility]
+            frs <- s4LService.fetchAndGet[S4LFlatRateScheme]
             testSetup = TestSetup(
               VatChoiceTestSetup(
                 taxableTurnoverChoice =   eligibilityChoice.flatMap(_.taxableTurnover.map(_.yesNo)),

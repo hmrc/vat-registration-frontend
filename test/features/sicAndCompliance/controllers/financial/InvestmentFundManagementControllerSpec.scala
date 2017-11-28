@@ -18,22 +18,24 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.{CurrentProfile, S4LVatSicAndCompliance}
+import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.financial.InvestmentFundManagement
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object InvestmentFundManagementController extends InvestmentFundManagementController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object InvestmentFundManagementController extends InvestmentFundManagementController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(routes.InvestmentFundManagementController.show())
 
@@ -50,7 +52,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[InvestmentFundManagement]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(Future.successful(validVatScheme))
       mockGetCurrentProfile()
       callAuthorised(InvestmentFundManagementController.show) {
         _ includesText "Does the company provide investment fund management services?"
@@ -59,7 +61,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[InvestmentFundManagement]()
-    when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
     mockGetCurrentProfile()
       callAuthorised(InvestmentFundManagementController.show) {
         _ includesText "Does the company provide investment fund management services?"
@@ -85,7 +87,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
     }
 
     "return 303 with Investment Fund Management No selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterExpectsSave[InvestmentFundManagement]()
       save4laterReturns(S4LVatSicAndCompliance())

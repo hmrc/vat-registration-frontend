@@ -16,6 +16,7 @@
 
 package models.view.vatLodgingOfficer {
 
+ 
   import java.time.LocalDate
 
   import models.api.{VatScheme, _}
@@ -51,22 +52,27 @@ package models.view.vatLodgingOfficer {
 
 package controllers.vatLodgingOfficer {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
   import cats.syntax.CartesianSyntax
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatLodgingOfficer.OfficerSecurityQuestionsForm
   import models.ModelKeys._
   import models.external.Officer
   import models.view.vatLodgingOfficer.OfficerSecurityQuestionsView
   import play.api.mvc._
-  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
-  import uk.gov.hmrc.play.http.HeaderCarrier
+  import services._
+  import uk.gov.hmrc.http.HeaderCarrier
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  class OfficerSecurityQuestionsController @Inject()(ds: CommonPlayDependencies)
-                                                    (implicit s4l: S4LService,
-                                                     vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with CommonService with CartesianSyntax with SessionProfile {
+  @Singleton
+  class OfficerSecurityQuestionsController @Inject()(ds: CommonPlayDependencies,
+                                                     val keystoreConnector: KeystoreConnect,
+                                                     val authConnector: AuthConnector,
+                                                     implicit val s4l: S4LService,
+                                                     implicit val vrs: RegistrationService)
+    extends VatRegistrationController(ds) with CartesianSyntax with SessionProfile {
 
     val form = OfficerSecurityQuestionsForm.form
 

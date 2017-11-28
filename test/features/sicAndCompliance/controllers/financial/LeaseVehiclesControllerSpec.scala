@@ -18,22 +18,24 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.{CurrentProfile, S4LVatSicAndCompliance}
+import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.financial.LeaseVehicles
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object LeaseVehiclesController extends LeaseVehiclesController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object LeaseVehiclesController extends LeaseVehiclesController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(routes.LeaseVehiclesController.show())
 
@@ -48,7 +50,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[LeaseVehicles]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(validVatScheme.pure)
       mockGetCurrentProfile()
       callAuthorised(LeaseVehiclesController.show) {
         _ includesText "Is the company involved in leasing vehicles or equipment to customers?"
@@ -57,7 +59,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[LeaseVehicles]()
-    when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(emptyVatScheme.pure)
+    when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]())).thenReturn(emptyVatScheme.pure)
     mockGetCurrentProfile()
       callAuthorised(LeaseVehiclesController.show) {
         _ includesText "Is the company involved in leasing vehicles or equipment to customers?"
@@ -74,7 +76,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
     }
 
     "redirects to next screen in the flow -  with Lease Vehicles or Equipment - Yes selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[LeaseVehicles]()
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
@@ -85,7 +87,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
     }
 
     "redirects to next screen in the flow -  with Lease Vehicles or Equipment - No selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[LeaseVehicles]()
       mockGetCurrentProfile()
       submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody("leaseVehiclesRadio" -> "false")) {

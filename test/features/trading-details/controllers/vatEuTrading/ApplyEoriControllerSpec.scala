@@ -20,8 +20,7 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.CurrentProfile
 import models.view.vatTradingDetails.vatEuTrading.ApplyEori
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 
@@ -29,10 +28,13 @@ import scala.concurrent.Future
 
 class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object ApplyEoriController extends ApplyEoriController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object ApplyEoriController extends ApplyEoriController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(routes.ApplyEoriController.show())
 
@@ -52,7 +54,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(ApplyEoriController.show) {
         _ includesText "You need an Economic Operator Registration and Identification (EORI) number"
@@ -62,7 +64,7 @@ class ApplyEoriControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[ApplyEori]()
-    when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+    when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
 
     mockGetCurrentProfile()
 

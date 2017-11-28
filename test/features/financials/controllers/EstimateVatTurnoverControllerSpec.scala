@@ -16,25 +16,23 @@
 
 package controllers.vatFinancials
 
-import connectors.KeystoreConnector
 import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.view.vatFinancials.EstimateVatTurnover
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 
-import scala.concurrent.Future
-
 class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object Controller extends EstimateVatTurnoverController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-  }
+  object Controller extends EstimateVatTurnoverController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(vatFinancials.routes.EstimateVatTurnoverController.show())
 
@@ -52,7 +50,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[EstimateVatTurnover]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(validVatScheme.pure)
 
       mockGetCurrentProfile()
 
@@ -63,7 +61,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[EstimateVatTurnover]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
 
       mockGetCurrentProfile()
       callAuthorised(Controller.show) {
@@ -93,7 +91,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
     "return 303 with no valid turnover estimate entered" in {
       save4laterReturnsNoViewModel[EstimateVatTurnover]()
       save4laterExpectsSave[EstimateVatTurnover]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
 
       mockGetCurrentProfile()
 

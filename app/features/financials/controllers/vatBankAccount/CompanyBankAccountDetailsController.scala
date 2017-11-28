@@ -53,27 +53,31 @@ package models.view.vatFinancials.vatBankAccount {
 
 package controllers.vatFinancials.vatBankAccount {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
   import cats.Show
   import common.ConditionalFlatMap._
+  import connectors.KeystoreConnect
   import controllers.vatFinancials.EstimateVatTurnoverKey.lastKnownValueKey
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatFinancials.vatBankAccount.{CompanyBankAccountDetailsForm, SortCode}
-  import models.{CurrentProfile, S4LFlatRateScheme}
   import models.view.vatFinancials.EstimateVatTurnover
   import models.view.vatFinancials.vatBankAccount.{CompanyBankAccountDetails, ModulusCheckAccount}
+  import models.{CurrentProfile, S4LFlatRateScheme}
   import play.api.mvc._
   import services._
-  import uk.gov.hmrc.play.http.{HeaderCarrier, InternalServerException, Upstream5xxResponse}
-  import views.html.pages.error.restart
+  import uk.gov.hmrc.http.HeaderCarrier
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
   import scala.concurrent.Future
 
-
-  class CompanyBankAccountDetailsController @Inject()(bars: BankAccountReputationService, ds: CommonPlayDependencies)
-                                                     (implicit s4l: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with CommonService with SessionProfile {
+  @Singleton
+  class CompanyBankAccountDetailsController @Inject()(bars: BankAccountReputationSrv,
+                                                      ds: CommonPlayDependencies,
+                                                      val keystoreConnector: KeystoreConnect,
+                                                      val authConnector: AuthConnector,
+                                                      implicit val s4l: S4LService,
+                                                      implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     val joinThreshold: Long = conf.getLong("thresholds.frs.joinThreshold").get
 

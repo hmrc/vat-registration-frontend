@@ -22,12 +22,12 @@ import models.{CurrentProfile, S4LFlatRateScheme, S4LVatFinancials}
 import models.api.VatFlatRateScheme
 import models.view.frs._
 import models.view.vatFinancials.EstimateVatTurnover
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import uk.gov.hmrc.play.http.HeaderCarrier
 import AnnualCostsInclusiveView.{YES, NO}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 class FlatRateServiceSpec extends VatSpec {
 

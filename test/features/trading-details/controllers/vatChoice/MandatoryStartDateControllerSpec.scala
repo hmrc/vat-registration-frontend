@@ -24,22 +24,25 @@ import models.CurrentProfile
 import models.api.{VatEligibilityChoice, VatExpectedThresholdPostIncorp, VatServiceEligibility, VatThresholdPostIncorp}
 import models.api.VatEligibilityChoice.NECESSITY_OBLIGATORY
 import models.view.vatTradingDetails.vatChoice.StartDateView
-import org.mockito.Matchers
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.{verify, when}
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.{HeaderCarrier, NotFoundException}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object MandatoryStartDateController extends MandatoryStartDateController(ds) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object MandatoryStartDateController extends MandatoryStartDateController(
+    ds,
+    mockAuthConnector,
+    mockKeystoreConnector,
+    mockVatRegistrationService,
+    mockS4LService
+  )
 
   val expectedThresholdDate = LocalDate.of(2017, 6, 21)
   val expectedThreshold = Some(VatExpectedThresholdPostIncorp(expectedOverThresholdSelection = true, Some(expectedThresholdDate)))
@@ -71,7 +74,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
   s"GET ${routes.MandatoryStartDateController.show()}" should {
     "display the mandatory start date confirmation page to the user if they are not incorporated" in {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentNonincorpProfile)))
 
       callAuthorised(MandatoryStartDateController.show) {
@@ -86,7 +89,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
     "error if they are incorporated with nothing in S4L with no vat scheme" in {
       save4laterReturnsNoViewModel[StartDateView]()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
       mockGetCurrentProfile()
       intercept[RuntimeException] {
@@ -99,7 +102,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
     "display the mandatory start date incorp page to the user if they are incorporated with nothing in S4L with a vat scheme" in {
       save4laterReturnsNoViewModel[StartDateView]()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
       mockGetCurrentProfile()
       callAuthorised(MandatoryStartDateController.show) {
@@ -116,7 +119,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
 
       save4laterReturnsViewModel(startDate)()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
       mockGetCurrentProfile()
@@ -150,7 +153,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
     "be a bad request if they're incorped and the form has no data" in {
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
       submitAuthorised(MandatoryStartDateController.submit, fakeRequest.withFormUrlEncodedBody()) {
@@ -162,7 +165,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
     "be a bad request if they're incorped and the form has partial data" in {
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
       submitAuthorised(MandatoryStartDateController.submit, fakeRequest.withFormUrlEncodedBody(
@@ -178,7 +181,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "be a bad request if they're incorped and the form date is 3 months in the future" in {
       mockGetCurrentProfile()
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
       submitAuthorised(MandatoryStartDateController.submit, fakeRequest.withFormUrlEncodedBody(
@@ -194,7 +197,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "be a bad request if they're incorped and the form date is 4 years in the past" in {
       mockGetCurrentProfile()
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
       submitAuthorised(MandatoryStartDateController.submit, fakeRequest.withFormUrlEncodedBody(
@@ -211,7 +214,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
     "be a bad request if they're incorped and the form date is after the calculated date" in {
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
       submitAuthorised(MandatoryStartDateController.submit, fakeRequest.withFormUrlEncodedBody(
@@ -232,7 +235,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
       mockGetCurrentProfile(Some(
           currentProfile().copy(incorporationDate = Some(validPastRegIncorpDate))))
 
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
       submitAuthorised(MandatoryStartDateController.submit, fakeRequest.withFormUrlEncodedBody(
@@ -255,7 +258,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
 
       mockGetCurrentProfile(Some(
           currentProfile().copy(incorporationDate = Some(validPastRegIncorpDate))))
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
       submitAuthorised(MandatoryStartDateController.submit, fakeRequest.withFormUrlEncodedBody(
@@ -275,19 +278,19 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
 
   "mandatoryStartDate" should {
     "return the calculated start date provided the vat scheme is there" in {
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme.copy(vatServiceEligibility = mandatoryEligibilityThreshold)))
 
       mockGetCurrentProfile()
-      await(MandatoryStartDateController.mandatoryStartDate(Matchers.any[CurrentProfile], Matchers.any[HeaderCarrier])) mustBe Some(expectedThresholdDate)
+      await(MandatoryStartDateController.mandatoryStartDate(ArgumentMatchers.any[CurrentProfile], ArgumentMatchers.any[HeaderCarrier])) mustBe Some(expectedThresholdDate)
     }
 
     "return the calculated start date provided the vat scheme isn't there" in {
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       mockGetCurrentProfile()
-      await(MandatoryStartDateController.mandatoryStartDate(Matchers.any[CurrentProfile], Matchers.any[HeaderCarrier])) mustBe None
+      await(MandatoryStartDateController.mandatoryStartDate(ArgumentMatchers.any[CurrentProfile], ArgumentMatchers.any[HeaderCarrier])) mustBe None
     }
   }
 

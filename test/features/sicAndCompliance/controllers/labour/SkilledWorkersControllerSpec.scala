@@ -19,24 +19,25 @@ package controllers.sicAndCompliance.labour
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.view.sicAndCompliance.labour.SkilledWorkers
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object SkilledWorkersController extends SkilledWorkersController(ds, mockVatRegistrationService, mockS4LService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object SkilledWorkersController extends SkilledWorkersController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockVatRegistrationService,
+    mockS4LService
+  )
 
   val fakeRequest = FakeRequest(sicAndCompliance.labour.routes.SkilledWorkersController.show())
 
@@ -57,7 +58,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[SkilledWorkers]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(Future.successful(validVatScheme))
       mockGetCurrentProfile()
       callAuthorised(SkilledWorkersController.show) {
         result =>
@@ -70,7 +71,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[SkilledWorkers]()
-    when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
     mockGetCurrentProfile()
       callAuthorised(SkilledWorkersController.show) {
         result =>
@@ -92,7 +93,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "return 303 with company provide Skilled workers Yes selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[SkilledWorkers]()
       mockGetCurrentProfile()
       submitAuthorised(SkilledWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -105,7 +106,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "return 303 with company provide Skilled workers No selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[SkilledWorkers]()
       mockGetCurrentProfile()
       submitAuthorised(SkilledWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(

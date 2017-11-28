@@ -22,10 +22,9 @@ import uk.gov.hmrc.play.http.ws.WSHttp
 
 class BusinessRegDynamicStubControllerSpec extends VatRegSpec {
   class Setup {
-    val testConnector = new BusinessRegDynamicStubConnector {
+    val testConnector = new BusinessRegDynamicStubConnector(mockConfig, mockWSHttp) {
       override val brdsUrl: String = "tst-url"
       override val brdsUri: String = "test-url"
-      override val http: WSHttp = mockWSHttp
     }
   }
 

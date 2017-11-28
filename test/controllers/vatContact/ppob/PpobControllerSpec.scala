@@ -19,27 +19,24 @@ package controllers.vatContact.ppob
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.api.ScrsAddress
 import models.view.vatContact.ppob.PpobView
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{verify, when}
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 
-import scala.concurrent.Future
-
 class PpobControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object Controller extends PpobController(ds)(
+  object Controller extends PpobController(
+    ds,
     mockS4LService,
     mockVatRegistrationService,
     mockPPService,
-    mockAddressLookupConnector) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-  }
+    mockAddressLookupConnector,
+    mockAuthConnector,
+    mockKeystoreConnector
+  )
 
   val fakeRequest = FakeRequest(controllers.vatContact.ppob.routes.PpobController.show())
 
@@ -52,7 +49,7 @@ class PpobControllerSpec extends VatRegSpec with VatRegistrationFixture with S4L
 
       mockKeystoreCache[Seq[ScrsAddress]]("PpobAddressList", dummyCacheMap)
       save4laterReturnsNoViewModel[PpobView]()
-      when(mockPPService.getPpobAddressList()(any(), any())).thenReturn(Seq(address).pure)
+      when(mockPPService.getPpobAddressList(any(), any())).thenReturn(Seq(address).pure)
 
       callAuthorised(Controller.show()) {
         _ includesText "Where will the company carry out most of its business activities"
@@ -64,7 +61,7 @@ class PpobControllerSpec extends VatRegSpec with VatRegistrationFixture with S4L
 
       save4laterReturnsViewModel(PpobView(addressId = address.id, address = Some(address)))()
       mockKeystoreCache[Seq[ScrsAddress]]("PpobAddressList", dummyCacheMap)
-      when(mockPPService.getPpobAddressList()(any(), any())).thenReturn(Seq(address).pure)
+      when(mockPPService.getPpobAddressList(any(), any())).thenReturn(Seq(address).pure)
 
       callAuthorised(Controller.show()) {
         _ includesText "Where will the company carry out most of its business activities"
@@ -85,7 +82,7 @@ class PpobControllerSpec extends VatRegSpec with VatRegistrationFixture with S4L
       mockGetCurrentProfile()
 
       save4laterExpectsSave[PpobView]()
-      when(mockPPService.getPpobAddressList()(any(), any())).thenReturn(Seq(address).pure)
+      when(mockPPService.getPpobAddressList(any(), any())).thenReturn(Seq(address).pure)
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("PpobAddressList", Some(Seq(address)))
 
       submitAuthorised(Controller.submit(),
@@ -97,7 +94,7 @@ class PpobControllerSpec extends VatRegSpec with VatRegistrationFixture with S4L
       mockGetCurrentProfile()
 
       save4laterExpectsSave[PpobView]()
-      when(mockPPService.getPpobAddressList()(any(), any())).thenReturn(Seq(address).pure)
+      when(mockPPService.getPpobAddressList(any(), any())).thenReturn(Seq(address).pure)
       mockKeystoreFetchAndGet("PpobAddressList", Option.empty[Seq[ScrsAddress]])
 
       submitAuthorised(Controller.submit(),

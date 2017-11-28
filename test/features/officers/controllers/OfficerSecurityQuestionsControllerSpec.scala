@@ -18,27 +18,23 @@ package controllers.vatLodgingOfficer
 
 import java.time.LocalDate
 
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.ModelKeys.REGISTERING_OFFICER_KEY
-import models.api.{DateOfBirth, Name, VatScheme}
+import models.api.{DateOfBirth, Name}
 import models.external.Officer
 import models.view.vatLodgingOfficer.OfficerSecurityQuestionsView
-import org.mockito.Matchers
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
 import play.api.test.FakeRequest
-
-import scala.concurrent.Future
 
 class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object Controller extends OfficerSecurityQuestionsController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-  }
+  object Controller extends OfficerSecurityQuestionsController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show())
 

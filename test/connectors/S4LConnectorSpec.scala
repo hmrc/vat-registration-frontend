@@ -17,22 +17,22 @@
 package connectors
 
 import models.view.vatTradingDetails.vatChoice.StartDateView
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 class S4LConnectorSpec extends UnitSpec with MockitoSugar {
 
   val mockShortLivedCache = mock[ShortLivedCache]
 
-  object S4LConnectorTest extends S4LConnector {
+  object S4LConnectorTest extends S4LConnect {
     override val shortCache = mockShortLivedCache
   }
 
@@ -44,7 +44,7 @@ class S4LConnectorSpec extends UnitSpec with MockitoSugar {
   "Fetching from save4later" should {
     "return the correct model" in {
 
-      when(mockShortLivedCache.fetchAndGetEntry[StartDateView](Matchers.anyString(), Matchers.anyString())(Matchers.any(), Matchers.any()))
+      when(mockShortLivedCache.fetchAndGetEntry[StartDateView](ArgumentMatchers.anyString(), ArgumentMatchers.anyString())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Option(sDateModel)))
 
       val result = S4LConnectorTest.fetchAndGet[StartDateView]("", "")
@@ -56,7 +56,7 @@ class S4LConnectorSpec extends UnitSpec with MockitoSugar {
     "save the model" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(sDateModel)))
 
-      when(mockShortLivedCache.cache[StartDateView](Matchers.anyString(), Matchers.anyString(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockShortLivedCache.cache[StartDateView](ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       val result = S4LConnectorTest.save[StartDateView]("", "", sDateModel)
@@ -66,7 +66,7 @@ class S4LConnectorSpec extends UnitSpec with MockitoSugar {
 
   "clearing an entry using save4later" should {
     "clear the entry given the user id" in {
-      when(mockShortLivedCache.remove(Matchers.anyString())(Matchers.any()))
+      when(mockShortLivedCache.remove(ArgumentMatchers.anyString())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK)))
 
       val result = S4LConnectorTest.clear("test")
@@ -76,7 +76,7 @@ class S4LConnectorSpec extends UnitSpec with MockitoSugar {
 
   "fetchAll" should {
     "fetch all entries in S4L" in {
-      when(mockShortLivedCache.fetch(Matchers.any())(Matchers.any()))
+      when(mockShortLivedCache.fetch(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(cacheMap)))
 
       val result = S4LConnectorTest.fetchAll("testUserId")

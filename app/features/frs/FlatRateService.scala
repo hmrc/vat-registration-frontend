@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 package services {
@@ -24,15 +23,16 @@ package services {
   import common.ErrorUtil.fail
   import models._
   import models.api.{VatFlatRateScheme, VatScheme}
+  import models.view.frs.AnnualCostsLimitedView.{NO, YES, YES_WITHIN_12_MONTHS}
   import models.view.frs._
-  import models.view.frs.AnnualCostsLimitedView.{NO, YES_WITHIN_12_MONTHS, YES}
+  import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-  trait FlatRateService extends CommonService {
+  trait FlatRateService {
     self: RegistrationService =>
 
     private val flatRateSchemeS4LKey: S4LKey[S4LFlatRateScheme] = S4LFlatRateScheme.vatFlatRateScheme
-    private val LIMITED_COST_TRADER_THRESHOLD = 1000L
-    private val defaultFlatRate: BigDecimal = 16.5
+    private val LIMITED_COST_TRADER_THRESHOLD                   = 1000L
+    private val defaultFlatRate: BigDecimal                     = 16.5
 
     type SavedFlatRateScheme = Either[S4LFlatRateScheme, VatFlatRateScheme]
 
@@ -40,7 +40,7 @@ package services {
       fetchFinancials map {
         _.estimateVatTurnover match {
           case Some(estimate) => Math.round(estimate.vatTurnoverEstimate * 0.02)
-          case None => 0L
+          case None           => 0L
         }
       }
     }
@@ -48,10 +48,10 @@ package services {
     def fetchFlatRateScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[S4LFlatRateScheme] = {
       fetchFRSFromS4L flatMap {
         case Some(frs) => Future.successful(frs)
-        case None => getVatScheme map { vatScheme =>
+        case None      => getVatScheme map { vatScheme =>
           vatScheme.vatFlatRateScheme match {
             case Some(_) => frsApiToView(vatScheme)
-            case None => S4LFlatRateScheme()
+            case None    => S4LFlatRateScheme()
           }
         }
       }
@@ -76,15 +76,13 @@ package services {
                               (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
       fetchFlatRateScheme flatMap { frs =>
         annualCostsLimitedView.selection match {
-          case NO => saveFRS(frs.copy(annualCostsLimited = Some(annualCostsLimitedView)))
-          case YES | YES_WITHIN_12_MONTHS =>
-            saveFRS(frs.copy(annualCostsLimited = Some(annualCostsLimitedView), frsStartDate = None, categoryOfBusiness = None))
+          case NO                         => saveFRS(frs.copy(annualCostsLimited = Some(annualCostsLimitedView)))
+          case YES | YES_WITHIN_12_MONTHS => saveFRS(frs.copy(annualCostsLimited = Some(annualCostsLimitedView), frsStartDate = None, categoryOfBusiness = None))
         }
       }
     }
 
-    def saveBusinessSector(businessSectorView: BusinessSectorView)
-                          (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
+    def saveBusinessSector(businessSectorView: BusinessSectorView)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
       fetchFlatRateScheme flatMap { frs =>
         saveFRS(frs.copy(categoryOfBusiness = Some(businessSectorView)))
       }
@@ -110,11 +108,9 @@ package services {
       } yield savedFRS
     }
 
-    def saveFRSStartDate(frsStartDateView: FrsStartDateView)
-                        (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
-
+    def saveFRSStartDate(frsStartDateView: FrsStartDateView)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
       fetchFlatRateScheme flatMap { frs =>
-        if(frsStartDateView.dateType == FrsStartDateView.VAT_REGISTRATION_DATE){
+        if(frsStartDateView.dateType == FrsStartDateView.VAT_REGISTRATION_DATE) {
           fetchVatStartDate flatMap { vatStartDate =>
             saveFRS(frs.copy(frsStartDate = Some(frsStartDateView.copy(date = vatStartDate))))
           }
@@ -131,47 +127,43 @@ package services {
     @Deprecated
     // TODO other FRS controllers still use this
     def submitVatFlatRateScheme()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatFlatRateScheme] = {
-      def merge(fresh: Option[S4LFlatRateScheme], vs: VatScheme): VatFlatRateScheme =
-        fresh.fold(
-          vs.vatFlatRateScheme.getOrElse(throw fail("VatFlatRateScheme"))
-        )(s4l => S4LFlatRateScheme.apiT.toApi(s4l))
+      def merge(fresh: Option[S4LFlatRateScheme], vs: VatScheme): VatFlatRateScheme = fresh.fold(
+        vs.vatFlatRateScheme.getOrElse(throw fail("VatFlatRateScheme"))
+      )(s4l => S4LFlatRateScheme.apiT.toApi(s4l))
 
       for {
-        vs <- getVatScheme()
-        frs <- s4l[S4LFlatRateScheme]()
+        vs <- getVatScheme
+        frs <- s4l[S4LFlatRateScheme]
         response <- vatRegConnector.upsertVatFlatRateScheme(profile.registrationId, merge(frs, vs))
       } yield response
     }
 
-    private[services] def frsApiToView(vs: VatScheme): S4LFlatRateScheme =
-      S4LFlatRateScheme(
-        joinFrs = ApiModelTransformer[JoinFrsView].toViewModel(vs),
-        annualCostsInclusive = ApiModelTransformer[AnnualCostsInclusiveView].toViewModel(vs),
-        annualCostsLimited = ApiModelTransformer[AnnualCostsLimitedView].toViewModel(vs),
-        registerForFrs = ApiModelTransformer[RegisterForFrsView].toViewModel(vs),
-        frsStartDate = ApiModelTransformer[FrsStartDateView].toViewModel(vs),
-        categoryOfBusiness = ApiModelTransformer[BusinessSectorView].toViewModel(vs)
-      )
+    private[services] def frsApiToView(vs: VatScheme): S4LFlatRateScheme = S4LFlatRateScheme(
+      joinFrs               = ApiModelTransformer[JoinFrsView].toViewModel(vs),
+      annualCostsInclusive  = ApiModelTransformer[AnnualCostsInclusiveView].toViewModel(vs),
+      annualCostsLimited    = ApiModelTransformer[AnnualCostsLimitedView].toViewModel(vs),
+      registerForFrs        = ApiModelTransformer[RegisterForFrsView].toViewModel(vs),
+      frsStartDate          = ApiModelTransformer[FrsStartDateView].toViewModel(vs),
+      categoryOfBusiness    = ApiModelTransformer[BusinessSectorView].toViewModel(vs)
+    )
 
-    private[services] def frsViewToApi(view: S4LFlatRateScheme): VatFlatRateScheme = {
-      VatFlatRateScheme(
-        joinFrs = view.joinFrs.map(_.selection).getOrElse(false),
-        annualCostsInclusive = view.annualCostsInclusive.map(_.selection),
-        annualCostsLimited = view.annualCostsLimited.map(_.selection),
-        doYouWantToUseThisRate = view.registerForFrs.map(_.selection),
-        whenDoYouWantToJoinFrs = view.frsStartDate.map(_.dateType),
-        startDate = view.frsStartDate.flatMap(_.date),
-        categoryOfBusiness = view.categoryOfBusiness.map(_.businessSector),
-        percentage = view.categoryOfBusiness.map(_.flatRatePercentage)
-      )
-    }
+    private[services] def frsViewToApi(view: S4LFlatRateScheme): VatFlatRateScheme = VatFlatRateScheme(
+      joinFrs                 = view.joinFrs.exists(_.selection),
+      annualCostsInclusive    = view.annualCostsInclusive.map(_.selection),
+      annualCostsLimited      = view.annualCostsLimited.map(_.selection),
+      doYouWantToUseThisRate  = view.registerForFrs.map(_.selection),
+      whenDoYouWantToJoinFrs  = view.frsStartDate.map(_.dateType),
+      startDate               = view.frsStartDate.flatMap(_.date),
+      categoryOfBusiness      = view.categoryOfBusiness.map(_.businessSector),
+      percentage              = view.categoryOfBusiness.map(_.flatRatePercentage)
+    )
 
     private[services] def fetchFRSFromS4L(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Option[S4LFlatRateScheme]] = {
       s4LService.fetchAndGetNoAux(flatRateSchemeS4LKey)
     }
 
     private[services] def fetchFRSFromAPI(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Option[VatFlatRateScheme]] = {
-      getVatScheme() map (_.vatFlatRateScheme)
+      getVatScheme map (_.vatFlatRateScheme)
     }
 
     private[services] def saveFRS(frs: S4LFlatRateScheme)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
@@ -196,22 +188,25 @@ package connectors {
 
   import cats.instances.FutureInstances
   import models.api.VatFlatRateScheme
-  import uk.gov.hmrc.play.http.HttpReads
+  import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
   trait FlatRateConnector extends FutureInstances {
     self: RegistrationConnector =>
 
     // TODO - check why this is here twice? update vs upsert?
     def updateVatFlatRateScheme(regId: String, vatFlatRateScheme: VatFlatRateScheme)
-                               (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] =
+                               (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] = {
       http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", vatFlatRateScheme).recover{
-        case e: Exception => throw logResponse(e, className, "vatFlatRateScheme")
+        case e: Exception => throw logResponse(e, "vatFlatRateScheme")
       }
+    }
+
 
     def upsertVatFlatRateScheme(regId: String, vatFrs: VatFlatRateScheme)
-                               (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] =
+                               (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] = {
       http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", vatFrs).recover{
-        case e: Exception => throw logResponse(e, className, "upsertVatFrsAnswers")
+        case e: Exception => throw logResponse(e, "upsertVatFrsAnswers")
       }
+    }
   }
 }

@@ -16,28 +16,25 @@
 
 package controllers.sicAndCompliance
 
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.ModelKeys._
-import models.{CurrentProfile, S4LVatSicAndCompliance}
+import models.S4LVatSicAndCompliance
 import models.api.SicCode
 import models.view.sicAndCompliance.MainBusinessActivityView
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 
-import scala.concurrent.Future
-
 class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object Controller extends MainBusinessActivityController(ds)(
+  object Controller extends MainBusinessActivityController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
     mockS4LService,
-    mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-  }
+    mockVatRegistrationService
+  )
 
   val validSicCode = SicCode("70221001", "Accounting systems design", "Financial management")
   val fakeRequest = FakeRequest(controllers.sicAndCompliance.routes.MainBusinessActivityController.show())
@@ -74,7 +71,7 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
       mockGetCurrentProfile()
       save4laterExpectsSave[MainBusinessActivityView]()
       mockKeystoreFetchAndGet(SIC_CODES_KEY, Option.empty[List[SicCode]])
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> sicCode.id)
       )(_ isA 400)
@@ -86,7 +83,7 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
       save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
       save4laterExpectsSave[MainBusinessActivityView]()
       mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(List(sicCode)))
-      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(validSicAndCompliance.pure)
+      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(validSicAndCompliance.pure)
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
       submitAuthorised(Controller.submit(),
@@ -100,7 +97,7 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
       save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
       save4laterExpectsSave[MainBusinessActivityView]()
       mockKeystoreFetchAndGet(SIC_CODES_KEY, Some(List(validSicCode)))
-      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(validSicAndCompliance.pure)
+      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(validSicAndCompliance.pure)
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(validVatFlatRateScheme.pure)
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
@@ -116,7 +113,7 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
       mockGetCurrentProfile()
       save4laterExpectsSave[MainBusinessActivityView]()
       mockKeystoreFetchAndGet(SIC_CODES_KEY, Some(List(validSicCode)))
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
       callAuthorised(Controller.redirectToNext())(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company")
     }
 
@@ -124,7 +121,7 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
       mockGetCurrentProfile()
       save4laterExpectsSave[MainBusinessActivityView]()
       mockKeystoreFetchAndGet(SIC_CODES_KEY, None)
-      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(validSicAndCompliance.pure)
+      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(validSicAndCompliance.pure)
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
       callAuthorised(Controller.redirectToNext())(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")

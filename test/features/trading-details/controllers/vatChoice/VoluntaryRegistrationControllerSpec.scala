@@ -36,20 +36,22 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.CurrentProfile
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object TestVoluntaryRegistrationController extends VoluntaryRegistrationController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object TestVoluntaryRegistrationController extends VoluntaryRegistrationController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(routes.VoluntaryRegistrationController.show())
 
@@ -73,7 +75,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
 
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestVoluntaryRegistrationController.show) {
@@ -86,7 +88,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
 
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestVoluntaryRegistrationController.show) {
@@ -117,9 +119,9 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
 
   s"POST ${routes.VoluntaryRegistrationController.submit()} with Voluntary Registration selected No" should {
     "redirect to the welcome page" in {
-      when(mockS4LService.clear()(any[HeaderCarrier](), any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockS4LService.clear(any[HeaderCarrier](), any())).thenReturn(Future.successful(validHttpResponse))
       save4laterExpectsSave[VoluntaryRegistration]()
-      when(mockVatRegistrationService.deleteVatScheme()(any[HeaderCarrier](), any()))
+      when(mockVatRegistrationService.deleteVatScheme(any[HeaderCarrier](), any()))
         .thenReturn(Future.successful(()))
 
       mockGetCurrentProfile()

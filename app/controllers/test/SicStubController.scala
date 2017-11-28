@@ -16,34 +16,39 @@
 
 package controllers.test
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-import connectors.{ConfigConnect, KeystoreConnector}
+import connectors.{ConfigConnector, KeystoreConnect}
 import controllers.CommonPlayDependencies
 import controllers.sicAndCompliance.ComplianceExitController
 import forms.test.SicStubForm
 import models.ModelKeys.SIC_CODES_KEY
 import models.view.test.SicStub
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, SessionProfile, VatRegistrationService}
+import services.{RegistrationService, S4LService, SessionProfile}
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class SicStubController @Inject()(ds: CommonPlayDependencies, configConnect: ConfigConnect)
-                                 (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends ComplianceExitController(ds) with SessionProfile {
+@Singleton
+class SicStubController @Inject()(ds: CommonPlayDependencies,
+                                  configConnect: ConfigConnector,
+                                  val keystoreConnector: KeystoreConnect,
+                                  implicit val s4LService: S4LService,
+                                  override val authConnector: AuthConnector,
+                                  override implicit val vrs: RegistrationService) extends ComplianceExitController(ds, authConnector, vrs, s4LService) with SessionProfile {
 
   def show: Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
           for {
-            sicCodes <- s4LService.fetchAndGet[SicStub]()
-            sicStub = SicStub(
+            sicCodes  <- s4LService.fetchAndGet[SicStub]
+            sicStub   =  SicStub(
               sicCodes.map(_.sicCode1.getOrElse("")),
               sicCodes.map(_.sicCode2.getOrElse("")),
               sicCodes.map(_.sicCode3.getOrElse("")),
               sicCodes.map(_.sicCode4.getOrElse(""))
             )
-            form = SicStubForm.form.fill(sicStub)
+            form       =  SicStubForm.form.fill(sicStub)
           } yield Ok(views.html.pages.test.sic_stub(form))
         }
   }
@@ -54,15 +59,16 @@ class SicStubController @Inject()(ds: CommonPlayDependencies, configConnect: Con
         withCurrentProfile { implicit profile =>
           SicStubForm.form.bindFromRequest().fold(
             badForm => BadRequest(views.html.pages.test.sic_stub(badForm)).pure,
-            data => s4LService.save[SicStub](data).flatMap(_ => {
+            data    => s4LService.save[SicStub](data).flatMap { _ =>
               val sicCodesList = data.fullSicCodes.map(configConnect.getSicCodeDetails)
-              keystoreConnector.cache(SIC_CODES_KEY, sicCodesList).flatMap(_ =>
+              keystoreConnector.cache(SIC_CODES_KEY, sicCodesList).flatMap { _ =>
                 data.sicCodes match {
-                  case head :: Nil => Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.redirectToNext()).pure
-                  case _ :: tail => Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.show()).pure
-                  case Nil => selectNextPage(sicCodesList)
-                })
-            })
+                  case head :: Nil  => Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.redirectToNext()).pure
+                  case _ :: tail    => Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.show()).pure
+                  case Nil          => selectNextPage(sicCodesList)
+                }
+              }
+            }
           )
         }
   }

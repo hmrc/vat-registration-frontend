@@ -23,25 +23,18 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Request
 import play.api.{Application, Configuration, Play}
 import play.twirl.api.Html
-import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.play.audit.filters.FrontendAuditFilter
-import uk.gov.hmrc.play.config.{AppName, ControllerConfig, RunMode}
-import uk.gov.hmrc.play.filters.MicroserviceFilterSupport
+import uk.gov.hmrc.play.config.{AppName, ControllerConfig}
 import uk.gov.hmrc.play.frontend.bootstrap.DefaultFrontendGlobal
-import uk.gov.hmrc.play.http.logging.filters.FrontendLoggingFilter
+import uk.gov.hmrc.play.frontend.filters.{FrontendAuditFilter, FrontendLoggingFilter, MicroserviceFilterSupport}
 
-object FrontendGlobal
-  extends FrontendGlobal
+object FrontendGlobal extends FrontendGlobal
 
 trait FrontendGlobal extends DefaultFrontendGlobal {
-  override val auditConnector = FrontendAuditConnector
-  override val loggingFilter = LoggingFilter
-  override val frontendAuditFilter = AuditFilter
+  override val auditConnector       = FrontendAuditConnector
+  override val loggingFilter        = LoggingFilter
+  override val frontendAuditFilter  = AuditFilter
 
-  override def onStart(app: Application) {
-    super.onStart(app)
-    ApplicationCrypto.verifyConfiguration()
-  }
+  //Code that needs running at app startup has been moved to app.config.startup, create new class and trait then bind in module
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit rh: Request[_]): Html =
     views.html.pages.error.restart()
@@ -57,19 +50,13 @@ object LoggingFilter extends FrontendLoggingFilter with MicroserviceFilterSuppor
   override def controllerNeedsLogging(controllerName: String): Boolean = ControllerConfiguration.paramsForController(controllerName).needsLogging
 }
 
-object AuditFilter extends FrontendAuditFilter with RunMode with AppName with MicroserviceFilterSupport {
-
-  override lazy val maskedFormFields = Seq("password")
-
-  override lazy val applicationPort = None
-
-  override lazy val auditConnector = FrontendAuditConnector
-
+object AuditFilter extends FrontendAuditFilter with AppName with MicroserviceFilterSupport {
+  override lazy val maskedFormFields                                    = Seq("password")
+  override lazy val applicationPort                                     = None
+  override lazy val auditConnector                                      = FrontendAuditConnector
   override def controllerNeedsAuditing(controllerName: String): Boolean = ControllerConfiguration.paramsForController(controllerName).needsAuditing
 }
 
 object ProductionFrontendGlobal extends FrontendGlobal {
-
   override def filters = WhitelistFilter +: super.filters
-
 }

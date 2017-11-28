@@ -16,46 +16,48 @@
 
 package controllers
 
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.ModelKeys.INCORPORATION_STATUS
 import models.external.IncorporationInfo
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
 class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  object TestSummaryController extends SummaryController(ds,mockVATFeatureSwitch)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector: AuthConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-  }
+  object TestSummaryController extends SummaryController(
+    ds,
+    mockVATFeatureSwitch,
+    mockVatRegistrationService,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService
+  )
 
   "Calling summary to show the summary page" should {
 
     "return HTML with a valid summary view pre-incorp" in {
-      when(mockS4LService.clear()(any(), any())).thenReturn(validHttpResponse.pure)
+      when(mockS4LService.clear(any(), any())).thenReturn(validHttpResponse.pure)
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
-      when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(Future.successful(validVatScheme))
       mockGetCurrentProfile()
       when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
     "return HTML with a valid summary view post-incorp" in {
-      when(mockS4LService.clear()(any(),any())).thenReturn(validHttpResponse.pure)
+      when(mockS4LService.clear(any(),any())).thenReturn(validHttpResponse.pure)
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, None)
-      when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.pure)
       mockGetCurrentProfile()
       when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
     "getRegistrationSummary maps a valid VatScheme object to a Summary object" in {
-      when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.pure)
       implicit val cp = currentProfile()
       when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
       TestSummaryController.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)

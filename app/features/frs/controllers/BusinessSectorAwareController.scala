@@ -16,6 +16,7 @@
 
 package models.view.frs {
 
+ 
   import java.text.DecimalFormat
 
   import models._
@@ -44,23 +45,23 @@ package models.view.frs {
 
 package controllers.frs {
 
-  import connectors.ConfigConnect
+  import connectors.ConfigConnector
   import controllers.VatRegistrationControllerNoAux
   import models.CurrentProfile
   import models.view.frs.BusinessSectorView
   import org.apache.commons.lang3.StringUtils
-  import services.VatRegistrationService
-  import uk.gov.hmrc.play.http.HeaderCarrier
+  import services.RegistrationService
+  import uk.gov.hmrc.http.HeaderCarrier
 
   import scala.concurrent.Future
 
   // TODO refactor this - controller being treated like a service by RegisterForFrsWithSector
   trait BusinessSectorAwareController extends VatRegistrationControllerNoAux {
 
-    val service: VatRegistrationService
-    val configConnect: ConfigConnect
+    val service: RegistrationService
+    val configConnect: ConfigConnector
 
-    def businessSectorView()(implicit headerCarrier: HeaderCarrier,profile: CurrentProfile): Future[BusinessSectorView] = {
+    def businessSectorView()(implicit headerCarrier: HeaderCarrier, profile: CurrentProfile): Future[BusinessSectorView] = {
       service.fetchFlatRateScheme flatMap { flatRateScheme =>
         //TODO StringUtils.isNotBlank(???) - use ???.trim.nonEmpty ?
         flatRateScheme.categoryOfBusiness match {

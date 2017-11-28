@@ -16,36 +16,24 @@
 
 package connectors
 
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
-import com.google.inject.ImplementedBy
 import models.api.SicCode
 import models.view.frs.BusinessSectorView
-import uk.gov.hmrc.play.config.ServicesConfig
-
+import uk.gov.hmrc.play.config.inject.ServicesConfig
 
 @Singleton
-class ConfigConnector extends ConfigConnect with ServicesConfig {
+class ConfigConnector @Inject()(config: ServicesConfig) {
+  private val sicCodePrefix = "sic.codes"
 
-  val sicCodePrefix = "sic.codes"
+  def getSicCodeDetails(sicCode: String): SicCode = SicCode(
+    id             = sicCode,
+    description    = config.getString(s"$sicCodePrefix.$sicCode.description"),
+    displayDetails = config.getString(s"$sicCodePrefix.$sicCode.displayDetails")
+  )
 
-  override def getSicCodeDetails(sicCode: String): SicCode =
-    SicCode(id = sicCode,
-      description = getString(s"$sicCodePrefix.$sicCode.description"),
-      displayDetails = getString(s"$sicCodePrefix.$sicCode.displayDetails"))
-
-  def getBusinessSectorDetails(sicCode: String): BusinessSectorView =
-    BusinessSectorView(
-      businessSector = getString(s"$sicCodePrefix.$sicCode.frsCategory"),
-      flatRatePercentage = BigDecimal(getString(s"$sicCodePrefix.$sicCode.currentFRSPercent")))
-
-}
-
-@ImplementedBy(classOf[ConfigConnector])
-trait ConfigConnect {
-
-  def getSicCodeDetails(sicCode: String): SicCode
-
-  def getBusinessSectorDetails(sicCode: String): BusinessSectorView
-
+  def getBusinessSectorDetails(sicCode: String): BusinessSectorView = BusinessSectorView(
+    businessSector      = config.getString(s"$sicCodePrefix.$sicCode.frsCategory"),
+    flatRatePercentage  = BigDecimal(config.getString(s"$sicCodePrefix.$sicCode.currentFRSPercent"))
+  )
 }

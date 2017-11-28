@@ -19,12 +19,12 @@ package common.enums
 import play.api.libs.json.{Format, Reads, Writes}
 
 object IVResult extends Enumeration {
-  val Success = Value
-  val FailedIV = Value
-  val UserAborted = Value
-  val Timeout = Value
-  val LockedOut = Value
-  val InsufficientEvidence = Value
+  val Success               = Value
+  val FailedIV              = Value
+  val UserAborted           = Value
+  val Timeout               = Value
+  val LockedOut             = Value
+  val InsufficientEvidence  = Value
 
   implicit val format: Format[IVResult.Value] = Format(Reads.enumNameReads(IVResult), Writes.enumNameWrites)
 }

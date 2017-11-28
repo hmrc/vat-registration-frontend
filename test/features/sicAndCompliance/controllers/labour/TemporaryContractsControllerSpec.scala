@@ -21,22 +21,25 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.{CurrentProfile, S4LVatSicAndCompliance}
 import models.view.sicAndCompliance.labour.TemporaryContracts
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object TemporaryContractsController extends TemporaryContractsController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object TemporaryContractsController extends TemporaryContractsController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(sicAndCompliance.labour.routes.TemporaryContractsController.show())
 
@@ -58,7 +61,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[TemporaryContracts]()
-      when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(Future.successful(validVatScheme))
       mockGetCurrentProfile()
       callAuthorised(TemporaryContractsController.show) {
         result =>
@@ -71,7 +74,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[TemporaryContracts]()
-    when(mockVatRegistrationService.getVatScheme()(any(),any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    when(mockVatRegistrationService.getVatScheme(any(),any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
     mockGetCurrentProfile()
       callAuthorised(TemporaryContractsController.show) {
         result =>
@@ -93,7 +96,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return 303 with TemporaryContracts Yes selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any(),any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.submitSicAndCompliance(any(),any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[TemporaryContracts]()
       mockGetCurrentProfile()
       submitAuthorised(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -106,7 +109,7 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
     }
 
     "return 303 with TemporaryContracts No selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterExpectsSave[TemporaryContracts]()
       save4laterReturns(S4LVatSicAndCompliance())
