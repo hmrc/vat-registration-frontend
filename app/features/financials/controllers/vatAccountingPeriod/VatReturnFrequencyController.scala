@@ -49,24 +49,26 @@ package models.view.vatFinancials.vatAccountingPeriod {
 
 package controllers.vatFinancials.vatAccountingPeriod {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
   import cats.syntax.FlatMapSyntax
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatFinancials.vatAccountingPeriod.VatReturnFrequencyForm
   import models.S4LVatFinancials
   import models.api.{VatEligibilityChoice, VatScheme}
   import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
   import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.MONTHLY
-  import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
   import play.api.mvc._
-  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  import scala.concurrent.Future
-
-  class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies)
-                                              (implicit s4l: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with CommonService with FlatMapSyntax with SessionProfile {
+  @Singleton
+  class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies,
+                                               val keystoreConnector: KeystoreConnect,
+                                               val authConnector: AuthConnector,
+                                               implicit val s4l: S4LService,
+                                               implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with FlatMapSyntax with SessionProfile {
 
     val joinThreshold: Long = conf.getLong("thresholds.frs.joinThreshold").get
 

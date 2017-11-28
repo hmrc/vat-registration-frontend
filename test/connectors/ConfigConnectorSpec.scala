@@ -20,22 +20,30 @@ import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api.SicCode
 import models.view.frs.BusinessSectorView
+import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers
 
 class ConfigConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
   class Setup {
-    val connector = new ConfigConnector()
+    val connector = new ConfigConnector(mockConfig)
     val sicCode = SicCode(id = "01490025", description = "Silk worm raising", displayDetails = "Raising of other animals")
   }
 
   "Calling getSicCodeDetails" must {
     "return a SicCode successfully" in new Setup {
+      when(mockConfig.getString(ArgumentMatchers.any()))
+        .thenReturn("Silk worm raising", "Raising of other animals")
+
       connector.getSicCodeDetails("01490025") mustBe sicCode
     }
   }
 
   "Calling getBusinessSectorDetails" must {
     "return a BusinessSectorView successfully" in new Setup {
+      when(mockConfig.getString(ArgumentMatchers.any()))
+        .thenReturn("Farming or agriculture that is not listed elsewhere", "6.5")
+
       connector.getBusinessSectorDetails("01490025") mustBe BusinessSectorView("Farming or agriculture that is not listed elsewhere", 6.5)
     }
   }

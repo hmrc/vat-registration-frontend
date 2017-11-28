@@ -47,23 +47,25 @@ package models.view.vatLodgingOfficer {
 
 package controllers.vatLodgingOfficer {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
-  import connectors.KeystoreConnector
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatLodgingOfficer.FormerNameForm
   import models.view.vatLodgingOfficer.FormerNameView
   import play.api.data.Form
   import play.api.mvc._
-  import services.{S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  class FormerNameController @Inject()(ds: CommonPlayDependencies)
-                                      (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService)
-    extends VatRegistrationController(ds) with SessionProfile {
+  @Singleton
+  class FormerNameController @Inject()(ds: CommonPlayDependencies,
+                                       implicit val s4LService: S4LService,
+                                       val keystoreConnector: KeystoreConnect,
+                                       val authConnector: AuthConnector,
+                                       implicit val vatRegistrationService: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     import cats.syntax.flatMap._
-
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
 
     val form: Form[FormerNameView] = FormerNameForm.form
 

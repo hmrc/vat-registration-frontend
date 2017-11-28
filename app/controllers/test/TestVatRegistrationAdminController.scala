@@ -16,16 +16,20 @@
 
 package controllers.test
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import connectors.test.TestRegistrationConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class TestVatRegistrationAdminController @Inject()(vatRegConnector: TestRegistrationConnector, ds: CommonPlayDependencies)
-  extends VatRegistrationController(ds) {
-
-  def dropCollection(): Action[AnyContent] = authorised.async(implicit user => implicit request =>
-    vatRegConnector.dropCollection().map(_ => Ok("DB cleared")))
-
+@Singleton
+class TestVatRegistrationAdminController @Inject()(vatRegConnector: TestRegistrationConnector,
+                                                   val authConnector: AuthConnector,
+                                                   ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+  def dropCollection(): Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+        vatRegConnector.dropCollection.map(_ => Ok("DB cleared"))
+  }
 }

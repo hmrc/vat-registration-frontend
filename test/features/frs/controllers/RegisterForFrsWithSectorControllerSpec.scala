@@ -21,7 +21,7 @@ import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, MockMessages}
 import models.CurrentProfile
 import models.view.frs.BusinessSectorView
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.i18n.MessagesApi
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -29,9 +29,9 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 class RegisterForFrsWithSectorControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages {
 

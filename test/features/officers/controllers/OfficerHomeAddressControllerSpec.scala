@@ -16,31 +16,27 @@
 
 package controllers.vatLodgingOfficer
 
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.api.ScrsAddress
 import models.view.vatLodgingOfficer.OfficerHomeAddressView
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{verify, when}
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 
-import scala.concurrent.Future
-
 class OfficerHomeAddressControllerSpec extends VatRegSpec
   with VatRegistrationFixture with S4LMockSugar {
 
-  object Controller extends OfficerHomeAddressController(ds)(
+  object Controller extends OfficerHomeAddressController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
     mockS4LService,
     mockVatRegistrationService,
     mockPPService,
-    mockAddressLookupConnector) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-  }
+    mockAddressLookupConnector
+  )
 
   val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())
 
@@ -51,7 +47,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
       mockGetCurrentProfile()
       save4laterReturnsNoViewModel[OfficerHomeAddressView]()
       mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", dummyCacheMap)
-      when(mockPPService.getOfficerAddressList()(any(),any())).thenReturn(Seq(address).pure)
+      when(mockPPService.getOfficerAddressList(any(),any())).thenReturn(Seq(address).pure)
 
       callAuthorised(Controller.show()) {
         _ includesText "What is your home address"
@@ -63,7 +59,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
 
       save4laterReturnsViewModel(OfficerHomeAddressView(scrsAddress.id, Some(scrsAddress)))()
       mockKeystoreCache[Seq[ScrsAddress]]("OfficerAddressList", dummyCacheMap)
-      when(mockPPService.getOfficerAddressList()(any(),any())).thenReturn(Seq(address).pure)
+      when(mockPPService.getOfficerAddressList(any(),any())).thenReturn(Seq(address).pure)
 
       callAuthorised(Controller.show()) {
         _ includesText "What is your home address"
@@ -82,7 +78,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
       mockGetCurrentProfile()
 
       save4laterExpectsSave[OfficerHomeAddressView]()
-      when(mockPPService.getOfficerAddressList()(any(),any())).thenReturn(Seq(address).pure)
+      when(mockPPService.getOfficerAddressList(any(),any())).thenReturn(Seq(address).pure)
       mockKeystoreFetchAndGet[Seq[ScrsAddress]]("OfficerAddressList", Some(Seq(address)))
 
       submitAuthorised(Controller.submit(),
@@ -94,7 +90,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
       mockGetCurrentProfile()
 
       save4laterExpectsSave[OfficerHomeAddressView]()
-      when(mockPPService.getOfficerAddressList()(any(),any())).thenReturn(Seq(address).pure)
+      when(mockPPService.getOfficerAddressList(any(),any())).thenReturn(Seq(address).pure)
       mockKeystoreFetchAndGet("OfficerAddressList", Option.empty[Seq[ScrsAddress]])
 
       submitAuthorised(Controller.submit(),

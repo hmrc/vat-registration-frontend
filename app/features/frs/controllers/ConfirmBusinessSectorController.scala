@@ -18,22 +18,19 @@ package controllers.frs {
 
   import javax.inject.Inject
 
-  import config.FrontendAuthConnector
-  import connectors.{ConfigConnect, KeystoreConnector}
+  import connectors.{ConfigConnector, KeystoreConnect}
   import play.api.i18n.MessagesApi
   import play.api.mvc.{Action, AnyContent}
-  import services.{SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, SessionProfile}
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
   class ConfirmBusinessSectorControllerImpl @Inject()(val messagesApi: MessagesApi,
-                                                      val configConnect: ConfigConnect,
-                                                      val service: VatRegistrationService) extends ConfirmBusinessSectorController {
-    override val authConnector: AuthConnector = FrontendAuthConnector
-  }
+                                                      val configConnect: ConfigConnector,
+                                                      val service: RegistrationService,
+                                                      val authConnector: AuthConnector,
+                                                      val keystoreConnector: KeystoreConnect) extends ConfirmBusinessSectorController
 
   trait ConfirmBusinessSectorController extends BusinessSectorAwareController with SessionProfile {
-
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
 
     def show: Action[AnyContent] = authorised.async {
       implicit user =>

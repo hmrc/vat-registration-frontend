@@ -16,12 +16,15 @@
 
 package controllers.feedback
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc._
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class FeedbackController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+@Singleton
+class FeedbackController @Inject()(ds: CommonPlayDependencies,
+                                   val authConnector: AuthConnector) extends VatRegistrationController(ds) {
 
   def show: Action[AnyContent] = authorised(implicit user => implicit request => Ok(views.html.pages.welcome()))
 

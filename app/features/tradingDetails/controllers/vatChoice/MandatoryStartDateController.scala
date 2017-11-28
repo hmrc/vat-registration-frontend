@@ -17,26 +17,28 @@
 package controllers.vatTradingDetails.vatChoice
 
 import java.time.LocalDate
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.mvc._
-import services.{S4LService, SessionProfile, VatRegistrationService}
 import features.tradingDetails.views.html.vatChoice.{mandatory_start_date_confirmation, mandatory_start_date_incorp}
 import forms.vatTradingDetails.vatChoice.MandatoryStartDateForm
-import models.{CurrentProfile, MonthYearModel}
 import models.api.{VatExpectedThresholdPostIncorp, VatThresholdPostIncorp}
 import models.view.vatTradingDetails.vatChoice.StartDateView
-import uk.gov.hmrc.play.http.HeaderCarrier
+import models.{CurrentProfile, MonthYearModel}
+import play.api.mvc._
+import services.{RegistrationService, S4LService, SessionProfile}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
-class MandatoryStartDateController @Inject()(ds: CommonPlayDependencies)
-                                            (implicit vrs: VatRegistrationService, s4LService: S4LService)
-  extends VatRegistrationController(ds) with SessionProfile {
-
-  val keystoreConnector: KeystoreConnector = KeystoreConnector
+@Singleton
+class MandatoryStartDateController @Inject()(ds: CommonPlayDependencies,
+                                             val authConnector: AuthConnector,
+                                             val keystoreConnector: KeystoreConnect,
+                                             implicit val vrs: RegistrationService,
+                                             implicit val s4LService: S4LService) extends VatRegistrationController(ds) with SessionProfile {
 
   def calculateMandatoryStartDate(threshold : Option[VatThresholdPostIncorp], expectedThreshold : Option[VatExpectedThresholdPostIncorp]): Option[LocalDate] = {
     def calculatedCrossedThresholdDate(thresholdDate : LocalDate) = thresholdDate.withDayOfMonth(1).plusMonths(2)
@@ -52,7 +54,7 @@ class MandatoryStartDateController @Inject()(ds: CommonPlayDependencies)
   }
 
   def mandatoryStartDate(implicit profile : CurrentProfile, hc : HeaderCarrier) : Future[Option[LocalDate]] = {
-    vrs.getVatScheme().map(
+    vrs.getVatScheme.map(
       _.vatServiceEligibility.flatMap(
         _.vatEligibilityChoice match {
           case Some(vec) => calculateMandatoryStartDate(vec.vatThresholdPostIncorp, vec.vatExpectedThresholdPostIncorp)

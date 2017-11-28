@@ -20,9 +20,6 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.frontend.auth.{AuthenticationProvider, TaxRegime}
 
 object VatTaxRegime extends TaxRegime {
-
-  override def isAuthorised(accounts: Accounts): Boolean = true
-
+  override def isAuthorised(accounts: Accounts): Boolean  = true
   override def authenticationType: AuthenticationProvider = VatAuthenticationProvider
-
 }

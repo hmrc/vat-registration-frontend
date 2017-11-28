@@ -24,7 +24,6 @@ class MaskedStringConverterSpec extends UnitSpec with Inside with Inspectors {
   import StringMasking._
 
   "mask" must {
-
     //masking with § character on purpose, to show it can accept non-* masking character explicitly
     "mask first n-characters of a string if string is longer than n (or n-characters long)" in {
       val str = "1234567890"
@@ -39,7 +38,5 @@ class MaskedStringConverterSpec extends UnitSpec with Inside with Inspectors {
         n => str.mask(n, '§').count(_ == '§') shouldBe str.length
       }
     }
-
   }
-
 }

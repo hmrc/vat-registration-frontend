@@ -16,27 +16,26 @@
 
 package controllers.vatFinancials.vatBankAccount
 
-import connectors.KeystoreConnector
 import controllers.vatFinancials
 import controllers.vatFinancials.EstimateVatTurnoverKey
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.{CurrentProfile, S4LVatFinancials}
+import models.S4LVatFinancials
 import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccount
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 
-import scala.concurrent.Future
-
 class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object Controller extends CompanyBankAccountController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-  }
+  object Controller extends CompanyBankAccountController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
 
@@ -56,7 +55,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
       mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[CompanyBankAccount]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(validVatScheme.pure)
 
       callAuthorised(Controller.show) {
         _ includesText "Is there a bank account set up in the name of the company?"
@@ -67,7 +66,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
       mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[CompanyBankAccount]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
 
       callAuthorised(Controller.show) {
         _ includesText "Is there a bank account set up in the name of the company?"

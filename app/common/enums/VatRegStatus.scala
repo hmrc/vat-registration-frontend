@@ -22,5 +22,4 @@ object VatRegStatus extends Enumeration {
   val draft = Value
 
   implicit val format: Format[VatRegStatus.Value] = Format(Reads.enumNameReads(VatRegStatus), Writes.enumNameWrites)
-
 }

@@ -52,22 +52,26 @@ package models.view.vatFinancials {
 
 package controllers.vatFinancials {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
   import cats.syntax.FlatMapSyntax
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatFinancials.VatChargeExpectancyForm
   import models.view.vatFinancials.VatChargeExpectancy
   import models.view.vatFinancials.VatChargeExpectancy.VAT_CHARGE_YES
   import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
   import play.api.mvc.{Action, AnyContent}
-  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-
-  class VatChargeExpectancyController @Inject()(ds: CommonPlayDependencies)
-                                               (implicit s4LService: S4LService,
-                                                vatRegistrationService: VatRegistrationService)
-    extends VatRegistrationController(ds) with FlatMapSyntax with CommonService with SessionProfile {
+  @Singleton
+  class VatChargeExpectancyController @Inject()(ds: CommonPlayDependencies,
+                                                val keystoreConnector: KeystoreConnect,
+                                                val authConnector: AuthConnector,
+                                                implicit val s4LService: S4LService,
+                                                implicit val vatRegistrationService: RegistrationService)
+    extends VatRegistrationController(ds) with FlatMapSyntax with SessionProfile {
 
     val form = VatChargeExpectancyForm.form
 

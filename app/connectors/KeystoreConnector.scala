@@ -16,33 +16,22 @@
 
 package connectors
 
-import config.VatSessionCache
+import javax.inject.Inject
+
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-object KeystoreConnector extends KeystoreConnector
+class KeystoreConnector @Inject()(val sessionCache: SessionCache) extends KeystoreConnect
 
-trait KeystoreConnector {
-  val sessionCache: SessionCache = VatSessionCache
+trait KeystoreConnect {
+  val sessionCache: SessionCache
 
-  def cache[T](formId: String, body : T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
-    sessionCache.cache[T](formId, body)
-  }
-
-  def fetch()(implicit hc : HeaderCarrier) : Future[Option[CacheMap]] = {
-    sessionCache.fetch()
-  }
-
-  def fetchAndGet[T](key : String)(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] = {
-    sessionCache.fetchAndGetEntry(key)
-  }
-
-  def remove()(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
-    sessionCache.remove()
-  }
-
-
+  def cache[T](formId: String, body : T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = sessionCache.cache[T](formId, body)
+  def fetch(implicit hc : HeaderCarrier) : Future[Option[CacheMap]]                                       = sessionCache.fetch()
+  def fetchAndGet[T](key : String)(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]]      = sessionCache.fetchAndGetEntry(key)
+  def remove(implicit hc : HeaderCarrier) : Future[HttpResponse]                                          = sessionCache.remove()
 }

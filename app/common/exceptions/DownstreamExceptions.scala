@@ -16,9 +16,6 @@
 
 package common.exceptions
 
-object DownstreamExceptions extends DownstreamExceptions
-
-trait DownstreamExceptions {
-
+object DownstreamExceptions {
   class RegistrationIdNotFoundException extends Exception
 }

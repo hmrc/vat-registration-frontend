@@ -18,50 +18,33 @@ package connectors
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
 import cats.data.OptionT
-import com.google.inject.ImplementedBy
-import config.WSHttp
-import models.{ApiModelTransformer, CurrentProfile, S4LVatEligibilityChoice}
+import cats.instances.future._
 import models.external.{AccountingDetails, CorporationTaxRegistration}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason.INTENDS_TO_SELL
-import services.{S4LService, VatRegistrationService}
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.ws.WSHttp
+import models.{ApiModelTransformer, CurrentProfile, S4LVatEligibilityChoice}
+import services.{RegistrationService, S4LService}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.ExecutionContext.Implicits.global
+class PrePopConnector @Inject()(val s4l: S4LService, val vrs: RegistrationService) extends PPConnector
 
-
-@ImplementedBy(classOf[PrePopConnector])
 trait PPConnector {
 
-//  val companyRegUrl: String
-  val http: WSHttp
-
-  def getCompanyRegistrationDetails(implicit hc: HeaderCarrier,
-                                    profile: CurrentProfile,
-                                    rds: HttpReads[CorporationTaxRegistration]): OptionalResponse[CorporationTaxRegistration]
-}
-
-
-@Singleton
-class PrePopConnector @Inject()(s4l: S4LService, vrs: VatRegistrationService) extends PPConnector with ServicesConfig {
-
-  import cats.instances.future._
-
-//  val className = this.getClass.getSimpleName
-//  val companyRegUrl = baseUrl("pre-pop")
-  val http: WSHttp = WSHttp
+  val s4l: S4LService
+  val vrs: RegistrationService
 
   val expectedFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-  override def getCompanyRegistrationDetails(implicit hc: HeaderCarrier, profile: CurrentProfile, rds: HttpReads[CorporationTaxRegistration])
-  : OptionalResponse[CorporationTaxRegistration] =
-    OptionT(s4l.fetchAndGet[S4LVatEligibilityChoice]()).subflatMap(_.voluntaryRegistrationReason)
-      .orElseF(vrs.getVatScheme() map ApiModelTransformer[VoluntaryRegistrationReason].toViewModel).collect {
+  def getCompanyRegistrationDetails(implicit hc: HeaderCarrier,
+                                             profile: CurrentProfile,
+                                             rds: HttpReads[CorporationTaxRegistration]): OptionalResponse[CorporationTaxRegistration] = OptionT(
+    s4l.fetchAndGet[S4LVatEligibilityChoice]).subflatMap(_.voluntaryRegistrationReason).orElseF(
+      vrs.getVatScheme map ApiModelTransformer[VoluntaryRegistrationReason].toViewModel
+    ).collect {
       case VoluntaryRegistrationReason(INTENDS_TO_SELL) => CorporationTaxRegistration(
         Some(AccountingDetails("", Some(LocalDate.now.plusDays(7) format expectedFormat))))
     }

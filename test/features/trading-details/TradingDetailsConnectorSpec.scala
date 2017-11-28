@@ -19,7 +19,7 @@ package connectors
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api._
-import uk.gov.hmrc.play.http.ws.WSHttp
+import config.WSHttp
 
 import scala.language.postfixOps
 
@@ -29,25 +29,6 @@ class TradingDetailsConnectorSpec extends VatRegSpec with VatRegistrationFixture
     val connector = new RegistrationConnector {
       override val vatRegUrl: String = "tst-url"
       override val http: WSHttp = mockWSHttp
-    }
-  }
-
-  "Calling upsertVatChoice" should {
-    "return the correct VatResponse when the microservice completes and returns a VatChoice model" in new Setup {
-      mockHttpPATCH[VatChoice, VatChoice]("tst-url", validVatChoice)
-      connector.upsertVatChoice("tstID", validVatChoice) returns validVatChoice
-    }
-    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatChoice, VatChoice]("tst-url", forbidden)
-      connector.upsertVatChoice("tstID", validVatChoice) failedWith forbidden
-    }
-    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[VatChoice, VatChoice]("tst-url", notFound)
-      connector.upsertVatChoice("tstID", validVatChoice) failedWith notFound
-    }
-    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatChoice, VatChoice]("tst-url", internalServiceException)
-      connector.upsertVatChoice("tstID", validVatChoice) failedWith internalServiceException
     }
   }
 

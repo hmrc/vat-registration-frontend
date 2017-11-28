@@ -18,44 +18,36 @@ package services
 
 import javax.inject.Inject
 
-import com.google.inject.ImplementedBy
-import connectors.{IncorporationInformationConnector, OptionalResponse, VatRegistrationConnector}
+import cats.instances.future._
+import connectors._
 import models.CurrentProfile
 import models.api.ScrsAddress
 import models.external.{IncorporationInfo, Officer}
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@ImplementedBy(classOf[IncorporationInformationService])
-trait IncorpInfoService {
-  def getRegisteredOfficeAddress()(implicit hc: HeaderCarrier, profile: CurrentProfile): OptionalResponse[ScrsAddress]
+class IncorporationInformationService @Inject()(val iiConnector: IncorporationInformationConnect,
+                                                val vatRegConnector: RegistrationConnector) extends IncorporationInfoSrv
 
-  def getOfficerList()(implicit headerCarrier: HeaderCarrier, profile: CurrentProfile): Future[Seq[Officer]]
+trait IncorporationInfoSrv {
+  val iiConnector: IncorporationInformationConnect
+  val vatRegConnector: RegistrationConnector
 
-  def getIncorporationInfo(txId: String)(implicit headerCarrier: HeaderCarrier): OptionalResponse[IncorporationInfo]
+  def getRegisteredOfficeAddress(implicit hc: HeaderCarrier, profile: CurrentProfile): OptionalResponse[ScrsAddress] = for {
+    address <- iiConnector.getRegisteredOfficeAddress(profile.transactionId)
+  } yield address: ScrsAddress // implicit conversion
 
-  def getCompanyName(regId: String, txId: String)(implicit hc: HeaderCarrier): Future[String]
-}
-
-class IncorporationInformationService @Inject()(iiConnector: IncorporationInformationConnector, vatRegConnector: VatRegistrationConnector)
-  extends IncorpInfoService with CommonService {
-
-  override def getRegisteredOfficeAddress()(implicit hc: HeaderCarrier, profile: CurrentProfile): OptionalResponse[ScrsAddress] =
-    for {
-      address <- iiConnector.getRegisteredOfficeAddress(profile.transactionId)
-    } yield address: ScrsAddress // implicit conversion
-
-  override def getOfficerList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[Officer]] =
-    (for {
-      officerList <- iiConnector.getOfficerList(profile.transactionId)
-    } yield officerList.items).getOrElse(Seq.empty[Officer])
+  def getOfficerList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[Officer]] = (for {
+    officerList <- iiConnector.getOfficerList(profile.transactionId)
+  } yield officerList.items).getOrElse(Seq.empty[Officer])
 
   def getCompanyName(regId: String, txId: String)(implicit hc: HeaderCarrier): Future[String] = {
     iiConnector.getCompanyName(regId, txId) map(_.\("company_name").as[String])
   }
 
-  def getIncorporationInfo(txId: String)(implicit headerCarrier: HeaderCarrier): OptionalResponse[IncorporationInfo] =
+  def getIncorporationInfo(txId: String)(implicit headerCarrier: HeaderCarrier): OptionalResponse[IncorporationInfo] = {
     vatRegConnector.getIncorporationInfo(txId)
+  }
 }

@@ -16,7 +16,6 @@
 
 package common
 
-
 object DateConversions {
   import scala.language.implicitConversions
 
@@ -25,5 +24,4 @@ object DateConversions {
 
   implicit def javaToJoda(javaLocalDate: java.time.LocalDate): org.joda.time.LocalDate =
     new org.joda.time.LocalDate(javaLocalDate.getYear, javaLocalDate.getMonthValue, javaLocalDate.getDayOfMonth)
-
 }

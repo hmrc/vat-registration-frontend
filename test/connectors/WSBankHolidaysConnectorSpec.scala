@@ -18,11 +18,15 @@ package connectors
 
 import helpers.VatRegSpec
 import org.joda.time.LocalDate
+import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
+
+import scala.concurrent.Future
 
 class WSBankHolidaysConnectorSpec extends VatRegSpec {
 
-  lazy val testConnector = new WSBankHolidaysConnector(mockWSHttp)
+  lazy val testConnector = new WSBankHolidaysConnector(mockWSHttp, mockConfig)
 
   "bankHolidays" must {
 
@@ -34,12 +38,12 @@ class WSBankHolidaysConnectorSpec extends VatRegSpec {
           BankHoliday("one", new LocalDate(2017, 3, 22)),
           BankHoliday("another", new LocalDate(2017, 3, 23))))
       )
-      mockHttpGET[Map[String, BankHolidaySet]]("any-url", testHolidaySet)
+
+      when(mockWSHttp.GET[Map[String, BankHolidaySet]](any())(any(), any(), any()))
+        .thenReturn(Future.successful(testHolidaySet))
 
       testConnector.bankHolidays("division1") returns BankHolidaySet("division1", List(
         BankHoliday("one", new LocalDate(2017, 3, 22))))
     }
-
   }
-
 }

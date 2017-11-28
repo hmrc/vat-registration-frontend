@@ -18,18 +18,22 @@ import java.time.LocalDate
 import javax.inject.Singleton
 
 import com.google.inject.name.Names
-import com.google.inject.{AbstractModule, Scopes, TypeLiteral}
+import com.google.inject.{AbstractModule, TypeLiteral}
 import common.Now
+import config._
+import config.startup.{VerifyCrypto, VerifyCryptoConfig}
 import connectors._
+import connectors.test.{TestRegistrationConnector, TestVatRegistrationConnector}
 import controllers.frs._
+import controllers.test.{FeatureSwitchController, FeatureSwitchCtrl}
+import features.iv.services.{IVService, IdentityVerificationService}
+import services._
+import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
-import uk.gov.hmrc.play.http.hooks.HttpHook
-import uk.gov.hmrc.play.http.ws.WSHttp
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import utils.{FeatureManager, FeatureSwitchManager, VATRegFeatureSwitch, VATRegFeatureSwitches}
 
-@Singleton
-class HmrcHttpClient extends WSHttp {
-  override val hooks: Seq[HttpHook] = NoneRequired
-}
+import scala.reflect.ClassTag
 
 @Singleton
 class LocalDateNow extends Now[LocalDate] {
@@ -39,32 +43,75 @@ class LocalDateNow extends Now[LocalDate] {
 class Module extends AbstractModule {
 
   override def configure(): Unit = {
-    bind(classOf[WSHttp]).to(classOf[HmrcHttpClient])
-
-    bind(new TypeLiteral[Now[LocalDate]] {})
-      .to(classOf[LocalDateNow])
-      .in(Scopes.SINGLETON)
-
-    bind(classOf[BankHolidaysConnector])
-      .annotatedWith(Names.named("fallback"))
-      .to(classOf[FallbackBankHolidaysConnector])
-    bind(classOf[BankHolidaysConnector])
-      .to(classOf[WSBankHolidaysConnector])
-
-
-    bind(classOf[ServicesConfig]).to(classOf[DefaultServicesConfig])
-
+    startupBindings()
+    bind(new TypeLiteral[Now[LocalDate]] {}).to(classOf[LocalDateNow]).asEagerSingleton()
+    hmrcDependencyBindings()
     bindControllers()
+    bindServices()
+    bindConnectors()
+    featureSwitches()
   }
 
-  def bindControllers() {
-    // FRS
-    bind(classOf[JoinFrsController]).to(classOf[JoinFrsControllerImpl])
-    bind(classOf[AnnualCostsInclusiveController]).to(classOf[AnnualCostsInclusiveControllerImpl])
-    bind(classOf[AnnualCostsLimitedController]).to(classOf[AnnualCostsLimitedControllerImpl])
-    bind(classOf[RegisterForFrsWithSectorController]).to(classOf[RegisterForFrsWithSectorControllerImpl])
-    bind(classOf[RegisterForFrsController]).to(classOf[RegisterForFrsControllerImpl])
-    bind(classOf[ConfirmBusinessSectorController]).to(classOf[ConfirmBusinessSectorControllerImpl])
-    bind(classOf[FrsStartDateController]).to(classOf[FrsStartDateControllerImpl])
+  private def startupBindings(): Unit = {
+    bind(classOf[VerifyCryptoConfig]).to(classOf[VerifyCrypto]).asEagerSingleton()
   }
+
+  private def hmrcDependencyBindings(): Unit = {
+    bind(classOf[AuthConnector]).to(classOf[FrontendAuthConnector]).asEagerSingleton()
+    bind(classOf[ServicesConfig]).to(classOf[DefaultServicesConfig]).asEagerSingleton()
+    bind(classOf[SessionCache]).to(classOf[VatSessionCache]).asEagerSingleton()
+    bind(classOf[ShortLivedHttpCaching]).to(classOf[VatShortLivedHttpCaching]).asEagerSingleton()
+    bind(classOf[ShortLivedCache]).to(classOf[VatShortLivedCache]).asEagerSingleton()
+    bind(classOf[WSHttp]).to(classOf[Http]).asEagerSingleton()
+  }
+
+  private def bindControllers(): Unit = {
+    bind(classOf[JoinFrsController]).to(classOf[JoinFrsControllerImpl]).asEagerSingleton()
+    bind(classOf[AnnualCostsInclusiveController]).to(classOf[AnnualCostsInclusiveControllerImpl]).asEagerSingleton()
+    bind(classOf[AnnualCostsLimitedController]).to(classOf[AnnualCostsLimitedControllerImpl]).asEagerSingleton()
+    bind(classOf[RegisterForFrsWithSectorController]).to(classOf[RegisterForFrsWithSectorControllerImpl]).asEagerSingleton()
+    bind(classOf[RegisterForFrsController]).to(classOf[RegisterForFrsControllerImpl]).asEagerSingleton()
+    bind(classOf[ConfirmBusinessSectorController]).to(classOf[ConfirmBusinessSectorControllerImpl]).asEagerSingleton()
+    bind(classOf[FrsStartDateController]).to(classOf[FrsStartDateControllerImpl]).asEagerSingleton()
+    bind(classOf[FeatureSwitchCtrl]).to(classOf[FeatureSwitchController]).asEagerSingleton()
+  }
+
+  private def bindServices(): Unit = {
+    bind(classOf[IncorporationInfoSrv]).to(classOf[IncorporationInformationService]).asEagerSingleton()
+    bind(classOf[DateService]).to(classOf[WorkingDaysService]).asEagerSingleton()
+    bind(classOf[S4LService]).to(classOf[PersistenceService]).asEagerSingleton()
+    bind(classOf[RegistrationService]).to(classOf[VatRegistrationService]).asEagerSingleton()
+    bind(classOf[PrePopService]).to(classOf[PrePopulationService]).asEagerSingleton()
+    bind(classOf[IVService]).to(classOf[IdentityVerificationService]).asEagerSingleton()
+    bind(classOf[CurrentProfileSrv]).to(classOf[CurrentProfileService]).asEagerSingleton()
+    bind(classOf[BankAccountReputationSrv]).to(classOf[BankAccountReputationService]).asEagerSingleton()
+  }
+
+  private def bindConnectors(): Unit = {
+    bind(classOf[AddressLookupConnect]).to(classOf[AddressLookupConnector]).asEagerSingleton()
+    bind(classOf[PPConnector]).to(classOf[PrePopConnector]).asEagerSingleton()
+    bind(classOf[TestRegistrationConnector]).to(classOf[TestVatRegistrationConnector]).asEagerSingleton()
+    bind(classOf[BankHolidaysConnector]).annotatedWith(Names.named("fallback")).to(classOf[FallbackBankHolidaysConnector]).asEagerSingleton()
+    bind(classOf[BankHolidaysConnector]).to(classOf[WSBankHolidaysConnector]).asEagerSingleton()
+    bind(classOf[IVConnector]).to(classOf[IdentityVerificationConnector]).asEagerSingleton()
+    bind(classOf[BankAccountReputationConnect]).to(classOf[BankAccountReputationConnector]).asEagerSingleton()
+    bind(classOf[CompanyRegistrationConnect]).to(classOf[CompanyRegistrationConnector]).asEagerSingleton()
+    bind(classOf[S4LConnect]).to(classOf[S4LConnector]).asEagerSingleton()
+    bind(classOf[KeystoreConnect]).to(classOf[KeystoreConnector]).asEagerSingleton()
+    bind(classOf[RegistrationConnector]).to(classOf[VatRegistrationConnector]).asEagerSingleton()
+    bind(classOf[IncorporationInformationConnect]).to(classOf[IncorporationInformationConnector]).asEagerSingleton()
+  }
+
+  private def featureSwitches(): Unit = {
+    bind(classOf[FeatureManager]).to(classOf[FeatureSwitchManager]).asEagerSingleton()
+    bind(classOf[VATRegFeatureSwitches]).to(classOf[VATRegFeatureSwitch]).asEagerSingleton()
+  }
+
+  //TODO: Investigate way of making bindings easier to read
+//  private def traitOf[A: ClassTag] = new TraitOf[A]
+//
+//  private class TraitOf[A: ClassTag] {
+//    import scala.reflect._
+//    def bindsToClassOf[B <: A](implicit tagA: ClassTag[A], tagB: ClassTag[B]): Unit = bind(tagA.runtimeClass).to(tagB.runtimeClass).asEagerSingleton()
+//  }
 }

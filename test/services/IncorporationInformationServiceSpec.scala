@@ -28,8 +28,9 @@ import org.scalatest.Inspectors
 class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors with VatRegistrationFixture {
 
   private class Setup {
-    val service = new IncorporationInformationService(mockIIConnector, mockRegConnector) {
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+    val service = new IncorporationInfoSrv {
+      override val iiConnector = mockIIConnector
+      override val vatRegConnector = mockRegConnector
     }
   }
 
@@ -63,7 +64,7 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors wit
 
       when(mockIIConnector.getRegisteredOfficeAddress(currentProfile().transactionId)).thenReturn(OptionT.pure(coHoRegisteredOfficeAddress))
 
-      service.getRegisteredOfficeAddress() returnsSome scrsAddress
+      service.getRegisteredOfficeAddress returnsSome scrsAddress
     }
   }
 
@@ -72,12 +73,12 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors wit
       mockKeystoreFetchAndGet("CompanyProfile", Some(CoHoCompanyProfile("status", "transactionId")))
       when(mockIIConnector.getOfficerList(currentProfile().transactionId)).thenReturn(OptionT.pure(OfficerList(Seq(officer))))
 
-      service.getOfficerList() returns Seq(officer)
+      service.getOfficerList returns Seq(officer)
     }
 
     "return am empty sequence when no OfficerList in keystore" in new Setup {
       when(mockIIConnector.getOfficerList(currentProfile().transactionId)).thenReturn(OptionT.pure(OfficerList(Seq())))
-      service.getOfficerList() returns Seq.empty[Officer]
+      service.getOfficerList returns Seq.empty[Officer]
     }
   }
 

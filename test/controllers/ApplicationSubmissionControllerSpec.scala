@@ -19,28 +19,28 @@ package controllers
 import cats.data.OptionT
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.CurrentProfile
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 
-import scala.concurrent.Future
-
 class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistrationFixture{
 
-  object Controller extends ApplicationSubmissionController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object Controller extends ApplicationSubmissionController(
+    ds,
+    mockVatRegistrationService,
+    mockAuthConnector,
+    mockKeystoreConnector,
+    mockS4LService
+  )
 
   val fakeRequest = FakeRequest(routes.ApplicationSubmissionController.show())
 
   s"GET ${routes.ApplicationSubmissionController.show()}" should {
     "display the submission confirmation page to the user" in {
       mockGetCurrentProfile()
-      when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
-      when(mockVatRegistrationService.getAckRef(Matchers.eq(validVatScheme.id))(any())).thenReturn(OptionT.some("testAckRef"))
+      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any())).thenReturn(OptionT.some("testAckRef"))
 
       callAuthorised(Controller.show) {
         _ includesText "Application submitted"

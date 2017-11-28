@@ -21,7 +21,7 @@ import helpers.VatRegSpec
 import models.api.Name
 import models.external.{CoHoRegisteredOfficeAddress, Officer, OfficerList}
 import org.joda.time.DateTime
-import uk.gov.hmrc.play.http.ws.WSHttp
+import config.WSHttp
 
 class IncorporationInformationConnectorSpec extends VatRegSpec {
 

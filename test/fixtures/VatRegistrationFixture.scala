@@ -33,6 +33,7 @@ import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.http.{ BadRequestException, HttpResponse, InternalServerException, NotFoundException, Upstream4xxResponse, Upstream5xxResponse }
 
 trait BaseFixture {
   //Test variables

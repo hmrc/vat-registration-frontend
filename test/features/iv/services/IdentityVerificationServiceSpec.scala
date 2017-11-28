@@ -24,13 +24,11 @@ import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.{CurrentProfile, S4LVatLodgingOfficer}
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerSecurityQuestionsView}
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
 
 import scala.concurrent.Future
 
@@ -38,9 +36,14 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
 
    class Setup(ivPassed:Boolean = true) {
       implicit val cp = currentProfile(ivPassed)
-      val service = new IdentityVerificationService(mockIdentityVerificationConnector, mockRegConnector, mockS4LService, mockVATFeatureSwitch) {
+      val service = new IVService {
         override val vrfeBaseUrl = """vrfe"""
         override val vrfeBaseUri: String = "/register-for-vat"
+        override val ORIGIN = "vat-registration-frontend"
+        override val s4lService = mockS4LService
+        override val ivConnector = mockIdentityVerificationConnector
+        override val vatRegFeatureSwitch = mockVATFeatureSwitch
+        override val vatRegistrationConnector = mockRegConnector
       }
   }
   val validS4LLodgingOfficer = S4LVatLodgingOfficer(
@@ -66,10 +69,10 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
     "successfully return a String (link) with feature switch off" in new Setup(false) {
       when(mockVATFeatureSwitch.useIvStub).thenReturn(disabledFeatureSwitch)
       when(mockS4LService.fetchAndGet[S4LVatLodgingOfficer]).thenReturn(Future.successful(Some(validS4LLodgingOfficer)))
-      when(mockS4LService.saveIv(Matchers.any())(Matchers.any(),Matchers.any())).thenReturn(Future.successful(CacheMap("",Map("IVJourneyID" -> Json.toJson("foo")))))
+      when(mockS4LService.saveIv(ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(CacheMap("",Map("IVJourneyID" -> Json.toJson("foo")))))
 
 
-      when(mockIdentityVerificationConnector.setupIVJourney(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Json.parse(
+      when(mockIdentityVerificationConnector.setupIVJourney(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Json.parse(
         """{
           |"link":"foo/bar/and/wizz",
           |"journeyLink" : "lifeisAJourney"
@@ -80,13 +83,15 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
 
       res mustBe """foo/bar/and/wizz"""
     }
+
     "successfully return a (link) with feature switch on" in new Setup(false) {
       when(mockVATFeatureSwitch.useIvStub).thenReturn(enabledFeatureSwitch)
       when(mockS4LService.fetchAndGet[S4LVatLodgingOfficer]).thenReturn(Future.successful(Some(validS4LLodgingOfficer)))
-      when(mockS4LService.saveIv(Matchers.any())(Matchers.any(),Matchers.any())).thenReturn(Future.successful(CacheMap("",Map("IVJourneyID" -> Json.toJson("foo")))))
+      when(mockS4LService.saveIv(ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(CacheMap("",Map("IVJourneyID" -> Json.toJson("foo")))))
       val res = await(service.setupAndGetIVJourneyURL)
       res.contains("""/test-iv-response/""") mustBe true
     }
+
     "return string to formername controller if cp.ivPassed is already true" in new Setup(true) {
       val res = await(service.setupAndGetIVJourneyURL)
       res mustBe controllers.vatLodgingOfficer.routes.FormerNameController.show().url
@@ -94,20 +99,20 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
   }
   "getIVJourneyID" should {
     "successfully return a future option string of journeyID" in new Setup {
-      when(mockS4LService.fetchIv()(Matchers.any(),Matchers.any())).thenReturn(Future.successful(Some("fooJourneyID")))
+      when(mockS4LService.fetchIv(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(Some("fooJourneyID")))
 
       val res = await(service.getIVJourneyID)
       res mustBe Some("fooJourneyID")
     }
     "return None when S4L returns None" in new Setup {
-      when(mockS4LService.fetchIv()(Matchers.any(),Matchers.any())).thenReturn(Future.successful(None))
+      when(mockS4LService.fetchIv(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val res = await(service.getIVJourneyID)
       res mustBe None
     }
   }
   "saveJourneyID" should {
     "successfully save journeyID" in new Setup{
-      when(mockS4LService.saveIv(Matchers.any())(Matchers.any(),Matchers.any())).thenReturn(Future.successful(CacheMap("",Map("IVJourneyID" -> Json.toJson("foo")))))
+      when(mockS4LService.saveIv(ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(CacheMap("",Map("IVJourneyID" -> Json.toJson("foo")))))
       val res = await(service.saveJourneyID(Json.parse("""{"journeyLink":"/foo"}""")))
       res mustBe CacheMap("",Map("IVJourneyID" -> Json.toJson("foo")))
     }
@@ -120,22 +125,22 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
   }
   "setIvStatus" should {
     "return true when iv is success" in new Setup {
-      when(mockRegConnector.updateIVStatus(Matchers.any(),Matchers.any())(Matchers.any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockRegConnector.updateIVStatus(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(validHttpResponse))
       val res = await(service.setIvStatus(IVResult.Success))
       res mustBe Some(IVResult.Success)
     }
     "return None if a non valid http response is returned from updateIVStatus but iv result was success" in new Setup{
-      when(mockRegConnector.updateIVStatus(Matchers.any(),Matchers.any())(Matchers.any())).thenReturn(Future.failed(new Exception))
+      when(mockRegConnector.updateIVStatus(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.failed(new Exception))
       val res = await(service.setIvStatus(IVResult.Success))
       res mustBe None
     }
     "return failedIV status if result was not a success" in new Setup {
-      when(mockRegConnector.updateIVStatus(Matchers.any(),Matchers.any())(Matchers.any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockRegConnector.updateIVStatus(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(validHttpResponse))
       val res = await(service.setIvStatus(IVResult.FailedIV))
       res mustBe Some(IVResult.FailedIV)
     }
     "return None if a non valid http response is returned from updateIVstatus and iv result is not success" in new Setup {
-      when(mockRegConnector.updateIVStatus(Matchers.any(),Matchers.any())(Matchers.any())).thenReturn(Future.failed(new Exception))
+      when(mockRegConnector.updateIVStatus(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.failed(new Exception))
       val res = await(service.setIvStatus(IVResult.FailedIV))
       res mustBe None
     }
@@ -143,8 +148,8 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
   }
   "getJourneyIdAndJourneyOutcome" should {
     "return iv success if journeyID exists and iv status is success" in new Setup {
-      when(mockS4LService.fetchIv()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("fooJourneyID")))
-      when(mockIdentityVerificationConnector.getJourneyOutcome(Matchers.any())(Matchers.any())).thenReturn(Future.successful(IVResult.Success))
+      when(mockS4LService.fetchIv(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("fooJourneyID")))
+      when(mockIdentityVerificationConnector.getJourneyOutcome(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(IVResult.Success))
 
       val res = await(service.getJourneyIdAndJourneyOutcome)
       res mustBe IVResult.Success

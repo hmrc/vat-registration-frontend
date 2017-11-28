@@ -45,10 +45,10 @@ package models.view.vatLodgingOfficer {
 
 package controllers.vatLodgingOfficer {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
   import cats.data.OptionT
-  import connectors.AddressLookupConnect
+  import connectors.{AddressLookupConnect, KeystoreConnect}
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatLodgingOfficer.OfficerHomeAddressForm
   import models.api.ScrsAddress
@@ -56,14 +56,17 @@ package controllers.vatLodgingOfficer {
   import play.api.Logger
   import play.api.mvc.{Action, AnyContent}
   import services._
-  import uk.gov.hmrc.play.http.HeaderCarrier
+  import uk.gov.hmrc.http.HeaderCarrier
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies)
-                                              (implicit s4l: S4LService,
-                                               vrs: VatRegistrationService,
-                                               prePopService: PrePopulationService,
-                                               alfConnector: AddressLookupConnect)
-    extends VatRegistrationController(ds) with CommonService with SessionProfile {
+  @Singleton
+  class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies,
+                                               val keystoreConnector: KeystoreConnect,
+                                               val authConnector: AuthConnector,
+                                               implicit val s4l: S4LService,
+                                               implicit val vrs: RegistrationService,
+                                               implicit val prePopService: PrePopService,
+                                               implicit val alfConnector: AddressLookupConnect) extends VatRegistrationController(ds)  with SessionProfile {
 
     import cats.syntax.flatMap._
     import models.AddressLookupJourneyId.homeAddressJourneyId
@@ -71,8 +74,7 @@ package controllers.vatLodgingOfficer {
     private val form = OfficerHomeAddressForm.form
     private val addressListKey = "OfficerAddressList"
 
-    private def fetchAddressList()(implicit headerCarrier: HeaderCarrier) =
-      OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]](addressListKey))
+    private def fetchAddressList()(implicit headerCarrier: HeaderCarrier) = OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]](addressListKey))
 
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
@@ -80,9 +82,9 @@ package controllers.vatLodgingOfficer {
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
               for {
-                addresses <- prePopService.getOfficerAddressList()
-                _ <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
-                res <- viewModel[OfficerHomeAddressView]().fold(form)(form.fill)
+                addresses <- prePopService.getOfficerAddressList
+                _         <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
+                res       <- viewModel[OfficerHomeAddressView]().fold(form)(form.fill)
               } yield Ok(features.officers.views.html.officer_home_address(res, addresses))
             }
           }

@@ -19,7 +19,7 @@ package builders
 import java.util.UUID
 
 import models.UserIDs
-import org.mockito.Matchers
+import org.mockito.{ArgumentMatchers => Matchers}
 import org.mockito.Mockito._
 import play.api.mvc._
 import play.api.test.FakeRequest
@@ -34,7 +34,7 @@ object AuthBuilder extends AuthBuilder {}
 trait AuthBuilder {
 
   def mockAuthorisedUser(userId: String, accounts: Accounts = Accounts())(implicit mockAuthConnector: AuthConnector) {
-    when(mockAuthConnector.currentAuthority(Matchers.any())) thenReturn {
+    when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())) thenReturn {
       Future.successful(Some(createUserAuthority(userId, accounts)))
     }
   }
@@ -55,14 +55,14 @@ trait AuthBuilder {
 
   def submitWithUnauthorisedUser(action: Action[AnyContent], request: FakeRequest[AnyContentAsFormUrlEncoded], mockAuthConnector: AuthConnector)
                                 (test: Future[Result] => Any) {
-    when(mockAuthConnector.currentAuthority(Matchers.any())).thenReturn(Future.successful(None))
+    when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
     val result = action.apply(SessionBuilder.updateRequestFormWithSession(request, ""))
     test(result)
   }
 
   def submitWithUnauthorisedUser(action: Action[AnyContent], request: FakeRequest[AnyContentAsFormUrlEncoded])
                                 (test: Future[Result] => Any)(implicit mockAuthConnector: AuthConnector) {
-    when(mockAuthConnector.currentAuthority(Matchers.any())).thenReturn(Future.successful(None))
+    when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
     val result = action.apply(SessionBuilder.updateRequestFormWithSession(request, ""))
     test(result)
   }

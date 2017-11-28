@@ -45,7 +45,7 @@ object TestIVForm {
   val form = Form(
     mapping(
       "journeyId" -> textMapping()("journeyId").verifying(mandatoryText()("journeyId")),
-      "ivResult" -> ivResult
+      "ivResult"  -> ivResult
     )(TestIVResponse.apply)(TestIVResponse.unapply)
   )
 }

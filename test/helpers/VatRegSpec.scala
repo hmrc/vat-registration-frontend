@@ -35,13 +35,13 @@ import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.mvc._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import uk.gov.hmrc.play.http.HeaderCarrier
 import org.mockito.Mockito.when
-import org.mockito.Matchers
+import org.mockito.{ArgumentMatchers => Matchers}
 import utils.{BooleanFeatureSwitch, FeatureManager, VATRegFeatureSwitch}
 
 import scala.concurrent.{Await, Awaitable, Future}
 import scala.concurrent.duration._
+import uk.gov.hmrc.http.HeaderCarrier
 
 class VatRegSpec extends PlaySpec with OneAppPerSuite
   with MockitoSugar with VatMocks with LoginFixture with Inside with Inspectors

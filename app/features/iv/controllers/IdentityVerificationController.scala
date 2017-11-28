@@ -16,23 +16,25 @@
 
 package controllers.iv
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import common.enums.IVResult
-import connectors.IdentityVerificationConnector
+import connectors.{IVConnector, KeystoreConnect}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import features.iv.services.IdentityVerificationService
-import play.api.Logger
-import play.api.mvc.{Action, AnyContent, Call}
-import services.{CommonService, CurrentProfileService, SessionProfile}
+import features.iv.services.IVService
+import play.api.mvc.{Action, AnyContent}
+import services.{CurrentProfileSrv, SessionProfile}
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
+@Singleton
 class IdentityVerificationController @Inject()(ds: CommonPlayDependencies,
-                                               ivConnector: IdentityVerificationConnector,
-                                               ivService: IdentityVerificationService,
-                                               cpService:CurrentProfileService)
-  extends VatRegistrationController(ds) with CommonService with SessionProfile {
+                                               ivConnector: IVConnector,
+                                               ivService: IVService,
+                                               cpService: CurrentProfileSrv,
+                                               val authConnector: AuthConnector,
+                                               val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
 
   def redirectToIV: Action[AnyContent] = authorised.async {
     implicit user =>
@@ -105,12 +107,12 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies,
         withCurrentProfile { implicit profile =>
           ivService.getJourneyIdAndJourneyOutcome.flatMap { res => {
             ivService.setIvStatus(res).map {
-              case Some(IVResult.Timeout) => Redirect(controllers.iv.routes.IdentityVerificationController.timeoutIV())
+              case Some(IVResult.Timeout)              => Redirect(controllers.iv.routes.IdentityVerificationController.timeoutIV())
               case Some(IVResult.InsufficientEvidence) => Redirect(controllers.iv.routes.IdentityVerificationController.unableToConfirmIdentity())
-              case Some(IVResult.FailedIV) => Redirect(controllers.iv.routes.IdentityVerificationController.failedIV())
-              case Some(IVResult.LockedOut) => Redirect(controllers.iv.routes.IdentityVerificationController.lockedOut())
-              case Some(IVResult.UserAborted) => Redirect(controllers.iv.routes.IdentityVerificationController.userAborted())
-              case _ => Redirect(controllers.callbacks.routes.SignInOutController.errorShow())
+              case Some(IVResult.FailedIV)             => Redirect(controllers.iv.routes.IdentityVerificationController.failedIV())
+              case Some(IVResult.LockedOut)            => Redirect(controllers.iv.routes.IdentityVerificationController.lockedOut())
+              case Some(IVResult.UserAborted)          => Redirect(controllers.iv.routes.IdentityVerificationController.userAborted())
+              case _                                   => Redirect(controllers.callbacks.routes.SignInOutController.errorShow())
             }
           }
             }

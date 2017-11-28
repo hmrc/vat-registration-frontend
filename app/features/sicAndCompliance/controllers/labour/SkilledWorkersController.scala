@@ -16,18 +16,22 @@
 
 package controllers.sicAndCompliance.labour {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.sicAndCompliance.labour.SkilledWorkersForm
   import models.view.sicAndCompliance.labour.SkilledWorkers
   import play.api.mvc.{Action, AnyContent}
-  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
+  @Singleton
   class SkilledWorkersController @Inject()(ds: CommonPlayDependencies,
-                                           implicit val vrs: VatRegistrationService,
-                                           implicit val s4lService: S4LService)
-    extends VatRegistrationController(ds) with CommonService with SessionProfile {
+                                           val keystoreConnector: KeystoreConnect,
+                                           val authConnector: AuthConnector,
+                                           implicit val vrs: RegistrationService,
+                                           implicit val s4lService: S4LService) extends VatRegistrationController(ds) with SessionProfile {
 
     val form = SkilledWorkersForm.form
 
@@ -50,7 +54,7 @@ package controllers.sicAndCompliance.labour {
               badForm => BadRequest(features.sicAndCompliance.views.html.labour.skilled_workers(badForm)).pure,
               view => for {
                 _ <- save(view)
-                _ <- vrs.submitSicAndCompliance()
+                _ <- vrs.submitSicAndCompliance
               } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()))
           }
     }

@@ -23,6 +23,7 @@ import org.scalatest.mockito.MockitoSugar
 import services._
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.audit.model.Audit
+import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 trait VatMocks
@@ -43,15 +44,16 @@ trait VatMocks
   implicit lazy val mockPPService = mock[PrePopulationService]
   implicit lazy val mockIIService = mock[IncorporationInformationService]
   implicit lazy val mockIIConnector = mock[IncorporationInformationConnector]
-  implicit lazy val mockConfigConnector = mock[ConfigConnect]
+  implicit lazy val mockConfigConnector = mock[ConfigConnector]
   implicit lazy val mockVatRegistrationService = mock[VatRegistrationService]
   implicit lazy val mockAddressLookupConnector = mock[AddressLookupConnect]
   implicit lazy val mockDateService = mock[DateService]
-  implicit lazy val mockIncorpInfoService = mock[IncorpInfoService]
+  implicit lazy val mockIncorpInfoService = mock[IncorporationInfoSrv]
   implicit lazy val mockIdentityVerificationConnector = mock[IdentityVerificationConnector]
   implicit lazy val mockBankAccountReputationService = mock[BankAccountReputationService]
   implicit lazy val mockBankAccountReputationConnector = mock[BankAccountReputationConnector]
   implicit lazy val mockIVService = mock[IdentityVerificationService]
+  implicit lazy val mockConfig = mock[ServicesConfig]
 
   def resetMocks() {
     reset(

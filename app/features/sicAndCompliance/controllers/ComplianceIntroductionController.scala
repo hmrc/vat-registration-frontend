@@ -16,22 +16,24 @@
 
 package controllers.sicAndCompliance {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
   import cats.data.OptionT
-  import connectors.KeystoreConnector
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import models.ComplianceQuestions
   import models.view.test.SicStub
   import play.api.mvc._
   import services.{S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
   import scala.concurrent.Future
 
-  class ComplianceIntroductionController @Inject()(s4LService: S4LService, ds: CommonPlayDependencies)
-    extends VatRegistrationController(ds) with SessionProfile {
-
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
+  @Singleton
+  class ComplianceIntroductionController @Inject()(s4LService: S4LService,
+                                                   ds: CommonPlayDependencies,
+                                                   val authConnector: AuthConnector,
+                                                   val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
 
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
@@ -48,14 +50,12 @@ package controllers.sicAndCompliance {
         implicit request =>
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
-              OptionT(s4LService.fetchAndGet[SicStub]()).map(
+              OptionT(s4LService.fetchAndGet[SicStub]).map(
                 ss =>
                   ComplianceQuestions(ss.sicCodes.toArray))
                 .fold(controllers.test.routes.SicStubController.show())(_.firstQuestion).map(Redirect)
             }
           }
     }
-
   }
-
 }

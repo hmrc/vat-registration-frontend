@@ -24,7 +24,7 @@ import play.api.libs.ws.WSCookie
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.crypto.{CompositeSymmetricCrypto, Crypted, PlainText}
-import uk.gov.hmrc.play.http.SessionKeys
+import uk.gov.hmrc.http.SessionKeys
 
 object SessionBuilder extends SessionBuilder {}
 

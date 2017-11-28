@@ -16,28 +16,31 @@
 
 package controllers.vatFinancials.vatBankAccount
 
-import connectors.KeystoreConnector
 import controllers.vatFinancials
 import controllers.vatFinancials.EstimateVatTurnoverKey
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.{CurrentProfile, S4LVatFinancials}
+import models.S4LVatFinancials
 import models.view.vatFinancials.EstimateVatTurnover
 import models.view.vatFinancials.vatBankAccount.CompanyBankAccountDetails
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.Upstream5xxResponse
+import uk.gov.hmrc.http.Upstream5xxResponse
 
 import scala.concurrent.Future
 
 class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object Controller extends CompanyBankAccountDetailsController(mockBankAccountReputationService, ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-  }
+  object Controller extends CompanyBankAccountDetailsController(
+    mockBankAccountReputationService,
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(vatFinancials.vatBankAccount.routes.CompanyBankAccountDetailsController.show())
   val validBankAccountFormData = Seq(
@@ -73,7 +76,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[CompanyBankAccountDetails]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(validVatScheme.pure)
 
       mockGetCurrentProfile()
 
@@ -85,7 +88,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[CompanyBankAccountDetails]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
 
       mockGetCurrentProfile()
 
@@ -111,7 +114,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(validVatFlatRateScheme.pure)
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatFinancials())
-      when(mockBankAccountReputationService.bankDetailsModulusCheck(Matchers.any())(Matchers.any()))
+      when(mockBankAccountReputationService.bankDetailsModulusCheck(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(true))
       mockGetCurrentProfile()
       submitAuthorised(Controller.submit(),
@@ -128,7 +131,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(validVatFlatRateScheme.pure)
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatFinancials())
-      when(mockBankAccountReputationService.bankDetailsModulusCheck(Matchers.any())(Matchers.any()))
+      when(mockBankAccountReputationService.bankDetailsModulusCheck(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(true))
       mockGetCurrentProfile()
       submitAuthorised(Controller.submit(),
@@ -140,13 +143,13 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
     "redirect to start of FRS flow with valid Company Bank Account Details and no turnover estimate found" in {
       mockKeystoreFetchAndGet[Long](EstimateVatTurnoverKey.lastKnownValueKey, Some(0))
       save4laterExpectsSave[CompanyBankAccountDetails]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
       save4laterReturnsNoViewModel[EstimateVatTurnover]()
       when(mockVatRegistrationService.submitVatFinancials()(any(), any())).thenReturn(validVatFinancials.pure)
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(validVatFlatRateScheme.pure)
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatFinancials())
-      when(mockBankAccountReputationService.bankDetailsModulusCheck(Matchers.any())(Matchers.any()))
+      when(mockBankAccountReputationService.bankDetailsModulusCheck(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(true))
       mockGetCurrentProfile()
       submitAuthorised(Controller.submit(),
@@ -164,7 +167,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
 
     "return 400 with invalid Company Bank Account Details entered" in {
      mockGetCurrentProfile()
-      when(mockBankAccountReputationService.bankDetailsModulusCheck(Matchers.any())(Matchers.any()))
+      when(mockBankAccountReputationService.bankDetailsModulusCheck(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(false))
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {
@@ -174,7 +177,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
 
     "an upstream5xxexception should be encountered if a 500 is recieved from BARS" in {
       mockGetCurrentProfile()
-      when(mockBankAccountReputationService.bankDetailsModulusCheck(Matchers.any())(Matchers.any()))
+      when(mockBankAccountReputationService.bankDetailsModulusCheck(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.failed(Upstream5xxResponse("",500,500)))
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody(validBankAccountFormData: _*)) {

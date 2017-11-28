@@ -21,9 +21,7 @@ import play.api.test.FakeRequest
 
 class FeedbackControllerSpec extends VatRegSpec {
 
-  object TestController extends FeedbackController(ds) {
-    override val authConnector = mockAuthConnector
-  }
+  object TestController extends FeedbackController(ds, mockAuthConnector)
 
   val fakeRequest = FakeRequest(routes.FeedbackController.show())
 

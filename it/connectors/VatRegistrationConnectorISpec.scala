@@ -18,14 +18,13 @@ package connectors
 
 import common.enums.VatRegStatus
 import models.api.VatScheme
-import play.api.mvc.Call
 import support.AppAndStubs
-import uk.gov.hmrc.play.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.Upstream5xxResponse
 import uk.gov.hmrc.play.test.UnitSpec
 
 class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
 
-  def vatregConnector: RegistrationConnector = app.injector.instanceOf(classOf[RegistrationConnector])
+  def vatregConnector: RegistrationConnector = app.injector.instanceOf(classOf[VatRegistrationConnector])
 
   "creating new Vat Registration" should {
 
@@ -34,7 +33,7 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
         given()
           .vatRegistrationFootprint.exists()
 
-        await(vatregConnector.createNewRegistration()) shouldBe VatScheme(id="1", status = VatRegStatus.draft)
+        await(vatregConnector.createNewRegistration) shouldBe VatScheme(id="1", status = VatRegStatus.draft)
       }
     }
 
@@ -44,7 +43,7 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
           .vatRegistrationFootprint.fails
 
         intercept[Upstream5xxResponse] {
-          await(vatregConnector.createNewRegistration())
+          await(vatregConnector.createNewRegistration)
         }
       }
     }

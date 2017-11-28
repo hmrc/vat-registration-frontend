@@ -46,27 +46,27 @@ package models.view.vatLodgingOfficer {
 }
 package controllers.vatLodgingOfficer {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
-  import connectors.{AddressLookupConnect, KeystoreConnector}
+  import connectors.{AddressLookupConnect, KeystoreConnect}
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatLodgingOfficer.PreviousAddressForm
   import models.view.vatLodgingOfficer.PreviousAddressView
   import play.api.data.Form
   import play.api.mvc.{Action, AnyContent}
-  import services.{S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-
-  class PreviousAddressController @Inject()(ds: CommonPlayDependencies)
-                                           (implicit s4l: S4LService,
-                                            vrs: VatRegistrationService,
-                                            alfConnector: AddressLookupConnect)
-    extends VatRegistrationController(ds) with SessionProfile {
+  @Singleton
+  class PreviousAddressController @Inject()(ds: CommonPlayDependencies,
+                                            val keystoreConnector: KeystoreConnect,
+                                            val authConnector: AuthConnector,
+                                            implicit val s4l: S4LService,
+                                            implicit val vrs: RegistrationService,
+                                            implicit val alfConnector: AddressLookupConnect) extends VatRegistrationController(ds) with SessionProfile {
 
     import cats.syntax.flatMap._
     import models.AddressLookupJourneyId.previousAddressId
-
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
 
     val form: Form[PreviousAddressView] = PreviousAddressForm.form
 
@@ -92,7 +92,7 @@ package controllers.vatLodgingOfficer {
                   ifTrue = alfConnector.getOnRampUrl(routes.PreviousAddressController.acceptFromTxm()),
                   ifFalse = for {
                     _ <- save(PreviousAddressView(true))
-                    _ <- vrs.submitVatLodgingOfficer()
+                    _ <- vrs.submitVatLodgingOfficer
                   } yield controllers.vatContact.ppob.routes.PpobController.show()
                 ).map(Redirect)
               )
@@ -107,8 +107,8 @@ package controllers.vatLodgingOfficer {
             ivPassedCheck {
               for {
                 address <- alfConnector.getAddress(id)
-                _ <- save(PreviousAddressView(false, Some(address)))
-                _ <- vrs.submitVatLodgingOfficer()
+                _       <- save(PreviousAddressView(false, Some(address)))
+                _       <- vrs.submitVatLodgingOfficer
               } yield Redirect(controllers.vatContact.ppob.routes.PpobController.show())
             }
           }

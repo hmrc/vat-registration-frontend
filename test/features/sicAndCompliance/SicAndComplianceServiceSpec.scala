@@ -20,7 +20,7 @@ import connectors.{CompanyRegistrationConnector, KeystoreConnector, VatRegistrat
 import helpers.VatSpec
 import models.S4LVatSicAndCompliance
 import org.mockito.Mockito._
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 
 import scala.concurrent.Future
 

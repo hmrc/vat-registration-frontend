@@ -17,7 +17,7 @@
 package models.view.frs {
 
   import models._
-  import models.api.{VatFlatRateScheme, VatScheme}
+  import models.api.VatScheme
   import play.api.libs.json.Json
 
   case class AnnualCostsLimitedView(selection: String)
@@ -46,29 +46,27 @@ package controllers.frs {
 
   import javax.inject.Inject
 
-  import config.FrontendAuthConnector
-  import connectors.KeystoreConnector
+  import connectors.KeystoreConnect
   import controllers.VatRegistrationControllerNoAux
   import forms.frs.AnnualCostsLimitedFormFactory
   import models.view.frs.AnnualCostsLimitedView
   import play.api.data.Form
   import play.api.i18n.MessagesApi
   import play.api.mvc.{Action, AnyContent}
-  import services.{SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, SessionProfile}
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
   import scala.concurrent.Future
 
   class AnnualCostsLimitedControllerImpl @Inject()(val messagesApi: MessagesApi,
-                                                   val service: VatRegistrationService) extends AnnualCostsLimitedController {
-    override val keystoreConnector: KeystoreConnector = KeystoreConnector
-    override val authConnector: AuthConnector = FrontendAuthConnector
-  }
+                                                   val service: RegistrationService,
+                                                   val authConnector: AuthConnector,
+                                                   val keystoreConnector: KeystoreConnect) extends AnnualCostsLimitedController
 
   trait AnnualCostsLimitedController extends VatRegistrationControllerNoAux with SessionProfile {
 
-    val keystoreConnector: KeystoreConnector
-    val service: VatRegistrationService
+    val keystoreConnector: KeystoreConnect
+    val service: RegistrationService
 
     val form: Form[AnnualCostsLimitedView] = AnnualCostsLimitedFormFactory.form()
 

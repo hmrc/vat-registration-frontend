@@ -48,38 +48,41 @@ package models.view.vatLodgingOfficer {
 
 package controllers.vatLodgingOfficer{
 
-import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
-import cats.data.OptionT
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.vatLodgingOfficer.CompletionCapacityForm
-import models.ModelKeys._
-import models.api.CompletionCapacity
-import models.external.Officer
-import models.view.vatLodgingOfficer.CompletionCapacityView
-import play.api.mvc.{Action, AnyContent}
-import services._
-import uk.gov.hmrc.play.http.HeaderCarrier
+  import cats.data.OptionT
+  import connectors.KeystoreConnect
+  import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import forms.vatLodgingOfficer.CompletionCapacityForm
+  import models.ModelKeys._
+  import models.api.CompletionCapacity
+  import models.external.Officer
+  import models.view.vatLodgingOfficer.CompletionCapacityView
+  import play.api.mvc.{Action, AnyContent}
+  import services._
+  import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
-                                            (implicit s4l: S4LService,
-                                             vrs: VatRegistrationService,
-                                             prePopService: PrePopulationService)
-  extends VatRegistrationController(ds) with CommonService with SessionProfile {
+  @Singleton
+  class CompletionCapacityController @Inject()(ds: CommonPlayDependencies,
+                                               implicit val s4l: S4LService,
+                                               implicit val vrs: RegistrationService,
+                                               prePopService: PrePopService,
+                                               val authConnector: AuthConnector,
+                                               val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
 
     private val form = CompletionCapacityForm.form
 
-    private def fetchOfficerList()(implicit hc: HeaderCarrier) =
-      OptionT(keystoreConnector.fetchAndGet[Seq[Officer]](OFFICER_LIST_KEY))
+    private def fetchOfficerList()(implicit hc: HeaderCarrier) = OptionT(keystoreConnector.fetchAndGet[Seq[Officer]](OFFICER_LIST_KEY))
 
     def show: Action[AnyContent] = authorised.async{
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
             for {
-              officerList <- prePopService.getOfficerList()
-              _ <- keystoreConnector.cache(OFFICER_LIST_KEY, officerList)
-              res <- viewModel[CompletionCapacityView]().fold(form)(form.fill)
+              officerList <- prePopService.getOfficerList
+              _           <- keystoreConnector.cache(OFFICER_LIST_KEY, officerList)
+              res         <- viewModel[CompletionCapacityView]().fold(form)(form.fill)
             } yield Ok(features.officers.views.html.completion_capacity(res, officerList))
           }
     }
@@ -92,14 +95,13 @@ class CompletionCapacityController @Inject()(ds: CommonPlayDependencies)
               badForm => fetchOfficerList().getOrElse(Seq()).map(
                 officerList => BadRequest(features.officers.views.html.completion_capacity(badForm, officerList))),
               view => for {
-                officerSeq <- fetchOfficerList().getOrElse(Seq())
-                selectedOfficer = officerSeq.find(_.name.id == view.id).getOrElse(Officer.empty)
-                _ <- keystoreConnector.cache(REGISTERING_OFFICER_KEY, selectedOfficer)
-                _ <- save(CompletionCapacityView(view.id, Some(CompletionCapacity(selectedOfficer.name, selectedOfficer.role))))
+                officerSeq      <- fetchOfficerList().getOrElse(Seq())
+                selectedOfficer =  officerSeq.find(_.name.id == view.id).getOrElse(Officer.empty)
+                _               <- keystoreConnector.cache(REGISTERING_OFFICER_KEY, selectedOfficer)
+                _               <- save(CompletionCapacityView(view.id, Some(CompletionCapacity(selectedOfficer.name, selectedOfficer.role))))
               } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show()))
           }
     }
-
   }
 }
 package forms.vatLodgingOfficer {

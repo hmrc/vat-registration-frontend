@@ -14,56 +14,33 @@
  * limitations under the License.
  */
 
-/*
- * Copyright 2017 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+import uk.gov.hmrc.http.HeaderCarrier
 
-import uk.gov.hmrc.play.http.HeaderCarrier
-
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 package services.frs {
 
   import com.google.inject.Inject
   import common.ErrorUtil.fail
-  import connectors.VatRegistrationConnector
+  import connectors.RegistrationConnector
   import models._
   import models.api.{VatFlatRateScheme, VatScheme}
-  import models.view.frs._
   import models.view.frs.AnnualCostsLimitedView.{NO, YES, YES_WITHIN_12_MONTHS}
+  import models.view.frs._
   import services.{RegistrationService, S4LService}
+  import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-  class FlatRateServiceImpl @Inject()(
-                                       injS4LService: S4LService,
-                                       injVatService: RegistrationService,
-                                       injVatRegConnector: VatRegistrationConnector
-                                     ) extends FlatRateService {
-    override val s4LService = injS4LService
-    override val vatService = injVatService
-    override val vatRegConnector = injVatRegConnector
-  }
+  class FlatRateServiceImpl @Inject()(val s4LService: S4LService,
+                                      val vatService: RegistrationService,
+                                      val vatRegConnector: RegistrationConnector) extends FlatRateService
 
   trait FlatRateService  {
-
     val s4LService: S4LService
     val vatService: RegistrationService
-    val vatRegConnector: VatRegistrationConnector
+    val vatRegConnector: RegistrationConnector
 
     private val flatRateSchemeS4LKey: S4LKey[S4LFlatRateScheme] = S4LFlatRateScheme.vatFlatRateScheme
-    private val LIMITED_COST_TRADER_THRESHOLD = 1000L
+    private val LIMITED_COST_TRADER_THRESHOLD                   = 1000L
 
     type SavedFlatRateScheme = Either[S4LFlatRateScheme, VatFlatRateScheme]
 
@@ -71,7 +48,7 @@ package services.frs {
       vatService.fetchFinancials map {
         _.estimateVatTurnover match {
           case Some(estimate) => Math.round(estimate.vatTurnoverEstimate * 0.02)
-          case None => 0L
+          case None           => 0L
         }
       }
     }
@@ -79,10 +56,10 @@ package services.frs {
     def fetchFlatRateScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[S4LFlatRateScheme] = {
       fetchFRSFromS4L flatMap {
         case Some(frs) => Future.successful(frs)
-        case None => vatService.getVatScheme map { vatScheme =>
+        case None      => vatService.getVatScheme map { vatScheme =>
           vatScheme.vatFlatRateScheme match {
             case Some(_) => frsApiToView(vatScheme)
-            case None => S4LFlatRateScheme()
+            case None    => S4LFlatRateScheme()
           }
         }
       }
@@ -102,19 +79,18 @@ package services.frs {
 
       def resolveStartDate(startDateView: FrsStartDateView) = {
         startDateView.dateType match {
-          case FrsStartDateView.VAT_REGISTRATION_DATE => {
+          case FrsStartDateView.VAT_REGISTRATION_DATE =>
             // TODO - AUX start date logic used viewModel[StartDateView] to get start date from trading details - this needs validating as the right way to do it :-(
             // Default to existing value for now
             Future.successful(startDateView)
-          }
           case _ => Future.successful(startDateView)
         }
       }
 
       for {
-        frs <- fetchFlatRateScheme
+        frs          <- fetchFlatRateScheme
         resolvedView <- resolveStartDate(startDateView)
-        savedFRS <- saveFRS(frs.copy(frsStartDate = Some(resolvedView)))
+        savedFRS     <- saveFRS(frs.copy(frsStartDate = Some(resolvedView)))
       } yield savedFRS
     }
 
@@ -127,9 +103,8 @@ package services.frs {
                               (implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
       fetchFlatRateScheme flatMap { frs =>
         annualCostsLimitedView.selection match {
-          case NO => saveFRS(frs.copy(annualCostsLimited = Some(annualCostsLimitedView)))
-          case YES | YES_WITHIN_12_MONTHS =>
-            saveFRS(frs.copy(annualCostsLimited = Some(annualCostsLimitedView), frsStartDate = None, categoryOfBusiness = None))
+          case NO                         => saveFRS(frs.copy(annualCostsLimited = Some(annualCostsLimitedView)))
+          case YES | YES_WITHIN_12_MONTHS => saveFRS(frs.copy(annualCostsLimited = Some(annualCostsLimitedView), frsStartDate = None, categoryOfBusiness = None))
         }
       }
     }
@@ -141,47 +116,43 @@ package services.frs {
     @Deprecated
     // TODO remove once other FRS controllers are refactored to not use this
     def submitVatFlatRateScheme()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatFlatRateScheme] = {
-      def merge(fresh: Option[S4LFlatRateScheme], vs: VatScheme): VatFlatRateScheme =
-        fresh.fold(
-          vs.vatFlatRateScheme.getOrElse(throw fail("VatFlatRateScheme"))
-        )(s4l => S4LFlatRateScheme.apiT.toApi(s4l))
+      def merge(fresh: Option[S4LFlatRateScheme], vs: VatScheme): VatFlatRateScheme = fresh.fold(
+        vs.vatFlatRateScheme.getOrElse(throw fail("VatFlatRateScheme"))
+      )(s4l => S4LFlatRateScheme.apiT.toApi(s4l))
 
       for {
-        vs <- vatService.getVatScheme()
-        frs <- vatService.s4l[S4LFlatRateScheme]() // TODO ??? s4L via service?
-        response <- vatRegConnector.upsertVatFlatRateScheme(profile.registrationId, merge(frs, vs))
+        vs        <- vatService.getVatScheme
+        frs       <- vatService.s4l[S4LFlatRateScheme] // TODO ??? s4L via service?
+        response  <- vatRegConnector.upsertVatFlatRateScheme(profile.registrationId, merge(frs, vs))
       } yield response
     }
 
-    private[services] def frsApiToView(vs: VatScheme): S4LFlatRateScheme =
-      S4LFlatRateScheme(
-        joinFrs = ApiModelTransformer[JoinFrsView].toViewModel(vs),
-        annualCostsInclusive = ApiModelTransformer[AnnualCostsInclusiveView].toViewModel(vs),
-        annualCostsLimited = ApiModelTransformer[AnnualCostsLimitedView].toViewModel(vs),
-        registerForFrs = ApiModelTransformer[RegisterForFrsView].toViewModel(vs),
-        frsStartDate = ApiModelTransformer[FrsStartDateView].toViewModel(vs),
-        categoryOfBusiness = ApiModelTransformer[BusinessSectorView].toViewModel(vs)
-      )
+    private[services] def frsApiToView(vs: VatScheme): S4LFlatRateScheme = S4LFlatRateScheme(
+      joinFrs               = ApiModelTransformer[JoinFrsView].toViewModel(vs),
+      annualCostsInclusive  = ApiModelTransformer[AnnualCostsInclusiveView].toViewModel(vs),
+      annualCostsLimited    = ApiModelTransformer[AnnualCostsLimitedView].toViewModel(vs),
+      registerForFrs        = ApiModelTransformer[RegisterForFrsView].toViewModel(vs),
+      frsStartDate          = ApiModelTransformer[FrsStartDateView].toViewModel(vs),
+      categoryOfBusiness    = ApiModelTransformer[BusinessSectorView].toViewModel(vs)
+    )
 
-    private[services] def frsViewToApi(view: S4LFlatRateScheme): VatFlatRateScheme = {
-      VatFlatRateScheme(
-        joinFrs = view.joinFrs.map(_.selection).getOrElse(false),
-        annualCostsInclusive = view.annualCostsInclusive.map(_.selection),
-        annualCostsLimited = view.annualCostsLimited.map(_.selection),
-        doYouWantToUseThisRate = view.registerForFrs.map(_.selection),
-        whenDoYouWantToJoinFrs = view.frsStartDate.map(_.dateType),
-        startDate = view.frsStartDate.flatMap(_.date),
-        categoryOfBusiness = view.categoryOfBusiness.map(_.businessSector),
-        percentage = view.categoryOfBusiness.map(_.flatRatePercentage)
-      )
-    }
+    private[services] def frsViewToApi(view: S4LFlatRateScheme): VatFlatRateScheme = VatFlatRateScheme(
+      joinFrs                 = view.joinFrs.exists(_.selection),
+      annualCostsInclusive    = view.annualCostsInclusive.map(_.selection),
+      annualCostsLimited      = view.annualCostsLimited.map(_.selection),
+      doYouWantToUseThisRate  = view.registerForFrs.map(_.selection),
+      whenDoYouWantToJoinFrs  = view.frsStartDate.map(_.dateType),
+      startDate               = view.frsStartDate.flatMap(_.date),
+      categoryOfBusiness      = view.categoryOfBusiness.map(_.businessSector),
+      percentage              = view.categoryOfBusiness.map(_.flatRatePercentage)
+    )
 
     private[services] def fetchFRSFromS4L(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Option[S4LFlatRateScheme]] = {
       s4LService.fetchAndGetNoAux(flatRateSchemeS4LKey)
     }
 
     private[services] def fetchFRSFromAPI(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Option[VatFlatRateScheme]] = {
-      vatService.getVatScheme() map (_.vatFlatRateScheme)
+      vatService.getVatScheme map (_.vatFlatRateScheme)
     }
 
     private[services] def saveFRS(frs: S4LFlatRateScheme)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {

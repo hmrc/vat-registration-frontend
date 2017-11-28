@@ -18,7 +18,7 @@ package models.view.vatTradingDetails.vatChoice {
 
   import models.api.VatEligibilityChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
   import models.api.VatScheme
-  import models.{ApiModelTransformer, S4LTradingDetails, S4LVatEligibilityChoice, ViewModelFormat}
+  import models.{ApiModelTransformer, S4LVatEligibilityChoice, ViewModelFormat}
   import play.api.libs.json.Json
 
   case class TaxableTurnover(yesNo: String)
@@ -49,9 +49,9 @@ package models.view.vatTradingDetails.vatChoice {
 
 package controllers.vatTradingDetails.vatChoice {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
-  import connectors.KeystoreConnector
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatTradingDetails.vatChoice.TaxableTurnoverForm
   import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
@@ -59,15 +59,17 @@ package controllers.vatTradingDetails.vatChoice {
   import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.REGISTER_NO
   import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration}
   import play.api.mvc.{Action, AnyContent}
-  import services.{S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies)
-                                           (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with SessionProfile {
+  @Singleton
+  class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies,
+                                            val keystoreConnector: KeystoreConnect,
+                                            val authConnector: AuthConnector,
+                                            implicit val s4LService: S4LService,
+                                            implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     import cats.syntax.flatMap._
-
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
 
     val form = TaxableTurnoverForm.form
 

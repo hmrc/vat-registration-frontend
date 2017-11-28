@@ -16,20 +16,24 @@
 
 package controllers.sicAndCompliance.labour {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
-  import controllers.sicAndCompliance.ComplianceExitController
   import forms.sicAndCompliance.labour.TemporaryContractsForm
   import models.S4LVatSicAndCompliance
   import models.S4LVatSicAndCompliance.dropFromTemporaryContracts
   import models.view.sicAndCompliance.labour.TemporaryContracts
   import play.api.mvc.{Action, AnyContent}
-  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  class TemporaryContractsController @Inject()(ds: CommonPlayDependencies)
-                                              (implicit s4lService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with CommonService with SessionProfile {
+  @Singleton
+  class TemporaryContractsController @Inject()(ds: CommonPlayDependencies,
+                                               val keystoreConnector: KeystoreConnect,
+                                               val authConnector: AuthConnector,
+                                               implicit val s4lService: S4LService,
+                                               implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     import cats.syntax.flatMap._
 
@@ -58,8 +62,8 @@ package controllers.sicAndCompliance.labour {
                   ifTrue = controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show().pure,
                   ifFalse = for {
                     container <- s4lContainer[S4LVatSicAndCompliance]()
-                    _ <- s4lService.save(dropFromTemporaryContracts(container))
-                    _ <- vrs.submitSicAndCompliance()
+                    _         <- s4lService.save(dropFromTemporaryContracts(container))
+                    _         <- vrs.submitSicAndCompliance
                   } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
                 ).map(Redirect))
             }

@@ -16,21 +16,25 @@
 
 package controllers.sicAndCompliance.cultural {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.sicAndCompliance.cultural.NotForProfitForm
   import models.S4LVatSicAndCompliance
   import models.S4LVatSicAndCompliance.culturalOnly
   import models.view.sicAndCompliance.cultural.NotForProfit
   import play.api.mvc.{Action, AnyContent}
-  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-
+  @Singleton
   class NotForProfitController @Inject()(ds: CommonPlayDependencies,
+                                         val keystoreConnector: KeystoreConnect,
+                                         val authConnector: AuthConnector,
                                          implicit val s4lService: S4LService,
-                                         implicit val vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with CommonService with SessionProfile {
+                                         implicit val vrs: RegistrationService)
+    extends VatRegistrationController(ds) with SessionProfile {
 
     val form = NotForProfitForm.form
 
@@ -54,8 +58,8 @@ package controllers.sicAndCompliance.cultural {
                 badForm => BadRequest(features.sicAndCompliance.views.html.cultural.not_for_profit(badForm)).pure,
                 view => for {
                   container <- s4lContainer[S4LVatSicAndCompliance]()
-                  _ <- s4lService.save(culturalOnly(container.copy(notForProfit = Some(view))))
-                  _ <- vrs.submitSicAndCompliance()
+                  _         <- s4lService.save(culturalOnly(container.copy(notForProfit = Some(view))))
+                  _         <- vrs.submitSicAndCompliance
                 } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
               )
             }

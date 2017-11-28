@@ -16,14 +16,13 @@
 
 package services
 
-import common.exceptions.DownstreamExceptions
 import connectors.KeystoreConnector
 import helpers.VatRegSpec
 
 class CommonServiceSpec extends VatRegSpec {
 
   trait Setup {
-    val service = new CommonService with DownstreamExceptions {
+    val service = new CommonService {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -31,7 +30,7 @@ class CommonServiceSpec extends VatRegSpec {
   "Calling fetchDateOfIncorporation" should {
     "throw an IllegalStateException when no Incorporation Date is found in keystore" in new Setup {
       mockKeystoreFetchAndGet[String]("incorporationStatus", None)
-      service.fetchDateOfIncorporation() failedWith classOf[IllegalStateException]
+      service.fetchDateOfIncorporation failedWith classOf[IllegalStateException]
     }
   }
 }
