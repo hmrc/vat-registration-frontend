@@ -16,69 +16,67 @@
 
 package config
 
+import javax.inject.Inject
+
 import play.api.mvc.Call
-import uk.gov.hmrc.crypto.ApplicationCrypto
+import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
-import uk.gov.hmrc.play.audit.http.config.LoadAuditingConfig
+import uk.gov.hmrc.http.hooks.HttpHooks
+import uk.gov.hmrc.play.audit.http.HttpAuditing
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
-import uk.gov.hmrc.play.config.{AppName, RunMode, ServicesConfig}
-import uk.gov.hmrc.play.filters.MicroserviceFilterSupport
+import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.play.frontend.config.LoadAuditingConfig
+import uk.gov.hmrc.play.frontend.filters.MicroserviceFilterSupport
 import uk.gov.hmrc.play.http.ws._
 import uk.gov.hmrc.whitelist.AkamaiWhitelistFilter
 
-import scala.language.postfixOps
-
-object FrontendAuditConnector extends Auditing with AppName with RunMode {
-  override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
+object FrontendAuditConnector extends Auditing {
+  override lazy val auditingConfig = LoadAuditingConfig("auditing")
 }
 
-object WSHttp extends WSHttp with AppName with RunMode {
-  override val hooks = NoneRequired
+trait Hooks extends HttpHooks with HttpAuditing {
+  override lazy val auditConnector: Auditing = FrontendAuditConnector
 }
 
-//object WSHttp extends WSHttp { // with AppName with RunMode {
-//  override val hooks = NoneRequired
-//}
+trait WSHttp extends
+  HttpGet with WSGet with
+  HttpPut with WSPut with
+  HttpPatch with WSPatch with
+  HttpPost with WSPost with
+  HttpDelete with WSDelete with Hooks
 
-object FrontendAuthConnector extends AuthConnector with ServicesConfig {
-  val serviceUrl = baseUrl("auth")
-  lazy val http = WSHttp
+class Http @Inject()(config: ServicesConfig) extends WSHttp {
+  override def appName = config.getString("appName")
+  override val hooks   = Seq(AuditingHook)
 }
 
+class FrontendAuthConnector @Inject()(val http: WSHttp, config: ServicesConfig) extends AuthConnector {
+  val serviceUrl = config.baseUrl("auth")
+}
 
-object VatShortLivedHttpCaching extends ShortLivedHttpCaching with AppName with ServicesConfig {
-  override lazy val http = WSHttp
-  override lazy val defaultSource = appName
-  override lazy val baseUri = baseUrl("cachable.short-lived-cache")
-  override lazy val domain = getConfString("cachable.short-lived-cache.domain",
+class VatShortLivedHttpCaching @Inject()(val http: WSHttp, config: ServicesConfig) extends ShortLivedHttpCaching {
+  override lazy val defaultSource = config.getString("appName")
+  override lazy val baseUri       = config.baseUrl("cachable.short-lived-cache")
+  override lazy val domain        = config.getConfString("cachable.short-lived-cache.domain",
     throw new Exception(s"Could not find config 'cachable.short-lived-cache.domain'"))
 }
 
-object VatShortLivedCache extends ShortLivedCache {
-  override implicit lazy val crypto = ApplicationCrypto.JsonCrypto
-  override lazy val shortLiveCache = VatShortLivedHttpCaching
+class VatShortLivedCache @Inject()(val shortLiveCache: ShortLivedHttpCaching) extends ShortLivedCache {
+  override implicit lazy val crypto: CryptoWithKeysFromConfig = ApplicationCrypto.JsonCrypto
 }
 
-object VatSessionCache extends SessionCache with AppName with ServicesConfig {
-  override lazy val http = WSHttp
-  override lazy val defaultSource = appName
-  override lazy val baseUri = baseUrl("cachable.session-cache")
-  override lazy val domain = getConfString("cachable.session-cache.domain",
+class VatSessionCache @Inject()(val http: WSHttp, config: ServicesConfig) extends SessionCache {
+  override lazy val defaultSource = config.getString("appName")
+  override lazy val baseUri       = config.baseUrl("cachable.session-cache")
+  override lazy val domain        = config.getConfString("cachable.session-cache.domain",
     throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
 }
 
-object WhitelistFilter extends AkamaiWhitelistFilter
-  with RunMode with MicroserviceFilterSupport {
-
-  override def whitelist: Seq[String] = FrontendAppConfig.whitelist
-
-  override def excludedPaths: Seq[Call] = {
-    FrontendAppConfig.whitelistExcluded.map { path =>
-      Call("GET", path)
-    }
-  }
-
-  override def destination: Call = Call("GET", "https://www.tax.service.gov.uk/outage-register-for-vat")
+object WhitelistFilter extends AkamaiWhitelistFilter with MicroserviceFilterSupport {
+  override def whitelist: Seq[String]   = FrontendAppConfig.whitelist
+  override def excludedPaths: Seq[Call] = FrontendAppConfig.whitelistExcluded map(Call("GET", _))
+  override def destination: Call        = Call("GET", "https://www.tax.service.gov.uk/outage-register-for-vat")
 }
 

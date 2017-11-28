@@ -16,22 +16,25 @@
 
 package controllers.sicAndCompliance.financial {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
-  import controllers.sicAndCompliance.ComplianceExitController
   import forms.sicAndCompliance.financial.LeaseVehiclesForm
   import models.S4LVatSicAndCompliance
   import models.S4LVatSicAndCompliance.dropFromLeaseVehicles
   import models.view.sicAndCompliance.financial.LeaseVehicles
   import play.api.data.Form
   import play.api.mvc.{Action, AnyContent}
-  import services.{CommonService, RegistrationService, S4LService, SessionProfile}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-
-  class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies)
-                                         (implicit s4lService: S4LService, vrs: RegistrationService)
-    extends VatRegistrationController(ds) with CommonService with SessionProfile {
+  @Singleton
+  class LeaseVehiclesController @Inject()(ds: CommonPlayDependencies,
+                                          val keystoreConnector: KeystoreConnect,
+                                          val authConnector: AuthConnector,
+                                          implicit val s4lService: S4LService,
+                                          implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     import cats.syntax.flatMap._
 
@@ -57,16 +60,14 @@ package controllers.sicAndCompliance.financial {
               view => save(view).map(_ => view.yesNo).ifM(
                 ifTrue = for {
                   container <- s4lContainer[S4LVatSicAndCompliance]()
-                  _ <- s4lService.save(dropFromLeaseVehicles(container))
-                  _ <- vrs.submitSicAndCompliance()
+                  _         <- s4lService.save(dropFromLeaseVehicles(container))
+                  _         <- vrs.submitSicAndCompliance
                 } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show(),
                 ifFalse = controllers.sicAndCompliance.financial.routes.InvestmentFundManagementController.show().pure
               ).map(Redirect))
           }
     }
-
   }
-
 }
 
 package forms.sicAndCompliance.financial {
@@ -85,8 +86,6 @@ package forms.sicAndCompliance.financial {
         RADIO_YES_NO -> missingBooleanFieldMapping()("leaseVehicles")
       )(LeaseVehicles.apply)(LeaseVehicles.unapply)
     )
-
   }
-
 }
 

@@ -19,7 +19,7 @@ package controllers.frs
 import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, MockMessages}
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.i18n.MessagesApi
 import play.api.mvc.AnyContentAsFormUrlEncoded

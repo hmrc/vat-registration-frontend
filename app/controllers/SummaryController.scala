@@ -16,22 +16,28 @@
 
 package controllers
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
+import connectors.KeystoreConnect
 import controllers.builders._
-import models.{CurrentProfile, MonthYearModel}
 import models.api._
 import models.view._
+import models.{CurrentProfile, MonthYearModel}
 import play.api.mvc._
-import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
-import uk.gov.hmrc.play.http.HeaderCarrier
-import utils.VATRegFeatureSwitch
+import services._
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import utils.VATRegFeatureSwitches
 
 import scala.concurrent.Future
 
-class SummaryController @Inject()(ds: CommonPlayDependencies, vatRegFeatureSwitch: VATRegFeatureSwitch)
-                                 (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with CommonService with SessionProfile {
+@Singleton
+class SummaryController @Inject()(ds: CommonPlayDependencies,
+                                  vatRegFeatureSwitch: VATRegFeatureSwitches,
+                                  vrs: RegistrationService,
+                                  val keystoreConnector: KeystoreConnect,
+                                  val authConnector: AuthConnector,
+                                  implicit val s4LService: S4LService) extends VatRegistrationController(ds) with SessionProfile {
 
   def useEligibilityFrontend: Boolean = !vatRegFeatureSwitch.disableEligibilityFrontend.enabled
 
@@ -42,18 +48,14 @@ class SummaryController @Inject()(ds: CommonPlayDependencies, vatRegFeatureSwitc
           ivPassedCheck {
             for {
               summary <- getRegistrationSummary()
-              _ <- s4LService.clear()
+              _       <- s4LService.clear
               dateOfIncorporation = profile.incorporationDate.fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y))
-            } yield Ok(views.html.pages.summary(
-              summary,
-              dateOfIncorporation
-            ))
+            } yield Ok(views.html.pages.summary(summary, dateOfIncorporation))
           }
         }
   }
 
-  def getRegistrationSummary()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] =
-    vrs.getVatScheme().map(registrationToSummary)
+  def getRegistrationSummary()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = vrs.getVatScheme.map(registrationToSummary)
 
   def registrationToSummary(vs: VatScheme)(implicit profile : CurrentProfile): Summary = {
     Summary(Seq(

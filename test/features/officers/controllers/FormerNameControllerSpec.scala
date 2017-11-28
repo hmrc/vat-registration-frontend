@@ -19,29 +19,28 @@ package controllers.vatLodgingOfficer
 import controllers.vatLodgingOfficer
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.ModelKeys.FORMER_NAME
 import models.view.vatLodgingOfficer.FormerNameView
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 
-import scala.concurrent.Future
-
 class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object TestFormerNameController extends FormerNameController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object TestFormerNameController extends FormerNameController(
+    ds,
+    mockS4LService,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(vatLodgingOfficer.routes.FormerNameController.show())
 
   s"GET ${vatLodgingOfficer.routes.FormerNameController.show()}" should {
     "return HTML when there's a former name in S4L" in {
       save4laterReturnsViewModel(FormerNameView(yesNo = true, formerName = Some("Smooth Handler")))()
-      when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.pure)
       mockGetCurrentProfile()
       callAuthorised(TestFormerNameController.show) {
         _ includesText "Have you ever changed your name?"
@@ -50,7 +49,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[FormerNameView]()
-      when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.pure)
       mockGetCurrentProfile()
       callAuthorised(TestFormerNameController.show) {
         _ includesText "Have you ever changed your name?"
@@ -59,7 +58,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[FormerNameView]()
-      when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(emptyVatScheme.pure)
       mockGetCurrentProfile()
       callAuthorised(TestFormerNameController.show) {
         _ includesText "Have you ever changed your name?"

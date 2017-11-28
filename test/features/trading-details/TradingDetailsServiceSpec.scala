@@ -16,27 +16,15 @@
 
 package services
 
-import java.time.LocalDate
-
 import cats.data.OptionT
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models._
-import models.api._
-import models.external.{CoHoCompanyProfile, IncorporationInfo}
-import models.view.frs._
-import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
-import models.view.vatContact.ppob.PpobView
-import models.view.vatFinancials.ZeroRatedSales
-import models.view.vatLodgingOfficer._
+import models.external.IncorporationInfo
 import models.view.vatTradingDetails.vatChoice.StartDateView
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import play.api.libs.json.Json
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -44,8 +32,12 @@ import scala.language.postfixOps
 class TradingDetailsServiceSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   class Setup {
-    val service = new VatRegistrationService(mockS4LService, mockRegConnector, mockCompanyRegConnector, mockIIService) {
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+    val service = new RegistrationService {
+      override val s4LService = mockS4LService
+      override val vatRegConnector = mockRegConnector
+      override val compRegConnector = mockCompanyRegConnector
+      override val incorporationService = mockIncorpInfoService
+      override val keystoreConnector = mockKeystoreConnector
     }
   }
 
@@ -60,7 +52,7 @@ class TradingDetailsServiceSpec extends VatRegSpec with VatRegistrationFixture w
 
     "return a success response when VatTradingDetails is submitted" in new Setup {
       save4laterReturns(s4LTradingDetails)
-      when(mockRegConnector.getRegistration(Matchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
 
       service.submitTradingDetails() returns validVatTradingDetails
@@ -73,7 +65,7 @@ class TradingDetailsServiceSpec extends VatRegSpec with VatRegistrationFixture w
         startDate = Some(StartDateView(dateType = StartDateView.BUSINESS_START_DATE, ctActiveDate = Some(testDate)))
       ))
 
-      when(mockRegConnector.getRegistration(Matchers.eq(testRegId))(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(validVatScheme.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(tradingDetailsWithCtActiveDateSelected.pure)
 
       service.submitTradingDetails() returns tradingDetailsWithCtActiveDateSelected
@@ -81,7 +73,7 @@ class TradingDetailsServiceSpec extends VatRegSpec with VatRegistrationFixture w
 
     "return a success response when VatTradingDetails is submitted and no Trading Name is found in S4L" in new Setup {
       save4laterReturnsNothing[S4LTradingDetails]()
-      when(mockRegConnector.getRegistration(Matchers.eq(testRegId))(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(validVatScheme.pure)
       when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(validVatTradingDetails.pure)
 
       service.submitTradingDetails() returns validVatTradingDetails

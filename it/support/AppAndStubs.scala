@@ -22,11 +22,11 @@ import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{Suite, TestSuite}
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.http.HeaderNames
-import play.api.libs.ws.WS
+import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.{FakeApplication, FakeRequest}
 import support.SessionBuilder.getSessionCookie
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.it.Port
 
 trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerSuite with IntegrationPatience with PatienceConfiguration {
@@ -45,8 +45,10 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerS
 
   override lazy val port: Int = Port.randomAvailable
 
+  private val ws: WSClient = app.injector.instanceOf(classOf[WSClient])
+
   def buildClient(path: String)(implicit headers:(String,String) = HeaderNames.COOKIE -> getSessionCookie()) = {
-    WS.url(s"http://localhost:$port/register-for-vat$path").withFollowRedirects(false).withHeaders(headers,"Csrf-Token" -> "nocheck")
+    ws.url(s"http://localhost:$port/register-for-vat$path").withFollowRedirects(false).withHeaders(headers,"Csrf-Token" -> "nocheck")
   }
 
   override implicit lazy val app: FakeApplication = FakeApplication(

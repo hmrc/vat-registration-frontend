@@ -16,33 +16,44 @@
 
 package connectors
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
 import common.enums.IVResult
 import config.WSHttp
 import features.iv.models.IVSetup
 import play.api.Logger
 import play.api.libs.json.{JsObject, JsValue, Json}
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.http.ws.WSHttp
-import utils.VATRegFeatureSwitch
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.config.inject.ServicesConfig
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import utils.VATRegFeatureSwitches
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Singleton
-class IdentityVerificationConnector @Inject()(vatRegFeatureSwitch: VATRegFeatureSwitch) extends ServicesConfig with ivConnect {
-  val brdsUrl = baseUrl("business-registration-dynamic-stub")
-  val brdsUri = getConfString("business-registration-dynamic-stub.uri", throw new Exception)
-  val ivProxyUrl: String = baseUrl("iv.identity-verification-proxy")
-  val ivProxyUri: String = getConfString("iv.identity-verification-proxy.uri", throw new Exception)
-  val ivFeUrl = getConfString("iv.identity-verification-frontend.www.url", throw new Exception)
-  val ivBase =  baseUrl("iv.identity-verification-frontend")
+class IdentityVerificationConnector @Inject()(vatRegFeatureSwitch: VATRegFeatureSwitches,
+                                              config: ServicesConfig,
+                                              val http: WSHttp) extends IVConnector {
+  val brdsUrl    = config.baseUrl("business-registration-dynamic-stub")
+  val brdsUri    = config.getConfString("business-registration-dynamic-stub.uri", throw new Exception)
+  val ivProxyUrl = config.baseUrl("iv.identity-verification-proxy")
+  val ivProxyUri = config.getConfString("iv.identity-verification-proxy.uri", throw new Exception)
+  val ivFeUrl    = config.getConfString("iv.identity-verification-frontend.www.url", throw new Exception)
+  val ivBase     = config.baseUrl("iv.identity-verification-frontend")
 
   def useIvStub = vatRegFeatureSwitch.useIvStub.enabled
+}
 
-  val http: WSHttp = WSHttp
+trait IVConnector {
+  val brdsUrl: String
+  val brdsUri: String
+  val ivProxyUrl: String
+  val ivProxyUri: String
+  val ivFeUrl: String
+  val ivBase: String
+
+  def useIvStub: Boolean
+
+  val http: WSHttp
 
   def getJourneyOutcome(journeyId: String)(implicit hc: HeaderCarrier): Future[IVResult.Value] = {
     val url = if (useIvStub) (brdsUrl + brdsUri) else ivBase
@@ -65,12 +76,5 @@ class IdentityVerificationConnector @Inject()(vatRegFeatureSwitch: VATRegFeature
         throw e
     }
   }
-}
-trait ivConnect{
-  val brdsUrl:String
-  val brdsUri:String
-  val ivProxyUrl:String
-  val ivProxyUri:String
-  val ivFeUrl:String
 }
 

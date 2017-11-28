@@ -58,30 +58,29 @@ package controllers.frs {
 
   import javax.inject.Inject
 
-  import config.FrontendAuthConnector
-  import connectors.KeystoreConnector
+  import connectors.KeystoreConnect
   import controllers.VatRegistrationControllerNoAux
   import forms.frs.FrsStartDateFormFactory
   import models.view.frs.FrsStartDateView
   import play.api.data.Form
   import play.api.i18n.MessagesApi
   import play.api.mvc._
-  import services.{SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, SessionProfile}
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
   import scala.concurrent.Future
 
   class FrsStartDateControllerImpl @Inject()(frsStartDateFormFactory: FrsStartDateFormFactory,
                                              val messagesApi: MessagesApi,
-                                             val service: VatRegistrationService) extends FrsStartDateController {
-    override val keystoreConnector: KeystoreConnector = KeystoreConnector
-    override val authConnector: AuthConnector = FrontendAuthConnector
+                                             val service: RegistrationService,
+                                             val authConnector: AuthConnector,
+                                             val keystoreConnector: KeystoreConnect) extends FrsStartDateController {
     val startDateForm: Form[FrsStartDateView] = frsStartDateFormFactory.form()
   }
 
   trait FrsStartDateController extends VatRegistrationControllerNoAux with SessionProfile {
 
-    val service: VatRegistrationService
+    val service: RegistrationService
     val startDateForm: Form[FrsStartDateView]
 
     def show: Action[AnyContent] = authorised.async {

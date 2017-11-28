@@ -16,21 +16,24 @@
 
 package controllers.sicAndCompliance.financial {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
-  import controllers.sicAndCompliance.ComplianceExitController
   import forms.sicAndCompliance.financial.InvestmentFundManagementForm
   import models.S4LVatSicAndCompliance
   import models.S4LVatSicAndCompliance.dropFromInvFundManagement
   import models.view.sicAndCompliance.financial.InvestmentFundManagement
   import play.api.mvc.{Action, AnyContent}
   import services.{CommonService, RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-
-  class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies)
-                                                    (implicit s4lService: S4LService, vrs: RegistrationService)
-    extends VatRegistrationController(ds) with CommonService with SessionProfile {
+  @Singleton
+  class InvestmentFundManagementController @Inject()(ds: CommonPlayDependencies,
+                                                     val keystoreConnector: KeystoreConnect,
+                                                     val authConnector: AuthConnector,
+                                                     implicit val s4lService: S4LService,
+                                                     implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with CommonService with SessionProfile {
 
     val form = InvestmentFundManagementForm.form
 
@@ -58,8 +61,8 @@ package controllers.sicAndCompliance.financial {
                   ifTrue = controllers.sicAndCompliance.financial.routes.ManageAdditionalFundsController.show().pure,
                   ifFalse = for {
                     container <- s4lContainer[S4LVatSicAndCompliance]()
-                    _ <- s4lService.save(dropFromInvFundManagement(container))
-                    _ <- vrs.submitSicAndCompliance()
+                    _         <- s4lService.save(dropFromInvFundManagement(container))
+                    _         <- vrs.submitSicAndCompliance
                   } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
                 ).map(Redirect))
             }
@@ -73,7 +76,7 @@ package controllers.sicAndCompliance.financial {
 package forms.sicAndCompliance.financial {
 
   import forms.FormValidation.missingBooleanFieldMapping
-  import models.view.sicAndCompliance.financial.{ChargeFees, InvestmentFundManagement}
+  import models.view.sicAndCompliance.financial.InvestmentFundManagement
   import play.api.data.Form
   import play.api.data.Forms._
 

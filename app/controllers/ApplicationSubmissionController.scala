@@ -16,18 +16,20 @@
 
 package controllers
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import play.api.mvc._
-import services.{S4LService, SessionProfile, VatRegistrationService}
+import services.{RegistrationService, S4LService, SessionProfile}
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import views.html.pages.application_submission_confirmation
 
-class ApplicationSubmissionController @Inject()(ds: CommonPlayDependencies)
-                                               (implicit s4LService: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with SessionProfile {
-
-  val keystoreConnector: KeystoreConnector = KeystoreConnector
+@Singleton
+class ApplicationSubmissionController @Inject()(ds: CommonPlayDependencies,
+                                                vrs: RegistrationService,
+                                                val authConnector: AuthConnector,
+                                                val keystoreConnector: KeystoreConnect,
+                                                implicit val s4LService: S4LService) extends VatRegistrationController(ds) with SessionProfile {
 
   def show: Action[AnyContent] = authorised.async {
     implicit user =>
@@ -35,11 +37,10 @@ class ApplicationSubmissionController @Inject()(ds: CommonPlayDependencies)
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
             for {
-              vs <- vrs.getVatScheme()
+              vs <- vrs.getVatScheme
               Some(ackRef) <- vrs.getAckRef(profile.registrationId).value
             } yield Ok(application_submission_confirmation(ackRef, vs.financials))
           }
         }
   }
-
 }

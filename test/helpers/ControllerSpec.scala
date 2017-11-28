@@ -22,8 +22,7 @@ import builders.AuthBuilder
 import common.enums.VatRegStatus
 import connectors.{ConfigConnector, KeystoreConnector}
 import models.CurrentProfile
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Assertion
@@ -34,9 +33,9 @@ import play.api.mvc._
 import play.api.test.FakeRequest
 import services.{DateService, VatRegistrationService}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite {
 

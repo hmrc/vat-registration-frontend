@@ -30,10 +30,11 @@ import scala.concurrent.Future
 
 class EligibilitySuccessControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object TestEligibilitySuccessController extends EligibilitySuccessController(ds){
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-  }
+  object TestEligibilitySuccessController extends EligibilitySuccessController(
+    ds,
+    mockAuthConnector,
+    mockKeystoreConnector
+  )
 
   val fakeRequest = FakeRequest(routes.EligibilitySuccessController.show())
 

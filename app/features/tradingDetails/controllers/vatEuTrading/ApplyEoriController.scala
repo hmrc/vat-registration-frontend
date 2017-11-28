@@ -45,21 +45,23 @@ package models.view.vatTradingDetails.vatEuTrading {
 
 package controllers.vatTradingDetails.vatEuTrading {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
-  import connectors.KeystoreConnector
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatTradingDetails.vatEuTrading.ApplyEoriForm
   import models.view.vatTradingDetails.vatEuTrading.ApplyEori
   import play.api.data.Form
   import play.api.mvc.{Action, AnyContent}
-  import services.{S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  class ApplyEoriController @Inject()(ds: CommonPlayDependencies)
-                                     (implicit s4l: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with SessionProfile {
-
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
+  @Singleton
+  class ApplyEoriController @Inject()(ds: CommonPlayDependencies,
+                                      val keystoreConnector: KeystoreConnect,
+                                      val authConnector: AuthConnector,
+                                      implicit val s4l: S4LService,
+                                      implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     val form: Form[ApplyEori] = ApplyEoriForm.form
 

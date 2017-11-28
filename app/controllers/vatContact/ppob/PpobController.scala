@@ -16,33 +16,34 @@
 
 package controllers.vatContact.ppob
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import cats.data.OptionT
-import connectors.AddressLookupConnect
+import cats.syntax.flatMap._
+import connectors.{AddressLookupConnect, KeystoreConnect}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.ppob.PpobForm
+import models.AddressLookupJourneyId.ppobVatReg
 import models.api.ScrsAddress
 import models.view.vatContact.ppob.PpobView
 import play.api.mvc.{Action, AnyContent}
 import services._
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class PpobController @Inject()(ds: CommonPlayDependencies)
-                              (implicit s4l: S4LService,
-                               vrs: VatRegistrationService,
-                               prePopService: PrePopulationService,
-                               alfConnector: AddressLookupConnect)
-  extends VatRegistrationController(ds) with CommonService with SessionProfile {
-
-  import cats.syntax.flatMap._
-  import models.AddressLookupJourneyId.ppobVatReg
+@Singleton
+class PpobController @Inject()(ds: CommonPlayDependencies,
+                               implicit val s4l: S4LService,
+                               implicit val vrs: RegistrationService,
+                               prePopService: PrePopService,
+                               alfConnector: AddressLookupConnect,
+                               val authConnector: AuthConnector,
+                               val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
 
   private val form = PpobForm.form
   private val addressListKey = "PpobAddressList"
 
-  private def fetchAddressList()(implicit headerCarrier: HeaderCarrier) =
-    OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]](addressListKey))
+  private def fetchAddressList(implicit headerCarrier: HeaderCarrier) = OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]](addressListKey))
 
   def show: Action[AnyContent] = authorised.async {
     implicit user =>
@@ -50,7 +51,7 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
             for {
-              addresses <- prePopService.getPpobAddressList()
+              addresses <- prePopService.getPpobAddressList
               _ <- keystoreConnector.cache[Seq[ScrsAddress]](addressListKey, addresses)
               res <- viewModel[PpobView]().fold(form)(form.fill)
             } yield Ok(views.html.pages.vatContact.ppob.ppob(res, addresses))
@@ -65,12 +66,12 @@ class PpobController @Inject()(ds: CommonPlayDependencies)
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
             form.bindFromRequest().fold(
-              badForm => fetchAddressList().getOrElse(Seq()).map(
+              badForm => fetchAddressList.getOrElse(Seq()).map(
                 addressList => BadRequest(views.html.pages.vatContact.ppob.ppob(badForm, addressList))),
               data => (data.addressId == "other").pure.ifM(
                 ifTrue = alfConnector.getOnRampUrl(routes.PpobController.acceptFromTxm()),
                 ifFalse = for {
-                  addressList <- fetchAddressList().getOrElse(Seq())
+                  addressList <- fetchAddressList.getOrElse(Seq())
                   address = addressList.find(_.id == data.addressId)
                   _ <- save(PpobView(data.addressId, address))
                 } yield controllers.vatContact.routes.BusinessContactDetailsController.show()

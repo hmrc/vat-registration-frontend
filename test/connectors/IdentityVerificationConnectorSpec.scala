@@ -20,12 +20,16 @@ import common.enums.IVResult
 import features.iv.models.{IVSetup, UserData}
 import helpers.VatRegSpec
 import play.api.libs.json.{JsObject, JsResultException, JsValue, Json}
-import uk.gov.hmrc.play.http.ws.WSHttp
+import config.WSHttp
 import org.mockito.Mockito._
 
 class IdentityVerificationConnectorSpec extends VatRegSpec {
   class Setup {
-    val connector = new IdentityVerificationConnector(mockVATFeatureSwitch) {
+    val connector = new IVConnector {
+      override val ivProxyUrl = "tst-url"
+      override val ivProxyUri = "tst-url"
+      override val ivBase = "tst-url"
+      override def useIvStub = true
       override val brdsUrl: String = "tst-url"
       override val brdsUri: String = "tst-url"
       override val ivFeUrl:String = "iv"

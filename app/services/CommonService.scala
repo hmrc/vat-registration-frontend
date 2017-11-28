@@ -20,25 +20,20 @@ import java.time.LocalDate
 
 import cats.data.OptionT
 import cats.instances.FutureInstances
-import common.exceptions.DownstreamExceptions._
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import models.ModelKeys.INCORPORATION_STATUS
 import models.external.IncorporationInfo
-import play.api.Logger
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 // TODO Refactor into a profile that's passed into services
 trait CommonService extends FutureInstances {
 
-  val keystoreConnector: KeystoreConnector = KeystoreConnector
+  val keystoreConnector: KeystoreConnect
 
-  def fetchDateOfIncorporation()(implicit hc: HeaderCarrier): Future[LocalDate] = {
-    OptionT(keystoreConnector.fetchAndGet[IncorporationInfo](INCORPORATION_STATUS))
-      .subflatMap(_.statusEvent.incorporationDate)
-      .getOrElse(throw new IllegalStateException("Date of Incorporation data expected to be found in Incorporation"))
-  }
-
+  def fetchDateOfIncorporation(implicit hc: HeaderCarrier): Future[LocalDate] = OptionT(
+    keystoreConnector.fetchAndGet[IncorporationInfo](INCORPORATION_STATUS)
+  ).subflatMap(_.statusEvent.incorporationDate).getOrElse(throw new IllegalStateException("Date of Incorporation data expected to be found in Incorporation"))
 }

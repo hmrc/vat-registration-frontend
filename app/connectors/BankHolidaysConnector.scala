@@ -17,48 +17,41 @@
 package connectors
 
 import java.io.InputStream
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
-import play.api.libs.json.Json
-import play.api.{Environment, Logger}
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.http.ws.WSHttp
+import config.WSHttp
+import play.api.Environment
+import play.api.libs.json.{Json, Reads}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.config.inject.ServicesConfig
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait BankHolidaysConnector {
-  implicit val bankHolidayReads = Json.reads[BankHoliday]
-  implicit val bankHolidaySetReads = Json.reads[BankHolidaySet]
+class WSBankHolidaysConnector @Inject()(http: WSHttp, config: ServicesConfig) extends BankHolidaysConnector {
+  val url = config.getConfString("bank-holidays.url", "")
 
-  def bankHolidays(division: String = "england-and-wales")(implicit headerCarrier: HeaderCarrier): Future[BankHolidaySet]
-
-  protected def filterByDivision(holidays: Future[Map[String, BankHolidaySet]], division: String): Future[BankHolidaySet] =
-    holidays map { holidaySets => holidaySets(division) }
-
+  def bankHolidays(division: String = "england-and-wales")(implicit hc: HeaderCarrier): Future[BankHolidaySet] = {
+    http.GET[Map[String, BankHolidaySet]](url) map {
+      holidaySets => holidaySets(division)
+    }
+  }
 }
-
-@Singleton
-class WSBankHolidaysConnector @Inject()(wsHttp: WSHttp) extends BankHolidaysConnector with ServicesConfig {
-
-  lazy val url = getConfString("bank-holidays.url", "")
-
-  def bankHolidays(division: String = "england-and-wales")(implicit headerCarrier: HeaderCarrier): Future[BankHolidaySet] =
-    filterByDivision(wsHttp.GET[Map[String, BankHolidaySet]](url), division)
-
-}
-
 
 class FallbackBankHolidaysConnector @Inject()(environment: Environment) extends BankHolidaysConnector {
-
-  override def bankHolidays(division: String = "england-and-wales")(implicit headerCarrier: HeaderCarrier): Future[BankHolidaySet] = {
-    Logger.info("Loading static set of bank holidays from classpath file: bank-holidays.json")
+  override def bankHolidays(division: String = "england-and-wales")(implicit hc: HeaderCarrier): Future[BankHolidaySet] = {
+    logger.info("Loading static set of bank holidays from classpath file: bank-holidays.json")
     val resourceAsStream: InputStream = environment.classLoader.getResourceAsStream("bank-holidays.json")
     //if below .get fails, app startup fails. This is as expected. bank-holidays.json file must be on classpath
     val parsed = Json.parse(resourceAsStream).asOpt[Map[String, BankHolidaySet]].get
-    filterByDivision(Future.successful(parsed), division)
+    Future.successful(parsed(division))
   }
+}
 
+trait BankHolidaysConnector {
+  protected implicit val bankHolidayReads: Reads[BankHoliday]       = Json.reads[BankHoliday]
+  protected implicit val bankHolidaySetReads: Reads[BankHolidaySet] = Json.reads[BankHolidaySet]
+
+  def bankHolidays(division: String = "england-and-wales")(implicit hc: HeaderCarrier): Future[BankHolidaySet]
 }

@@ -32,10 +32,13 @@ import scala.concurrent.Future
 
 class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object TestThresholdSummaryController extends ThresholdSummaryController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-  }
+  object TestThresholdSummaryController extends ThresholdSummaryController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(controllers.vatTradingDetails.vatChoice.routes.ThresholdSummaryController.show())
 
@@ -58,7 +61,7 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
 
       mockGetCurrentProfile()
       implicit val cp = currentProfile()
-      TestThresholdSummaryController.getVatThresholdPostIncorp() returns validVatThresholdPostIncorp
+      TestThresholdSummaryController.getVatThresholdPostIncorp returns validVatThresholdPostIncorp
     }
 
     "getThresholdSummary maps a valid VatThresholdSummary object to a Summary object" in {
@@ -68,7 +71,7 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
 
       mockGetCurrentProfile()
       implicit val cp = currentProfile()
-      TestThresholdSummaryController.getThresholdSummary().map(summary => summary.sections.length mustEqual 1)
+      TestThresholdSummaryController.getThresholdSummary.map(summary => summary.sections.length mustEqual 1)
     }
   }
 

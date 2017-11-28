@@ -16,19 +16,22 @@
 
 package controllers
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import play.api.mvc._
 import services.SessionProfile
-import utils.VATRegFeatureSwitch
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import utils.VATRegFeatureSwitches
 
 import scala.concurrent.Future
 
-class TwirlViewController @Inject()(ds: CommonPlayDependencies, vatRegFeatureSwitch: VATRegFeatureSwitch)
-  extends VatRegistrationController(ds) with SessionProfile {
+@Singleton
+class TwirlViewController @Inject()(ds: CommonPlayDependencies,
+                                    vatRegFeatureSwitch: VATRegFeatureSwitches,
+                                    val authConnector: AuthConnector,
+                                    val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
 
-  val keystoreConnector: KeystoreConnector = KeystoreConnector
   def useEligibilityFrontend: Boolean = !vatRegFeatureSwitch.disableEligibilityFrontend.enabled
 
   def renderViewAuthorised(viewName: String): Action[AnyContent] = authorised.async {
@@ -48,7 +51,7 @@ class TwirlViewController @Inject()(ds: CommonPlayDependencies, vatRegFeatureSwi
       val url = conf.getString("microservice.services.vat-registration-eligibility-frontend.entry-url")
         .getOrElse("http://localhost:9894/check-if-you-can-register-for-vat/use-this-service")
       Redirect(Call("GET", url))
-    }else{
+    } else {
       Ok(views.html.pages.vatEligibility.use_this_service())
     }
 }

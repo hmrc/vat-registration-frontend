@@ -16,25 +16,29 @@
 
 package controllers.test
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import common.enums.IVResult
+import connectors.KeystoreConnect
 import connectors.test.BusinessRegDynamicStubConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import features.iv.services.IdentityVerificationService
+import features.iv.services.IVService
 import forms.test.TestIVForm
 import models.view.test.TestIVResponse
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent}
-import services.{CommonService, CurrentProfileService, SessionProfile}
+import services.{CurrentProfileSrv, SessionProfile}
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
+@Singleton
 class TestIVController @Inject()(ds: CommonPlayDependencies,
                                  busRegDynStub: BusinessRegDynamicStubConnector,
-                                 ivService:IdentityVerificationService,
-                                 cpService:CurrentProfileService)
-  extends VatRegistrationController(ds) with CommonService with SessionProfile {
+                                 ivService: IVService,
+                                 cpService: CurrentProfileSrv,
+                                 val authConnector: AuthConnector,
+                                 val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
 
   def setIVStatus(ivPassed:String):Action[AnyContent] = authorised.async{
     implicit user =>

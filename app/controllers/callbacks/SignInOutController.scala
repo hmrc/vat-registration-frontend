@@ -17,19 +17,23 @@
 package controllers.callbacks
 
 import java.io.File
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.config.inject.ServicesConfig
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import views.html.pages.error.TimeoutView
 
 import scala.concurrent.Future
 
-class SignInOutController @Inject()(ds: CommonPlayDependencies) extends VatRegistrationController(ds) with ServicesConfig {
+@Singleton
+class SignInOutController @Inject()(ds: CommonPlayDependencies,
+                                    config: ServicesConfig,
+                                    val authConnector: AuthConnector) extends VatRegistrationController(ds) {
 
-  lazy val compRegFEURL = getConfString("company-registration-frontend.www.url", "")
-  lazy val compRegFEURI = getConfString("company-registration-frontend.www.uri", "")
+  lazy val compRegFEURL = config.getConfString("company-registration-frontend.www.url", "")
+  lazy val compRegFEURI = config.getConfString("company-registration-frontend.www.uri", "")
 
   def postSignIn: Action[AnyContent] = authorised(implicit user => implicit request =>
     Redirect(s"$compRegFEURL$compRegFEURI/post-sign-in")

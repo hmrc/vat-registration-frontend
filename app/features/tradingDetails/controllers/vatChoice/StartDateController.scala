@@ -16,10 +16,13 @@
 
 package models.view.vatTradingDetails.vatChoice {
 
+ 
   import java.time.LocalDate
+
   import models._
   import models.api.{VatEligibilityChoice, VatScheme, VatStartDate}
   import play.api.libs.json.Json
+
   import scala.util.Try
 
   case class StartDateView(dateType: String = "", date: Option[LocalDate] = None, ctActiveDate: Option[LocalDate] = None) {
@@ -67,32 +70,37 @@ package models.view.vatTradingDetails.vatChoice {
 package controllers.vatTradingDetails.vatChoice {
 
   import java.time.LocalDate
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
   import common.Now
-  import connectors.KeystoreConnector
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import features.tradingDetails.views.html.vatChoice.{start_date, start_date_incorp}
   import forms.vatTradingDetails.vatChoice.StartDateFormFactory
+  import models.CurrentProfile
   import models.view.vatTradingDetails.vatChoice.StartDateView
   import play.api.data.Form
   import play.api.mvc._
-  import services.{PrePopService, S4LService, SessionProfile, VatRegistrationService}
-  import uk.gov.hmrc.play.http.HeaderCarrier
-  import features.tradingDetails.views.html.vatChoice.{start_date, start_date_incorp}
-  import models.CurrentProfile
+  import services._
+  import uk.gov.hmrc.http.HeaderCarrier
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
   import scala.concurrent.Future
 
-  class StartDateController @Inject()(startDateFormFactory: StartDateFormFactory, prepopService: PrePopService, playDep: CommonPlayDependencies)
-                                     (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(playDep) with SessionProfile {
+  @Singleton
+  class StartDateController @Inject()(startDateFormFactory: StartDateFormFactory,
+                                      prepopService: PrePopService,
+                                      playDep: CommonPlayDependencies,
+                                      val keystoreConnector: KeystoreConnect,
+                                      val authConnector: AuthConnector,
+                                      implicit val s4LService: S4LService,
+                                      implicit val vrs: RegistrationService) extends VatRegistrationController(playDep) with SessionProfile {
 
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
     val form: Form[StartDateView] = startDateFormFactory.form()
 
     protected[controllers]
     def populateCtActiveDate(vm: StartDateView)(implicit hc: HeaderCarrier, profile: CurrentProfile, today: Now[LocalDate]): Future[StartDateView] =
-      prepopService.getCTActiveDate().filter(today().plusMonths(3).isAfter).fold(vm)(vm.withCtActiveDateOption)
+      prepopService.getCTActiveDate.filter(today().plusMonths(3).isAfter).fold(vm)(vm.withCtActiveDateOption)
 
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
@@ -110,6 +118,7 @@ package controllers.vatTradingDetails.vatChoice {
             }
           }
     }
+
     def submit: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>

@@ -24,12 +24,12 @@ import helpers.VatRegSpec
 import models.CurrentProfile
 import models.external.{CoHoCompanyProfile, IncorpStatusEvent, IncorpSubscription, IncorporationInfo}
 import org.mockito.Mockito.when
-import org.mockito.Matchers
+import org.mockito.{ArgumentMatchers => Matchers}
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 class CurrentProfileServiceSpec extends VatRegSpec {
 
@@ -48,7 +48,6 @@ class CurrentProfileServiceSpec extends VatRegSpec {
     vatRegistrationStatus = VatRegStatus.draft,
     incorporationDate     = Some(now),
     ivPassed              = false
-
   )
 
   "buildCurrentProfile" should {
@@ -71,7 +70,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
 
         when(mockVatRegistrationService.getStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful(VatRegStatus.draft))
-        when(mockVatRegistrationService.getVatScheme()(Matchers.any(),Matchers.any())).thenReturn(Future.successful(validVatScheme))
+        when(mockVatRegistrationService.getVatScheme(Matchers.any(),Matchers.any())).thenReturn(Future.successful(validVatScheme))
 
         when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
@@ -95,7 +94,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
     "getIV status from vr backend and return a current profile modified" in {
       when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any(),Matchers.any())).thenReturn(Future.successful(validVatScheme.copy(lodgingOfficer = Some(validLodgingOfficer.copy(ivPassed = true)))))
+      when(mockVatRegistrationService.getVatScheme(Matchers.any(),Matchers.any())).thenReturn(Future.successful(validVatScheme.copy(lodgingOfficer = Some(validLodgingOfficer.copy(ivPassed = true)))))
       val result = await(testService.getIVStatusFromVRServiceAndUpdateCurrentProfile(testCurrentProfile))
       result mustBe testCurrentProfile.copy(ivPassed = true)
     }

@@ -16,29 +16,25 @@
 
 package controllers.vatLodgingOfficer
 
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.ModelKeys.REGISTERING_OFFICER_KEY
 import models.external.Officer
 import models.view.vatLodgingOfficer.CompletionCapacityView
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 
-import scala.concurrent.Future
-
 class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object Controller extends CompletionCapacityController(ds)(
+  object Controller extends CompletionCapacityController(
+    ds,
     mockS4LService,
     mockVatRegistrationService,
-    mockPPService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-  }
+    mockPPService,
+    mockAuthConnector,
+    mockKeystoreConnector
+  )
 
   val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
 
@@ -47,7 +43,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
       mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[CompletionCapacityView]()
-      when(mockPPService.getOfficerList()(any(), any())).thenReturn(Seq(officer).pure)
+      when(mockPPService.getOfficerList(any(), any())).thenReturn(Seq(officer).pure)
       mockKeystoreCache[Seq[Officer]]("OfficerList", dummyCacheMap)
 
       callAuthorised(Controller.show()) {
@@ -59,7 +55,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
       mockGetCurrentProfile()
 
       save4laterReturnsViewModel(CompletionCapacityView("id", Some(completionCapacity)))()
-      when(mockPPService.getOfficerList()(any(), any())).thenReturn(Seq(officer).pure)
+      when(mockPPService.getOfficerList(any(), any())).thenReturn(Seq(officer).pure)
       mockKeystoreCache[Seq[Officer]]("OfficerList", dummyCacheMap)
 
       callAuthorised(Controller.show()) {
@@ -92,7 +88,7 @@ class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFi
     "return 303 with selected completionCapacity" in {
       mockGetCurrentProfile()
 
-      when(mockPPService.getOfficerList()(any(), any())).thenReturn(Seq(officer).pure)
+      when(mockPPService.getOfficerList(any(), any())).thenReturn(Seq(officer).pure)
       save4laterExpectsSave[CompletionCapacityView]()
       mockKeystoreFetchAndGet[Seq[Officer]]("OfficerList", Some(Seq(officer)))
       mockKeystoreCache[Officer](REGISTERING_OFFICER_KEY, dummyCacheMap)

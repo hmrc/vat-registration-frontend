@@ -18,22 +18,23 @@ package controllers.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration}
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object TestTaxableTurnoverController extends TaxableTurnoverController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object TestTaxableTurnoverController extends TaxableTurnoverController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(routes.TaxableTurnoverController.show())
 
@@ -58,7 +59,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestTaxableTurnoverController.show) {
@@ -71,7 +72,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
       save4laterReturnsNoViewModel[TaxableTurnover]()
 
       mockGetCurrentProfile()
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestTaxableTurnoverController.show) {

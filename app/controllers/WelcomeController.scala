@@ -19,11 +19,13 @@ package controllers
 import javax.inject.Inject
 
 import play.api.mvc._
-import services.{CurrentProfileService, RegistrationService}
+import services.{CurrentProfileService, CurrentProfileSrv, RegistrationService}
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import views.html.pages.welcome
 
 class WelcomeController @Inject()(vatRegistrationService: RegistrationService,
-                                  currentProfileService: CurrentProfileService,
+                                  currentProfileService: CurrentProfileSrv,
+                                  val authConnector: AuthConnector,
                                   ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
 
   //access to root of application should by default direct the user to the proper URL for start of VAT registration
@@ -33,9 +35,8 @@ class WelcomeController @Inject()(vatRegistrationService: RegistrationService,
     implicit user =>
       implicit request =>
         for {
-          (regId, txId) <- vatRegistrationService.createRegistrationFootprint()
+          (regId, txId) <- vatRegistrationService.createRegistrationFootprint
           _             <- currentProfileService.buildCurrentProfile(regId, txId)
         } yield Ok(welcome())
   }
-
 }

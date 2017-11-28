@@ -19,12 +19,9 @@ package common
 object StringMasking {
 
   implicit class MaskedStringConverter(val s: String) extends AnyVal {
-
     def mask(n: Int, char: Char = '*'): String = s.length match {
       case len if n <= len => (char.toString * n) + s.substring(n)
-      case len => char.toString * len
+      case len             => char.toString * len
     }
-
   }
-
 }

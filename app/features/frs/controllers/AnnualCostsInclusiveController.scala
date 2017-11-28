@@ -44,29 +44,27 @@ package models.view.frs {
 
 package controllers.frs {
 
-  import config.FrontendAuthConnector
-  import connectors.KeystoreConnector
+  import connectors.KeystoreConnect
   import controllers.VatRegistrationControllerNoAux
   import forms.frs.AnnualCostsInclusiveForm
-  import models.view.frs.AnnualCostsInclusiveView.NO
   import models.view.frs.AnnualCostsInclusiveView
+  import models.view.frs.AnnualCostsInclusiveView.NO
   import play.api.data.Form
   import play.api.i18n.MessagesApi
   import play.api.mvc.{Action, AnyContent}
-  import services.{SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, SessionProfile}
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
   import scala.concurrent.Future
 
   class AnnualCostsInclusiveControllerImpl @Inject()(val messagesApi: MessagesApi,
-                                                     val service: VatRegistrationService) extends AnnualCostsInclusiveController {
-    override val authConnector: AuthConnector = FrontendAuthConnector
-    override val keystoreConnector: KeystoreConnector = KeystoreConnector
-  }
+                                                     val service: RegistrationService,
+                                                     val authConnector: AuthConnector,
+                                                     val keystoreConnector: KeystoreConnect) extends AnnualCostsInclusiveController
 
   trait AnnualCostsInclusiveController extends VatRegistrationControllerNoAux with SessionProfile {
 
-    val service: VatRegistrationService
+    val service: RegistrationService
 
     val form: Form[AnnualCostsInclusiveView] = AnnualCostsInclusiveForm.form
 

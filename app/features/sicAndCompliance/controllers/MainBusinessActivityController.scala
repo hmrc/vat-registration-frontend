@@ -16,9 +16,11 @@
 
 package controllers.sicAndCompliance {
 
-  import javax.inject.Inject
+ 
+  import javax.inject.{Inject, Singleton}
 
   import cats.data.OptionT
+  import connectors.KeystoreConnect
   import controllers.CommonPlayDependencies
   import forms.sicAndCompliance.MainBusinessActivityForm
   import models.ModelKeys._
@@ -26,18 +28,20 @@ package controllers.sicAndCompliance {
   import models.api.SicCode
   import models.view.sicAndCompliance.MainBusinessActivityView
   import play.api.mvc.{Action, AnyContent}
-  import services.{S4LService, SessionProfile, VatRegistrationService}
-  import uk.gov.hmrc.play.http.HeaderCarrier
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.http.HeaderCarrier
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
   import scala.concurrent.Future
 
+  @Singleton
+  class MainBusinessActivityController @Inject()(ds: CommonPlayDependencies,
+                                                 val keystoreConnector: KeystoreConnect,
+                                                 override val authConnector: AuthConnector,
+                                                 implicit val s4l: S4LService,
+                                                 override implicit val vrs: RegistrationService)
+    extends ComplianceExitController(ds, authConnector, vrs, s4l) with SessionProfile {
 
-  class MainBusinessActivityController @Inject()(ds: CommonPlayDependencies)
-                                                (implicit s4l: S4LService,
-                                                 vrs: VatRegistrationService)
-    extends ComplianceExitController(ds) with SessionProfile {
-
-    import cats.syntax.cartesian._
     import common.ConditionalFlatMap._
 
     private val form = MainBusinessActivityForm.form

@@ -16,22 +16,25 @@
 
 package controllers.sicAndCompliance.financial {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
-  import controllers.sicAndCompliance.ComplianceExitController
   import forms.sicAndCompliance.financial.AdviceOrConsultancyForm
   import models.S4LVatSicAndCompliance
   import models.S4LVatSicAndCompliance.financeOnly
   import models.view.sicAndCompliance.financial.AdviceOrConsultancy
   import play.api.data.Form
   import play.api.mvc.{Action, AnyContent}
-  import services.{CommonService, RegistrationService, S4LService, SessionProfile}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-
-  class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies)
-                                               (implicit s4lService: S4LService, vrs: RegistrationService)
-    extends VatRegistrationController(ds) with CommonService with SessionProfile {
+  @Singleton
+  class AdviceOrConsultancyController @Inject()(ds: CommonPlayDependencies,
+                                                val keystoreConnector: KeystoreConnect,
+                                                val authConnector: AuthConnector,
+                                                implicit val s4lService: S4LService,
+                                                implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     val form: Form[AdviceOrConsultancy] = AdviceOrConsultancyForm.form
 

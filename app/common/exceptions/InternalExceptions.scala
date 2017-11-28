@@ -16,10 +16,7 @@
 
 package common.exceptions
 
-object InternalExceptions extends InternalExceptions
-
-trait InternalExceptions {
-
+object InternalExceptions {
   class UnableToCreateEnumException(val enumName: String, attemptedString: String) extends Exception(
     s"Couldn't create enum $enumName from input $attemptedString"
   )

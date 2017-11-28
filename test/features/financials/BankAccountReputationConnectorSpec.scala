@@ -18,20 +18,20 @@ package connectors
 
 import helpers.VatRegSpec
 import models.view.vatFinancials.vatBankAccount.ModulusCheckAccount
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.play.http.{InternalServerException, NotFoundException, Upstream5xxResponse}
-import uk.gov.hmrc.play.http.ws.WSHttp
+import config.WSHttp
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.Upstream5xxResponse
 
 class BankAccountReputationConnectorSpec extends VatRegSpec {
 
   class Setup {
 
-    val connector = new BankAccountReputationConnector {
+    val connector = new BankAccountReputationConnect {
       override val bankAccountReputationUrl: String = "test-url"
       override val http: WSHttp = mockWSHttp
     }
@@ -44,7 +44,8 @@ class BankAccountReputationConnectorSpec extends VatRegSpec {
     }
 
     "throw an exception" in new Setup{
-      when(mockWSHttp.POST[ModulusCheckAccount, JsValue](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(),Matchers.any()))
+      when(mockWSHttp.POST[ModulusCheckAccount, JsValue](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+        (ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.failed(Upstream5xxResponse(INTERNAL_SERVER_ERROR.toString,500,500)))
 
       connector.bankAccountModulusCheck(validBankAccountDetailsForModulusCheck) failedWith classOf[Upstream5xxResponse]

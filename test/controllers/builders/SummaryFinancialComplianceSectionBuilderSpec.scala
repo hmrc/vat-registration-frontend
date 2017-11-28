@@ -23,7 +23,8 @@ import models.view.SummaryRow
 
 class SummaryFinancialComplianceSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val defaultFinancialCompliance = VatComplianceFinancial(adviceOrConsultancyOnly = false,
+  val defaultFinancialCompliance = VatComplianceFinancial(
+    adviceOrConsultancyOnly = false,
     actAsIntermediary = false,
     additionalNonSecuritiesWork = Some(false),
     vehicleOrEquipmentLeasing = Some(false),

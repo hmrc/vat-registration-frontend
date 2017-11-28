@@ -16,32 +16,32 @@
 
 package services
 
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import models.CurrentProfile
-import play.api.Logger
 import play.api.i18n.Messages
-import play.api.libs.json.Json
-import play.api.mvc.{Request, Result}
 import play.api.mvc.Results._
-import uk.gov.hmrc.play.http.HeaderCarrier
+import play.api.mvc.{Request, Result}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 trait SessionProfile {
 
-  val keystoreConnector: KeystoreConnector
+  val keystoreConnector: KeystoreConnect
 
   private val CURRENT_PROFILE_KEY = "CurrentProfile"
 
   def withCurrentProfile(f: CurrentProfile => Future[Result])(implicit request: Request[_], hc: HeaderCarrier): Future[Result] = {
     keystoreConnector.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) flatMap {
       case Some(profile) => f(profile)
-      case None          => Future.successful(Conflict)
+      case None          =>
+        //TODO: Redirect to start of PAYE
+        Future.successful(Conflict)
     }
   }
 
-  def ivPassedCheck(f: => Future[Result])(implicit cp:CurrentProfile,request: Request[_],messages:Messages):Future[Result] = {
+  def ivPassedCheck(f: => Future[Result])(implicit cp: CurrentProfile, request: Request[_], messages: Messages): Future[Result] = {
     if(!cp.ivPassed) Future.successful(InternalServerError(views.html.pages.error.restart())) else f
   }
 }

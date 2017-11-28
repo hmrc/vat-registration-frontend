@@ -16,31 +16,28 @@
 
 package features.frs.controllers
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
-import config.FrontendAuthConnector
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import controllers.VatRegistrationControllerNoAux
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import models.view.frs.JoinFrsView
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, VatRegistrationService}
+import services.{RegistrationService, SessionProfile}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
-@Singleton
 class FlatRateSchemeControllerImpl @Inject()(val messagesApi: MessagesApi,
-                                             val service: VatRegistrationService) extends FlatRateSchemeController {
-  override val keystoreConnector: KeystoreConnector = KeystoreConnector
-  override val authConnector: AuthConnector = FrontendAuthConnector
-}
+                                             val service: RegistrationService,
+                                             val authConnector: AuthConnector,
+                                             val keystoreConnector: KeystoreConnect) extends FlatRateSchemeController
 
 trait FlatRateSchemeController extends VatRegistrationControllerNoAux with SessionProfile {
 
-  val service: VatRegistrationService
+  val service: RegistrationService
 
   //Join Frs
   val joinFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("joinFrs")("frs.join")

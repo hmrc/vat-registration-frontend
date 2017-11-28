@@ -28,16 +28,16 @@ import models.CurrentProfile
 import models.ModelKeys._
 import models.external.IncorporationInfo
 import models.view.vatTradingDetails.vatChoice.OverThresholdView
-import org.mockito.Matchers
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatest.exceptions.TestFailedException
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
@@ -45,10 +45,14 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
 
   val overThresholdFormFactory = new OverThresholdFormFactory(Now[LocalDate](today))
 
-  object TestOverThresholdController extends OverThresholdController(overThresholdFormFactory, ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-  }
+  object TestOverThresholdController extends OverThresholdController(
+    overThresholdFormFactory,
+    ds,
+    mockAuthConnector,
+    mockKeystoreConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(routes.OverThresholdController.show())
 
@@ -87,7 +91,7 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
 
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
 
@@ -101,7 +105,7 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
 
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
 

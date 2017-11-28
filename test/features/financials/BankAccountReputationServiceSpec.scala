@@ -17,7 +17,7 @@
 package services
 
 import helpers.{S4LMockSugar, VatRegSpec}
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 
 import scala.concurrent.Future
@@ -30,13 +30,13 @@ class BankAccountReputationServiceSpec extends VatRegSpec with S4LMockSugar {
 
   "Calling bankDetailsModulusCheck" should {
     "return true when accountNumberWithSortCodeIsValid is true" in new Setup {
-      when(mockBankAccountReputationConnector.bankAccountModulusCheck(Matchers.any())(Matchers.any()))
+      when(mockBankAccountReputationConnector.bankAccountModulusCheck(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(validBankCheckJsonResponse))
       service.bankDetailsModulusCheck(validBankAccountDetailsForModulusCheck) returns true
     }
 
     "return false when accountNumberWithSortCodeIsValid is false" in new Setup {
-      when(mockBankAccountReputationConnector.bankAccountModulusCheck(Matchers.any())(Matchers.any()))
+      when(mockBankAccountReputationConnector.bankAccountModulusCheck(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(invalidBankCheckJsonResponse))
       service.bankDetailsModulusCheck(validBankAccountDetailsForModulusCheck) returns false
     }

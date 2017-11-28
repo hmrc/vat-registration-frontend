@@ -608,7 +608,7 @@ trait StubUtils {
 
   case class AuditStub()(implicit builder: PreconditionBuilder) {
     def writesAudit(status:Int =200) = {
-      stubFor(post(urlMatching("/write/audit"))
+      stubFor(post(urlMatching("/write/audit/merged"))
         .willReturn(
           aResponse().
             withStatus(status).

@@ -29,7 +29,7 @@ import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
 import models.view.vatContact.ppob.PpobView
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerHomeAddressView, OfficerSecurityQuestionsView}
 import models.{S4LVatContact, S4LVatLodgingOfficer}
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
 
@@ -45,8 +45,11 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
     implicit def toOptionT(d: LocalDate): OptionT[Future, CorporationTaxRegistration] =
       OptionT.pure(CorporationTaxRegistration(Some(AccountingDetails("", Some(d.format(ofPattern("yyyy-MM-dd")))))))
 
-    val service = new PrePopulationService(mockPPConnector, mockIIService, mockS4LService) {
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+    val service = new PrePopService {
+      override val ppConnector = mockPPConnector
+      override val incorpInfoService = mockIIService
+      override val vatRegService = mockVatRegistrationService
+      override val save4later = mockS4LService
       mockFetchRegId()
     }
   }
@@ -62,7 +65,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
     "be None" in new Setup {
       when(mockPPConnector.getCompanyRegistrationDetails(any(), any(), any()))
         .thenReturn(OptionT.none[Future, CorporationTaxRegistration])
-      service.getCTActiveDate().returnsNone
+      service.getCTActiveDate.returnsNone
     }
 
   }
@@ -74,11 +77,11 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
       val scsrAddress = ScrsAddress("premises address_line_1", "address_line_2 po_box", Some("locality"), Some("region"), Some("postal_code"), Some("country"))
       val officerHomeAddressView = OfficerHomeAddressView(scsrAddress.id, Some(scsrAddress))
 
-      when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(scsrAddress))
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
+      when(mockIIService.getRegisteredOfficeAddress).thenReturn(OptionT.pure(scsrAddress))
+      when(mockVatRegistrationService.getVatScheme).thenReturn(emptyVatScheme.pure)
       save4laterReturns(S4LVatLodgingOfficer(officerHomeAddress = Some(officerHomeAddressView)))
 
-      service.getOfficerAddressList() returns Seq(scsrAddress)
+      service.getOfficerAddressList returns Seq(scsrAddress)
     }
 
     "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
@@ -96,20 +99,20 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
       )))
 
 
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
-      when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(address))
+      when(mockVatRegistrationService.getVatScheme).thenReturn(vatSchemeWithAddress.pure)
+      when(mockIIService.getRegisteredOfficeAddress).thenReturn(OptionT.pure(address))
       save4laterReturnsNothing[S4LVatLodgingOfficer]()
 
-      service.getOfficerAddressList() returns Seq(address)
+      service.getOfficerAddressList returns Seq(address)
     }
 
     "be empty if a companyProfile is not present and addressDB and addressS4L are not present" in new Setup {
 
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
-      when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.none[Future, ScrsAddress])
+      when(mockVatRegistrationService.getVatScheme).thenReturn(emptyVatScheme.pure)
+      when(mockIIService.getRegisteredOfficeAddress).thenReturn(OptionT.none[Future, ScrsAddress])
       save4laterReturnsNothing[S4LVatLodgingOfficer]()
 
-      service.getOfficerAddressList() returns Seq()
+      service.getOfficerAddressList returns Seq()
     }
   }
 
@@ -120,31 +123,31 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
     "be non-empty when companyProfile, addressDB and addressS4L are present" in new Setup {
       val ppobView = PpobView(scsrAddress.id, Some(scsrAddress))
 
-      when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(scsrAddress))
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
+      when(mockIIService.getRegisteredOfficeAddress).thenReturn(OptionT.pure(scsrAddress))
+      when(mockVatRegistrationService.getVatScheme).thenReturn(emptyVatScheme.pure)
       save4laterReturns(S4LVatContact(ppob = Some(ppobView)))
 
-      service.getPpobAddressList() returns Seq(scsrAddress)
+      service.getPpobAddressList returns Seq(scsrAddress)
     }
 
     "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
       val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
       val vatSchemeWithAddress = VatScheme("123", status = VatRegStatus.draft).copy(vatContact = Some(validVatContact.copy(ppob = scsrAddress)))
 
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithAddress.pure)
-      when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.pure(address))
+      when(mockVatRegistrationService.getVatScheme).thenReturn(vatSchemeWithAddress.pure)
+      when(mockIIService.getRegisteredOfficeAddress).thenReturn(OptionT.pure(address))
       save4laterReturnsNothing[S4LVatContact]()
 
-      service.getPpobAddressList() returns Seq(address, scsrAddress)
+      service.getPpobAddressList returns Seq(address, scsrAddress)
     }
 
     "be empty if a companyProfile is not present and addressDB and addressS4L are not present" in new Setup {
 
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
-      when(mockIIService.getRegisteredOfficeAddress()).thenReturn(OptionT.none[Future, ScrsAddress])
+      when(mockVatRegistrationService.getVatScheme).thenReturn(emptyVatScheme.pure)
+      when(mockIIService.getRegisteredOfficeAddress).thenReturn(OptionT.none[Future, ScrsAddress])
       save4laterReturnsNothing[S4LVatContact]()
 
-      service.getPpobAddressList() returns Seq()
+      service.getPpobAddressList returns Seq()
     }
   }
 
@@ -158,21 +161,21 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "be non-empty when OfficerList is present and nothing in S4L" in new Setup {
 
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
-      when(mockIIService.getOfficerList()).thenReturn(Seq(officer).pure)
+      when(mockVatRegistrationService.getVatScheme).thenReturn(emptyVatScheme.pure)
+      when(mockIIService.getOfficerList).thenReturn(Seq(officer).pure)
       save4laterReturnsNothing[S4LVatLodgingOfficer]
 
-      service.getOfficerList() returns Seq(officer)
+      service.getOfficerList returns Seq(officer)
     }
 
     "be empty when officer only in S4L" in new Setup {
 
-      when(mockIIService.getOfficerList()).thenReturn(Seq.empty[Officer].pure)
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
+      when(mockIIService.getOfficerList).thenReturn(Seq.empty[Officer].pure)
+      when(mockVatRegistrationService.getVatScheme).thenReturn(emptyVatScheme.pure)
       save4laterReturns(S4LVatLodgingOfficer(completionCapacity = Some(completeCapacityView),
         officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.of(1999,1,1), ""))))
 
-      service.getOfficerList() returns Seq()
+      service.getOfficerList returns Seq()
     }
 
     "be empty when officer only in BE" in new Setup {
@@ -190,38 +193,38 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
           Some(currentOrPreviousAddress),
           Some(validOfficerContactDetails))))
 
-      when(mockIIService.getOfficerList()).thenReturn(Seq.empty[Officer].pure)
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(vatSchemeWithOfficer.pure)
+      when(mockIIService.getOfficerList).thenReturn(Seq.empty[Officer].pure)
+      when(mockVatRegistrationService.getVatScheme).thenReturn(vatSchemeWithOfficer.pure)
       save4laterReturnsNothing[S4LVatLodgingOfficer]
 
-      service.getOfficerList() returns Seq()
+      service.getOfficerList returns Seq()
     }
 
     "be non-empty and no duplicates when OfficerList and same officer in S4L are present" in new Setup {
 
-      when(mockIIService.getOfficerList()).thenReturn(Seq(officer).pure)
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
+      when(mockIIService.getOfficerList).thenReturn(Seq(officer).pure)
+      when(mockVatRegistrationService.getVatScheme).thenReturn(emptyVatScheme.pure)
       save4laterReturns(S4LVatLodgingOfficer(completionCapacity = Some(completeCapacityView)))
 
-      service.getOfficerList() returns Seq(officer)
+      service.getOfficerList returns Seq(officer)
     }
 
     "be empty when no officer list is present" in new Setup {
 
-      when(mockIIService.getOfficerList()).thenReturn(Seq.empty[Officer].pure)
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(emptyVatScheme.pure)
+      when(mockIIService.getOfficerList).thenReturn(Seq.empty[Officer].pure)
+      when(mockVatRegistrationService.getVatScheme).thenReturn(emptyVatScheme.pure)
       save4laterReturnsNothing[S4LVatLodgingOfficer]
 
-      service.getOfficerList() returns Seq()
+      service.getOfficerList returns Seq()
     }
 
     "return the II officer list is present" in new Setup {
 
-      when(mockIIService.getOfficerList()).thenReturn(Seq.empty[Officer].pure)
-      when(mockVatRegistrationService.getVatScheme()).thenReturn(validVatScheme.pure)
+      when(mockIIService.getOfficerList).thenReturn(Seq.empty[Officer].pure)
+      when(mockVatRegistrationService.getVatScheme).thenReturn(validVatScheme.pure)
       save4laterReturnsNothing[S4LVatLodgingOfficer]
 
-      service.getOfficerList() returns Seq()
+      service.getOfficerList returns Seq()
     }
 
  }

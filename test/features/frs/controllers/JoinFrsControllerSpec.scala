@@ -21,8 +21,8 @@ import fixtures.VatRegistrationFixture
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import helpers.{ControllerSpec, MockMessages}
 import models.{CurrentProfile, S4LFlatRateScheme}
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.data.Form
 import play.api.i18n.MessagesApi
@@ -56,7 +56,7 @@ class JoinFrsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       "visited for the first time" in new Setup {
 
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Some(currentProfile)))
 
         when(mockVatRegistrationService.fetchFlatRateScheme(any(), any()))
@@ -72,7 +72,7 @@ class JoinFrsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       "user has already answered this question" in new Setup {
 
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Some(currentProfile)))
 
         when(mockVatRegistrationService.fetchFlatRateScheme(any(), any()))
@@ -92,7 +92,7 @@ class JoinFrsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
     "return 400 with Empty data" in new Setup {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody())(result =>
@@ -102,7 +102,7 @@ class JoinFrsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
     "return 303 with Join Flat Rate Scheme selected Yes" in new Setup {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
       when(mockVatRegistrationService.saveJoinFRS(any())(any(), any()))
@@ -119,7 +119,7 @@ class JoinFrsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
     "return 303 with Join Flat Rate Scheme selected No" in new Setup {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
       when(mockVatRegistrationService.saveJoinFRS(any())(any(), any()))

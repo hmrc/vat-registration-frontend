@@ -16,63 +16,54 @@
 
 package connectors.test
 
-import com.google.inject.ImplementedBy
+import javax.inject.Inject
+
 import config.WSHttp
 import connectors._
-import play.api.Logger
+import models.CurrentProfile
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Result, Results}
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.http._
+import uk.gov.hmrc.play.config.inject.ServicesConfig
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@ImplementedBy(classOf[TestVatRegistrationConnector])
-trait TestRegistrationConnector {
-  def setupCurrentProfile()(implicit hc: HeaderCarrier): Future[Result]
+class TestVatRegistrationConnector @Inject()(val http: WSHttp, config: ServicesConfig) extends TestRegistrationConnector {
+  val vatRegUrl = config.baseUrl("vat-registration")
 
-  def dropCollection()(implicit hc: HeaderCarrier): Future[Result]
-
-  def getIncorpInfo(txId: String)(implicit hc: HeaderCarrier): Future[HttpResponse]
-
-  def incorpCompany(txId: String)(implicit hc: HeaderCarrier): Future[HttpResponse]
-
-  def postTestData(jsonData: JsValue)(implicit hc: HeaderCarrier): Future[HttpResponse]
-
-  def wipeTestData()(implicit hc: HeaderCarrier): Future[HttpResponse]
-
+  val incorporationFrontendStubsUrl = config.baseUrl("incorporation-frontend-stub")
+  val incorporationFrontendStubsUri = config.getConfString("incorporation-frontend-stub.uri", "")
 }
 
-class TestVatRegistrationConnector extends TestRegistrationConnector with ServicesConfig {
-  val vatRegUrl = baseUrl("vat-registration")
-  val http = WSHttp
+trait TestRegistrationConnector {
+  val http: CoreGet with CorePost with CorePut
 
-  lazy val incorporationFrontendStubsUrl: String = baseUrl("incorporation-frontend-stub")
-  lazy val incorporationFrontendStubsUri: String = getConfString("incorporation-frontend-stub.uri", "")
+  val vatRegUrl: String
+  val incorporationFrontendStubsUrl: String
+  val incorporationFrontendStubsUri: String
 
-  def setupCurrentProfile()(implicit hc: HeaderCarrier): Future[Result] =
-    http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/current-profile-setup").map { _ => Results.Ok }
+  def setupCurrentProfile(implicit hc: HeaderCarrier): Future[Result] = {
+    http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/current-profile-setup").map(_ => Results.Ok)
+  }
 
-  def dropCollection()(implicit hc: HeaderCarrier): Future[Result] =
-    http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/clear").map { _ => Results.Ok }
+  def dropCollection(implicit hc: HeaderCarrier): Future[Result] = {
+    http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/clear").map(_ => Results.Ok)
+  }
 
-  def getIncorpInfo(txId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/incorporation-information/$txId")
-
-  def incorpCompany(txId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/test-only/incorporation-information/incorp-company/$txId")
+  def incorpCompany(implicit currentProfile: CurrentProfile, hc: HeaderCarrier): Future[HttpResponse] = {
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/test-only/incorporation-information/incorp-company/${currentProfile.transactionId}")
+  }
 
   def postTestData(jsonData: JsValue)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    Logger.debug(s"###111###$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data")
     http.POST[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data", jsonData) recover {
-      case e: Exception => throw logResponse(e, "TestVatRegistrationConnector", s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data")
+      case e: Exception => throw logResponse(e, "postTestData")
     }
   }
 
-  def wipeTestData()(implicit hc: HeaderCarrier): Future[HttpResponse] =
+  def wipeTestData(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     http.PUT[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data", Json.parse("{}")) recover {
-      case e: Exception => throw logResponse(e, "TestVatRegistrationConnector", s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data")
+      case e: Exception => throw logResponse(e, "wipeTestData")
     }
-
+  }
 }

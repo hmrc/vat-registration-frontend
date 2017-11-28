@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 package services {
@@ -24,13 +23,14 @@ package services {
   import java.time.LocalDate
 
   import common.ErrorUtil.fail
-  import models.{ApiModelTransformer, CurrentProfile, S4LKey, S4LTradingDetails}
   import models.api.{VatScheme, VatTradingDetails}
   import models.view.vatTradingDetails.TradingNameView
   import models.view.vatTradingDetails.vatChoice.StartDateView
   import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
+  import models.{ApiModelTransformer, CurrentProfile, S4LKey, S4LTradingDetails}
+  import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-  trait TradingDetailsService extends CommonService {
+  trait TradingDetailsService {
     self: RegistrationService =>
 
     private val tradingDetailsS4LKey: S4LKey[S4LTradingDetails] = S4LKey[S4LTradingDetails]("VatTradingDetails")
@@ -38,10 +38,10 @@ package services {
     def fetchTradingDetails(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[S4LTradingDetails] = {
       fetchTradingDetailsFromS4L flatMap {
         case Some(tradingDetails) => Future.successful(tradingDetails)
-        case None => getVatScheme map { vatScheme =>
+        case None                 => getVatScheme map { vatScheme =>
           vatScheme.tradingDetails match {
             case Some(_) => tradingDetailsApiToView(vatScheme)
-            case None => S4LTradingDetails()
+            case None    => S4LTradingDetails()
           }
         }
       }
@@ -52,26 +52,23 @@ package services {
     }
 
     def submitTradingDetails()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatTradingDetails] = {
-      def merge(fresh: Option[S4LTradingDetails], vs: VatScheme): VatTradingDetails =
-        fresh.fold(
-          vs.tradingDetails.getOrElse(throw fail("VatTradingDetails"))
-        )(s4l => S4LTradingDetails.apiT.toApi(s4l))
+      def merge(fresh: Option[S4LTradingDetails], vs: VatScheme): VatTradingDetails = fresh.fold(
+        vs.tradingDetails.getOrElse(throw fail("VatTradingDetails"))
+      )(s4l => S4LTradingDetails.apiT.toApi(s4l))
 
       for {
-        vs       <- getVatScheme()
-        vlo      <- s4l[S4LTradingDetails]()
+        vs       <- getVatScheme
+        vlo      <- s4l[S4LTradingDetails]
         response <- vatRegConnector.upsertVatTradingDetails(profile.registrationId, merge(vlo, vs))
       } yield response
     }
 
-    private[services] def tradingDetailsApiToView(vs: VatScheme): S4LTradingDetails = {
-      S4LTradingDetails(
-        tradingName = ApiModelTransformer[TradingNameView].toViewModel(vs),
-        startDate = ApiModelTransformer[StartDateView].toViewModel(vs),
-        euGoods = ApiModelTransformer[EuGoods].toViewModel(vs),
-        applyEori = ApiModelTransformer[ApplyEori].toViewModel(vs)
-      )
-    }
+    private[services] def tradingDetailsApiToView(vs: VatScheme): S4LTradingDetails = S4LTradingDetails(
+      tradingName = ApiModelTransformer[TradingNameView].toViewModel(vs),
+      startDate   = ApiModelTransformer[StartDateView].toViewModel(vs),
+      euGoods     = ApiModelTransformer[EuGoods].toViewModel(vs),
+      applyEori   = ApiModelTransformer[ApplyEori].toViewModel(vs)
+    )
 
     private[services] def fetchTradingDetailsFromS4L(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Option[S4LTradingDetails]] = {
       s4LService.fetchAndGetNoAux(tradingDetailsS4LKey)
@@ -83,7 +80,7 @@ package connectors {
 
   import cats.instances.FutureInstances
   import models.api.{VatChoice, VatTradingDetails}
-  import uk.gov.hmrc.play.http.HttpReads
+  import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
   import scala.concurrent.Future
 
@@ -91,15 +88,10 @@ package connectors {
     self: RegistrationConnector =>
 
     def upsertVatTradingDetails(regId: String, vatTradingDetails: VatTradingDetails)
-                               (implicit hc: HeaderCarrier, rds: HttpReads[VatTradingDetails]): Future[VatTradingDetails] =
+                               (implicit hc: HeaderCarrier, rds: HttpReads[VatTradingDetails]): Future[VatTradingDetails] = {
       http.PATCH[VatTradingDetails, VatTradingDetails](s"$vatRegUrl/vatreg/$regId/trading-details", vatTradingDetails).recover{
-        case e: Exception => throw logResponse(e, className, "upsertVatTradingDetails")
+        case e: Exception => throw logResponse(e, "upsertVatTradingDetails")
       }
-
-    // TODO - doesn't appear to be called from anywhere ? Remove?
-    def upsertVatChoice(regId: String, vatChoice: VatChoice)(implicit hc: HeaderCarrier, rds: HttpReads[VatChoice]): Future[VatChoice] =
-      http.PATCH[VatChoice, VatChoice](s"$vatRegUrl/vatreg/$regId/vat-choice", vatChoice).recover{
-        case e: Exception => throw logResponse(e, className, "upsertVatChoice")
-      }
+    }
   }
 }

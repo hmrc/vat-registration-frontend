@@ -16,7 +16,7 @@
 
 package controllers.test
 
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{BAD_REQUEST, OK}
@@ -36,10 +36,10 @@ class FeatureSwitchControllerSpec extends VatRegSpec {
   "switcher" should {
     "enable the addressService feature switch and return an OK" when {
       "addressService and addressLookUpFrontend are passed in the url" in new Setup{
-        when(mockVATFeatureSwitch(Matchers.any()))
+        when(mockVATFeatureSwitch(ArgumentMatchers.any()))
           .thenReturn(Some(enabledFeatureSwitch))
 
-        when(mockFeatureManager.enable(Matchers.any()))
+        when(mockFeatureManager.enable(ArgumentMatchers.any()))
           .thenReturn(enabledFeatureSwitch)
 
         val result = await(controller.switcher("test","true")(FakeRequest()))
@@ -49,10 +49,10 @@ class FeatureSwitchControllerSpec extends VatRegSpec {
 
     "disable the test service switch and return an OK" when {
       "valid service name and some other featureState is passed into the URL" in new Setup {
-        when(mockVATFeatureSwitch(Matchers.any()))
+        when(mockVATFeatureSwitch(ArgumentMatchers.any()))
           .thenReturn(Some(enabledFeatureSwitch))
 
-        when(mockFeatureManager.disable(Matchers.any()))
+        when(mockFeatureManager.disable(ArgumentMatchers.any()))
           .thenReturn(disabledFeatureSwitch)
 
         val result = await(controller.switcher("test","someOtherState")(FakeRequest()))
@@ -62,7 +62,7 @@ class FeatureSwitchControllerSpec extends VatRegSpec {
 
     "return a bad request" when {
       "an unknown feature is trying to be enabled" in new Setup {
-        when(mockVATFeatureSwitch(Matchers.any()))
+        when(mockVATFeatureSwitch(ArgumentMatchers.any()))
           .thenReturn(None)
 
         val result = await(controller.switcher("invalidName","invalidState")(FakeRequest()))

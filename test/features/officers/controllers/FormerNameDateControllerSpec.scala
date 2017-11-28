@@ -25,15 +25,15 @@ import forms.vatLodgingOfficer.FormerNameDateForm
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.CurrentProfile
 import models.view.vatLodgingOfficer.{FormerNameDateView, FormerNameView}
-import org.mockito.Matchers
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
@@ -42,10 +42,14 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
   implicit val localDateOrdering = formerNameDateForm
   val validFormerNameView = FormerNameView(true, Some("FORMER_NAME"))
 
-  object FormerNameDateController extends FormerNameDateController(ds)(mockS4LService, mockVatRegistrationService) {
+  object FormerNameDateController extends FormerNameDateController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  ) {
     implicit val fixedToday = Now[LocalDate](today)
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(routes.FormerNameDateController.show())
@@ -56,7 +60,7 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
       save4laterReturnsNoViewModel[FormerNameView]()
       save4laterReturnsViewModel[FormerNameDateView](formerNameDate)()
       mockGetCurrentProfile()
-      when(mockVatRegistrationService.getVatScheme()(any(),any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(),any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(FormerNameDateController.show) {
@@ -69,7 +73,7 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
       save4laterReturnsNoViewModel[FormerNameView]()
       save4laterReturnsViewModel[FormerNameDateView](formerNameDate)()
       mockGetCurrentProfile()
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       save4laterReturnsViewModel(formerNameDate)()
@@ -83,7 +87,7 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
       save4laterReturnsNoViewModel[FormerNameDateView]()
       save4laterReturnsViewModel[FormerNameView](validFormerNameView)()
       mockGetCurrentProfile()
-      when(mockVatRegistrationService.getVatScheme()(any(),any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(),any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(FormerNameDateController.show) {
@@ -95,7 +99,7 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
       save4laterReturnsNoViewModel[FormerNameDateView]()
       save4laterReturnsViewModel[FormerNameView](validFormerNameView)()
       mockGetCurrentProfile()
-      when(mockVatRegistrationService.getVatScheme()(any(),any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(),any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(FormerNameDateController.show) {
@@ -110,7 +114,7 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
       save4laterReturnsNoViewModel[FormerNameDateView]()
       save4laterReturnsNoViewModel[FormerNameView]()
       mockGetCurrentProfile()
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       submitAuthorised(
@@ -123,7 +127,7 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
       save4laterReturnsViewModel[FormerNameDateView](FormerNameDateView(LocalDate.now))()
       save4laterReturnsViewModel[FormerNameView](validFormerNameView)()
       mockGetCurrentProfile()
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       submitAuthorised(

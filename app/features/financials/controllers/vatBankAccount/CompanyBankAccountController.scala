@@ -48,10 +48,11 @@ package models.view.vatFinancials.vatBankAccount {
 
 package controllers.vatFinancials.vatBankAccount {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
   import cats.syntax.FlatMapSyntax
   import common.ConditionalFlatMap._
+  import connectors.KeystoreConnect
   import controllers.vatFinancials.EstimateVatTurnoverKey.lastKnownValueKey
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatFinancials.vatBankAccount.CompanyBankAccountForm
@@ -59,11 +60,15 @@ package controllers.vatFinancials.vatBankAccount {
   import models.view.vatFinancials.EstimateVatTurnover
   import models.view.vatFinancials.vatBankAccount.CompanyBankAccount
   import play.api.mvc._
-  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
+  import services._
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies)
-                                              (implicit s4l: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with FlatMapSyntax with CommonService with SessionProfile {
+  @Singleton
+  class CompanyBankAccountController @Inject()(ds: CommonPlayDependencies,
+                                               val keystoreConnector: KeystoreConnect,
+                                               val authConnector: AuthConnector,
+                                               implicit val s4l: S4LService,
+                                               implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with FlatMapSyntax with SessionProfile {
 
     val joinThreshold: Long = conf.getLong("thresholds.frs.joinThreshold").get
 

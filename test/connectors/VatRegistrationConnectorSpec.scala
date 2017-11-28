@@ -21,9 +21,10 @@ import helpers.VatRegSpec
 import models.api._
 import models.external.IncorporationInfo
 import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.ws.WSHttp
+import config.WSHttp
 
 import scala.language.postfixOps
+import uk.gov.hmrc.http.HttpResponse
 
 class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -37,27 +38,27 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   "Calling createNewRegistration" should {
     "return a successful outcome when the microservice successfully creates a new Vat Registration" in new Setup {
       mockHttpPOSTEmpty[VatScheme]("tst-url", emptyVatScheme)
-      connector.createNewRegistration() returns emptyVatScheme
+      connector.createNewRegistration returns emptyVatScheme
     }
     "return a Bad Request response" in new Setup {
       mockHttpFailedPOSTEmpty[HttpResponse]("tst-url", badRequest)
-      connector.createNewRegistration() failedWith badRequest
+      connector.createNewRegistration failedWith badRequest
     }
     "return a Forbidden response" in new Setup {
       mockHttpFailedPOSTEmpty[HttpResponse]("tst-url", forbidden)
-      connector.createNewRegistration() failedWith forbidden
+      connector.createNewRegistration failedWith forbidden
     }
     "return an Upstream4xxResponse" in new Setup {
       mockHttpFailedPOSTEmpty[HttpResponse]("tst-url", upstream4xx)
-      connector.createNewRegistration() failedWith upstream4xx
+      connector.createNewRegistration failedWith upstream4xx
     }
     "return Upstream5xxResponse" in new Setup {
       mockHttpFailedPOSTEmpty[HttpResponse]("tst-url", upstream5xx)
-      connector.createNewRegistration() failedWith upstream5xx
+      connector.createNewRegistration failedWith upstream5xx
     }
     "return a Internal Server Error" in new Setup {
       mockHttpFailedPOSTEmpty[HttpResponse]("tst-url", internalServiceException)
-      connector.createNewRegistration() failedWith internalServiceException
+      connector.createNewRegistration failedWith internalServiceException
     }
   }
 

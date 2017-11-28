@@ -18,26 +18,23 @@ package services
 
 import javax.inject.{Inject, Singleton}
 
-import common.enums.VatRegStatus
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import models.CurrentProfile
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
-@Singleton
-class CurrentProfileService @Inject()(val incorpInfoService: IncorpInfoService,
-                                      val vatRegistrationService: VatRegistrationService) extends CurrentProfileSrv {
-  val keystoreConnector = KeystoreConnector
-}
+class CurrentProfileService @Inject()(val incorpInfoService: IncorporationInfoSrv,
+                                      val vatRegistrationService: RegistrationService,
+                                      val keystoreConnector: KeystoreConnect) extends CurrentProfileSrv
 
 trait CurrentProfileSrv {
 
-  val incorpInfoService: IncorpInfoService
-  val keystoreConnector: KeystoreConnector
+  val incorpInfoService: IncorporationInfoSrv
+  val keystoreConnector: KeystoreConnect
 
-  val vatRegistrationService: VatRegistrationService
+  val vatRegistrationService: RegistrationService
 
   def buildCurrentProfile(regId: String, txId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
     for {
@@ -56,12 +53,12 @@ trait CurrentProfileSrv {
     } yield profileWithIV
   }
 
-  def getIVStatusFromVRServiceAndUpdateCurrentProfile(cp:CurrentProfile)(implicit hc:HeaderCarrier):Future[CurrentProfile] = {
-    vatRegistrationService.getVatScheme()(cp,hc).map(_.lodgingOfficer.map(_.ivPassed)).flatMap(a => updateIVStatusInCurrentProfile(a.getOrElse(false))(hc,cp))
+  def getIVStatusFromVRServiceAndUpdateCurrentProfile(cp: CurrentProfile)(implicit hc: HeaderCarrier):Future[CurrentProfile] = {
+    vatRegistrationService.getVatScheme(cp,hc).map(_.lodgingOfficer.map(_.ivPassed)).flatMap(a => updateIVStatusInCurrentProfile(a.getOrElse(false))(hc,cp))
   }
 
 
-  def updateIVStatusInCurrentProfile(passed: Boolean)(implicit hc:HeaderCarrier,cp:CurrentProfile):Future[CurrentProfile] = {
+  def updateIVStatusInCurrentProfile(passed: Boolean)(implicit hc: HeaderCarrier, cp: CurrentProfile):Future[CurrentProfile] = {
     val updatedCurrentProfile = cp.copy(ivPassed = passed)
     keystoreConnector.cache[CurrentProfile]("CurrentProfile", updatedCurrentProfile) map(_ => updatedCurrentProfile)
   }
