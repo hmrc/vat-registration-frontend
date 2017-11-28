@@ -16,19 +16,17 @@
 
 package services
 
-import common.exceptions.DownstreamExceptions.RegistrationIdNotFoundException
 import fixtures.{S4LFixture, VatRegistrationFixture}
 import helpers.VatRegSpec
 import models.api.VatServiceEligibility
 import models.view.vatContact.BusinessContactDetails
 import models.{S4LKey, S4LVatContact, S4LVatEligibility, ViewModelFormat}
-import org.mockito.Matchers.{any, eq => =~=}
+import org.mockito.ArgumentMatchers.{any, eq => =~=}
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
-
 
 class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixture {
 
@@ -71,20 +69,20 @@ class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixt
     "fetch a form with the correct key" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
       mockS4LFetchAndGet(S4LKey[S4LVatEligibility].key, Some(S4LVatEligibility(vatEligibility = Some(testServiceEligibility))))
-      service.fetchAndGet[S4LVatEligibility]() returns Some(S4LVatEligibility(vatEligibility = Some(testServiceEligibility)))
+      service.fetchAndGet[S4LVatEligibility] returns Some(S4LVatEligibility(vatEligibility = Some(testServiceEligibility)))
     }
 
     "clear down S4L data" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
       mockS4LClear()
-      service.clear().map(_.status) returns 200
+      service.clear.map(_.status) returns 200
     }
 
     "fetch all data" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
       private val cacheMap = CacheMap("allData", Map.empty)
       mockS4LFetchAll(Some(cacheMap))
-      service.fetchAll() returns Some(cacheMap)
+      service.fetchAll returns Some(cacheMap)
     }
   }
 

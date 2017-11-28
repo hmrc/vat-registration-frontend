@@ -51,20 +51,23 @@ package models.view.vatTradingDetails {
 
 package controllers.vatTradingDetails {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
-  import connectors.KeystoreConnector
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatTradingDetails.TradingNameForm
   import models.view.vatTradingDetails.TradingNameView
   import play.api.mvc._
-  import services.{S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  class TradingNameController @Inject()(ds: CommonPlayDependencies)
-                                       (implicit s4LService: S4LService, vatRegistrationService: VatRegistrationService)
+  @Singleton
+  class TradingNameController @Inject()(ds: CommonPlayDependencies,
+                                        val keystoreConnector: KeystoreConnect,
+                                        val authConnector: AuthConnector,
+                                        implicit val s4LService: S4LService,
+                                        implicit val vatRegistrationService: RegistrationService)
     extends VatRegistrationController(ds) with SessionProfile {
-
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
 
     val form = TradingNameForm.form
 

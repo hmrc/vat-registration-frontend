@@ -19,38 +19,32 @@ package services
 import java.time.LocalDate
 import javax.inject.{Inject, Named}
 
-import com.google.inject.ImplementedBy
+import common.DateConversions._
 import connectors.BankHolidaysConnector
 import play.api.Logger
 import play.api.cache.CacheApi
-import services.WorkingDaysService.BANK_HOLIDAYS_CACHE_KEY
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.time.workingdays._
 
 import scala.concurrent.Await
+import scala.concurrent.duration._
+import scala.language.postfixOps
 import scala.util.Try
 
-@ImplementedBy(classOf[WorkingDaysService])
+class WorkingDaysService @Inject()(val bankHolidaysConnector: BankHolidaysConnector,
+                                   val cache: CacheApi,
+                                   @Named("fallback") val fallbackBHConnector: BankHolidaysConnector) extends DateService
+
 trait DateService {
+  val cache: CacheApi
+  val fallbackBHConnector: BankHolidaysConnector
+  val bankHolidaysConnector: BankHolidaysConnector
 
-  def addWorkingDays(date: LocalDate, days: Int): LocalDate
+  private val BANK_HOLIDAYS_CACHE_KEY = "bankHolidaySet"
 
-}
+  private val defaultHolidaySet: BankHolidaySet = Await.result(fallbackBHConnector.bankHolidays()(HeaderCarrier()), 1 second)
 
-class WorkingDaysService @Inject()(
-                                    bankHolidaysConnector: BankHolidaysConnector,
-                                    cache: CacheApi,
-                                    @Named("fallback") fallbackBHConnector: BankHolidaysConnector) extends DateService {
-
-  import uk.gov.hmrc.time.workingdays._
-
-  import scala.concurrent.duration._
-  import scala.language.postfixOps
-
-  val defaultHolidaySet: BankHolidaySet = Await.result(fallbackBHConnector.bankHolidays()(HeaderCarrier()), 1 second)
-
-  override def addWorkingDays(date: LocalDate, days: Int): LocalDate = {
-    import common.DateConversions._
-
+  def addWorkingDays(date: LocalDate, days: Int): LocalDate = {
     implicit val hols: BankHolidaySet = cache.getOrElse[BankHolidaySet](BANK_HOLIDAYS_CACHE_KEY, 1 day) {
       Logger.info(s"Reloading cache entry for $BANK_HOLIDAYS_CACHE_KEY")
       Try {
@@ -64,8 +58,4 @@ class WorkingDaysService @Inject()(
     (date: org.joda.time.LocalDate).plusWorkingDays(days)
   }
 
-}
-
-object WorkingDaysService {
-  val BANK_HOLIDAYS_CACHE_KEY = "bankHolidaySet"
 }

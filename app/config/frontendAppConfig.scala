@@ -19,7 +19,6 @@ package config
 import java.util.Base64
 
 import play.api.Play.{configuration, current}
-import uk.gov.hmrc.play.config.ServicesConfig
 
 trait AppConfig {
   val analyticsToken: String
@@ -29,25 +28,24 @@ trait AppConfig {
   val timeoutInSeconds: String
 }
 
-object FrontendAppConfig extends AppConfig with ServicesConfig {
+object FrontendAppConfig extends AppConfig {
 
   private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
 
-  private val contactFormServiceIdentifier = "MyService"
+  private val contactFormServiceIdentifier   = "SCRS"
 
-  override lazy val analyticsToken = loadConfig(s"google-analytics.token")
-  override lazy val analyticsHost = loadConfig(s"google-analytics.host")
+  override lazy val analyticsToken           = loadConfig(s"google-analytics.token")
+  override lazy val analyticsHost            = loadConfig(s"google-analytics.host")
   override lazy val reportAProblemPartialUrl = s"/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
-  override lazy val reportAProblemNonJSUrl = s"/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
+  override lazy val reportAProblemNonJSUrl   = s"/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
 
   override val timeoutInSeconds = loadConfig("timeoutInSeconds")
 
-  private def whitelistConfig(key: String): Seq[String] = Some(new String(Base64.getDecoder
-    .decode(loadConfig(key)), "UTF-8"))
+  private def whitelistConfig(key: String): Seq[String] = {
+    Some(new String(Base64.getDecoder.decode(loadConfig(key)), "UTF-8"))
+      .map(_.split(",")).getOrElse(Array.empty).toSeq
+  }
 
-    .map(_.split(",")).getOrElse(Array.empty).toSeq
-
-  lazy val whitelist = whitelistConfig("whitelist")
-  lazy val whitelistExcluded = whitelistConfig("whitelist-excluded")
-
+  lazy val whitelist          = whitelistConfig("whitelist")
+  lazy val whitelistExcluded  = whitelistConfig("whitelist-excluded")
 }

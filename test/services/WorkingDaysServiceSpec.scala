@@ -25,7 +25,7 @@ import org.joda.time.{LocalDate => JodaDate}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.Inspectors
 import play.api.cache.CacheApi
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
@@ -65,7 +65,7 @@ class WorkingDaysServiceSpec extends UnitSpec with MockFactory with Inspectors {
       forAll(tests) { test =>
         new Setup {
           (mockCache.getOrElse[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
-            .expects(WorkingDaysService.BANK_HOLIDAYS_CACHE_KEY, 1 day, *, *).returns(fixedHolidaySet)
+            .expects("bankHolidaySet", 1 day, *, *).returns(fixedHolidaySet)
           (mockConnector.bankHolidays(_: String)(_: HeaderCarrier))
             .expects("england-and-wales", *)
             .returns(Future.successful(fixedHolidaySet)).once()
@@ -80,7 +80,7 @@ class WorkingDaysServiceSpec extends UnitSpec with MockFactory with Inspectors {
     "should call bank holiday connector when nothing found in cache" in new Setup {
 
       (mockCache.getOrElse[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
-        .expects(WorkingDaysService.BANK_HOLIDAYS_CACHE_KEY, 1 day, *, *).onCall(product => {
+        .expects("bankHolidaySet", 1 day, *, *).onCall(product => {
         // call-by-name parameter of type BankHolidaySet will actually become a
         // () => BankHolidaySet, i.e. Function0[BankHolidaySet] at runtime
         // according to http://stackoverflow.com/a/18298495/81520 we need to do this trick:
@@ -114,7 +114,7 @@ class WorkingDaysServiceSpec extends UnitSpec with MockFactory with Inspectors {
           .returns(Future.successful(fixedHolidaySet))
 
         (mockCache.getOrElse[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
-          .expects(WorkingDaysService.BANK_HOLIDAYS_CACHE_KEY, 1 day, *, *).onCall(product => {
+          .expects("bankHolidaySet", 1 day, *, *).onCall(product => {
           product.productElement(2).asInstanceOf[Function0[BankHolidaySet]]()
         })
 

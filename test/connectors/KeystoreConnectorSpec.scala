@@ -17,18 +17,18 @@
 package connectors
 
 import helpers.VatRegSpec
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HttpResponse
 
 class KeystoreConnectorSpec extends VatRegSpec {
 
-  val connector = new KeystoreConnector {
+  val connector = new KeystoreConnect {
     override val sessionCache = mockSessionCache
   }
 
@@ -44,7 +44,7 @@ class KeystoreConnectorSpec extends VatRegSpec {
     "save the model" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(testModel)))
 
-      when(mockSessionCache.cache[TestModel](any(), any())(any(), any()))
+      when(mockSessionCache.cache[TestModel](any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(returnCacheMap))
 
       connector.cache("", testModel) returns returnCacheMap
@@ -55,7 +55,7 @@ class KeystoreConnectorSpec extends VatRegSpec {
     "return a list" in {
       val list = List(testModel)
 
-      when(mockSessionCache.fetchAndGetEntry[List[TestModel]](any())(any(), any()))
+      when(mockSessionCache.fetchAndGetEntry[List[TestModel]](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(list)))
 
       connector.fetchAndGet[List[TestModel]]("") returns Some(list)
@@ -66,17 +66,17 @@ class KeystoreConnectorSpec extends VatRegSpec {
     "return a CacheMap" in {
       val returnCacheMap = CacheMap("", Map("" -> Json.toJson(testModel)))
 
-      when(mockSessionCache.fetch()(any())).thenReturn(Future.successful(Some(returnCacheMap)))
+      when(mockSessionCache.fetch()(any(), any())).thenReturn(Future.successful(Some(returnCacheMap)))
 
-      await(connector.fetch()) mustBe Some(returnCacheMap)
+      await(connector.fetch) mustBe Some(returnCacheMap)
     }
   }
 
   "Removing from KeyStore" should {
     "return a HTTP Response" in {
-      when(mockSessionCache.remove()(any())).thenReturn(Future.successful(HttpResponse(OK)))
+      when(mockSessionCache.remove()(any(), any())).thenReturn(Future.successful(HttpResponse(OK)))
 
-      await(connector.remove()).status mustBe HttpResponse(OK).status
+      await(connector.remove).status mustBe HttpResponse(OK).status
     }
   }
 }

@@ -19,22 +19,22 @@ package controllers.vatFinancials
 import controllers.vatFinancials
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.{CurrentProfile, S4LVatFinancials}
+import models.S4LVatFinancials
 import models.view.vatFinancials.ZeroRatedSales
 import models.view.vatFinancials.ZeroRatedSales.{ZERO_RATED_SALES_NO, ZERO_RATED_SALES_YES}
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 
-import scala.concurrent.Future
-
 class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object Controller extends ZeroRatedSalesController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object Controller extends ZeroRatedSalesController(
+    ds,
+    mockS4LService,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(vatFinancials.routes.ZeroRatedSalesController.show())
 
@@ -51,7 +51,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[ZeroRatedSales]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(validVatScheme.pure)
 
       mockGetCurrentProfile()
 
@@ -62,7 +62,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[ZeroRatedSales]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
 
       mockGetCurrentProfile()
 

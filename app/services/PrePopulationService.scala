@@ -18,69 +18,63 @@ package services
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
 import cats.data.OptionT
 import cats.data.OptionT.fromOption
-import cats.instances.ListInstances
+import cats.instances.{FutureInstances, ListInstances}
 import cats.syntax.TraverseSyntax
-import com.google.inject.ImplementedBy
 import connectors.{OptionalResponse, PPConnector}
 import models._
 import models.api._
 import models.external.Officer
 import play.api.libs.json.Format
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@ImplementedBy(classOf[PrePopulationService])
-trait PrePopService {
-  def getCTActiveDate()(implicit hc: HeaderCarrier, profile: CurrentProfile): OptionalResponse[LocalDate]
-  def getOfficerAddressList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]]
-  def getPpobAddressList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]]
-  def getOfficerList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[Officer]]
-}
+class PrePopulationService @Inject()(val ppConnector: PPConnector,
+                                     val incorpInfoService: IncorporationInfoSrv,
+                                     val save4later: S4LService,
+                                     implicit val vatRegService: RegistrationService) extends PrePopService
 
-@Singleton
-class PrePopulationService @Inject()(ppc: PPConnector, iis: IncorporationInformationService, s4l: S4LService)
-                                    (implicit vrs: VatRegistrationService)
-  extends PrePopService with CommonService with TraverseSyntax with ListInstances {
+trait PrePopService extends TraverseSyntax with ListInstances with FutureInstances {
+
+  val ppConnector: PPConnector
+  val incorpInfoService: IncorporationInfoSrv
+  val vatRegService: RegistrationService
+  val save4later: S4LService
 
   private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-  val ppConnector = ppc
-  val incorpInfoService = iis
-  val save4later = s4l
-  val vatRegService = vrs
 
-  def getCTActiveDate()(implicit hc: HeaderCarrier, profile: CurrentProfile): OptionalResponse[LocalDate] =
+  def getCTActiveDate(implicit hc: HeaderCarrier, profile: CurrentProfile): OptionalResponse[LocalDate] =
     for {
-      ctReg <- ppConnector.getCompanyRegistrationDetails
+      ctReg             <- ppConnector.getCompanyRegistrationDetails
       accountingDetails <- fromOption[Future](ctReg.accountingDetails)
-      dateString <- fromOption[Future](accountingDetails.activeDate)
+      dateString        <- fromOption[Future](accountingDetails.activeDate)
     } yield LocalDate.parse(dateString, formatter)
 
-  private def getAddresses[T: S4LKey : Format]
-  (save4laterExtractor: T => Option[ScrsAddress])
-  (implicit mt: ApiModelTransformer[ScrsAddress], hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] =
+  private def getAddresses[T: S4LKey : Format](save4laterExtractor: T => Option[ScrsAddress])
+                                              (implicit mt: ApiModelTransformer[ScrsAddress], hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
     List(
-      incorpInfoService.getRegisteredOfficeAddress(),
-      OptionT(vatRegService.getVatScheme() map mt.toViewModel),
-      OptionT(save4later.fetchAndGet[T]()).subflatMap(save4laterExtractor)
+      incorpInfoService.getRegisteredOfficeAddress,
+      OptionT(vatRegService.getVatScheme map mt.toViewModel),
+      OptionT(save4later.fetchAndGet[T]).subflatMap(save4laterExtractor)
     ).traverse(_.value).map(_.flatten.distinct)
+  }
 
-  def getOfficerAddressList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
+  def getOfficerAddressList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
     import ScrsAddress.modelTransformerOfficerHomeAddressView
     getAddresses((_: S4LVatLodgingOfficer).officerHomeAddress.flatMap(_.address))
   }
 
-  def getPpobAddressList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
+  def getPpobAddressList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
     import ScrsAddress.modelTransformerPpobView
     getAddresses((_: S4LVatContact).ppob.flatMap(_.address))
   }
 
-  def getOfficerList()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[Officer]] = {
-    incorpInfoService.getOfficerList() map (_.distinct)
+  def getOfficerList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[Officer]] = {
+    incorpInfoService.getOfficerList map (_.distinct)
   }
 }

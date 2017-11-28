@@ -20,7 +20,7 @@ import models.AddressLookupJourneyId
 import models.api.ScrsAddress
 import play.api.mvc.Call
 import support.AppAndStubs
-import uk.gov.hmrc.play.http.{HeaderCarrier, NotFoundException, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, Upstream5xxResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class AddressLookupConnectorISpec extends UnitSpec with AppAndStubs {

@@ -42,18 +42,23 @@ package models.view.vatFinancials {
 
 package controllers.vatFinancials {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatFinancials.EstimateVatTurnoverForm
   import models.view.vatFinancials.EstimateVatTurnover
   import play.api.mvc.{Action, AnyContent}
-  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-
-  class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies)
-                                               (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with CommonService with SessionProfile {
+  @Singleton
+  class EstimateVatTurnoverController @Inject()(ds: CommonPlayDependencies,
+                                                val keystoreConnector: KeystoreConnect,
+                                                val authConnector: AuthConnector,
+                                                implicit val s4LService: S4LService,
+                                                implicit val vrs: RegistrationService)
+    extends VatRegistrationController(ds) with SessionProfile {
 
     val form = EstimateVatTurnoverForm.form
 

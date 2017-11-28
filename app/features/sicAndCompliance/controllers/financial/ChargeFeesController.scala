@@ -16,19 +16,23 @@
 
 package controllers.sicAndCompliance.financial {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.sicAndCompliance.financial.ChargeFeesForm
   import models.view.sicAndCompliance.financial.ChargeFees
   import play.api.data.Form
   import play.api.mvc.{Action, AnyContent}
-  import services.{CommonService, RegistrationService, S4LService, SessionProfile}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-
-  class ChargeFeesController @Inject()(ds: CommonPlayDependencies)
-                                      (implicit s4LService: S4LService, vrs: RegistrationService)
-    extends VatRegistrationController(ds) with CommonService with SessionProfile {
+  @Singleton
+  class ChargeFeesController @Inject()(ds: CommonPlayDependencies,
+                                       val keystoreConnector: KeystoreConnect,
+                                       val authConnector: AuthConnector,
+                                       implicit val s4LService: S4LService,
+                                       implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     val form: Form[ChargeFees] = ChargeFeesForm.form
 
@@ -55,9 +59,7 @@ package controllers.sicAndCompliance.financial {
             }
           }
     }
-
   }
-
 }
 
 package forms.sicAndCompliance.financial {
@@ -75,9 +77,5 @@ package forms.sicAndCompliance.financial {
         RADIO_YES_NO -> missingBooleanFieldMapping()("chargeFees")
       )(ChargeFees.apply)(ChargeFees.unapply)
     )
-
   }
-
 }
-
-

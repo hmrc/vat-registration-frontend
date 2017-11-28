@@ -21,8 +21,8 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.CurrentProfile
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
@@ -32,10 +32,13 @@ import scala.concurrent.Future
 
 class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object EuGoodsController extends EuGoodsController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object EuGoodsController extends EuGoodsController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
 
@@ -59,7 +62,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
 
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any(), any()))
+      when(mockVatRegistrationService.getVatScheme(ArgumentMatchers.any(), any()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(EuGoodsController.show) {
@@ -72,7 +75,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
 
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any(), any()))
+      when(mockVatRegistrationService.getVatScheme(ArgumentMatchers.any(), any()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(EuGoodsController.show) {

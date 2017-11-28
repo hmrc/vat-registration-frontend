@@ -16,21 +16,24 @@
 
 package controllers.vatContact
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatContact.BusinessContactDetailsForm
 import models.view.vatContact.BusinessContactDetails
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, SessionProfile, VatRegistrationService}
+import services.{RegistrationService, S4LService, SessionProfile}
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies)
-                                                (implicit s4l: S4LService, vrs: VatRegistrationService)
-  extends VatRegistrationController(ds) with SessionProfile {
+@Singleton
+class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies,
+                                                 val keystoreConnector: KeystoreConnect,
+                                                 val authConnector: AuthConnector,
+                                                 implicit val vrs: RegistrationService,
+                                                 implicit val s4l: S4LService) extends VatRegistrationController(ds) with SessionProfile {
 
   val form = BusinessContactDetailsForm.form
-  val keystoreConnector: KeystoreConnector = KeystoreConnector
 
   def show: Action[AnyContent] = authorised.async {
     implicit user =>
@@ -53,7 +56,7 @@ class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies)
                 .andThen(form => BadRequest(views.html.pages.vatContact.business_contact_details(form)).pure),
               contactDetails => for {
                 _ <- save(contactDetails)
-                _ <- vrs.submitVatContact()
+                _ <- vrs.submitVatContact
               } yield Redirect(controllers.vatTradingDetails.routes.TradingNameController.show()))
           }
         }

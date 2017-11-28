@@ -23,9 +23,11 @@ import play.api.test.Helpers._
 
 class SignInOutControllerSpec extends VatRegSpec {
 
-  object TestController extends SignInOutController(ds) {
-    override val authConnector = mockAuthConnector
-  }
+  object TestController extends SignInOutController(
+    ds,
+    mockConfig,
+    mockAuthConnector
+  )
 
   "Post-sign-in" should {
     "redirect to CT post sign in" in {

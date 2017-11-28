@@ -17,25 +17,19 @@
 package controllers.test
 
 import javax.inject.{Inject, Singleton}
+
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import utils._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
-/**
-  * Created by eric on 26/09/17.
-  */
-@Singleton
-class FeatureSwitchController  @Inject()(val injFeatureManager: FeatureSwitchManager,
-                                         val injVatFeatureSwitch: VATRegFeatureSwitches,
-                                         ds: CommonPlayDependencies)
-  extends VatRegistrationController(ds) with FeatureSwitchCtrl {
-
-  val featureManager: FeatureSwitchManager = injFeatureManager
-  val vatRegFeatureSwitch: VATRegFeatureSwitches = injVatFeatureSwitch
-}
+class FeatureSwitchController @Inject()(val featureManager: FeatureManager,
+                                        val vatRegFeatureSwitch: VATRegFeatureSwitches,
+                                        val authConnector: AuthConnector,
+                                        ds: CommonPlayDependencies) extends VatRegistrationController(ds) with FeatureSwitchCtrl
 
 trait FeatureSwitchCtrl extends FrontendController{
   val featureManager: FeatureManager
@@ -43,16 +37,14 @@ trait FeatureSwitchCtrl extends FrontendController{
 
   def switcher(name: String, state: String): Action[AnyContent] = Action.async{
     implicit request =>
-
       def feature: FeatureSwitch = state match {
         case "true" => featureManager.enable(BooleanFeatureSwitch(name, enabled = true))
-        case _ => featureManager.disable(BooleanFeatureSwitch(name, enabled = false))
+        case _      => featureManager.disable(BooleanFeatureSwitch(name, enabled = false))
       }
 
       vatRegFeatureSwitch(name) match {
         case Some(_) => Future.successful(Ok(feature.toString))
-        case None => Future.successful(BadRequest)
+        case None    => Future.successful(BadRequest)
       }
   }
-
 }

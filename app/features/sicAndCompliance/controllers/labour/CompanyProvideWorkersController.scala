@@ -16,8 +16,9 @@
 
 package controllers.sicAndCompliance.labour {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.sicAndCompliance.labour.CompanyProvideWorkersForm
   import models.S4LVatSicAndCompliance
@@ -25,12 +26,15 @@ package controllers.sicAndCompliance.labour {
   import models.view.sicAndCompliance.labour.CompanyProvideWorkers
   import models.view.sicAndCompliance.labour.CompanyProvideWorkers.PROVIDE_WORKERS_YES
   import play.api.mvc.{Action, AnyContent}
-  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-
-  class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies)
-                                                 (implicit s4lService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with CommonService with SessionProfile {
+  @Singleton
+  class CompanyProvideWorkersController @Inject()(ds: CommonPlayDependencies,
+                                                  val keystoreConnector: KeystoreConnect,
+                                                  val authConnector: AuthConnector,
+                                                  implicit val s4lService: S4LService,
+                                                  implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     val form = CompanyProvideWorkersForm.form
 
@@ -55,13 +59,13 @@ package controllers.sicAndCompliance.labour {
                 view => (if (PROVIDE_WORKERS_YES == view.yesNo) {
                   for {
                     container <- s4lContainer[S4LVatSicAndCompliance]()
-                    _ <- s4lService.save(labourOnly(container.copy(companyProvideWorkers = Some(view))))
+                    _         <- s4lService.save(labourOnly(container.copy(companyProvideWorkers = Some(view))))
                   } yield controllers.sicAndCompliance.labour.routes.WorkersController.show()
                 } else {
                   for {
                     container <- s4lContainer[S4LVatSicAndCompliance]()
-                    _ <- s4lService.save(dropFromCompanyProvideWorkers(labourOnly(container.copy(companyProvideWorkers = Some(view)))))
-                    _ <- vrs.submitSicAndCompliance()
+                    _         <- s4lService.save(dropFromCompanyProvideWorkers(labourOnly(container.copy(companyProvideWorkers = Some(view)))))
+                    _         <- vrs.submitSicAndCompliance
                   } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
                 }).map(Redirect))
             }

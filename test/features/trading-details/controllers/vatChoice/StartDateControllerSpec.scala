@@ -26,15 +26,15 @@ import forms.vatTradingDetails.vatChoice.StartDateFormFactory
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.CurrentProfile
 import models.view.vatTradingDetails.vatChoice.StartDateView
-import org.mockito.Matchers
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
@@ -44,10 +44,15 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
   val startDateFormFactory = new StartDateFormFactory(mockDateService, Now[LocalDate](today))
 
-  object TestStartDateController extends StartDateController(startDateFormFactory, mockPPService, ds)(mockS4LService, mockVatRegistrationService) {
+  object TestStartDateController extends StartDateController(
+    startDateFormFactory,
+    mockPPService,
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService) {
     implicit val fixedToday = Now[LocalDate](today)
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
   }
 
   val fakeRequest = FakeRequest(routes.StartDateController.show())
@@ -57,7 +62,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       val startDate = StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.of(2017, 3, 21)))
 
       save4laterReturnsViewModel(startDate)()
-      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockPPService.getCTActiveDate(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
       mockGetCurrentProfile()
 
@@ -74,9 +79,9 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       val startDate = StartDateView(StartDateView.COMPANY_REGISTRATION_DATE, Some(LocalDate.of(2017, 3, 21)))
 
       save4laterReturnsViewModel(startDate)()
-      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockPPService.getCTActiveDate(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(
           currentProfile().copy(incorporationDate = Some(validPastRegIncorpDate)))
         ))
@@ -94,9 +99,9 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       val startDate = StartDateView(StartDateView.SPECIFIC_DATE, Some(LocalDate.of(2017, 3, 21)))
 
       save4laterReturnsViewModel(startDate)()
-      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockPPService.getCTActiveDate(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentNonincorpProfile)))
 
       callAuthorised(TestStartDateController.show) {
@@ -111,9 +116,9 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
     "return HTML when there's nothing in S4L and vatScheme contains data, with an incorporated company" in {
       save4laterReturnsNoViewModel[StartDateView]()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
-      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockPPService.getCTActiveDate(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
       mockGetCurrentProfile()
 
@@ -129,11 +134,11 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
     "return HTML when there's nothing in S4L and vatScheme contains data, with a non incorporated company" in {
       save4laterReturnsNoViewModel[StartDateView]()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
-      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockPPService.getCTActiveDate(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentNonincorpProfile)))
 
       callAuthorised(TestStartDateController.show) {
@@ -148,9 +153,9 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
     "return HTML when there's nothing in S4L and vatScheme contains no data with an incorporated company" in {
       save4laterReturnsNoViewModel[StartDateView]()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
-      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockPPService.getCTActiveDate(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
       mockGetCurrentProfile()
 
@@ -166,11 +171,11 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
     "return HTML when there's nothing in S4L and vatScheme contains no data with a non incorporated company" in {
       save4laterReturnsNoViewModel[StartDateView]()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
-      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockPPService.getCTActiveDate(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentNonincorpProfile)))
 
       callAuthorised(TestStartDateController.show) {
@@ -223,7 +228,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
     }
 
     "return 400 when the company was incorporated and the specific date is 4 years in the past" in {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(
           currentProfile().copy(incorporationDate = Some(veryOldRegIncorpDate)))
         ))
@@ -241,7 +246,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
     "return 303 with valid data" in {
       save4laterExpectsSave[StartDateView]()
-      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockPPService.getCTActiveDate(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
       when(mockVatRegistrationService.submitTradingDetails()(any(), any())).thenReturn(validVatTradingDetails.pure)
 
       mockGetCurrentProfile()
@@ -262,7 +267,7 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
     "return 303 with valid data BUSINESS_START_DATE" in {
       save4laterExpectsSave[StartDateView]()
-      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockPPService.getCTActiveDate(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
       when(mockVatRegistrationService.submitTradingDetails()(any(), any())).thenReturn(validVatTradingDetails.pure)
 
       mockGetCurrentProfile()
@@ -280,8 +285,8 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
     "return 303 with StartDate having a specific date whilst the company is incorporated" in {
       save4laterExpectsSave[StartDateView]()
-      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
-      when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
+      when(mockPPService.getCTActiveDate(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockDateService.addWorkingDays(ArgumentMatchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
       when(mockVatRegistrationService.submitTradingDetails()(any(), any())).thenReturn(validVatTradingDetails.pure)
 
   mockGetCurrentProfile(Some(
@@ -303,8 +308,8 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
 
     "return 303 with StartDate having a specific date when the company is not incorporated" in {
       save4laterExpectsSave[StartDateView]()
-      when(mockPPService.getCTActiveDate()(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
-      when(mockDateService.addWorkingDays(Matchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
+      when(mockPPService.getCTActiveDate(any(), any())).thenReturn(OptionT.some(LocalDate.of(2017, 4, 20)))
+      when(mockDateService.addWorkingDays(ArgumentMatchers.eq(today), anyInt())).thenReturn(today.plus(2, DAYS))
       when(mockVatRegistrationService.submitTradingDetails()(any(), any())).thenReturn(validVatTradingDetails.pure)
       mockGetCurrentProfile((Some(currentNonincorpProfile)))
 

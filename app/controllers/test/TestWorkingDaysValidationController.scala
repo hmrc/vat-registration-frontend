@@ -17,26 +17,25 @@
 package controllers.test
 
 import java.time.LocalDate
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results._
 import play.api.mvc.{Action, AnyContent, Request}
 import play.twirl.api.Html
 import services.DateService
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.HeaderCarrierConverter
 
+@Singleton
 class TestWorkingDaysValidationController @Inject()(dateService: DateService)
                                                    (implicit val messagesApi: MessagesApi) {
 
-  implicit def hc(implicit request: Request[_]): HeaderCarrier =
-    HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
+  implicit def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
   def show(): Action[AnyContent] = Action { implicit req =>
-    Ok(Html {
-      (1 to 100).map(n => s"$n working days from today => ${dateService.addWorkingDays(LocalDate.now(), n)}")
-        .mkString("<ul><li>", "</li><li>", "</li></ul>")
-    })
+    Ok(Html((1 to 100).map(n =>
+      s"$n working days from today => ${dateService.addWorkingDays(LocalDate.now(), n)}").mkString("<ul><li>", "</li><li>", "</li></ul>")
+    ))
   }
-
 }

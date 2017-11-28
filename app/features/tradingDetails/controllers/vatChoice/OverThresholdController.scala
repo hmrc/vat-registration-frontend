@@ -16,19 +16,27 @@
 
 package controllers.vatTradingDetails.vatChoice
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import cats.syntax.FlatMapSyntax
+import connectors.KeystoreConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.vatTradingDetails.vatChoice.OverThresholdFormFactory
 import models.MonthYearModel.FORMAT_DD_MMMM_Y
 import models.view.vatTradingDetails.vatChoice.OverThresholdView
 import play.api.mvc._
 import services._
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class OverThresholdController @Inject()(formFactory: OverThresholdFormFactory, ds: CommonPlayDependencies)
-                                       (implicit s4LService: S4LService, vrs: VatRegistrationService)
+@Singleton
+class OverThresholdController @Inject()(formFactory: OverThresholdFormFactory,
+                                        ds: CommonPlayDependencies,
+                                        val authConnector: AuthConnector,
+                                        val keystoreConnector: KeystoreConnect,
+                                        implicit val s4LService: S4LService,
+                                        implicit val vrs: RegistrationService)
   extends VatRegistrationController(ds) with FlatMapSyntax with CommonService with SessionProfile {
+
   def show: Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request => {
@@ -47,7 +55,7 @@ class OverThresholdController @Inject()(formFactory: OverThresholdFormFactory, d
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          fetchDateOfIncorporation().flatMap(date =>
+          fetchDateOfIncorporation.flatMap(date =>
             formFactory.form(date).bindFromRequest().fold(badForm =>
               BadRequest(features.tradingDetails.views.html.vatChoice.over_threshold(badForm, date.format(FORMAT_DD_MMMM_Y))).pure,
               data => save(data).map(_ => Redirect(controllers.vatTradingDetails.vatChoice.routes.ThresholdSummaryController.show()))

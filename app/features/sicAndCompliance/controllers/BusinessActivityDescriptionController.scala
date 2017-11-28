@@ -16,22 +16,23 @@
 
 package controllers.sicAndCompliance {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
-  import connectors.KeystoreConnector
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.sicAndCompliance.BusinessActivityDescriptionForm
   import models.view.sicAndCompliance.BusinessActivityDescription
   import play.api.data.Form
   import play.api.mvc.{Action, AnyContent}
-  import services.{S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-
-  class BusinessActivityDescriptionController @Inject()(ds: CommonPlayDependencies)
-                                                       (implicit s4l: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with SessionProfile {
-
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
+  @Singleton
+  class BusinessActivityDescriptionController @Inject()(ds: CommonPlayDependencies,
+                                                        val keystoreConnector: KeystoreConnect,
+                                                        val authConnector: AuthConnector,
+                                                        implicit val s4l: S4LService,
+                                                        implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     val form: Form[BusinessActivityDescription] = BusinessActivityDescriptionForm.form
 
@@ -59,9 +60,7 @@ package controllers.sicAndCompliance {
             }
           }
     }
-
   }
-
 }
 
 package forms.sicAndCompliance {

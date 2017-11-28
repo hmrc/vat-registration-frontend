@@ -17,7 +17,7 @@
 package models.view.frs {
 
   import models.ApiModelTransformer
-  import models.api.{VatFlatRateScheme, VatScheme}
+  import models.api.VatScheme
   import play.api.libs.json.Json
 
   case class JoinFrsView(selection: Boolean)
@@ -35,32 +35,29 @@ package controllers.frs {
 
   import javax.inject.Inject
 
-  import config.FrontendAuthConnector
+  import connectors.KeystoreConnect
   import controllers.VatRegistrationControllerNoAux
-  import models.{S4LFlatRateScheme, S4LKey, S4LModelTransformer}
-  import play.api.data.Form
-  import play.api.i18n.MessagesApi
-  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-  import connectors.KeystoreConnector
   import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
   import models.view.frs.JoinFrsView
+  import play.api.data.Form
+  import play.api.i18n.MessagesApi
   import play.api.mvc.{Action, AnyContent}
-  import services.{S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
   import scala.concurrent.Future
 
   class JoinFrsControllerImpl @Inject()(formFactory: YesOrNoFormFactory,
-                                    val service: VatRegistrationService,
-                                    val messagesApi: MessagesApi) extends JoinFrsController {
-
-    val authConnector: AuthConnector = FrontendAuthConnector
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
+                                        val service: RegistrationService,
+                                        val messagesApi: MessagesApi,
+                                        val authConnector: AuthConnector,
+                                        val keystoreConnector: KeystoreConnect) extends JoinFrsController {
     val form: Form[YesOrNoAnswer] = formFactory.form("joinFrs")("frs.join")
   }
 
   trait JoinFrsController extends VatRegistrationControllerNoAux with SessionProfile {
 
-    val service: VatRegistrationService
+    val service: RegistrationService
     val form: Form[YesOrNoAnswer]
 
     def show: Action[AnyContent] = authorised.async {

@@ -36,8 +36,7 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.CurrentProfile
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 
@@ -46,10 +45,13 @@ import scala.concurrent.Future
 class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object TestVoluntaryRegistrationReasonController
-    extends VoluntaryRegistrationReasonController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+    extends VoluntaryRegistrationReasonController(
+      ds,
+      mockKeystoreConnector,
+      mockAuthConnector,
+      mockS4LService,
+      mockVatRegistrationService
+    )
 
   val fakeRequest = FakeRequest(routes.VoluntaryRegistrationReasonController.show())
 
@@ -71,7 +73,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[VoluntaryRegistrationReason]()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), any()))
+      when(mockVatRegistrationService.getVatScheme(any(), any()))
         .thenReturn(Future.successful(validVatScheme))
 
       mockGetCurrentProfile()
@@ -84,7 +86,7 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[VoluntaryRegistrationReason]()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), any()))
+      when(mockVatRegistrationService.getVatScheme(any(), any()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       mockGetCurrentProfile()
@@ -131,9 +133,9 @@ class VoluntaryRegistrationReasonControllerSpec extends VatRegSpec with VatRegis
 
   s"POST ${routes.VoluntaryRegistrationReasonController.submit()} with Voluntary Registration selected No" should {
     "redirect to the welcome page" in {
-      when(mockS4LService.clear()(any(), any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
       save4laterExpectsSave[VoluntaryRegistrationReason]()
-      when(mockVatRegistrationService.deleteVatScheme()(any(), any())).thenReturn(Future.successful(()))
+      when(mockVatRegistrationService.deleteVatScheme(any(), any())).thenReturn(Future.successful(()))
 
       mockGetCurrentProfile()
 

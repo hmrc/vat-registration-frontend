@@ -19,7 +19,7 @@ package connectors
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api.VatFinancials
-import uk.gov.hmrc.play.http.ws.WSHttp
+import config.WSHttp
 
 import scala.language.postfixOps
 

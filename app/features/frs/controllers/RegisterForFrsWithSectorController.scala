@@ -18,26 +18,23 @@ package controllers.frs {
 
   import javax.inject.Inject
 
-  import config.FrontendAuthConnector
-  import connectors.{ConfigConnect, KeystoreConnector}
+  import connectors.{ConfigConnector, KeystoreConnect}
   import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
   import play.api.data.Form
   import play.api.i18n.MessagesApi
   import play.api.mvc.{Action, AnyContent}
-  import services.{SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, SessionProfile}
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
   class RegisterForFrsWithSectorControllerImpl @Inject()(val messagesApi: MessagesApi,
-                                                         val configConnect: ConfigConnect,
-                                                         val service: VatRegistrationService) extends RegisterForFrsWithSectorController {
-
-    override val authConnector: AuthConnector = FrontendAuthConnector
-    override val keystoreConnector: KeystoreConnector = KeystoreConnector
-  }
+                                                         val configConnect: ConfigConnector,
+                                                         val service: RegistrationService,
+                                                         val authConnector: AuthConnector,
+                                                         val keystoreConnector: KeystoreConnect) extends RegisterForFrsWithSectorController
 
   trait RegisterForFrsWithSectorController extends BusinessSectorAwareController with SessionProfile {
 
-    val service: VatRegistrationService
+    val service: RegistrationService
     val formFactory: YesOrNoFormFactory = YesOrNoFormFactory
 
     val form: Form[YesOrNoAnswer] = formFactory.form("registerForFrsWithSector")("frs.registerForWithSector")
@@ -59,17 +56,14 @@ package controllers.frs {
                 badForm => businessSectorView map { view =>
                   BadRequest(features.frs.views.html.frs_your_flat_rate(view, badForm))
                 },
-                view =>
-                  for {
-                    sector <- businessSectorView
-                    _ <- service.saveRegisterForFRS(view.answer, Some(sector))
-                  } yield {
-                    if(view.answer){
-                      Redirect(controllers.frs.routes.FrsStartDateController.show())
-                    } else {
-                      Redirect(controllers.routes.SummaryController.show())
-                    }
-                  }
+                view => for {
+                  sector <- businessSectorView
+                  _      <- service.saveRegisterForFRS(view.answer, Some(sector))
+                } yield if(view.answer) {
+                  Redirect(controllers.frs.routes.FrsStartDateController.show())
+                } else {
+                  Redirect(controllers.routes.SummaryController.show())
+                }
               )
             }
           }

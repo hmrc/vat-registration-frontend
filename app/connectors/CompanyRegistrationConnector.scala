@@ -16,41 +16,32 @@
 
 package connectors
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
-import com.google.inject.ImplementedBy
 import config.WSHttp
 import play.api.libs.json.JsValue
+import uk.gov.hmrc.http.{CoreGet, HeaderCarrier}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.http.ws.WSHttp
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Singleton
-class CompanyRegistrationConnector @Inject()(config: ServicesConfig) extends CompanyRegistrationConnect {
+class CompanyRegistrationConnector @Inject()(val http: WSHttp, config: ServicesConfig) extends CompanyRegistrationConnect {
   val companyRegistrationUrl: String = config.baseUrl("company-registration")
   val companyRegistrationUri: String = config.getConfString("company-registration.uri", "")
-  val http: WSHttp = WSHttp
 }
 
-@ImplementedBy(classOf[CompanyRegistrationConnector])
 trait CompanyRegistrationConnect {
-  self =>
 
   val companyRegistrationUrl: String
   val companyRegistrationUri: String
   val http: WSHttp
 
-  val className = self.getClass.getSimpleName
-
   def getTransactionId(regId: String)(implicit hc: HeaderCarrier): Future[String] = {
     http.GET[JsValue](s"$companyRegistrationUrl$companyRegistrationUri/$regId/corporation-tax-registration") map {
       _.\("confirmationReferences").\("transaction-id").as[String]
     } recover {
-      case e => logResponse(e, "CompanyRegistrationConnector", "getTransactionID")
-        throw e
+      case e => throw logResponse(e,"getTransactionID")
     }
   }
 }

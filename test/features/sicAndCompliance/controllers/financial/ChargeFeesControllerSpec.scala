@@ -18,24 +18,26 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.view.sicAndCompliance.financial.ChargeFees
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object ChargeFeesController extends ChargeFeesController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object ChargeFeesController extends ChargeFeesController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(routes.ChargeFeesController.show())
 
@@ -54,7 +56,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[ChargeFees]()
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(validVatScheme))
       mockGetCurrentProfile()
       callAuthorised(ChargeFeesController.show) {
        _ includesText "Does the company charge fees for introducing clients to financial service providers?"
@@ -63,7 +65,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[ChargeFees]()
-    when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    when(mockVatRegistrationService.getVatScheme(ArgumentMatchers.any(), ArgumentMatchers.any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
     mockGetCurrentProfile()
       callAuthorised(ChargeFeesController.show) {
         _ includesText "Does the company charge fees for introducing clients to financial service providers?"
@@ -81,7 +83,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     }
 
     "return 303 with charge fees Yes" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[ChargeFees]()
       mockGetCurrentProfile()
       submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -93,7 +95,7 @@ class ChargeFeesControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     }
 
     "return 303 with charge fees No" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       save4laterExpectsSave[ChargeFees]()
       mockGetCurrentProfile()
       submitAuthorised(ChargeFeesController.submit(), fakeRequest.withFormUrlEncodedBody(

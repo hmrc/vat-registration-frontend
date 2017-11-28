@@ -34,9 +34,9 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController
   with I18nSupport with Actions with ApplicativeSyntax with FutureInstances {
@@ -45,21 +45,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
 
   lazy val conf: Configuration = ds.conf
   implicit lazy val messagesApi: MessagesApi = ds.messagesApi
-  override val authConnector: AuthConnector = FrontendAuthConnector
 
-  /**
-    * Use this to obtain an [[uk.gov.hmrc.play.frontend.auth.UserActions.AuthenticatedBy]] action builder.
-    * Usage of an `AuthenticatedBy` is similar to standard [[play.api.mvc.Action]]. Just like you would do this:
-    * {{{Action ( implicit request => Ok(...))}}}
-    * or
-    * {{{Action.async( implicit request => ??? // generates a Future Result )}}}
-    * With `AuthenticatedBy` you would do the same but you get a handle on the current user's [[uk.gov.hmrc.play.frontend.auth.AuthContext]] too:
-    * {{{authorised( implicit user => implicit request => Ok(...))}}}
-    * or
-    * {{{authorised.async( implicit user => implicit request => ??? // generates a Future Result )}}}
-    *
-    * @return an AuthenticatedBy action builder that is specific to VatTaxRegime and GGConfidence confidence level
-    */
   protected[controllers] def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
 
   protected[controllers] def viewModel[T] = new ViewModelLookupHelper[T]
@@ -90,8 +76,7 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
                                              hc: HeaderCarrier,
                                              s4lTransformer: S4LModelTransformer[G]
                                             ): Future[G] =
-    OptionT(s4l.fetchAndGet[G]()).getOrElseF(
-      vrs.getVatScheme() map s4lTransformer.toS4LModel)
+    OptionT(s4l.fetchAndGet[G]).getOrElseF(vrs.getVatScheme map s4lTransformer.toS4LModel)
 
 
   def getFlatRateSchemeThreshold()(implicit s4l: S4LService, vrs: RegistrationService, profile: CurrentProfile, hc: HeaderCarrier): Future[Long] =

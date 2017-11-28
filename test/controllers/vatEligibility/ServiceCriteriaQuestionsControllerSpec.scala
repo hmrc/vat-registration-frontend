@@ -20,27 +20,27 @@ import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import forms.vatEligibility.ServiceCriteriaFormFactory
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.api.EligibilityQuestion._
 import models.api.{EligibilityQuestion, VatServiceEligibility}
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-
-import scala.concurrent.Future
 
 class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  val testController = new ServiceCriteriaQuestionsController(ds, new ServiceCriteriaFormFactory(), mockVatRegistrationService, mockS4LService) {
-    override val authConnector: AuthConnector = mockAuthConnector
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-  }
+  val testController = new ServiceCriteriaQuestionsController(
+    ds,
+    new ServiceCriteriaFormFactory(),
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockVatRegistrationService,
+    mockS4LService
+  )
 
   private def setupIneligibilityReason(keystoreConnector: KeystoreConnector, question: EligibilityQuestion) =
-    when(mockKeystoreConnector.fetchAndGet[String](Matchers.eq(testController.INELIGIBILITY_REASON_KEY))(any(), any()))
+    when(mockKeystoreConnector.fetchAndGet[String](ArgumentMatchers.eq(testController.INELIGIBILITY_REASON_KEY))(any(), any()))
       .thenReturn(Some(question.name).pure)
 
   "GET ServiceCriteriaQuestionsController.show()" should {
@@ -79,7 +79,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
     "redirect to next screen when user is eligible to register for VAT using this service" in {
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.submitVatEligibility()(any(),any())).thenReturn(validServiceEligibility().pure)
+      when(mockVatRegistrationService.submitVatEligibility(any(),any())).thenReturn(validServiceEligibility().pure)
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
         save4laterReturnsViewModel(validServiceEligibility())()
@@ -96,11 +96,11 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
     "redirect to next screen when eligible and nothing in s4l or backend" in {
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.submitVatEligibility()(any(),any())).thenReturn(validServiceEligibility().pure)
+      when(mockVatRegistrationService.submitVatEligibility(any(),any())).thenReturn(validServiceEligibility().pure)
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
         setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
         save4laterReturnsNoViewModel[VatServiceEligibility]()
-        when(mockVatRegistrationService.getVatScheme()(any(),any())).thenReturn(validVatScheme.copy(vatServiceEligibility = None).pure)
+        when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.copy(vatServiceEligibility = None).pure)
         save4laterExpectsSave[VatServiceEligibility]()
 
         submitAuthorised(testController.submit(currentQuestion.name),
@@ -114,7 +114,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
     "redirect to ineligible screen when user is NOT eligible to register for VAT using this service" in {
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.submitVatEligibility()(any(),any())).thenReturn(validServiceEligibility().pure)
+      when(mockVatRegistrationService.submitVatEligibility(any(),any())).thenReturn(validServiceEligibility().pure)
       save4laterReturnsViewModel(validServiceEligibility())()
       save4laterExpectsSave[VatServiceEligibility]()
       when(mockKeystoreConnector.cache[String](any(), any())(any(), any())).thenReturn(CacheMap("id", Map()).pure)
@@ -131,7 +131,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
         }
 
       }
-      verify(mockKeystoreConnector, times(questions.size)).cache[String](Matchers.eq(testController.INELIGIBILITY_REASON_KEY), any())(any(), any())
+      verify(mockKeystoreConnector, times(questions.size)).cache[String](ArgumentMatchers.eq(testController.INELIGIBILITY_REASON_KEY), any())(any(), any())
     }
 
     "400 for malformed requests" in {
@@ -178,9 +178,9 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
       mockGetCurrentProfile()
 
-      when(mockKeystoreConnector.fetchAndGet[String](Matchers.eq(testController.INELIGIBILITY_REASON_KEY))(any(), any()))
+      when(mockKeystoreConnector.fetchAndGet[String](ArgumentMatchers.eq(testController.INELIGIBILITY_REASON_KEY))(any(), any()))
         .thenReturn(Option.empty[String].pure)
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(validVatScheme.copy(vatServiceEligibility = None).pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(validVatScheme.copy(vatServiceEligibility = None).pure)
 
       callAuthorised(testController.ineligible()) {
         result => forAll(hiddenReasonSections)(result includesText _)

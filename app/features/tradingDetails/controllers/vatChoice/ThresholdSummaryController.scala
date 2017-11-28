@@ -16,6 +16,7 @@
 
 package models.view.vatTradingDetails.vatChoice {
 
+ 
   import java.time.LocalDate
 
   import models._
@@ -57,8 +58,9 @@ package models.view.vatTradingDetails.vatChoice {
 
 package controllers.vatTradingDetails.vatChoice {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
+  import connectors.KeystoreConnect
   import controllers.builders._
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import models.api._
@@ -66,16 +68,20 @@ package controllers.vatTradingDetails.vatChoice {
   import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
   import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.REGISTER_NO
   import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration}
-  import models.{CurrentProfile, MonthYearModel, S4LTradingDetails, S4LVatEligibilityChoice}
+  import models.{CurrentProfile, MonthYearModel, S4LVatEligibilityChoice}
   import play.api.mvc._
-  import services.{CommonService, S4LService, SessionProfile, VatRegistrationService}
-  import uk.gov.hmrc.play.http.HeaderCarrier
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.http.HeaderCarrier
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
   import scala.concurrent.Future
 
-  class ThresholdSummaryController @Inject()(ds: CommonPlayDependencies)
-                                            (implicit s4LService: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with CommonService with SessionProfile {
+  @Singleton
+  class ThresholdSummaryController @Inject()(ds: CommonPlayDependencies,
+                                             val keystoreConnector: KeystoreConnect,
+                                             val authConnector: AuthConnector,
+                                             implicit val s4LService: S4LService,
+                                             implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
@@ -84,7 +90,7 @@ package controllers.vatTradingDetails.vatChoice {
             val dateOfIncorporation = profile.incorporationDate
               .getOrElse(throw new IllegalStateException("Date of Incorporation data expected to be found in Incorporation"))
 
-            getThresholdSummary() map {
+            getThresholdSummary map {
               thresholdSummary => Ok(features.tradingDetails.views.html.vatChoice.threshold_summary(
                 thresholdSummary,
                 MonthYearModel.FORMAT_DD_MMMM_Y.format(dateOfIncorporation))
@@ -97,7 +103,7 @@ package controllers.vatTradingDetails.vatChoice {
       implicit user =>
         implicit request => {
           withCurrentProfile { implicit profile =>
-            getVatThresholdPostIncorp().map {
+            getVatThresholdPostIncorp.map {
               case VatThresholdPostIncorp(true, _) =>
                 save(VoluntaryRegistration(REGISTER_NO))
                 save(StartDateView(COMPANY_REGISTRATION_DATE))
@@ -108,9 +114,9 @@ package controllers.vatTradingDetails.vatChoice {
       }
     }
 
-    def getThresholdSummary()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = {
+    def getThresholdSummary(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = {
       for {
-        vatThresholdPostIncorp <- getVatThresholdPostIncorp()
+        vatThresholdPostIncorp <- getVatThresholdPostIncorp
       } yield thresholdToSummary(vatThresholdPostIncorp)
     }
 
@@ -120,9 +126,9 @@ package controllers.vatTradingDetails.vatChoice {
       ))
     }
 
-    def getVatThresholdPostIncorp()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatThresholdPostIncorp] = {
+    def getVatThresholdPostIncorp(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatThresholdPostIncorp] = {
       for {
-        eligibilityChoice <- s4LService.fetchAndGet[S4LVatEligibilityChoice]()
+        eligibilityChoice <- s4LService.fetchAndGet[S4LVatEligibilityChoice]
         overThreshold <- eligibilityChoice.flatMap(_.overThreshold).pure
       } yield overThreshold.map(o => VatThresholdPostIncorp(o.selection, o.date)).get
     }

@@ -20,11 +20,9 @@ package models.view.vatLodgingOfficer {
   import models.{ApiModelTransformer, S4LVatLodgingOfficer, ViewModelFormat}
   import play.api.libs.json.{Json, OFormat}
 
-  case class OfficerContactDetailsView(
-                                        email: Option[String] = None,
-                                        daytimePhone: Option[String] = None,
-                                        mobile: Option[String] = None
-                                      )
+  case class OfficerContactDetailsView(email: Option[String] = None,
+                                       daytimePhone: Option[String] = None,
+                                       mobile: Option[String] = None)
 
 
   object OfficerContactDetailsView {
@@ -51,23 +49,27 @@ package models.view.vatLodgingOfficer {
 
 package controllers.vatLodgingOfficer {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
   import cats.syntax.FlatMapSyntax
-  import connectors.KeystoreConnector
+  import connectors.KeystoreConnect
   import controllers.vatTradingDetails.vatChoice.{routes => vatChoiceRoutes}
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatLodgingOfficer.OfficerContactDetailsForm
   import models.view.vatLodgingOfficer.OfficerContactDetailsView
   import play.api.mvc.{Action, AnyContent}
-  import services.{S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  class OfficerContactDetailsController @Inject()(ds: CommonPlayDependencies)
-                                                 (implicit s4l: S4LService, vrs: VatRegistrationService)
+  @Singleton
+  class OfficerContactDetailsController @Inject()(ds: CommonPlayDependencies,
+                                                  val keystoreConnector: KeystoreConnect,
+                                                  val authConnector: AuthConnector,
+                                                  implicit val s4l: S4LService,
+                                                  implicit val vrs: RegistrationService)
     extends VatRegistrationController(ds) with FlatMapSyntax with SessionProfile {
 
     val form = OfficerContactDetailsForm.form
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
 
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
@@ -105,15 +107,15 @@ package forms.vatLodgingOfficer {
 
   object OfficerContactDetailsForm {
 
-    val EMAIL_MAX_LENGTH = 70
-    val EMAIL_PATTERN = """^([A-Za-z0-9\-_.]+)@([A-Za-z0-9\-_.]+)\.[A-Za-z0-9\-_.]{2,3}$""".r
-    val PHONE_NUMBER_PATTERN = """[\d]{1,20}""".r
+    val EMAIL_MAX_LENGTH      = 70
+    val EMAIL_PATTERN         = """^([A-Za-z0-9\-_.]+)@([A-Za-z0-9\-_.]+)\.[A-Za-z0-9\-_.]{2,3}$""".r
+    val PHONE_NUMBER_PATTERN  = """[\d]{1,20}""".r
 
     private val FORM_NAME = "officerContactDetails"
 
-    private val EMAIL = "email"
+    private val EMAIL         = "email"
     private val DAYTIME_PHONE = "daytimePhone"
-    private val MOBILE = "mobile"
+    private val MOBILE        = "mobile"
 
     implicit val errorCode: ErrorCode = "officerContactDetails.email"
 
@@ -121,16 +123,15 @@ package forms.vatLodgingOfficer {
 
     val form = Form(
       mapping(
-        EMAIL -> optional(text.verifying(regexPattern(EMAIL_PATTERN)(s"$FORM_NAME.$EMAIL")).verifying(maxLenText(EMAIL_MAX_LENGTH))),
+        EMAIL         -> optional(text.verifying(regexPattern(EMAIL_PATTERN)(s"$FORM_NAME.$EMAIL")).verifying(maxLenText(EMAIL_MAX_LENGTH))),
         DAYTIME_PHONE -> optional(text.transform(removeSpaces, identity[String]).verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$DAYTIME_PHONE"))),
-        MOBILE -> optional(text.transform(removeSpaces, identity[String]).verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$MOBILE")))
+        MOBILE        -> optional(text.transform(removeSpaces, identity[String]).verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$MOBILE")))
       )(OfficerContactDetailsView.apply)(OfficerContactDetailsView.unapply).verifying(atLeastOneContactDetail)
     )
 
     def atLeastOneContactDetail: Constraint[OfficerContactDetailsView] = Constraint {
-      case OfficerContactDetailsView(None, None, None) =>
-        Invalid(Seq(EMAIL, MOBILE, DAYTIME_PHONE).map(validationError))
-      case _ => Valid
+      case OfficerContactDetailsView(None, None, None) => Invalid(Seq(EMAIL, MOBILE, DAYTIME_PHONE).map(validationError))
+      case _                                           => Valid
     }
 
   }

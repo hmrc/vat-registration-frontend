@@ -16,15 +16,14 @@
 
 package controllers.frs
 
-import config.FrontendAuthConnector
-import connectors.ConfigConnect
+import connectors.ConfigConnector
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, MockMessages}
-import play.api.test.Helpers._
 import models.view.frs.BusinessSectorView
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
-import org.mockito.Matchers._
 import play.api.i18n.MessagesApi
+import play.api.test.Helpers._
 import services.VatRegistrationService
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
@@ -38,9 +37,9 @@ class BusinessSectorAwareControllerSpec extends ControllerSpec with VatRegistrat
   trait Setup {
     val controller: BusinessSectorAwareController = new BusinessSectorAwareController {
       override val service: VatRegistrationService = mockVatRegistrationService
-      override val configConnect: ConfigConnect = mockConfigConnector
+      override val configConnect: ConfigConnector = mockConfigConnector
       override val messagesApi: MessagesApi = mockMessagesAPI
-      override val authConnector: AuthConnector = FrontendAuthConnector
+      override val authConnector: AuthConnector = mockAuthConnector
     }
 
     mockAllMessages

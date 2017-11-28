@@ -18,7 +18,7 @@ package models.view.vatTradingDetails.vatChoice {
 
   import models.api.VatEligibilityChoice.NECESSITY_VOLUNTARY
   import models.api.VatScheme
-  import models.{ApiModelTransformer, S4LTradingDetails, S4LVatEligibilityChoice, ViewModelFormat}
+  import models.{ApiModelTransformer, S4LVatEligibilityChoice, ViewModelFormat}
   import play.api.libs.json.Json
 
   case class VoluntaryRegistration(yesNo: String)
@@ -51,22 +51,24 @@ package models.view.vatTradingDetails.vatChoice {
 
 package controllers.vatTradingDetails.vatChoice {
 
-  import javax.inject.Inject
+  import javax.inject.{Inject, Singleton}
 
-  import connectors.KeystoreConnector
+  import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatTradingDetails.vatChoice.VoluntaryRegistrationForm
   import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
   import play.api.mvc._
-  import services.{S4LService, SessionProfile, VatRegistrationService}
+  import services.{RegistrationService, S4LService, SessionProfile}
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  class VoluntaryRegistrationController @Inject()(ds: CommonPlayDependencies)
-                                                 (implicit s4l: S4LService, vrs: VatRegistrationService)
-    extends VatRegistrationController(ds) with SessionProfile {
+  @Singleton
+  class VoluntaryRegistrationController @Inject()(ds: CommonPlayDependencies,
+                                                  val keystoreConnector: KeystoreConnect,
+                                                  val authConnector: AuthConnector,
+                                                  implicit val s4l: S4LService,
+                                                  implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     import cats.syntax.flatMap._
-
-    val keystoreConnector: KeystoreConnector = KeystoreConnector
 
     val form = VoluntaryRegistrationForm.form
 
@@ -87,7 +89,7 @@ package controllers.vatTradingDetails.vatChoice {
               badForm => BadRequest(features.tradingDetails.views.html.vatChoice.voluntary_registration(badForm)).pure,
               goodForm => (VoluntaryRegistration.REGISTER_YES == goodForm.yesNo).pure.ifM(
                 save(goodForm).map(_ => controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationReasonController.show()),
-                s4l.clear().flatMap(_ => vrs.deleteVatScheme()).map(_ => controllers.routes.WelcomeController.show())
+                s4l.clear.flatMap(_ => vrs.deleteVatScheme).map(_ => controllers.routes.WelcomeController.show())
               ).map(Redirect))
           }
     }

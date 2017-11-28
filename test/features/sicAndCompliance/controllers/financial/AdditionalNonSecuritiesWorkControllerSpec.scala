@@ -18,23 +18,24 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.{CurrentProfile, S4LVatSicAndCompliance}
+import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.financial.AdditionalNonSecuritiesWork
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object AdditionalNonSecuritiesWorkController
-    extends AdditionalNonSecuritiesWorkController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object AdditionalNonSecuritiesWorkController extends AdditionalNonSecuritiesWorkController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(routes.AdditionalNonSecuritiesWorkController.show())
 
@@ -52,7 +53,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[AdditionalNonSecuritiesWork]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(Future.successful(validVatScheme))
       mockGetCurrentProfile()
 
       callAuthorised(AdditionalNonSecuritiesWorkController.show) {
@@ -63,7 +64,7 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
 
   "return HTML when there's nothing in S4L and vatScheme contains no dataempty vatScheme" in {
     save4laterReturnsNoViewModel[AdditionalNonSecuritiesWork]()
-    when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
+    when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]()))
       .thenReturn(Future.successful(emptyVatScheme))
 
     mockGetCurrentProfile()
@@ -82,8 +83,8 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
     }
 
     "return 303 with Additional Non Securities Work Yes selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
       save4laterExpectsSave[AdditionalNonSecuritiesWork]()
@@ -94,8 +95,8 @@ class AdditionalNonSecuritiesWorkControllerSpec extends VatRegSpec with VatRegis
     }
 
     "return 303 with Additional Non Securities Work No selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       save4laterExpectsSave[AdditionalNonSecuritiesWork]()
       mockGetCurrentProfile()
       submitAuthorised(AdditionalNonSecuritiesWorkController.submit(), fakeRequest.withFormUrlEncodedBody(

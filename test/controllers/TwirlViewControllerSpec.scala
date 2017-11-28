@@ -26,10 +26,12 @@ import scala.concurrent.Future
 
 class TwirlViewControllerSpec extends VatRegSpec {
 
-  object TestController extends TwirlViewController(ds, mockVATFeatureSwitch) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object TestController extends TwirlViewController(
+    ds,
+    mockVATFeatureSwitch,
+    mockAuthConnector,
+    mockKeystoreConnector
+  )
 
   val redirectUrl = "http://localhost:9894/check-if-you-can-register-for-vat/use-this-service"
 

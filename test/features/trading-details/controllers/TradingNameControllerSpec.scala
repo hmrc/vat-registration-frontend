@@ -19,22 +19,24 @@ package controllers.vatTradingDetails
 import controllers.vatTradingDetails
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.view.vatTradingDetails.TradingNameView
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
-  object TestTradingNameController extends TradingNameController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object TestTradingNameController extends TradingNameController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(vatTradingDetails.routes.TradingNameController.show())
 
@@ -46,7 +48,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture w
 
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(ArgumentMatchers.any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestTradingNameController.show) {
@@ -63,7 +65,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture w
 
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(ArgumentMatchers.any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestTradingNameController.show) {
@@ -80,7 +82,7 @@ class TradingNameControllerSpec extends VatRegSpec with VatRegistrationFixture w
 
       mockGetCurrentProfile()
 
-      when(mockVatRegistrationService.getVatScheme()(Matchers.any(), Matchers.any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(ArgumentMatchers.any(), ArgumentMatchers.any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestTradingNameController.show) {

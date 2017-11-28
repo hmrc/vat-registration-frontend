@@ -16,9 +16,7 @@
 
 package utils
 
-import javax.inject.{Inject, Singleton}
-
-import com.google.inject.ImplementedBy
+import javax.inject.Inject
 
 sealed trait FeatureSwitch {
   def name: String
@@ -27,7 +25,6 @@ sealed trait FeatureSwitch {
 
 case class BooleanFeatureSwitch(name: String, enabled: Boolean) extends FeatureSwitch
 
-@Singleton
 class FeatureSwitchManager extends FeatureManager
 
 trait FeatureManager {
@@ -48,18 +45,16 @@ trait FeatureManager {
     getProperty(name)
   }
 
-  def enable(fs: FeatureSwitch): FeatureSwitch = setProperty(fs.name, "true")
+  def enable(fs: FeatureSwitch): FeatureSwitch  = setProperty(fs.name, "true")
   def disable(fs: FeatureSwitch): FeatureSwitch = setProperty(fs.name, "false")
 }
 
-@Singleton
 class VATRegFeatureSwitch @Inject()(injManager: FeatureSwitchManager) extends VATRegFeatureSwitches {
-  override val vatEligibilityUrl: String = "disableEligibilityFrontend"
-  override val ivStubbed: String = "ivStubbed"
-  override val manager: FeatureManager = injManager
+  override val vatEligibilityUrl: String  = "disableEligibilityFrontend"
+  override val ivStubbed: String          = "ivStubbed"
+  override val manager: FeatureManager    = injManager
 }
 
-@ImplementedBy(classOf[VATRegFeatureSwitch])
 trait VATRegFeatureSwitches {
 
   val vatEligibilityUrl: String
@@ -67,11 +62,11 @@ trait VATRegFeatureSwitches {
   val manager: FeatureManager
 
   def disableEligibilityFrontend: FeatureSwitch = manager.getProperty(vatEligibilityUrl)
-  def useIvStub: FeatureSwitch = manager.getProperty(ivStubbed)
+  def useIvStub: FeatureSwitch                  = manager.getProperty(ivStubbed)
 
   def apply(name: String): Option[FeatureSwitch] = name match {
-    case `vatEligibilityUrl` => Some(disableEligibilityFrontend)
-    case `ivStubbed` => Some(useIvStub)
-    case _ => None
+    case `vatEligibilityUrl`  => Some(disableEligibilityFrontend)
+    case `ivStubbed`          => Some(useIvStub)
+    case _                    => None
   }
 }

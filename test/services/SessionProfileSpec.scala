@@ -28,7 +28,7 @@ import play.api.test.FakeRequest
 import scala.concurrent.Future
 
 
-class SessionProfileSpec  extends VatRegSpec  with VatRegistrationFixture {
+class SessionProfileSpec extends VatRegSpec with VatRegistrationFixture {
 val mockMessages = mock[Messages]
   class Setup {
     val sp = new SessionProfile {

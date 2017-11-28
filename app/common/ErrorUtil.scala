@@ -17,6 +17,5 @@
 package common
 
 object ErrorUtil {
-  def fail(logicalGroup: String): Exception =
-    new IllegalStateException(s"$logicalGroup data expected to be found in either backend or save for later")
+  def fail(logicalGroup: String): Exception = new IllegalStateException(s"$logicalGroup data expected to be found in either backend or save for later")
 }

@@ -20,22 +20,21 @@ import java.util.UUID
 
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.SessionKeys
+import uk.gov.hmrc.http.SessionKeys
 
 object SessionBuilder extends SessionBuilder {}
 
 trait SessionBuilder {
 
-  def updateRequestFormWithSession(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], userId: String): FakeRequest[AnyContentAsFormUrlEncoded] =
-    fakeRequest.withSession(
-      SessionKeys.sessionId -> s"session-${UUID.randomUUID}",
-      SessionKeys.token -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId)
+  def updateRequestFormWithSession(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], userId: String): FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withSession(
+    SessionKeys.sessionId -> s"session-${UUID.randomUUID}",
+    SessionKeys.token -> "RANDOMTOKEN",
+    SessionKeys.userId -> userId
+  )
 
-  def buildRequestWithSession(userId: String): FakeRequest[AnyContentAsEmpty.type] =
-    FakeRequest().withSession(
-      SessionKeys.sessionId -> s"session-${UUID.randomUUID}",
-      SessionKeys.token -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId)
-
+  def buildRequestWithSession(userId: String): FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
+    SessionKeys.sessionId -> s"session-${UUID.randomUUID}",
+    SessionKeys.token -> "RANDOMTOKEN",
+    SessionKeys.userId -> userId
+  )
 }

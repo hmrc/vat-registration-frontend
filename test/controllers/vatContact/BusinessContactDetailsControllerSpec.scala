@@ -18,22 +18,23 @@ package controllers.vatContact
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.view.vatContact.BusinessContactDetails
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object TestBusinessContactDetailsController extends BusinessContactDetailsController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object TestBusinessContactDetailsController extends BusinessContactDetailsController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockVatRegistrationService,
+    mockS4LService
+  )
 
   val fakeRequest = FakeRequest(controllers.vatContact.routes.BusinessContactDetailsController.show())
 
@@ -43,7 +44,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
       mockGetCurrentProfile()
 
       save4laterReturnsNoViewModel[BusinessContactDetails]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(TestBusinessContactDetailsController.show()) {
@@ -72,7 +73,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
 
       save4laterReturnsNoViewModel[BusinessContactDetails]()
 
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]()))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]()))
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(TestBusinessContactDetailsController.show) {
@@ -93,7 +94,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
       mockGetCurrentProfile()
 
       save4laterExpectsSave[BusinessContactDetails]()
-      when(mockVatRegistrationService.submitVatContact()(any(), any())).thenReturn(validVatContact.pure)
+      when(mockVatRegistrationService.submitVatContact(any(), any())).thenReturn(validVatContact.pure)
 
       submitAuthorised(
         TestBusinessContactDetailsController.submit(),
@@ -103,7 +104,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
           "mobile" -> "0123456789")
       )(_ redirectsTo s"$contextRoot/trading-name")
 
-      verify(mockVatRegistrationService).submitVatContact()(any(), any())
+      verify(mockVatRegistrationService).submitVatContact(any(), any())
     }
   }
 }

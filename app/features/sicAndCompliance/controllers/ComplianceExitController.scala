@@ -16,30 +16,34 @@
 
 package controllers.sicAndCompliance {
 
+  import javax.inject.Singleton
+
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import models.S4LVatSicAndCompliance.dropAllCompliance
   import models._
   import models.api.SicCode
   import play.api.mvc._
-  import services.{CommonService, RegistrationService, S4LService}
-  import uk.gov.hmrc.play.http.HeaderCarrier
+  import services.{RegistrationService, S4LService}
+  import uk.gov.hmrc.http.HeaderCarrier
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
   import scala.concurrent.Future
 
-  class ComplianceExitController(ds: CommonPlayDependencies)
-                                (implicit vrs: RegistrationService, s4lService: S4LService)
-    extends VatRegistrationController(ds) with CommonService {
+  @Singleton
+  class ComplianceExitController(ds: CommonPlayDependencies,
+                                 val authConnector: AuthConnector,
+                                 implicit val vrs: RegistrationService,
+                                 implicit val s4lService: S4LService) extends VatRegistrationController(ds) {
 
-    def selectNextPage(sicCodesList: List[SicCode])(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[Result] =
+    def selectNextPage(sicCodesList: List[SicCode])(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[Result] = {
       ComplianceQuestions(sicCodesList) match {
         case NoComplianceQuestions => for {
           container <- s4lContainer[S4LVatSicAndCompliance]()
-          _ <- s4lService.save(dropAllCompliance(container))
-          _ <- vrs.submitSicAndCompliance()
+          _         <- s4lService.save(dropAllCompliance(container))
+          _         <- vrs.submitSicAndCompliance
         } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
         case _ => Redirect(controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()).pure
       }
-
+    }
   }
-
 }

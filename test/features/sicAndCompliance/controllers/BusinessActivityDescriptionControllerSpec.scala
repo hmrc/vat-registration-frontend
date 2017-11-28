@@ -18,13 +18,11 @@ package controllers.sicAndCompliance
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.view.sicAndCompliance.BusinessActivityDescription
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -32,10 +30,13 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
 
   val DESCRIPTION = "Testing"
 
-  object TestController extends BusinessActivityDescriptionController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+  object TestController extends BusinessActivityDescriptionController(
+    ds,
+    mockKeystoreConnector,
+    mockAuthConnector,
+    mockS4LService,
+    mockVatRegistrationService
+  )
 
   val fakeRequest = FakeRequest(routes.BusinessActivityDescriptionController.show())
 
@@ -51,7 +52,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[BusinessActivityDescription]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]())).thenReturn(Future.successful(validVatScheme))
       mockGetCurrentProfile()
       callAuthorised(TestController.show) {
         _ includesText "Describe what the company does"
@@ -60,7 +61,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[BusinessActivityDescription]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       mockGetCurrentProfile()
       callAuthorised(TestController.show) {
         _ includesText "Describe what the company does"

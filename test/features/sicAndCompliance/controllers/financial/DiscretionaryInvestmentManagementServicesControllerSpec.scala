@@ -18,23 +18,25 @@ package controllers.sicAndCompliance.financial
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.{CurrentProfile, S4LVatSicAndCompliance}
+import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.financial.DiscretionaryInvestmentManagementServices
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object DiscretionaryInvestmentManagementServicesController extends
-    DiscretionaryInvestmentManagementServicesController(ds)(mockS4LService, mockVatRegistrationService) {
-    override val authConnector = mockAuthConnector
-    override val keystoreConnector = mockKeystoreConnector
-  }
+    DiscretionaryInvestmentManagementServicesController(
+      ds,
+      mockKeystoreConnector,
+      mockAuthConnector,
+      mockS4LService,
+      mockVatRegistrationService
+    )
 
   val fakeRequest = FakeRequest(routes.DiscretionaryInvestmentManagementServicesController.show())
 
@@ -51,7 +53,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[DiscretionaryInvestmentManagementServices]()
-      when(mockVatRegistrationService.getVatScheme()(any(), any())).thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(Future.successful(validVatScheme))
       mockGetCurrentProfile()
       callAuthorised(DiscretionaryInvestmentManagementServicesController.show) {
         _ includesText "Does the company provide discretionary investment management services, or introduce clients to companies who do?"
@@ -60,7 +62,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
 
   "return HTML when there's nothing in S4L and vatScheme contains no data" in {
     save4laterReturnsNoViewModel[DiscretionaryInvestmentManagementServices]()
-    when(mockVatRegistrationService.getVatScheme()(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
+    when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
     mockGetCurrentProfile()
       callAuthorised(DiscretionaryInvestmentManagementServicesController.show) {
         _ includesText "Does the company provide discretionary investment management services, or introduce clients to companies who do?"
@@ -76,7 +78,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
     }
 
     "return 303 with Provide Discretionary Investment Management Services Yes selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance()(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
+      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterExpectsSave[DiscretionaryInvestmentManagementServices]()
       save4laterReturns(S4LVatSicAndCompliance())

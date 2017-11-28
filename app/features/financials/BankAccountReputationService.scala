@@ -16,21 +16,19 @@
 
 package services {
 
-  import javax.inject.{Inject, Singleton}
+  import javax.inject.Inject
 
-  import connectors.BankAccountReputationConnector
+  import connectors.BankAccountReputationConnect
   import models.view.vatFinancials.vatBankAccount.ModulusCheckAccount
-  import uk.gov.hmrc.play.http.HeaderCarrier
+  import uk.gov.hmrc.http.HeaderCarrier
+  import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
   import scala.concurrent.Future
-  import scala.concurrent.ExecutionContext.Implicits.global
 
-  @Singleton
-  class BankAccountReputationService @Inject()(val bankAccountReputationConnector: BankAccountReputationConnector) extends BankAccountReputationSrv
+  class BankAccountReputationService @Inject()(val bankAccountReputationConnector: BankAccountReputationConnect) extends BankAccountReputationSrv
 
   trait BankAccountReputationSrv {
-
-    val bankAccountReputationConnector: BankAccountReputationConnector
+    val bankAccountReputationConnector: BankAccountReputationConnect
 
     def bankDetailsModulusCheck(account: ModulusCheckAccount)(implicit hc: HeaderCarrier): Future[Boolean] = {
       bankAccountReputationConnector.bankAccountModulusCheck(account) map {
@@ -42,36 +40,29 @@ package services {
 
 package connectors {
 
-  import javax.inject.Singleton
+  import javax.inject.Inject
 
   import config.WSHttp
   import models.view.vatFinancials.vatBankAccount.ModulusCheckAccount
-  import play.api.Logger
   import play.api.libs.json.JsValue
-  import uk.gov.hmrc.play.config.ServicesConfig
-  import uk.gov.hmrc.play.http.{HeaderCarrier, Upstream5xxResponse}
-  import uk.gov.hmrc.play.http.ws.WSHttp
+  import uk.gov.hmrc.http.{CorePost, HeaderCarrier}
+  import uk.gov.hmrc.play.config.inject.ServicesConfig
+  import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-  import scala.concurrent.ExecutionContext.Implicits.global
   import scala.concurrent.Future
 
-  @Singleton
-  class BankAccountReputationConnector extends BankAccountReputationConnect with ServicesConfig {
-    val bankAccountReputationUrl: String = baseUrl("bank-account-reputation")
-    val http: WSHttp = WSHttp
+  class BankAccountReputationConnector @Inject()(val http: WSHttp, config: ServicesConfig) extends BankAccountReputationConnect{
+    val bankAccountReputationUrl: String = config.baseUrl("bank-account-reputation")
   }
 
   trait BankAccountReputationConnect {
-
     val bankAccountReputationUrl: String
-    val http: WSHttp
+    val http: CorePost
 
     def bankAccountModulusCheck(account: ModulusCheckAccount)(implicit hc: HeaderCarrier): Future[JsValue] = {
       http.POST[ModulusCheckAccount, JsValue](s"$bankAccountReputationUrl/modcheck", account) recover {
-        case ex => logResponse(ex, "BankAccountReputationConnector","bankAccountModulusCheck")
-          throw ex
+        case ex => throw logResponse(ex, "bankAccountModulusCheck")
       }
     }
   }
-
 }

@@ -27,7 +27,7 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait VatSpec extends PlaySpec with MockitoSugar with VatRegistrationFixture with VatMocks
   with FutureAwaits with DefaultAwaitTimeout with BeforeAndAfterEach {
