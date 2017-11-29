@@ -5,26 +5,26 @@
 
 @main_template(title = messages("pages.summary.title")) {
 
-    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.summary.heading")</h1>
+  <h1 class="form-title heading-large" id="pageHeading">@messages("pages.summary.heading")</h1>
 
-    @for(section <- summaryModel.sections) {
-        @if(section.display) {
-            <section>
-                <h2 class="heading-medium">@Messages(s"pages.summary.${section.id}.sectionHeading")</h2>
-                <table class="check-your-answers form-group">
-                    @for((row, doDisplayRow) <- section.rows) {
-                        @if(doDisplayRow) {
-                            @summaryRow(row, questionArg)
-                        }
-                    }
-                </table>
-            </section>
-        }
+  @for(section <- summaryModel.sections) {
+    @if(section.display) {
+      <section>
+        <h2 class="heading-medium">@Messages(s"pages.summary.${section.id}.sectionHeading")</h2>
+        <dl class="govuk-check-your-answers cya-questions-long">
+          @for((row, doDisplayRow) <- section.rows) {
+            @if(doDisplayRow) {
+                @summaryRow(row, questionArg)
+            }
+          }
+        </dl>
+      </section>
     }
+  }
 
-    @form(action = controllers.routes.ApplicationSubmissionController.show()) {
-        <div class="form-group">
-            <button class="button-get-started" role="button" id="save-and-continue">@messages("app.common.continue")</button>
-        </div>
-    }
+  @form(action = controllers.routes.ApplicationSubmissionController.show()) {
+    <div class="form-group">
+      <button class="button-get-started" role="button" id="save-and-continue">@messages("app.common.continue")</button>
+    </div>
+  }
 }
