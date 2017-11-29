@@ -6,16 +6,16 @@
    @messages(ans)<br>
 }
 
-<tr id="@{row.id}">
-    <td id="@{row.id}Question">@messages(s"pages.summary.${row.id}", questionArg)</td>
-    <td id="@{row.id}Answer">
-        @for(answer <- row.answerMessageKeys) {
-            @displayAnswer(answer)
-        }
-    </td>
-    <td class="change-answer">
-        @row.changeLink.map { linkLocation =>
-            <a href="@linkLocation" id="@{row.id}ChangeLink">@messages("app.common.change")</a>
-        }
-    </td>
-</tr>
+<div id="@{row.id}">
+  <dt class="cya-question" id="@{row.id}Question">@messages(s"pages.summary.${row.id}", questionArg)</dt>
+  <dd class="cya-answer" id="@{row.id}Answer">
+    @for(answer <- row.answerMessageKeys) {
+        @displayAnswer(answer)
+    }
+  </dd>
+  <dd class="cya-change">
+    @row.changeLink.map { linkLocation =>
+        <a href="@linkLocation" id="@{row.id}ChangeLink">@messages("app.common.change") <span class="visuallyhidden">&nbsp; @messages(s"pages.summary.${row.id}", questionArg)</span></a>
+    }
+  </dd>
+</div>
