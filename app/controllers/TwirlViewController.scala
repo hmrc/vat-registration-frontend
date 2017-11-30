@@ -38,18 +38,13 @@ class TwirlViewController @Inject()(ds: CommonPlayDependencies,
     implicit user =>
       implicit request =>
         withCurrentProfile { _ =>
-          Future.successful(
-            Some(viewName).collect {
-              case "use-this-service" => getEligibilityUrl
-            }.fold[Result](NotFound)(result => result)
-          )
+          Future.successful(getEligibilityUrl())
         }
   }
 
   def getEligibilityUrl()(implicit request: Request[AnyContent]): Result =
     if(useEligibilityFrontend) {
-      val url = conf.getString("microservice.services.vat-registration-eligibility-frontend.entry-url")
-        .getOrElse("http://localhost:9894/check-if-you-can-register-for-vat/use-this-service")
+      val url = conf.getString("microservice.services.vat-registration-eligibility-frontend.entry-url").get
       Redirect(Call("GET", url))
     } else {
       Ok(views.html.pages.vatEligibility.use_this_service())
