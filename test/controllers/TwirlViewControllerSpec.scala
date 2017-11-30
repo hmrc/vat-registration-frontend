@@ -33,7 +33,7 @@ class TwirlViewControllerSpec extends VatRegSpec {
     mockKeystoreConnector
   )
 
-  val redirectUrl = "http://localhost:9894/check-if-you-can-register-for-vat/use-this-service"
+  val redirectUrl = "http://localhost:9894/check-if-you-can-register-for-vat/national-insurance-number"
 
   "GET" should {
     "return HTML when user is authorized to access" in {
@@ -63,18 +63,6 @@ class TwirlViewControllerSpec extends VatRegSpec {
           callAuthorised(TestController.renderViewAuthorised(input)) {
             _ redirectsTo redirectUrl
           }
-      }
-    }
-
-    "return 404" when {
-      "requested twirl template does not exist" in {
-        mockGetCurrentProfile()
-
-        when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
-
-        callAuthorised(TestController.renderViewAuthorised("fake")) { result =>
-          result isA Status.NOT_FOUND
-        }
       }
     }
   }
