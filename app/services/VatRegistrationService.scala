@@ -127,4 +127,8 @@ trait LegacyServiceToBeRefactored extends CommonService {
 
   def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = vatRegConnector.getStatus(regId)
 
+  def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[DESResponse] = {
+    vatRegConnector.submitRegistration(profile.registrationId)
+  }
+
 }

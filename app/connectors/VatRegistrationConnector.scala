@@ -24,12 +24,17 @@ import common.enums.VatRegStatus
 import config.WSHttp
 import models.api._
 import models.external.IncorporationInfo
+import play.api.Logger
 import play.api.libs.json.{JsObject, JsValue}
-import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.http._
+import play.api.http.Status._
 
 import scala.concurrent.Future
+
+sealed trait DESResponse
+object Success extends DESResponse
 
 class VatRegistrationConnector @Inject()(val http: WSHttp, config: ServicesConfig) extends RegistrationConnector {
   val vatRegUrl = config.baseUrl("vat-registration")
@@ -115,6 +120,14 @@ trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnect
   def updateIVStatus(regId:String,ivData:JsValue)(implicit hc:HeaderCarrier):Future[HttpResponse] = {
     http.PATCH[JsValue, HttpResponse](s"$vatRegUrl/vatreg/$regId/update-iv-status", ivData).recover {
       case e: Exception => throw logResponse(e, "updateIVStatus")
+    }
+  }
+
+  def submitRegistration(regId:String)(implicit hc:HeaderCarrier) : Future[DESResponse] = {
+    http.PUT[String, HttpResponse](s"$vatRegUrl/vatreg/$regId/submit-registration", "") map {
+      _.status match {
+        case OK => Success
+      }
     }
   }
 }

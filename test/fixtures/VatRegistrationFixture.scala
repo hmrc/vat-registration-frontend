@@ -51,6 +51,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   //Responses
   val IM_A_TEAPOT = 418
   val forbidden = Upstream4xxResponse(FORBIDDEN.toString, FORBIDDEN, FORBIDDEN)
+  val noContent = HttpResponse(204)
   val upstream4xx = Upstream4xxResponse(IM_A_TEAPOT.toString, IM_A_TEAPOT, IM_A_TEAPOT)
   val upstream5xx = Upstream5xxResponse(INTERNAL_SERVER_ERROR.toString, INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)
   val validHttpResponse = HttpResponse(OK)
