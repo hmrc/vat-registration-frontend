@@ -205,6 +205,7 @@ GET         /feedback                                                           
 
 ## SUMMARY
 GET         /check-your-answers                                                                controllers.SummaryController.show
+POST        /check-your-answers                                                                controllers.SummaryController.submitRegistration
 
 ## CALLBACKS FROM OTHER SERVICES
 ## SIGN OUT

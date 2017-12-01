@@ -17,11 +17,10 @@
 package services
 
 import cats.data.OptionT
-import connectors.KeystoreConnector
+import connectors._
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models._
-
 import models.external.IncorporationInfo
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.vatContact.ppob.PpobView
@@ -203,6 +202,14 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturnsNothing[S4LVatSicAndCompliance]()
 
       service.submitSicAndCompliance failedWith classOf[IllegalStateException]
+    }
+  }
+
+  "Calling submitRegistration" should {
+    "return a Success DES response" in new Setup {
+      when(mockRegConnector.submitRegistration(any())(any()))
+        .thenReturn(Future.successful(Success))
+      await(service.submitRegistration()) mustBe Success
     }
   }
 }

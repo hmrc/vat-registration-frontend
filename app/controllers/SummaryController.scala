@@ -18,7 +18,8 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import connectors.KeystoreConnect
+import connectors.{KeystoreConnect, Success}
+import common.enums.VatRegStatus
 import controllers.builders._
 import models.api._
 import models.view._
@@ -57,6 +58,20 @@ class SummaryController @Inject()(ds: CommonPlayDependencies,
 
   def getRegistrationSummary()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = vrs.getVatScheme.map(registrationToSummary)
 
+  def submitRegistration: Action[AnyContent] = authorised.async {
+    implicit user =>
+      implicit request =>
+      withCurrentProfile { implicit profile =>
+        ivPassedCheck {
+          invalidSubmissionGuard() {
+            vrs.submitRegistration() map {
+              case Success => Redirect(controllers.routes.ApplicationSubmissionController.show())
+            }
+          }
+        }
+      }
+  }
+
   def registrationToSummary(vs: VatScheme)(implicit profile : CurrentProfile): Summary = {
     Summary(Seq(
       SummaryVatDetailsSectionBuilder(vs.tradingDetails, vs.vatServiceEligibility.flatMap(_.vatEligibilityChoice), useEligibilityFrontend, profile.incorporationDate).section,
@@ -71,5 +86,12 @@ class SummaryController @Inject()(ds: CommonPlayDependencies,
       SummaryAnnualAccountingSchemeSectionBuilder(vs.financials).section,
       SummaryFrsSectionBuilder(vs.vatFlatRateScheme).section
     ))
+  }
+
+  private[controllers] def invalidSubmissionGuard()(f: => Future[Result])(implicit hc: HeaderCarrier, profile: CurrentProfile) = {
+    vrs.getStatus(profile.registrationId) flatMap {
+      case VatRegStatus.draft => f
+      case _ => Future.successful(InternalServerError)
+    }
   }
 }

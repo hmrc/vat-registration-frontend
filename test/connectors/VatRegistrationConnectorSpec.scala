@@ -256,4 +256,12 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       connector.getIncorporationInfo("tstID") returnsNone
     }
   }
+
+  "calling submitRegistration" should {
+    "return a Success" in new Setup {
+      mockHttpPUT[String, HttpResponse]("test-url", validHttpResponse)
+
+      await(connector.submitRegistration("tstID")) mustBe Success
+    }
+  }
 }
