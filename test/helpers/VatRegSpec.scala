@@ -26,7 +26,6 @@ import controllers.CommonPlayDependencies
 import fixtures.{LoginFixture, VatRegistrationFixture}
 import mocks.VatMocks
 import models.CurrentProfile
-import org.mockito.Mockito.reset
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.time.{Millis, Seconds, Span}

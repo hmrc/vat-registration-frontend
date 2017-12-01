@@ -22,9 +22,9 @@
     }
   }
 
-  @form(action = controllers.routes.ApplicationSubmissionController.show()) {
+  @form(action = controllers.routes.SummaryController.submitRegistration()) {
     <div class="form-group">
-      <button class="button-get-started" role="button" id="save-and-continue">@messages("app.common.continue")</button>
+    <button class="button-get-started" role="button" id="save-and-continue">@messages("app.common.continue")</button>
     </div>
   }
 }

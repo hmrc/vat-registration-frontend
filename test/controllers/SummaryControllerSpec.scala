@@ -16,12 +16,20 @@
 
 package controllers
 
+import common.enums.VatRegStatus
+import connectors.{KeystoreConnector, Success, VatRegistrationConnector}
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.CurrentProfile
 import models.ModelKeys.INCORPORATION_STATUS
 import models.external.IncorporationInfo
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import play.api.http.Status
+import play.api.mvc.Result
+import play.api.test.FakeRequest
+import play.api.test.Helpers.redirectLocation
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
@@ -35,6 +43,10 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
     mockAuthConnector,
     mockS4LService
   )
+
+  val mockVatRegistrationConnector: VatRegistrationConnector = mock[VatRegistrationConnector]
+
+  val fakeRequest = FakeRequest(routes.SummaryController.show())
 
   "Calling summary to show the summary page" should {
 
@@ -70,7 +82,37 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "registrationToSummary maps a valid empty VatScheme object to a Summary object" in {
       TestSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency).sections.length mustEqual 11
     }
-
   }
 
+  "Calling submitRegistration" should {
+    "redirect to the confirmation page if the status of the document is in draft" in {
+      when(mockVatRegistrationService.getStatus(any())(any()))
+        .thenReturn(Future.successful(VatRegStatus.draft))
+
+      mockGetCurrentProfile()
+
+      when(mockVatRegistrationService.submitRegistration()(any(), any()))
+        .thenReturn(Future.successful(Success))
+
+      submitAuthorised(TestSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
+        (result: Future[Result]) =>
+          await(result).header.status mustBe Status.SEE_OTHER
+      }
+    }
+
+    "have an internal server error if the document is not in draft" in {
+      when(mockVatRegistrationService.getStatus(any())(any()))
+        .thenReturn(Future.successful(VatRegStatus.acknowledged))
+
+      mockGetCurrentProfile()
+
+      when(mockVatRegistrationService.submitRegistration()(any(), any()))
+        .thenReturn(Future.successful(Success))
+
+      submitAuthorised(TestSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
+        (result: Future[Result]) =>
+          await(result).header.status mustBe Status.INTERNAL_SERVER_ERROR
+      }
+    }
+  }
 }
