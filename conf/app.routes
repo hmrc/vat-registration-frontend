@@ -10,6 +10,11 @@ GET         /session-timed-out                                                  
 ##GenericError
 GET /error                                                                                     controllers.callbacks.SignInOutController.errorShow
 
+## FEEDBACK
+GET         /feedback                                                                          controllers.feedback.FeedbackController.feedbackShow
+POST        /feedback                                                                          controllers.feedback.FeedbackController.submitFeedback
+GET         /thankyou                                                                          controllers.feedback.FeedbackController.thankyou
+
 ##IDENTITY VERIFICATION
 GET         /start-iv-journey                                                                  controllers.iv.IdentityVerificationController.redirectToIV
 GET         /timed-out-inactivity                                                              controllers.iv.IdentityVerificationController.timeoutIV
@@ -199,9 +204,6 @@ GET         /current-address-three-years-or-more                                
 POST        /current-address-three-years-or-more                                               controllers.vatLodgingOfficer.PreviousAddressController.submit
 GET         /current-address-three-years-or-more/changePreviousAddress                         controllers.vatLodgingOfficer.PreviousAddressController.changeAddress
 GET         /current-address-three-years-or-more/acceptFromTxm                                 controllers.vatLodgingOfficer.PreviousAddressController.acceptFromTxm(id: String ?= "")
-
-## FEEDBACK
-GET         /feedback                                                                          controllers.feedback.FeedbackController.show
 
 ## SUMMARY
 GET         /check-your-answers                                                                controllers.SummaryController.show
