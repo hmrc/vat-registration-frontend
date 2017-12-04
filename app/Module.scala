@@ -77,6 +77,7 @@ class Module extends AbstractModule {
   }
 
   private def bindServices(): Unit = {
+    bind(classOf[AddressLookupService]).to(classOf[AddressLookupServiceImpl]).asEagerSingleton()
     bind(classOf[IncorporationInfoSrv]).to(classOf[IncorporationInformationService]).asEagerSingleton()
     bind(classOf[DateService]).to(classOf[WorkingDaysService]).asEagerSingleton()
     bind(classOf[S4LService]).to(classOf[PersistenceService]).asEagerSingleton()
@@ -88,7 +89,7 @@ class Module extends AbstractModule {
   }
 
   private def bindConnectors(): Unit = {
-    bind(classOf[AddressLookupConnect]).to(classOf[AddressLookupConnector]).asEagerSingleton()
+    bind(classOf[AddressLookupConnector]).to(classOf[AddressLookupConnectorImpl]).asEagerSingleton()
     bind(classOf[PPConnector]).to(classOf[PrePopConnector]).asEagerSingleton()
     bind(classOf[TestRegistrationConnector]).to(classOf[TestVatRegistrationConnector]).asEagerSingleton()
     bind(classOf[BankHolidaysConnector]).annotatedWith(Names.named("fallback")).to(classOf[FallbackBankHolidaysConnector]).asEagerSingleton()

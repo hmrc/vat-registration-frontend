@@ -19,11 +19,10 @@ package controllers.vatContact.ppob
 import javax.inject.{Inject, Singleton}
 
 import cats.data.OptionT
-import cats.syntax.flatMap._
-import connectors.{AddressLookupConnect, KeystoreConnect}
+import connectors.KeystoreConnect
+import common.enums.AddressLookupJourneyIdentifier.businessActivities
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.ppob.PpobForm
-import models.AddressLookupJourneyId.ppobVatReg
 import models.api.ScrsAddress
 import models.view.vatContact.ppob.PpobView
 import play.api.mvc.{Action, AnyContent}
@@ -33,12 +32,12 @@ import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 @Singleton
 class PpobController @Inject()(ds: CommonPlayDependencies,
-                               implicit val s4l: S4LService,
-                               implicit val vrs: RegistrationService,
                                prePopService: PrePopService,
-                               alfConnector: AddressLookupConnect,
+                               addressLookupService: AddressLookupService,
                                val authConnector: AuthConnector,
-                               val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
+                               val keystoreConnector: KeystoreConnect,
+                               implicit val s4l: S4LService,
+                               implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
   private val form = PpobForm.form
   private val addressListKey = "PpobAddressList"
@@ -65,17 +64,20 @@ class PpobController @Inject()(ds: CommonPlayDependencies,
       implicit request =>
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
-            form.bindFromRequest().fold(
-              badForm => fetchAddressList.getOrElse(Seq()).map(
-                addressList => BadRequest(views.html.pages.vatContact.ppob.ppob(badForm, addressList))),
-              data => (data.addressId == "other").pure.ifM(
-                ifTrue = alfConnector.getOnRampUrl(routes.PpobController.acceptFromTxm()),
-                ifFalse = for {
+            form.bindFromRequest.fold(
+              badForm => fetchAddressList.getOrElse(Seq()) map {
+                addressList => BadRequest(views.html.pages.vatContact.ppob.ppob(badForm, addressList))
+              },
+              data    => if(data.addressId == "other") {
+                addressLookupService.getJourneyUrl(businessActivities, routes.PpobController.acceptFromTxm()) map Redirect
+              } else {
+                for {
                   addressList <- fetchAddressList.getOrElse(Seq())
-                  address = addressList.find(_.id == data.addressId)
-                  _ <- save(PpobView(data.addressId, address))
-                } yield controllers.vatContact.routes.BusinessContactDetailsController.show()
-              ).map(Redirect))
+                  adddress    =  addressList.find(_.id == data.addressId)
+                  _           <- save(PpobView(data.addressId, adddress))
+                } yield Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())
+              }
+            )
           }
         }
   }
@@ -86,11 +88,10 @@ class PpobController @Inject()(ds: CommonPlayDependencies,
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
             for {
-              address <- alfConnector.getAddress(id)
+              address <- addressLookupService.getAddressById(id)
               _ <- save(PpobView(address.id, Some(address)))
             } yield Redirect(controllers.vatContact.routes.BusinessContactDetailsController.show())
           }
         }
   }
-
 }

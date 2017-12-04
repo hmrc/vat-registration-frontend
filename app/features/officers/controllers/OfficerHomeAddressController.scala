@@ -48,12 +48,12 @@ package controllers.vatLodgingOfficer {
   import javax.inject.{Inject, Singleton}
 
   import cats.data.OptionT
-  import connectors.{AddressLookupConnect, KeystoreConnect}
+  import connectors.KeystoreConnect
+  import common.enums.AddressLookupJourneyIdentifier.homeAddress
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatLodgingOfficer.OfficerHomeAddressForm
   import models.api.ScrsAddress
   import models.view.vatLodgingOfficer.OfficerHomeAddressView
-  import play.api.Logger
   import play.api.mvc.{Action, AnyContent}
   import services._
   import uk.gov.hmrc.http.HeaderCarrier
@@ -61,20 +61,17 @@ package controllers.vatLodgingOfficer {
 
   @Singleton
   class OfficerHomeAddressController @Inject()(ds: CommonPlayDependencies,
+                                               addressLookupService: AddressLookupService,
                                                val keystoreConnector: KeystoreConnect,
                                                val authConnector: AuthConnector,
                                                implicit val s4l: S4LService,
                                                implicit val vrs: RegistrationService,
-                                               implicit val prePopService: PrePopService,
-                                               implicit val alfConnector: AddressLookupConnect) extends VatRegistrationController(ds)  with SessionProfile {
-
-    import cats.syntax.flatMap._
-    import models.AddressLookupJourneyId.homeAddressJourneyId
+                                               implicit val prePopService: PrePopService) extends VatRegistrationController(ds)  with SessionProfile {
 
     private val form = OfficerHomeAddressForm.form
     private val addressListKey = "OfficerAddressList"
 
-    private def fetchAddressList()(implicit headerCarrier: HeaderCarrier) = OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]](addressListKey))
+    private def fetchAddressList(implicit headerCarrier: HeaderCarrier) = OptionT(keystoreConnector.fetchAndGet[Seq[ScrsAddress]](addressListKey))
 
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
@@ -95,34 +92,33 @@ package controllers.vatLodgingOfficer {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => fetchAddressList().getOrElse(Seq()).map(
-                addressList => BadRequest(features.officers.views.html.officer_home_address(badForm, addressList))),
-              data => (data.addressId == "other").pure.ifM(
-                ifTrue = alfConnector.getOnRampUrl(routes.OfficerHomeAddressController.acceptFromTxm()),
-                ifFalse = for {
-                  addressList <- fetchAddressList().getOrElse(Seq())
-                  address = addressList.find(_.id == data.addressId)
-                  _ <- save(OfficerHomeAddressView(data.addressId, address))
-                } yield controllers.vatLodgingOfficer.routes.PreviousAddressController.show()
-              ).map(Redirect))
+            form.bindFromRequest.fold(
+              badForm => fetchAddressList.getOrElse(Seq()) map {
+                addressList => BadRequest(features.officers.views.html.officer_home_address(badForm, addressList))
+              },
+              data    => if(data.addressId == "other") {
+                addressLookupService.getJourneyUrl(homeAddress, routes.OfficerHomeAddressController.acceptFromTxm()) map Redirect
+              } else {
+                for {
+                  addressList <- fetchAddressList.getOrElse(Seq())
+                  address     =  addressList.find(_.id == data.addressId)
+                  _           <- save(OfficerHomeAddressView(data.addressId, address))
+                } yield Redirect(controllers.vatLodgingOfficer.routes.PreviousAddressController.show())
+              }
+            )
           }
     }
-
 
     def acceptFromTxm(id: String): Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            alfConnector.getAddress(id).flatMap { address =>
-              Logger.debug(s"address received: $address")
+            addressLookupService.getAddressById(id).flatMap { address =>
               save(OfficerHomeAddressView(address.id, Some(address.normalise())))
             }.map(_ => Redirect(controllers.vatLodgingOfficer.routes.PreviousAddressController.show()))
           }
     }
-
   }
-
 }
 
 package forms.vatLodgingOfficer {

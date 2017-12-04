@@ -30,12 +30,12 @@ class PpobControllerSpec extends VatRegSpec with VatRegistrationFixture with S4L
 
   object Controller extends PpobController(
     ds,
-    mockS4LService,
-    mockVatRegistrationService,
     mockPPService,
-    mockAddressLookupConnector,
+    mockAddressService,
     mockAuthConnector,
-    mockKeystoreConnector
+    mockKeystoreConnector,
+    mockS4LService,
+    mockVatRegistrationService
   )
 
   val fakeRequest = FakeRequest(controllers.vatContact.ppob.routes.PpobController.show())
@@ -105,13 +105,12 @@ class PpobControllerSpec extends VatRegSpec with VatRegistrationFixture with S4L
     "redirect the user to TxM address capture page with 'other address' selected" in {
       mockGetCurrentProfile()
 
-      when(mockAddressLookupConnector.getOnRampUrl(any[Call])(any(), any())).thenReturn(Call("GET", "TxM").pure)
+      when(mockAddressService.getJourneyUrl(any(), any())(any(), any())).thenReturn(Call("GET", "TxM").pure)
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("ppobRadio" -> "other")
       )(_ redirectsTo "TxM")
     }
-
   }
 
   s"GET ${routes.PpobController.acceptFromTxm()}" should {
@@ -119,7 +118,7 @@ class PpobControllerSpec extends VatRegSpec with VatRegistrationFixture with S4L
       mockGetCurrentProfile()
 
       save4laterExpectsSave[PpobView]()
-      when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
+      when(mockAddressService.getAddressById(any())(any())).thenReturn(address.pure)
       callAuthorised(Controller.acceptFromTxm("addressId")) {
         _ redirectsTo s"$contextRoot/company-contact-details"
       }
