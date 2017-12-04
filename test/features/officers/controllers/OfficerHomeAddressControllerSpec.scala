@@ -30,12 +30,12 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
 
   object Controller extends OfficerHomeAddressController(
     ds,
+    mockAddressService,
     mockKeystoreConnector,
     mockAuthConnector,
     mockS4LService,
     mockVatRegistrationService,
-    mockPPService,
-    mockAddressLookupConnector
+    mockPPService
   )
 
   val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())
@@ -101,7 +101,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
     "redirect the user to TxM address capture page with 'other address' selected" in {
       mockGetCurrentProfile()
 
-      when(mockAddressLookupConnector.getOnRampUrl(any[Call])(any(), any())).thenReturn(Call("GET", "TxM").pure)
+      when(mockAddressService.getJourneyUrl(any(), any())(any(), any())).thenReturn(Call("GET", "TxM").pure)
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> "other")
@@ -113,7 +113,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
     "save an address and redirect to next page" in {
       mockGetCurrentProfile()
       save4laterExpectsSave[OfficerHomeAddressView]()
-      when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
+      when(mockAddressService.getAddressById(any())(any())).thenReturn(address.pure)
 
       callAuthorised(Controller.acceptFromTxm("addressId")) {
         _ redirectsTo s"$contextRoot/current-address-three-years-or-more"

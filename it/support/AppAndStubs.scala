@@ -20,16 +20,18 @@ package support
 import org.scalatest.concurrent.{IntegrationPatience, PatienceConfiguration}
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{Suite, TestSuite}
-import org.scalatestplus.play.OneServerPerSuite
 import play.api.http.HeaderNames
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContentAsFormUrlEncoded
-import play.api.test.{FakeApplication, FakeRequest}
+import play.api.test.FakeRequest
 import support.SessionBuilder.getSessionCookie
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.it.Port
 
-trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerSuite with IntegrationPatience with PatienceConfiguration {
+trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServerPerSuite with IntegrationPatience with PatienceConfiguration {
   me: Suite with TestSuite =>
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -51,9 +53,10 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerS
     ws.url(s"http://localhost:$port/register-for-vat$path").withFollowRedirects(false).withHeaders(headers,"Csrf-Token" -> "nocheck")
   }
 
-  override implicit lazy val app: FakeApplication = FakeApplication(
-    //override app config here, chaning hosts and ports to point app at Wiremock
-    additionalConfiguration = replaceWithWiremock(Seq(
+  val additionalConfig: Map[String, String] = Map()
+
+  override implicit lazy val app: Application = new GuiceApplicationBuilder()
+    .configure(replaceWithWiremock(Seq(
       "address-lookup-frontend",
       "auth",
       "auth.company-auth",
@@ -68,8 +71,8 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerS
       "bank-account-reputation",
       "identity-verification-proxy",
       "identity-verification-frontend"
-    ))
-  )
+    )))
+    .build()
 
   private def replaceWithWiremock(services: Seq[String]) =
     services.foldLeft(Map.empty[String, Any]) { (configMap, service) =>
@@ -85,7 +88,8 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with OneServerPerS
       ("microservice.services.iv.identity-verification-proxy.host" -> wiremockHost) +
       ("microservice.services.iv.identity-verification-proxy.port" -> wiremockPort)+
       ("microservice.services.iv.identity-verification-frontend.host" -> wiremockHost) +
-      ("microservice.services.iv.identity-verification-frontend.port" -> wiremockPort)
+      ("microservice.services.iv.identity-verification-frontend.port" -> wiremockPort) +
+      ("microservice.services.address-lookup-frontend.new-address-callback.url" -> s"http://localhost:$port")
 }
 
 
