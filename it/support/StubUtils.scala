@@ -16,12 +16,9 @@
 
 package support
 
-import javax.inject.{Inject, Singleton}
-
 import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern
-
 import common.enums.{IVResult, VatRegStatus}
 import models.S4LKey
 import models.api.VatScheme
@@ -50,7 +47,7 @@ trait StubUtils {
 
     def user = UserStub()
 
-    def journey(id: String) = JourneyStub(id)
+    def journey = JourneyStub()
 
     def vatRegistrationFootprint = VatRegistrationFootprintStub()
 
@@ -544,11 +541,9 @@ trait StubUtils {
     }
   }
 
-  case class JourneyStub
-  (journeyId: String)
-  (implicit builder: PreconditionBuilder) {
+  case class JourneyStub()(implicit builder: PreconditionBuilder) {
 
-    val journeyInitUrl: UrlPathPattern = urlPathMatching(s".*/api/init/$journeyId")
+    val journeyInitUrl: UrlPathPattern = urlPathMatching(s".*/api/init")
 
     def initialisedSuccessfully(): PreconditionBuilder = {
       stubFor(post(journeyInitUrl).willReturn(aResponse.withStatus(202).withHeader("Location", "continueUrl")))

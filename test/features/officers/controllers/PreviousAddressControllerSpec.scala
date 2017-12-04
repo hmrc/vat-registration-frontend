@@ -30,11 +30,11 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
   object TestPreviousAddressController extends PreviousAddressController(
     ds,
+    mockAddressService,
     mockKeystoreConnector,
     mockAuthConnector,
     mockS4LService,
-    mockVatRegistrationService,
-    mockAddressLookupConnector
+    mockVatRegistrationService
   )
 
   val fakeRequest = FakeRequest(vatLodgingOfficer.routes.PreviousAddressController.show())
@@ -81,7 +81,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
     }
 
     "return 303 redirect the user to TxM address capture page" in {
-      when(mockAddressLookupConnector.getOnRampUrl(any[Call])(any(), any())).thenReturn(Call("GET", "TxM").pure)
+      when(mockAddressService.getJourneyUrl(any(), any())(any(), any())).thenReturn(Call("GET", "TxM").pure)
       mockGetCurrentProfile()
       submitAuthorised(TestPreviousAddressController.submit(),
         fakeRequest.withFormUrlEncodedBody("previousAddressQuestionRadio" -> "false")
@@ -106,7 +106,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
   s"GET ${vatLodgingOfficer.routes.PreviousAddressController.acceptFromTxm()}" should {
     "save an address and redirect to next page" in {
       save4laterExpectsSave[PreviousAddressView]()
-      when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
+      when(mockAddressService.getAddressById(any())(any())).thenReturn(address.pure)
       when(mockVatRegistrationService.submitVatLodgingOfficer(any(), any())).thenReturn(validLodgingOfficer.pure)
       mockGetCurrentProfile()
       callAuthorised(TestPreviousAddressController.acceptFromTxm("addressId")) {
@@ -123,7 +123,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
     "save an address and redirect to next page" in {
       save4laterExpectsSave[PreviousAddressView]()
       when(mockAddressLookupConnector.getAddress(any())(any())).thenReturn(address.pure)
-      when(mockAddressLookupConnector.getOnRampUrl(any[Call])(any(), any())).thenReturn(Call("GET", "TxM").pure)
+      when(mockAddressService.getJourneyUrl(any(), any())(any(), any())).thenReturn(Call("GET", "TxM").pure)
       mockGetCurrentProfile()
       callAuthorised(TestPreviousAddressController.changeAddress()) {
         _ redirectsTo "TxM"
