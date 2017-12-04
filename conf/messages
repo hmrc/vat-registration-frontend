@@ -17,6 +17,10 @@ error.required                          = Select an option
 error.unknown                           = Invalid input
 validation.numeric                      = Enter a numeric value
 
+#Feedback
+page.feedback.title                     = Feedback
+page.feedback.thank-you.title           = Thank you
+
 #Address journeys
 addressLookup.common.homeNavHref                            = http://www.hmrc.gov.uk/
 addressLookup.common.navTitle                               = Register your company
