@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package models
+package common.enums
 
-final case class AddressLookupJourneyId(id: String)
-
-object AddressLookupJourneyId {
-  implicit val homeAddressJourneyId = AddressLookupJourneyId("vatreg1")
-  implicit val previousAddressId = AddressLookupJourneyId("vatreg2")
-  implicit val ppobVatReg = AddressLookupJourneyId("vatreg_ppob")
+object AddressLookupJourneyIdentifier extends Enumeration {
+  val homeAddress             = Value
+  val addressThreeYearsOrLess = Value
+  val businessActivities      = Value
 }

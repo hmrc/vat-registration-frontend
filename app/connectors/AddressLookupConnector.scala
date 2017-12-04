@@ -19,27 +19,24 @@ package connectors
 import javax.inject.Inject
 
 import config.WSHttp
-import models.AddressLookupJourneyId
 import models.api.ScrsAddress
+import models.external.addresslookup.AddressJourneyBuilder
 import play.api.http.HeaderNames._
 import play.api.http.HttpVerbs._
-import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Call
-import uk.gov.hmrc.http.{CoreGet, CorePost, HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 import scala.util.control.NoStackTrace
 
-class AddressLookupConnector @Inject()(val http: WSHttp, config: ServicesConfig) extends AddressLookupConnect {
-  val addressLookupFrontendUrl = config.baseUrl("address-lookup-frontend")
-  val addressLookupContinueUrl = config.getConfString("address-lookup-frontend.new-address-callback.url", "")
+class AddressLookupConnectorImpl @Inject()(val http: WSHttp, config: ServicesConfig) extends AddressLookupConnector {
+  lazy val addressLookupFrontendUrl = config.baseUrl("address-lookup-frontend")
 }
 
-trait AddressLookupConnect {
+trait AddressLookupConnector {
   val addressLookupFrontendUrl: String
-  val addressLookupContinueUrl: String
 
   val http: WSHttp
 
@@ -49,11 +46,9 @@ trait AddressLookupConnect {
     http.GET[ScrsAddress](s"$addressLookupFrontendUrl/api/confirmed?id=$id")
   }
 
-  def getOnRampUrl(call: Call)(implicit hc: HeaderCarrier, journeyId: AddressLookupJourneyId): Future[Call] = {
-    val postUrl      = s"$addressLookupFrontendUrl/api/init/${journeyId.id}"
-    val continueJson = Json.obj("continueUrl" -> s"$addressLookupContinueUrl${call.url}")
-
-    http.POST[JsObject, HttpResponse](postUrl, continueJson).map { resp =>
+  def getOnRampUrl(initialiserModel: AddressJourneyBuilder)(implicit hc: HeaderCarrier): Future[Call] = {
+    val postUrl = s"$addressLookupFrontendUrl/api/init"
+    http.POST[AddressJourneyBuilder, HttpResponse](postUrl, initialiserModel).map { resp =>
       resp.header(LOCATION).map(Call(GET, _)).getOrElse { //here resp will be a 202 Accepted with a Location header
         logger.warn("[getOnRampUrl] - ERROR: Location header not set in ALF response")
         throw new ALFLocationHeaderNotSetException

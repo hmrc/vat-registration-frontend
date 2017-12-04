@@ -48,25 +48,25 @@ package controllers.vatLodgingOfficer {
 
   import javax.inject.{Inject, Singleton}
 
-  import connectors.{AddressLookupConnect, KeystoreConnect}
+  import connectors.KeystoreConnect
+  import common.enums.AddressLookupJourneyIdentifier.addressThreeYearsOrLess
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatLodgingOfficer.PreviousAddressForm
   import models.view.vatLodgingOfficer.PreviousAddressView
   import play.api.data.Form
   import play.api.mvc.{Action, AnyContent}
-  import services.{RegistrationService, S4LService, SessionProfile}
+  import services.{AddressLookupService, RegistrationService, S4LService, SessionProfile}
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+
+  import scala.concurrent.Future
 
   @Singleton
   class PreviousAddressController @Inject()(ds: CommonPlayDependencies,
+                                            addressLookupService: AddressLookupService,
                                             val keystoreConnector: KeystoreConnect,
                                             val authConnector: AuthConnector,
                                             implicit val s4l: S4LService,
-                                            implicit val vrs: RegistrationService,
-                                            implicit val alfConnector: AddressLookupConnect) extends VatRegistrationController(ds) with SessionProfile {
-
-    import cats.syntax.flatMap._
-    import models.AddressLookupJourneyId.previousAddressId
+                                            implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     val form: Form[PreviousAddressView] = PreviousAddressForm.form
 
@@ -86,15 +86,16 @@ package controllers.vatLodgingOfficer {
         implicit request =>
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
-              form.bindFromRequest().fold(
-                badForm => BadRequest(features.officers.views.html.previous_address(badForm)).pure,
-                data => (!data.yesNo).pure.ifM(
-                  ifTrue = alfConnector.getOnRampUrl(routes.PreviousAddressController.acceptFromTxm()),
-                  ifFalse = for {
+              form.bindFromRequest.fold(
+                badForm => Future.successful(BadRequest(features.officers.views.html.previous_address(badForm))),
+                data    => if(!data.yesNo) {
+                  addressLookupService.getJourneyUrl(addressThreeYearsOrLess, routes.PreviousAddressController.acceptFromTxm()) map Redirect
+                } else {
+                  for {
                     _ <- save(PreviousAddressView(true))
                     _ <- vrs.submitVatLodgingOfficer
-                  } yield controllers.vatContact.ppob.routes.PpobController.show()
-                ).map(Redirect)
+                  } yield Redirect(controllers.vatContact.ppob.routes.PpobController.show())
+                }
               )
             }
           }
@@ -106,7 +107,7 @@ package controllers.vatLodgingOfficer {
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
               for {
-                address <- alfConnector.getAddress(id)
+                address <- addressLookupService.getAddressById(id)
                 _       <- save(PreviousAddressView(false, Some(address)))
                 _       <- vrs.submitVatLodgingOfficer
               } yield Redirect(controllers.vatContact.ppob.routes.PpobController.show())
@@ -119,12 +120,11 @@ package controllers.vatLodgingOfficer {
         implicit request =>
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
-              alfConnector.getOnRampUrl(routes.PreviousAddressController.acceptFromTxm()).map(Redirect)
+              addressLookupService.getJourneyUrl(addressThreeYearsOrLess, routes.PreviousAddressController.acceptFromTxm()) map Redirect
             }
           }
     }
   }
-
 }
 
 package forms.vatLodgingOfficer {
