@@ -19,6 +19,7 @@ package config
 import java.util.Base64
 
 import play.api.Play.{configuration, current}
+import uk.gov.hmrc.play.config.ServicesConfig
 
 trait AppConfig {
   val analyticsToken: String
@@ -26,14 +27,16 @@ trait AppConfig {
   val reportAProblemPartialUrl: String
   val reportAProblemNonJSUrl: String
   val timeoutInSeconds: String
+  val contactFrontendPartialBaseUrl: String
 }
 
-object FrontendAppConfig extends AppConfig {
+object FrontendAppConfig extends AppConfig with ServicesConfig {
 
   private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
 
-  private val contactFormServiceIdentifier   = "SCRS"
+  val contactFormServiceIdentifier = "SCRS"
 
+  override lazy val contactFrontendPartialBaseUrl = baseUrl("contact-frontend")
   override lazy val analyticsToken           = loadConfig(s"google-analytics.token")
   override lazy val analyticsHost            = loadConfig(s"google-analytics.host")
   override lazy val reportAProblemPartialUrl = s"/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
