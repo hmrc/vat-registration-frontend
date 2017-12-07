@@ -30,8 +30,9 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   class Setup {
     val connector = new RegistrationConnector {
-      override val vatRegUrl: String = "tst-url"
-      override val http: WSHttp = mockWSHttp
+      override val vatRegUrl: String   = "tst-url"
+      override val vatRegElUrl: String = "test-url"
+      override val http: WSHttp        = mockWSHttp
     }
   }
 
@@ -102,12 +103,21 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   }
 
   "Calling deleteVatScheme" should {
+
+    val okStatus = new HttpResponse {
+      override def status = 200
+    }
+
+    val otherRepsonse = new HttpResponse {
+      override def status = 500
+    }
+
     "return a successful outcome given an existing registration" in new Setup {
-      mockHttpDELETE[Boolean]("tst-url", true)
-      connector.deleteVatScheme("regId") completedSuccessfully
+      mockHttpDELETE[HttpResponse]("tst-url", okStatus)
+      connector.deleteVatScheme("regId")
     }
     "return the notFound exception when trying to DELETE non-existent registration" in new Setup {
-      mockHttpFailedDELETE[Boolean]("tst-url", notFound)
+      mockHttpFailedDELETE[HttpResponse]("tst-url", notFound)
       connector.deleteVatScheme("regId") failedWith notFound
     }
   }

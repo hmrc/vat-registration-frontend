@@ -17,6 +17,7 @@
 package config
 
 import com.typesafe.config.Config
+import filters.VATCSRFExceptionsFilter
 import net.ceedubs.ficus.Ficus._
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
@@ -33,6 +34,9 @@ trait FrontendGlobal extends DefaultFrontendGlobal {
   override val auditConnector       = FrontendAuditConnector
   override val loggingFilter        = LoggingFilter
   override val frontendAuditFilter  = AuditFilter
+
+
+  override def csrfExceptionsFilter = new VATCSRFExceptionsFilter(FrontendAppConfig.uriWhiteList)
 
   //Code that needs running at app startup has been moved to app.config.startup, create new class and trait then bind in module
 

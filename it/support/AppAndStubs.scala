@@ -53,6 +53,10 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
     ws.url(s"http://localhost:$port/register-for-vat$path").withFollowRedirects(false).withHeaders(headers,"Csrf-Token" -> "nocheck")
   }
 
+  def buildInternalClient(path: String)(implicit headers:(String,String) = HeaderNames.COOKIE -> getSessionCookie()) = {
+    ws.url(s"http://localhost:$port/internal$path").withFollowRedirects(false).withHeaders(headers,"Csrf-Token" -> "nocheck")
+  }
+
   val additionalConfig: Map[String, String] = Map()
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
@@ -82,14 +86,16 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
     } +
       (s"auditing.consumer.baseUri.host" -> wiremockHost, s"auditing.consumer.baseUri.port" -> wiremockPort) +
       ("play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck") +
-      ("microservice.services.vat-registration-eligibility-frontend.www.host" -> "") +
+      ("microservice.services.vat-registration-eligibility-frontend.www.host" -> s"http://$wiremockHost:$wiremockPort") +
       ("microservice.services.vat-registration-eligibility-frontend.uri" -> "/vat-eligibility-uri") +
       ("microservice.services.business-registration-dynamic-stub.uri" -> "/iv-uri") +
       ("microservice.services.iv.identity-verification-proxy.host" -> wiremockHost) +
       ("microservice.services.iv.identity-verification-proxy.port" -> wiremockPort)+
       ("microservice.services.iv.identity-verification-frontend.host" -> wiremockHost) +
       ("microservice.services.iv.identity-verification-frontend.port" -> wiremockPort) +
-      ("microservice.services.address-lookup-frontend.new-address-callback.url" -> s"http://localhost:$port")
+      ("microservice.services.address-lookup-frontend.new-address-callback.url" -> s"http://localhost:$port") +
+      ("microservice.services.vat-registration-eligibility-frontend.host" -> s"$wiremockHost") +
+      ("microservice.services.vat-registration-eligibility-frontend.port" -> s"$wiremockPort")
 }
 
 
