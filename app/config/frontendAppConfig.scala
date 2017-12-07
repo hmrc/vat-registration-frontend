@@ -16,6 +16,7 @@
 
 package config
 
+import java.nio.charset.Charset
 import java.util.Base64
 
 import play.api.Play.{configuration, current}
@@ -49,6 +50,13 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
       .map(_.split(",")).getOrElse(Array.empty).toSeq
   }
 
+  private def loadStringConfigBase64(key : String) : String = {
+    new String(Base64.getDecoder.decode(configuration.getString(key).getOrElse("")), Charset.forName("UTF-8"))
+  }
+
   lazy val whitelist          = whitelistConfig("whitelist")
   lazy val whitelistExcluded  = whitelistConfig("whitelist-excluded")
+
+  lazy val uriWhiteList     = configuration.getStringSeq("csrfexceptions.whitelist").getOrElse(Seq.empty).toSet
+  lazy val csrfBypassValue  = loadStringConfigBase64("Csrf-Bypass-value")
 }

@@ -20,6 +20,7 @@ import connectors._
 import features.iv.services.IdentityVerificationService
 import org.mockito.Mockito.reset
 import org.scalatest.mockito.MockitoSugar
+import play.api.i18n.MessagesApi
 import services._
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.audit.model.Audit
@@ -33,6 +34,7 @@ trait VatMocks
 
   this: MockitoSugar =>
 
+  implicit lazy val mockMessagesApi = mock[MessagesApi]
   implicit lazy val mockAuthConnector = mock[AuthConnector]
   implicit lazy val mockSessionCache = mock[SessionCache]
   implicit lazy val mockAudit = mock[Audit]

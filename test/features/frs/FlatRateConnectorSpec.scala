@@ -27,6 +27,7 @@ package connectors {
     class Setup {
       val connector: FlatRateConnector = new RegistrationConnector {
         override val vatRegUrl: String = "tst-url"
+        override val vatRegElUrl: String = "test-url"
         override val http: WSHttp = mockWSHttp
       }
     }

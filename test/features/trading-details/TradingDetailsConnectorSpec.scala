@@ -28,6 +28,7 @@ class TradingDetailsConnectorSpec extends VatRegSpec with VatRegistrationFixture
   class Setup {
     val connector = new RegistrationConnector {
       override val vatRegUrl: String = "tst-url"
+      override val vatRegElUrl: String = "test-url"
       override val http: WSHttp = mockWSHttp
     }
   }

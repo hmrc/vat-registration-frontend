@@ -39,8 +39,8 @@ trait SessionBuilder extends SessionCookieBaker {
   def requestWithSession(req: FakeRequest[AnyContentAsFormUrlEncoded], userId: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     req.withSession(
       SessionKeys.sessionId -> s"session-${UUID.randomUUID}",
-      SessionKeys.token -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId)
+      SessionKeys.token     -> "RANDOMTOKEN",
+      SessionKeys.userId    -> userId)
 
   def getSessionCookie(additionalData: Map[String, String] = Map(), timeStampRollback: Long = 0) = {
     cookieValue(cookieData())

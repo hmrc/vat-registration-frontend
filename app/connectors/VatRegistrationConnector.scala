@@ -22,6 +22,7 @@ import cats.data.OptionT
 import cats.instances.FutureInstances
 import common.enums.VatRegStatus
 import config.WSHttp
+import models.CurrentProfile
 import models.api._
 import models.external.IncorporationInfo
 import play.api.Logger
@@ -37,12 +38,14 @@ sealed trait DESResponse
 object Success extends DESResponse
 
 class VatRegistrationConnector @Inject()(val http: WSHttp, config: ServicesConfig) extends RegistrationConnector {
-  val vatRegUrl = config.baseUrl("vat-registration")
+  lazy val vatRegUrl   = config.baseUrl("vat-registration")
+  lazy val vatRegElUrl = config.baseUrl("vat-registration-eligibility-frontend")
 }
 
 trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnector with FinancialsConnector with FutureInstances {
 
   val vatRegUrl: String
+  val vatRegElUrl: String
   val http: WSHttp
 
   def createNewRegistration(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[VatScheme] = {
@@ -97,10 +100,8 @@ trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnect
     }
   }
 
-  def deleteVatScheme(regId: String)(implicit hc: HeaderCarrier, rds: HttpReads[Boolean]): Future[Unit] = {
-    http.DELETE[Boolean](s"$vatRegUrl/vatreg/$regId/delete-scheme").map (_ => ()).recover{
-      case e: Exception => throw logResponse(e, "deleteVatScheme")
-    }
+  def deleteVatScheme(regId: String)(implicit hc: HeaderCarrier, rds: HttpReads[HttpResponse]): Future[Boolean] = {
+    http.DELETE[HttpResponse](s"$vatRegUrl/vatreg/$regId/delete-scheme").map(_.status == OK)
   }
 
   def getIncorporationInfo(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[IncorporationInfo] = OptionT(
@@ -108,6 +109,10 @@ trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnect
       case _ => Option.empty[IncorporationInfo]
     }
   )
+
+  def deleteVREFESession(regId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    http.DELETE[HttpResponse](s"$vatRegElUrl/internal/$regId/delete-session")
+  }
 
   def getStatus(regId: String)(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[VatRegStatus.Value] = {
     http.GET[JsObject](s"$vatRegUrl/vatreg/$regId/status") map { json =>
