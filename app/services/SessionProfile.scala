@@ -17,6 +17,7 @@
 package services
 
 import connectors.KeystoreConnect
+import controllers.routes
 import models.CurrentProfile
 import play.api.i18n.Messages
 import play.api.mvc.Results._
@@ -35,9 +36,7 @@ trait SessionProfile {
   def withCurrentProfile(f: CurrentProfile => Future[Result])(implicit request: Request[_], hc: HeaderCarrier): Future[Result] = {
     keystoreConnector.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) flatMap {
       case Some(profile) => f(profile)
-      case None          =>
-        //TODO: Redirect to start of PAYE
-        Future.successful(Conflict)
+      case None          => Future.successful(Redirect(routes.WelcomeController.show()))
     }
   }
 

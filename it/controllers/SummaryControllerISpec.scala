@@ -42,11 +42,11 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           
           a[NullPointerException] mustBe thrownBy(document.getElementById("threshold.overThresholdSelectionQuestion").text)
           document.getElementById("vatDetails.taxableTurnoverAnswer").text mustBe "No"
-          document.getElementById("vatDetails.taxableTurnoverChangeLink").attr("href") mustBe "/vat-eligibility-uri/vat-taxable-sales-over-threshold"
+          document.getElementById("vatDetails.taxableTurnoverChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/vat-taxable-sales-over-threshold"
           document.getElementById("vatDetails.necessityAnswer").text mustBe "Yes"
-          document.getElementById("vatDetails.necessityChangeLink").attr("href") mustBe "/vat-eligibility-uri/register-voluntarily"
+          document.getElementById("vatDetails.necessityChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/register-voluntarily"
           document.getElementById("vatDetails.voluntaryRegistrationReasonAnswer").text mustBe "The company is already selling goods or services"
-          document.getElementById("vatDetails.voluntaryRegistrationReasonChangeLink").attr("href") mustBe "/vat-eligibility-uri/applies-company"
+          document.getElementById("vatDetails.voluntaryRegistrationReasonChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/applies-company"
 
           document.getElementById("directorDetails.formerNameAnswer").text mustBe "No former name"
           document.getElementById("taxableSales.estimatedSalesValueAnswer").text mustBe "£30000"
@@ -70,13 +70,13 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           a[NullPointerException] mustBe thrownBy(document.getElementById("vatDetails.taxableTurnoverQuestion").text)
           document.getElementById("vatDetails.overThresholdSelectionQuestion").text must include("05 August 2016")
           document.getElementById("vatDetails.overThresholdSelectionAnswer").text mustBe "Yes"
-          document.getElementById("vatDetails.overThresholdSelectionChangeLink").attr("href") mustBe "/vat-eligibility-uri/vat-taxable-turnover-gone-over"
+          document.getElementById("vatDetails.overThresholdSelectionChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/vat-taxable-turnover-gone-over"
           document.getElementById("vatDetails.overThresholdDateAnswer").text mustBe "September 2016"
-          document.getElementById("vatDetails.overThresholdDateChangeLink").attr("href") mustBe "/vat-eligibility-uri/vat-taxable-turnover-gone-over"
+          document.getElementById("vatDetails.overThresholdDateChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/vat-taxable-turnover-gone-over"
           document.getElementById("vatDetails.expectedOverThresholdSelectionAnswer").text mustBe "Yes"
-          document.getElementById("vatDetails.expectedOverThresholdSelectionChangeLink").attr("href") mustBe "/vat-eligibility-uri/go-over-vat-threshold-period"
+          document.getElementById("vatDetails.expectedOverThresholdSelectionChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/go-over-vat-threshold-period"
           document.getElementById("vatDetails.expectedOverThresholdDateAnswer").text mustBe "30 September 2016"
-          document.getElementById("vatDetails.expectedOverThresholdDateChangeLink").attr("href") mustBe "/vat-eligibility-uri/go-over-vat-threshold-period"
+          document.getElementById("vatDetails.expectedOverThresholdDateChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/go-over-vat-threshold-period"
         }
       }
     }
