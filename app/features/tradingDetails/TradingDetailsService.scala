@@ -79,6 +79,7 @@ package services {
 package connectors {
 
   import cats.instances.FutureInstances
+  import features.tradingDetails.models.TradingDetails
   import models.api.{VatChoice, VatTradingDetails}
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -91,6 +92,20 @@ package connectors {
                                (implicit hc: HeaderCarrier, rds: HttpReads[VatTradingDetails]): Future[VatTradingDetails] = {
       http.PATCH[VatTradingDetails, VatTradingDetails](s"$vatRegUrl/vatreg/$regId/trading-details", vatTradingDetails).recover{
         case e: Exception => throw logResponse(e, "upsertVatTradingDetails")
+      }
+    }
+
+    def getTradingDetails(regId: String)
+                         (implicit hc: HeaderCarrier, rds: HttpReads[TradingDetails]): Future[TradingDetails] = {
+      http.GET[TradingDetails](s"$vatRegUrl/vatreg/$regId/trading-details").recover {
+        case e: Exception => throw logResponse(e, "getTradingDetails")
+      }
+    }
+
+    def upsertTradingDetails(regId: String, tradingDetails: TradingDetails)
+                            (implicit hc: HeaderCarrier, rds: HttpReads[TradingDetails]): Future[TradingDetails] = {
+      http.PATCH[TradingDetails, TradingDetails](s"$vatRegUrl/vatreg/$regId/trading-details", tradingDetails).recover {
+        case e: Exception => throw logResponse(e, "upsertTradingDetails")
       }
     }
   }
