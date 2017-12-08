@@ -18,6 +18,7 @@ package fixtures
 
 import java.time.LocalDate
 
+import features.tradingDetails.models.TradingDetails
 import models.api._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover}
@@ -50,6 +51,8 @@ trait TradingDetailsFixture extends BaseFixture {
     tradingName = validTradingName,
     validEuTrading
   )
+
+  val validTradingDetails = TradingDetails(Some(testTradingName), None)
 
   def tradingDetails(
                       startDateSelection: String = StartDateView.COMPANY_REGISTRATION_DATE,

@@ -66,13 +66,13 @@ trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnect
     }
   )
 
+
   def upsertSicAndCompliance(regId: String, sicAndCompliance: VatSicAndCompliance)
                             (implicit hc: HeaderCarrier, rds: HttpReads[VatSicAndCompliance]): Future[VatSicAndCompliance] = {
     http.PATCH[VatSicAndCompliance, VatSicAndCompliance](s"$vatRegUrl/vatreg/$regId/sic-and-compliance", sicAndCompliance).recover{
       case e: Exception => throw logResponse(e, "upsertSicAndCompliance")
     }
   }
-
 
   def upsertVatContact(regId: String, vatContact: VatContact)(implicit hc: HeaderCarrier, rds: HttpReads[VatContact]): Future[VatContact] = {
     http.PATCH[VatContact, VatContact](s"$vatRegUrl/vatreg/$regId/vat-contact", vatContact).recover{
