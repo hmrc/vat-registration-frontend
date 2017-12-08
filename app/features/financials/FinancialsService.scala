@@ -77,6 +77,7 @@ package services {
 package connectors {
 
   import cats.instances.FutureInstances
+  import features.financials.models.{BankAccount, Returns, TurnoverEstimates}
   import models.api.VatFinancials
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -84,6 +85,48 @@ package connectors {
 
   trait FinancialsConnector extends FutureInstances {
     self: RegistrationConnector =>
+
+    def getTurnoverEstimates(regId: String)
+                            (implicit hc: HeaderCarrier, rds: HttpReads[TurnoverEstimates]): Future[TurnoverEstimates] = {
+      http.GET[TurnoverEstimates](s"$vatRegUrl/vatreg/$regId/turnover-estimates") recover {
+        case e: Exception => throw logResponse(e, "getTurnoverEstimates")
+      }
+    }
+
+    def patchTurnoverEstimates(regId: String, turnoverEstimates: TurnoverEstimates)
+                              (implicit hc: HeaderCarrier, rds: HttpReads[TurnoverEstimates]): Future[TurnoverEstimates] = {
+      http.PATCH[TurnoverEstimates, TurnoverEstimates](s"$vatRegUrl/vatreg/$regId/turnover-estimates", turnoverEstimates) recover {
+        case e: Exception => throw logResponse(e, "patchTurnoverEstimates")
+      }
+    }
+
+    def getReturns(regId: String)
+                  (implicit hc: HeaderCarrier, rds: HttpReads[Returns]): Future[Returns] = {
+      http.GET[Returns](s"$vatRegUrl/vatreg/$regId/returns") recover {
+        case e: Exception => throw logResponse(e, "getReturns")
+      }
+    }
+
+    def patchReturns(regId: String, returns: Returns)
+                    (implicit hc: HeaderCarrier, rds: HttpReads[Returns]): Future[Returns] = {
+      http.PATCH[Returns, Returns](s"$vatRegUrl/vatreg/$regId/returns", returns) recover {
+        case e: Exception => throw logResponse(e, "patchReturns")
+      }
+    }
+
+    def getBankAccount(regId: String)
+                      (implicit hc: HeaderCarrier, rds: HttpReads[BankAccount]): Future[BankAccount] = {
+      http.GET[BankAccount](s"$vatRegUrl/vatreg/$regId/bank-account") recover {
+        case e: Exception => throw logResponse(e, "patchBankAccount")
+      }
+    }
+
+    def patchBankAccount(regId: String, bankAccount: BankAccount)
+                        (implicit hc: HeaderCarrier, rds: HttpReads[BankAccount]): Future[BankAccount] = {
+      http.PATCH[BankAccount, BankAccount](s"$vatRegUrl/vatreg/$regId/bank-account", bankAccount) recover {
+        case e: Exception => throw logResponse(e, "patchBankAccount")
+      }
+    }
 
     def upsertVatFinancials(regId: String, vatFinancials: VatFinancials)
                            (implicit hc: HeaderCarrier, rds: HttpReads[VatFinancials]): Future[VatFinancials] = {
