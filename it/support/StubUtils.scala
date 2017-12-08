@@ -71,10 +71,19 @@ trait StubUtils {
     def iv = IVStub()
     def setIvStatus = setIVStatusInVat()
     def getS4LJourneyID = S4LGETIVJourneyID()
+
+    def vrefe = VREFE()
   }
 
   def given(): PreconditionBuilder = {
     new PreconditionBuilder()
+  }
+
+  case class VREFE()(implicit builder: PreconditionBuilder) {
+    def deleteVREFESession(): PreconditionBuilder = {
+      stubFor(delete(urlMatching("/internal/1/delete-session")).willReturn(ok))
+      builder
+    }
   }
 
   class KeystoreStubWrapper()(implicit builder: PreconditionBuilder) extends KeystoreStub {
@@ -85,6 +94,11 @@ trait StubUtils {
 
     def putKeyStoreValue(key: String, data: String): PreconditionBuilder = {
       stubFor(stubKeystorePut(key, data))
+      builder
+    }
+
+    def deleteKS(): PreconditionBuilder = {
+      stubFor(deleteKeystore())
       builder
     }
   }
@@ -132,6 +146,10 @@ trait StubUtils {
           """.stripMargin
         ))
 
+    def deleteKeystore(): MappingBuilder = {
+      delete(urlMatching("/keystore/vat-registration-frontend/session-[a-z0-9-]+"))
+        .willReturn(ok)
+    }
   }
 
   trait S4LStub {
@@ -604,6 +622,17 @@ trait StubUtils {
   case class AuditStub()(implicit builder: PreconditionBuilder) {
     def writesAudit(status:Int =200) = {
       stubFor(post(urlMatching("/write/audit/merged"))
+        .willReturn(
+          aResponse().
+            withStatus(status).
+            withBody("""{"x":2}""")
+        )
+      )
+      builder
+    }
+
+    def writesAuditMerged(status:Int =200) = {
+      stubFor(post(urlMatching("/write/audit"))
         .willReturn(
           aResponse().
             withStatus(status).

@@ -25,6 +25,7 @@ import config.startup.{VerifyCrypto, VerifyCryptoConfig}
 import connectors._
 import connectors.test.{TestRegistrationConnector, TestVatRegistrationConnector}
 import controllers.frs._
+import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsControllerImpl}
 import controllers.test.{FeatureSwitchController, FeatureSwitchCtrl}
 import features.iv.services.{IVService, IdentityVerificationService}
 import services._
@@ -47,6 +48,7 @@ class Module extends AbstractModule {
     bind(new TypeLiteral[Now[LocalDate]] {}).to(classOf[LocalDateNow]).asEagerSingleton()
     hmrcDependencyBindings()
     bindControllers()
+    bindInternalRoutes()
     bindServices()
     bindConnectors()
     featureSwitches()
@@ -65,7 +67,12 @@ class Module extends AbstractModule {
     bind(classOf[WSHttp]).to(classOf[Http]).asEagerSingleton()
   }
 
+  private def bindInternalRoutes(): Unit = {
+
+  }
+
   private def bindControllers(): Unit = {
+    bind(classOf[DeleteSessionItemsController]).to(classOf[DeleteSessionItemsControllerImpl]).asEagerSingleton()
     bind(classOf[JoinFrsController]).to(classOf[JoinFrsControllerImpl]).asEagerSingleton()
     bind(classOf[AnnualCostsInclusiveController]).to(classOf[AnnualCostsInclusiveControllerImpl]).asEagerSingleton()
     bind(classOf[AnnualCostsLimitedController]).to(classOf[AnnualCostsLimitedControllerImpl]).asEagerSingleton()
@@ -77,6 +84,7 @@ class Module extends AbstractModule {
   }
 
   private def bindServices(): Unit = {
+    bind(classOf[CancellationService]).to(classOf[CancellationServiceImpl]).asEagerSingleton()
     bind(classOf[AddressLookupService]).to(classOf[AddressLookupServiceImpl]).asEagerSingleton()
     bind(classOf[IncorporationInfoSrv]).to(classOf[IncorporationInformationService]).asEagerSingleton()
     bind(classOf[DateService]).to(classOf[WorkingDaysService]).asEagerSingleton()

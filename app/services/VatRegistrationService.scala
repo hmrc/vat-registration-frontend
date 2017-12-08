@@ -61,7 +61,7 @@ trait LegacyServiceToBeRefactored extends CommonService {
   def getAckRef(regId: String)(implicit hc: HeaderCarrier): OptionalResponse[String] =
     vatRegConnector.getAckRef(regId)
 
-  def deleteVatScheme(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Unit] =
+  def deleteVatScheme(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Boolean] =
     vatRegConnector.deleteVatScheme(profile.registrationId)
 
   def createRegistrationFootprint(implicit hc: HeaderCarrier): Future[(String, String)] =
