@@ -25,7 +25,6 @@ import config.WSHttp
 import models.CurrentProfile
 import models.api._
 import models.external.IncorporationInfo
-import play.api.Logger
 import play.api.libs.json.{JsObject, JsValue}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
