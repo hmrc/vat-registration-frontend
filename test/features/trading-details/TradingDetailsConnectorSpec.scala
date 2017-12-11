@@ -76,7 +76,7 @@ class TradingDetailsConnectorSpec extends VatRegSpec with VatRegistrationFixture
   "Calling getTradingDetails" should {
     "return the correct VatResponse when the microservice completes and returns a VatTradingDetails model" in new Setup {
       mockHttpGET[TradingDetails]("tst-url", validTradingDetails)
-      connector.getTradingDetails("tstID") returns validTradingDetails
+      connector.getTradingDetails("tstID") returns Some(validTradingDetails)
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
       mockHttpFailedGET[TradingDetails]("tst-url", forbidden)
@@ -84,7 +84,7 @@ class TradingDetailsConnectorSpec extends VatRegSpec with VatRegistrationFixture
     }
     "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
       mockHttpFailedGET[TradingDetails]("tst-url", notFound)
-      connector.getTradingDetails("tstID") failedWith notFound
+      connector.getTradingDetails("tstID") returns None
     }
     "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
       mockHttpFailedGET[TradingDetails]("tst-url", internalServiceException)
