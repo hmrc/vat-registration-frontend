@@ -81,6 +81,7 @@ package connectors {
   import cats.instances.FutureInstances
   import features.tradingDetails.models.TradingDetails
   import models.api.{VatChoice, VatTradingDetails}
+  import uk.gov.hmrc.http.NotFoundException
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
   import scala.concurrent.Future
@@ -96,8 +97,11 @@ package connectors {
     }
 
     def getTradingDetails(regId: String)
-                         (implicit hc: HeaderCarrier, rds: HttpReads[TradingDetails]): Future[TradingDetails] = {
-      http.GET[TradingDetails](s"$vatRegUrl/vatreg/$regId/trading-details").recover {
+                         (implicit hc: HeaderCarrier, rds: HttpReads[TradingDetails]): Future[Option[TradingDetails]] = {
+      http.GET[TradingDetails](s"$vatRegUrl/vatreg/$regId/trading-details").map {resp =>
+        Some(resp)
+      } recover {
+        case _: NotFoundException => None
         case e: Exception => throw logResponse(e, "getTradingDetails")
       }
     }
