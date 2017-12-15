@@ -54,11 +54,11 @@ trait CurrentProfileSrv {
   }
 
   def getIVStatusFromVRServiceAndUpdateCurrentProfile(cp: CurrentProfile)(implicit hc: HeaderCarrier):Future[CurrentProfile] = {
-    vatRegistrationService.getVatScheme(cp,hc).map(_.lodgingOfficer.map(_.ivPassed)).flatMap(a => updateIVStatusInCurrentProfile(a.getOrElse(false))(hc,cp))
+    vatRegistrationService.getVatScheme(cp,hc).map(_.lodgingOfficer.flatMap(_.ivPassed)).flatMap(a => updateIVStatusInCurrentProfile(a)(hc,cp))
   }
 
 
-  def updateIVStatusInCurrentProfile(passed: Boolean)(implicit hc: HeaderCarrier, cp: CurrentProfile):Future[CurrentProfile] = {
+  def updateIVStatusInCurrentProfile(passed: Option[Boolean])(implicit hc: HeaderCarrier, cp: CurrentProfile):Future[CurrentProfile] = {
     val updatedCurrentProfile = cp.copy(ivPassed = passed)
     keystoreConnector.cache[CurrentProfile]("CurrentProfile", updatedCurrentProfile) map(_ => updatedCurrentProfile)
   }

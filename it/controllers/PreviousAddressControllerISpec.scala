@@ -20,6 +20,7 @@ import java.time.LocalDate
 
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
 import helpers.RequestsFinder
+import it.fixtures.VatRegistrationFixture
 import models.S4LVatLodgingOfficer
 import models.api.{CompletionCapacity, Name, OfficerContactDetails, ScrsAddress, VatLodgingOfficer}
 import models.view.vatLodgingOfficer._
@@ -29,7 +30,7 @@ import play.api.http.HeaderNames
 import play.api.libs.json.{JsBoolean, JsNumber, JsString, JsValue}
 import support.AppAndStubs
 
-class PreviousAddressControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder {
+class PreviousAddressControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with VatRegistrationFixture{
   val email = "test@test.com"
   val nino = "SR123456C"
   val role = "Director"
@@ -38,11 +39,11 @@ class PreviousAddressControllerISpec extends PlaySpec with AppAndStubs with Scal
   val addrLine2 = "seashore next to the pebble beach"
   val postcode = "TE1 1ST"
 
-  val address = ScrsAddress(line1 = addrLine1, line2 = addrLine2, postcode = Some(postcode))
+  val testAddress = ScrsAddress(line1 = addrLine1, line2 = addrLine2, postcode = Some(postcode))
   val dob = LocalDate.of(1980, 11, 15)
 
   val s4LVatLodgingOfficer = S4LVatLodgingOfficer(
-    officerHomeAddress = Some(OfficerHomeAddressView("12345", Some(address))),
+    officerHomeAddress = Some(OfficerHomeAddressView("12345", Some(testAddress))),
     officerSecurityQuestions = Some(OfficerSecurityQuestionsView(dob, nino, None)),
     completionCapacity = Some(CompletionCapacityView(CompletionCapacity(
       Name(surname = "Bobble", forename = Some("Jingles"), otherForenames = None),
@@ -62,7 +63,7 @@ class PreviousAddressControllerISpec extends PlaySpec with AppAndStubs with Scal
         .currentProfile.withProfile()
         .s4lContainerInScenario[S4LVatLodgingOfficer].contains(s4LVatLodgingOfficer, Some(STARTED))
         .s4lContainerInScenario[S4LVatLodgingOfficer].isUpdatedWith(updatedS4LVatLodgingOfficer, Some(STARTED), Some("Vat Lodging Officer updated"))
-        .vatScheme.isBlank
+        .vatScheme.contains(validPreIVScheme)
         .s4lContainerInScenario[S4LVatLodgingOfficer].contains(updatedS4LVatLodgingOfficer, Some("Vat Lodging Officer updated"))
         .vatScheme.isUpdatedWith[VatLodgingOfficer](S4LVatLodgingOfficer.apiT.toApi(updatedS4LVatLodgingOfficer))
         .audit.writesAudit()
@@ -76,9 +77,7 @@ class PreviousAddressControllerISpec extends PlaySpec with AppAndStubs with Scal
         (json \ "currentAddress" \ "line1").as[JsString].value mustBe addrLine1
         (json \ "currentAddress" \ "line2").as[JsString].value mustBe addrLine2
         (json \ "currentAddress" \ "postcode").as[JsString].value mustBe postcode
-        (json \ "dob" \ "day").as[JsNumber].value mustBe 15
-        (json \ "dob" \ "month").as[JsNumber].value mustBe 11
-        (json \ "dob" \ "year").as[JsNumber].value mustBe 1980
+        (json \ "dob").as[LocalDate] mustBe LocalDate.of(1980,11,15)
         (json \ "nino").as[JsString].value mustBe nino
         (json \ "role").as[JsString].value mustBe role
         (json \ "name" \ "surname").as[JsString].value mustBe "Bobble"
