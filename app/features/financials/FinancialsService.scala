@@ -79,6 +79,7 @@ package connectors {
   import cats.instances.FutureInstances
   import features.financials.models.{BankAccount, Returns, TurnoverEstimates}
   import models.api.VatFinancials
+  import uk.gov.hmrc.http.HttpResponse
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
   import scala.concurrent.Future
@@ -94,8 +95,8 @@ package connectors {
     }
 
     def patchTurnoverEstimates(regId: String, turnoverEstimates: TurnoverEstimates)
-                              (implicit hc: HeaderCarrier, rds: HttpReads[TurnoverEstimates]): Future[TurnoverEstimates] = {
-      http.PATCH[TurnoverEstimates, TurnoverEstimates](s"$vatRegUrl/vatreg/$regId/turnover-estimates", turnoverEstimates) recover {
+                              (implicit hc: HeaderCarrier, rds: HttpReads[TurnoverEstimates]): Future[HttpResponse] = {
+      http.PATCH[TurnoverEstimates, HttpResponse](s"$vatRegUrl/vatreg/$regId/turnover-estimates", turnoverEstimates) recover {
         case e: Exception => throw logResponse(e, "patchTurnoverEstimates")
       }
     }
@@ -108,8 +109,8 @@ package connectors {
     }
 
     def patchReturns(regId: String, returns: Returns)
-                    (implicit hc: HeaderCarrier, rds: HttpReads[Returns]): Future[Returns] = {
-      http.PATCH[Returns, Returns](s"$vatRegUrl/vatreg/$regId/returns", returns) recover {
+                    (implicit hc: HeaderCarrier, rds: HttpReads[Returns]): Future[HttpResponse] = {
+      http.PATCH[Returns, HttpResponse](s"$vatRegUrl/vatreg/$regId/returns", returns) recover {
         case e: Exception => throw logResponse(e, "patchReturns")
       }
     }
@@ -122,8 +123,8 @@ package connectors {
     }
 
     def patchBankAccount(regId: String, bankAccount: BankAccount)
-                        (implicit hc: HeaderCarrier, rds: HttpReads[BankAccount]): Future[BankAccount] = {
-      http.PATCH[BankAccount, BankAccount](s"$vatRegUrl/vatreg/$regId/bank-account", bankAccount) recover {
+                        (implicit hc: HeaderCarrier, rds: HttpReads[BankAccount]): Future[HttpResponse] = {
+      http.PATCH[BankAccount, HttpResponse](s"$vatRegUrl/vatreg/$regId/bank-account", bankAccount) recover {
         case e: Exception => throw logResponse(e, "patchBankAccount")
       }
     }

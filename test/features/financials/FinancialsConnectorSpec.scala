@@ -21,7 +21,7 @@ import java.time.LocalDate
 import helpers.VatRegSpec
 import models.api.VatFinancials
 import config.WSHttp
-import features.financials.models.{BankAccount, Returns, TurnoverEstimates}
+import features.financials.models._
 
 import scala.language.postfixOps
 
@@ -38,7 +38,12 @@ class FinancialsConnectorSpec extends VatRegSpec {
   val date = LocalDate.now()
 
   val turnoverEstimates = TurnoverEstimates(1234567890L)
-  val returns           = Returns(reclaimVATOnMostReturns = true, "frequency", None, date)
+
+  val reclaimOnReturns = true
+  val returnsFrequency = Frequency.monthly
+  val startDate        = date
+  val returns = Returns(Some(reclaimOnReturns), Some(returnsFrequency), None, Some(startDate))
+
   val bankAccount       = BankAccount("accountName", "SortCode", "AccountNumber")
 
   "Calling upsertVatFinancials" should {

@@ -94,6 +94,7 @@ class Module extends AbstractModule {
     bind(classOf[IVService]).to(classOf[IdentityVerificationService]).asEagerSingleton()
     bind(classOf[CurrentProfileSrv]).to(classOf[CurrentProfileService]).asEagerSingleton()
     bind(classOf[BankAccountReputationSrv]).to(classOf[BankAccountReputationService]).asEagerSingleton()
+    bind(classOf[ReturnsService]).to(classOf[ReturnsServiceImpl]).asEagerSingleton()
   }
 
   private def bindConnectors(): Unit = {
