@@ -17,16 +17,30 @@
 package features.financials.models
 
 import java.time.LocalDate
+import play.api.libs.json._
 
-import play.api.libs.json.Json
+object Frequency extends Enumeration {
+  val monthly   = Value
+  val quarterly = Value
 
-case class Returns (
-  reclaimVATOnMostReturns: Boolean,
-  frequency: String,
-  staggerStart: Option[String],
-  vatStartDate: LocalDate
-)
+  implicit val format = Format(Reads.enumNameReads(Frequency), Writes.enumNameWrites)
+}
 
+object Stagger extends Enumeration {
+  val jan_feb_mar = Value
+  val apr_may_jun = Value
+  val jul_aug_sep = Value
+  val oct_nov_dec = Value
+
+  implicit val format = Format(Reads.enumNameReads(Stagger), Writes.enumNameWrites)
+}
+
+case class Returns(reclaimVatOnMostReturns: Option[Boolean],
+                   frequency: Option[Frequency.Value],
+                   staggerStart: Option[Stagger.Value],
+                   vatStartDate: Option[LocalDate])
 object Returns {
   implicit val format = Json.format[Returns]
+
+  def empty = Returns(None, None, None, None)
 }
