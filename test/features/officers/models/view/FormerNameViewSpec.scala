@@ -55,7 +55,7 @@ class FormerNameViewSpec extends UnitSpec with VatRegistrationFixture with Insid
       ApiModelTransformer[FormerNameView].toViewModel(vs) shouldBe None
     }
     "convert VATScheme with partial VatLodgingOfficer to empty view model" in {
-      val ivFalseScheme = vatScheme().copy(lodgingOfficer = Some(VatLodgingOfficer(None,None,None,None,None,None,None,None,ivPassed = false)))
+      val ivFalseScheme = vatScheme().copy(lodgingOfficer = Some(VatLodgingOfficer(None,None,None,None,None,None,None,None,ivPassed = Some(false))))
       ApiModelTransformer[FormerNameView].toViewModel(ivFalseScheme) shouldBe None
     }
   }

@@ -42,10 +42,12 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
+        .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficerPreIv)
+        .vatScheme.isUpdatedWith(validLodgingOfficerPreIV)
         .getS4LJourneyID.stubS4LGetIV()
         .iv.outcome(journeyId, IVResult.Success)
         .setIvStatus.setStatus()
-        .currentProfile.putKeyStoreValue("CurrentProfile", Json.toJson(cp("foo", "bar", "fizz", VatRegStatus.draft, None, true)).toString())
+        .currentProfile.putKeyStoreValue("CurrentProfile", Json.toJson(cp("foo", "bar", "fizz", VatRegStatus.draft, None, Some(true))).toString())
         val response = buildClient(s"/ivComplete").get()
         whenReady(response) { res =>
           res.status mustBe 303
@@ -74,7 +76,8 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
       featureSwitch.manager.disable(featureSwitch.useIvStub)
       given()
         .user.isAuthorised
-        .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficer, Some(STARTED), Some("Lodging Officer retrieved from S4L"))
+        .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficerPreIv, Some(STARTED), Some("Lodging Officer retrieved from S4L"))
+        .vatScheme.isUpdatedWith(validLodgingOfficerPreIV)
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"), ivPassed =  false)
         .getS4LJourneyID.stubS4LPutIV(currentState = Some("Lodging Officer retrieved from S4L"), nextState = Some("IV updated in S4L"))
         .getS4LJourneyID.stubS4LGetIV(currentState = Some("IV updated in S4L"), nextState = Some("IV retrieved from S4L"))
@@ -92,8 +95,8 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
       given()
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"), ivPassed =  false)
-
-        .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficer, Some(STARTED), Some("Lodging Officer retrieved from S4L"))
+        .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficerPreIv, Some(STARTED), Some("Lodging Officer retrieved from S4L"))
+        .vatScheme.isUpdatedWith(validLodgingOfficerPreIV)
         .getS4LJourneyID.stubS4LPutIV(currentState = Some("Lodging Officer retrieved from S4L"), nextState = Some("IV updated in S4L"))
         .getS4LJourneyID.stubS4LGetIV(currentState = Some("IV updated in S4L"), nextState = Some("IV retrieved from S4L"))
         .audit.writesAudit()
@@ -113,10 +116,12 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
+        .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficerPreIv)
+        .vatScheme.isUpdatedWith(validLodgingOfficerPreIV)
         .getS4LJourneyID.stubS4LGetIV()
         .iv.outcome(journeyId, IVResult.Timeout)
         .setIvStatus.setStatus(ivPassed = false)
-        .currentProfile.putKeyStoreValue("CurrentProfile", Json.toJson(cp("foo", "bar", "fizz", VatRegStatus.draft, None, false)).toString())
+        .currentProfile.putKeyStoreValue("CurrentProfile", Json.toJson(cp("foo", "bar", "fizz", VatRegStatus.draft, None, Some(false))).toString())
         val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
         whenReady(response) { res =>
           res.status mustBe 303
@@ -131,10 +136,12 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
+        .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficerPreIv)
+        .vatScheme.isUpdatedWith(validLodgingOfficerPreIV)
         .iv.outcome(journeyId, IVResult.InsufficientEvidence)
         .getS4LJourneyID.stubS4LGetIV()
         .setIvStatus.setStatus(ivPassed = false)
-        .currentProfile.putKeyStoreValue("CurrentProfile", Json.toJson(cp("foo", "bar", "fizz", VatRegStatus.draft, None, false)).toString())
+        .currentProfile.putKeyStoreValue("CurrentProfile", Json.toJson(cp("foo", "bar", "fizz", VatRegStatus.draft, None, Some(false))).toString())
         val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
         whenReady(response) { res =>
           res.status mustBe 303
@@ -149,10 +156,12 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
+        .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficerPreIv)
+        .vatScheme.isUpdatedWith(validLodgingOfficerPreIV)
         .getS4LJourneyID.stubS4LGetIV()
         .iv.outcome(journeyId, IVResult.FailedIV)
         .setIvStatus.setStatus(ivPassed = false)
-        .currentProfile.putKeyStoreValue("CurrentProfile", Json.toJson(cp("foo", "bar", "fizz", VatRegStatus.draft, None, false)).toString())
+        .currentProfile.putKeyStoreValue("CurrentProfile", Json.toJson(cp("foo", "bar", "fizz", VatRegStatus.draft, None, Some(false))).toString())
       val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
       whenReady(response) { res =>
         res.status mustBe 303
@@ -167,10 +176,12 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
           .user.isAuthorised
           .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
           .audit.writesAudit()
+          .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficerPreIv)
+          .vatScheme.isUpdatedWith(validLodgingOfficerPreIV)
           .getS4LJourneyID.stubS4LGetIV()
           .iv.outcome(journeyId, IVResult.LockedOut)
           .setIvStatus.setStatus(ivPassed = false)
-          .currentProfile.putKeyStoreValue("CurrentProfile", Json.toJson(cp("foo", "bar", "fizz", VatRegStatus.draft, None, false)).toString())
+          .currentProfile.putKeyStoreValue("CurrentProfile", Json.toJson(cp("foo", "bar", "fizz", VatRegStatus.draft, None, Some(false))).toString())
         val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
         whenReady(response) { res =>
           res.status mustBe 303
@@ -185,10 +196,13 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
+          .audit.writesAuditMerged()
+        .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficerPreIv)
+        .vatScheme.isUpdatedWith(validLodgingOfficerPreIV)
         .getS4LJourneyID.stubS4LGetIV()
         .iv.outcome(journeyId, IVResult.UserAborted)
         .setIvStatus.setStatus(ivPassed = false)
-        .currentProfile.putKeyStoreValue("CurrentProfile",Json.toJson(cp("foo","bar","fizz",VatRegStatus.draft,None,false)).toString())
+        .currentProfile.putKeyStoreValue("CurrentProfile",Json.toJson(cp("foo","bar","fizz",VatRegStatus.draft,None, Some(false))).toString())
         val response = buildClient(s"/ivFailure?journeyId=$journeyId").get()
         whenReady(response) { res =>
           res.status mustBe 303

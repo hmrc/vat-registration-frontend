@@ -34,8 +34,9 @@ trait S4LService extends CommonService {
 
   val s4LConnector: S4LConnect
 
-  def save[T: S4LKey](data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[CacheMap] =
+  def save[T: S4LKey](data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
     s4LConnector.save[T](profile.registrationId, S4LKey[T].key, data)
+  }
 
   def updateViewModel[T, G](data: T, container: Future[G])
                            (implicit hc: HeaderCarrier,

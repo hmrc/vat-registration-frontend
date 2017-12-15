@@ -47,7 +47,7 @@ class TestIVController @Inject()(ds: CommonPlayDependencies,
           val ivp = ivPassed.toBoolean
           for {
             _ <- ivService.setIvStatus(if(ivp) IVResult.Success else IVResult.FailedIV)
-            _ <- cpService.updateIVStatusInCurrentProfile(passed = ivp)
+            _ <- cpService.updateIVStatusInCurrentProfile(passed = Some(ivp))
           } yield Ok("ivPassed set to true, the current Profile has been refreshed with this data")
         }
   }
