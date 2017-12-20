@@ -56,7 +56,7 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite {
     transactionId = "000-434-1",
     vatRegistrationStatus = VatRegStatus.draft,
     incorporationDate = Some(LocalDate.of(2017, 12, 21)),
-    ivPassed = true
+    ivPassed = Some(true)
   )
 
   def submitAuthorised(a: => Action[AnyContent], r: => FakeRequest[AnyContentAsFormUrlEncoded])

@@ -61,7 +61,7 @@ class VatRegistrationServiceISpec extends IntegrationSpecBase {
     transactionId = "40-123456",
     vatRegistrationStatus = VatRegStatus.draft,
     incorporationDate = Some(LocalDate.of(2017, 11, 27)),
-    ivPassed = true
+    ivPassed = Some(true)
   )
 
   "submitRegistration" should {

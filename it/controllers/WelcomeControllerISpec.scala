@@ -35,7 +35,7 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .corporationTaxRegistration.existsWithStatus("held")
           .company.isIncorporated
           .currentProfile.setup(currentState = Some("Vat Reg Footprint created"))
-          .vatScheme.contains(vatRegIncorporated.copy(lodgingOfficer = Some(lodgingOfficer.copy(ivPassed = true))))
+          .vatScheme.contains(vatRegIncorporated.copy(lodgingOfficer = Some(lodgingOfficer.copy(ivPassed = Some(true)))))
 
         whenReady(controller.start(request))(res => res.header.status mustBe 200)
       }

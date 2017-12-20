@@ -48,7 +48,8 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
 
   implicit val hc = HeaderCarrier()
   implicit val cp = currentProfile()
-   def currentProfile(ivPassed:Boolean = true) = CurrentProfile("Test Me", testRegId, "000-434-1",
+
+  def currentProfile(ivPassed:Option[Boolean] = Some(true)) = CurrentProfile("Test Me", testRegId, "000-434-1",
     VatRegStatus.draft,Some(LocalDate.of(2017, 12, 21)),ivPassed)
 
 

@@ -38,14 +38,14 @@ package models.api {
   }
 
   case class VatLodgingOfficer(currentAddress: Option[ScrsAddress],
-                               dob: Option[DateOfBirth],
+                               dob: Option[LocalDate],
                                nino: Option[String],
                                role: Option[String],
                                name: Option[Name],
                                changeOfName: Option[ChangeOfName],
                                currentOrPreviousAddress: Option[CurrentOrPreviousAddress],
                                contact: Option[OfficerContactDetails],
-                               ivPassed:Boolean = false)
+                               ivPassed: Option[Boolean] = None)
 
   object VatLodgingOfficer {
     implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
@@ -174,7 +174,7 @@ package models {
     formerName: Option[FormerNameView] = None,
     formerNameDate: Option[FormerNameDateView] = None,
     previousAddress: Option[PreviousAddressView] = None,
-    ivPassed: Boolean = false
+    ivPassed: Option[Boolean] = None
   )
 
   object S4LVatLodgingOfficer {
@@ -191,7 +191,7 @@ package models {
           formerName = ApiModelTransformer[FormerNameView].toViewModel(vs),
           formerNameDate = ApiModelTransformer[FormerNameDateView].toViewModel(vs),
           previousAddress = ApiModelTransformer[PreviousAddressView].toViewModel(vs),
-          ivPassed = vs.lodgingOfficer.exists(_.ivPassed)
+          ivPassed = vs.lodgingOfficer.flatMap(_.ivPassed)
         )
     }
 
@@ -199,7 +199,7 @@ package models {
       override def toApi(c: S4LVatLodgingOfficer): VatLodgingOfficer =
         VatLodgingOfficer(
           currentAddress = c.officerHomeAddress.flatMap(_.address),
-          dob = c.officerSecurityQuestions.map(d => DateOfBirth(d.dob)),
+          dob = c.officerSecurityQuestions.map(d => d.dob),
           nino = c.officerSecurityQuestions.map(n => n.nino),
           role = c.completionCapacity.flatMap(_.completionCapacity.map(_.role)),
           name = c.completionCapacity.flatMap(_.completionCapacity.map(_.name)),

@@ -25,7 +25,7 @@ import config.WSHttp
 import models.CurrentProfile
 import models.api._
 import models.external.IncorporationInfo
-import play.api.libs.json.{JsObject, JsValue}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.http._
@@ -121,8 +121,8 @@ trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnect
     }
   }
 
-  def updateIVStatus(regId:String,ivData:JsValue)(implicit hc:HeaderCarrier):Future[HttpResponse] = {
-    http.PATCH[JsValue, HttpResponse](s"$vatRegUrl/vatreg/$regId/update-iv-status", ivData).recover {
+  def updateIVStatus(regId: String, ivData: Boolean)(implicit hc:HeaderCarrier):Future[HttpResponse] = {
+    http.PATCH[JsValue, HttpResponse](s"$vatRegUrl/vatreg/$regId/update-iv-status/${ivData.toString}", Json.obj()).recover {
       case e: Exception => throw logResponse(e, "updateIVStatus")
     }
   }

@@ -26,15 +26,26 @@ case class CurrentProfile(companyName: String,
                           transactionId: String,
                           vatRegistrationStatus: VatRegStatus.Value,
                           incorporationDate: Option[LocalDate],
-                          ivPassed:Boolean = false)
+                          ivPassed: Option[Boolean] = None)
 
 object CurrentProfile {
-  implicit val format: Format[CurrentProfile] = (
-    (__ \ "companyName").format[String] and
-    (__ \ "registrationID").format[String] and
-    (__ \ "transactionID").format[String] and
-    (__ \ "vatRegistrationStatus").format[VatRegStatus.Value] and
-    (__ \ "incorporationDate").formatNullable[LocalDate] and
-    (__ \ "ivPassed").format[Boolean]
-  )(CurrentProfile.apply, unlift(CurrentProfile.unapply))
+  val reads: Reads[CurrentProfile] = (
+    (__ \ "companyName").read[String] and
+    (__ \ "registrationID").read[String] and
+    (__ \ "transactionID").read[String] and
+    (__ \ "vatRegistrationStatus").read[VatRegStatus.Value] and
+    (__ \ "incorporationDate").readNullable[LocalDate] and
+    (__ \ "ivPassed").readNullable[Boolean]
+  )(CurrentProfile.apply _)
+
+  val writes: Writes[CurrentProfile] = (
+    (__ \ "companyName").write[String] and
+    (__ \ "registrationID").write[String] and
+    (__ \ "transactionID").write[String] and
+    (__ \ "vatRegistrationStatus").write[VatRegStatus.Value] and
+    (__ \ "incorporationDate").writeNullable[LocalDate] and
+    (__ \ "ivPassed").writeNullable[Boolean]
+  )(unlift(CurrentProfile.unapply))
+
+  implicit val format: Format[CurrentProfile] = Format(reads, writes)
 }
