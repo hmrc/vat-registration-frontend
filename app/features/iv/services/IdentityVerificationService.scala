@@ -23,7 +23,7 @@ import common.enums.IVResult
 import common.exceptions.InternalExceptions.ElementNotFoundException
 import connectors.{IVConnector, RegistrationConnector}
 import features.iv.models.{IVSetup, UserData}
-import models.{CurrentProfile, S4LVatLodgingOfficer}
+import models.{ApiModelTransformer, CurrentProfile, S4LVatLodgingOfficer}
 import play.api.libs.json.{JsObject, JsValue, Json}
 import services.S4LService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -96,9 +96,10 @@ trait IVService {
   }
 
   def setupAndGetIVJourneyURL(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[String] = {
-    if(!cp.ivPassed) {
+    if(!cp.ivPassed.getOrElse(false)) {
       for {
         Some(officer) <- s4lService.fetchAndGet[S4LVatLodgingOfficer]
+        _             <- vatRegistrationConnector.upsertVatLodgingOfficer(cp.registrationId, S4LVatLodgingOfficer.apiT.toApi(officer))
         ivData        =  buildIVSetupData(officer)
         json          <- if (useIVStub) startIVJourney() else ivConnector.setupIVJourney(ivData)
         _             <- saveJourneyID(json)
@@ -110,7 +111,7 @@ trait IVService {
 
   def setIvStatus(ivResult: IVResult.Value)(implicit currentProfile: CurrentProfile, hc: HeaderCarrier) :Future[Option[IVResult.Value]] = {
     val res = ivResult == IVResult.Success
-    vatRegistrationConnector.updateIVStatus(currentProfile.registrationId, JsObject(Map("ivPassed" -> Json.toJson(res)))).map(_ => Some(ivResult)).recoverWith {
+    vatRegistrationConnector.updateIVStatus(currentProfile.registrationId, res).map(_ => Some(ivResult)).recoverWith {
       case _: Exception => Future.successful(None)
     }
   }

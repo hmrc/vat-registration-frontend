@@ -40,7 +40,7 @@ trait VatSpec extends PlaySpec with MockitoSugar with VatRegistrationFixture wit
     transactionId = "000-434-1",
     vatRegistrationStatus = VatRegStatus.draft,
     incorporationDate = Some(LocalDate.of(2017, 12, 21)),
-    ivPassed = true
+    ivPassed = Some(true)
   )
 
   val dummyCacheMap: CacheMap = CacheMap("", Map.empty)

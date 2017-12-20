@@ -37,12 +37,12 @@ val mockMessages = mock[Messages]
   }
   "hasIvStatus" should {
     "return foo when CurrentProfile ivPassed is true" in new Setup {
-      val cp = CurrentProfile("","","",VatRegStatus.draft,None,true)
+      val cp = CurrentProfile("","","",VatRegStatus.draft,None,Some(true))
       val res = await(sp.ivPassedCheck(Future.successful(Ok))(cp,FakeRequest(),mockMessages))
       res.header.status mustBe 200
     }
     "return fo when CurrentProfile ivPassed is false" in new Setup {
-      val cp = CurrentProfile("","","",VatRegStatus.draft,None,false)
+      val cp = CurrentProfile("","","",VatRegStatus.draft,None,Some(false))
       val res = await(sp.ivPassedCheck(Future.successful(Ok))(cp,FakeRequest(),mockMessages))
       res.header.status mustBe 500
     }

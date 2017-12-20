@@ -21,6 +21,7 @@ import java.time.LocalDate
 import common.enums.VatRegStatus
 import models.S4LVatLodgingOfficer
 import models.api._
+import models.external.Officer
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.QUARTERLY
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerSecurityQuestionsView}
 import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
@@ -44,6 +45,38 @@ trait VatRegistrationFixture {
     changeOfName = Some(ChangeOfName(nameHasChanged = false)),
     currentOrPreviousAddress = Some(CurrentOrPreviousAddress(true)),
     contact = Some(OfficerContactDetails(Some("test@test.com"), None, None))
+  )
+
+  val validLodgingOfficerPreIV = VatLodgingOfficer(
+    currentAddress = None,
+    dob = Some(DateOfBirth(31, 12, 1980)),
+    nino = Some("SR123456C"),
+    role = Some("Director"),
+    name = Some(Name(forename = Some("Firstname"), surname = "lastname", otherForenames = None)),
+    changeOfName = None,
+    currentOrPreviousAddress = None,
+    contact = None
+  )
+
+  val validPreIVScheme = VatScheme(id="1",lodgingOfficer = Some(validLodgingOfficerPreIV), status = VatRegStatus.draft)
+  val completionCapacity = CompletionCapacity(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director")
+
+  val officerName = Name(forename = Some("Firstname"), surname = "lastname", otherForenames = None)
+
+  val validS4LLodgingOfficerPreIv = S4LVatLodgingOfficer (
+    completionCapacity = Some(CompletionCapacityView("",Some(completionCapacity))),
+    officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.of(2017,11,5),"nino",Some(officerName)))
+  )
+
+  val validOfficer = Officer(
+    name = officerName,
+    role = "Director",
+    dateOfBirth = Some(DateOfBirth(31, 12, 1980))
+  )
+
+  val validCompletionCapacity = CompletionCapacity(
+    name = Name(forename = Some("Firstname"), surname = "lastname", otherForenames = None),
+    role = "Director"
   )
 
   val financials = VatFinancials(

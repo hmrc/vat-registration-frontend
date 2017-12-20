@@ -37,12 +37,12 @@ class IncorporationInformationStubsController @Inject()(vatRegistrationService: 
   def postTestData(): Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request =>
+        System.setProperty("feature.ivStubbed","true")
         for {
           _          <- vatRegConnector.setupCurrentProfile
           (regId, _) <- vatRegistrationService.createRegistrationFootprint
           _          <- vatRegConnector.wipeTestData
           _          <- vatRegConnector.postTestData(defaultTestData(regId))
-          _          <- vr.updateIVStatus(regId,JsObject(Map("ivPassed" -> Json.toJson(true))))
         } yield Ok("Data inserted")
   }
 

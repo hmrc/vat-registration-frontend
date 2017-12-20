@@ -34,8 +34,8 @@ import scala.concurrent.Future
 
 class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with VatRegistrationFixture   {
 
-   class Setup(ivPassed:Boolean = true) {
-      implicit val cp = currentProfile(ivPassed)
+   class Setup(ivPassed: Boolean = true) {
+      implicit val cp = currentProfile(Some(ivPassed))
       val service = new IVService {
         override val vrfeBaseUrl = """vrfe"""
         override val vrfeBaseUri: String = "/register-for-vat"
@@ -69,7 +69,10 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
     "successfully return a String (link) with feature switch off" in new Setup(false) {
       when(mockVATFeatureSwitch.useIvStub).thenReturn(disabledFeatureSwitch)
       when(mockS4LService.fetchAndGet[S4LVatLodgingOfficer]).thenReturn(Future.successful(Some(validS4LLodgingOfficer)))
-      when(mockS4LService.saveIv(ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(CacheMap("",Map("IVJourneyID" -> Json.toJson("foo")))))
+      when(mockS4LService.saveIv(ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any()))
+        .thenReturn(Future.successful(CacheMap("",Map("IVJourneyID" -> Json.toJson("foo")))))
+      when(mockRegConnector.upsertVatLodgingOfficer(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any()))
+        .thenReturn(Future.successful(validLodgingOfficer))
 
 
       when(mockIdentityVerificationConnector.setupIVJourney(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Json.parse(
@@ -87,7 +90,10 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
     "successfully return a (link) with feature switch on" in new Setup(false) {
       when(mockVATFeatureSwitch.useIvStub).thenReturn(enabledFeatureSwitch)
       when(mockS4LService.fetchAndGet[S4LVatLodgingOfficer]).thenReturn(Future.successful(Some(validS4LLodgingOfficer)))
-      when(mockS4LService.saveIv(ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(CacheMap("",Map("IVJourneyID" -> Json.toJson("foo")))))
+      when(mockS4LService.saveIv(ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any()))
+        .thenReturn(Future.successful(CacheMap("",Map("IVJourneyID" -> Json.toJson("foo")))))
+      when(mockRegConnector.upsertVatLodgingOfficer(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any()))
+        .thenReturn(Future.successful(validLodgingOfficer))
       val res = await(service.setupAndGetIVJourneyURL)
       res.contains("""/test-iv-response/""") mustBe true
     }

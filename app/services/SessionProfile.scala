@@ -41,6 +41,6 @@ trait SessionProfile {
   }
 
   def ivPassedCheck(f: => Future[Result])(implicit cp: CurrentProfile, request: Request[_], messages: Messages): Future[Result] = {
-    if(!cp.ivPassed) Future.successful(InternalServerError(views.html.pages.error.restart())) else f
+    if(!cp.ivPassed.getOrElse(false)) Future.successful(InternalServerError(views.html.pages.error.restart())) else f
   }
 }

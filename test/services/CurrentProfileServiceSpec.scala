@@ -47,7 +47,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
     transactionId         = "testTxId",
     vatRegistrationStatus = VatRegStatus.draft,
     incorporationDate     = Some(now),
-    ivPassed              = false
+    ivPassed              = None
   )
 
   "buildCurrentProfile" should {
@@ -85,8 +85,8 @@ class CurrentProfileServiceSpec extends VatRegSpec {
       when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
-      val result = await(testService.updateIVStatusInCurrentProfile(true)(hc,testCurrentProfile))
-        result mustBe testCurrentProfile.copy(ivPassed = true)
+      val result = await(testService.updateIVStatusInCurrentProfile(Some(true))(hc,testCurrentProfile))
+        result mustBe testCurrentProfile.copy(ivPassed = Some(true))
     }
   }
 
@@ -94,9 +94,9 @@ class CurrentProfileServiceSpec extends VatRegSpec {
     "getIV status from vr backend and return a current profile modified" in {
       when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
-      when(mockVatRegistrationService.getVatScheme(Matchers.any(),Matchers.any())).thenReturn(Future.successful(validVatScheme.copy(lodgingOfficer = Some(validLodgingOfficer.copy(ivPassed = true)))))
+      when(mockVatRegistrationService.getVatScheme(Matchers.any(),Matchers.any())).thenReturn(Future.successful(validVatScheme.copy(lodgingOfficer = Some(validLodgingOfficer.copy(ivPassed = Some(true))))))
       val result = await(testService.getIVStatusFromVRServiceAndUpdateCurrentProfile(testCurrentProfile))
-      result mustBe testCurrentProfile.copy(ivPassed = true)
+      result mustBe testCurrentProfile.copy(ivPassed = Some(true))
     }
   }
 }

@@ -17,7 +17,7 @@
 package models.view.vatLodgingOfficer
 
 import models.ApiModelTransformer
-import models.api.VatScheme
+import models.api.{DateOfBirth, VatScheme}
 import models.external.Officer
 import play.api.libs.json.Json
 
@@ -39,7 +39,7 @@ object OfficerView {
       lodgingOfficer => OfficerView(Officer(
         name = lodgingOfficer.name.get,
         role = lodgingOfficer.role.get,
-        dateOfBirth = Some(lodgingOfficer.dob.get)))
+        dateOfBirth = Some(DateOfBirth(lodgingOfficer.dob.get))))
     }
   }
 
