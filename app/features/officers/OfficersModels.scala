@@ -98,12 +98,9 @@ package models.api {
     implicit val format = Json.format[CompletionCapacity]
   }
 
-  case class Name(
-                   forename: Option[String],
-                   otherForenames: Option[String],
-                   surname: String,
-                   title: Option[String] = None
-                 ){
+  case class Name(first: Option[String],
+                  middle: Option[String],
+                  surname: String){
 
     import cats.instances.option._
     import cats.syntax.applicative._

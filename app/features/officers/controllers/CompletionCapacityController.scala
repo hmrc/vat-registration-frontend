@@ -14,76 +14,41 @@
  * limitations under the License.
  */
 
-package models.view.vatLodgingOfficer {
-
-  import models.api.{CompletionCapacity, VatLodgingOfficer, VatScheme}
-  import models.{ApiModelTransformer, _}
-  import play.api.libs.json.Json
-
-  case class CompletionCapacityView(id: String, completionCapacity: Option[CompletionCapacity] = None)
-
-  object CompletionCapacityView {
-
-    def apply(cc: CompletionCapacity): CompletionCapacityView = new CompletionCapacityView(cc.name.id, Some(cc))
-
-    implicit val format = Json.format[CompletionCapacityView]
-
-    implicit val viewModelFormat = ViewModelFormat(
-      readF = (group: S4LVatLodgingOfficer) => group.completionCapacity,
-      updateF = (c: CompletionCapacityView, g: Option[S4LVatLodgingOfficer]) =>
-        g.getOrElse(S4LVatLodgingOfficer()).copy(completionCapacity = Some(c))
-    )
-
-    // return a view model from a VatScheme instance
-    implicit val modelTransformer = ApiModelTransformer[CompletionCapacityView] { vs: VatScheme =>
-      vs.lodgingOfficer match{
-        case Some(VatLodgingOfficer(_,_,_,Some(b),Some(a),_,_,_,_)) => Some(CompletionCapacityView(a.id, Some(CompletionCapacity(a, b))))
-        case _ => None
-      }
-    }
-
-  }
-
-}
 
 package controllers.vatLodgingOfficer{
 
-  import javax.inject.{Inject, Singleton}
+  import javax.inject.Inject
 
-  import cats.data.OptionT
   import connectors.KeystoreConnect
-  import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import controllers.VatRegistrationControllerNoAux
+  import features.officers.services.LodgingOfficerService
   import forms.vatLodgingOfficer.CompletionCapacityForm
-  import models.ModelKeys._
-  import models.api.CompletionCapacity
-  import models.external.Officer
-  import models.view.vatLodgingOfficer.CompletionCapacityView
+  import play.api.i18n.MessagesApi
   import play.api.mvc.{Action, AnyContent}
   import services._
-  import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  @Singleton
-  class CompletionCapacityController @Inject()(ds: CommonPlayDependencies,
-                                               implicit val s4l: S4LService,
-                                               implicit val vrs: RegistrationService,
-                                               prePopService: PrePopService,
-                                               val authConnector: AuthConnector,
-                                               val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
+  class CompletionCapacityControllerImpl @Inject()(implicit val messagesApi: MessagesApi,
+                                                   val authConnector: AuthConnector,
+                                                   val keystoreConnector: KeystoreConnect,
+                                                   val lodgingOfficerService: LodgingOfficerService,
+                                                   val prePopService: PrePopService) extends CompletionCapacityController
+
+  trait CompletionCapacityController extends VatRegistrationControllerNoAux with SessionProfile {
+    val prePopService: PrePopService
+    val lodgingOfficerService: LodgingOfficerService
 
     private val form = CompletionCapacityForm.form
 
-    private def fetchOfficerList()(implicit hc: HeaderCarrier) = OptionT(keystoreConnector.fetchAndGet[Seq[Officer]](OFFICER_LIST_KEY))
-
-    def show: Action[AnyContent] = authorised.async{
+    def show: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
             for {
-              officerList <- prePopService.getOfficerList
-              _           <- keystoreConnector.cache(OFFICER_LIST_KEY, officerList)
-              res         <- viewModel[CompletionCapacityView]().fold(form)(form.fill)
-            } yield Ok(features.officers.views.html.completion_capacity(res, officerList))
+              officerList     <- prePopService.getOfficerList
+              selectedOfficer <- lodgingOfficerService.getCompletionCapacity
+              filledForm      =  selectedOfficer.fold(form)(x => form.fill(x))
+            } yield Ok(features.officers.views.html.completion_capacity(filledForm, officerList))
           }
     }
 
@@ -91,19 +56,19 @@ import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-            form.bindFromRequest().fold(
-              badForm => fetchOfficerList().getOrElse(Seq()).map(
-                officerList => BadRequest(features.officers.views.html.completion_capacity(badForm, officerList))),
-              view => for {
-                officerSeq      <- fetchOfficerList().getOrElse(Seq())
-                selectedOfficer =  officerSeq.find(_.name.id == view.id).getOrElse(Officer.empty)
-                _               <- keystoreConnector.cache(REGISTERING_OFFICER_KEY, selectedOfficer)
-                _               <- save(CompletionCapacityView(view.id, Some(CompletionCapacity(selectedOfficer.name, selectedOfficer.role))))
-              } yield Redirect(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show()))
+            form.bindFromRequest.fold(
+              formErrors => prePopService.getOfficerList map { officerList =>
+                BadRequest(features.officers.views.html.completion_capacity(formErrors, officerList))
+              },
+              ccView => lodgingOfficerService.submitCompletionCapacity(ccView) map {
+                _ => Redirect(routes.OfficerSecurityQuestionsController.show())
+              }
+            )
           }
     }
   }
 }
+
 package forms.vatLodgingOfficer {
 
   import forms.FormValidation.textMapping
@@ -112,14 +77,12 @@ package forms.vatLodgingOfficer {
   import play.api.data.Forms._
 
   object CompletionCapacityForm {
-
     val NAME_ID: String = "completionCapacityRadio"
 
     val form = Form(
-      mapping(
+      single(
         NAME_ID -> textMapping()("completionCapacity")
-      )(CompletionCapacityView(_))(view => Option(view.id))
-
+      )
     )
   }
 

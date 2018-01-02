@@ -18,6 +18,7 @@ package config
 
 import javax.inject.Inject
 
+import org.slf4j.{Logger, LoggerFactory}
 import play.api.mvc.Call
 import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
 import uk.gov.hmrc.http._

@@ -25,7 +25,7 @@ import config.WSHttp
 import models.CurrentProfile
 import models.api._
 import models.external.IncorporationInfo
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json._
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.http._
@@ -76,6 +76,23 @@ trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnect
   def upsertVatContact(regId: String, vatContact: VatContact)(implicit hc: HeaderCarrier, rds: HttpReads[VatContact]): Future[VatContact] = {
     http.PATCH[VatContact, VatContact](s"$vatRegUrl/vatreg/$regId/vat-contact", vatContact).recover{
       case e: Exception => throw logResponse(e, "upsertVatContact")
+    }
+  }
+
+  def getLodgingOfficer(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Option[JsValue]] = {
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${profile.registrationId}/officer") map { response =>
+      if(response.status == NO_CONTENT) None else Some(response.json)
+    } recover {
+      case e => throw logResponse(e, "getLodgingOfficer")
+    }
+  }
+
+  def patchLodgingOfficer[T](data: T, writes: Writes[T])(implicit profile: CurrentProfile, hc: HeaderCarrier, rds: HttpReads[T]): Future[T] = {
+    val json = Json.toJson[T](data)(writes)
+    http.PATCH[JsValue, T](s"$vatRegUrl/vatreg/${profile.registrationId}/officer", json) map {
+      _ => data
+    } recover {
+      case e: Exception => throw logResponse(e, "patchLodgingOfficer")
     }
   }
 
