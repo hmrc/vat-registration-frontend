@@ -98,9 +98,10 @@ package models.api {
     implicit val format = Json.format[CompletionCapacity]
   }
 
-  case class Name(first: Option[String],
-                  middle: Option[String],
-                  surname: String){
+  case class Name(forename: Option[String],
+                  otherForenames: Option[String],
+                  surname: String,
+                  title: Option[String] = None) {
 
     import cats.instances.option._
     import cats.syntax.applicative._
@@ -166,7 +167,7 @@ package models {
   (
     officerHomeAddress: Option[OfficerHomeAddressView] = None,
     officerSecurityQuestions: Option[OfficerSecurityQuestionsView] = None,
-    completionCapacity: Option[CompletionCapacityView] = None,
+    completionCapacity: Option[String] = None,
     officerContactDetails: Option[OfficerContactDetailsView] = None,
     formerName: Option[FormerNameView] = None,
     formerNameDate: Option[FormerNameDateView] = None,
@@ -183,7 +184,7 @@ package models {
         S4LVatLodgingOfficer(
           officerHomeAddress = ApiModelTransformer[OfficerHomeAddressView].toViewModel(vs),
           officerSecurityQuestions = ApiModelTransformer[OfficerSecurityQuestionsView].toViewModel(vs),
-          completionCapacity = ApiModelTransformer[CompletionCapacityView].toViewModel(vs),
+          completionCapacity = ApiModelTransformer[String].toViewModel(vs),
           officerContactDetails = ApiModelTransformer[OfficerContactDetailsView].toViewModel(vs),
           formerName = ApiModelTransformer[FormerNameView].toViewModel(vs),
           formerNameDate = ApiModelTransformer[FormerNameDateView].toViewModel(vs),
@@ -198,8 +199,8 @@ package models {
           currentAddress = c.officerHomeAddress.flatMap(_.address),
           dob = c.officerSecurityQuestions.map(d => d.dob),
           nino = c.officerSecurityQuestions.map(n => n.nino),
-          role = c.completionCapacity.flatMap(_.completionCapacity.map(_.role)),
-          name = c.completionCapacity.flatMap(_.completionCapacity.map(_.name)),
+          role = Some("deprecated"),
+          name = Some(Name(forename = None, otherForenames= None, surname = "deprecated")),
           changeOfName =
             c.formerName.map((fnv: FormerNameView) =>
               ChangeOfName(

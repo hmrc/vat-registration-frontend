@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package controllers.vatLodgingOfficer{
 
   import javax.inject.Inject
@@ -47,7 +46,7 @@ package controllers.vatLodgingOfficer{
             for {
               officerList     <- prePopService.getOfficerList
               selectedOfficer <- lodgingOfficerService.getCompletionCapacity
-              filledForm      =  selectedOfficer.fold(form)(x => form.fill(x))
+              filledForm      =  selectedOfficer.fold(form)(form.fill)
             } yield Ok(features.officers.views.html.completion_capacity(filledForm, officerList))
           }
     }
@@ -60,7 +59,7 @@ package controllers.vatLodgingOfficer{
               formErrors => prePopService.getOfficerList map { officerList =>
                 BadRequest(features.officers.views.html.completion_capacity(formErrors, officerList))
               },
-              ccView => lodgingOfficerService.submitCompletionCapacity(ccView) map {
+              cc => lodgingOfficerService.submitCompletionCapacity(cc) map {
                 _ => Redirect(routes.OfficerSecurityQuestionsController.show())
               }
             )

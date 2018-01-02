@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,33 @@
 
 package features.officers.models.view
 
-import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerSecurityQuestionsView}
+import models.external.Officer
+import models.view.vatLodgingOfficer.OfficerSecurityQuestionsView
 import play.api.libs.json._
 
-case class LodgingOfficer(comletionCapacity: Option[String],
+case class LodgingOfficer(completionCapacity: Option[String],
                           securityQuestions: Option[OfficerSecurityQuestionsView])
 
 object LodgingOfficer {
   implicit val format: Format[LodgingOfficer] = Json.format[LodgingOfficer]
 
-  val apiWrites: Writes[LodgingOfficer] = new Writes[LodgingOfficer] {
-    override def writes(o: LodgingOfficer) = Json.parse(
-      s"""
-        |{
-        | "name" : {
-        |   "first" : "${o.comletionCapacity.get.completionCapacity.get.name.forename.get}",
-        |   "middle" : "${o.comletionCapacity.get.completionCapacity.get.name.otherForenames.getOrElse("")}",
-        |   "last" : "${o.comletionCapacity.get.completionCapacity.get.name.surname}",
-        | },
-        | "role" : "${o.comletionCapacity.get.completionCapacity.get.role}"
-        | "dob" : "${o.securityQuestions.get.dob}",
-        | "nino" : "${o.securityQuestions.get.nino}"
-        |}
-      """.stripMargin
-    )
+  def apiWrites(officer: Officer): Writes[LodgingOfficer] = new Writes[LodgingOfficer] {
+    override def writes(o: LodgingOfficer) = {
+
+      val lastName = Json.obj("last" -> officer.name.surname)
+      val firstName = officer.name.forename.fold(Json.obj())(v => Json.obj("first" -> v))
+      val middleName = officer.name.otherForenames.fold(Json.obj())(v => Json.obj("middle" -> v))
+      val name = lastName ++ firstName ++ middleName
+
+      name ++ Json.parse(
+        s"""
+           |{
+           | "role" : "${officer.role}"
+           | "dob" : "${o.securityQuestions.get.dob}",
+           | "nino" : "${o.securityQuestions.get.nino}"
+           |}
+        """.stripMargin
+      ).as[JsObject]
+    }
   }
 }

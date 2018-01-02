@@ -80,3 +80,7 @@ object WhitelistFilter extends AkamaiWhitelistFilter with MicroserviceFilterSupp
   override def excludedPaths: Seq[Call] = FrontendAppConfig.whitelistExcluded map(Call("GET", _))
   override def destination: Call        = Call("GET", "https://www.tax.service.gov.uk/outage-register-for-vat")
 }
+
+trait Logging {
+  val logger: Logger = LoggerFactory.getLogger(getClass)
+}

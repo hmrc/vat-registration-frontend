@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,37 +51,29 @@ trait LodgingOfficerService extends Logging {
   private val LODGING_OFFICER = "LodgingOfficer"
   private val N               = None
 
-  def getCompletionCapacity(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
+  def getLodgingOfficer(implicit profile: CurrentProfile, ec: ExecutionContext): Future[LodgingOfficer] =
     s4lConnector.fetchAndGet[LodgingOfficer](profile.registrationId, LODGING_OFFICER) flatMap {
-      case Some(officer) => Future.successful(officer.comletionCapacity)
+      case Some(officer) => Future.successful(officer)
       case _             => vatRegistrationConnector.getLodgingOfficer flatMap { json =>
-        val lodgingOfficer = json.fold(LodgingOfficer(N,N))(ToLodgingOfficerView.fromApi(_))
-               ndde
-//        case Some(officer) =>
-//          val lodgingOfficer = ToLodgingOfficerView.fromApi(officer)
-//          s4lConnector.save[LodgingOfficer](profile.registrationId, LODGING_OFFICER, lodgingOfficer) map {
-//            _ => None
-//          }
-//        case None          => s4lConnector.save[LodgingOfficer](profile.registrationId, LODGING_OFFICER, LodgingOfficer(N,N)) map {
-//          _ => None
-        }
+        val lodgingOfficer = json.fold(LodgingOfficer(N,N))(ToLodgingOfficerView.fromApi)
+        s4lConnector.save[LodgingOfficer](profile.registrationId, LODGING_OFFICER, lodgingOfficer) map (_ => lodgingOfficer)
       }
     }
+
+  private def isModelComplete(lodgingOfficer: LodgingOfficer): Completion[LodgingOfficer] = lodgingOfficer match {
+    case LodgingOfficer(Some(_), Some(_)) => Complete
   }
 
-  def getSecurityDetails(implicit profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[Option[OfficerSecurityQuestionsView]] = {
-    s4lConnector.fetchAndGet[LodgingOfficer](profile.registrationId, LODGING_OFFICER) flatMap {
-      case Some(officer) =>
-      case None => getFromVatRegistration[LodgingOfficer](LodgingOfficer.apiWrites) flatMap {
-        case Some(officer) =>
-      }
-    }
-  }
+  def getCompletionCapacity(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+    getLodgingOfficer map (_.completionCapacity)
 
-  def submitCompletionCapacity(ccView: CompletionCapacityView)
+  def getSecurityDetails(implicit profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[Option[OfficerSecurityQuestionsView]] =
+    getLodgingOfficer map (_.securityQuestions)
+
+  def submitCompletionCapacity(cc: String)
                               (implicit profile: CurrentProfile, hc: HeaderCarrier, executionContext: ExecutionContext): Future[LodgingOfficer] = {
     for {
-      selectedOfficer <- incorpInfoService.getOfficerList map(_.find(_.name.id == ccView.id)
+      selectedOfficer <- incorpInfoService.getOfficerList map(_.find(_.name.id == cc.id)
         .getOrElse(throw new NoOfficerFoundException(profile.registrationId)))
       Some(s4lModel)  <- s4lConnector.fetchAndGet[LodgingOfficer](profile.registrationId, LODGING_OFFICER)
       update          =  updateS4LWithCompletionCapacity(s4lModel, selectedOfficer)
