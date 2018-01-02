@@ -33,7 +33,7 @@ import scala.util.matching.Regex
 import scala.util.{Failure, Success, Try}
 
 
-private[forms] object FormValidation {
+object FormValidation {
 
   type ErrorCode = String
 

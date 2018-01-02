@@ -17,9 +17,9 @@
 package models.api
 
 import cats.Show.show
+import features.officer.models.view.HomeAddressView
 import models.api.ScrsAddress.inlineShow.inline
 import models.view.vatContact.ppob.PpobView
-import models.view.vatLodgingOfficer.OfficerHomeAddressView
 import models.{ApiModelTransformer => MT}
 import org.apache.commons.lang3.text.WordUtils
 import play.api.data.validation.ValidationError
@@ -112,7 +112,7 @@ object ScrsAddress {
     implicit val inline = show((a: ScrsAddress) => normalisedSeq(a).mkString(", "))
   }
 
-  implicit def modelTransformerOfficerHomeAddressView(implicit t: MT[OfficerHomeAddressView]): MT[ScrsAddress] =
+  implicit def modelTransformerOfficerHomeAddressView(implicit t: MT[HomeAddressView]): MT[ScrsAddress] =
     MT((vatScheme: VatScheme) => t.toViewModel(vatScheme).flatMap(_.address))
 
   implicit def modelTransformerPpobView(implicit t: MT[PpobView]): MT[ScrsAddress] =

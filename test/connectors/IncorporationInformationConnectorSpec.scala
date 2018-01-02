@@ -16,10 +16,8 @@
 
 package connectors
 
-import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.Name
-import models.external.{CoHoRegisteredOfficeAddress, Officer, OfficerList}
+import models.external.{CoHoRegisteredOfficeAddress, Name, Officer, OfficerList}
 import org.joda.time.DateTime
 import config.WSHttp
 
