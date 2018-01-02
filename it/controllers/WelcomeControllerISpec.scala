@@ -20,6 +20,7 @@ import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
 import it.fixtures.VatRegistrationFixture
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
+import play.api.libs.json.Json
 import support.AppAndStubs
 
 class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with VatRegistrationFixture {
@@ -35,7 +36,9 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .corporationTaxRegistration.existsWithStatus("held")
           .company.isIncorporated
           .currentProfile.setup(currentState = Some("Vat Reg Footprint created"))
-          .vatScheme.contains(vatRegIncorporated.copy(lodgingOfficer = Some(lodgingOfficer.copy(ivPassed = Some(true)))))
+          .vatScheme.contains(vatRegIncorporated)
+          .vatScheme.has("officer", Json.obj())
+          .audit.writesAuditMerged()
 
         whenReady(controller.start(request))(res => res.header.status mustBe 200)
       }

@@ -112,19 +112,6 @@ trait LegacyServiceToBeRefactored extends CommonService {
     } yield response
   }
 
-  def submitVatLodgingOfficer(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatLodgingOfficer] = {
-    def merge(fresh: Option[S4LVatLodgingOfficer], vs: VatScheme): VatLodgingOfficer =
-      fresh.fold(
-        vs.lodgingOfficer.getOrElse(throw fail("VatLodgingOfficer"))
-      )(s4l => S4LVatLodgingOfficer.apiT.toApi(s4l))
-
-    for {
-      vs       <- getVatScheme
-      vlo      <- s4l[S4LVatLodgingOfficer]
-      response <- vatRegConnector.upsertVatLodgingOfficer(profile.registrationId, merge(vlo, vs))
-    } yield response
-  }
-
   def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = vatRegConnector.getStatus(regId)
 
   def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[DESResponse] = {

@@ -29,7 +29,7 @@ case class TestSetup(
                       vatServiceEligibility: VatServiceEligibilityTestSetup,
                       officerHomeAddress: OfficerHomeAddressTestSetup,
                       officerPreviousAddress: OfficerPreviousAddressTestSetup,
-                      vatLodgingOfficer: VatLodgingOfficerTestSetup,
+                      lodgingOfficer: LodgingOfficerTestSetup,
                       vatFlatRateScheme: VatFlatRateSchemeTestSetup,
                       bankAccountBlock: Option[BankAccount],
                       returnsBlock: Option[Returns]

@@ -16,71 +16,60 @@
 
 package controllers.builders
 
-import models.api._
+import features.officer.models.view.LodgingOfficer
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLodgingOfficer] = None)
+case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: LodgingOfficer)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "directorDetails"
 
   val completionCapacity: SummaryRow = SummaryRow(
     s"$sectionId.completionCapacity",
-    vatLodgingOfficer.flatMap(_.name.map(_.asLabel)).getOrElse(""),
-    Some(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
+    vatLodgingOfficer.completionCapacity.flatMap(_.officer).map(_.name.asLabel).getOrElse(""),
+    Some(features.officer.controllers.routes.OfficerController.showCompletionCapacity())
   )
 
 
   val formerName: SummaryRow = SummaryRow(
     s"$sectionId.formerName",
-    vatLodgingOfficer.flatMap(_.changeOfName.map(_.nameHasChanged)).collect {
-      case true => vatLodgingOfficer.flatMap(
-        _.changeOfName
-          .flatMap(_.formerName
-            .map(_.formerName))).getOrElse("")
-    }.getOrElse(s"pages.summary.$sectionId.noFormerName"),
-    Some(controllers.vatLodgingOfficer.routes.FormerNameController.show())
+    vatLodgingOfficer.formerName.flatMap(_.formerName).getOrElse(s"pages.summary.$sectionId.noFormerName"),
+    Some(features.officer.controllers.routes.OfficerController.showFormerName())
   )
   val formerNameDate: SummaryRow = SummaryRow(
     s"$sectionId.formerNameDate",
-    vatLodgingOfficer.flatMap(_.changeOfName.map(_.nameHasChanged)).collect {
-      case true => vatLodgingOfficer.flatMap(
-        _.changeOfName
-          .flatMap(_.formerName
-            .flatMap(_.dateOfNameChange
-              .map(_.format(presentationFormatter))))).getOrElse("")
-    }.getOrElse(""),
-    Some(controllers.vatLodgingOfficer.routes.FormerNameDateController.show())
+    vatLodgingOfficer.formerNameDate.map(_.date.format(presentationFormatter)).getOrElse(""),
+    Some(features.officer.controllers.routes.OfficerController.showFormerNameDate())
   )
 
   val dob: SummaryRow = SummaryRow(
     s"$sectionId.dob",
-    vatLodgingOfficer.flatMap(_.dob.map(_.format(presentationFormatter))).getOrElse(""),
-    Some(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show())
+    vatLodgingOfficer.securityQuestions.map(_.dob.format(presentationFormatter)).getOrElse(""),
+    Some(features.officer.controllers.routes.OfficerController.showSecurityQuestions())
   )
 
   val nino: SummaryRow = SummaryRow(
     s"$sectionId.nino",
-    vatLodgingOfficer.flatMap(_.nino).getOrElse(""),
-    Some(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show())
+    vatLodgingOfficer.securityQuestions.map(_.nino).getOrElse(""),
+    Some(features.officer.controllers.routes.OfficerController.showSecurityQuestions())
   )
 
   val email: SummaryRow = SummaryRow(
     s"$sectionId.email",
-    vatLodgingOfficer.flatMap(_.contact.flatMap(_.email)).getOrElse(""),
-    Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
+    vatLodgingOfficer.contactDetails.flatMap(_.email).getOrElse(""),
+    Some(features.officer.controllers.routes.OfficerController.showContactDetails())
   )
 
   val daytimePhone: SummaryRow = SummaryRow(
     s"$sectionId.daytimePhone",
-    vatLodgingOfficer.flatMap(_.contact.flatMap(_.tel)).getOrElse(""),
-    Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
+    vatLodgingOfficer.contactDetails.flatMap(_.daytimePhone).getOrElse(""),
+    Some(features.officer.controllers.routes.OfficerController.showContactDetails())
   )
 
   val mobile: SummaryRow = SummaryRow(
     s"$sectionId.mobile",
-    vatLodgingOfficer.flatMap(_.contact.flatMap(_.mobile)).getOrElse(""),
-    Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
+    vatLodgingOfficer.contactDetails.flatMap(_.mobile).getOrElse(""),
+    Some(features.officer.controllers.routes.OfficerController.showContactDetails())
   )
 
   val section: SummarySection = SummarySection(
@@ -88,14 +77,12 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLod
     Seq(
       (completionCapacity, true),
       (formerName, true),
-      (formerNameDate,
-        vatLodgingOfficer.flatMap(
-          _.changeOfName).map(_.nameHasChanged).getOrElse(false)),
+      (formerNameDate, vatLodgingOfficer.formerName.exists(_.yesNo)),
       (dob, true),
       (nino, true),
-      (email, vatLodgingOfficer.flatMap(_.contact.map(_.email.isDefined)).getOrElse(false)),
-      (daytimePhone, vatLodgingOfficer.flatMap(_.contact.map(_.tel.isDefined)).getOrElse(false)),
-      (mobile, vatLodgingOfficer.flatMap(_.contact.map(_.mobile.isDefined)).getOrElse(false))
+      (email, vatLodgingOfficer.contactDetails.flatMap(_.email).isDefined),
+      (daytimePhone, vatLodgingOfficer.contactDetails.flatMap(_.daytimePhone).isDefined),
+      (mobile, vatLodgingOfficer.contactDetails.flatMap(_.mobile).isDefined)
     )
   )
 }

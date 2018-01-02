@@ -93,7 +93,7 @@ package controllers.vatTradingDetails.vatChoice {
                 for {
                   _ <- save(VoluntaryRegistration(REGISTER_NO))
                   _ <- returnsService.saveVatStartDate(None)
-                } yield controllers.vatLodgingOfficer.routes.CompletionCapacityController.show(),
+                } yield features.officer.controllers.routes.OfficerController.showCompletionCapacity(),
                 controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show().pure
               ) map Redirect)
           }

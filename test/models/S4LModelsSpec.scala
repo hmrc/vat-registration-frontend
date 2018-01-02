@@ -33,7 +33,6 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.ZeroRatedSales.ZERO_RATED_SALES_YES
 import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, ZeroRatedSales}
-import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.TradingNameView.TRADING_NAME_YES
 import models.view.vatTradingDetails.vatChoice.TaxableTurnover.TAXABLE_NO
@@ -330,45 +329,6 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
 
 
       S4LVatContact.modelT.toS4LModel(vs) shouldBe expected
-    }
-  }
-
-  "S4LVatLodgingOfficer.S4LApiTransformer.toApi" should {
-    val address = ScrsAddress(line1 = "l1", line2 = "l2", postcode = Some("postcode"))
-    val prevAddress = ScrsAddress(line1 = "pal1", line2 = "pal2", postcode = Some("paPostcode"))
-    val date = LocalDate.of(2017, 11, 12)
-    val name = Name(forename = Some("first"), otherForenames = None, surname = "surname", title = None)
-    val testNino = "nino"
-    val testRole = "role"
-
-    val s4l = S4LVatLodgingOfficer(
-      officerHomeAddress = Some(OfficerHomeAddressView(address.id, Some(address))),
-      officerSecurityQuestions = Some(OfficerSecurityQuestionsView(dob = date, nino = testNino, officerName = Some(name))),
-      completionCapacity = Some(CompletionCapacityView(id = "id", completionCapacity = Some(CompletionCapacity(name, testRole)))),
-      officerContactDetails = Some(
-        OfficerContactDetailsView(email = Some("email"), daytimePhone = Some("daytimePhone"), mobile = Some("mobile"))),
-      formerName = Some(FormerNameView(yesNo = true, formerName = Some("formerName"))),
-      formerNameDate = Some(FormerNameDateView(date)),
-      previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
-    )
-
-    "transform complete s4l container to API" in {
-
-      val expected = VatLodgingOfficer(
-        currentAddress = Some(address),
-        dob = Some(DateOfBirth(date)),
-        nino = Some(testNino),
-        role = Some(testRole),
-        name = Some(name),
-        changeOfName =
-          Some(ChangeOfName(
-            nameHasChanged = true,
-            formerName = Some(FormerName(formerName = "formerName", dateOfNameChange = Some(date))))),
-        currentOrPreviousAddress = Some(CurrentOrPreviousAddress(currentAddressThreeYears = false, previousAddress = Some(prevAddress))),
-        contact = Some(OfficerContactDetails(Some("email"), Some("daytimePhone"), Some("mobile")))
-      )
-
-      S4LVatLodgingOfficer.apiT.toApi(s4l) shouldBe expected
     }
   }
 

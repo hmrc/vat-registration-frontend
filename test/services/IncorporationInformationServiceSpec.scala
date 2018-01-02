@@ -17,11 +17,10 @@
 package services
 
 import cats.data.OptionT
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{Name, ScrsAddress}
-import models.external.{CoHoCompanyProfile, CoHoRegisteredOfficeAddress, Officer, OfficerList}
+import models.api.ScrsAddress
+import models.external.{CoHoCompanyProfile, CoHoRegisteredOfficeAddress, Name, Officer, OfficerList}
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
 
@@ -42,7 +41,6 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors wit
       surname = "Reddy"
     ),
     role = "director",
-    dateOfBirth = Some(validDob),
     resignedOn = None,
     appointmentLink = None)
 

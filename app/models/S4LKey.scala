@@ -18,6 +18,7 @@ package models
 
 import features.returns.Returns
 import features.turnoverEstimates.TurnoverEstimates
+import features.officer.models.view.LodgingOfficer
 import models.view.test.SicStub
 
 trait S4LKey[T] {
@@ -37,7 +38,6 @@ object S4LKey {
   implicit val sicStub: S4LKey[SicStub] = S4LKey("SicStub")
   implicit val vatServiceEligibility: S4LKey[S4LVatEligibility] = S4LKey("VatServiceEligibility")
   implicit val vatContact: S4LKey[S4LVatContact] = S4LKey("VatContact")
-  implicit val vatLodgingOfficer: S4LKey[S4LVatLodgingOfficer] = S4LKey("VatLodgingOfficer")
   implicit val sicAndCompliance: S4LKey[S4LVatSicAndCompliance] = S4LKey("VatSicAndCompliance")
   implicit val returns: S4LKey[Returns] = S4LKey("returns")
   implicit val bankAccountKey: S4LKey[BankAccount] = S4LKey[BankAccount]("bankAccount")

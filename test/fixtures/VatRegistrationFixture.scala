@@ -21,6 +21,8 @@ import java.time.format.DateTimeFormatter
 
 import common.enums.VatRegStatus
 import models.{BankAccount, BankAccountDetails, S4LVatSicAndCompliance}
+import features.officer.fixtures.LodgingOfficerFixtures
+import features.officer.models.view._
 import models.api._
 import models.external.{IncorporationInfo, _}
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
@@ -28,10 +30,8 @@ import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatContact.BusinessContactDetails
-import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import play.api.http.Status._
 import play.api.libs.json.Json
-import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.http.{BadRequestException, HttpResponse, InternalServerException, NotFoundException, Upstream4xxResponse, Upstream5xxResponse}
 
 trait BaseFixture {
@@ -43,7 +43,7 @@ trait BaseFixture {
 }
 
 trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixtures
-  with FinancialsFixtures {
+  with FinancialsFixtures with LodgingOfficerFixtures {
 
   val sicCode = SicCode("88888888", "description", "displayDetails")
 
@@ -60,6 +60,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val notFound = new NotFoundException(NOT_FOUND.toString)
   val internalServiceException = new InternalServerException(BAD_GATEWAY.toString)
   val runTimeException = new RuntimeException("tst")
+  val internalServerError = Upstream5xxResponse(INTERNAL_SERVER_ERROR.toString, INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)
+  val exception = new Exception(BAD_GATEWAY.toString)
 
   //Test variables
   val contextRoot = "/register-for-vat"
@@ -116,7 +118,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   )
 
   //View models
-  val validOfficerContactDetailsView = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
+  val validOfficerContactDetailsView = ContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
   val validNotForProfit = NotForProfit(NotForProfit.NOT_PROFIT_NO)
   val validCompanyProvideWorkers = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
   val validWorkers = Workers(8)
@@ -128,13 +130,10 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
 
   //Api models
-  val validDob = DateOfBirth(12, 11, 1973)
-  val validStartDate = DateOfBirth(12, 11, 1990)
-  val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", Some(validDob), None, None)
+  val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", None, None)
   val validExpectedOverTrue = Some(VatExpectedThresholdPostIncorp(true,Some(testDate)))
   val validExpectedOverTrueNoDate = Some(VatExpectedThresholdPostIncorp(true,None))
   val validExpectedOverFalse = Some(VatExpectedThresholdPostIncorp(false,None))
-  val completionCapacity = CompletionCapacity(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director")
   def validServiceEligibility(nes : String = VatEligibilityChoice.NECESSITY_VOLUNTARY, reason : Option[String] = None, expectedThreshold: Option[VatExpectedThresholdPostIncorp] = None) =
       VatServiceEligibility(
         Some(true),
@@ -146,10 +145,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
         Some(VatEligibilityChoice(
           nes, reason, None, expectedThreshold)))
 
-  val officerName = Name(Some("Reddy"), None, "Yattapu", Some("Dr"))
-  val validOfficerContactDetails = OfficerContactDetails(Some("test@test.com"), None, None)
-  val changeOfName = ChangeOfName(true, None)
-  val currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(ScrsAddress("", "")))
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
   val validVatThresholdPostIncorp = VatThresholdPostIncorp(overThresholdSelection = false, None)
   val validVatCulturalCompliance = VatComplianceCultural(notForProfit = true)
@@ -158,25 +153,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
 
   val emptyVatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
-
-  val validLodgingOfficer = VatLodgingOfficer(
-    currentAddress = Some(ScrsAddress("", "")),
-    dob = Some(validDob),
-    nino = Some(""),
-    role = Some("director"),
-    name = Some(officerName),
-    changeOfName = Some(changeOfName),
-    currentOrPreviousAddress = Some(currentOrPreviousAddress),
-    contact = Some(validOfficerContactDetails)
-  )
-
-//  val validSicAndCompliance = VatSicAndCompliance(
-//    businessDescription = testBusinessActivityDescription,
-//    culturalCompliance = Some(VatComplianceCultural(notForProfit = false)),
-//    labourCompliance = None,
-//    financialCompliance = None,
-//    mainBusinessActivity = sicCode
-//  )
 
   val validVatContact = VatContact(
     digitalContact = VatDigitalContact(email = "asd@com", tel = Some("123"), mobile = None),
@@ -191,7 +167,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     tradingDetails = Some(validVatTradingDetails),
     financials = Some(validVatFinancials),
     vatContact = Some(validVatContact),
-    lodgingOfficer = Some(validLodgingOfficer),
+    lodgingOfficer = Some(validFullLodgingOfficer),
     vatSicAndCompliance = Some(validSicAndCompliance),
     vatFlatRateScheme = Some(validVatFlatRateScheme),
     bankAccount = Some(validBankAccount),
@@ -202,6 +178,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     status = VatRegStatus.draft,
     id = testRegId,
     vatSicAndCompliance = Some(validSicAndCompliance),
+    lodgingOfficer = Some(emptyLodgingOfficer),
     financials = Some(
       VatFinancials(
         turnoverEstimate = 0L,
