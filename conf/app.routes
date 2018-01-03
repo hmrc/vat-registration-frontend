@@ -101,12 +101,16 @@ GET         /how-often-do-you-want-to-submit-vat-returns                        
 POST        /how-often-do-you-want-to-submit-vat-returns                                       controllers.vatFinancials.vatAccountingPeriod.VatReturnFrequencyController.submit
 
 ## COMPANY BANK ACCOUNT
-GET         /business-bank-account                                                             controllers.vatFinancials.vatBankAccount.CompanyBankAccountController.show
-POST        /business-bank-account                                                             controllers.vatFinancials.vatBankAccount.CompanyBankAccountController.submit
+GET         /business-bank-account-legacy                                                      controllers.vatFinancials.vatBankAccount.CompanyBankAccountController.show
+POST        /business-bank-account-legacy                                                      controllers.vatFinancials.vatBankAccount.CompanyBankAccountController.submit
+GET         /business-bank-account                                                             features.bankAccountDetails.BankAccountDetailsController.showHasCompanyBankAccountView
+POST        /business-bank-account                                                             features.bankAccountDetails.BankAccountDetailsController.submitHasCompanyBankAccount
 
 ## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
-GET         /business-bank-account-details                                                     controllers.vatFinancials.vatBankAccount.CompanyBankAccountDetailsController.show
-POST        /business-bank-account-details                                                     controllers.vatFinancials.vatBankAccount.CompanyBankAccountDetailsController.submit
+GET          /business-bank-account-details-legacy                                              controllers.vatFinancials.vatBankAccount.CompanyBankAccountDetailsController.show
+POST         /business-bank-account-details-legacy                                              controllers.vatFinancials.vatBankAccount.CompanyBankAccountDetailsController.submit
+GET          /business-bank-account-details                                                     features.bankAccountDetails.BankAccountDetailsController.showEnterCompanyBankAccountDetails
+POST         /business-bank-account-details                                                     features.bankAccountDetails.BankAccountDetailsController.submitEnterCompanyBankAccountDetails
 
 ## BUSINESS ACTIVITY DESCRIPTION
 GET         /describe-what-company-does                                                        controllers.sicAndCompliance.BusinessActivityDescriptionController.show

@@ -15,14 +15,17 @@
  */
 package itutil
 
+import java.time.{LocalDate, LocalDateTime}
+
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.{JsString, JsObject, Json}
-import play.api.libs.ws.WS
-import uk.gov.hmrc.crypto.{ApplicationCrypto, Protected}
+import play.api.Application
+import play.api.libs.json.{JsObject, JsValue, Json}
+import uk.gov.hmrc.crypto.{CompositeSymmetricCrypto, CryptoWithKeysFromConfig, Protected}
 import uk.gov.hmrc.crypto.json.JsonEncryptor
 
 object WiremockHelper {
@@ -31,7 +34,7 @@ object WiremockHelper {
   val url = s"http://$wiremockHost:$wiremockPort"
 }
 
-trait WiremockHelper {
+trait WiremockHelper extends WiremockS4LHelper {
   self: OneServerPerSuite =>
 
   import WiremockHelper._
@@ -47,9 +50,6 @@ trait WiremockHelper {
   def stopWiremock() = wireMockServer.stop()
 
   def resetWiremock() = WireMock.reset()
-
-  def buildClient(path: String) = WS.url(s"http://localhost:$port/register-for-paye$path").withFollowRedirects(false)
-  def buildClientInternal(path: String) = WS.url(s"http://localhost:$port/internal$path").withFollowRedirects(false)
 
   def stubGet(url: String, status: Integer, body: String) =
     stubFor(get(urlMatching(url))
@@ -95,4 +95,122 @@ trait WiremockHelper {
           withBody(responseBody)
       )
     )
+
+  def stubKeystoreFetchCurrentProfile(session: String, regId: String): StubMapping = {
+    val keystoreUrl = s"/keystore/vat-registration-frontend/$session"
+    stubFor(get(urlMatching(keystoreUrl))
+      .willReturn(
+        aResponse().
+          withStatus(200).
+          withBody(
+            s"""{
+               |  "id": "$session",
+               |  "data": {
+               |    "CurrentProfile":{
+               |      "registrationID": "$regId",
+               |      "companyName":"Test Me",
+               |      "transactionID":"000-434-1",
+               |      "vatRegistrationStatus":"draft",
+               |      "incorporationDate":"2017-12-21",
+               |      "ivPassed":true
+               |    }
+               |  }
+               |}""".stripMargin
+          )
+      )
+    )
+  }
+
+  def stubBankReputationCheck(valid: Boolean): StubMapping = {
+    val response = Json.obj("accountNumberWithSortCodeIsValid" -> valid)
+    stubFor(post(urlMatching("/modcheck"))
+      .willReturn(
+        aResponse().
+          withStatus(200)
+          .withBody(response.toString())
+      )
+    )
+  }
+
+  def stubVATFetch(regId: String, uri: String, response: Option[JsObject]): StubMapping = {
+    val vatRegistrationUrl = s"/vatreg/$regId/$uri"
+    val (status, resp) = response.fold((404, Json.obj()))(js => (200, js))
+    stubFor(get(urlMatching(vatRegistrationUrl))
+      .willReturn(
+        aResponse().
+          withStatus(status)
+          .withBody(resp.toString())
+      )
+    )
+  }
+
+  def stubVATFetchBankAccount(regId: String, response: Option[JsObject]): StubMapping = stubVATFetch(regId, "bank-account", response)
+
+  def stubVATPatch(regId: String, uri: String, response: Option[JsObject]): StubMapping = {
+    val vatRegistrationUrl = s"/vatreg/$regId/$uri"
+    val resp = response.fold(Json.obj().toString())(_.toString())
+    stubFor(patch(urlMatching(vatRegistrationUrl))
+      .willReturn(
+        aResponse().
+          withStatus(200)
+          .withBody(resp)
+      )
+    )
+  }
+
+  def stubVATPatchBankAccount(regId: String, response: JsObject): StubMapping = stubVATPatch(regId, "bank-account", Some(response))
+}
+
+trait WiremockS4LHelper {
+
+  private def encryptJson(body: JsObject)(implicit app: Application): String = {
+    val crypto = CryptoWithKeysFromConfig(baseConfigKey = "json.encryption", app.configuration)
+    val encryptionFormat = new JsonEncryptor[JsObject]()(crypto, implicitly)
+    encryptionFormat.writes(Protected(body)).toString()
+  }
+
+  def stubS4LFetch(regId: String, key: String, response: Option[JsObject])(implicit app: Application): StubMapping = {
+    val save4LaterUrl = s"/save4later/vat-registration-frontend/$regId"
+    val json = response.fold(Json.obj())(js => Json.obj(key -> encryptJson(js)))
+
+    stubFor(get(urlMatching(save4LaterUrl))
+      .willReturn(
+        aResponse().
+          withStatus(200).
+          withBody(
+            Json.parse(
+              s"""{
+                 |  "id":"$regId",
+                 |  "data": $json,
+                 |  "modifiedDetails": {
+                 |    "lastUpdated": ${Json.toJson(LocalDateTime.now())},
+                 |    "createdAt": ${Json.toJson(LocalDateTime.now())}
+                 |  }
+                 |}""".stripMargin).as[JsObject].toString()
+          )
+      )
+    )
+  }
+
+  def stubS4LSave(regId: String, key: String): StubMapping = {
+    val save4LaterUrl = s"/save4later/vat-registration-frontend/$regId/data/$key"
+
+    stubFor(put(urlMatching(save4LaterUrl))
+      .willReturn(
+        aResponse().
+          withStatus(200).
+          withBody(
+            Json.parse(
+            s"""{
+               |  "id":"$regId",
+               |  "data": {"test":"cacheMap"},
+               |  "modifiedDetails": {
+               |    "lastUpdated": ${Json.toJson(LocalDateTime.now())},
+               |    "createdAt": ${Json.toJson(LocalDateTime.now())}
+               |  }
+               |}""".stripMargin).as[JsObject].toString()
+          )
+      )
+    )
+  }
 }

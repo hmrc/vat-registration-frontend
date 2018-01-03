@@ -72,7 +72,7 @@ package controllers.vatFinancials.vatBankAccount {
   import scala.concurrent.Future
 
   @Singleton
-  class CompanyBankAccountDetailsController @Inject()(bars: BankAccountReputationSrv,
+  class CompanyBankAccountDetailsController @Inject()(bars: BankAccountReputationService,
                                                       ds: CommonPlayDependencies,
                                                       val keystoreConnector: KeystoreConnect,
                                                       val authConnector: AuthConnector,

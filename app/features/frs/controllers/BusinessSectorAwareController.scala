@@ -50,13 +50,14 @@ package controllers.frs {
   import models.CurrentProfile
   import models.view.frs.BusinessSectorView
   import org.apache.commons.lang3.StringUtils
-  import services.RegistrationService
+  import services.{RegistrationService, SessionProfile}
   import uk.gov.hmrc.http.HeaderCarrier
 
   import scala.concurrent.Future
 
   // TODO refactor this - controller being treated like a service by RegisterForFrsWithSector
   trait BusinessSectorAwareController extends VatRegistrationControllerNoAux {
+    self: SessionProfile =>
 
     val service: RegistrationService
     val configConnect: ConfigConnector
