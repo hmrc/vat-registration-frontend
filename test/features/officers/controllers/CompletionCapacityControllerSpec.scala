@@ -16,84 +16,81 @@
 
 package controllers.vatLodgingOfficer
 
+import connectors.KeystoreConnect
+import features.officers.models.view.LodgingOfficer
+import features.officers.services.LodgingOfficerService
 import fixtures.VatRegistrationFixture
-import helpers.{S4LMockSugar, VatRegSpec}
-import models.ModelKeys.REGISTERING_OFFICER_KEY
-import models.external.Officer
-import models.view.vatLodgingOfficer.CompletionCapacityView
+import helpers.{ControllerSpec, FutureAssertions, MockMessages}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
+import services.PrePopService
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class CompletionCapacityControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+import scala.concurrent.Future
 
-  object Controller extends CompletionCapacityController(
-    ds,
-    mockS4LService,
-    mockVatRegistrationService,
-    mockPPService,
-    mockAuthConnector,
-    mockKeystoreConnector
-  )
+class CompletionCapacityControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages with FutureAssertions {
+  val mockLodgingOfficerService: LodgingOfficerService = mock[LodgingOfficerService]
+  val mockPPService: PrePopService = mock[PrePopService]
+
+  trait Setup {
+    val controller: CompletionCapacityController = new CompletionCapacityController {
+      override val lodgingOfficerService: LodgingOfficerService = mockLodgingOfficerService
+      override val prePopService: PrePopService = mockPPService
+      override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
+      override val messagesApi: MessagesApi = mockMessagesAPI
+      override val authConnector: AuthConnector = mockAuthConnector
+    }
+
+    mockAllMessages
+    mockWithCurrentProfile(Some(currentProfile))
+  }
 
   val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
 
   s"GET ${routes.CompletionCapacityController.show()}" should {
-    "return HTML when there's no view in S4L" in {
-      mockGetCurrentProfile()
 
-      save4laterReturnsNoViewModel[CompletionCapacityView]()
-      when(mockPPService.getOfficerList(any(), any())).thenReturn(Seq(officer).pure)
-      mockKeystoreCache[Seq[Officer]]("OfficerList", dummyCacheMap)
+    "return HTML with no data" in new Setup {
+      val emptyLodgingOfficer = LodgingOfficer(None, None)
 
-      callAuthorised(Controller.show()) {
-        _ includesText "Who is registering the company for VAT?"
+      when(mockPPService.getOfficerList(any(), any())).thenReturn(Future.successful(Seq(officer)))
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(emptyLodgingOfficer))
+
+      callAuthorised(controller.show()) {
+        _ includesText MOCKED_MESSAGE
       }
     }
 
-    "return HTML when view is present in S4L" in {
-      mockGetCurrentProfile()
+    "return HTML with officer already saved" in new Setup {
+      val partialLodgingOfficer = LodgingOfficer(Some("BobBimblyBobblousBobbings"), None)
 
-      save4laterReturnsViewModel(CompletionCapacityView("id", Some(completionCapacity)))()
-      when(mockPPService.getOfficerList(any(), any())).thenReturn(Seq(officer).pure)
-      mockKeystoreCache[Seq[Officer]]("OfficerList", dummyCacheMap)
+      when(mockPPService.getOfficerList(any(), any())).thenReturn(Future.successful(Seq(officer)))
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
-      callAuthorised(Controller.show()) {
-        _ includesText "Who is registering the company for VAT?"
+      callAuthorised(controller.show()) {
+        _ includesText MOCKED_MESSAGE
       }
     }
   }
 
   s"POST ${routes.CompletionCapacityController.submit()}" should {
-    "return 400 with Empty data" in {
-      mockGetCurrentProfile()
-      mockKeystoreFetchAndGet[Seq[Officer]]("OfficerList", None)
+    "return 400 with Empty data" in new Setup {
+      when(mockPPService.getOfficerList(any(), any())).thenReturn(Future.successful(Seq(officer)))
 
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody()
-      )(result => result isA 400)
+      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody()
+      )(_ isA 400)
     }
 
-    "return 303  with selected completionCapacity but no completionCapacity list in keystore" in {
-      mockGetCurrentProfile()
-      save4laterExpectsSave[CompletionCapacityView]()
-      mockKeystoreFetchAndGet("OfficerList", Option.empty[Seq[Officer]])
-      mockKeystoreCache[Officer](REGISTERING_OFFICER_KEY, dummyCacheMap)
+    "return 303 with selected completionCapacity" in new Setup {
+      val lodgingOfficer = LodgingOfficer(
+        Some(completionCapacity.name.id),
+        None
+      )
 
-      submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> completionCapacity.name.id)
-      )(_ redirectsTo s"$contextRoot/pass-security")
+      when(mockLodgingOfficerService.updateCompletionCapacity(any())(any(), any())).thenReturn(Future.successful(lodgingOfficer))
 
-    }
-
-    "return 303 with selected completionCapacity" in {
-      mockGetCurrentProfile()
-
-      when(mockPPService.getOfficerList(any(), any())).thenReturn(Seq(officer).pure)
-      save4laterExpectsSave[CompletionCapacityView]()
-      mockKeystoreFetchAndGet[Seq[Officer]]("OfficerList", Some(Seq(officer)))
-      mockKeystoreCache[Officer](REGISTERING_OFFICER_KEY, dummyCacheMap)
-
-      submitAuthorised(Controller.submit(),
+      submitAuthorised(controller.submit(),
         fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> completionCapacity.name.id)
       )(_ redirectsTo s"$contextRoot/pass-security")
     }

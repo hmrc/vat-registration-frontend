@@ -118,7 +118,7 @@ package models.api {
   }
 
   object Name {
-    implicit val format = (
+    implicit val format: OFormat[Name] = (
       (__ \ "forename").formatNullable[String] and
         (__ \ "other_forenames").formatNullable[String] and
         (__ \ "surname").format[String] and
@@ -167,7 +167,7 @@ package models {
   (
     officerHomeAddress: Option[OfficerHomeAddressView] = None,
     officerSecurityQuestions: Option[OfficerSecurityQuestionsView] = None,
-    completionCapacity: Option[String] = None,
+    completionCapacity: Option[CompletionCapacityView] = None,
     officerContactDetails: Option[OfficerContactDetailsView] = None,
     formerName: Option[FormerNameView] = None,
     formerNameDate: Option[FormerNameDateView] = None,
@@ -184,7 +184,7 @@ package models {
         S4LVatLodgingOfficer(
           officerHomeAddress = ApiModelTransformer[OfficerHomeAddressView].toViewModel(vs),
           officerSecurityQuestions = ApiModelTransformer[OfficerSecurityQuestionsView].toViewModel(vs),
-          completionCapacity = ApiModelTransformer[String].toViewModel(vs),
+          completionCapacity = ApiModelTransformer[CompletionCapacityView].toViewModel(vs),
           officerContactDetails = ApiModelTransformer[OfficerContactDetailsView].toViewModel(vs),
           formerName = ApiModelTransformer[FormerNameView].toViewModel(vs),
           formerNameDate = ApiModelTransformer[FormerNameDateView].toViewModel(vs),
@@ -199,8 +199,8 @@ package models {
           currentAddress = c.officerHomeAddress.flatMap(_.address),
           dob = c.officerSecurityQuestions.map(d => d.dob),
           nino = c.officerSecurityQuestions.map(n => n.nino),
-          role = Some("deprecated"),
-          name = Some(Name(forename = None, otherForenames= None, surname = "deprecated")),
+          role = c.completionCapacity.flatMap(_.completionCapacity.map(_.role)),
+          name = c.completionCapacity.flatMap(_.completionCapacity.map(_.name)),
           changeOfName =
             c.formerName.map((fnv: FormerNameView) =>
               ChangeOfName(

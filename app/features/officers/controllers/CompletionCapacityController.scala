@@ -14,6 +14,38 @@
  * limitations under the License.
  */
 
+package models.view.vatLodgingOfficer {
+
+  import models.api.{CompletionCapacity, VatLodgingOfficer, VatScheme}
+  import models.{ApiModelTransformer, _}
+  import play.api.libs.json.Json
+
+  case class CompletionCapacityView(id: String, completionCapacity: Option[CompletionCapacity] = None)
+
+  object CompletionCapacityView {
+
+    def apply(cc: CompletionCapacity): CompletionCapacityView = new CompletionCapacityView(cc.name.id, Some(cc))
+
+    implicit val format = Json.format[CompletionCapacityView]
+
+    implicit val viewModelFormat = ViewModelFormat(
+      readF = (group: S4LVatLodgingOfficer) => group.completionCapacity,
+      updateF = (c: CompletionCapacityView, g: Option[S4LVatLodgingOfficer]) =>
+        g.getOrElse(S4LVatLodgingOfficer()).copy(completionCapacity = Some(c))
+    )
+
+    // return a view model from a VatScheme instance
+    implicit val modelTransformer = ApiModelTransformer[CompletionCapacityView] { vs: VatScheme =>
+      vs.lodgingOfficer match{
+        case Some(VatLodgingOfficer(_,_,_,Some(b),Some(a),_,_,_,_)) => Some(CompletionCapacityView(a.id, Some(CompletionCapacity(a, b))))
+        case _ => None
+      }
+    }
+
+  }
+
+}
+
 package controllers.vatLodgingOfficer{
 
   import javax.inject.Inject
@@ -44,9 +76,9 @@ package controllers.vatLodgingOfficer{
         implicit request =>
           withCurrentProfile { implicit profile =>
             for {
-              officerList     <- prePopService.getOfficerList
-              selectedOfficer <- lodgingOfficerService.getCompletionCapacity
-              filledForm      =  selectedOfficer.fold(form)(form.fill)
+              officerList <- prePopService.getOfficerList
+              officer     <- lodgingOfficerService.getLodgingOfficer
+              filledForm  = officer.completionCapacity.fold(form)(form.fill)
             } yield Ok(features.officers.views.html.completion_capacity(filledForm, officerList))
           }
     }
@@ -59,7 +91,7 @@ package controllers.vatLodgingOfficer{
               formErrors => prePopService.getOfficerList map { officerList =>
                 BadRequest(features.officers.views.html.completion_capacity(formErrors, officerList))
               },
-              cc => lodgingOfficerService.submitCompletionCapacity(cc) map {
+              cc => lodgingOfficerService.updateCompletionCapacity(cc) map {
                 _ => Redirect(routes.OfficerSecurityQuestionsController.show())
               }
             )

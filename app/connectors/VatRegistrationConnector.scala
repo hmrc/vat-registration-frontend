@@ -22,6 +22,7 @@ import cats.data.OptionT
 import cats.instances.FutureInstances
 import common.enums.VatRegStatus
 import config.WSHttp
+import features.officers.models.view.LodgingOfficer
 import models.CurrentProfile
 import models.api._
 import models.external.IncorporationInfo
@@ -87,10 +88,10 @@ trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnect
     }
   }
 
-  def patchLodgingOfficer[T](data: T, writes: Writes[T])(implicit profile: CurrentProfile, hc: HeaderCarrier, rds: HttpReads[T]): Future[T] = {
-    val json = Json.toJson[T](data)(writes)
-    http.PATCH[JsValue, T](s"$vatRegUrl/vatreg/${profile.registrationId}/officer", json) map {
-      _ => data
+  def patchLodgingOfficer(data: LodgingOfficer, writes: Writes[LodgingOfficer])(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[JsValue] = {
+    val json = Json.toJson(data)(writes)
+    http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/officer", json) map {
+      _ => json
     } recover {
       case e: Exception => throw logResponse(e, "patchLodgingOfficer")
     }

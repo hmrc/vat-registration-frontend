@@ -61,6 +61,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val notFound = new NotFoundException(NOT_FOUND.toString)
   val internalServiceException = new InternalServerException(BAD_GATEWAY.toString)
   val runTimeException = new RuntimeException("tst")
+  val internalServerError = Upstream5xxResponse(INTERNAL_SERVER_ERROR.toString, INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)
+  val exception = new Exception(BAD_GATEWAY.toString)
 
   //Test variables
   val contextRoot = "/register-for-vat"

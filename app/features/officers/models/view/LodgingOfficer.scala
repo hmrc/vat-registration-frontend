@@ -34,12 +34,12 @@ object LodgingOfficer {
       val middleName = officer.name.otherForenames.fold(Json.obj())(v => Json.obj("middle" -> v))
       val name = lastName ++ firstName ++ middleName
 
-      name ++ Json.parse(
+      Json.obj("name" -> name) ++ Json.parse(
         s"""
            |{
-           | "role" : "${officer.role}"
-           | "dob" : "${o.securityQuestions.get.dob}",
-           | "nino" : "${o.securityQuestions.get.nino}"
+           |  "role": "${officer.role}",
+           |  "dob": "${o.securityQuestions.get.dob}",
+           |  "nino": "${o.securityQuestions.get.nino}"
            |}
         """.stripMargin
       ).as[JsObject]

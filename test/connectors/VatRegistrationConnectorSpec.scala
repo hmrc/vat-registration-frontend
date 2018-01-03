@@ -16,12 +16,18 @@
 
 package connectors
 
+import java.time.LocalDate
+
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api._
-import models.external.IncorporationInfo
+import models.external.{IncorporationInfo, Officer}
 import uk.gov.hmrc.play.http._
 import config.WSHttp
+import features.officers.models.view.LodgingOfficer
+import models.view.vatLodgingOfficer.OfficerSecurityQuestionsView
+import play.api.http.Status.{NO_CONTENT, OK}
+import play.api.libs.json.{JsValue, Json}
 
 import scala.language.postfixOps
 import uk.gov.hmrc.http.HttpResponse
@@ -272,6 +278,101 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       mockHttpPUT[String, HttpResponse]("test-url", validHttpResponse)
 
       await(connector.submitRegistration("tstID")) mustBe Success
+    }
+  }
+
+  "Calling getLodgingOfficer" should {
+    val validJson = Json.parse(
+      s"""
+         |{
+         |  "name": {
+         |    "first": "First",
+         |    "last": "Last"
+         |  },
+         |  "role": "Director",
+         |  "dob": "1998-07-12",
+         |  "nino": "AA112233Z"
+         |}""".stripMargin)
+    val httpRespOK = HttpResponse(OK, Some(validJson))
+    val httpRespNOCONTENT = HttpResponse(NO_CONTENT, None)
+
+    "return a JsValue" in new Setup {
+      mockHttpGET[HttpResponse]("tst-url", httpRespOK)
+      connector.getLodgingOfficer returns Some(validJson)
+    }
+
+    "return None if there is no data for the registration" in new Setup {
+      mockHttpGET[HttpResponse]("tst-url", httpRespNOCONTENT)
+      connector.getLodgingOfficer returns None
+    }
+
+    "throw a NotFoundException if the registration does not exist" in new Setup {
+      mockHttpFailedGET[HttpResponse]("tst-url", notFound)
+      connector.getLodgingOfficer failedWith notFound
+    }
+
+    "throw an Upstream4xxResponse with Forbidden status" in new Setup {
+      mockHttpFailedGET[HttpResponse]("tst-url", forbidden)
+      connector.getLodgingOfficer failedWith forbidden
+    }
+
+    "throw an Upstream5xxResponse with Internal Server Error status" in new Setup {
+      mockHttpFailedGET[HttpResponse]("tst-url", internalServerError)
+      connector.getLodgingOfficer failedWith internalServerError
+    }
+
+    "throw an Exception if the call failed" in new Setup {
+      mockHttpFailedGET[HttpResponse]("tst-url", exception)
+      connector.getLodgingOfficer failedWith exception
+    }
+  }
+
+  "Calling patchLodgingOfficer" should {
+    val officer = Officer(
+      name = Name(forename = Some("First"), otherForenames = None, surname = "Last"),
+      role = "Director"
+    )
+
+    val validLodgingOfficer = LodgingOfficer(
+      Some("FirstLast"),
+      Some(OfficerSecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z"))
+    )
+
+    val validJson = Json.parse(
+      s"""
+         |{
+         |  "name": {
+         |    "first": "First",
+         |    "last": "Last"
+         |  },
+         |  "role": "Director",
+         |  "dob": "1998-07-12",
+         |  "nino": "AA112233Z"
+         |}""".stripMargin)
+
+    "return a JsValue" in new Setup {
+      mockHttpPATCH[JsValue, JsValue]("tst-url", validJson)
+      connector.patchLodgingOfficer(validLodgingOfficer, LodgingOfficer.apiWrites(officer)) returns validJson
+    }
+
+    "throw a NotFoundException if the registration does not exist" in new Setup {
+      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", notFound)
+      connector.patchLodgingOfficer(validLodgingOfficer, LodgingOfficer.apiWrites(officer)) failedWith notFound
+    }
+
+    "throw an Upstream4xxResponse with Forbidden status" in new Setup {
+      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", forbidden)
+      connector.patchLodgingOfficer(validLodgingOfficer, LodgingOfficer.apiWrites(officer)) failedWith forbidden
+    }
+
+    "throw an Upstream5xxResponse with Internal Server Error status" in new Setup {
+      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", internalServerError)
+      connector.patchLodgingOfficer(validLodgingOfficer, LodgingOfficer.apiWrites(officer)) failedWith internalServerError
+    }
+
+    "throw an Exception if the call failed" in new Setup {
+      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", exception)
+      connector.patchLodgingOfficer(validLodgingOfficer, LodgingOfficer.apiWrites(officer)) failedWith exception
     }
   }
 }
