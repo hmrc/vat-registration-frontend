@@ -24,4 +24,15 @@ package object services {
   val Incomplete   = scala.util.Left
   val Complete     = scala.util.Right
 
+
+//  sealed trait CompletedBlock[T]{
+//    def fold[X](complete: T => X, incomplete: T => X): X = this match {
+//      case Complete(a) => complete(a)
+//      case Incomplete(b) => incomplete(b)
+//    }
+//  }
+//  case class Complete[T](a: T) extends CompletedBlock[T]
+//  case class Incomplete[T](a: T) extends CompletedBlock[T]
+
+  type CompletedBlock[T]     = Either[T, T]
 }

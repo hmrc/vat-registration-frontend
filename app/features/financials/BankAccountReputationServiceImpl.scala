@@ -19,19 +19,26 @@ package services {
   import javax.inject.Inject
 
   import connectors.BankAccountReputationConnect
+  import models.BankAccountDetails
   import models.view.vatFinancials.vatBankAccount.ModulusCheckAccount
   import uk.gov.hmrc.http.HeaderCarrier
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
   import scala.concurrent.Future
 
-  class BankAccountReputationService @Inject()(val bankAccountReputationConnector: BankAccountReputationConnect) extends BankAccountReputationSrv
+  class BankAccountReputationServiceImpl @Inject()(val bankAccountReputationConnector: BankAccountReputationConnect) extends BankAccountReputationService
 
-  trait BankAccountReputationSrv {
+  trait BankAccountReputationService {
     val bankAccountReputationConnector: BankAccountReputationConnect
 
     def bankDetailsModulusCheck(account: ModulusCheckAccount)(implicit hc: HeaderCarrier): Future[Boolean] = {
       bankAccountReputationConnector.bankAccountModulusCheck(account) map {
+        response => (response \ "accountNumberWithSortCodeIsValid").as[Boolean]
+      }
+    }
+
+    def bankAccountDetailsModulusCheck(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[Boolean] = {
+      bankAccountReputationConnector.bankAccountDetailsModulusCheck(account) map {
         response => (response \ "accountNumberWithSortCodeIsValid").as[Boolean]
       }
     }
@@ -43,6 +50,7 @@ package connectors {
   import javax.inject.Inject
 
   import config.WSHttp
+  import models.BankAccountDetails
   import models.view.vatFinancials.vatBankAccount.ModulusCheckAccount
   import play.api.libs.json.JsValue
   import uk.gov.hmrc.http.{CorePost, HeaderCarrier}
@@ -61,6 +69,12 @@ package connectors {
 
     def bankAccountModulusCheck(account: ModulusCheckAccount)(implicit hc: HeaderCarrier): Future[JsValue] = {
       http.POST[ModulusCheckAccount, JsValue](s"$bankAccountReputationUrl/modcheck", account) recover {
+        case ex => throw logResponse(ex, "bankAccountModulusCheck")
+      }
+    }
+
+    def bankAccountDetailsModulusCheck(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[JsValue] = {
+      http.POST[BankAccountDetails, JsValue](s"$bankAccountReputationUrl/modcheck", account) recover {
         case ex => throw logResponse(ex, "bankAccountModulusCheck")
       }
     }

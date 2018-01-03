@@ -31,6 +31,7 @@ private object CompileDependencies {
   private val whitelistFilterVersion = "2.0.0"
   private val catsVersion            = "0.9.0"
 
+
   private val compileDependencies: Seq[ModuleID] = Seq(
     cache,
     "uk.gov.hmrc"   %% "frontend-bootstrap"            % bootstrapVersion,

@@ -19,6 +19,6 @@ package auth
 import uk.gov.hmrc.play.frontend.auth.GovernmentGateway
 
 object VatAuthenticationProvider extends GovernmentGateway {
-  override val continueURL: String = VatExternalUrls.continueUrl
-  override val loginURL: String    = VatExternalUrls.loginUrl
+  override lazy val continueURL: String = VatExternalUrls.continueUrl
+  override lazy val loginURL: String    = VatExternalUrls.loginUrl
 }

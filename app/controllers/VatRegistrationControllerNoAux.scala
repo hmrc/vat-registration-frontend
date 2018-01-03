@@ -17,11 +17,28 @@
 package controllers
 
 import auth.VatTaxRegime
+import models.CurrentProfile
 import play.api.i18n.I18nSupport
-import uk.gov.hmrc.play.frontend.auth.Actions
+import play.api.mvc.{Action, AnyContent, Request, Result}
+import services.SessionProfile
+import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
+import scala.concurrent.Future
+
 trait VatRegistrationControllerNoAux extends FrontendController with I18nSupport with Actions {
+  self: SessionProfile =>
+
+  type AuthorisedRequest = (AuthContext) => (Request[AnyContent]) => Future[Result]
+  type AuthorisedRequestWithCurrentProfile = (AuthContext) => (Request[AnyContent]) => (CurrentProfile) => Future[Result]
 
   def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
+
+  def withCurrentProfile(f: => AuthorisedRequestWithCurrentProfile): AuthorisedRequest = {
+    a => r => withCurrentProfile(f(a)(r))(r, hc(r))
+  }
+
+  def authorisedWithCurrentProfile(f: => AuthorisedRequestWithCurrentProfile): Action[AnyContent] = {
+    authorised async withCurrentProfile(f)
+  }
 }

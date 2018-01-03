@@ -57,6 +57,9 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
     "return HTML when there's a CompanyBankAccountDetails model in S4L" in {
       save4laterReturnsViewModel(validCompanyBankAccountDetails)()
 
+      when(mockBankAccountReputationService.bankDetailsModulusCheck(any())(any()))
+        .thenReturn(Future.successful(true))
+
       mockGetCurrentProfile()
 
       callAuthorised(Controller.show()) {
@@ -114,7 +117,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(validVatFlatRateScheme.pure)
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatFinancials())
-      when(mockBankAccountReputationService.bankDetailsModulusCheck(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      when(mockBankAccountReputationService.bankAccountDetailsModulusCheck(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(true))
       mockGetCurrentProfile()
       submitAuthorised(Controller.submit(),
@@ -131,7 +134,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(validVatFlatRateScheme.pure)
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatFinancials())
-      when(mockBankAccountReputationService.bankDetailsModulusCheck(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      when(mockBankAccountReputationService.bankAccountDetailsModulusCheck(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(true))
       mockGetCurrentProfile()
       submitAuthorised(Controller.submit(),
@@ -149,7 +152,7 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
       when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(validVatFlatRateScheme.pure)
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatFinancials())
-      when(mockBankAccountReputationService.bankDetailsModulusCheck(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      when(mockBankAccountReputationService.bankAccountDetailsModulusCheck(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(true))
       mockGetCurrentProfile()
       submitAuthorised(Controller.submit(),
@@ -160,6 +163,10 @@ class CompanyBankAccountDetailsControllerSpec extends VatRegSpec with VatRegistr
 
     "return 400 with invalid Company Bank Account Details" in {
       save4laterExpectsSave[CompanyBankAccountDetails]()
+
+      when(mockBankAccountReputationService.bankDetailsModulusCheck(any())(any()))
+        .thenReturn(Future.successful(false))
+
       val invalidFormData = validBankAccountFormData.drop(1)
       mockGetCurrentProfile()
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(invalidFormData: _*))(_ isA 400)

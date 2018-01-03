@@ -27,6 +27,7 @@ import connectors.test.{TestRegistrationConnector, TestVatRegistrationConnector}
 import controllers.frs._
 import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsControllerImpl}
 import controllers.test.{FeatureSwitchController, FeatureSwitchCtrl}
+import features.bankAccountDetails.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
 import features.iv.services.{IVService, IdentityVerificationService}
 import services._
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
@@ -81,6 +82,7 @@ class Module extends AbstractModule {
     bind(classOf[ConfirmBusinessSectorController]).to(classOf[ConfirmBusinessSectorControllerImpl]).asEagerSingleton()
     bind(classOf[FrsStartDateController]).to(classOf[FrsStartDateControllerImpl]).asEagerSingleton()
     bind(classOf[FeatureSwitchCtrl]).to(classOf[FeatureSwitchController]).asEagerSingleton()
+    bind(classOf[BankAccountDetailsController]).to(classOf[BankAccountDetailsControllerImpl])
   }
 
   private def bindServices(): Unit = {
@@ -93,8 +95,9 @@ class Module extends AbstractModule {
     bind(classOf[PrePopService]).to(classOf[PrePopulationService]).asEagerSingleton()
     bind(classOf[IVService]).to(classOf[IdentityVerificationService]).asEagerSingleton()
     bind(classOf[CurrentProfileSrv]).to(classOf[CurrentProfileService]).asEagerSingleton()
-    bind(classOf[BankAccountReputationSrv]).to(classOf[BankAccountReputationService]).asEagerSingleton()
     bind(classOf[ReturnsService]).to(classOf[ReturnsServiceImpl]).asEagerSingleton()
+    bind(classOf[BankAccountReputationService]).to(classOf[BankAccountReputationServiceImpl]).asEagerSingleton()
+    bind(classOf[BankAccountDetailsService]).to(classOf[BankAccountDetailsServiceImpl]).asEagerSingleton()
   }
 
   private def bindConnectors(): Unit = {

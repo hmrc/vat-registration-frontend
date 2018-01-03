@@ -19,7 +19,7 @@ import uk.gov.hmrc.http.{ HeaderCarrier, HttpReads }
 package services {
 
   import common.ErrorUtil.fail
-  import models._
+  import models.{ApiModelTransformer, CurrentProfile, S4LKey, S4LVatFinancials}
   import models.api.{VatFinancials, VatScheme}
   import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, VatChargeExpectancy, ZeroRatedSales}
   import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
@@ -77,9 +77,11 @@ package services {
 package connectors {
 
   import cats.instances.FutureInstances
-  import features.financials.models.{BankAccount, Returns, TurnoverEstimates}
+  import features.financials.models.{Returns, TurnoverEstimates}
+  import models.BankAccount
   import models.api.VatFinancials
   import uk.gov.hmrc.http.HttpResponse
+  import uk.gov.hmrc.http.NotFoundException
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
   import scala.concurrent.Future
@@ -115,10 +117,10 @@ package connectors {
       }
     }
 
-    def getBankAccount(regId: String)
-                      (implicit hc: HeaderCarrier, rds: HttpReads[BankAccount]): Future[BankAccount] = {
-      http.GET[BankAccount](s"$vatRegUrl/vatreg/$regId/bank-account") recover {
-        case e: Exception => throw logResponse(e, "patchBankAccount")
+    def getBankAccount(regId: String)(implicit hc: HeaderCarrier): Future[Option[BankAccount]] = {
+      http.GET[BankAccount](s"$vatRegUrl/vatreg/$regId/bank-account") map (Some(_)) recover {
+        case _: NotFoundException => None
+        case e: Exception => throw logResponse(e, "getBankAccount")
       }
     }
 

@@ -29,10 +29,13 @@ import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.HeaderCarrier
 
+import scala.concurrent.ExecutionContext
+
 trait VatSpec extends PlaySpec with MockitoSugar with VatRegistrationFixture with VatMocks
   with FutureAwaits with DefaultAwaitTimeout with BeforeAndAfterEach {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val ex: ExecutionContext =  scala.concurrent.ExecutionContext.Implicits.global
 
   implicit val currentProfile: CurrentProfile = CurrentProfile(
     companyName = "Test Me",
