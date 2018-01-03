@@ -145,7 +145,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
       callAuthorised(MandatoryStartDateController.submit) {
         result =>
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(vatBankAccount.routes.CompanyBankAccountController.show().url)
+          redirectLocation(result) mustBe Some(features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
       }
 
       verify(mockVatRegistrationService).submitTradingDetails()(any(), any())
@@ -247,7 +247,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result) mustBe Some(vatBankAccount.routes.CompanyBankAccountController.show().url)
+          redirectLocation(result) mustBe Some(features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
       }
 
       verify(mockVatRegistrationService).submitTradingDetails()(any(), any())
@@ -270,7 +270,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result) mustBe Some(vatBankAccount.routes.CompanyBankAccountController.show().url)
+          redirectLocation(result) mustBe Some(features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
       }
 
       verify(mockVatRegistrationService).submitTradingDetails()(any(), any())
