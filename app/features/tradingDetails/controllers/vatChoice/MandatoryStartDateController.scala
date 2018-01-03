@@ -104,13 +104,13 @@ class MandatoryStartDateController @Inject()(ds: CommonPlayDependencies,
                     )).pure,
                     goodForm => save(goodForm).flatMap { _ =>
                       vrs.submitTradingDetails().map(_ =>
-                        Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+                        Redirect(features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
                       )
                     }
                   )
                 }
               case None => vrs.submitTradingDetails().map { _ =>
-                Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())
+                Redirect(features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
               }
             }
           }
