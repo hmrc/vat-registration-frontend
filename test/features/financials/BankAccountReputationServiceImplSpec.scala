@@ -22,10 +22,10 @@ import org.mockito.Mockito._
 
 import scala.concurrent.Future
 
-class BankAccountReputationServiceSpec extends VatRegSpec with S4LMockSugar {
+class BankAccountReputationServiceImplSpec extends VatRegSpec with S4LMockSugar {
 
   class Setup {
-    val service = new BankAccountReputationService(mockBankAccountReputationConnector)
+    val service = new BankAccountReputationServiceImpl(mockBankAccountReputationConnector)
   }
 
   "Calling bankDetailsModulusCheck" should {

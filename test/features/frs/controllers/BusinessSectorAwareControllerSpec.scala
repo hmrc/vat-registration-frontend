@@ -16,7 +16,7 @@
 
 package controllers.frs
 
-import connectors.ConfigConnector
+import connectors.{ConfigConnector, KeystoreConnector}
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, MockMessages}
 import models.view.frs.BusinessSectorView
@@ -24,7 +24,7 @@ import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import play.api.i18n.MessagesApi
 import play.api.test.Helpers._
-import services.VatRegistrationService
+import services.{SessionProfile, VatRegistrationService}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
@@ -35,11 +35,12 @@ class BusinessSectorAwareControllerSpec extends ControllerSpec with VatRegistrat
   val limitedCostCompanyRate = BusinessSectorView("", 16.5)
 
   trait Setup {
-    val controller: BusinessSectorAwareController = new BusinessSectorAwareController {
+    val controller: BusinessSectorAwareController = new BusinessSectorAwareController with SessionProfile {
       override val service: VatRegistrationService = mockVatRegistrationService
       override val configConnect: ConfigConnector = mockConfigConnector
       override val messagesApi: MessagesApi = mockMessagesAPI
       override val authConnector: AuthConnector = mockAuthConnector
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
 
     mockAllMessages

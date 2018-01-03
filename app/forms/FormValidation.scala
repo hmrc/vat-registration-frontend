@@ -26,6 +26,7 @@ import play.api.Logger
 import play.api.data.format.Formatter
 import play.api.data.validation._
 import play.api.data.{FieldMapping, FormError, Mapping}
+import StringUtils.isNotBlank
 
 import scala.util.Try
 import scala.util.matching.Regex
@@ -40,6 +41,21 @@ private[forms] object FormValidation {
         case Valid => Constraints.pattern(pattern, error = s"validation.$e.invalid")(input)
         case err => if (mandatory) err else Valid
       }
+  }
+
+  def matchesRegex(pattern: Regex, errKey: String): Constraint[String] = Constraint {
+    input: String => Constraints.pattern(pattern, error = errKey)(input)
+  }
+
+  def mandatory(errKey: String): Constraint[String] = Constraint { input: String =>
+    if (StringUtils.isNotBlank(input)) Valid else Invalid(errKey)
+  }
+
+  def mandatoryTuple3(errKey: String): Constraint[(String, String, String)] = Constraint { input: (String, String, String) =>
+    input match {
+      case (_1, _2, _3) if isNotBlank(_1) & isNotBlank(_2) & isNotBlank(_3) => Valid
+      case _ => Invalid(errKey)
+    }
   }
 
   def mandatoryText()(implicit e: ErrorCode): Constraint[String] = Constraint { input: String =>

@@ -1,0 +1,36 @@
+@(hasBankAccountForm: Form[Boolean])(implicit request: Request[_], messages: Messages)
+
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
+
+@main_template(title = messages("pages.company.bank.account.title")) {
+
+  @errorSummary(
+      Messages("app.common.errorSummaryLabel"),
+      hasBankAccountForm
+  )
+
+  <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.company.bank.account.heading")</h1>
+
+  @form(action = features.bankAccountDetails.routes.BankAccountDetailsController.submitHasCompanyBankAccount()) {
+      <div class="form-group">
+        <fieldset class="inline">
+            <span id="companyBankAccountRadio">
+                @vatInputRadioGroup(
+                    field = hasBankAccountForm("companyBankAccountRadio"),
+                    Seq(
+                      "true" -> Messages("app.common.yes"),
+                      "false" -> Messages("app.common.no")
+                    ),
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label"
+                )
+            </span>
+        </fieldset>
+      </div>
+
+      <div class="form-group">
+        <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+      </div>
+  }
+}
