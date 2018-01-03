@@ -18,6 +18,7 @@ package controllers.vatTradingDetails.vatChoice
 
 import java.time.LocalDate
 
+import controllers.vatFinancials.vatBankAccount
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.CurrentProfile
@@ -144,7 +145,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
       callAuthorised(MandatoryStartDateController.submit) {
         result =>
           status(result) mustBe SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/business-bank-account"
+          redirectLocation(result) mustBe Some(vatBankAccount.routes.CompanyBankAccountController.show().url)
       }
 
       verify(mockVatRegistrationService).submitTradingDetails()(any(), any())
@@ -246,7 +247,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/business-bank-account"
+          redirectLocation(result) mustBe Some(vatBankAccount.routes.CompanyBankAccountController.show().url)
       }
 
       verify(mockVatRegistrationService).submitTradingDetails()(any(), any())
@@ -269,7 +270,7 @@ class MandatoryStartDateControllerSpec extends VatRegSpec with VatRegistrationFi
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result).getOrElse("") mustBe s"$contextRoot/business-bank-account"
+          redirectLocation(result) mustBe Some(vatBankAccount.routes.CompanyBankAccountController.show().url)
       }
 
       verify(mockVatRegistrationService).submitTradingDetails()(any(), any())

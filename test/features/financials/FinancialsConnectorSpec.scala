@@ -22,6 +22,8 @@ import helpers.VatRegSpec
 import models.api.VatFinancials
 import config.WSHttp
 import features.financials.models._
+import models.{BankAccount, BankAccountDetails}
+import features.financials.models.{Returns, TurnoverEstimates}
 
 import scala.language.postfixOps
 
@@ -44,7 +46,7 @@ class FinancialsConnectorSpec extends VatRegSpec {
   val startDate        = date
   val returns = Returns(Some(reclaimOnReturns), Some(returnsFrequency), None, Some(startDate))
 
-  val bankAccount       = BankAccount("accountName", "SortCode", "AccountNumber")
+  val bankAccount       = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")))
 
   "Calling upsertVatFinancials" should {
     "return the correct VatResponse when the microservice completes and returns a VatFinancials model" in new Setup {
@@ -144,7 +146,7 @@ class FinancialsConnectorSpec extends VatRegSpec {
   "Calling getBankAccount" should {
     "return the correct response when the microservice completes and returns a BankAccount model" in new Setup {
       mockHttpGET[BankAccount]("tst-url", bankAccount)
-      connector.getBankAccount("tstID") returns bankAccount
+      connector.getBankAccount("tstID") returns Some(bankAccount)
     }
     "return the correct response when a Forbidden response is returned by the microservice" in new Setup {
       mockHttpFailedGET[BankAccount]("tst-url", forbidden)
@@ -152,7 +154,7 @@ class FinancialsConnectorSpec extends VatRegSpec {
     }
     "return a Not Found response when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
       mockHttpFailedGET[BankAccount]("tst-url", notFound)
-      connector.getBankAccount("tstID") failedWith notFound
+      connector.getBankAccount("tstID") returns None
     }
     "return the correct response when an Internal Server Error response is returned by the microservice" in new Setup {
       mockHttpFailedGET[BankAccount]("tst-url", internalServiceException)

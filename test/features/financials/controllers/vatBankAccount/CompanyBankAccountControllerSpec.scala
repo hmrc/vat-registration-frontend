@@ -17,7 +17,7 @@
 package controllers.vatFinancials.vatBankAccount
 
 import controllers.vatFinancials
-import controllers.vatFinancials.EstimateVatTurnoverKey
+import controllers.vatFinancials.{EstimateVatTurnoverKey, vatBankAccount}
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.S4LVatFinancials
@@ -26,6 +26,7 @@ import models.view.vatFinancials.vatBankAccount.CompanyBankAccount
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
+import play.api.test.Helpers.redirectLocation
 
 class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
@@ -88,7 +89,7 @@ class CompanyBankAccountControllerSpec extends VatRegSpec with VatRegistrationFi
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("companyBankAccountRadio" -> CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES)) {
-        _ redirectsTo s"$contextRoot/business-bank-account-details"
+        _ redirectsTo vatBankAccount.routes.CompanyBankAccountDetailsController.show().url
       }
     }
 
