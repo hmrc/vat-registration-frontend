@@ -54,7 +54,6 @@ package controllers.vatLodgingOfficer {
 
   import javax.inject.{Inject, Singleton}
 
-  import cats.syntax.CartesianSyntax
   import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.vatLodgingOfficer.OfficerSecurityQuestionsForm
@@ -72,7 +71,7 @@ package controllers.vatLodgingOfficer {
                                                      val authConnector: AuthConnector,
                                                      implicit val s4l: S4LService,
                                                      implicit val vrs: RegistrationService)
-    extends VatRegistrationController(ds) with CartesianSyntax with SessionProfile {
+    extends VatRegistrationController(ds) with SessionProfile {
 
     val form = OfficerSecurityQuestionsForm.form
 
