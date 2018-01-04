@@ -62,6 +62,7 @@
     <logger name="akka.stream.impl.io.InputStreamPublisher" level="INFO"/>
 
     <logger name="io.netty" level="INFO"/>
+    <logger name="uk.gov.hmrc.audit.handler.DatastreamHandler" level="WARN"/>
 
     <logger name="connector" level="INFO"> // TRACE
         <appender-ref ref="STDOUT"/>

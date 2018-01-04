@@ -39,11 +39,13 @@
             <p>@vatInput(testSetupForm("vatContact.mobile"), '_label -> "Mobile (at least one of daytime phone or mobile)")</p>
             <p>@vatInput(testSetupForm("vatContact.website"), '_label -> "Website (optional)")</p>
 
+            <b>BANK ACCOUNT</b>
+            <p>@vatInput(testSetupForm("bankAccount.isProvided"), '_label -> "Has company bank account? (true or false)")</p>
+            <p>@vatInput(testSetupForm("bankAccount.details.accountName"), '_label -> "Company Bank Account Name")</p>
+            <p>@vatInput(testSetupForm("bankAccount.details.accountNumber"), '_label -> "Company Bank Account Number (8 digit number)")</p>
+            <p>@vatInput(testSetupForm("bankAccount.details.accountSortCode"), '_label -> "Sort Code (xx-xx-xx)")</p>
+
             <b>VAT FINANCIALS</b>
-            <p>@vatInput(testSetupForm("vatFinancials.companyBankAccountChoice"), '_label -> "Company Bank Account Choice (COMPANY_BANK_ACCOUNT_YES or COMPANY_BANK_ACCOUNT_NO)")</p>
-            <p>@vatInput(testSetupForm("vatFinancials.companyBankAccountName"), '_label -> "Company Bank Account Name")</p>
-            <p>@vatInput(testSetupForm("vatFinancials.companyBankAccountNumber"), '_label -> "Company Bank Account Number (8 digit number)")</p>
-            <p>@vatInput(testSetupForm("vatFinancials.sortCode"), '_label -> "Sort Code (11-22-33)")</p>
             <p>@vatInput(testSetupForm("vatFinancials.estimateVatTurnover"), '_label -> "Estimated vat turnover")</p>
             <p>@vatInput(testSetupForm("vatFinancials.zeroRatedSalesChoice"), '_label -> "Zero rated sales choice (ZERO_RATED_SALES_YES or ZERO_RATED_SALES_NO)")</p>
             <p>@vatInput(testSetupForm("vatFinancials.zeroRatedTurnoverEstimate"), '_label -> "Zero rate sales estimate")</p>

@@ -28,7 +28,6 @@ import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatContact.BusinessContactDetails
-import models.view.vatFinancials.vatBankAccount.ModulusCheckAccount
 import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import play.api.http.Status._
 import play.api.libs.json.Json
@@ -127,7 +126,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validActAsIntermediary = ActAsIntermediary(true)
   val validBusinessActivityDescription = BusinessActivityDescription(testBusinessActivityDescription)
   val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
-  val validBankAccountDetailsForModulusCheck = ModulusCheckAccount(validBankAccountDetails)
 
   //Api models
   val validDob = DateOfBirth(12, 11, 1973)
@@ -201,7 +199,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     vatSicAndCompliance = Some(validSicAndCompliance),
     financials = Some(
       VatFinancials(
-        bankAccount = None,
         turnoverEstimate = 0L,
         zeroRatedTurnoverEstimate = None,
         reclaimVatOnMostReturns = false,

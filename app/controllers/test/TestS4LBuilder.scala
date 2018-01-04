@@ -31,7 +31,6 @@ import models.view.test.TestSetup
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
-import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, VatChargeExpectancy, ZeroRatedSales}
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
@@ -98,19 +97,14 @@ class TestS4LBuilder {
     val vatChargeExpectancy = fin.vatChargeExpectancyChoice.map(VatChargeExpectancy.apply)
     val vatReturnFrequency = fin.vatReturnFrequency.map(VatReturnFrequency.apply)
     val accountingPeriod = fin.accountingPeriod.map(AccountingPeriod.apply)
-    val companyBankAccount = fin.companyBankAccountChoice.map(CompanyBankAccount.apply)
-    val companyBankAccountDetails = fin.companyBankAccountName.map(name =>
-      CompanyBankAccountDetails(name, fin.companyBankAccountNumber.get, fin.sortCode.get)
-    )
+
     S4LVatFinancials(
       estimateVatTurnover = estimateVatTurnover,
       zeroRatedTurnover = zeroRatedTurnover,
       zeroRatedTurnoverEstimate = zeroRatedTurnoverEstimate,
       vatChargeExpectancy = vatChargeExpectancy,
       vatReturnFrequency = vatReturnFrequency,
-      accountingPeriod = accountingPeriod,
-      companyBankAccount = companyBankAccount,
-      companyBankAccountDetails = companyBankAccountDetails
+      accountingPeriod = accountingPeriod
     )
   }
 

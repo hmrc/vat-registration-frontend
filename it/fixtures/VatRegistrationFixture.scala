@@ -80,7 +80,6 @@ trait VatRegistrationFixture {
   )
 
   val financials = VatFinancials(
-    bankAccount = None,
     turnoverEstimate = 30000,
     zeroRatedTurnoverEstimate = None,
     reclaimVatOnMostReturns = false,

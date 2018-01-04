@@ -19,7 +19,6 @@ package forms
 import java.time.LocalDate
 
 import cats.Show
-import forms.vatFinancials.vatBankAccount.SortCode
 import models.{DateModel, MonthYearModel}
 import org.apache.commons.lang3.StringUtils
 import play.api.Logger
@@ -183,27 +182,6 @@ private[forms] object FormValidation {
 
   def missingBooleanFieldMapping()(implicit e: ErrorCode): Mapping[Boolean] =
     FieldMapping[Boolean]()(booleanFormat()(Seq()))
-
-  object BankAccount {
-
-    import cats.instances.string._
-
-    private val SortCode = """^([0-9]{2})-([0-9]{2})-([0-9]{2})$""".r
-    private val AccountName = """[A-Za-z0-9\-',/& ]{1,150}""".r
-    private val AccountNumber = """[0-9]{8}""".r
-
-    def accountName(errorSubstring: String, mandatory: Boolean = true): Constraint[String] =
-      regexPattern(AccountName, mandatory)(s"$errorSubstring.name")
-
-    def accountNumber(errorSubstring: String, mandatory: Boolean = true): Constraint[String] =
-      regexPattern(AccountNumber, mandatory)(s"$errorSubstring.number")
-
-    def accountSortCode(errorSubstring: String, mandatory: Boolean = true): Constraint[SortCode] = Constraint {
-      (in: SortCode) =>
-        regexPattern(SortCode, mandatory)(s"$errorSubstring.sortCode")(Show[SortCode].show(in))
-    }
-
-  }
 
   object Dates {
 

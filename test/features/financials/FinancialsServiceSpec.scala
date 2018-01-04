@@ -53,7 +53,6 @@ class FinancialsServiceSpec extends VatRegSpec with VatRegistrationFixture with 
 
     "submitVatFinancials should process the submission even if VatScheme does not contain a VatFinancials object" in new Setup {
       val mergedVatFinancials = VatFinancials(
-        bankAccount = Some(validBankAccount),
         turnoverEstimate = validEstimateVatTurnover.vatTurnoverEstimate,
         zeroRatedTurnoverEstimate = Some(validEstimateZeroRatedSales.zeroRatedTurnoverEstimate),
         reclaimVatOnMostReturns = true,
@@ -66,9 +65,8 @@ class FinancialsServiceSpec extends VatRegSpec with VatRegistrationFixture with 
         zeroRatedTurnoverEstimate = Some(validEstimateZeroRatedSales),
         vatChargeExpectancy = Some(validVatChargeExpectancy),
         vatReturnFrequency = Some(validVatReturnFrequency),
-        accountingPeriod = Some(validAccountingPeriod),
-        companyBankAccount = Some(validCompanyBankAccount),
-        companyBankAccountDetails = Some(validBankAccountDetails)))
+        accountingPeriod = Some(validAccountingPeriod)
+      ))
 
       when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       when(mockRegConnector.upsertVatFinancials(any(), any())(any(), any())).thenReturn(validVatFinancials.pure)

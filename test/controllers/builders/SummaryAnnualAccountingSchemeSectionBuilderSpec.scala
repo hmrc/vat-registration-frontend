@@ -131,8 +131,7 @@ class SummaryAnnualAccountingSchemeSectionBuilderSpec extends VatRegSpec with Va
           turnoverEstimate = 0L,
           accountingPeriods = VatAccountingPeriod(VatReturnFrequency.MONTHLY),
           reclaimVatOnMostReturns = false,
-          zeroRatedTurnoverEstimate = None,
-          bankAccount = None
+          zeroRatedTurnoverEstimate = None
         )
         val builder = SummaryAnnualAccountingSchemeSectionBuilder(vatFinancials = Some(financials))
         builder.section.id mustBe "annualAccountingScheme"

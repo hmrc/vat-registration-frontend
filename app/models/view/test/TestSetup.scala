@@ -16,8 +16,8 @@
 
 package models.view.test
 
+import models.BankAccount
 import play.api.libs.json.Json
-
 
 case class TestSetup(
                       vatChoice: VatChoiceTestSetup,
@@ -29,7 +29,8 @@ case class TestSetup(
                       officerHomeAddress: OfficerHomeAddressTestSetup,
                       officerPreviousAddress: OfficerPreviousAddressTestSetup,
                       vatLodgingOfficer: VatLodgingOfficerTestSetup,
-                      vatFlatRateScheme: VatFlatRateSchemeTestSetup
+                      vatFlatRateScheme: VatFlatRateSchemeTestSetup,
+                      bankAccountBlock: Option[BankAccount]
                     )
 
 

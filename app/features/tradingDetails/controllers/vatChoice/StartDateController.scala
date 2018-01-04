@@ -130,7 +130,7 @@ package controllers.vatTradingDetails.vatChoice {
                 },
                 goodForm => populateCtActiveDate(goodForm).flatMap(vm => save(vm)).map(_ =>
                   vrs.submitTradingDetails()).map(_ =>
-                  Redirect(controllers.vatFinancials.vatBankAccount.routes.CompanyBankAccountController.show())))
+                  Redirect(features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView())))
             }
           }
     }

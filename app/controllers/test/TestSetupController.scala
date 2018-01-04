@@ -29,6 +29,7 @@ import models.{S4LKey, S4LVatContact, S4LVatFinancials, S4LVatLodgingOfficer, S4
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService, SessionProfile}
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
@@ -40,6 +41,8 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                                     ds: CommonPlayDependencies,
                                     val authConnector: AuthConnector,
                                     val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
+
+  private val empty = Future.successful(CacheMap("", Map.empty))
 
   def show: Action[AnyContent] = authorised.async {
     implicit user =>
@@ -55,6 +58,8 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
             vatLodgingOfficer <- s4LService.fetchAndGet[S4LVatLodgingOfficer]
             eligibility <- s4LService.fetchAndGet[S4LVatEligibility]
             frs <- s4LService.fetchAndGet[S4LFlatRateScheme]
+
+            bankAccount <- s4LService.fetchAndGetNoAux(S4LKey.bankAccountKey)
             testSetup = TestSetup(
               VatChoiceTestSetup(
                 taxableTurnoverChoice =   eligibilityChoice.flatMap(_.taxableTurnover.map(_.yesNo)),
@@ -87,10 +92,6 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                 country = vatContact.flatMap(_.ppob).flatMap(_.address).flatMap(_.country)
               ),
               VatFinancialsTestSetup(
-                vatFinancials.flatMap(_.companyBankAccount).map(_.yesNo),
-                vatFinancials.flatMap(_.companyBankAccountDetails).map(_.accountName),
-                vatFinancials.flatMap(_.companyBankAccountDetails).map(_.accountNumber),
-                vatFinancials.flatMap(_.companyBankAccountDetails).map(_.sortCode),
                 vatFinancials.flatMap(_.estimateVatTurnover).map(_.vatTurnoverEstimate.toString),
                 vatFinancials.flatMap(_.zeroRatedTurnover).map(_.yesNo),
                 vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).map(_.zeroRatedTurnoverEstimate.toString),
@@ -169,7 +170,8 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                 frsStartDateDay = frs.flatMap(_.frsStartDate).flatMap(_.date).map(_.getDayOfMonth.toString),
                 frsStartDateMonth = frs.flatMap(_.frsStartDate).flatMap(_.date).map(_.getMonthValue.toString),
                 frsStartDateYear = frs.flatMap(_.frsStartDate).flatMap(_.date).map(_.getYear.toString)
-              )
+              ),
+              bankAccountBlock = bankAccount
             )
             form = TestSetupForm.form.fill(testSetup)
           } yield Ok(views.html.pages.test.test_setup(form))
@@ -182,6 +184,8 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
         withCurrentProfile { implicit profile =>
           def saveToS4Later[T: Format : S4LKey](userEntered: Option[String], data: TestSetup, f: TestSetup => T): Future[Unit] =
             userEntered.map(_ => s4LService.save(f(data)).map(_ => ())).getOrElse(Future.successful(()))
+
+          def saveToS4L[T: Format: S4LKey](data: T) = s4LService.save(data)
 
           TestSetupForm.form.bindFromRequest().fold(
             badForm => {
@@ -222,6 +226,9 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                       map(cc => Officer(cc.name, cc.role, None)))
                   _ <- keystoreConnector.cache(REGISTERING_OFFICER_KEY, officer.getOrElse(Officer.empty))
 
+                  // Bank Account
+//                  _ <- saveToS4L(data.bankAccountBlock.fold(BankAccount(isProvided = false, None))(identity))
+                  _ <- data.bankAccountBlock.fold(empty)(saveToS4L)
                 } yield Ok("Test setup complete")
               }
             })

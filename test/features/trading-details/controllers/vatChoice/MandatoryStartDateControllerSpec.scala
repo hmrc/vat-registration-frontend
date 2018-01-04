@@ -18,12 +18,10 @@ package controllers.vatTradingDetails.vatChoice
 
 import java.time.LocalDate
 
-import controllers.vatFinancials.vatBankAccount
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.CurrentProfile
 import models.api.{VatEligibilityChoice, VatExpectedThresholdPostIncorp, VatServiceEligibility, VatThresholdPostIncorp}
-import models.api.VatEligibilityChoice.NECESSITY_OBLIGATORY
 import models.view.vatTradingDetails.vatChoice.StartDateView
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers._
