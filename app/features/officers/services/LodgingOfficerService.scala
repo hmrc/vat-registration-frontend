@@ -22,7 +22,6 @@ import common.exceptions.InternalExceptions.NoOfficerFoundException
 import config.Logging
 import connectors.{RegistrationConnector, S4LConnect}
 import features.officers.models.view.LodgingOfficer
-import features.officers.transformers.ToLodgingOfficerView
 import models.CurrentProfile
 import models.external.Officer
 import models.view.vatLodgingOfficer.OfficerSecurityQuestionsView
@@ -52,7 +51,7 @@ trait LodgingOfficerService extends Logging {
     s4lConnector.fetchAndGet[LodgingOfficer](cp.registrationId, LODGING_OFFICER) flatMap {
       case Some(officer) => Future.successful(officer)
       case _             => vatRegistrationConnector.getLodgingOfficer flatMap { json =>
-        val lodgingOfficer = json.fold(LodgingOfficer(N,N))(ToLodgingOfficerView.fromApi)
+        val lodgingOfficer = json.fold(LodgingOfficer(N, N, N, N, N, N, N))(LodgingOfficer.fromApi)
         s4lConnector.save[LodgingOfficer](cp.registrationId, LODGING_OFFICER, lodgingOfficer) map (_ => lodgingOfficer)
       }
     }
@@ -71,7 +70,8 @@ trait LodgingOfficerService extends Logging {
     } yield data
 
   private def isModelComplete(lodgingOfficer: LodgingOfficer): Completion[LodgingOfficer] = lodgingOfficer match {
-    case LodgingOfficer(Some(_), Some(_)) => Complete(lodgingOfficer)
+    case LodgingOfficer(Some(_), Some(_), N, N, N, N, N) => Complete(lodgingOfficer)
+    case LodgingOfficer(Some(_), Some(_), Some(_), Some(_), Some(_), _, Some(_)) => Complete(lodgingOfficer)
     case _ => Incomplete(lodgingOfficer)
   }
 

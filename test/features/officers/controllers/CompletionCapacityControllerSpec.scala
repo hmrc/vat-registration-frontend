@@ -52,7 +52,7 @@ class CompletionCapacityControllerSpec extends ControllerSpec with VatRegistrati
   s"GET ${routes.CompletionCapacityController.show()}" should {
 
     "return HTML with no data" in new Setup {
-      val emptyLodgingOfficer = LodgingOfficer(None, None)
+      val emptyLodgingOfficer = LodgingOfficer(None, None, None, None, None, None, None)
 
       when(mockPPService.getOfficerList(any(), any())).thenReturn(Future.successful(Seq(officer)))
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(emptyLodgingOfficer))
@@ -63,7 +63,7 @@ class CompletionCapacityControllerSpec extends ControllerSpec with VatRegistrati
     }
 
     "return HTML with officer already saved" in new Setup {
-      val partialLodgingOfficer = LodgingOfficer(Some("BobBimblyBobblousBobbings"), None)
+      val partialLodgingOfficer = LodgingOfficer(Some("BobBimblyBobblousBobbings"), None, None, None, None, None, None)
 
       when(mockPPService.getOfficerList(any(), any())).thenReturn(Future.successful(Seq(officer)))
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
@@ -85,6 +85,11 @@ class CompletionCapacityControllerSpec extends ControllerSpec with VatRegistrati
     "return 303 with selected completionCapacity" in new Setup {
       val lodgingOfficer = LodgingOfficer(
         Some(completionCapacity.name.id),
+        None,
+        None,
+        None,
+        None,
+        None,
         None
       )
 

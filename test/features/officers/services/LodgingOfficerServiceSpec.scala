@@ -25,9 +25,9 @@ import features.officers.models.view.LodgingOfficer
 import helpers.FutureAssertions
 import mocks.VatMocks
 import models.CurrentProfile
-import models.api.Name
+import models.api.{Name, ScrsAddress}
 import models.external.Officer
-import models.view.vatLodgingOfficer.OfficerSecurityQuestionsView
+import models.view.vatLodgingOfficer.{OfficerContactDetailsView, OfficerHomeAddressView, OfficerSecurityQuestionsView}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -46,11 +46,16 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
   implicit val hc = HeaderCarrier()
   implicit val currentProfile = CurrentProfile("Test Me", testRegId, "000-434-1", VatRegStatus.draft, None)
 
-  val emptyLodgingOfficer = LodgingOfficer(None, None)
-  val partialLodgingOfficer = LodgingOfficer(Some("TestName"), None)
+  val emptyLodgingOfficer = LodgingOfficer(None, None, None, None, None, None, None)
+  val incompleteLodgingOfficer = LodgingOfficer(Some("TestName"), None, None, None, None, None, None)
   val validLodgingOfficer = LodgingOfficer(
-    Some("TestName"),
-    Some(OfficerSecurityQuestionsView(LocalDate.of(1998, 7, 12), "Director"))
+    completionCapacity = Some("TestName"),
+    officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.of(1998, 7, 12), "Director")),
+    officerHomeAddress = None,
+    officerContactDetails = None,
+    formerName = None,
+    formerNameDate = None,
+    previousAddress = None
   )
   val validOfficer = Officer(
     name = Name(forename = Some("First"), otherForenames = Some("Middle"), surname = "Last"),
@@ -108,7 +113,7 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
   }
 
   "Calling getLodgingOfficer" should {
-    val jsonLodgingOfficer = Json.parse(
+    val jsonPartialLodgingOfficer = Json.parse(
       s"""
          |{
          |  "name": {
@@ -121,18 +126,60 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
          |}
        """.stripMargin)
 
+    val jsonFullLodgingOfficer = Json.parse(
+      s"""
+         |{
+         |  "name": {
+         |    "first": "TestFirst",
+         |    "middle": "TestMiddle",
+         |    "last": "TestLast"
+         |  },
+         |  "dob": "1998-07-12",
+         |  "nino": "SR123456Z",
+         |  "details": {
+         |    "currentAddress": {
+         |      "line1": "TestLine1",
+         |      "line2": "TestLine2",
+         |      "postcode": "TE 1ST"
+         |    },
+         |    "contact": {
+         |      "email": "test@t.test"
+         |    }
+         |  }
+         |}
+       """.stripMargin)
+
     "return a default LodgingOfficer view model if nothing is in S4L & backend" in new Setup {
       service.getLodgingOfficer returns emptyLodgingOfficer
     }
 
-    "return a partial LodgingOfficer view model from S4L" in new Setup(Some(partialLodgingOfficer)) {
-      service.getLodgingOfficer returns partialLodgingOfficer
+    "return an incomplete LodgingOfficer view model from S4L" in new Setup(Some(incompleteLodgingOfficer)) {
+      service.getLodgingOfficer returns incompleteLodgingOfficer
     }
 
-    "return a full LodgingOfficer view model from backend" in new Setup(None, Some(jsonLodgingOfficer)) {
+    "return a partial LodgingOfficer view model from backend" in new Setup(None, Some(jsonPartialLodgingOfficer)) {
       val expected = LodgingOfficer(
-        Some("TestFirstTestMiddleTestLast"),
-        Some(OfficerSecurityQuestionsView(dob = LocalDate.of(1998, 7, 12), nino = "SR123456Z"))
+        completionCapacity = Some("TestFirstTestLastTestMiddle"),
+        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(dob = LocalDate.of(1998, 7, 12), nino = "SR123456Z")),
+        officerHomeAddress = None,
+        officerContactDetails = None,
+        formerName = None,
+        formerNameDate = None,
+        previousAddress = None
+      )
+      service.getLodgingOfficer returns expected
+    }
+
+    "return a full LodgingOfficer view model from backend" in new Setup(None, Some(jsonFullLodgingOfficer)) {
+      val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+      val expected: LodgingOfficer = LodgingOfficer(
+        completionCapacity = Some("TestFirstTestLastTestMiddle"),
+        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(dob = LocalDate.of(1998, 7, 12), nino = "SR123456Z")),
+        officerHomeAddress = Some(OfficerHomeAddressView(currentAddress.id, Some(currentAddress))),
+        officerContactDetails = Some(OfficerContactDetailsView(Some("test@t.test"), None, None)),
+        formerName = None,
+        formerNameDate = None,
+        previousAddress = None
       )
       service.getLodgingOfficer returns expected
     }
