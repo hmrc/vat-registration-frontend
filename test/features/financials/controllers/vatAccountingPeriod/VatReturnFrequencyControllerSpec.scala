@@ -118,7 +118,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
         submitAuthorised(Controller.submit(),
           fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
-          _ redirectsTo s"$contextRoot/vat-start-date"
+          _ redirectsTo s"$contextRoot/vat-start-date-legacy"
         }
       }
       "voluntary registration is yes" in {
@@ -134,7 +134,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
         submitAuthorised(Controller.submit(),
           fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.MONTHLY)) {
-          _ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be"
+          _ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be-legacy"
         }
       }
 
@@ -169,7 +169,7 @@ class VatReturnFrequencyControllerSpec extends VatRegSpec with VatRegistrationFi
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody(VatReturnFrequencyForm.RADIO_FREQUENCY -> VatReturnFrequency.QUARTERLY)) {
-        _ redirectsTo s"$contextRoot/vat-return-periods-end"
+        _ redirectsTo s"$contextRoot/vat-return-periods-end-legacy"
       }
     }
   }

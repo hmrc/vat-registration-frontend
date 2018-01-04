@@ -1,0 +1,38 @@
+@import features.financials.models.Frequency
+@import features.financials.models.Frequency._
+@(vatReturnFrequencyForm: Form[Frequency.Value])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
+
+@main_template(title = messages("pages.vat.return.frequency.title")) {
+
+  @errorSummary(
+    Messages("app.common.errorSummaryLabel"),
+    vatReturnFrequencyForm
+  )
+
+  <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.vat.return.frequency.heading")</h1>
+  
+  @govHelpers.form(action = features.returns.routes.ReturnsController.submitReturnsFrequency()) {
+  <div class="form-group">
+    <fieldset>
+      <span id="vatReturnFrequencyRadio">
+          @vatInputRadioGroup(
+              field = vatReturnFrequencyForm("returnFrequencyRadio"),
+              Seq(
+                monthly.toString -> Messages("pages.vat.return.frequency.radio.monthly"),
+                quarterly.toString -> Messages("pages.vat.return.frequency.radio.quarterly")
+              ),
+              '_labelAfter -> true,
+              '_labelClass -> "block-label"
+          )
+      </span>
+    </fieldset>
+  </div>
+
+    <div class="form-group">
+      <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+    </div>
+  }
+}
+

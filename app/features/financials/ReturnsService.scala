@@ -22,6 +22,7 @@ import javax.inject.Inject
 import connectors.RegistrationConnector
 import models.{CurrentProfile, S4LKey}
 import features.financials.models._
+import models.api.{VatEligibilityChoice, VatExpectedThresholdPostIncorp, VatThresholdPostIncorp}
 import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -36,6 +37,33 @@ trait ReturnsService {
   val vatRegConnector: RegistrationConnector
   val vatService: RegistrationService
   val s4lService: S4LService
+
+  //TODO: Refactor this to use the eligibility functions once this has been rebased onto it.
+  def calculateMandatoryStartDate(threshold : Option[VatThresholdPostIncorp], expectedThreshold : Option[VatExpectedThresholdPostIncorp]): Option[LocalDate] = {
+    def calculatedCrossedThresholdDate(thresholdDate : LocalDate) = thresholdDate.withDayOfMonth(1).plusMonths(2)
+
+    (threshold.flatMap(_.overThresholdDate), expectedThreshold.flatMap(_.expectedOverThresholdDate)) match {
+      case (Some(td), Some(ed)) =>
+        val calculatedThresholdDate = calculatedCrossedThresholdDate(td)
+        Some(if (calculatedThresholdDate.isBefore(ed)) calculatedThresholdDate else ed)
+      case (Some(td), None) => Some(calculatedCrossedThresholdDate(td))
+      case (None, Some(ed)) => Some(ed)
+      case _ => None
+    }
+  }
+
+
+  //TODO: Refactor this to use the eligibility functions once this has been rebased onto it.
+  def retrieveCalculatedStartDate(implicit profile : CurrentProfile, hc : HeaderCarrier) : Future[Option[LocalDate]] = {
+    vatService.getVatScheme.map(
+      _.vatServiceEligibility.flatMap(
+        _.vatEligibilityChoice match {
+          case Some(vec) => calculateMandatoryStartDate(vec.vatThresholdPostIncorp, vec.vatExpectedThresholdPostIncorp)
+          case None => None
+        }
+      )
+    )
+  }
 
   def getReturns(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
     s4lService.fetchAndGetNoAux[Returns](S4LKey.returns) flatMap {
@@ -76,20 +104,20 @@ trait ReturnsService {
     ) map { _ => returns}
   }
 
-  def saveReclaimVATOnMostReturns(reclaimView: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile) = {
+  def saveReclaimVATOnMostReturns(reclaimView: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
     getReturns flatMap (storedData =>
       submitReturns(storedData.copy(reclaimVatOnMostReturns = Some(reclaimView))
       )
     )
   }
 
-  def saveFrequency(frequencyView: Frequency.Value)(implicit hc: HeaderCarrier, profile: CurrentProfile) = {
+  def saveFrequency(frequencyView: Frequency.Value)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
     getReturns flatMap (storedData =>
       submitReturns(storedData.copy(frequency = Some(frequencyView)))
     )
   }
 
-  def saveStaggerStart(staggerStartView: Stagger.Value)(implicit hc: HeaderCarrier, profile: CurrentProfile) = {
+  def saveStaggerStart(staggerStartView: Stagger.Value)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
     getReturns flatMap (storedData =>
       submitReturns(
         storedData.copy(staggerStart = Some(staggerStartView))
@@ -97,9 +125,17 @@ trait ReturnsService {
     )
   }
 
-  def saveVatStartDate(vatStartDateView: LocalDate)(implicit hc: HeaderCarrier, profile: CurrentProfile) = {
+  def saveVatStartDate(vatStartDateView: Option[LocalDate])(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
     getReturns flatMap (storedData =>
-      submitReturns(storedData.copy(vatStartDate = Some(vatStartDateView)))
+      submitReturns(storedData.copy(start = Some(Start(vatStartDateView))))
     )
   }
+
+  def getEligibilityChoice()(implicit hc:HeaderCarrier, profile: CurrentProfile): Future[Boolean] = {
+    vatRegConnector.getRegistration(profile.registrationId) map { vs =>
+      vs.vatServiceEligibility.flatMap(_.vatEligibilityChoice).map(_.necessity.contains(VatEligibilityChoice.NECESSITY_VOLUNTARY))
+        .fold(throw new RuntimeException(""))(contains => contains)
+    }
+  }
+
 }

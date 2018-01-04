@@ -61,6 +61,8 @@ package controllers.vatFinancials.vatAccountingPeriod {
   import services.{RegistrationService, S4LService, SessionProfile}
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
+  import scala.concurrent.Future
+
   @Singleton
   class AccountingPeriodController @Inject()(ds: CommonPlayDependencies,
                                              val keystoreConnector: KeystoreConnect,

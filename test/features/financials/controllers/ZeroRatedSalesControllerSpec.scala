@@ -101,7 +101,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("zeroRatedSalesRadio" -> ZERO_RATED_SALES_NO)) {
-        _ redirectsTo s"$contextRoot/expect-to-reclaim-more-vat-than-you-charge"
+        _ redirectsTo s"$contextRoot/expect-to-reclaim-more-vat-than-you-charge-legacy"
       }
     }
   }

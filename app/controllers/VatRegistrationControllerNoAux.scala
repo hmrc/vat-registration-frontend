@@ -33,7 +33,6 @@ trait VatRegistrationControllerNoAux extends FrontendController with I18nSupport
   type AuthorisedRequestWithCurrentProfile = (AuthContext) => (Request[AnyContent]) => (CurrentProfile) => Future[Result]
 
   def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
-
   def withCurrentProfile(f: => AuthorisedRequestWithCurrentProfile): AuthorisedRequest = {
     a => r => withCurrentProfile(f(a)(r))(r, hc(r))
   }
