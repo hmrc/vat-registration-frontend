@@ -17,28 +17,47 @@
 package features.financials.models
 
 import java.time.LocalDate
+
 import play.api.libs.json._
+
+import scala.language.implicitConversions
 
 object Frequency extends Enumeration {
   val monthly   = Value
   val quarterly = Value
 
+  implicit def toString(f : Frequency.Value) : String = f.toString
   implicit val format = Format(Reads.enumNameReads(Frequency), Writes.enumNameWrites)
 }
 
 object Stagger extends Enumeration {
-  val jan_feb_mar = Value
-  val apr_may_jun = Value
-  val jul_aug_sep = Value
-  val oct_nov_dec = Value
+  val jan = Value
+  val feb = Value
+  val mar = Value
 
+  implicit def toString(f : Stagger.Value) : String = f.toString
   implicit val format = Format(Reads.enumNameReads(Stagger), Writes.enumNameWrites)
+}
+
+object DateSelection extends Enumeration {
+  val company_registration_date = Value
+  val business_start_date = Value
+  val specific_date = Value
+  val calculated_date = Value
+
+  implicit def toString(f : DateSelection.Value) : String = f.toString
+}
+
+case class Start(date: Option[LocalDate])
+object Start {
+  implicit val format = Json.format[Start]
 }
 
 case class Returns(reclaimVatOnMostReturns: Option[Boolean],
                    frequency: Option[Frequency.Value],
                    staggerStart: Option[Stagger.Value],
-                   vatStartDate: Option[LocalDate])
+                   start: Option[Start])
+
 object Returns {
   implicit val format = Json.format[Returns]
 

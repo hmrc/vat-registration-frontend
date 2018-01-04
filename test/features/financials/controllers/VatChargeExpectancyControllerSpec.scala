@@ -87,7 +87,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_YES)) {
-        _ redirectsTo s"$contextRoot/how-often-do-you-want-to-submit-vat-returns"
+        _ redirectsTo s"$contextRoot/how-often-do-you-want-to-submit-vat-returns-legacy"
       }
     }
 
@@ -102,7 +102,7 @@ class VatChargeExpectancyControllerSpec extends VatRegSpec with VatRegistrationF
 
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("vatChargeRadio" -> VatChargeExpectancy.VAT_CHARGE_NO)) {
-        _ redirectsTo s"$contextRoot/vat-return-periods-end"
+        _ redirectsTo s"$contextRoot/vat-return-periods-end-legacy"
       }
     }
   }

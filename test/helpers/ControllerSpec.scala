@@ -32,11 +32,11 @@ import play.api.http.{HeaderNames, Status}
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc._
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits, ResultExtractors}
-import services.{DateService, VatRegistrationService}
+import services.{DateService, PrePopService, VatRegistrationService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite with AuthBuilder
   with Status with FutureAwaits with DefaultAwaitTimeout with ResultExtractors with HeaderNames {
@@ -49,6 +49,7 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite with
   val mockMessagesAPI: MessagesApi = mock[MessagesApi]
   val mockConfigConnector: ConfigConnector = mock[ConfigConnector]
   val mockDateService: DateService = mock[DateService]
+  val mockPrePopService: PrePopService = mock[PrePopService]
 
   val regId = "VAT123456"
 

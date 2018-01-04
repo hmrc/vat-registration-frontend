@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+//TODO: Remove once the aux refactor has taken place
+
 package models.view.vatTradingDetails.vatChoice {
 
  
@@ -25,10 +27,12 @@ package models.view.vatTradingDetails.vatChoice {
 
   import scala.util.Try
 
+  @deprecated
   case class StartDateView(dateType: String = "", date: Option[LocalDate] = None, ctActiveDate: Option[LocalDate] = None) {
     def withCtActiveDateOption(d: LocalDate): StartDateView = this.copy(ctActiveDate = Some(d))
   }
 
+  @deprecated
   object StartDateView {
 
     def bind(dateType: String, dateModel: Option[DateModel])(implicit defaultDate : Option[LocalDate] = None): StartDateView =
@@ -87,6 +91,7 @@ package controllers.vatTradingDetails.vatChoice {
 
   import scala.concurrent.Future
 
+  @deprecated
   @Singleton
   class StartDateController @Inject()(startDateFormFactory: StartDateFormFactory,
                                       prepopService: PrePopService,
@@ -98,10 +103,12 @@ package controllers.vatTradingDetails.vatChoice {
 
     val form: Form[StartDateView] = startDateFormFactory.form()
 
+    @deprecated
     protected[controllers]
     def populateCtActiveDate(vm: StartDateView)(implicit hc: HeaderCarrier, profile: CurrentProfile, today: Now[LocalDate]): Future[StartDateView] =
       prepopService.getCTActiveDate.filter(today().plusMonths(3).isAfter).fold(vm)(vm.withCtActiveDateOption)
 
+    @deprecated
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
@@ -119,6 +126,7 @@ package controllers.vatTradingDetails.vatChoice {
           }
     }
 
+    @deprecated
     def submit: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
@@ -154,13 +162,18 @@ package forms.vatTradingDetails.vatChoice {
   import services.DateService
   import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
+  @deprecated
   trait MinimumDateValidation {
     val date : LocalDate
   }
+  @deprecated
   case class ToIncorpMinimumFutureDate(date : LocalDate) extends MinimumDateValidation
+  @deprecated
   case class FourYearsSinceIncorporatedDate(date : LocalDate) extends MinimumDateValidation
+  @deprecated
   case class StandardIncorporatedDate(date : LocalDate) extends MinimumDateValidation
 
+  @deprecated
   class StartDateFormFactory @Inject()(dateService: DateService, today: Now[LocalDate]) {
 
     implicit object LocalDateOrdering extends Ordering[LocalDate] {

@@ -22,6 +22,7 @@ package models.view.vatFinancials {
 
   case class VatChargeExpectancy(yesNo: String)
 
+  @deprecated
   object VatChargeExpectancy {
 
     val VAT_CHARGE_YES = "VAT_CHARGE_YES"
@@ -65,6 +66,9 @@ package controllers.vatFinancials {
   import services.{RegistrationService, S4LService, SessionProfile}
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
+  import scala.concurrent.Future
+
+  @deprecated
   @Singleton
   class VatChargeExpectancyController @Inject()(ds: CommonPlayDependencies,
                                                 val keystoreConnector: KeystoreConnect,
@@ -75,6 +79,7 @@ package controllers.vatFinancials {
 
     val form = VatChargeExpectancyForm.form
 
+    @deprecated
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
@@ -86,6 +91,7 @@ package controllers.vatFinancials {
           }
     }
 
+    @deprecated
     def submit: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
@@ -112,6 +118,7 @@ package forms.vatFinancials {
   import play.api.data.Form
   import play.api.data.Forms._
 
+  @deprecated
   object VatChargeExpectancyForm {
 
     val RADIO_YES_NO: String = "vatChargeRadio"

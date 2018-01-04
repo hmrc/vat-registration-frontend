@@ -5,32 +5,32 @@
 
 @main_template(title = messages("pages.vat.return.frequency.title")) {
 
-  @errorSummary(
-    Messages("app.common.errorSummaryLabel"),
-    vatReturnFrequencyForm
-  )
+    @errorSummary(
+        Messages("app.common.errorSummaryLabel"),
+        vatReturnFrequencyForm
+    )
 
-  <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.vat.return.frequency.heading")</h1>
-  
-  @govHelpers.form(action = controllers.vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.submit()) {
-  <div class="form-group">
-    <fieldset>
-      <span id="vatReturnFrequencyRadio"/>
-      @vatInputRadioGroup(
-          field = vatReturnFrequencyForm("vatReturnFrequencyRadio"),
-          Seq(
-            VatReturnFrequency.MONTHLY -> Messages("pages.vat.return.frequency.radio.monthly"),
-            VatReturnFrequency.QUARTERLY -> Messages("pages.vat.return.frequency.radio.quarterly")
-          ),
-          '_labelAfter -> true,
-          '_labelClass -> "block-label"
-      )
-    </fieldset>
-  </div>
+    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.vat.return.frequency.heading")</h1>
 
-    <div class="form-group">
-      <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-    </div>
-  }
+    @govHelpers.form(action = controllers.vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.submit()) {
+        <div class="form-group">
+            <fieldset>
+                <span id="vatReturnFrequencyRadio"/>
+                @vatInputRadioGroup(
+                    field = vatReturnFrequencyForm("vatReturnFrequencyRadio"),
+                    Seq(
+                        VatReturnFrequency.MONTHLY -> Messages("pages.vat.return.frequency.radio.monthly"),
+                        VatReturnFrequency.QUARTERLY -> Messages("pages.vat.return.frequency.radio.quarterly")
+                    ),
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label"
+                )
+            </fieldset>
+        </div>
+
+        <div class="form-group">
+            <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+        </div>
+    }
 }
 

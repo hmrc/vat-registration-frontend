@@ -20,8 +20,10 @@ package models.view.vatFinancials.vatAccountingPeriod {
   import models.{ApiModelTransformer, S4LVatFinancials, ViewModelFormat}
   import play.api.libs.json.Json
 
+  @deprecated
   case class VatReturnFrequency(frequencyType: String)
 
+  @deprecated
   object VatReturnFrequency {
 
     val MONTHLY = "monthly"
@@ -63,6 +65,9 @@ package controllers.vatFinancials.vatAccountingPeriod {
   import services.{RegistrationService, S4LService, SessionProfile}
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
+  import scala.concurrent.Future
+
+  @deprecated
   @Singleton
   class VatReturnFrequencyController @Inject()(ds: CommonPlayDependencies,
                                                val keystoreConnector: KeystoreConnect,
@@ -123,6 +128,7 @@ package forms.vatFinancials.vatAccountingPeriod {
   import play.api.data.Form
   import play.api.data.Forms._
 
+  @deprecated
   object VatReturnFrequencyForm {
 
     val RADIO_FREQUENCY: String = "vatReturnFrequencyRadio"
