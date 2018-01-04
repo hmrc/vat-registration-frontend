@@ -23,13 +23,13 @@ object AppDependencies {
 }
 
 private object CompileDependencies {
-  private val bootstrapVersion       = "8.11.0"
+  private val bootstrapVersion       = "8.17.0"
   private val partialsVersion        = "6.1.0"
-  private val cachingClientVersion   = "7.0.0"
+  private val cachingClientVersion   = "7.1.0"
   private val formMappingVersion     = "0.2.0"
   private val timeVersion            = "3.1.0"
   private val whitelistFilterVersion = "2.0.0"
-  private val catsVersion            = "0.9.0"
+  private val catsVersion            = "1.0.0"
 
 
   private val compileDependencies: Seq[ModuleID] = Seq(
@@ -40,7 +40,7 @@ private object CompileDependencies {
     "uk.gov.hmrc"   %% "play-conditional-form-mapping" % formMappingVersion,
     "uk.gov.hmrc"   %% "time"                          % timeVersion,
     "uk.gov.hmrc"   %% "play-whitelist-filter"         % whitelistFilterVersion,
-    "org.typelevel" %% "cats"                          % catsVersion
+    "org.typelevel" %% "cats-core"                     % catsVersion
   )
 
   def apply(): Seq[ModuleID] = compileDependencies
@@ -53,7 +53,7 @@ private trait TestDependencies {
   val mockitoVersion           = "2.12.0"
   val scalaMockVersion         = "3.6.0"
   val wireMockVersion          = "2.6.0"
-  val hmrcTestVersion          = "2.4.0"
+  val hmrcTestVersion          = "3.0.0"
 
   val scope: Configuration
   val testDependencies: Seq[ModuleID]
