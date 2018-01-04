@@ -20,7 +20,6 @@ package services {
 
   import connectors.BankAccountReputationConnect
   import models.BankAccountDetails
-  import models.view.vatFinancials.vatBankAccount.ModulusCheckAccount
   import uk.gov.hmrc.http.HeaderCarrier
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -30,12 +29,6 @@ package services {
 
   trait BankAccountReputationService {
     val bankAccountReputationConnector: BankAccountReputationConnect
-
-    def bankDetailsModulusCheck(account: ModulusCheckAccount)(implicit hc: HeaderCarrier): Future[Boolean] = {
-      bankAccountReputationConnector.bankAccountModulusCheck(account) map {
-        response => (response \ "accountNumberWithSortCodeIsValid").as[Boolean]
-      }
-    }
 
     def bankAccountDetailsModulusCheck(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[Boolean] = {
       bankAccountReputationConnector.bankAccountDetailsModulusCheck(account) map {
@@ -51,7 +44,6 @@ package connectors {
 
   import config.WSHttp
   import models.BankAccountDetails
-  import models.view.vatFinancials.vatBankAccount.ModulusCheckAccount
   import play.api.libs.json.JsValue
   import uk.gov.hmrc.http.{CorePost, HeaderCarrier}
   import uk.gov.hmrc.play.config.inject.ServicesConfig
@@ -66,12 +58,6 @@ package connectors {
   trait BankAccountReputationConnect {
     val bankAccountReputationUrl: String
     val http: CorePost
-
-    def bankAccountModulusCheck(account: ModulusCheckAccount)(implicit hc: HeaderCarrier): Future[JsValue] = {
-      http.POST[ModulusCheckAccount, JsValue](s"$bankAccountReputationUrl/modcheck", account) recover {
-        case ex => throw logResponse(ex, "bankAccountModulusCheck")
-      }
-    }
 
     def bankAccountDetailsModulusCheck(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[JsValue] = {
       http.POST[BankAccountDetails, JsValue](s"$bankAccountReputationUrl/modcheck", account) recover {
