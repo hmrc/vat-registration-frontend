@@ -121,8 +121,7 @@ class SummaryTaxableSalesSectionBuilderSpec extends VatRegSpec with VatRegistrat
           turnoverEstimate = 50000L,
           accountingPeriods = VatAccountingPeriod(VatReturnFrequency.MONTHLY),
           reclaimVatOnMostReturns = false,
-          zeroRatedTurnoverEstimate = Some(10000L),
-          bankAccount = None
+          zeroRatedTurnoverEstimate = Some(10000L)
         )
         val builder = SummaryTaxableSalesSectionBuilder(vatFinancials = Some(financials))
         builder.section.id mustBe "taxableSales"

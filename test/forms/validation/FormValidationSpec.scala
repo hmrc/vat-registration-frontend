@@ -18,12 +18,10 @@ package forms.validation
 
 import forms.FormValidation
 import forms.FormValidation.ErrorCode
-import forms.vatFinancials.vatBankAccount.SortCode
 import models.DateModel
 import org.scalatest.{Inside, Inspectors}
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import uk.gov.hmrc.play.test.UnitSpec
-
 
 class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
@@ -217,101 +215,6 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
     }
 
   }
-
-  "Bank account name validation" must {
-
-    val constraint = FormValidation.BankAccount.accountName("account")
-
-    "accept valid bank account name" in {
-      forAll(Seq("Account Name", "Peter Perhac & Sons", "X"))(constraint(_) shouldBe Valid)
-    }
-
-    "reject blank bank account name" in {
-      forAll(Seq("", " ", "    \t   "))(in => inside(constraint(in)) {
-        case Invalid(err :: _) => err.message shouldBe "validation.account.name.missing"
-      })
-    }
-
-    "reject bank account name containing illegal characters" in {
-      forAll(Seq("Foo * Bar", "_foobar_", "$$$"))(in => inside(constraint(in)) {
-        case Invalid(err :: _) => err.message shouldBe "validation.account.name.invalid"
-      })
-    }
-
-    "reject too long bank account name" in {
-      inside(constraint(("text" * 100).mkString)) {
-        case Invalid(err :: _) => err.message shouldBe "validation.account.name.invalid"
-      }
-    }
-
-  }
-
-  "Bank account number validation" must {
-
-    val constraint = FormValidation.BankAccount.accountNumber("account")
-
-    "accept valid bank account number" in {
-      forAll(Seq("12345678", "00000000", "09876543"))(constraint(_) shouldBe Valid)
-    }
-
-    "reject blank bank account number" in {
-      forAll(Seq("", " ", "    \t   "))(in => inside(constraint(in)) {
-        case Invalid(err :: _) => err.message shouldBe "validation.account.number.missing"
-      })
-    }
-
-    "reject bank account number containing illegal characters" in {
-      forAll(Seq("10000e30", "-2001234", "$mydollars$"))(in => inside(constraint(in)) {
-        case Invalid(err :: _) => err.message shouldBe "validation.account.number.invalid"
-      })
-    }
-
-    "reject too long bank account number" in {
-      forAll(Seq(("1" * 20).mkString, "123456789"))(in => inside(constraint(in)) {
-        case Invalid(err :: _) => err.message shouldBe "validation.account.number.invalid"
-      })
-    }
-
-  }
-
-
-  "Bank account sort code validation" must {
-
-    val constraint = FormValidation.BankAccount.accountSortCode("account")
-
-    "accept valid bank account sortCode" in {
-      forAll(Seq(
-        SortCode("99", "00", "01"),
-        SortCode("00", "00", "00"),
-        SortCode("99", "99", "99")))(constraint(_) shouldBe Valid)
-    }
-
-    "reject blank bank account sortCode" in {
-      forAll(Seq(
-        SortCode("", "", ""),
-        SortCode(" ", " ", " "),
-        SortCode("    \t   ", "    \t   ", "    \t   ")))(in => inside(constraint(in)) {
-        case Invalid(err :: _) => err.message shouldBe "validation.account.sortCode.missing"
-      })
-    }
-
-    "reject bank account sortCode containing illegal characters" in {
-      forAll(Seq(
-        SortCode("20", "$$", "45"),
-        SortCode("ab", "cd", "ef"),
-        SortCode("$#", "#", "@")))(in => inside(constraint(in)) {
-        case Invalid(err :: _) => err.message shouldBe "validation.account.sortCode.invalid"
-      })
-    }
-
-    "reject too long bank account sortCode" in {
-      inside(constraint(SortCode("eigewig", "eogbweougb", "oegweigb"))) {
-        case Invalid(err :: _) => err.message shouldBe "validation.account.sortCode.invalid"
-      }
-    }
-
-  }
-
 
   "Date validation" must {
 

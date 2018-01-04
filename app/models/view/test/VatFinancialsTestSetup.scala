@@ -19,11 +19,7 @@ package models.view.test
 import play.api.libs.json.Json
 
 
-case class VatFinancialsTestSetup(companyBankAccountChoice: Option[String],
-                                  companyBankAccountName: Option[String],
-                                  companyBankAccountNumber: Option[String],
-                                  sortCode: Option[String],
-                                  estimateVatTurnover: Option[String],
+case class VatFinancialsTestSetup(estimateVatTurnover: Option[String],
                                   zeroRatedSalesChoice: Option[String],
                                   zeroRatedTurnoverEstimate: Option[String],
                                   vatChargeExpectancyChoice: Option[String],

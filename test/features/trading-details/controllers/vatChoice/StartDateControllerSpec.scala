@@ -32,7 +32,6 @@ import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import controllers.vatFinancials.vatBankAccount
 
 import scala.concurrent.Future
 import uk.gov.hmrc.http.HeaderCarrier
@@ -260,7 +259,8 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result) mustBe Some(vatBankAccount.routes.CompanyBankAccountController.show().url)
+          redirectLocation(result) mustBe
+            Some(features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
       }
 
       verify(mockVatRegistrationService).submitTradingDetails()(any(), any())
@@ -278,7 +278,8 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result) mustBe Some(vatBankAccount.routes.CompanyBankAccountController.show().url)
+          redirectLocation(result) mustBe
+            Some(features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
       }
 
       verify(mockVatRegistrationService).submitTradingDetails()(any(), any())
@@ -301,7 +302,8 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result) mustBe Some(vatBankAccount.routes.CompanyBankAccountController.show().url)
+          redirectLocation(result) mustBe
+            Some(features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
       }
 
       verify(mockVatRegistrationService).submitTradingDetails()(any(), any())
@@ -322,7 +324,8 @@ class StartDateControllerSpec extends VatRegSpec with VatRegistrationFixture wit
       )) {
         result =>
           status(result) mustBe Status.SEE_OTHER
-          redirectLocation(result) mustBe Some(vatBankAccount.routes.CompanyBankAccountController.show().url)
+          redirectLocation(result) mustBe
+            Some(features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
       }
 
       verify(mockVatRegistrationService).submitTradingDetails()(any(), any())

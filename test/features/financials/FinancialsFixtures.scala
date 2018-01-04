@@ -19,10 +19,8 @@ package fixtures
 import models.S4LVatFinancials
 import models.view.vatFinancials._
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
-import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.api.{VatAccountingPeriod, VatBankAccount, VatFinancials}
 import models.view.vatFinancials.ZeroRatedSales.ZERO_RATED_SALES_YES
-import models.view.vatFinancials.vatBankAccount.CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES
 
 trait FinancialsFixture extends BaseFixture {
 
@@ -31,20 +29,17 @@ trait FinancialsFixture extends BaseFixture {
   val testEstimatedSales = 60000L
 
   //View models
-  val validCompanyBankAccount = CompanyBankAccount(CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES)
   val validEstimateVatTurnover = EstimateVatTurnover(testTurnoverEstimate)
   val validEstimateZeroRatedSales = EstimateZeroRatedSales(testEstimatedSales)
   val validVatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
   val validVatReturnFrequency = VatReturnFrequency(VatReturnFrequency.QUARTERLY)
   val validAccountingPeriod = AccountingPeriod(AccountingPeriod.MAR_JUN_SEP_DEC)
-  val validBankAccountDetails = CompanyBankAccountDetails(testTradingName, testAccountNumber, testSortCode)
 
   //Api models
   val monthlyAccountingPeriod = VatAccountingPeriod(VatReturnFrequency.MONTHLY)
   val validBankAccount = VatBankAccount(testTradingName, testAccountNumber, testSortCode)
 
   val validVatFinancials = VatFinancials(
-    bankAccount = Some(validBankAccount),
     turnoverEstimate = testTurnoverEstimate,
     zeroRatedTurnoverEstimate = Some(testEstimatedSales),
     reclaimVatOnMostReturns = true,
@@ -57,8 +52,6 @@ trait FinancialsFixture extends BaseFixture {
     zeroRatedTurnoverEstimate = Some(validEstimateZeroRatedSales),
     vatChargeExpectancy = Some(validVatChargeExpectancy),
     vatReturnFrequency = Some(validVatReturnFrequency),
-    accountingPeriod = Some(validAccountingPeriod),
-    companyBankAccount = Some(CompanyBankAccount(COMPANY_BANK_ACCOUNT_YES)),
-    companyBankAccountDetails = Some(validBankAccountDetails)
+    accountingPeriod = Some(validAccountingPeriod)
   )
 }

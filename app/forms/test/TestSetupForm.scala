@@ -16,8 +16,9 @@
 
 package forms.test
 
+import models.{BankAccount, BankAccountDetails}
 import models.view.test._
-import play.api.data.Form
+import play.api.data.{Form, Mapping}
 import play.api.data.Forms._
 
 object TestSetupForm {
@@ -80,10 +81,6 @@ object TestSetupForm {
   )(VatContactTestSetup.apply)(VatContactTestSetup.unapply)
 
   val vatFinancialsTestSetupMapping = mapping(
-    "companyBankAccountChoice" -> optional(text),
-    "companyBankAccountName" -> optional(text),
-    "companyBankAccountNumber" -> optional(text),
-    "sortCode" -> optional(text),
     "estimateVatTurnover" -> optional(text),
     "zeroRatedSalesChoice" -> optional(text),
     "zeroRatedTurnoverEstimate" -> optional(text),
@@ -150,6 +147,15 @@ object TestSetupForm {
     "frsStartDateYear" -> optional(text)
   )(VatFlatRateSchemeTestSetup.apply)(VatFlatRateSchemeTestSetup.unapply)
 
+  val bankAccountMapping: Mapping[BankAccount] = mapping(
+    "isProvided" -> boolean,
+    "details"    -> optional(mapping(
+      "accountName" -> text,
+      "accountSortCode" -> text,
+      "accountNumber" -> text
+    )(BankAccountDetails.apply)(BankAccountDetails.unapply))
+  )(BankAccount.apply)(BankAccount.unapply)
+
   val form = Form(mapping(
     "vatChoice" -> vatChoiceTestSetupMapping,
     "vatTradingDetails" -> vatTradingDetailsTestSetupMapping,
@@ -160,7 +166,8 @@ object TestSetupForm {
     "officerHomeAddress" -> officeHomeAddressMapping,
     "officerPreviousAddress" -> officePreviousAddressMapping,
     "vatLodgingOfficer" -> vatLodgingOfficerTestSetup,
-    "vatFlatRateScheme" -> flatRateSchemeMapping
+    "vatFlatRateScheme" -> flatRateSchemeMapping,
+    "bankAccount" -> optional(bankAccountMapping)
   )(TestSetup.apply)(TestSetup.unapply))
 
 }
