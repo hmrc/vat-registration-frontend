@@ -50,6 +50,20 @@ class CompletionCapacityPageSpec extends UnitSpec with WithFakeApplication with 
 
       document.getElementsByAttributeValue("name", "completionCapacityRadio").size shouldBe 2
       document.getElementsByAttributeValue("checked", "checked").size shouldBe 0
+
+      document.getElementById(s"completionCapacityRadio-${validOfficer1.name.id.toLowerCase}").attr("value") shouldBe validOfficer1.name.id
+      document.getElementById(s"completionCapacityRadio-${validOfficer2.name.id.toLowerCase}").attr("value") shouldBe validOfficer2.name.id
+    }
+
+    "display a list of officers with a pre selection" in {
+      lazy val view = CompletionCapacityPage(form.fill(validOfficer2.name.id), officerList)
+      lazy val document = Jsoup.parse(view.body)
+
+      document.getElementsByAttributeValue("name", "completionCapacityRadio").size shouldBe 2
+
+      val preSelected = document.getElementsByAttributeValue("checked", "checked")
+      preSelected.size shouldBe 1
+      preSelected.get(0).attr("value") shouldBe validOfficer2.name.id
     }
   }
 }
