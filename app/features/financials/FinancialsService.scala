@@ -23,7 +23,6 @@ package services {
   import models.api.{VatFinancials, VatScheme}
   import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, VatChargeExpectancy, ZeroRatedSales}
   import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
-  import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
   import scala.concurrent.Future
@@ -63,9 +62,7 @@ package services {
       zeroRatedTurnoverEstimate = ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vs),
       vatChargeExpectancy       = ApiModelTransformer[VatChargeExpectancy].toViewModel(vs),
       vatReturnFrequency        = ApiModelTransformer[VatReturnFrequency].toViewModel(vs),
-      accountingPeriod          = ApiModelTransformer[AccountingPeriod].toViewModel(vs),
-      companyBankAccount        = ApiModelTransformer[CompanyBankAccount].toViewModel(vs),
-      companyBankAccountDetails = ApiModelTransformer[CompanyBankAccountDetails].toViewModel(vs)
+      accountingPeriod          = ApiModelTransformer[AccountingPeriod].toViewModel(vs)
     )
 
     private[services] def fetchFinancialsFromS4L(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Option[S4LVatFinancials]] = {

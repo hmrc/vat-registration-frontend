@@ -36,8 +36,6 @@ import models.view.vatFinancials.ZeroRatedSales.ZERO_RATED_SALES_YES
 import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod.FEB_MAY_AUG_NOV
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.{MONTHLY, QUARTERLY}
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
-import models.view.vatFinancials.vatBankAccount.CompanyBankAccount.COMPANY_BANK_ACCOUNT_YES
-import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, VatChargeExpectancy, ZeroRatedSales}
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
@@ -63,16 +61,11 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
       zeroRatedTurnoverEstimate = Some(EstimateZeroRatedSales(1)),
       vatChargeExpectancy = Some(VatChargeExpectancy(VAT_CHARGE_YES)),
       vatReturnFrequency = Some(VatReturnFrequency(QUARTERLY)),
-      accountingPeriod = Some(AccountingPeriod(FEB_MAY_AUG_NOV)),
-      companyBankAccount = Some(CompanyBankAccount(COMPANY_BANK_ACCOUNT_YES)),
-      companyBankAccountDetails = Some(CompanyBankAccountDetails(
-        accountName = "name", sortCode = "code", accountNumber = "number"))
+      accountingPeriod = Some(AccountingPeriod(FEB_MAY_AUG_NOV))
     )
 
     "transform complete S4L model to API" in {
       val expected = VatFinancials(
-        bankAccount = Some(VatBankAccount(
-          accountName = "name", accountSortCode = "code", accountNumber = "number")),
         turnoverEstimate = 10,
         zeroRatedTurnoverEstimate = Some(1),
         reclaimVatOnMostReturns = true,
@@ -88,8 +81,6 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
         accountingPeriod = None)
 
       val expected = VatFinancials(
-        bankAccount = Some(VatBankAccount(
-          accountName = "name", accountSortCode = "code", accountNumber = "number")),
         turnoverEstimate = 10,
         zeroRatedTurnoverEstimate = Some(1),
         reclaimVatOnMostReturns = true,

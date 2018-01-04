@@ -17,12 +17,12 @@
 package connectors
 
 import helpers.VatRegSpec
-import models.view.vatFinancials.vatBankAccount.ModulusCheckAccount
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.libs.json.JsValue
 import config.WSHttp
+import models.BankAccountDetails
 
 import scala.concurrent.Future
 import uk.gov.hmrc.http.Upstream5xxResponse
@@ -38,17 +38,21 @@ class BankAccountReputationConnectorSpec extends VatRegSpec {
   }
 
   "bankAccountModulusCheck" should {
+
+    val bankDetails = BankAccountDetails("testName", "12-34-56", "12345678")
+
     "return a valid JSON value" in new Setup{
-      mockHttpPOST[ModulusCheckAccount, JsValue](connector.bankAccountReputationUrl, validBankCheckJsonResponse)
-      connector.bankAccountModulusCheck(validBankAccountDetailsForModulusCheck) returns validBankCheckJsonResponse
+      mockHttpPOST[BankAccountDetails, JsValue](connector.bankAccountReputationUrl, validBankCheckJsonResponse)
+
+      connector.bankAccountDetailsModulusCheck(bankDetails) returns validBankCheckJsonResponse
     }
 
     "throw an exception" in new Setup{
-      when(mockWSHttp.POST[ModulusCheckAccount, JsValue](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      when(mockWSHttp.POST[BankAccountDetails, JsValue](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
         (ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.failed(Upstream5xxResponse(INTERNAL_SERVER_ERROR.toString,500,500)))
 
-      connector.bankAccountModulusCheck(validBankAccountDetailsForModulusCheck) failedWith classOf[Upstream5xxResponse]
+      connector.bankAccountDetailsModulusCheck(bankDetails) failedWith classOf[Upstream5xxResponse]
     }
   }
 }

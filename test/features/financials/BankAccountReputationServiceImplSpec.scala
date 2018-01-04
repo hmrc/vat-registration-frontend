@@ -16,8 +16,10 @@
 
 package services
 
+import connectors.BankAccountReputationConnector
 import helpers.{S4LMockSugar, VatRegSpec}
-import org.mockito.ArgumentMatchers
+import models.BankAccountDetails
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 
 import scala.concurrent.Future
@@ -25,20 +27,27 @@ import scala.concurrent.Future
 class BankAccountReputationServiceImplSpec extends VatRegSpec with S4LMockSugar {
 
   class Setup {
-    val service = new BankAccountReputationServiceImpl(mockBankAccountReputationConnector)
+    val service: BankAccountReputationService = new BankAccountReputationService{
+      override val bankAccountReputationConnector: BankAccountReputationConnector = mockBankAccountReputationConnector
+    }
   }
 
   "Calling bankDetailsModulusCheck" should {
-    "return true when accountNumberWithSortCodeIsValid is true" in new Setup {
-      when(mockBankAccountReputationConnector.bankAccountModulusCheck(ArgumentMatchers.any())(ArgumentMatchers.any()))
+
+    val bankDetails = BankAccountDetails("testName", "12-34-56", "12345678")
+
+    "return true when the json returns a true" in new Setup {
+      when(mockBankAccountReputationConnector.bankAccountDetailsModulusCheck(any())(any()))
         .thenReturn(Future.successful(validBankCheckJsonResponse))
-      service.bankDetailsModulusCheck(validBankAccountDetailsForModulusCheck) returns true
+
+      service.bankAccountDetailsModulusCheck(bankDetails) returns true
     }
 
-    "return false when accountNumberWithSortCodeIsValid is false" in new Setup {
-      when(mockBankAccountReputationConnector.bankAccountModulusCheck(ArgumentMatchers.any())(ArgumentMatchers.any()))
+    "return false when the json returns a false" in new Setup {
+      when(mockBankAccountReputationConnector.bankAccountDetailsModulusCheck(any())(any()))
         .thenReturn(Future.successful(invalidBankCheckJsonResponse))
-      service.bankDetailsModulusCheck(validBankAccountDetailsForModulusCheck) returns false
+
+      service.bankAccountDetailsModulusCheck(bankDetails) returns false
     }
   }
 }

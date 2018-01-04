@@ -17,8 +17,7 @@
 package models.api {
   import play.api.libs.json._
 
-  case class VatFinancials(bankAccount: Option[VatBankAccount] = None,
-                           turnoverEstimate: Long,
+  case class VatFinancials(turnoverEstimate: Long,
                            zeroRatedTurnoverEstimate: Option[Long] = None,
                            reclaimVatOnMostReturns: Boolean,
                            accountingPeriods: VatAccountingPeriod)
@@ -35,7 +34,6 @@ package models {
   import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, VatChargeExpectancy, ZeroRatedSales}
   import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
   import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.MONTHLY
-  import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
   import play.api.libs.json.{Json, OFormat}
 
   final case class S4LVatFinancials(estimateVatTurnover: Option[EstimateVatTurnover] = None,
@@ -43,9 +41,7 @@ package models {
                                     zeroRatedTurnoverEstimate: Option[EstimateZeroRatedSales] = None,
                                     vatChargeExpectancy: Option[VatChargeExpectancy] = None,
                                     vatReturnFrequency: Option[VatReturnFrequency] = None,
-                                    accountingPeriod: Option[AccountingPeriod] = None,
-                                    companyBankAccount: Option[CompanyBankAccount] = None,
-                                    companyBankAccountDetails: Option[CompanyBankAccountDetails] = None)
+                                    accountingPeriod: Option[AccountingPeriod] = None)
 
   object S4LVatFinancials {
     implicit val format: OFormat[S4LVatFinancials] = Json.format[S4LVatFinancials]
@@ -60,9 +56,7 @@ package models {
           zeroRatedTurnoverEstimate = ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vs),
           vatChargeExpectancy = ApiModelTransformer[VatChargeExpectancy].toViewModel(vs),
           vatReturnFrequency = ApiModelTransformer[VatReturnFrequency].toViewModel(vs),
-          accountingPeriod = ApiModelTransformer[AccountingPeriod].toViewModel(vs),
-          companyBankAccount = ApiModelTransformer[CompanyBankAccount].toViewModel(vs),
-          companyBankAccountDetails = ApiModelTransformer[CompanyBankAccountDetails].toViewModel(vs)
+          accountingPeriod = ApiModelTransformer[AccountingPeriod].toViewModel(vs)
         )
     }
 
@@ -73,11 +67,6 @@ package models {
       // map S4LVatFinancials to VatFinancials
       override def toApi(c: S4LVatFinancials): VatFinancials =
         VatFinancials(
-          bankAccount = c.companyBankAccountDetails.map(cad =>
-            VatBankAccount(
-              accountName = cad.accountName,
-              accountSortCode = cad.sortCode,
-              accountNumber = cad.accountNumber)),
           turnoverEstimate = c.estimateVatTurnover.map(_.vatTurnoverEstimate).getOrElse(error),
           zeroRatedTurnoverEstimate = c.zeroRatedTurnoverEstimate.map(_.zeroRatedTurnoverEstimate),
           reclaimVatOnMostReturns = c.vatChargeExpectancy.map(_.yesNo == VAT_CHARGE_YES).getOrElse(error),
