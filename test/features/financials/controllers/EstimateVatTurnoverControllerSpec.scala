@@ -43,7 +43,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       mockGetCurrentProfile()
 
       callAuthorised(Controller.show()) {
-        _ includesText "What will the company&#x27;s VAT taxable turnover be during the next 12 months?"
+        _ includesText "Estimate the company&#x27;s VAT-taxable turnover for the next 12 months"
       }
     }
 
@@ -55,7 +55,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
       mockGetCurrentProfile()
 
       callAuthorised(Controller.show) {
-        _ includesText "What will the company&#x27;s VAT taxable turnover be during the next 12 months?"
+        _ includesText "Estimate the company&#x27;s VAT-taxable turnover for the next 12 months"
       }
     }
 
@@ -65,7 +65,7 @@ class EstimateVatTurnoverControllerSpec extends VatRegSpec with VatRegistrationF
 
       mockGetCurrentProfile()
       callAuthorised(Controller.show) {
-        _ includesText "What will the company&#x27;s VAT taxable turnover be during the next 12 months?"
+        _ includesText "Estimate the company&#x27;s VAT-taxable turnover for the next 12 months"
       }
     }
   }

@@ -1,9 +1,25 @@
 @()(implicit request: Request[_], messages: Messages)
+@import views.html.helpers.templates.newWindowLink
+@import uk.gov.hmrc.play.views.html.helpers.form
+@main_template(title = messages("errorPages.title"), backEnabled = false) {
 
-@main_template(title = messages("errorPages.title")) {
+ <header class="page-header">
+    <h1 class="form-title heading-xlarge" id="main-heading">@messages("errorPages.restart.heading")</h1>
+ </header>
 
-    <h1>@messages("errorPages.restart.heading")</h1>
+    <p>@messages("errorPages.restart.para1")</p>
+    <p>@messages("errorPages.restart.para2")</p>
+    <p>@messages("errorPages.restart.para3")
+    @newWindowLink("https://www.gov.uk/limited-company-formation/register-your-company", messages("errorPages.restart.para3.1"))
+        @messages("errorPages.restart.para3.2")</p>
 
-    <p>@Html(messages("errorPages.restart.p1", controllers.routes.WelcomeController.show))</p>
+
+@form(action = controllers.routes.WelcomeController.show()) {
+<div class="form-group">
+    <button class="btn button" role="button" id="restart">@messages("error.restart.tryagain")</button>
+</div>
+
+}
+
 
 }

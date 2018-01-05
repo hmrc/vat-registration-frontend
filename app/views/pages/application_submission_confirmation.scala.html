@@ -18,24 +18,23 @@
         </p>
     </div>
 
-
     <div class="form-group">
         <h2 class="heading-medium">@messages("pages.application.submission.confirmation.whatNext.sub.heading")</h2>
         <p>@messages("pages.application.submission.confirmation.whatNext.para1")</p>
-        <p>@messages("pages.application.submission.confirmation.whatNext.para2")</p>
-        <p>@messages("pages.application.submission.confirmation.whatNext.para3")</p>
-
+        <ul class="list list-bullet">
+            <li>@messages("pages.application.submission.confirmation.whatNext.para2")</li>
+            <li>@messages("pages.application.submission.confirmation.whatNext.para3")</li>
+        </ul>
+        <p>@messages("pages.application.submission.confirmation.whatNext.para4")</p>
+        <p>@messages("pages.application.submission.confirmation.whatNext.para5")</p>
+    <br>
         <h2 class="heading-medium">@messages("pages.application.submission.confirmation.whileWait.sub.heading")</h2>
         <p>@messages("pages.application.submission.confirmation.whileWait.para1")</p>
         <p>@messages("pages.application.submission.confirmation.whileWait.para2")</p>
-        <div class="panel panel-indent" id="details-content-2" aria-hidden="false">
-            <h3 class="heading-small">@messages("pages.application.submission.confirmation.whileWait.example")</h3>
-            <p>@messages("pages.application.submission.confirmation.whileWait.example.para1")
-                @newWindowLink("https://www.gov.uk/vat-rates", messages("pages.application.submission.confirmation.whileWait.example.para1.link"))
-                @messages("pages.application.submission.confirmation.whileWait.example.para1.1")</p>
-        </div>
-        <p>@messages("pages.application.submission.confirmation.whileWait.para3")</p>
-
+        <ul class="list list-bullet">
+            <li>@messages("pages.application.submission.confirmation.whileWait.para3")</li>
+            <li>@messages("pages.application.submission.confirmation.whileWait.para4")</li>
+        </ul>
     </div>
 
     @form(action = controllers.routes.WelcomeController.show()) {
@@ -44,7 +43,6 @@
         </div>
 
     }
-
 
     @***
     * "vatAccountPeriod" ID must not change as there's GA scripts looking for this hidden element
