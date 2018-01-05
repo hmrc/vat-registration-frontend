@@ -12,13 +12,25 @@
     )
     <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.frs.join.heading")</h1>
 
-    <h3>@messages("pages.frs.join.subheading1")</h3>
+    <p>@messages("pages.frs.join.p1")</p>
     <ul class="list list-bullet">
         <li>@messages("pages.frs.join.list1.bullet1")</li>
         <li>@messages("pages.frs.join.list1.bullet2")</li>
+        <li>@messages("pages.frs.join.list1.bullet3")</li>
     </ul>
-
+    <div class="form-group">
+    <details role="group">
+          <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
+          @Html(messages("pages.frs.join.title"))
+          </span></summary>
+          <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
+              <p>@messages("pages.frs.join.p2")</p>
+              <p>@messages("pages.frs.join.p3")</p>
+          </div>
+    </details>
+    </div>
     <h3>@messages("pages.frs.join.subheading2")</h3>
+    <p>@messages("pages.frs.join.p4")</p>
     <ul class="list list-bullet">
         <li>@messages("pages.frs.join.list2.bullet1")</li>
         <li>@messages("pages.frs.join.list2.bullet2")</li>
@@ -27,7 +39,7 @@
 
     <p>@Html(messages("pages.frs.join.para1"))</p>
     <p>@messages("pages.frs.join.para2")
-        @newWindowLink("https://www.gov.uk/government/publications/vat-application-to-join-the-flat-rate-scheme-vat600frs", messages("pages.frs.join.para2.1"))</p>
+        @newWindowLink("https://www.gov.uk/vat-flat-rate-scheme", messages("pages.frs.join.para2.1"))@messages("pages.frs.join.para3")</p>
 
     @govHelpers.form(action = controllers.frs.routes.JoinFrsController.submit()) {
         <div class="form-group">

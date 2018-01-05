@@ -42,3 +42,5 @@ trait VatRegistrationControllerNoAux extends FrontendController with I18nSupport
     authorised async withCurrentProfile(f)
   }
 }
+
+

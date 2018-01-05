@@ -16,7 +16,6 @@ app.common.back                         = Back
 error.required                          = Select an option
 error.unknown                           = Invalid input
 validation.numeric                      = Enter a numeric value
-
 #Feedback
 page.feedback.title                     = Feedback
 page.feedback.thank-you.title           = Thank you
@@ -120,7 +119,8 @@ pages.cantconfirmidentity.title         = We can''t confirm your identity
 pages.cantconfirmidentity.heading       = We can''t confirm your identity
 pages.cantconfirmidentity.body.one      = We don''t hold enough information about you to check your identity.
 pages.cantconfirmidentity.body.two      = If you have the company''s name and registration date, you can
-pages.cantconfirmidentity.body.link     = use another HMRC service.
+pages.cantconfirmidentity.body.link     = use another HMRC service
+pages.cantconfirmidentity.body.three    = to register for VAT.
 
 ## Failediv
 pages.failediv.title                   = We couldn''t confirm your identity
@@ -146,21 +146,31 @@ pages.useraborted.body1.url            = You need to <a href="{0}">restart the i
 pages.useraborted.body2.url            = If you have the company''s name and registration date, you can
 pages.useraborted.body2.link           = use another HMRC service.
 
+
+
 ## Welcome Page
 pages.welcome.title                     = Before you start
 pages.welcome.heading                   = Register for VAT
-pages.welcome.p1                        = Use this service to register the company if:
-pages.welcome.bullet1                   = its VAT taxable sales were more than the VAT registration threshold in any 12-month period
-pages.welcome.bullet2                   = you thought its VAT taxable sales would be more than the VAT registration threshold in any 30-day period (including the next 30 days)
-pages.welcome.p2                        = The current VAT registration threshold is £85,000.
-pages.welcome.p3                        = If the company doesn''t meet these criteria, you can register it voluntarily so long as the company sells or intends to sell VAT taxable goods or services. You''ll be able to reclaim VAT on any business-related purchases.
+
+pages.welcome.p1                        = Before you work out if a company must register for VAT, you need to know:
+
+pages.welcome.bullet1                   = the company''s ''VAT taxable sales'' - this is everything the company sells that isn''t exempt from VAT
+pages.welcome.bullet2                   = the ''VAT registration threshold'' - this is how much VAT taxable sales the company can make before it has to register for VAT (currently [£85,000])
+
+pages.welcome.h2                        = Mandatory registration
+pages.welcome.p2                        = You must register a company for VAT if any of these apply:
+pages.welcome.bullet3                   = you think its VAT taxable sales will be more than the VAT registration threshold in the next 30 days
+pages.welcome.bullet4                   = you thought its VAT taxable sales would be more than the VAT registration threshold in any 30-day period
+pages.welcome.bullet5                   = its VAT taxable sales were more than the VAT registration threshold in any 12-month period
+pages.welcome.h3                        = Voluntary registration
+
+pages.welcome.p3                        = You can still register voluntarily if the company doesn''t meet these criteria if the company sells or intends to sell VAT taxable goods or services. You''ll be able to reclaim VAT on any business-related purchases.
 pages.welcome.button.start              = Start now
-pages.welcome.p4                        = Before you start you''ll need:
-pages.welcome.bullet3                   = to be a company director or secretary
-pages.welcome.bullet4                   = personal information we can use to identify you (for example, details from a UK passport, a P60 or payslips)
-pages.welcome.bullet5                   = your UK National Insurance number
-pages.welcome.bullet6                   = estimates of the company''s total VAT taxable sales for the next 12 months
-pages.welcome.p5                        = Your answers should reflect your current business details. You''ll need to tell HM Revenue and Customs (HMRC) about any changes to the company in the future.
+pages.welcome.p4                        = You''ll need:
+pages.welcome.bullet6                   = to be a company director or company secretary
+pages.welcome.bullet7                   = personal information we can use to identify you (for example, details from a UK passport, a P60 or payslips)
+pages.welcome.bullet8                   = your UK National Insurance number
+
 
 ## Service Criteria Questions (VAT Service Eligibility)
 ## Service Criteria Success
@@ -323,18 +333,22 @@ validation.startDate.missing                          = Enter a date
 
 ## Trading Name Page
 pages.tradingName.title                             = Trading Name
-pages.tradingName.heading                           = Does the company trade under any other name?
+pages.tradingName.heading                           = Does or will the company trade using a different name?
 pages.tradingName.panels.tradingName                = Trading name
+pages.tradingName.panel.para1                       = What is a trading name?
+pages.tradingName.panel.para2                       = A company can trade using a name that''s different from its registered name. This is also known as a ''business name''.
+pages.tradingName.panel.para3                       = Some companies choose a different trading name to help with branding or getting a domain name for their website.
+
 validation.tradingName.invalid                      = Enter a valid trading name
 validation.tradingName.missing                      = Enter a trading name
-validation.tradingNameRadio.missing                 = Tell us if the company trades under any other name
+validation.tradingNameRadio.missing                 = Tell us if the company will trade under another name
 
 ## Voluntary Registration Page
 pages.voluntary.registration.title                            = Do you want to register voluntarily for VAT?
 pages.voluntary.registration.heading                          = Do you want to register voluntarily for VAT?
 pages.voluntary.registration.para1                            = Based on your answers, you don''t need to register for VAT right now.
 pages.voluntary.registration.para2                            = You can still register voluntarily if the company will supply VAT taxable goods or services in the UK.
-pages.voluntary.registration.reason.panels.neither.para       = If none of these apply you won’t be able to register voluntarily for VAT.
+pages.voluntary.registration.reason.panels.neither.para       = If none of these apply you won''t be able to register voluntarily for VAT.
 validation.voluntary.registration.missing                     = Tell us if you want to register voluntarily for VAT
 
 ## Voluntary Registration Reason Page
@@ -356,12 +370,11 @@ pages.taxable.turnover.p1                               = You must register imme
 validation.taxable.turnover.missing                     = Tell us if you expect the company''s turnover to be more than £85,000 in the 30 days after it''s registered
 
 ## Mandatory Start Date Confirmation page
-pages.start.date.confirmation.title                          = Start Date Confirmation page
-pages.start.date.confirmation.heading                        = Your VAT start date
-pages.start.date.confirmation.para1                          = Your VAT start date will be the same as your company registration date. You can''t be registered for VAT before the company has been set up.
-pages.start.date.confirmation.para2                          = You must apply to register if you expect your VAT taxable turnover to go over the £85,000 threshold within the next 30 days.
-pages.start.date.confirmation.para3                          = If you register late, you must pay what you owe from the date you should''ve registered.
-pages.start.date.confirmation.warning                        = You may get a penalty depending on how much you owe and how late your registration is.
+pages.start.date.confirmation.title                          = The company''s VAT start date
+pages.start.date.confirmation.heading                        = The company''s VAT start date
+pages.start.date.confirmation.para1                          = This is when the company needs to start accounting for VAT.
+pages.start.date.confirmation.para2                          = The company''s VAT start date will be the same as the date Companies House set it up. The company can''t be registered for VAT before this happens.
+
 
 ## Mandatory Start Date Incorp page
 pages.start.date.incorp.title                                = What do you want your VAT start date to be?
@@ -378,18 +391,16 @@ validation.startDateManIncorp.range.above                    = Enter a date whic
 
 ## Estimate Vat Turnover Page
 pages.estimate.vat.turnover.title                           = Estimate value of sales
-pages.estimate.vat.turnover.heading                         = What will the company''s VAT taxable turnover be during the next 12 months?
-pages.estimate.vat.turnover.info                            = You must give an estimate that''s as realistic as possible.
-pages.estimate.vat.turnover.include.title                   = What should I include?
-pages.estimate.vat.turnover.include.bullet1                 = goods you hired or loaned to customers
-pages.estimate.vat.turnover.include.bullet2                 = business goods used for personal reasons
-pages.estimate.vat.turnover.include.bullet3                 = goods you bartered, part-exchanged or gave as gifts
-pages.estimate.vat.turnover.include.bullet4                 = building work over £100,000 that your company did for itself
+pages.estimate.vat.turnover.heading                         = Estimate the company''s VAT-taxable turnover for the next 12 months
+pages.estimate.vat.turnover.info                            = Give an estimate rounded to the nearest £10,000.
+pages.estimate.vat.turnover.include.title                   = What should I include as VAT-taxable turnover?
+pages.estimate.vat.turnover.include.bullet1                 = Add together the total value of the company''s UK sales of VAT-taxable goods and services. Include any zero-rated items.
+
 pages.estimate.vat.turnover.include.para1                   = Find out more about
-pages.estimate.vat.turnover.include.para1.1                 = VAT rates on different goods and services.
+pages.estimate.vat.turnover.include.para1.1                 = VAT rates on different goods and services
 validation.estimate.vat.turnover.low                        = Enter a positive estimate
 validation.estimate.vat.turnover.high                       = Enter an estimate which is less than 1,000,000,000,000,000
-validation.estimate.vat.turnover.missing                    = Estimate the company''s VAT taxable turnover for the next 12 months
+validation.estimate.vat.turnover.missing                    = Enter what the company''s VAT taxable turnover will be during the next 12 months
 
 ## Zero Rated Sales Page
 pages.zero.rated.sales.title                                = Zero-Rated sales
@@ -404,7 +415,7 @@ pages.zero.rated.sales.examples.bullet3                     = motorcycle helmets
 pages.zero.rated.sales.examples.bullet4                     = most goods you export to non-EU countries
 pages.zero.rated.sales.examples.p3                          = Find out about
 pages.zero.rated.sales.examples.p3.1                        = VAT rates on different goods and services.
-validation.zero.rated.sales.missing                         = Tell us if you expect to sell any zero-rated items in the next 12 months
+validation.zero.rated.sales.missing                         = Tell us if the company will sell any zero-rated goods or services in the next 12 months
 
 ## Estimate Zero-Rated Sales Page
 pages.estimate.zero.rated.sales.title                       = Estimate the value of the company''s zero-rated sales for the next 12 months
@@ -427,18 +438,18 @@ validation.estimate.zero.rated.sales.missing                = Estimate the value
 ## Vat Charge Expectancy Page
 pages.vat.charge.expectancy.title                           = VAT charge expectancy
 pages.vat.charge.expectancy.heading                         = Do you expect to reclaim more VAT than you charge?
-pages.vat.charge.expectancy.para1                           = If the VAT you pay for business-related purchases is more than the VAT you charge your customers, you can reclaim the difference from HMRC.
-pages.vat.charge.expectancy.para2                           = If the VAT you charge is more than the VAT you pay, you have to pay the difference to HMRC.
-pages.vat.charge.expectancy.radio.yes                       = Yes, I expect to reclaim more VAT than I charge
-pages.vat.charge.expectancy.radio.no                        = No, I expect to charge more VAT than I reclaim
-validation.vat.charge.expectancy.missing                    = Tell us if you expect to reclaim more VAT than you charge
+pages.vat.charge.expectancy.para1                           = If the VAT you pay for your day to day business-related purchases is more than the VAT you charge your customers, you can claim back the difference.
+pages.vat.charge.expectancy.para2                           = If the VAT you charge is more than the VAT you pay, you''ll have to pay the difference.
+pages.vat.charge.expectancy.radio.yes                       = Yes - I expect to claim back more VAT
+pages.vat.charge.expectancy.radio.no                        = No - I expect to charge more VAT
+validation.vat.charge.expectancy.missing                    = Tell us if you expect the company to claim VAT refunds from HMRC
 
 ## Vat Return Frequency
 pages.vat.return.frequency.title                           = Vat Return Frequency
 pages.vat.return.frequency.heading                         = How often do you want to submit VAT Returns?
 pages.vat.return.frequency.radio.monthly                   = Once a month
 pages.vat.return.frequency.radio.quarterly                 = Every 3 months
-validation.vat.return.frequency.missing                    = Tell us how often you want to submit VAT Returns
+validation.vat.return.frequency.missing                    = Tell us when you want to submit VAT Returns
 
 ## Accounting Period Page
 pages.accounting.period.title                               = Account period
@@ -452,24 +463,27 @@ validation.accounting.period.missing                        = Tell us when you w
 ## Summary Page
 pages.summary.title                                         = Summary
 pages.summary.heading                                       = Check and confirm your answers
+pages.summary.subheading                                    = Now send your application
+pages.summary.para1                                         = By submitting this application you''re confirming that the details you''re providing are correct and reflect the company''s current position.
+pages.summary.continue                                      = Confirm and send application
+pages.summary.print                                         = Print Page
 
 ## Application Submission Confirmation page
 pages.application.submission.confirmation.title                     = Application Submitted
 pages.application.submission.confirmation.heading                   = Application submitted
 pages.application.submission.confirmation.reference.number          = Your reference number is
 pages.application.submission.confirmation.whatNext.sub.heading      = What happens next?
-pages.application.submission.confirmation.whatNext.para1            = HMRC will send you an email to let you know the outcome of your application. This will usually take up to 7 days.
-pages.application.submission.confirmation.whatNext.para2            = You''ll get a secure message with your VAT number sent to your business tax account once you''re registered for VAT.
-pages.application.submission.confirmation.whatNext.para3            = Once you''ve got your VAT number you can send VAT invoices to your VAT-registered customers which show the VAT amount separately.
-pages.application.submission.confirmation.whileWait.sub.heading     = While you wait
-pages.application.submission.confirmation.whileWait.para1           = You can''t charge VAT until you get your VAT number, but you''ll still have to pay the VAT to HMRC for this period.
-pages.application.submission.confirmation.whileWait.para2           = You should increase your prices to allow for this and tell your customers why.
-pages.application.submission.confirmation.whileWait.example         = Example
-pages.application.submission.confirmation.whileWait.example.para1   = If you would''ve charged £100 for something that''s subject to the standard
-pages.application.submission.confirmation.whileWait.example.para1.link = rate of VAT
-pages.application.submission.confirmation.whileWait.example.para1.1 = (20%), increase the price by the 20% and charge £120.
-pages.application.submission.confirmation.whileWait.para3           = Once you''ve got your VAT number you can then reissue invoices showing the VAT.
-pages.application.submission.confirmation.button                    = Your business registration overview
+pages.application.submission.confirmation.whatNext.para1            = You''ll receive:
+pages.application.submission.confirmation.whatNext.para2            = an email now with your application reference number
+pages.application.submission.confirmation.whatNext.para3            = another email within 7 working days letting you know the outcome of your application
+pages.application.submission.confirmation.whatNext.para4            = If your application is successful, we''ll send a message to the company''s Business Tax Account with it''s VAT number.
+pages.application.submission.confirmation.whatNext.para5            = We''ll also send an activation code to do VAT online.
+pages.application.submission.confirmation.whileWait.sub.heading     = When the company can start charging VAT
+pages.application.submission.confirmation.whileWait.para1           = The company can''t charge customers for VAT until it has its VAT number. However, it must start paying VAT from the start date you gave in this application.
+pages.application.submission.confirmation.whileWait.para2           = To protect income:
+pages.application.submission.confirmation.whileWait.para3           = while the company doesn''t have a VAT number, it can temporarily increase its prices
+pages.application.submission.confirmation.whileWait.para4           = when it has the VAT number, it can reissue any unpaid invoices - splitting the price into sale amount and VAT
+pages.application.submission.confirmation.button                    = Finish
 
 ## Summary Page VAT details
 pages.summary.vatDetails.sectionHeading                 = VAT details
@@ -507,12 +521,11 @@ pages.summary.directorDetails.daytimePhone             = Daytime phone number
 pages.summary.directorDetails.mobile                   = Mobile number
 
 ##Business Activity Description
-pages.business.activity.description.title                     = Describe what the company does
-pages.business.activity.description.heading                   = Describe what the company does
-pages.business.activity.description.para1                     = Tell us about the type of VAT taxable goods or services the company sells.
-pages.business.activity.description.label                     = Enter a description of what the company does
+pages.business.activity.description.title                     = What does the company do?
+pages.business.activity.description.heading                   = What does the company do?
+pages.business.activity.description.label                     = Enter a description of the type of goods or services the company sells.
 validation.BusinessActivity.description.missing               = Tell us what the company does
-validation.BusinessActivity.description.invalid               = Enter a valid business activity description
+validation.BusinessActivity.description.invalid               = Enter a business description using only letters, numbers and - , / & ''
 
 ## Summary Page Company details
 pages.summary.companyDetails.flatRateScheme                     = Flat rate scheme
@@ -586,20 +599,25 @@ pages.summary.culturalCompliance.sectionHeading               = Organisation typ
 pages.summary.culturalCompliance.notForProfitOrganisation     = Not-for-profit organisation or public body
 
 ## Error Pages
-errorPages.title                        = Something went wrong
-errorPages.restart.heading              = Sorry, we''re having technical issues.
-errorPages.restart.p1                   = You can try again by <a href="{0}" >restarting</a> your VAT registration.
+errorPages.title                        = We are experiencing technical problems
+errorPages.restart.heading              = We are experiencing technical problems
+errorPages.restart.para1                = Something''s gone wrong with this service. It wasn''t your fault.
+errorPages.restart.para2                = We''ve saved your details.
+errorPages.restart.para3                = You can try again now or come back later by signing back into the service using the link on the
+errorPages.restart.para3.1              = register a company
+errorPages.restart.para3.2              = GOV.UK page
+error.restart.tryagain                  = Try again
 
 ## Company Bank Account
-pages.company.bank.account.title                = Is there a bank account set up in the name of the company?
-pages.company.bank.account.heading              = Is there a bank account set up in the name of the company?
-validation.company.bank.account.missing  = Tell us if you have a bank account set up in the name of the company
+pages.company.bank.account.title                = Does the company have a bank or building society account in the UK?
+pages.company.bank.account.heading              = Does the company have a bank or building society account in the UK?
+pages.company.bank.account.para1                = The bank account must be in the name of the company.
+validation.company.bank.account.missing         = Tell us if the company has a bank or building society account in the UK
 
 ## Bank Details page
 pages.bankDetails.title = Bank details
-pages.bankDetails.heading = What are your business bank account details?
-pages.bankDetails.para1 = For legal reasons, HMRC will only pay any VAT refunds you''re owed into a UK bank account or building society that''s in the name of the business.
-pages.bankDetails.info = The only money HMRC will take out of this account is what you declare on your VAT Returns.
+pages.bankDetails.heading = What are the company''s bank or building society account details?
+pages.bankDetails.info = The only money we''ll take from this account is what you declare on the company''s VAT Returns.
 pages.bankDetails.accountName.label = Business account name
 pages.bankDetails.accountName.hint = For example, Company Name Limited
 pages.bankDetails.accountNumber.label = Business account number
@@ -613,10 +631,9 @@ validation.companyBankAccount.sortCode.invalid = Enter a valid sort code
 validation.companyBankAccount.invalidCombination = Enter a valid bank account number and sort code
 
 ## Main Business Activity
-pages.mainBusinessActivity.heading                        = Which business activity is the company''s main source of income?
-pages.mainBusinessActivity.title                          = Which business activity is the company''s main source of income?
-pages.mainBusinessActivity.para1                          = This business activity will be on your VAT certificate.
-validation.mainBusinessActivity.missing                   = Tell us the company''s main source of income
+pages.mainBusinessActivity.heading                        = Which activity is the company''s main source of income?
+pages.mainBusinessActivity.title                          = Which activity is the company''s main source of income?
+validation.mainBusinessActivity.missing                   = Tell us which activity is the company''s main source of income
 
 ## Compliance - Tell us more about your company page
 pages.compliance.introduction.title                          = Compliance questions
@@ -718,12 +735,13 @@ pages.applyEori.para2                          = We can send you an EORI number 
 pages.applyEori.h3                             = Do you want to apply for one now?
 pages.applyEori.number.yes                     = Yes - send me one now
 pages.applyEori.number.no                      = No - I''ll get one later
-validation.applyEori.missing                   = Tell us if you want to apply for an Economic Operator Registration and Identification (EORI) number
+validation.applyEori.missing                   = Tell us if you want to apply for an EORI number
 
 ## EU Goods
-pages.euGoods.title                         = Will you trade VAT taxable goods with countries outside the EU?
-pages.euGoods.heading                       = Will you trade VAT taxable goods with countries outside the EU?
-validation.euGoods.missing                  = Tell us if you import or export goods from or to countries outside the EU
+pages.euGoods.title                         = Will the company trade VAT taxable goods or services with countries outside the EU?
+pages.euGoods.heading                       = Will the company trade VAT taxable goods or services with countries outside the EU?
+pages.euGoods.p1                            = This includes imports from and exports to non-EU countries.
+validation.euGoods.missing                  = Tell us if the company will trade VAT taxable goods with countries outside the EU
 
 ## Business Contact Details Page
 pages.businessContactDetails.title                           = Company contact details
@@ -738,10 +756,10 @@ pages.businessContactDetails.website.label                   = Website address (
 validation.businessContactDetails.email.missing              = Enter an email address
 validation.businessContactDetails.email.invalid              = Enter a valid email address
 validation.businessContactDetails.email.maxlen               = Email address must not exceed 70 characters
-validation.businessContactDetails.mobile.missing             = Enter at least one phone number
-validation.businessContactDetails.mobile.invalid             = Enter a valid mobile phone number
-validation.businessContactDetails.daytimePhone.missing       = Enter at least one phone number
-validation.businessContactDetails.daytimePhone.invalid       = Enter a valid phone number
+validation.businessContactDetails.mobile.missing             = Enter at least one contact number
+validation.businessContactDetails.mobile.invalid             = Enter a valid contact number
+validation.businessContactDetails.daytimePhone.missing       = Enter at least one contact number
+validation.businessContactDetails.daytimePhone.invalid       = Enter a valid contact number
 
 ## Officer Home Address Page
 pages.officerHomeAddress.title                           = Director residential address
@@ -752,7 +770,7 @@ validation.officerHomeAddress.missing                    = Tell us your home add
 ## Officer Security questions
 pages.security.questions.title                                   = We''re about to pass you through security
 pages.security.questions.heading                                 = We''re about to pass you through security
-pages.security.questions.p1                                      = Before we do, we need ask you two questions.
+pages.security.questions.p1                                      = Before we do, we need ask you two questions. We''ll use your answers to try and find an HMRC record of you.
 pages.security.questions.date.of.birth.h3                        = What is your date of birth?
 pages.security.questions.date.of.birth.hint                      = For example, 31 3 1980
 pages.security.questions.day.label                               = Day
@@ -761,21 +779,25 @@ pages.security.questions.year.label                              = Year
 pages.security.questions.nino.h3                                 = What is your National Insurance number?
 pages.security.questions.nino.p1                                 = You can find your National Insurance number on your National Insurance card, benefit letter, payslip or P60.
 pages.security.questions.nino.hint                               = For example, QQ 12 34 56 C
-validation.security.questions.dob.missing                            = Enter your date of birth
-validation.security.questions.dob.invalid                            = Enter a valid date of birth
-validation.security.questions.dob.range.above                        = Date of birth must not be in the future
-validation.security.questions.dob.range.below                        = Date of birth must be after 1 Jan 1900
-validation.security.questions.nino.missing                            = Enter your National Insurance number
-validation.security.questions.nino.invalid                            = Enter a valid National Insurance number
+validation.security.questions.dob.missing                        = Enter your date of birth
+validation.security.questions.dob.invalid                        = Enter a valid date of birth
+validation.security.questions.dob.range.above                    = Date of birth must not be in the future
+validation.security.questions.dob.range.below                    = Date of birth must be after 1 Jan 1900
+validation.security.questions.nino.missing                       = Enter your National Insurance number
+validation.security.questions.nino.invalid                       = Enter a valid National Insurance number
 
 ## Officer Completion Capacity
 pages.completionCapacity.title                           = Who is registering the company for VAT?
 pages.completionCapacity.heading                         = Who is registering the company for VAT?
-pages.completionCapacity.p1                              = Only formal officers of the company (directors or secretaries) can use this service.
-pages.completionCapacity.panel.title                     = What if I''m not a company director or secretary?
-pages.completionCapacity.panel.p1                        = If you''re an agent for the company, you''ll need to log in to Government Gateway using your agent ID and
-pages.completionCapacity.panel.p1.1                      = register for VAT with another HMRC service.
-pages.completionCapacity.panel.p2                        = Otherwise you can''t register your company for VAT. You''ll need to get a director, secretary or agent to do it for you. <a href="">Go to your company registration overview.</a>
+pages.completionCapacity.panel.title                     = What if these company officers are wrong?
+pages.completionCapacity.panel.p1                        = If the company officers shown are wrong,
+pages.completionCapacity.panel.p1.link                   = tell Companies House
+pages.completionCapacity.panel.p1.1                      = It will take less than 24 hours for Companies House to confirm the changes via email.
+pages.completionCapacity.panel.p2                        = After you get the email,
+pages.completionCapacity.panel.p2.link                   = sign back into this service from GOV.UK
+pages.completionCapacity.panel.p2.1                      = to continue your application.
+pages.completionCapacity.panel.p3                        = If you''re an agent for the company, you''ll need to log in to Government Gateway using your agent ID and
+pages.completionCapacity.panel.p3.link                   = sign back into this service from GOV.UK
 validation.completionCapacity.missing                    = Tell us who is registering the company for VAT
 
 ## Officer Contact Details
@@ -785,9 +807,9 @@ pages.officerContact.p1                                  = You need to provide a
 pages.officerContact.emailAddress.label                  = Email address
 pages.officerContact.mobile.label                        = Mobile number
 pages.officerContact.daytimePhone.label                  = Phone number
-validation.officerContact.missing                        = Enter at least one contact detail
-validation.officerContactDetails.mobile.invalid          = Enter a valid mobile phone number
-validation.officerContactDetails.daytimePhone.invalid    = Enter a valid daytime phone number
+validation.officerContact.missing                        = Enter your contact details
+validation.officerContactDetails.mobile.invalid          = Enter a valid contact number
+validation.officerContactDetails.daytimePhone.invalid    = Enter a valid contact number
 validation.officerContactDetails.email.invalid           = Enter a valid email address
 validation.officerContactDetails.email.maxlen            = Email address must not exceed 70 characters
 
@@ -806,7 +828,7 @@ pages.formerNameDate.heading1                            = When did you change i
 pages.formerNameDate.heading2                            = ?
 pages.formerNameDate.hint1                               = For example, 31 3 2006.
 validation.formerNameDate.invalid                        = Enter a valid date
-validation.formerNameDate.missing                        = Enter when this changed
+validation.formerNameDate.missing                        = Enter a valid date
 validation.formerNameDate.day.invalid                    = Day
 validation.formerNameDate.month.invalid                  = Month
 validation.formerNameDate.year.invalid                   = Year
@@ -827,15 +849,21 @@ validation.ppob.missing                                 = Tell us where you''ll 
 ## Are you interested in FRS Page
 pages.frs.join.title                            = Do you want to join the Flat Rate Scheme?
 pages.frs.join.heading                          = Do you want to join the Flat Rate Scheme?
-pages.frs.join.subheading1                      = Companies on the Flat Rate Scheme:
+pages.frs.join.p1                               = Companies on the Flat Rate Scheme:
 pages.frs.join.list1.bullet1                    = pay a fixed rate of VAT (based on their business type), which is lower than the standard 20% VAT rate
 pages.frs.join.list1.bullet2                    = keep the difference between what they charge customers and what they pay to HMRC
-pages.frs.join.subheading2                      = You can join the Flat Rate Scheme if:
-pages.frs.join.list2.bullet1                    = your company is registered for VAT
-pages.frs.join.list2.bullet2                    = you don''t expect your VAT taxable turnover to be more than £150,000 (excluding VAT) over the next 12 months
-pages.frs.join.para1                            = For companies in their first year of VAT registration, the VAT flat rate is reduced by 1%.
-pages.frs.join.para2                            = You don''t have to decide now. Find out more about
-pages.frs.join.para2.1                          = VAT Flat Rate Scheme.
+pages.frs.join.list1.bullet3                    = can take an extra 1% off their flat rate in their first year
+pages.frs.join.title                            = Show me an example
+pages.frs.join.p2                               = A company that develops computer software does £10,000 consultancy work for a client. It can add 20% VAT when it charges the client, which is £2,000.
+pages.frs.join.p3                               = However, if this type of company is on the Flat Rate Scheme, it only needs to pay 14.5% VAT back to HMRC, which is £1450. It can keep the extra £550.
+pages.frs.join.subheading2                      = Before you decide
+pages.frs.join.p4                               = You''ll need to have an idea how much the company will:
+pages.frs.join.list2.bullet1                    = spend on goods to run the business over the next 3 months
+pages.frs.join.list2.bullet2                    = earn in sales, including VAT, over the next 3 months
+pages.frs.join.para1                            = If you can''t decide right now, answer ''no''. You can register the company for the Flat Rate Scheme at a later date.
+pages.frs.join.para2                            = Find out more about
+pages.frs.join.para2.1                          = VAT Flat Rate Scheme
+pages.frs.join.para3                            = .
 validation.frs.join.missing                     = Tell us if you want to join the Flat Rate Scheme
 
 ## Do you spend less than £1000 Page
@@ -847,22 +875,21 @@ pages.frs.costsInclusive.radio3                           = No
 validation.frs.costsInclusive.missing                     = Tell us if you spend less than £1,000 a year (including VAT) on business goods
 
 ## FRS Confirm business sector Page
-pages.frs.confirmBusinessSector.title                     = Confirm the company''s business type
-pages.frs.confirmBusinessSector.heading                   = Confirm the company''s business type
-pages.frs.confirmBusinessSector.table.row1.heading        = Business sector
-pages.frs.confirmBusinessSector.table.row2.heading        = VAT flat rate (%)
-pages.frs.confirmBusinessSector.panel1.para               = You can add a 1% discount to this rate in your first year as a VAT-registered business.
+pages.frs.confirmBusinessSector.title                     = Confirm the company''s business type for the Flat Rate Scheme
+pages.frs.confirmBusinessSector.heading                   = Confirm the company''s business type for the Flat Rate Scheme
+pages.frs.confirmBusinessSector.para                      = We''ve based this on what we already know about the company:
+pages.frs.confirmBusinessSector.table.row1.heading        = Business type
 pages.frs.confirmBusinessSector.exclamationPoint          = It''s your legal responsibility to check the company has the right business type.
 pages.frs.confirmBusinessSector.changeLink                = Change your business type
 validation.frs.confirmBusinessSector.missing              = Tell us if you want to use this rate
 
 ## Do you want to register for FRS Page 16.5% rate
-pages.frs.registerFor.title                               = Use the 16.5% flat rate
-pages.frs.registerFor.heading                             = You can use the 16.5% flat rate
-pages.frs.registerFor.p                                   = This is because you don''t spend enough (including VAT) on business goods.
-pages.frs.registerFor.panel1.para                         = You can add a 1% discount to this rate in your first year as a VAT-registered business.
-pages.frs.registerFor.subheading1                         = Do you want to use the 16.5% rate?
-validation.frs.registerFor.missing                        = Tell us if you want to use this rate
+pages.frs.registerFor.title                               = To join the Flat Rate Scheme the company must use the 16.5% flat rate
+pages.frs.registerFor.heading                             = To join the Flat Rate Scheme the company must use the 16.5% flat rate
+pages.frs.registerFor.p                                   = This is because the company doesn''t spend enough (including VAT) on relevant goods.
+pages.frs.registerFor.panel1.para                         = Companies in their first year of VAT registration can take an extra 1% off their flat rate.
+pages.frs.registerFor.subheading1                         = Do you want the company to join the Flat Rate Scheme with this rate?
+validation.frs.registerFor.missing                        = Tell us if you want to use the 16.5% flat rate
 
 ## Do you want to register for FRS Page business sector rate
 pages.frs.registerForWithSector.title                     = Your flat rate

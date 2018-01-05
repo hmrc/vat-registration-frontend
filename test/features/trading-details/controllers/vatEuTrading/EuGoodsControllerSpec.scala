@@ -53,7 +53,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
       submitAuthorised(EuGoodsController.show(), fakeRequest.withFormUrlEncodedBody(
         "euGoodsRadio" -> ""
       )) {
-        _ includesText "Will you trade VAT taxable goods with countries outside the EU"
+        _ includesText "Will the company trade VAT taxable goods or services with countries outside the EU?"
       }
     }
 
@@ -66,7 +66,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
         .thenReturn(Future.successful(validVatScheme))
 
       callAuthorised(EuGoodsController.show) {
-        _ includesText "Will you trade VAT taxable goods with countries outside the EU"
+        _ includesText "Will the company trade VAT taxable goods or services with countries outside the EU?"
       }
     }
 
@@ -79,7 +79,7 @@ class EuGoodsControllerSpec extends VatRegSpec with VatRegistrationFixture with 
         .thenReturn(Future.successful(emptyVatScheme))
 
       callAuthorised(EuGoodsController.show) {
-        _ includesText "Will you trade VAT taxable goods with countries outside the EU"
+        _ includesText "Will the company trade VAT taxable goods or services with countries outside the EU?"
       }
     }
   }
