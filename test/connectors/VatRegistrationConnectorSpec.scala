@@ -22,6 +22,8 @@ import models.api._
 import models.external.IncorporationInfo
 import uk.gov.hmrc.play.http._
 import config.WSHttp
+import features.turnoverEstimates.TurnoverEstimates
+import play.api.libs.json.Json
 
 import scala.language.postfixOps
 import uk.gov.hmrc.http.HttpResponse
@@ -35,6 +37,8 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       override val http: WSHttp        = mockWSHttp
     }
   }
+
+  val testUrl = "testUrl"
 
   "Calling createNewRegistration" should {
     "return a successful outcome when the microservice successfully creates a new Vat Registration" in new Setup {
@@ -272,6 +276,39 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       mockHttpPUT[String, HttpResponse]("test-url", validHttpResponse)
 
       await(connector.submitRegistration("tstID")) mustBe Success
+    }
+  }
+
+  "getTurnoverEstimates" should {
+
+    val jsonBody = Json.obj("vatTaxable" -> 1000)
+    val turnoverEstimates = TurnoverEstimates(1000L)
+
+    "return turnover estimates if they are returned from the backend" in new Setup {
+      mockHttpGET[HttpResponse](testUrl, HttpResponse(200, Some(jsonBody)))
+
+      val result: Option[TurnoverEstimates] = await(connector.getTurnoverEstimates)
+      result mustBe Some(turnoverEstimates)
+    }
+
+    "return None if turnover estimates can't be found in the backend for the supplied regId" in new Setup {
+      mockHttpGET[HttpResponse](testUrl, HttpResponse(204))
+
+      val result: Option[TurnoverEstimates] = await(connector.getTurnoverEstimates)
+      result mustBe None
+    }
+  }
+
+  "patchTurnoverEstimates" should {
+
+    val turnoverEstimates = TurnoverEstimates(1000L)
+    val httpResponse = HttpResponse(200)
+
+    "return a 200 HttpResponse" in new Setup {
+      mockHttpPATCH(testUrl, HttpResponse(200))
+
+      val result: HttpResponse = await(connector.patchTurnoverEstimates(turnoverEstimates))
+      result.status mustBe httpResponse.status
     }
   }
 }
