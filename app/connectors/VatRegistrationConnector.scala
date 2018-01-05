@@ -22,6 +22,7 @@ import cats.data.OptionT
 import cats.instances.FutureInstances
 import common.enums.VatRegStatus
 import config.WSHttp
+import features.turnoverEstimates.TurnoverEstimates
 import models.CurrentProfile
 import models.api._
 import models.external.IncorporationInfo
@@ -124,6 +125,24 @@ trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnect
   def updateIVStatus(regId: String, ivData: Boolean)(implicit hc:HeaderCarrier):Future[HttpResponse] = {
     http.PATCH[JsValue, HttpResponse](s"$vatRegUrl/vatreg/$regId/update-iv-status/${ivData.toString}", Json.obj()).recover {
       case e: Exception => throw logResponse(e, "updateIVStatus")
+    }
+  }
+
+  def getTurnoverEstimates(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[TurnoverEstimates]] = {
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${profile.registrationId}/turnover-estimates") map { res =>
+      res.status match {
+        case OK         => Some(res.json.as[TurnoverEstimates])
+        case NO_CONTENT => None
+      }
+    } recover {
+      case e: Exception => throw logResponse(e, "getTurnoverEstimates")
+    }
+  }
+
+  def patchTurnoverEstimates(turnoverEstimates: TurnoverEstimates)
+                            (implicit hc: HeaderCarrier, profile: CurrentProfile): Future[HttpResponse] = {
+    http.PATCH[TurnoverEstimates, HttpResponse](s"$vatRegUrl/vatreg/${profile.registrationId}/turnover-estimates", turnoverEstimates) recover {
+      case e: Exception => throw logResponse(e, "patchTurnoverEstimates")
     }
   }
 

@@ -401,6 +401,7 @@ pages.estimate.vat.turnover.include.para1.1                 = VAT rates on diffe
 validation.estimate.vat.turnover.low                        = Enter a positive estimate
 validation.estimate.vat.turnover.high                       = Enter an estimate which is less than 1,000,000,000,000,000
 validation.estimate.vat.turnover.missing                    = Enter what the company''s VAT taxable turnover will be during the next 12 months
+validation.estimate.vat.turnover.invalid                    = Enter a valid number
 
 ## Zero Rated Sales Page
 pages.zero.rated.sales.title                                = Zero-Rated sales
@@ -847,7 +848,6 @@ pages.ppob.different.address                            = A different address
 validation.ppob.missing                                 = Tell us where you''ll carry out most of your business activities
 
 ## Are you interested in FRS Page
-pages.frs.join.title                            = Do you want to join the Flat Rate Scheme?
 pages.frs.join.heading                          = Do you want to join the Flat Rate Scheme?
 pages.frs.join.p1                               = Companies on the Flat Rate Scheme:
 pages.frs.join.list1.bullet1                    = pay a fixed rate of VAT (based on their business type), which is lower than the standard 20% VAT rate

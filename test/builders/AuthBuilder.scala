@@ -29,57 +29,64 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 
 import scala.concurrent.Future
 
-object AuthBuilder extends AuthBuilder {}
+trait AuthBuilder extends SessionBuilder {
 
-trait AuthBuilder {
+  val mockAuthConnector: AuthConnector
 
-  def mockAuthorisedUser(userId: String, accounts: Accounts = Accounts())(implicit mockAuthConnector: AuthConnector) {
+  val userId = "testUserId"
+
+  def mockAuthorisedUser(userId: String, accounts: Accounts = Accounts()) {
     when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())) thenReturn {
       Future.successful(Some(createUserAuthority(userId, accounts)))
     }
   }
 
+  def requestWithAuthorisedUser[T <: AnyContent](action: Action[AnyContent], request: FakeRequest[T])
+                                                (test: Future[Result] => Any) {
+    mockAuthorisedUser(userId)
+    val result = action(updateRequestWithSession(request))
+    test(result)
+  }
+
   def requestWithAuthorisedUser(action: Action[AnyContent], mockAuthConnector: AuthConnector)(test: Future[Result] => Any) {
     val userId = "testUserId"
-    mockAuthorisedUser(userId)(mockAuthConnector)
-    val result = action(SessionBuilder.buildRequestWithSession(userId))
+    mockAuthorisedUser(userId)
+    val result = action(buildRequestWithSession(userId))
     test(result)
   }
 
   def withAuthorisedUser(action: Action[AnyContent])(test: Future[Result] => Any)(implicit mockAuthConnector: AuthConnector) {
     val userId = "testUserId"
     mockAuthorisedUser(userId)
-    val result = action(SessionBuilder.buildRequestWithSession(userId))
+    val result = action(buildRequestWithSession(userId))
     test(result)
   }
 
   def submitWithUnauthorisedUser(action: Action[AnyContent], request: FakeRequest[AnyContentAsFormUrlEncoded], mockAuthConnector: AuthConnector)
                                 (test: Future[Result] => Any) {
-    when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    val result = action.apply(SessionBuilder.updateRequestFormWithSession(request, ""))
+    when(this.mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    val result = action.apply(updateRequestFormWithSession(request, ""))
     test(result)
   }
 
   def submitWithUnauthorisedUser(action: Action[AnyContent], request: FakeRequest[AnyContentAsFormUrlEncoded])
-                                (test: Future[Result] => Any)(implicit mockAuthConnector: AuthConnector) {
+                                (test: Future[Result] => Any) {
     when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    val result = action.apply(SessionBuilder.updateRequestFormWithSession(request, ""))
+    val result = action.apply(updateRequestFormWithSession(request, ""))
     test(result)
   }
 
   def submitWithAuthorisedUser(action: Action[AnyContent], request: FakeRequest[AnyContentAsFormUrlEncoded], mockAuthConnector: AuthConnector)
                               (test: Future[Result] => Any) {
-    val userId = "testUserId"
-    AuthBuilder.mockAuthorisedUser(userId)(mockAuthConnector)
-    val result = action.apply(SessionBuilder.updateRequestFormWithSession(request, userId))
+    mockAuthorisedUser(userId)
+    val result = action.apply(updateRequestFormWithSession(request, userId))
     test(result)
   }
 
   def submitWithAuthorisedUser(action: Action[AnyContent], request: FakeRequest[AnyContentAsFormUrlEncoded])
-                              (test: Future[Result] => Any)(implicit mockAuthConnector: AuthConnector) {
-    val userId = "testUserId"
-    AuthBuilder.mockAuthorisedUser(userId)
-    val result = action.apply(SessionBuilder.updateRequestFormWithSession(request, userId))
+                              (test: Future[Result] => Any) {
+    mockAuthorisedUser(userId)
+    val result = action.apply(updateRequestFormWithSession(request, userId))
     test(result)
   }
 

@@ -28,16 +28,18 @@ import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Assertion
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import play.api.http.{HeaderNames, Status}
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc._
-import play.api.test.FakeRequest
+import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits, ResultExtractors}
 import services.{DateService, VatRegistrationService}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 import uk.gov.hmrc.http.HeaderCarrier
 
-trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite {
+trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite with AuthBuilder
+  with Status with FutureAwaits with DefaultAwaitTimeout with ResultExtractors with HeaderNames {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -62,10 +64,10 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite {
   def submitAuthorised(a: => Action[AnyContent], r: => FakeRequest[AnyContentAsFormUrlEncoded])
                       (test: Future[Result] => Assertion)
                       (implicit mockAuthConnector: AuthConnector): Unit =
-    AuthBuilder.submitWithAuthorisedUser(a, r)(test)
+    submitWithAuthorisedUser(a, r)(test)
 
   def callAuthorised(a: Action[AnyContent])(test: Future[Result] => Assertion): Unit =
-    AuthBuilder.withAuthorisedUser(a)(test)
+    withAuthorisedUser(a)(test)
 
   def mockWithCurrentProfile(currentProfile: Option[CurrentProfile]): OngoingStubbing[Future[Option[CurrentProfile]]] = {
     when(mockKeystoreConnector.fetchAndGet[CurrentProfile](any())(any(), any()))

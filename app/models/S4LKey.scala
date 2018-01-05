@@ -17,6 +17,7 @@
 package models
 
 import features.financials.models.Returns
+import features.turnoverEstimates.TurnoverEstimates
 import models.view.test.SicStub
 
 trait S4LKey[T] {
