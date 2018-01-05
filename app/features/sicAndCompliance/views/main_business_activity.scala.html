@@ -15,8 +15,6 @@
         <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.mainBusinessActivity.heading")</h1>
     </header>
 
-    <p>@messages("pages.mainBusinessActivity.para1")</p>
-
     @govHelpers.form(action = controllers.sicAndCompliance.routes.MainBusinessActivityController.submit()) {
         <div class="form-group" id="mainBusinessActivityRadio">
 
@@ -28,7 +26,6 @@
                 '_legendClass -> "hidden",
                 '_labelClass -> "block-label"
             )
-
         </div>
 
         <div class="form-group">

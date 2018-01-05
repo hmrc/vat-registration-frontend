@@ -45,7 +45,7 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
       save4laterReturnsNoViewModel[MainBusinessActivityView]()
       mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
       callAuthorised(Controller.show()) {
-        _ includesText "Which business activity is the company"
+        _ includesText "Which activity is the company&#x27;s main source of income?"
       }
     }
 
@@ -54,7 +54,7 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
       save4laterReturnsViewModel(MainBusinessActivityView(sicCode.id, Some(sicCode)))()
       mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
       callAuthorised(Controller.show()) {
-        _ includesText "Which business activity is the company"
+        _ includesText "Which activity is the company&#x27;s main source of income?"
       }
     }
   }

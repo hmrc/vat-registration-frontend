@@ -46,7 +46,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
       mockGetCurrentProfile()
       submitAuthorised(TestController.show(), fakeRequest.withFormUrlEncodedBody(
         "description" -> ""
-      ))(_ includesText "Describe what the company does")
+      ))(_ includesText "Enter a description of the type of goods or services the company sells.")
     }
 
 
@@ -55,7 +55,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
       when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]())).thenReturn(Future.successful(validVatScheme))
       mockGetCurrentProfile()
       callAuthorised(TestController.show) {
-        _ includesText "Describe what the company does"
+        _ includesText "Enter a description of the type of goods or services the company sells."
       }
     }
 
@@ -64,7 +64,7 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
       when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
       mockGetCurrentProfile()
       callAuthorised(TestController.show) {
-        _ includesText "Describe what the company does"
+        _ includesText "Enter a description of the type of goods or services the company sells."
       }
     }
   }
