@@ -16,11 +16,13 @@
 
 package models.view.vatLodgingOfficer
 
+import features.officers.models.view.OfficerSecurityQuestionsView
 import fixtures.VatRegistrationFixture
 import models.api._
 import models.{ApiModelTransformer, S4LVatLodgingOfficer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
+import models.S4LVatLodgingOfficer.{viewModelFormat, modelTransformer}
 
 class OfficerSecurityQuestionsViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
   val testDOB = DateOfBirth(1,12,1999)
@@ -43,12 +45,12 @@ class OfficerSecurityQuestionsViewSpec extends UnitSpec with VatRegistrationFixt
         Some(emptyOfficer))
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
-      ApiModelTransformer[OfficerSecurityQuestionsView].toViewModel(vs) shouldBe Some(officerSecurityQuestions)
+      modelTransformer.toViewModel(vs) shouldBe Some(officerSecurityQuestions)
     }
 
     "convert VatScheme without VatLodgingOfficer to empty view model" in {
       val vs = vatScheme().copy(lodgingOfficer = None)
-      ApiModelTransformer[OfficerSecurityQuestionsView].toViewModel(vs) shouldBe None
+      modelTransformer.toViewModel(vs) shouldBe None
     }
 
   }
@@ -57,16 +59,16 @@ class OfficerSecurityQuestionsViewSpec extends UnitSpec with VatRegistrationFixt
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(officerSecurityQuestions = Some(officerSecurityQuestions))
 
     "extract OfficerSecurityQuestionsView from lodgingOfficer" in {
-      OfficerSecurityQuestionsView.viewModelFormat.read(s4LVatLodgingOfficer) shouldBe Some(officerSecurityQuestions)
+      viewModelFormat.read(s4LVatLodgingOfficer) shouldBe Some(officerSecurityQuestions)
     }
 
     "update empty lodgingOfficer with OfficerSecurityQuestionsView" in {
-      OfficerSecurityQuestionsView.viewModelFormat.update(officerSecurityQuestions, Option.empty[S4LVatLodgingOfficer]).
+      viewModelFormat.update(officerSecurityQuestions, Option.empty[S4LVatLodgingOfficer]).
         officerSecurityQuestions shouldBe Some(officerSecurityQuestions)
     }
 
     "update non-empty lodgingOfficer with OfficerSecurityQuestionsView" in {
-      OfficerSecurityQuestionsView.viewModelFormat.update(officerSecurityQuestions, Some(s4LVatLodgingOfficer)).
+      viewModelFormat.update(officerSecurityQuestions, Some(s4LVatLodgingOfficer)).
         officerSecurityQuestions shouldBe Some(officerSecurityQuestions)
     }
   }

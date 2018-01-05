@@ -52,6 +52,7 @@ import models.view.vatTradingDetails.vatEuTrading.EuGoods.EU_GOODS_YES
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import org.scalatest.Inspectors
 import uk.gov.hmrc.play.test.UnitSpec
+import features.officers.models.view._
 
 class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixture {
 

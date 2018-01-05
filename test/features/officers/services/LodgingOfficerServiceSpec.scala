@@ -21,13 +21,13 @@ import java.time.LocalDate
 import common.enums.VatRegStatus
 import common.exceptions.InternalExceptions.NoOfficerFoundException
 import connectors.{RegistrationConnector, S4LConnect}
-import features.officers.models.view.LodgingOfficer
+import features.officers.models.view._
 import helpers.FutureAssertions
 import mocks.VatMocks
 import models.CurrentProfile
 import models.api.{Name, ScrsAddress}
 import models.external.Officer
-import models.view.vatLodgingOfficer.{OfficerContactDetailsView, OfficerHomeAddressView, OfficerSecurityQuestionsView}
+import models.view.vatLodgingOfficer._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -48,18 +48,33 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
 
   val emptyLodgingOfficer = LodgingOfficer(None, None, None, None, None, None, None)
   val incompleteLodgingOfficer = LodgingOfficer(Some("TestName"), None, None, None, None, None, None)
-  val validLodgingOfficer = LodgingOfficer(
-    completionCapacity = Some("TestName"),
-    officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.of(1998, 7, 12), "Director")),
+  val validOfficer = Officer(
+    name = Name(forename = Some("First"), otherForenames = Some("Middle"), surname = "Last"),
+    role = "Director"
+  )
+  val validPartialLodgingOfficer = LodgingOfficer(
+    completionCapacity = Some("FirstLastMiddle"),
+    officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.of(1998, 7, 12), "ZZ987654A")),
     officerHomeAddress = None,
     officerContactDetails = None,
     formerName = None,
     formerNameDate = None,
     previousAddress = None
   )
-  val validOfficer = Officer(
-    name = Name(forename = Some("First"), otherForenames = Some("Middle"), surname = "Last"),
-    role = "Director"
+  val validCurrentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+  val validPrevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
+  val validFullLodgingOfficer = LodgingOfficer(
+    completionCapacity = Some("FirstLastMiddle"),
+    officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.of(1998, 7, 12), "ZZ987654A")),
+    officerHomeAddress = Some(OfficerHomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
+    officerContactDetails = Some(OfficerContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+    formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
+    formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
+    previousAddress = Some(PreviousAddressView(true, Some(validPrevAddress)))
+  )
+  val validFullLodgingOfficerNoFormerName = validFullLodgingOfficer.copy(
+    formerName = Some(FormerNameView(false, None)),
+    formerNameDate = None
   )
 
   class Setup(s4lData: Option[LodgingOfficer] = None, backendData: Option[JsValue] = None) {
@@ -93,7 +108,7 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
       .thenReturn(Future.successful(CacheMap("", Map())))
   }
 
-  class SetupForBackendSave(t: LodgingOfficer = validLodgingOfficer, list: Seq[Officer] = Seq(validOfficer)) {
+  class SetupForBackendSave(t: LodgingOfficer = validPartialLodgingOfficer, list: Seq[Officer] = Seq(validOfficer)) {
     val service = new LodgingOfficerService {
       override val s4lConnector: S4LConnect = mockS4LConnector
       override val incorpInfoService: IncorporationInfoSrv = mockIncorpInfoService
@@ -185,21 +200,139 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
     }
   }
 
-  "Calling updateCompletionCapacity" should {
-    "return a LodgingOfficer and save to S4L" in new SetupForS4LSave {
-      val expected = emptyLodgingOfficer.copy(completionCapacity = Some("FirstLast"))
+  "Calling updateLodgingOfficer" should {
+    "return a LodgingOfficer" when {
+      "updating completion capacity" that {
+        val preUpdateLodgingOfficer = validPartialLodgingOfficer.copy(completionCapacity = Some("TestName"))
 
-      service.updateCompletionCapacity("FirstLast") returns expected
+        "makes the block incomplete and save to S4L" in new SetupForS4LSave {
+          val expected = emptyLodgingOfficer.copy(completionCapacity = Some("FirstLast"))
+
+          service.updateLodgingOfficer("FirstLast") returns expected
+        }
+
+        "makes the block complete and save to backend" in new SetupForBackendSave(preUpdateLodgingOfficer) {
+          service.updateLodgingOfficer(validOfficer.name.id) returns validPartialLodgingOfficer
+        }
+      }
+
+      "updating security questions" that {
+        val officerSecurityQuestions = OfficerSecurityQuestionsView(LocalDate.of(2000, 7, 23), "AA123456Z")
+
+        "makes the block incomplete and save to S4L" in new SetupForS4LSave {
+          val expected = emptyLodgingOfficer.copy(officerSecurityQuestions = Some(officerSecurityQuestions))
+
+          service.updateLodgingOfficer(officerSecurityQuestions) returns expected
+        }
+
+        "makes the block complete and save to backend" in new SetupForBackendSave {
+          val expected = validPartialLodgingOfficer.copy(officerSecurityQuestions = Some(officerSecurityQuestions))
+
+          service.updateLodgingOfficer(officerSecurityQuestions) returns expected
+        }
+      }
+
+      "updating current address" that {
+        val currentAddress = ScrsAddress(line1 = "Line1", line2 = "Line2", postcode = Some("PO BOX"))
+        val officerHomeAddress = OfficerHomeAddressView(currentAddress.id, Some(currentAddress))
+
+        "makes the block incomplete and save to S4L" in new SetupForS4LSave(validPartialLodgingOfficer) {
+          val expected = validPartialLodgingOfficer.copy(officerHomeAddress = Some(officerHomeAddress))
+
+          service.updateLodgingOfficer(officerHomeAddress) returns expected
+        }
+
+        "makes the block complete and save to backend" in new SetupForBackendSave(validFullLodgingOfficer) {
+          val expected = validFullLodgingOfficer.copy(officerHomeAddress = Some(officerHomeAddress))
+
+          service.updateLodgingOfficer(officerHomeAddress) returns expected
+        }
+      }
+
+      "updating officer contact" that {
+        val officerContactDetails = OfficerContactDetailsView(Some("tt@dd.uk"))
+
+        "makes the block incomplete and save to S4L" in new SetupForS4LSave(validPartialLodgingOfficer) {
+          val expected = validPartialLodgingOfficer.copy(officerContactDetails = Some(officerContactDetails))
+
+          service.updateLodgingOfficer(officerContactDetails) returns expected
+        }
+
+        "makes the block complete and save to backend" in new SetupForBackendSave(validFullLodgingOfficer) {
+          val expected = validFullLodgingOfficer.copy(officerContactDetails = Some(officerContactDetails))
+
+          service.updateLodgingOfficer(officerContactDetails) returns expected
+        }
+      }
+
+      "updating officer former name" that {
+        val formerNameFalse = FormerNameView(false, None)
+        val formerNameTrue = FormerNameView(true, Some("New FormerName TADA"))
+
+        "makes the block incomplete and save to S4L, model was previously incomplete" in new SetupForS4LSave(validPartialLodgingOfficer) {
+          val expected = validPartialLodgingOfficer.copy(formerName = Some(formerNameFalse))
+
+          service.updateLodgingOfficer(formerNameFalse) returns expected
+        }
+
+        "makes the block incomplete and save to S4L, model was previously complete no former name" in new SetupForS4LSave(validFullLodgingOfficerNoFormerName) {
+          val formerName = FormerNameView(true, Some("New Name TADA"))
+          val expected = validFullLodgingOfficerNoFormerName.copy(formerName = Some(formerName))
+
+          service.updateLodgingOfficer(formerName) returns expected
+        }
+
+        "makes the block complete with no former name and save to backend" in new SetupForBackendSave(validFullLodgingOfficer) {
+          val expected = validFullLodgingOfficer.copy(formerName = Some(formerNameFalse))
+
+          service.updateLodgingOfficer(formerNameFalse) returns expected
+        }
+
+        "makes the block complete with a former name and save to backend" in new SetupForBackendSave(validFullLodgingOfficer) {
+          val expected = validFullLodgingOfficer.copy(formerName = Some(formerNameTrue))
+
+          service.updateLodgingOfficer(formerNameTrue) returns expected
+        }
+      }
+
+      "updating officer former name date change" that {
+        val formerNameDate = FormerNameDateView(LocalDate.of(2002, 5, 15))
+
+        "makes the block incomplete and save to S4L" in new SetupForS4LSave(validPartialLodgingOfficer) {
+          val expected = validPartialLodgingOfficer.copy(formerNameDate = Some(formerNameDate))
+
+          service.updateLodgingOfficer(formerNameDate) returns expected
+        }
+
+        "makes the block complete and save to backend" in new SetupForBackendSave(validFullLodgingOfficer) {
+          val expected = validFullLodgingOfficer.copy(formerNameDate = Some(formerNameDate))
+
+          service.updateLodgingOfficer(formerNameDate) returns expected
+        }
+      }
+
+      "updating officer previous address" that {
+        val addr = ScrsAddress(line1 = "PrevLine1", line2 = "PrevLine2", postcode = Some("PO PRE"))
+        val previousAddress = PreviousAddressView(true, Some(addr))
+
+        "makes the block incomplete and save to S4L" in new SetupForS4LSave(validPartialLodgingOfficer) {
+          val expected = validPartialLodgingOfficer.copy(previousAddress = Some(previousAddress))
+
+          service.updateLodgingOfficer(previousAddress) returns expected
+        }
+
+        "makes the block complete and save to backend" in new SetupForBackendSave(validFullLodgingOfficer) {
+          val expected = validFullLodgingOfficer.copy(previousAddress = Some(previousAddress))
+
+          service.updateLodgingOfficer(previousAddress) returns expected
+        }
+      }
     }
 
-    "return a LodgingOfficer and save to backend" in new SetupForBackendSave {
-      val expected = validLodgingOfficer.copy(completionCapacity = Some(validOfficer.name.id))
-
-      service.updateCompletionCapacity(validOfficer.name.id) returns expected
-    }
-
-    "throw a NoOfficerFoundException if there's no match in Officer List when trying to save to backend" in new SetupForBackendSave {
-      service.updateCompletionCapacity("NotFound") failedWith classOf[NoOfficerFoundException]
+    "throw a NoOfficerFoundException" when {
+      "there's no match in Officer List when updating completion capacity to save to backend" in new SetupForBackendSave {
+        service.updateLodgingOfficer("NotFound") failedWith classOf[NoOfficerFoundException]
+      }
     }
   }
 }

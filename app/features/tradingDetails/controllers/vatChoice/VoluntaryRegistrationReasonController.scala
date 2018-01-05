@@ -92,7 +92,7 @@ package controllers.vatTradingDetails.vatChoice {
               badForm => BadRequest(features.tradingDetails.views.html.vatChoice.voluntary_registration_reason(badForm)).pure,
               goodForm => (goodForm.reason == VoluntaryRegistrationReason.NEITHER).pure.ifM(
                 s4l.clear.flatMap(_ => vrs.deleteVatScheme).map(_ => controllers.routes.WelcomeController.show()),
-                save(goodForm).map(_ => controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
+                save(goodForm).map(_ => features.officers.controllers.routes.CompletionCapacityController.show())
               ).map(Redirect))
           }
     }

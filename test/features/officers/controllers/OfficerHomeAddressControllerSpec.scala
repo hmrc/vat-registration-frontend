@@ -16,6 +16,7 @@
 
 package controllers.vatLodgingOfficer
 
+import features.officers.controllers.routes
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.api.ScrsAddress
@@ -38,7 +39,7 @@ class OfficerHomeAddressControllerSpec extends VatRegSpec
     mockPPService
   )
 
-  val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())
+  val fakeRequest = FakeRequest(routes.OfficerHomeAddressController.show())
 
   val address = ScrsAddress(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
 

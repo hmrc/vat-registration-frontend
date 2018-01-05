@@ -51,6 +51,7 @@ package controllers.vatLodgingOfficer {
 
   import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import features.officers.controllers.routes
   import forms.vatLodgingOfficer.FormerNameForm
   import models.view.vatLodgingOfficer.FormerNameView
   import play.api.data.Form
@@ -88,8 +89,8 @@ package controllers.vatLodgingOfficer {
               form.bindFromRequest().fold(
                 badForm => BadRequest(features.officers.views.html.former_name(badForm)).pure,
                 data => data.yesNo.pure.ifM(
-                  ifTrue = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.FormerNameDateController.show())),
-                  ifFalse = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show()))))
+                  ifTrue = save(data).map(_ => Redirect(routes.FormerNameDateController.show())),
+                  ifFalse = save(data).map(_ => Redirect(features.officers.controllers.routes.OfficerContactDetailsController.show()))))
             }
           }
     }

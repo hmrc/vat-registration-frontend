@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.vatLodgingOfficer
+package features.officers.controllers
 
 import connectors.KeystoreConnect
 import features.officers.models.view.LodgingOfficer
@@ -47,7 +47,7 @@ class CompletionCapacityControllerSpec extends ControllerSpec with VatRegistrati
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
+  val fakeRequest = FakeRequest(routes.CompletionCapacityController.show())
 
   s"GET ${routes.CompletionCapacityController.show()}" should {
 
@@ -93,7 +93,7 @@ class CompletionCapacityControllerSpec extends ControllerSpec with VatRegistrati
         None
       )
 
-      when(mockLodgingOfficerService.updateCompletionCapacity(any())(any(), any())).thenReturn(Future.successful(lodgingOfficer))
+      when(mockLodgingOfficerService.updateLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(lodgingOfficer))
 
       submitAuthorised(controller.submit(),
         fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> completionCapacity.name.id)

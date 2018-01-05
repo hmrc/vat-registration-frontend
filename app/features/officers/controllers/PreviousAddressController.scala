@@ -51,6 +51,7 @@ package controllers.vatLodgingOfficer {
   import connectors.KeystoreConnect
   import common.enums.AddressLookupJourneyIdentifier.addressThreeYearsOrLess
   import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import features.officers.controllers.routes
   import forms.vatLodgingOfficer.PreviousAddressForm
   import models.view.vatLodgingOfficer.PreviousAddressView
   import play.api.data.Form

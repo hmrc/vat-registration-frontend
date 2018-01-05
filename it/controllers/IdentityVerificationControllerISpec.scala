@@ -51,7 +51,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         val response = buildClient(s"/ivComplete").get()
         whenReady(response) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatLodgingOfficer.routes.FormerNameController.show().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(features.officers.controllers.routes.FormerNameController.show().url)
         }
       }
     "return 500 if VAT Backend does not return a 200 status when saving ivPassed" in {

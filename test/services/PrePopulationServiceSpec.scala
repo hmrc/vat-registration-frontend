@@ -21,17 +21,17 @@ import java.time.format.DateTimeFormatter.ofPattern
 
 import cats.data.OptionT
 import common.enums.VatRegStatus
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.api._
 import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
 import models.view.vatContact.ppob.PpobView
-import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerHomeAddressView, OfficerSecurityQuestionsView}
+import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerHomeAddressView}
 import models.{S4LVatContact, S4LVatLodgingOfficer}
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
+import features.officers.models.view.OfficerSecurityQuestionsView
 
 import scala.concurrent.Future
 import scala.language.implicitConversions

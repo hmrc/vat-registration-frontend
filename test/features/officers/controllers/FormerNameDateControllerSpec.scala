@@ -20,6 +20,7 @@ import java.time.LocalDate
 
 import common.Now
 import controllers.vatLodgingOfficer
+import features.officers.controllers.routes
 import fixtures.VatRegistrationFixture
 import forms.vatLodgingOfficer.FormerNameDateForm
 import helpers.{S4LMockSugar, VatRegSpec}
@@ -54,7 +55,7 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
   val fakeRequest = FakeRequest(routes.FormerNameDateController.show())
 
-  s"GET ${vatLodgingOfficer.routes.FormerNameDateController.show()}" should {
+  s"GET ${routes.FormerNameDateController.show()}" should {
     "return HTML when a date no data entered in S4L for Former name" in {
       val formerNameDate = FormerNameDateView(LocalDate.now)
       save4laterReturnsNoViewModel[FormerNameView]()

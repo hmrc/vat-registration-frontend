@@ -38,6 +38,7 @@ import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.TradingNameView._
 import models.view.vatTradingDetails.vatChoice._
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
+import features.officers.models.view._
 
 @Singleton
 class TestS4LBuilder {

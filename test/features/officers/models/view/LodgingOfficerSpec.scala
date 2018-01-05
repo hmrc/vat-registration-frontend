@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import models.api.{Name, ScrsAddress}
 import models.external.Officer
-import models.view.vatLodgingOfficer.{FormerNameDateView, FormerNameView, OfficerContactDetailsView, OfficerHomeAddressView, OfficerSecurityQuestionsView, PreviousAddressView}
+import models.view.vatLodgingOfficer._
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.test.UnitSpec
 

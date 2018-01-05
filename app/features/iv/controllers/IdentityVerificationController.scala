@@ -94,7 +94,7 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies,
           ivService.getJourneyIdAndJourneyOutcome.flatMap { res =>
             ivService.setIvStatus(res).flatMap {
               case Some(_) => cpService.updateIVStatusInCurrentProfile(Some(true)).flatMap(_ =>
-                Future.successful(Redirect(controllers.vatLodgingOfficer.routes.FormerNameController.show())))
+                Future.successful(Redirect(features.officers.controllers.routes.FormerNameController.show())))
               case _ => Future.successful(InternalServerError)
             }
           }.recover{case _ => InternalServerError(views.html.pages.error.restart())}

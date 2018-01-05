@@ -16,6 +16,7 @@
 
 package controllers.vatLodgingOfficer
 
+import features.officers.controllers.routes
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatLodgingOfficer.OfficerContactDetailsView
@@ -33,9 +34,9 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
     mockVatRegistrationService
   )
 
-  val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
+  val fakeRequest = FakeRequest(routes.OfficerContactDetailsController.show())
 
-  s"GET ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show()}" should {
+  s"GET ${features.officers.controllers.routes.OfficerContactDetailsController.show()}" should {
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[OfficerContactDetailsView]()
       when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.pure)
@@ -64,7 +65,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
     }
   }
 
-  s"POST ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.submit()}" should {
+  s"POST ${features.officers.controllers.routes.OfficerContactDetailsController.submit()}" should {
     "return 400 with Empty data" in {
       mockGetCurrentProfile()
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody()

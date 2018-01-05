@@ -162,6 +162,7 @@ package models {
   import models.api._
   import models.view.vatLodgingOfficer._
   import play.api.libs.json.{Json, OFormat}
+  import features.officers.models.view.OfficerSecurityQuestionsView
 
   final case class S4LVatLodgingOfficer
   (
@@ -178,6 +179,20 @@ package models {
   object S4LVatLodgingOfficer {
     implicit val format: OFormat[S4LVatLodgingOfficer] = Json.format[S4LVatLodgingOfficer]
 
+
+
+    implicit val viewModelFormat = ViewModelFormat(
+      readF = (group: S4LVatLodgingOfficer) => group.officerSecurityQuestions,
+      updateF = (c: OfficerSecurityQuestionsView, g: Option[S4LVatLodgingOfficer]) =>
+        g.getOrElse(S4LVatLodgingOfficer()).copy(officerSecurityQuestions = Some(c))
+    )
+
+    // return a view model from a VatScheme instance
+    implicit val modelTransformer = ApiModelTransformer[OfficerSecurityQuestionsView] { vs: VatScheme =>
+      vs.lodgingOfficer.collect {
+        case VatLodgingOfficer(_,Some(a),Some(b),_,Some(c),_,_,_,_) => OfficerSecurityQuestionsView(a, b, Some(c))
+      }
+    }
 
     implicit val modelT = new S4LModelTransformer[S4LVatLodgingOfficer] {
       override def toS4LModel(vs: VatScheme): S4LVatLodgingOfficer =

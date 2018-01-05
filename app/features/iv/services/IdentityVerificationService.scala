@@ -23,6 +23,7 @@ import common.enums.IVResult
 import common.exceptions.InternalExceptions.ElementNotFoundException
 import connectors.{IVConnector, RegistrationConnector}
 import features.iv.models.{IVSetup, UserData}
+import features.officers.controllers.routes
 import models.{ApiModelTransformer, CurrentProfile, S4LVatLodgingOfficer}
 import play.api.libs.json.{JsObject, JsValue, Json}
 import services.S4LService
@@ -105,7 +106,7 @@ trait IVService {
         _             <- saveJourneyID(json)
       } yield (json \ "link").as[String]
     } else {
-      Future.successful(controllers.vatLodgingOfficer.routes.FormerNameController.show().url)
+      Future.successful(routes.FormerNameController.show().url)
     }
   }
 

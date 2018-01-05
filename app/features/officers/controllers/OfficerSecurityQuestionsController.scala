@@ -14,102 +14,51 @@
  * limitations under the License.
  */
 
-package models.view.vatLodgingOfficer {
+package features.officers.controllers {
 
- 
-  import java.time.LocalDate
-
-  import models.api.{VatScheme, _}
-  import models.{ApiModelTransformer, DateModel, _}
-  import play.api.libs.json.Json
-
-  case class OfficerSecurityQuestionsView(dob: LocalDate, nino: String, officerName: Option[Name] = None)
-
-  object OfficerSecurityQuestionsView {
-
-    def bind(dateModel: DateModel, nino: String): OfficerSecurityQuestionsView =
-      OfficerSecurityQuestionsView(dateModel.toLocalDate.get, nino) // form ensures valid date
-
-    def unbind(dobView: OfficerSecurityQuestionsView): Option[(DateModel, String)] =
-      Some(DateModel.fromLocalDate(dobView.dob) -> dobView.nino) // form ensures valid date
-
-    implicit val format = Json.format[OfficerSecurityQuestionsView]
-
-    implicit val viewModelFormat = ViewModelFormat(
-      readF = (group: S4LVatLodgingOfficer) => group.officerSecurityQuestions,
-      updateF = (c: OfficerSecurityQuestionsView, g: Option[S4LVatLodgingOfficer]) =>
-        g.getOrElse(S4LVatLodgingOfficer()).copy(officerSecurityQuestions = Some(c))
-    )
-
-    // return a view model from a VatScheme instance
-    implicit val modelTransformer = ApiModelTransformer[OfficerSecurityQuestionsView] { vs: VatScheme =>
-      vs.lodgingOfficer.collect {
-        case VatLodgingOfficer(_,Some(a),Some(b),_,Some(c),_,_,_,_) => OfficerSecurityQuestionsView(a, b, Some(c))
-      }
-    }
-  }
-}
-
-package controllers.vatLodgingOfficer {
-
-  import javax.inject.{Inject, Singleton}
+  import javax.inject.Inject
 
   import connectors.KeystoreConnect
-  import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import controllers.VatRegistrationControllerNoAux
+  import features.officers.services.LodgingOfficerService
   import forms.vatLodgingOfficer.OfficerSecurityQuestionsForm
-  import models.ModelKeys._
-  import models.external.Officer
-  import models.view.vatLodgingOfficer.OfficerSecurityQuestionsView
+  import play.api.i18n.MessagesApi
   import play.api.mvc._
   import services._
-  import uk.gov.hmrc.http.HeaderCarrier
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-  @Singleton
-  class OfficerSecurityQuestionsController @Inject()(ds: CommonPlayDependencies,
-                                                     val keystoreConnector: KeystoreConnect,
-                                                     val authConnector: AuthConnector,
-                                                     implicit val s4l: S4LService,
-                                                     implicit val vrs: RegistrationService)
-    extends VatRegistrationController(ds) with SessionProfile {
+  import scala.concurrent.Future
 
-    val form = OfficerSecurityQuestionsForm.form
+  class OfficerSecurityQuestionsControllerImpl @Inject()(implicit val messagesApi: MessagesApi,
+                                                         val keystoreConnector: KeystoreConnect,
+                                                         val authConnector: AuthConnector,
+                                                         val lodgingOfficerService: LodgingOfficerService) extends OfficerSecurityQuestionsController
 
-    private def fetchOfficer()(implicit headerCarrier: HeaderCarrier) = keystoreConnector.fetchAndGet[Officer](REGISTERING_OFFICER_KEY)
+  trait OfficerSecurityQuestionsController extends VatRegistrationControllerNoAux with SessionProfile {
+    val lodgingOfficerService: LodgingOfficerService
+    private val form = OfficerSecurityQuestionsForm.form
 
     def show: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
-              for {
-                officer <- fetchOfficer()
-                view <- viewModel[OfficerSecurityQuestionsView]().value
-              } yield Ok(features.officers.views.html.officer_security_questions(getView(officer, view).fold(form)(form.fill)))
-
+            for {
+              officer    <- lodgingOfficerService.getLodgingOfficer
+              filledForm = officer.officerSecurityQuestions.fold(form)(form.fill)
+            } yield Ok(features.officers.views.html.officer_security_questions(filledForm))
           }
     }
-
-    def getView(officer: Option[Officer], view: Option[OfficerSecurityQuestionsView]): Option[OfficerSecurityQuestionsView] =
-      (officer.map(_.name) == view.flatMap(_.officerName), officer.flatMap(_.dateOfBirth), view) match {
-        case (_, None, None) => None
-        case (true, _, Some(v)) => Some(v)
-        case (false, None, Some(v)) if officer.isEmpty => Some(v)
-        case (false, None, Some(_)) => None
-        case (false, Some(dob), None) => Some(OfficerSecurityQuestionsView(dob, "", Some(officer.get.name)))
-        case (false, Some(dob), Some(v)) => Some(OfficerSecurityQuestionsView(dob, v.nino, Some(officer.get.name)))
-      }
-
 
     def submit: Action[AnyContent] = authorised.async {
       implicit user =>
         implicit request =>
           withCurrentProfile { implicit profile =>
             form.bindFromRequest().fold(
-              badForm => BadRequest(features.officers.views.html.officer_security_questions(badForm)).pure,
-              data => for {
-                officer <- fetchOfficer()
-                _ <- save(officer.fold(data)(officer => data.copy(officerName = Some(officer.name))))
-              } yield Redirect(controllers.iv.routes.IdentityVerificationController.redirectToIV()))
+              badForm => Future.successful(BadRequest(features.officers.views.html.officer_security_questions(badForm))),
+              data => lodgingOfficerService.updateLodgingOfficer(data) map {
+                _ => Redirect(controllers.iv.routes.IdentityVerificationController.redirectToIV())
+              }
+            )
           }
     }
   }
@@ -119,10 +68,10 @@ package forms.vatLodgingOfficer {
 
   import java.time.LocalDate
 
+  import features.officers.models.view.OfficerSecurityQuestionsView
   import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
   import forms.FormValidation._
   import models.DateModel
-  import models.view.vatLodgingOfficer.OfficerSecurityQuestionsView
   import play.api.data.Form
   import play.api.data.Forms.{mapping, text}
 

@@ -14,96 +14,62 @@
  * limitations under the License.
  */
 
-package controllers.vatLodgingOfficer
+package features.officers.controllers
 
 import java.time.LocalDate
 
+import connectors.KeystoreConnect
 import fixtures.VatRegistrationFixture
-import helpers.{S4LMockSugar, VatRegSpec}
+import helpers.{ControllerSpec, FutureAssertions, MockMessages, S4LMockSugar, VatRegSpec}
 import models.ModelKeys.REGISTERING_OFFICER_KEY
 import models.api.{DateOfBirth, Name}
 import models.external.Officer
-import models.view.vatLodgingOfficer.OfficerSecurityQuestionsView
+import features.officers.models.view.{LodgingOfficer, OfficerSecurityQuestionsView}
+import features.officers.services.LodgingOfficerService
 import play.api.test.FakeRequest
+import models.S4LVatLodgingOfficer.viewModelFormat
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import play.api.i18n.MessagesApi
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+import scala.concurrent.Future
 
-  object Controller extends OfficerSecurityQuestionsController(
-    ds,
-    mockKeystoreConnector,
-    mockAuthConnector,
-    mockS4LService,
-    mockVatRegistrationService
-  )
+class OfficerSecurityQuestionsControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages with FutureAssertions {
+  val mockLodgingOfficerService: LodgingOfficerService = mock[LodgingOfficerService]
 
-  val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.show())
-
-  s"GET ${routes.OfficerSecurityQuestionsController.show()}" should {
-    "succeed for all possible Officer / OfficerSecurityQuestionsView combinations" in {
-
-      val nameSame = Name(Some("forename"), None, "surname")
-      val nameOther = Name(Some("other"), None, "other")
-
-      val officerWithDOB = Officer(name = nameSame, role = "", dateOfBirth = Some(DateOfBirth(1, 1, 1900)))
-      val officerWithoutDOB = Officer(name = nameSame, role = "", dateOfBirth = None)
-
-      val securityQuestionsViewSameName = OfficerSecurityQuestionsView(LocalDate.of(2000, 1, 1), testNino, Some(nameSame))
-      val securityQuestionsViewOtherName = OfficerSecurityQuestionsView(LocalDate.of(2000, 1, 1), testNino, Some(nameOther))
-
-      val securityQuestionsViewFromOfficerWithDOB = OfficerSecurityQuestionsView(LocalDate.of(1900, 1, 1), testNino, Some(officerWithDOB.name))
-      val securityQuestionsViewOfficerWithDOBAndNINOIsNone = OfficerSecurityQuestionsView(LocalDate.of(1900, 1, 1), "", Some(officerWithDOB.name))
-
-      case class TestCase(officer: Option[Officer], securityQuestionsView: Option[OfficerSecurityQuestionsView], expected: Option[OfficerSecurityQuestionsView])
-
-      val testCases = List(
-        TestCase(None, None, None),
-        TestCase(None, Some(securityQuestionsViewSameName), Some(securityQuestionsViewSameName)),
-
-        TestCase(Some(officerWithDOB), Some(securityQuestionsViewFromOfficerWithDOB), Some(securityQuestionsViewFromOfficerWithDOB)),
-        TestCase(Some(officerWithDOB), Some(securityQuestionsViewSameName), Some(securityQuestionsViewSameName)),
-        TestCase(Some(officerWithDOB), Some(securityQuestionsViewOtherName), Some(securityQuestionsViewFromOfficerWithDOB)),
-
-        TestCase(Some(officerWithoutDOB), None, None),
-        TestCase(Some(officerWithoutDOB), Some(securityQuestionsViewSameName), Some(securityQuestionsViewSameName)),
-        TestCase(Some(officerWithoutDOB), Some(securityQuestionsViewOtherName), None),
-        TestCase(Some(officerWithDOB), None, Some(securityQuestionsViewOfficerWithDOBAndNINOIsNone))
-
-      )
-
-      def test(testCase: TestCase): Boolean = {
-        val officerOpt = testCase.officer
-        val securityQuestionsViewOpt = testCase.securityQuestionsView
-
-        // setup mocks
-        securityQuestionsViewOpt.fold(save4laterReturnsNoViewModel[OfficerSecurityQuestionsView]())(view => save4laterReturnsViewModel(view)())
-        officerOpt.fold(mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer]))(
-          (officer: Officer) => mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Some(officer)))
-
-        // test controller logic here
-        Controller.getView(officerOpt, securityQuestionsViewOpt) == testCase.expected
-      }
-
-      // test all scenarios
-      forAll (testCases) (tc => test(tc) mustBe true)
+  trait Setup {
+    val controller: OfficerSecurityQuestionsController = new OfficerSecurityQuestionsController {
+      override val lodgingOfficerService: LodgingOfficerService = mockLodgingOfficerService
+      override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
+      override val messagesApi: MessagesApi = mockMessagesAPI
+      override val authConnector: AuthConnector = mockAuthConnector
     }
 
+    mockAllMessages
+    mockWithCurrentProfile(Some(currentProfile))
+  }
 
-    "return HTML and form populated" in {
-      mockGetCurrentProfile()
-      save4laterReturnsViewModel(OfficerSecurityQuestionsView(testDate, testNino, Some(officerName)))()
-      mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
+  val fakeRequest = FakeRequest(routes.OfficerSecurityQuestionsController.show())
 
-      callAuthorised(Controller.show()) {
+  val officerSecu = OfficerSecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA123456Z")
+  val partialLodgingOfficer = LodgingOfficer(Some("BobBimblyBobblousBobbings"), Some(officerSecu), None, None, None, None, None)
+
+  s"GET ${routes.OfficerSecurityQuestionsController.show()}" should {
+    "return HTML and form populated" in new Setup {
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+
+      callAuthorised(controller.show()) {
         _ includesText "What is your date of birth"
       }
     }
 
-    "return HTML with empty form" in {
-      mockGetCurrentProfile()
-      save4laterReturnsNoViewModel[OfficerSecurityQuestionsView]()
-      mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
+    "return HTML with empty form" in new Setup {
+      val emptyLodgingOfficer = LodgingOfficer(None, None, None, None, None, None, None)
 
-      callAuthorised(Controller.show()) {
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(emptyLodgingOfficer))
+
+      callAuthorised(controller.show()) {
         _ includesText "What is your date of birth"
       }
     }
@@ -111,31 +77,14 @@ class OfficerSecurityQuestionsControllerSpec extends VatRegSpec with VatRegistra
   }
 
   s"POST ${routes.OfficerSecurityQuestionsController.submit()}" should {
-    "return 400 with Empty data" in {
-      mockGetCurrentProfile()
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
+    "return 400 with Empty data" in new Setup {
+      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
 
-    val officer = Officer(Name(None, None, "surname"), "director", Some(DateOfBirth(12, 11, 1973)))
+    "return 303 with officer in keystore" in new Setup {
+      when(mockLodgingOfficerService.updateLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
-    "return 303 with officer in keystore" in {
-      mockGetCurrentProfile()
-
-      save4laterExpectsSave[OfficerSecurityQuestionsView]()
-      mockKeystoreFetchAndGet[Officer](REGISTERING_OFFICER_KEY, Some(officer))
-
-      submitAuthorised(Controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> testNino)
-      )(_ redirectsTo s"$contextRoot/start-iv-journey")
-    }
-
-    "return 303 with no officer in keystore" in {
-      mockGetCurrentProfile()
-
-      save4laterExpectsSave[OfficerSecurityQuestionsView]()
-      mockKeystoreFetchAndGet(REGISTERING_OFFICER_KEY, Option.empty[Officer])
-
-      submitAuthorised(Controller.submit(),
+      submitAuthorised(controller.submit(),
         fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> testNino)
       )(_ redirectsTo s"$contextRoot/start-iv-journey")
     }

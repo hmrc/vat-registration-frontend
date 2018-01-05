@@ -17,6 +17,7 @@
 package controllers.vatLodgingOfficer
 
 import controllers.vatLodgingOfficer
+import features.officers.controllers.routes
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.api.ScrsAddress
@@ -37,11 +38,11 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
     mockVatRegistrationService
   )
 
-  val fakeRequest = FakeRequest(vatLodgingOfficer.routes.PreviousAddressController.show())
+  val fakeRequest = FakeRequest(routes.PreviousAddressController.show())
 
   val address = ScrsAddress(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
 
-  s"GET ${vatLodgingOfficer.routes.PreviousAddressController.show()}" should {
+  s"GET ${features.officers.controllers.routes.PreviousAddressController.show()}" should {
 
     "return HTML when there's a previous address question in S4L" in {
       save4laterReturnsViewModel(PreviousAddressView(yesNo = true))()
@@ -71,7 +72,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
     }
   }
 
-  s"POST ${vatLodgingOfficer.routes.PreviousAddressController.submit()}" should {
+  s"POST ${features.officers.controllers.routes.PreviousAddressController.submit()}" should {
     "return 400 with Empty data" in {
       mockGetCurrentProfile()
       submitAuthorised(TestPreviousAddressController.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -103,7 +104,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
     }
   }
 
-  s"GET ${vatLodgingOfficer.routes.PreviousAddressController.acceptFromTxm()}" should {
+  s"GET ${features.officers.controllers.routes.PreviousAddressController.acceptFromTxm()}" should {
     "save an address and redirect to next page" in {
       save4laterExpectsSave[PreviousAddressView]()
       when(mockAddressService.getAddressById(any())(any())).thenReturn(address.pure)
@@ -118,7 +119,7 @@ class PreviousAddressControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
   }
 
-  s"GET ${vatLodgingOfficer.routes.PreviousAddressController.changeAddress()}" should {
+  s"GET ${features.officers.controllers.routes.PreviousAddressController.changeAddress()}" should {
 
     "save an address and redirect to next page" in {
       save4laterExpectsSave[PreviousAddressView]()

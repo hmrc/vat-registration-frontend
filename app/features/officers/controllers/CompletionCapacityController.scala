@@ -46,7 +46,7 @@ package models.view.vatLodgingOfficer {
 
 }
 
-package controllers.vatLodgingOfficer{
+package features.officers.controllers {
 
   import javax.inject.Inject
 
@@ -91,7 +91,7 @@ package controllers.vatLodgingOfficer{
               formErrors => prePopService.getOfficerList map { officerList =>
                 BadRequest(features.officers.views.html.completion_capacity(formErrors, officerList))
               },
-              cc => lodgingOfficerService.updateCompletionCapacity(cc) map {
+              cc => lodgingOfficerService.updateLodgingOfficer(cc) map {
                 _ => Redirect(routes.OfficerSecurityQuestionsController.show())
               }
             )

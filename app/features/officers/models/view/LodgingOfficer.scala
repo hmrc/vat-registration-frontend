@@ -148,8 +148,8 @@ object LodgingOfficer {
       val officerDetails = o match {
         case LodgingOfficer(_, _, None, None, None, None, None) =>
           Json.obj()
-        case LodgingOfficer(_, _, Some(currAddr), Some(contact), Some(formerName), _@nameChangeDate, Some(prevAddr)) =>
-          Json.obj("details" -> buildJsonOfficerDetails(currAddr, contact, formerName, nameChangeDate, prevAddr))
+        case LodgingOfficer(_, _, Some(currAddr), Some(contact), Some(fName), _@fNameDate, Some(prevAddr)) =>
+          Json.obj("details" -> buildJsonOfficerDetails(currAddr, contact, fName, fNameDate, prevAddr))
         case _ =>
           throw new IllegalStateException("Missing officer details data to save into backend")
       }

@@ -55,6 +55,7 @@ package controllers.vatLodgingOfficer {
   import connectors.KeystoreConnect
   import controllers.vatTradingDetails.vatChoice.{routes => vatChoiceRoutes}
   import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import features.officers.controllers.routes
   import forms.vatLodgingOfficer.OfficerContactDetailsForm
   import models.view.vatLodgingOfficer.OfficerContactDetailsView
   import play.api.mvc.{Action, AnyContent}
@@ -89,7 +90,7 @@ package controllers.vatLodgingOfficer {
             form.bindFromRequest().fold(
               copyGlobalErrorsToFields("email", "daytimePhone", "mobile")
                 .andThen(form => BadRequest(features.officers.views.html.officer_contact_details(form)).pure),
-              data => save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())))
+              data => save(data).map(_ => Redirect(routes.OfficerHomeAddressController.show())))
           }
     }
 

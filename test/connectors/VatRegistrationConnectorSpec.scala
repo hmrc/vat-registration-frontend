@@ -22,12 +22,12 @@ import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api._
 import models.external.{IncorporationInfo, Officer}
-import uk.gov.hmrc.play.http._
 import config.WSHttp
 import features.officers.models.view.LodgingOfficer
-import models.view.vatLodgingOfficer.{FormerNameView, OfficerContactDetailsView, OfficerHomeAddressView, OfficerSecurityQuestionsView, PreviousAddressView}
+import models.view.vatLodgingOfficer.{FormerNameView, OfficerContactDetailsView, OfficerHomeAddressView, PreviousAddressView}
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.{JsValue, Json}
+import features.officers.models.view._
 
 import scala.language.postfixOps
 import uk.gov.hmrc.http.HttpResponse

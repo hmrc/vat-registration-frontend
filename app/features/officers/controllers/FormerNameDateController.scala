@@ -61,6 +61,7 @@ package controllers.vatLodgingOfficer {
   import cats.syntax.FlatMapSyntax
   import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import features.officers.controllers.routes
   import forms.vatLodgingOfficer.FormerNameDateForm
   import models.view.vatLodgingOfficer.{FormerNameDateView, FormerNameView}
   import play.api.data.Form
@@ -99,7 +100,7 @@ package controllers.vatLodgingOfficer {
               form.bindFromRequest().fold(
                 badForm => viewModel[FormerNameView]().subflatMap(_.formerName).getOrElse("")
                   .map(formerName => BadRequest(features.officers.views.html.former_name_date(badForm, formerName))),
-                data => save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show()))
+                data => save(data).map(_ => Redirect(routes.OfficerContactDetailsController.show()))
               )
             }
           }

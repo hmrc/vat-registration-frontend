@@ -17,6 +17,7 @@
 package controllers.vatLodgingOfficer
 
 import controllers.vatLodgingOfficer
+import features.officers.controllers.routes
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.ModelKeys.FORMER_NAME
@@ -35,9 +36,9 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     mockVatRegistrationService
   )
 
-  val fakeRequest = FakeRequest(vatLodgingOfficer.routes.FormerNameController.show())
+  val fakeRequest = FakeRequest(routes.FormerNameController.show())
 
-  s"GET ${vatLodgingOfficer.routes.FormerNameController.show()}" should {
+  s"GET ${features.officers.controllers.routes.FormerNameController.show()}" should {
     "return HTML when there's a former name in S4L" in {
       save4laterReturnsViewModel(FormerNameView(yesNo = true, formerName = Some("Smooth Handler")))()
       when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.pure)
@@ -66,7 +67,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     }
   }
 
-  s"POST ${vatLodgingOfficer.routes.FormerNameController.submit()}" should {
+  s"POST ${features.officers.controllers.routes.FormerNameController.submit()}" should {
     "return 400 with Empty data" in {
       mockGetCurrentProfile()
       submitAuthorised(TestFormerNameController.submit(), fakeRequest.withFormUrlEncodedBody(

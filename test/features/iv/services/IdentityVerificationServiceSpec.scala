@@ -20,10 +20,12 @@ import java.time.LocalDate
 
 import common.enums.IVResult
 import features.iv.models.{IVSetup, UserData}
+import features.officers.controllers.routes
+import features.officers.models.view.OfficerSecurityQuestionsView
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.{CurrentProfile, S4LVatLodgingOfficer}
-import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerSecurityQuestionsView}
+import models.S4LVatLodgingOfficer
+import models.view.vatLodgingOfficer.CompletionCapacityView
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
@@ -100,7 +102,7 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
 
     "return string to formername controller if cp.ivPassed is already true" in new Setup(true) {
       val res = await(service.setupAndGetIVJourneyURL)
-      res mustBe controllers.vatLodgingOfficer.routes.FormerNameController.show().url
+      res mustBe routes.FormerNameController.show().url
     }
   }
   "getIVJourneyID" should {
