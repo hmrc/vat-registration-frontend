@@ -22,9 +22,9 @@ import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.SessionKeys
 
-object SessionBuilder extends SessionBuilder {}
-
 trait SessionBuilder {
+
+  val userId: String
 
   def updateRequestFormWithSession(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], userId: String): FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withSession(
     SessionKeys.sessionId -> s"session-${UUID.randomUUID}",
@@ -37,4 +37,13 @@ trait SessionBuilder {
     SessionKeys.token -> "RANDOMTOKEN",
     SessionKeys.userId -> userId
   )
+
+  def updateRequestWithSession[T](req: FakeRequest[T]): FakeRequest[T] = {
+    val sessionId = req.headers.get(SessionKeys.sessionId).fold(s"session-${UUID.randomUUID}")(s => s)
+    req.withSession(
+      SessionKeys.sessionId -> sessionId,
+      SessionKeys.token -> "RANDOMTOKEN",
+      SessionKeys.userId -> userId
+    )
+  }
 }

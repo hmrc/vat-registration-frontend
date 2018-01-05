@@ -42,7 +42,7 @@ import scala.concurrent.{Await, Awaitable, Future}
 import scala.concurrent.duration._
 import uk.gov.hmrc.http.HeaderCarrier
 
-class VatRegSpec extends PlaySpec with OneAppPerSuite
+class VatRegSpec extends PlaySpec with OneAppPerSuite with AuthBuilder
   with MockitoSugar with VatMocks with LoginFixture with Inside with Inspectors
   with ScalaFutures with ApplicativeSyntax with FutureInstances with BeforeAndAfterEach with FutureAssertions with VatRegistrationFixture {
 
@@ -79,10 +79,10 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite
   def submitAuthorised(a: => Action[AnyContent], r: => FakeRequest[AnyContentAsFormUrlEncoded])
                       (test: Future[Result] => Assertion)
                       (implicit mockAuthConnector: AuthConnector): Unit =
-    AuthBuilder.submitWithAuthorisedUser(a, r)(test)
+    submitWithAuthorisedUser(a, r)(test)
 
   def callAuthorised(a: Action[AnyContent])(test: Future[Result] => Assertion): Unit =
-    AuthBuilder.withAuthorisedUser(a)(test)
+    withAuthorisedUser(a)(test)
 
   override protected def beforeEach(): Unit = {
     resetMocks()
