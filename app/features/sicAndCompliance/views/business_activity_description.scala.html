@@ -13,22 +13,22 @@
 
   <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.business.activity.description.heading")</h1>
 
-  <p>@Html(Messages("pages.business.activity.description.para1"))</p>
-
   @govHelpers.form(action = controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.submit()) {
       <div class="form-group">
+
           <fieldset>
-            <style>
-                textarea { height: 5em }
-                label.form-hint p { margin-bottom: 0 }
-            </style>
+              <div class="char-counter" data-char-counter>
             @vatTextArea(
                     businessActivityDescriptionForm("description"),
                     '_divClass -> "form-group",
                     '_labelClass -> "form-label",
                     '_inputClass -> "form-control fill-width",
+                    '_rows -> "4",
+                    '_maxlength -> "250",
+                    '_dataCharField -> "data_char_field",
                     '_label -> messages("pages.business.activity.description.label")
             )
+              </div>
           </fieldset>
       </div>
 

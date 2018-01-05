@@ -16,6 +16,16 @@
 
     <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.tradingName.heading")</h1>
 
+    <details role="group">
+        <summary role="button" aria-controls="details-content-0" aria-expanded="false">
+            <span class="summary">@messages("pages.tradingName.panel.para1")</span>
+        </summary>
+        <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
+            <p>@messages("pages.tradingName.panel.para2")</p>
+            <p>@messages("pages.tradingName.panel.para3")</p>
+        </div>
+    </details>
+
     @govHelpers.form(action = controllers.vatTradingDetails.routes.TradingNameController.submit()) {
         <div class="form-group">
             <fieldset class="inline">

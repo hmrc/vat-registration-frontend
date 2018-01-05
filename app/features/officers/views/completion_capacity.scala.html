@@ -18,18 +18,6 @@
         <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.completionCapacity.heading")</h1>
     </header>
 
-    <p>@messages("pages.completionCapacity.p1")</p>
-
-    <details role="group">
-        <summary role="button" aria-controls="details-content-0" aria-expanded="false">
-            <span class="summary">@messages("pages.completionCapacity.panel.title")</span>
-        </summary>
-        <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
-            <p>@messages("pages.completionCapacity.panel.p1")
-                @newWindowLink("https://online.hmrc.gov.uk/registration/newbusiness/business-allowed", messages("pages.completionCapacity.panel.p1.1"))</p>
-            <p>@Html(messages("pages.completionCapacity.panel.p2"))</p>
-        </div>
-    </details>
 
     @govHelpers.form(action = controllers.vatLodgingOfficer.routes.CompletionCapacityController.submit()) {
         <div class="form-group" id="completionCapacityRadio">
@@ -44,9 +32,22 @@
         )
 
         </div>
+        <details role="group">
+            <summary role="button" aria-controls="details-content-0" aria-expanded="false">
+                <span class="summary">@messages("pages.completionCapacity.panel.title")</span>
+            </summary>
+            <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
+                <p>@messages("pages.completionCapacity.panel.p1")
+                    @newWindowLink("https://ewf.companieshouse.gov.uk//seclogin?tc=1", messages("pages.completionCapacity.panel.p1.link")). @messages("pages.completionCapacity.panel.p1.1") </p>
+                <p>@Html(messages("pages.completionCapacity.panel.p2"))
+                    @newWindowLink("https://www.gov.uk/limited-company-formation/register-your-company", messages("pages.completionCapacity.panel.p2.link")) @messages("pages.completionCapacity.panel.p2.1")</p>
 
+                <p>@Html(messages("pages.completionCapacity.panel.p3"))  @newWindowLink("https://online.hmrc.gov.uk/registration/newbusiness/business-allowed", messages("pages.completionCapacity.panel.p3.link"))</p>
+            </div>
+        </details>
         <div class="form-group">
             <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
         </div>
     }
+
 }
