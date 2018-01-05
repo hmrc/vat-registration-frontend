@@ -84,7 +84,9 @@ package controllers.vatTradingDetails.vatEuTrading {
               form.bindFromRequest().fold(
                 badForm => BadRequest(features.tradingDetails.views.html.vatEuTrading.eori_apply(badForm)).pure,
                 goodForm => save(goodForm).map(_ =>
-                  Redirect(controllers.vatFinancials.routes.EstimateVatTurnoverController.show())))
+                  Redirect(features.turnoverEstimates.routes.TurnoverEstimatesController.showEstimateVatTurnover())
+                )
+              )
             }
           }
     }

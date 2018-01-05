@@ -86,7 +86,7 @@ package controllers.vatTradingDetails.vatEuTrading {
                 badForm => BadRequest(features.tradingDetails.views.html.vatEuTrading.eu_goods(badForm)).pure,
                 goodForm => save(goodForm).map(_ => goodForm.yesNo == EuGoods.EU_GOODS_NO).ifM(
                   save(ApplyEori(ApplyEori.APPLY_EORI_NO)).map(_ =>
-                    controllers.vatFinancials.routes.EstimateVatTurnoverController.show()),
+                    features.turnoverEstimates.routes.TurnoverEstimatesController.showEstimateVatTurnover()),
                   controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show().pure
                 ).map(Redirect))
             }

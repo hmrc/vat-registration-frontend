@@ -24,15 +24,17 @@ import org.apache.commons.lang3.StringUtils
 import play.api.Logger
 import play.api.data.format.Formatter
 import play.api.data.validation._
-import play.api.data.{FieldMapping, FormError, Mapping}
+import play.api.data.{FieldMapping, FormError, Forms, Mapping}
 import StringUtils.isNotBlank
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 import scala.util.matching.Regex
 
 private[forms] object FormValidation {
 
   type ErrorCode = String
+
+  val trimmedText: Mapping[String] = Forms.text.transform[String](_.trim, identity)
 
   def regexPattern(pattern: Regex, mandatory: Boolean = true)(implicit e: ErrorCode): Constraint[String] = Constraint {
     input: String =>
@@ -46,8 +48,11 @@ private[forms] object FormValidation {
     input: String => Constraints.pattern(pattern, error = errKey)(input)
   }
 
-  def mandatory(errKey: String): Constraint[String] = Constraint { input: String =>
-    if (StringUtils.isNotBlank(input)) Valid else Invalid(errKey)
+  def mandatory(errKey: String): Constraint[String] = mandatoryGen[String](errKey)
+  def mandatoryLong(errKey: String): Constraint[Long] = mandatoryGen[Long](errKey)
+
+  private def mandatoryGen[T](errKey: String): Constraint[T] = Constraint { input: T =>
+    if (StringUtils.isNotBlank(input.toString)) Valid else Invalid(errKey)
   }
 
   def mandatoryTuple3(errKey: String): Constraint[(String, String, String)] = Constraint { input: (String, String, String) =>
@@ -129,6 +134,23 @@ private[forms] object FormValidation {
   def intToText(i: Int): String = i.toString
 
   def longToText(l: Long): String = l.toString
+
+  def verifyIsNumeric(errKey: String): Constraint[String] = Constraint {
+    inputToCheck: String =>
+      //checking for negatives
+      val input = if(inputToCheck.startsWith("-")) inputToCheck.drop(1) else inputToCheck
+      if(input.forall(_.isDigit)) Valid else Invalid(errKey)
+  }
+
+  def boundedLong(tooLowMessage: String, tooHighMessage: String): Constraint[String] = Constraint {
+    input: String =>
+      Try(input.toLong) match {
+        case Success(_) => Valid
+        case Failure(_: NumberFormatException) => {
+          if(input.startsWith("-")) Invalid(tooLowMessage) else Invalid(tooHighMessage)
+        }
+      }
+  }
 
   def boundedLong()(implicit e: ErrorCode): Constraint[Long] = Constraint {
     input: Long =>
