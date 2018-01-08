@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package features.iv.controllers
+package features.officer.controllers
 
 import java.util.concurrent.TimeUnit
 
 import connectors.KeystoreConnector
-import controllers.iv.IdentityVerificationController
+import features.officer.controllers.IdentityVerificationController
 import helpers.VatRegSpec
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
@@ -56,6 +56,7 @@ class Setup {
         redirectLocation(res)(Timeout(FiniteDuration(5, TimeUnit.SECONDS))) mustBe Some("/test-redirect-uri")
       }
     }
+
     "throw error if no link is returned" in new Setup {
       mockGetCurrentProfile()
 
@@ -135,7 +136,7 @@ class Setup {
       when(mockIVService.getJourneyIdAndJourneyOutcome()(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(IVResult.FailedIV))
       when(mockIVService.setIvStatus(ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(Some(IVResult.FailedIV)))
 
-      callAuthorised(testController.failedIVJourney("123"))(redirectLocation(_) mustBe Some(controllers.iv.routes.IdentityVerificationController.failedIV().url))
+      callAuthorised(testController.failedIVJourney("123"))(redirectLocation(_) mustBe Some(features.officer.controllers.routes.IdentityVerificationController.failedIV().url))
     }
     "should NOT redirect user to a failed page if the response from vat backend is not a 200" in new Setup {
       mockGetCurrentProfile()

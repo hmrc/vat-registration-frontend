@@ -268,20 +268,6 @@ package models {
       }
     }
 
-    implicit val modelT = new S4LModelTransformer[S4LVatLodgingOfficer] {
-      override def toS4LModel(vs: VatScheme): S4LVatLodgingOfficer =
-        S4LVatLodgingOfficer(
-          officerHomeAddress = ApiModelTransformer[HomeAddressView].toViewModel(vs),
-          officerSecurityQuestions = ApiModelTransformer[SecurityQuestionsView].toViewModel(vs),
-          completionCapacity = ApiModelTransformer[CompletionCapacityView].toViewModel(vs),
-          officerContactDetails = ApiModelTransformer[ContactDetailsView].toViewModel(vs),
-          formerName = ApiModelTransformer[FormerNameView].toViewModel(vs),
-          formerNameDate = ApiModelTransformer[FormerNameDateView].toViewModel(vs),
-          previousAddress = ApiModelTransformer[PreviousAddressView].toViewModel(vs),
-          ivPassed = vs.lodgingOfficer.flatMap(_.ivPassed)
-        )
-    }
-
     implicit val viewModelFormatPreviousAddress = ViewModelFormat(
       readF = (group: S4LVatLodgingOfficer) => group.previousAddress,
       updateF = (c: PreviousAddressView, g: Option[S4LVatLodgingOfficer]) =>
@@ -295,6 +281,20 @@ package models {
         case _ => None
       }
 
+    }
+
+    implicit val modelT = new S4LModelTransformer[S4LVatLodgingOfficer] {
+      override def toS4LModel(vs: VatScheme): S4LVatLodgingOfficer =
+        S4LVatLodgingOfficer(
+          officerHomeAddress = ApiModelTransformer[HomeAddressView].toViewModel(vs),
+          officerSecurityQuestions = ApiModelTransformer[SecurityQuestionsView].toViewModel(vs),
+          completionCapacity = ApiModelTransformer[CompletionCapacityView].toViewModel(vs),
+          officerContactDetails = ApiModelTransformer[ContactDetailsView].toViewModel(vs),
+          formerName = ApiModelTransformer[FormerNameView].toViewModel(vs),
+          formerNameDate = ApiModelTransformer[FormerNameDateView].toViewModel(vs),
+          previousAddress = ApiModelTransformer[PreviousAddressView].toViewModel(vs),
+          ivPassed = vs.lodgingOfficer.flatMap(_.ivPassed)
+        )
     }
 
     implicit val apiT = new S4LApiTransformer[S4LVatLodgingOfficer, VatLodgingOfficer] {

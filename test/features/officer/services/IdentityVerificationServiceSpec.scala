@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package features.iv.services
+package features.officer.services
 
 import java.time.LocalDate
 
 import common.enums.IVResult
-import features.iv.models.{IVSetup, UserData}
-import features.officer.controllers.routes
-import features.officer.models.view.SecurityQuestionsView
+import features.officer.models.{IVSetup, UserData}
+import features.officer.models.view.{CompletionCapacityView, LodgingOfficer, SecurityQuestionsView}
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.S4LVatLodgingOfficer
-import models.view.vatLodgingOfficer.CompletionCapacityView
+import models.api.Name
+import models.external.Officer
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
@@ -43,38 +42,45 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
         override val vrfeBaseUri: String = "/register-for-vat"
         override val ORIGIN = "vat-registration-frontend"
         override val s4lService = mockS4LService
+        override val officerService = mockLodgingOfficerService
         override val ivConnector = mockIdentityVerificationConnector
         override val vatRegFeatureSwitch = mockVATFeatureSwitch
         override val vatRegistrationConnector = mockRegConnector
       }
   }
-  val validS4LLodgingOfficer = S4LVatLodgingOfficer(
-    completionCapacity = Some(CompletionCapacityView("",Some(completionCapacity))),
-    officerSecurityQuestions = Some(SecurityQuestionsView(LocalDate.of(2017,11,5),"nino"))
+
+  val validOfficer = Officer(
+    name = Name(forename = Some("First"), otherForenames = Some("Middle"), surname = "Last"),
+    role = "Director"
+  )
+
+  val validLodgingOfficerPreIv = LodgingOfficer(
+    completionCapacity = Some(CompletionCapacityView("blank_capacity", Some(validOfficer))),
+    securityQuestions = Some(SecurityQuestionsView(LocalDate.of(2017,11,5),"nino")),
+    None,None,None,None,None
   )
 
   "buildIVSetupData" should {
     "sucessfully return an IVSetup class" in new Setup  {
 
-      val res = service.buildIVSetupData(validS4LLodgingOfficer)
+      val res = service.buildIVSetupData(validLodgingOfficerPreIv)
 
       res mustBe IVSetup(
         "vat-registration-frontend",
-        """vrfe""" + controllers.iv.routes.IdentityVerificationController.completedIVJourney().url,
+        """vrfe""" + features.officer.controllers.routes.IdentityVerificationController.completedIVJourney().url,
         """vrfe/register-for-vat""" + """/ivFailure""",
         200,
-        UserData("Bob","Bobbings","2017-11-05","nino"))
+        UserData("First","Last","2017-11-05","nino"))
     }
   }
 
   "setupAndGetIVJourneyURL" should {
     "successfully return a String (link) with feature switch off" in new Setup(false) {
       when(mockVATFeatureSwitch.useIvStub).thenReturn(disabledFeatureSwitch)
-      when(mockS4LService.fetchAndGet[S4LVatLodgingOfficer]).thenReturn(Future.successful(Some(validS4LLodgingOfficer)))
       when(mockS4LService.saveIv(ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any()))
         .thenReturn(Future.successful(CacheMap("",Map("IVJourneyID" -> Json.toJson("foo")))))
-      when(mockRegConnector.upsertVatLodgingOfficer(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any()))
-        .thenReturn(Future.successful(validLodgingOfficer))
+      when(mockLodgingOfficerService.getLodgingOfficer(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(validLodgingOfficerPreIv))
 
 
       when(mockIdentityVerificationConnector.setupIVJourney(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Json.parse(
@@ -91,11 +97,13 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
 
     "successfully return a (link) with feature switch on" in new Setup(false) {
       when(mockVATFeatureSwitch.useIvStub).thenReturn(enabledFeatureSwitch)
-      when(mockS4LService.fetchAndGet[S4LVatLodgingOfficer]).thenReturn(Future.successful(Some(validS4LLodgingOfficer)))
+      when(mockS4LService.fetchAndGetNoAux[LodgingOfficer](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(validLodgingOfficerPreIv)))
       when(mockS4LService.saveIv(ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any()))
         .thenReturn(Future.successful(CacheMap("",Map("IVJourneyID" -> Json.toJson("foo")))))
-      when(mockRegConnector.upsertVatLodgingOfficer(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any()))
-        .thenReturn(Future.successful(validLodgingOfficer))
+      when(mockLodgingOfficerService.getLodgingOfficer(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(validLodgingOfficerPreIv))
+
       val res = await(service.setupAndGetIVJourneyURL)
       res.contains("""/test-iv-response/""") mustBe true
     }
@@ -164,9 +172,10 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
     }
   }
   "startIVJourney" should {
-  "return JsObject with a link and a journey ID" in new Setup {
-    val res = await(service.startIVJourney("foo"))
-    res mustBe JsObject(Map("link" ->Json.toJson(controllers.test.routes.TestIVController.show("foo").url),"journeyLink" -> Json.toJson("""/foo""")))
-  }}
+    "return JsObject with a link and a journey ID" in new Setup {
+      val res = await(service.startIVJourney("foo"))
+      res mustBe JsObject(Map("link" ->Json.toJson(features.officer.controllers.test.routes.TestIVController.show("foo").url),"journeyLink" -> Json.toJson("""/foo""")))
+    }
+  }
 
 }

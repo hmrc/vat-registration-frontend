@@ -17,7 +17,7 @@
 package connectors
 
 import common.enums.IVResult
-import features.iv.models.{IVSetup, UserData}
+import features.officer.models.{IVSetup, UserData}
 import helpers.VatRegSpec
 import play.api.libs.json.{JsObject, JsResultException, JsValue, Json}
 import config.WSHttp

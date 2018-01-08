@@ -28,7 +28,7 @@ import controllers.frs._
 import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsControllerImpl}
 import controllers.test.{FeatureSwitchController, FeatureSwitchCtrl}
 import features.bankAccountDetails.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
-import features.iv.services.{IVService, IdentityVerificationService}
+import features.officer.services.{IVService, IdentityVerificationService}
 import features.officer.controllers._
 import features.officer.services.{LodgingOfficerService, LodgingOfficerServiceImpl}
 import services._

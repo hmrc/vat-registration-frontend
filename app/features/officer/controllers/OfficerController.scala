@@ -93,7 +93,7 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
           SecurityQuestionsForm.form.bindFromRequest().fold(
             badForm => Future.successful(BadRequest(features.officer.views.html.officer_security_questions(badForm))),
             data => lodgingOfficerService.saveLodgingOfficer(data) map {
-              _ => Redirect(controllers.iv.routes.IdentityVerificationController.redirectToIV())
+              _ => Redirect(features.officer.controllers.routes.IdentityVerificationController.redirectToIV())
             }
           )
         }

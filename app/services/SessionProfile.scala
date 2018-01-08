@@ -19,6 +19,7 @@ package services
 import connectors.KeystoreConnect
 import controllers.routes
 import models.CurrentProfile
+import play.api.Logger
 import play.api.i18n.Messages
 import play.api.mvc.Results._
 import play.api.mvc.{Request, Result}
@@ -41,6 +42,9 @@ trait SessionProfile {
   }
 
   def ivPassedCheck(f: => Future[Result])(implicit cp: CurrentProfile, request: Request[_], messages: Messages): Future[Result] = {
-    if(!cp.ivPassed.getOrElse(false)) Future.successful(InternalServerError(views.html.pages.error.restart())) else f
+    if(!cp.ivPassed.getOrElse(false)) {
+      Logger.warn(s"[ivPassedCheck] IV has not been passed so showing error page - regId: ${cp.registrationId}, ivpassed: ${cp.ivPassed}")
+      Future.successful(InternalServerError(views.html.pages.error.restart()))
+    } else f
   }
 }

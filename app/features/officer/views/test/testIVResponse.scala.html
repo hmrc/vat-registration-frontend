@@ -7,7 +7,7 @@
 
 <h1 class="form-title heading-xlarge" id="pageHeading">Test IV Response</h1>
 
-@govHelpers.form(action = controllers.test.routes.TestIVController.submit()) {
+@govHelpers.form(action = features.officer.controllers.test.routes.TestIVController.submit()) {
     <div class="form-group">
         <fieldset>
             <p>@vatInput(testForm("journeyId"), '_label -> "Journey Id")</p>

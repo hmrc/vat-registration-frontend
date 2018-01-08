@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package controllers.iv
+package features.officer.controllers
 
 import javax.inject.{Inject, Singleton}
 
 import common.enums.IVResult
 import connectors.{IVConnector, KeystoreConnect}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import features.iv.services.IVService
+import features.officer.services.IVService
+import play.api.Logger
 import play.api.mvc.{Action, AnyContent}
 import services.{CurrentProfileSrv, SessionProfile}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
@@ -43,14 +44,16 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies,
           ivService.setupAndGetIVJourneyURL.map { ivUrl =>
             Redirect(ivUrl)
           }
-        }.recover{case e:Exception => Redirect(controllers.callbacks.routes.SignInOutController.errorShow())}
+        }.recover{case e: Exception =>
+          Logger.error(s"[IdentityVerificationController][redirectToIV] an error occurred while redirecting to IV with message: ${e.getMessage}")
+          Redirect(controllers.callbacks.routes.SignInOutController.errorShow())}
   }
 
   def timeoutIV: Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request =>
         withCurrentProfile { _ =>
-          Future.successful(Ok(features.iv.views.html.error.timeoutIV()))
+          Future.successful(Ok(features.officer.views.html.error.timeoutIV()))
         }
   }
 
@@ -58,7 +61,7 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies,
     implicit user =>
       implicit request =>
         withCurrentProfile { _ =>
-          Future.successful(Ok(features.iv.views.html.error.unabletoconfirmidentity()))
+          Future.successful(Ok(features.officer.views.html.error.unabletoconfirmidentity()))
         }
   }
 
@@ -66,7 +69,7 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies,
     implicit user =>
       implicit request =>
         withCurrentProfile { _ =>
-          Future.successful(Ok(features.iv.views.html.error.failediv()))
+          Future.successful(Ok(features.officer.views.html.error.failediv()))
         }
 
   }
@@ -75,7 +78,7 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies,
     implicit user =>
       implicit request =>
         withCurrentProfile { _ =>
-          Future.successful(Ok(features.iv.views.html.error.lockedoutiv()))
+          Future.successful(Ok(features.officer.views.html.error.lockedoutiv()))
         }
   }
 
@@ -83,7 +86,7 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies,
     implicit user =>
       implicit request =>
         withCurrentProfile { _ =>
-          Future.successful(Ok(features.iv.views.html.error.useraborted()))
+          Future.successful(Ok(features.officer.views.html.error.useraborted()))
         }
   }
 
@@ -97,7 +100,10 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies,
                 Future.successful(Redirect(features.officer.controllers.routes.OfficerController.showFormerName())))
               case _ => Future.successful(InternalServerError)
             }
-          }.recover{case _ => InternalServerError(views.html.pages.error.restart())}
+          }.recover{case e =>
+            Logger.error(s"[IdentityVerificationController][completedIVJourney] an error occurred with message: ${e.getMessage}")
+            InternalServerError(views.html.pages.error.restart())
+          }
         }
   }
 
@@ -107,11 +113,11 @@ class IdentityVerificationController @Inject()(ds: CommonPlayDependencies,
         withCurrentProfile { implicit profile =>
           ivService.getJourneyIdAndJourneyOutcome.flatMap { res => {
             ivService.setIvStatus(res).map {
-              case Some(IVResult.Timeout)              => Redirect(controllers.iv.routes.IdentityVerificationController.timeoutIV())
-              case Some(IVResult.InsufficientEvidence) => Redirect(controllers.iv.routes.IdentityVerificationController.unableToConfirmIdentity())
-              case Some(IVResult.FailedIV)             => Redirect(controllers.iv.routes.IdentityVerificationController.failedIV())
-              case Some(IVResult.LockedOut)            => Redirect(controllers.iv.routes.IdentityVerificationController.lockedOut())
-              case Some(IVResult.UserAborted)          => Redirect(controllers.iv.routes.IdentityVerificationController.userAborted())
+              case Some(IVResult.Timeout)              => Redirect(features.officer.controllers.routes.IdentityVerificationController.timeoutIV())
+              case Some(IVResult.InsufficientEvidence) => Redirect(features.officer.controllers.routes.IdentityVerificationController.unableToConfirmIdentity())
+              case Some(IVResult.FailedIV)             => Redirect(features.officer.controllers.routes.IdentityVerificationController.failedIV())
+              case Some(IVResult.LockedOut)            => Redirect(features.officer.controllers.routes.IdentityVerificationController.lockedOut())
+              case Some(IVResult.UserAborted)          => Redirect(features.officer.controllers.routes.IdentityVerificationController.userAborted())
               case _                                   => Redirect(controllers.callbacks.routes.SignInOutController.errorShow())
             }
           }

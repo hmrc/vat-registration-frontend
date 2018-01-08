@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import common.enums.IVResult
 import config.WSHttp
-import features.iv.models.IVSetup
+import features.officer.models.IVSetup
 import play.api.Logger
 import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.http.HeaderCarrier

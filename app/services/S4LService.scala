@@ -68,8 +68,8 @@ trait S4LService extends CommonService {
   def fetchAll(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[CacheMap]] =
     s4LConnector.fetchAll(profile.registrationId)
 
-  def saveIv(json:JsValue)(implicit hc: HeaderCarrier, cp: CurrentProfile) = {
-    s4LConnector.save[JsValue] (cp.registrationId, "IVJourneyID", json)
+  def saveIv(data: JsValue)(implicit hc: HeaderCarrier, cp: CurrentProfile) = {
+    s4LConnector.save[JsValue] (cp.registrationId, "IVJourneyID", data)
   }
 
   def fetchIv(implicit hc: HeaderCarrier, cp: CurrentProfile):Future[Option[String]] = {

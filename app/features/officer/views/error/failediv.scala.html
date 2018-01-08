@@ -14,7 +14,7 @@
     </div>
 
  <div class="form-group">
- @govHelpers.form(action = controllers.iv.routes.IdentityVerificationController.redirectToIV()) {
+ @govHelpers.form(action = features.officer.controllers.routes.IdentityVerificationController.redirectToIV()) {
          <button class="button-get-started" role="submit" id="save-and-continue">@messages("pages.failediv.button.try")</button>
  }
  </div>

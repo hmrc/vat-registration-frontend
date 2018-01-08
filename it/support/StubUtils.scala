@@ -729,11 +729,11 @@ trait StubUtils {
       builder
     }
   }
-  case class setIVStatusInVat(implicit builder:PreconditionBuilder){
-    def setStatus(regId:String = "1",ivPassed:Boolean = true, status:Int = 200) = {
+  case class setIVStatusInVat(implicit builder: PreconditionBuilder){
+    def setStatus(regId:String = "1", ivPassed: Boolean = true, status: Int = 200) = {
       stubFor(
-        patch(urlPathMatching(s"/vatreg/${regId}/update-iv-status"))
-          .willReturn(aResponse().withStatus(status).withBody(s"""{"ivPassed":${ivPassed}}""")))
+        patch(urlPathMatching(s"/vatreg/${regId}/update-iv-status/$ivPassed"))
+          .willReturn(aResponse().withStatus(status)))
       builder
     }
   }

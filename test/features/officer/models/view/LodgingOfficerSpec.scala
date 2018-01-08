@@ -44,6 +44,7 @@ class LodgingOfficerSpec extends UnitSpec {
         name = Name(forename = Some("First"), otherForenames = Some("Middle"), surname = "Last"),
         role = "Director"
       )
+
       val lodgingOfficer = LodgingOfficer(
         completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA123456Z")),
@@ -71,10 +72,12 @@ class LodgingOfficerSpec extends UnitSpec {
            |}
          """.stripMargin)
 
+
       val officer = Officer(
         name = Name(forename = Some("First"), otherForenames = None, surname = "Last"),
         role = "Director"
       )
+
       val lodgingOfficer = LodgingOfficer(
         completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA123456Z")),

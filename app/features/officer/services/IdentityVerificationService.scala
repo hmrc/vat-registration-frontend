@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package features.iv.services
+package features.officer.services
 
 import java.util.UUID
 import javax.inject.Inject
@@ -22,8 +22,11 @@ import javax.inject.Inject
 import common.enums.IVResult
 import common.exceptions.InternalExceptions.ElementNotFoundException
 import connectors.{IVConnector, RegistrationConnector}
-import features.iv.models.{IVSetup, UserData}
-import models.{CurrentProfile, S4LVatLodgingOfficer}
+import features.officer.models.{IVSetup, UserData}
+import features.officer.models.view.LodgingOfficer
+import features.officer.services.LodgingOfficerService
+import models.CurrentProfile
+import play.api.Logger
 import play.api.libs.json.{JsObject, JsValue, Json}
 import services.S4LService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -38,12 +41,11 @@ class IdentityVerificationService @Inject()(config: ServicesConfig,
                                             val ivConnector: IVConnector,
                                             val vatRegistrationConnector: RegistrationConnector,
                                             val vatRegFeatureSwitch: VATRegFeatureSwitches,
+                                            val officerService: LodgingOfficerService,
                                             implicit val s4lService: S4LService) extends IVService {
   val ORIGIN             = config.getString("appName")
   val vrfeBaseUrl        = config.getConfString("vat-registration-frontend.www.url", "")
   val vrfeBaseUri        = config.getConfString("vat-registration-frontend.www.uri", "")
-
-
 }
 
 trait IVService {
@@ -52,6 +54,7 @@ trait IVService {
   val vatRegistrationConnector: RegistrationConnector
   val vatRegFeatureSwitch: VATRegFeatureSwitches
   val s4lService: S4LService
+  val officerService: LodgingOfficerService
 
   val ORIGIN: String
   val vrfeBaseUrl: String
@@ -61,45 +64,44 @@ trait IVService {
 
   private val CONFIDENCE_LEVEL = 200
 
-  private[services] def buildIVSetupData(lodgingOfficer: S4LVatLodgingOfficer)(implicit currentProfile: CurrentProfile, hc: HeaderCarrier): IVSetup = {
+  private[services] def buildIVSetupData(lodgingOfficer: LodgingOfficer)(implicit cp: CurrentProfile, hc: HeaderCarrier): IVSetup = {
+    val securityQuestions = lodgingOfficer.securityQuestions.getOrElse(throw new ElementNotFoundException(s"No Security questions found for regId: ${cp.registrationId}"))
+    val ccView            = lodgingOfficer.completionCapacity.getOrElse(throw new ElementNotFoundException(s"No Completion Capacity View found for regId: ${cp.registrationId}"))
+    val officer           = ccView.officer.getOrElse(throw new ElementNotFoundException(s"No Officer found for regId: ${cp.registrationId}"))
+    val officerName       = officer.name
     IVSetup(
       origin          = ORIGIN,
-      completionURL   = vrfeBaseUrl + controllers.iv.routes.IdentityVerificationController.completedIVJourney().url,
+      completionURL   = vrfeBaseUrl + features.officer.controllers.routes.IdentityVerificationController.completedIVJourney().url,
       failureURL      = vrfeBaseUrl + vrfeBaseUri + "/ivFailure",
       confidenceLevel = CONFIDENCE_LEVEL,
       userData = UserData(
-        firstName   = lodgingOfficer.completionCapacity.getOrElse(throw new ElementNotFoundException("Completion capacity in S4L not found"))
-          .completionCapacity.getOrElse(throw new ElementNotFoundException("Completion capacity in S4L.CC not found"))
-          .name.forename.getOrElse(throw new ElementNotFoundException("First name in S4L.CC.name not found")),
-        lastName    = lodgingOfficer.completionCapacity.getOrElse(throw new ElementNotFoundException("Completion capacity in S4L not found"))
-          .completionCapacity.getOrElse(throw new ElementNotFoundException("Completion capacity in S4L.CC not found"))
-          .name.surname,
-        dateOfBirth = lodgingOfficer.officerSecurityQuestions.getOrElse(throw new ElementNotFoundException("Security questions not found in S4L")).dob.toString,
-        nino        = lodgingOfficer.officerSecurityQuestions.getOrElse(throw new ElementNotFoundException("Security questions not found in S4L")).nino
+        firstName   = officerName.forename.getOrElse(throw new ElementNotFoundException(s"First Name not found for regId: ${cp.registrationId}")),
+        lastName    = officerName.surname,
+        dateOfBirth = securityQuestions.dob.toString,
+        nino        = securityQuestions.nino
       )
     )
   }
 
-  def saveJourneyID(json:JsValue)(implicit cp:CurrentProfile,hc:HeaderCarrier):Future[CacheMap] ={
+  def saveJourneyID(json:JsValue)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[CacheMap] = {
     s4lService.saveIv(getJourneyIdFromJson(json))
   }
 
-  def getJourneyIdFromJson(json:JsValue): JsValue = Json.toJson(
-    (json \ "journeyLink").toOption.map { a =>
+  def getJourneyIdFromJson(json:JsValue): JsValue = Json.toJson((json \ "journeyLink").toOption.map { a =>
       val s = a.as[String]
       s.substring(s.lastIndexOf("""/""") + 1)
     }.get
   )
 
-  def getIVJourneyID(implicit cp:CurrentProfile,hc:HeaderCarrier):Future[Option[String]] = {
+
+  def getIVJourneyID(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[String]] = {
     s4lService.fetchIv
   }
 
   def setupAndGetIVJourneyURL(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[String] = {
     if(!cp.ivPassed.getOrElse(false)) {
       for {
-        Some(officer) <- s4lService.fetchAndGet[S4LVatLodgingOfficer]
-        _             <- vatRegistrationConnector.upsertVatLodgingOfficer(cp.registrationId, S4LVatLodgingOfficer.apiT.toApi(officer))
+        officer       <- officerService.getLodgingOfficer
         ivData        =  buildIVSetupData(officer)
         json          <- if (useIVStub) startIVJourney() else ivConnector.setupIVJourney(ivData)
         _             <- saveJourneyID(json)
@@ -109,20 +111,21 @@ trait IVService {
     }
   }
 
-  def setIvStatus(ivResult: IVResult.Value)(implicit currentProfile: CurrentProfile, hc: HeaderCarrier) :Future[Option[IVResult.Value]] = {
+  def setIvStatus(ivResult: IVResult.Value)(implicit currentProfile: CurrentProfile, hc: HeaderCarrier): Future[Option[IVResult.Value]] = {
     val res = ivResult == IVResult.Success
     vatRegistrationConnector.updateIVStatus(currentProfile.registrationId, res).map(_ => Some(ivResult)).recoverWith {
-      case _: Exception => Future.successful(None)
+      case e: Exception =>
+        Logger.warn(s"[setIvStatus] Something went wrong for regId: ${currentProfile.registrationId} with message: ${e.getMessage}. returning None")
+        Future.successful(None)
     }
   }
 
-
-  def getJourneyIdAndJourneyOutcome()(implicit cp:CurrentProfile,hc:HeaderCarrier):Future[IVResult.Value] = for {
+  def getJourneyIdAndJourneyOutcome()(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[IVResult.Value] = for {
     id       <- getIVJourneyID
     ivResult <- ivConnector.getJourneyOutcome(id.get)
   } yield ivResult
 
   private[services] def startIVJourney(journeyid:String = UUID.randomUUID.toString):Future[JsObject] = Future.successful(JsObject(
-    Map("link" ->Json.toJson(controllers.test.routes.TestIVController.show(journeyid).url), "journeyLink" -> Json.toJson("""/""" + journeyid))
+    Map("link" ->Json.toJson(features.officer.controllers.test.routes.TestIVController.show(journeyid).url), "journeyLink" -> Json.toJson("""/""" + journeyid))
   ))
 }

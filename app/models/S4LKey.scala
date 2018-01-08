@@ -17,6 +17,7 @@
 package models
 
 import features.financials.models.Returns
+import features.officer.models.view.LodgingOfficer
 import models.view.test.SicStub
 
 trait S4LKey[T] {
@@ -39,5 +40,6 @@ object S4LKey {
   implicit val vatLodgingOfficer: S4LKey[S4LVatLodgingOfficer] = S4LKey("VatLodgingOfficer")
   implicit val sicAndCompliance: S4LKey[S4LVatSicAndCompliance] = S4LKey("VatSicAndCompliance")
   implicit val returns: S4LKey[Returns] = S4LKey("returns")
+  implicit val lodgingOfficer: S4LKey[LodgingOfficer] = S4LKey("LodgingOfficer")
   val bankAccountKey: S4LKey[BankAccount] = S4LKey[BankAccount]("bankAccount")
 }

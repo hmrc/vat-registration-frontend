@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.test
+package features.officer.controllers.test
 
 import javax.inject.{Inject, Singleton}
 
@@ -22,7 +22,7 @@ import common.enums.IVResult
 import connectors.KeystoreConnect
 import connectors.test.BusinessRegDynamicStubConnector
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import features.iv.services.IVService
+import features.officer.services.IVService
 import forms.test.TestIVForm
 import models.view.test.TestIVResponse
 import play.api.libs.json.{JsObject, Json}
@@ -58,7 +58,7 @@ class TestIVController @Inject()(ds: CommonPlayDependencies,
       implicit request =>
         withCurrentProfile { implicit profile =>
           val testIVResponse = TestIVResponse(journeyId, IVResult.Success)
-          Future.successful(Ok(features.iv.views.html.test.testIVResponse(TestIVForm.form.fill(testIVResponse))))
+          Future.successful(Ok(features.officer.views.html.test.testIVResponse(TestIVForm.form.fill(testIVResponse))))
         }
   }
 
@@ -68,13 +68,13 @@ class TestIVController @Inject()(ds: CommonPlayDependencies,
         withCurrentProfile { implicit profile =>
           TestIVForm.form.bindFromRequest().fold(
             badForm =>
-              Future.successful(BadRequest(features.iv.views.html.test.testIVResponse(badForm))),
+              Future.successful(BadRequest(features.officer.views.html.test.testIVResponse(badForm))),
             success => for {
               _ <- busRegDynStub.setupIVOutcome(success.journeyId, success.ivResult)
               _ <- ivService.saveJourneyID(JsObject(Map("journeyLink" -> Json.toJson(s"""/${success.journeyId}"""))))
             } yield success.ivResult match {
-              case IVResult.Success => Redirect(controllers.iv.routes.IdentityVerificationController.completedIVJourney())
-              case _                => Redirect(controllers.iv.routes.IdentityVerificationController.failedIVJourney(success.journeyId))
+              case IVResult.Success => Redirect(features.officer.controllers.routes.IdentityVerificationController.completedIVJourney())
+              case _                => Redirect(features.officer.controllers.routes.IdentityVerificationController.failedIVJourney(success.journeyId))
             }
           )
         }

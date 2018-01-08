@@ -19,12 +19,10 @@ package it.fixtures
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
-import features.officer.models.view.SecurityQuestionsView
-import models.S4LVatLodgingOfficer
+import features.officer.models.view.{CompletionCapacityView, LodgingOfficer, SecurityQuestionsView}
 import models.api._
 import models.external.Officer
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.QUARTERLY
-import models.view.vatLodgingOfficer.CompletionCapacityView
 import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 
@@ -37,6 +35,7 @@ trait VatRegistrationFixture {
     euTrading = VatEuTrading(false, Some(false))
   )
 
+  @deprecated("use lodgingOfficer","when updating welcome controller")
   val lodgingOfficer = VatLodgingOfficer(
     currentAddress = Some(address),
     dob = Some(DateOfBirth(31, 12, 1980)),
@@ -48,36 +47,20 @@ trait VatRegistrationFixture {
     contact = Some(OfficerContactDetails(Some("test@test.com"), None, None))
   )
 
-  val validLodgingOfficerPreIV = VatLodgingOfficer(
-    currentAddress = None,
-    dob = Some(DateOfBirth(31, 12, 1980)),
-    nino = Some("SR123456C"),
-    role = Some("Director"),
-    name = Some(Name(forename = Some("Firstname"), surname = "lastname", otherForenames = None)),
-    changeOfName = None,
-    currentOrPreviousAddress = None,
-    contact = None
-  )
+  val officerDob = LocalDate.of(1998, 7, 12)
 
-  val validPreIVScheme = VatScheme(id="1",lodgingOfficer = Some(validLodgingOfficerPreIV), status = VatRegStatus.draft)
-  val completionCapacity = CompletionCapacity(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director")
-
-  val officerName = Name(forename = Some("Firstname"), surname = "lastname", otherForenames = None)
-
-  val validS4LLodgingOfficerPreIv = S4LVatLodgingOfficer (
-    completionCapacity = Some(CompletionCapacityView("",Some(completionCapacity))),
-    officerSecurityQuestions = Some(SecurityQuestionsView(LocalDate.of(2017,11,5),"nino",Some(officerName)))
-  )
-
-  val validOfficer = Officer(
-    name = officerName,
-    role = "Director",
+  def generateOfficer(first: String, middle: Option[String], last: String, role: String) = Officer(
+    name = Name(forename = Some(first), otherForenames = middle, surname = last),
+    role = role,
     dateOfBirth = Some(DateOfBirth(31, 12, 1980))
   )
 
-  val validCompletionCapacity = CompletionCapacity(
-    name = Name(forename = Some("Firstname"), surname = "lastname", otherForenames = None),
-    role = "Director"
+  val validOfficer: Officer = generateOfficer("First", Some("Middle"), "Last", "Role")
+
+  val lodgingOfficerPreIv = LodgingOfficer(
+    completionCapacity = Some(CompletionCapacityView(id = validOfficer.name.id, officer = Some(validOfficer))),
+    securityQuestions = Some(SecurityQuestionsView(officerDob,"fakenino")),
+    None,None,None,None,None
   )
 
   val financials = VatFinancials(
@@ -148,10 +131,5 @@ trait VatRegistrationFixture {
     vatServiceEligibility = Some(eligibility.copy(vatEligibilityChoice = Some(eligibilityChoiceIncorporated))),
     vatFlatRateScheme = Some(flatRateScheme)
   )
-val validName = Name(Some("foo"),Some("bar"),"fizz",Some("bang"))
-  val nameId = validName.id
-  val validS4LLodgingOfficer = S4LVatLodgingOfficer(
-    completionCapacity = Some(CompletionCapacityView(nameId,Some(CompletionCapacity(validName,"bar")))),
-    officerSecurityQuestions = Some(SecurityQuestionsView(LocalDate.of(2017,11,5),"nino",Some(validName))))
 
 }

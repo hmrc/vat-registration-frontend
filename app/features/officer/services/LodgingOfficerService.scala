@@ -19,11 +19,10 @@ package features.officer.services
 import javax.inject.Inject
 
 import config.Logging
-import connectors.{RegistrationConnector, S4LConnect}
-import features.officer.models.view.LodgingOfficer
-import models.CurrentProfile
-import features.officer.models.view._
-import services.IncorporationInfoSrv
+import connectors.RegistrationConnector
+import features.officer.models.view.{LodgingOfficer, _}
+import models.{CurrentProfile, S4LKey}
+import services.{IncorporationInfoSrv, S4LService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -31,26 +30,25 @@ import scala.concurrent.Future
 
 class LodgingOfficerServiceImpl @Inject()(val vatRegistrationConnector: RegistrationConnector,
                                           val incorpInfoService: IncorporationInfoSrv,
-                                          val s4lConnector: S4LConnect) extends LodgingOfficerService
+                                          val s4LService: S4LService) extends LodgingOfficerService
 
 trait LodgingOfficerService extends Logging {
   val incorpInfoService: IncorporationInfoSrv
-  val s4lConnector: S4LConnect
   val vatRegistrationConnector: RegistrationConnector
+  val s4LService: S4LService
 
   type Completion[T] = Either[T, T]
   val Incomplete   = scala.util.Left
   val Complete     = scala.util.Right
 
-  private val LODGING_OFFICER = "LodgingOfficer"
   private val N               = None
 
   def getLodgingOfficer(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[LodgingOfficer] = {
-    s4lConnector.fetchAndGet[LodgingOfficer](cp.registrationId, LODGING_OFFICER) flatMap {
+    s4LService.fetchAndGetNoAux[LodgingOfficer](S4LKey[LodgingOfficer]) flatMap {
       case Some(officer) => Future.successful(officer)
       case _ => vatRegistrationConnector.getLodgingOfficer flatMap { json =>
         val lodgingOfficer = json.fold(LodgingOfficer(N, N, N, N, N, N, N))(LodgingOfficer.fromApi)
-        s4lConnector.save[LodgingOfficer](cp.registrationId, LODGING_OFFICER, lodgingOfficer) map (_ => lodgingOfficer)
+        s4LService.saveNoAux[LodgingOfficer](lodgingOfficer, S4LKey[LodgingOfficer]) map (_ => lodgingOfficer)
       }
     }
   }
@@ -59,7 +57,7 @@ trait LodgingOfficerService extends Logging {
                                   (implicit cp: CurrentProfile, headerCarrier: HeaderCarrier): Future[LodgingOfficer] = {
     for {
       _ <- vatRegistrationConnector.patchLodgingOfficer(data)
-      _ <- s4lConnector.clear(cp.registrationId)
+      _ <- s4LService.clear
     } yield data
   }
 
@@ -89,7 +87,7 @@ trait LodgingOfficerService extends Logging {
 
     getLodgingOfficer flatMap { lodgingOfficer =>
       isModelComplete(updateModel(data, lodgingOfficer)).fold(
-        incomplete => s4lConnector.save[LodgingOfficer](cp.registrationId, LODGING_OFFICER, incomplete) map (_ => incomplete),
+        incomplete => s4LService.saveNoAux[LodgingOfficer](incomplete, S4LKey[LodgingOfficer]) map (_ => incomplete),
         complete => updateLodgingOfficer(complete)
       )
     }

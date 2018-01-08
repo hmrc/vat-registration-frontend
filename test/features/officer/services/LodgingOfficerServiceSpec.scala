@@ -33,7 +33,7 @@ import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
-import services.IncorporationInfoSrv
+import services.{IncorporationInfoSrv, S4LService}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -79,23 +79,23 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
 
   class Setup(s4lData: Option[LodgingOfficer] = None, backendData: Option[JsValue] = None) {
     val service = new LodgingOfficerService {
-      override val s4lConnector: S4LConnect = mockS4LConnector
+      override val s4LService: S4LService = mockS4LService
       override val incorpInfoService: IncorporationInfoSrv = mockIncorpInfoService
       override val vatRegistrationConnector: RegistrationConnector = mockRegConnector
     }
 
-    when(mockS4LConnector.fetchAndGet[LodgingOfficer](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockS4LService.fetchAndGetNoAux[LodgingOfficer](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(s4lData))
 
     when(mockRegConnector.getLodgingOfficer(any(),any())).thenReturn(Future.successful(backendData))
 
-    when(mockS4LConnector.save(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockS4LService.saveNoAux(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(CacheMap("", Map())))
   }
 
   class SetupForS4LSave(t: LodgingOfficer = emptyLodgingOfficer) {
     val service = new LodgingOfficerService {
-      override val s4lConnector: S4LConnect = mockS4LConnector
+      override val s4LService: S4LService = mockS4LService
       override val incorpInfoService: IncorporationInfoSrv = mockIncorpInfoService
       override val vatRegistrationConnector: RegistrationConnector = mockRegConnector
 
@@ -104,13 +104,13 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
       }
     }
 
-    when(mockS4LConnector.save(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockS4LService.saveNoAux(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(CacheMap("", Map())))
   }
 
   class SetupForBackendSave(t: LodgingOfficer = validPartialLodgingOfficer) {
     val service = new LodgingOfficerService {
-      override val s4lConnector: S4LConnect = mockS4LConnector
+      override val s4LService: S4LService = mockS4LService
       override val incorpInfoService: IncorporationInfoSrv = mockIncorpInfoService
       override val vatRegistrationConnector: RegistrationConnector = mockRegConnector
 
@@ -121,7 +121,7 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
 
     when(mockRegConnector.patchLodgingOfficer(any())(any(),any())).thenReturn(Future.successful(Json.toJson("""{}""")))
 
-    when(mockS4LConnector.clear(ArgumentMatchers.any())(ArgumentMatchers.any()))
+    when(mockS4LService.clear(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(HttpResponse(200)))
   }
 
@@ -176,10 +176,10 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
       val expected = LodgingOfficer(
         completionCapacity = Some(CompletionCapacityView(validOfficer.name.id, Some(validOfficer))),
         securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12), nino = "SR123456Z")),
-        homeAddress = None,
-        contactDetails = None,
-        formerName = None,
-        formerNameDate = None,
+        homeAddress     = None,
+        contactDetails  = None,
+        formerName      = None,
+        formerNameDate  = None,
         previousAddress = None
       )
       service.getLodgingOfficer returns expected

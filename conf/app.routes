@@ -16,15 +16,15 @@ POST        /feedback                                                           
 GET         /thankyou                                                                          controllers.feedback.FeedbackController.thankyou
 
 ##IDENTITY VERIFICATION
-GET         /start-iv-journey                                                                  controllers.iv.IdentityVerificationController.redirectToIV
-GET         /timed-out-inactivity                                                              controllers.iv.IdentityVerificationController.timeoutIV
-GET         /cant-confirm-identity                                                             controllers.iv.IdentityVerificationController.unableToConfirmIdentity
-GET         /couldnt-confirm-identity                                                          controllers.iv.IdentityVerificationController.failedIV
-GET         /locked-out                                                                        controllers.iv.IdentityVerificationController.lockedOut
-GET         /incomplete-identity-check                                                         controllers.iv.IdentityVerificationController.userAborted
+GET         /start-iv-journey                                                                  features.officer.controllers.IdentityVerificationController.redirectToIV
+GET         /timed-out-inactivity                                                              features.officer.controllers.IdentityVerificationController.timeoutIV
+GET         /cant-confirm-identity                                                             features.officer.controllers.IdentityVerificationController.unableToConfirmIdentity
+GET         /couldnt-confirm-identity                                                          features.officer.controllers.IdentityVerificationController.failedIV
+GET         /locked-out                                                                        features.officer.controllers.IdentityVerificationController.lockedOut
+GET         /incomplete-identity-check                                                         features.officer.controllers.IdentityVerificationController.userAborted
 
-GET         /ivComplete                                                                        controllers.iv.IdentityVerificationController.completedIVJourney
-GET         /ivFailure                                                                         controllers.iv.IdentityVerificationController.failedIVJourney(journeyId: String)
+GET         /ivComplete                                                                        features.officer.controllers.IdentityVerificationController.completedIVJourney
+GET         /ivFailure                                                                         features.officer.controllers.IdentityVerificationController.failedIVJourney(journeyId: String)
 
 ## WELCOME PAGE
 GET         /                                                                                  controllers.WelcomeController.show

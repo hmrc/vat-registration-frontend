@@ -145,7 +145,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
 
       submitAuthorised(controller.submitSecurityQuestions(),
         fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> testNino)
-      )(_ redirectsTo s"${controllers.iv.routes.IdentityVerificationController.redirectToIV.url}")
+      )(_ redirectsTo s"${features.officer.controllers.routes.IdentityVerificationController.redirectToIV.url}")
     }
   }
 

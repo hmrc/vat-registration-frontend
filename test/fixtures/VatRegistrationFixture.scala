@@ -150,7 +150,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
         Some(VatEligibilityChoice(
           nes, reason, None, expectedThreshold)))
 
-  val officerName = Name(Some("Reddy"), None, "Yattapu", Some("Dr"))
+  val officerName = Name(Some("Bobby"), None, "Bobbings", Some("Dr"))
   val validOfficerContactDetails = OfficerContactDetails(Some("test@test.com"), None, None)
   val changeOfName = ChangeOfName(true, None)
   val currentOrPreviousAddress = CurrentOrPreviousAddress(false, Some(ScrsAddress("", "")))
