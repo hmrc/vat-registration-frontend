@@ -17,7 +17,7 @@
   <p>@messages("pages.security.questions.p1")</p>
   <h3 class="form-title heading-medium">@messages("pages.security.questions.date.of.birth.h3")</h3>
 
-  @govHelpers.form(action = controllers.vatLodgingOfficer.routes.OfficerSecurityQuestionsController.submit()) {
+  @govHelpers.form(action = features.officers.controllers.routes.OfficerSecurityQuestionsController.submit()) {
   <div class="form-group-compound">
       @defining(securityQuestionsForm("dob").errors.nonEmpty) { errorPresent =>
           <div class="form-date @if(errorPresent) { form-group-error }">

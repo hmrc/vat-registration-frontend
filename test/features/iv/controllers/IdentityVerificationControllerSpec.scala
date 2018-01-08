@@ -76,7 +76,7 @@ class Setup {
       when(mockIVService.setIvStatus(ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(Some(IVResult.Success)))
       when(mockCurrentProfile.updateIVStatusInCurrentProfile(ArgumentMatchers.any())
       (ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(currentProfile(Some(true))))
-      callAuthorised(testController.completedIVJourney)(redirectLocation(_) mustBe Some(routes.FormerNameController.show().url))
+      callAuthorised(testController.completedIVJourney)(redirectLocation(_) mustBe Some(controllers.vatLodgingOfficer.routes.FormerNameController.show().url))
     }
     "return 500 when the user does not have journeyID/response from iv" in new Setup {
       mockGetCurrentProfile()

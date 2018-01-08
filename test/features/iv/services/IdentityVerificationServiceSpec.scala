@@ -102,7 +102,7 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
 
     "return string to formername controller if cp.ivPassed is already true" in new Setup(true) {
       val res = await(service.setupAndGetIVJourneyURL)
-      res mustBe routes.FormerNameController.show().url
+      res mustBe controllers.vatLodgingOfficer.routes.FormerNameController.show().url
     }
   }
   "getIVJourneyID" should {

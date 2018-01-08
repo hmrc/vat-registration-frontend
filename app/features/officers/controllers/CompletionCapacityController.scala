@@ -92,7 +92,7 @@ package features.officers.controllers {
                 BadRequest(features.officers.views.html.completion_capacity(formErrors, officerList))
               },
               cc => lodgingOfficerService.updateLodgingOfficer(cc) map {
-                _ => Redirect(routes.OfficerSecurityQuestionsController.show())
+                _ => Redirect(features.officers.controllers.routes.OfficerSecurityQuestionsController.show())
               }
             )
           }

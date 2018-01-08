@@ -16,13 +16,14 @@
 
 package controllers.vatLodgingOfficer
 
-import features.officers.controllers.routes
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
+
+import scala.concurrent.Future
 
 class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
@@ -36,10 +37,10 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
 
   val fakeRequest = FakeRequest(routes.OfficerContactDetailsController.show())
 
-  s"GET ${features.officers.controllers.routes.OfficerContactDetailsController.show()}" should {
+  s"GET ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show()}" should {
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[OfficerContactDetailsView]()
-      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(Future.successful(validVatScheme))
       mockGetCurrentProfile()
       callAuthorised(Controller.show()) {
         _ includesText "What are your contact details?"
@@ -57,7 +58,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[OfficerContactDetailsView]()
-      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(Future.successful(emptyVatScheme))
       mockGetCurrentProfile()
       callAuthorised(Controller.show) {
         _ includesText "What are your contact details?"
@@ -65,7 +66,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
     }
   }
 
-  s"POST ${features.officers.controllers.routes.OfficerContactDetailsController.submit()}" should {
+  s"POST ${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.submit()}" should {
     "return 400 with Empty data" in {
       mockGetCurrentProfile()
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody()
@@ -75,7 +76,7 @@ class OfficerContactDetailsControllerSpec extends VatRegSpec with VatRegistratio
 
     "return 303 with valid Officer Contact Details entered" in {
       save4laterExpectsSave[OfficerContactDetailsView]()
-      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(Future.successful(emptyVatScheme))
       mockGetCurrentProfile()
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("email" -> "some@email.com",

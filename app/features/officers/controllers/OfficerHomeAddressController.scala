@@ -51,7 +51,6 @@ package controllers.vatLodgingOfficer {
   import connectors.KeystoreConnect
   import common.enums.AddressLookupJourneyIdentifier.homeAddress
   import controllers.{CommonPlayDependencies, VatRegistrationController}
-  import features.officers.controllers.routes
   import forms.vatLodgingOfficer.OfficerHomeAddressForm
   import models.api.ScrsAddress
   import models.view.vatLodgingOfficer.OfficerHomeAddressView
@@ -116,7 +115,7 @@ package controllers.vatLodgingOfficer {
           withCurrentProfile { implicit profile =>
             addressLookupService.getAddressById(id).flatMap { address =>
               save(OfficerHomeAddressView(address.id, Some(address.normalise())))
-            }.map(_ => Redirect(features.officers.controllers.routes.PreviousAddressController.show()))
+            }.map(_ => Redirect(controllers.vatLodgingOfficer.routes.PreviousAddressController.show()))
           }
     }
   }

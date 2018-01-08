@@ -60,7 +60,7 @@ class OfficerSecurityQuestionsControllerSpec extends ControllerSpec with VatRegi
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       callAuthorised(controller.show()) {
-        _ includesText "What is your date of birth"
+        _ includesText MOCKED_MESSAGE
       }
     }
 
@@ -70,7 +70,7 @@ class OfficerSecurityQuestionsControllerSpec extends ControllerSpec with VatRegi
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(emptyLodgingOfficer))
 
       callAuthorised(controller.show()) {
-        _ includesText "What is your date of birth"
+        _ includesText MOCKED_MESSAGE
       }
     }
 

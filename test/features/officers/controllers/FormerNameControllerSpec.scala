@@ -26,6 +26,8 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 
+import scala.concurrent.Future
+
 class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   object TestFormerNameController extends FormerNameController(
@@ -38,10 +40,10 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
   val fakeRequest = FakeRequest(routes.FormerNameController.show())
 
-  s"GET ${features.officers.controllers.routes.FormerNameController.show()}" should {
+  s"GET ${controllers.vatLodgingOfficer.routes.FormerNameController.show()}" should {
     "return HTML when there's a former name in S4L" in {
       save4laterReturnsViewModel(FormerNameView(yesNo = true, formerName = Some("Smooth Handler")))()
-      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(Future.successful(validVatScheme))
       mockGetCurrentProfile()
       callAuthorised(TestFormerNameController.show) {
         _ includesText "Have you ever changed your name?"
@@ -50,7 +52,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
       save4laterReturnsNoViewModel[FormerNameView]()
-      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(Future.successful(validVatScheme))
       mockGetCurrentProfile()
       callAuthorised(TestFormerNameController.show) {
         _ includesText "Have you ever changed your name?"
@@ -59,7 +61,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
       save4laterReturnsNoViewModel[FormerNameView]()
-      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(emptyVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(Future.successful(emptyVatScheme))
       mockGetCurrentProfile()
       callAuthorised(TestFormerNameController.show) {
         _ includesText "Have you ever changed your name?"
@@ -67,7 +69,7 @@ class FormerNameControllerSpec extends VatRegSpec with VatRegistrationFixture wi
     }
   }
 
-  s"POST ${features.officers.controllers.routes.FormerNameController.submit()}" should {
+  s"POST ${controllers.vatLodgingOfficer.routes.FormerNameController.submit()}" should {
     "return 400 with Empty data" in {
       mockGetCurrentProfile()
       submitAuthorised(TestFormerNameController.submit(), fakeRequest.withFormUrlEncodedBody(

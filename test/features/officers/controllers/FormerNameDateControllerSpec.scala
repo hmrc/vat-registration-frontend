@@ -19,22 +19,18 @@ package controllers.vatLodgingOfficer
 import java.time.LocalDate
 
 import common.Now
-import controllers.vatLodgingOfficer
-import features.officers.controllers.routes
 import fixtures.VatRegistrationFixture
 import forms.vatLodgingOfficer.FormerNameDateForm
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.view.vatLodgingOfficer.{FormerNameDateView, FormerNameView}
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
@@ -53,7 +49,7 @@ class FormerNameDateControllerSpec extends VatRegSpec with VatRegistrationFixtur
     implicit val fixedToday = Now[LocalDate](today)
   }
 
-  val fakeRequest = FakeRequest(routes.FormerNameDateController.show())
+  val fakeRequest = FakeRequest(controllers.vatLodgingOfficer.routes.FormerNameDateController.show())
 
   s"GET ${routes.FormerNameDateController.show()}" should {
     "return HTML when a date no data entered in S4L for Former name" in {

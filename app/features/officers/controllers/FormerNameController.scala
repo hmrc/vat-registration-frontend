@@ -90,7 +90,7 @@ package controllers.vatLodgingOfficer {
                 badForm => BadRequest(features.officers.views.html.former_name(badForm)).pure,
                 data => data.yesNo.pure.ifM(
                   ifTrue = save(data).map(_ => Redirect(routes.FormerNameDateController.show())),
-                  ifFalse = save(data).map(_ => Redirect(features.officers.controllers.routes.OfficerContactDetailsController.show()))))
+                  ifFalse = save(data).map(_ => Redirect(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show()))))
             }
           }
     }
