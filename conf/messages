@@ -115,12 +115,12 @@ pages.timeoutiv.heading                 = Your session has timed out due to inac
 pages.timeoutiv.body.url                = You need to <a href="{0}">restart the identity check</a>.
 
 ## Unable to confirm identity page
-pages.cantconfirmidentity.title         = We can''t confirm your identity
-pages.cantconfirmidentity.heading       = We can''t confirm your identity
-pages.cantconfirmidentity.body.one      = We don''t hold enough information about you to check your identity.
+pages.cantconfirmidentity.title         = We won''t be able to confirm your identity
+pages.cantconfirmidentity.heading       = We won''t be able to confirm your identity
+pages.cantconfirmidentity.body.one      = We don''t hold enough information for us to check who you are.
 pages.cantconfirmidentity.body.two      = If you have the company''s name and registration date, you can
-pages.cantconfirmidentity.body.link     = use another HMRC service
-pages.cantconfirmidentity.body.three    = to register for VAT.
+pages.cantconfirmidentity.body.link     = using another HMRC service
+pages.cantconfirmidentity.body.three    = , which has a different way of confirming your identity.
 
 ## Failediv
 pages.failediv.title                   = We couldn''t confirm your identity
@@ -155,7 +155,7 @@ pages.welcome.heading                   = Register for VAT
 pages.welcome.p1                        = Before you work out if a company must register for VAT, you need to know:
 
 pages.welcome.bullet1                   = the company''s ''VAT taxable sales'' - this is everything the company sells that isn''t exempt from VAT
-pages.welcome.bullet2                   = the ''VAT registration threshold'' - this is how much VAT taxable sales the company can make before it has to register for VAT (currently [£85,000])
+pages.welcome.bullet2                   = the ''VAT registration threshold'' - this is how much VAT taxable sales the company can make before it has to register for VAT (currently £85,000)
 
 pages.welcome.h2                        = Mandatory registration
 pages.welcome.p2                        = You must register a company for VAT if any of these apply:
@@ -395,13 +395,14 @@ pages.estimate.vat.turnover.heading                         = Estimate the compa
 pages.estimate.vat.turnover.info                            = Give an estimate rounded to the nearest £10,000.
 pages.estimate.vat.turnover.include.title                   = What should I include as VAT-taxable turnover?
 pages.estimate.vat.turnover.include.bullet1                 = Add together the total value of the company''s UK sales of VAT-taxable goods and services. Include any zero-rated items.
-
 pages.estimate.vat.turnover.include.para1                   = Find out more about
 pages.estimate.vat.turnover.include.para1.1                 = VAT rates on different goods and services
+pages.estimate.vat.turnover.include.para1.2                 = .
 validation.estimate.vat.turnover.low                        = Enter a positive estimate
 validation.estimate.vat.turnover.high                       = Enter an estimate which is less than 1,000,000,000,000,000
 validation.estimate.vat.turnover.missing                    = Enter what the company''s VAT taxable turnover will be during the next 12 months
 validation.estimate.vat.turnover.invalid                    = Enter a valid number
+
 
 ## Zero Rated Sales Page
 pages.zero.rated.sales.title                                = Zero-Rated sales
@@ -466,6 +467,7 @@ pages.summary.title                                         = Summary
 pages.summary.heading                                       = Check and confirm your answers
 pages.summary.subheading                                    = Now send your application
 pages.summary.para1                                         = By submitting this application you''re confirming that the details you''re providing are correct and reflect the company''s current position.
+pages.summary.para1                                         = By submitting this application you’re confirming that the details you’re providing are correct and reflect the company’s current position.
 pages.summary.continue                                      = Confirm and send application
 pages.summary.print                                         = Print Page
 
@@ -798,7 +800,7 @@ pages.completionCapacity.panel.p2                        = After you get the ema
 pages.completionCapacity.panel.p2.link                   = sign back into this service from GOV.UK
 pages.completionCapacity.panel.p2.1                      = to continue your application.
 pages.completionCapacity.panel.p3                        = If you''re an agent for the company, you''ll need to log in to Government Gateway using your agent ID and
-pages.completionCapacity.panel.p3.link                   = sign back into this service from GOV.UK
+pages.completionCapacity.panel.p3.link                   = register for VAT with another HMRC service.
 validation.completionCapacity.missing                    = Tell us who is registering the company for VAT
 
 ## Officer Contact Details

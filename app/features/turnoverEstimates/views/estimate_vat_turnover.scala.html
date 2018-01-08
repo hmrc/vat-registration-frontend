@@ -24,23 +24,19 @@
       </div>
   </div>
 
-  <details role="group">
-      <summary role="button" aria-controls="details-content-1" aria-expanded="false">
+<details role="group">
+    <summary role="button" aria-controls="details-content-1" aria-expanded="false">
           <span class="summary">
             @Html(messages("pages.estimate.vat.turnover.include.title"))
           </span>
-      </summary>
-      <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
-          <ul class="list list-bullet">
-              <li>@Html(messages("pages.estimate.vat.turnover.include.bullet1"))</li>
-              <li>@Html(messages("pages.estimate.vat.turnover.include.bullet2"))</li>
-              <li>@Html(messages("pages.estimate.vat.turnover.include.bullet3"))</li>
-              <li>@Html(messages("pages.estimate.vat.turnover.include.bullet4"))</li>
-          </ul>
-          <p>@messages("pages.estimate.vat.turnover.include.para1")
-              @newWindowLink("https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services", messages("pages.estimate.vat.turnover.include.para1.1"))</p>
-      </div>
-  </details>
+    </summary>
+    <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
+        <p>@Html(messages("pages.estimate.vat.turnover.include.bullet1"))</p>
+        <p>@messages("pages.estimate.vat.turnover.include.para1")
+            @newWindowLink("https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services", messages("pages.estimate.vat.turnover.include.para1.1"))
+            @messages("pages.estimate.vat.turnover.include.para1.2")</p>
+    </div>
+</details>
 
   @govHelpers.form(action = features.turnoverEstimates.routes.TurnoverEstimatesController.submitEstimateVatTurnover) {
       <div class="form-group @fieldSetClasses">
