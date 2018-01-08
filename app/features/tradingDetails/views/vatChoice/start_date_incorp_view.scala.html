@@ -17,7 +17,15 @@
 
       <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.startDate.heading")</h1>
 
-      <p>@messages("pages.startDate.para1")</p>
+      <div class="notice form-group">
+          <i class="icon icon-important">
+              <span class="visuallyhidden">Warning</span>
+          </i>
+
+          <strong class="bold-small">@messages("pages.startDate.warning")</strong>
+      </div>
+
+      <p>@messages("pages.startDate.para1.post")</p>
 
         @govHelpers.form(action = features.returns.routes.ReturnsController.submitVoluntaryStart()) {
             <div class="form-group">
