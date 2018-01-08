@@ -18,7 +18,7 @@ package mocks
 
 import connectors._
 import features.iv.services.IdentityVerificationService
-import features.officers.services.LodgingOfficerService
+import features.officer.services.LodgingOfficerService
 import org.mockito.Mockito.reset
 import org.scalatest.mockito.MockitoSugar
 import play.api.i18n.MessagesApi

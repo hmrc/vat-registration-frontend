@@ -105,7 +105,7 @@ trait IVService {
         _             <- saveJourneyID(json)
       } yield (json \ "link").as[String]
     } else {
-      Future.successful(controllers.vatLodgingOfficer.routes.FormerNameController.show().url)
+      Future.successful(features.officer.controllers.routes.OfficerController.showFormerName().url)
     }
   }
 

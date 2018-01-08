@@ -52,7 +52,7 @@ import models.view.vatTradingDetails.vatEuTrading.EuGoods.EU_GOODS_YES
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import org.scalatest.Inspectors
 import uk.gov.hmrc.play.test.UnitSpec
-import features.officers.models.view._
+import features.officer.models.view._
 
 class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixture {
 
@@ -388,7 +388,7 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
 
     val s4l = S4LVatLodgingOfficer(
       officerHomeAddress = Some(OfficerHomeAddressView(address.id, Some(address))),
-      officerSecurityQuestions = Some(OfficerSecurityQuestionsView(dob = date, nino = testNino, officerName = Some(name))),
+      officerSecurityQuestions = Some(SecurityQuestionsView(dob = date, nino = testNino, officerName = Some(name))),
       completionCapacity = Some(CompletionCapacityView(id = "id", completionCapacity = Some(CompletionCapacity(name, testRole)))),
       officerContactDetails = Some(
         OfficerContactDetailsView(email = Some("email"), daytimePhone = Some("daytimePhone"), mobile = Some("mobile"))),

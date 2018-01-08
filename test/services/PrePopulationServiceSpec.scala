@@ -31,7 +31,7 @@ import models.{S4LVatContact, S4LVatLodgingOfficer}
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
-import features.officers.models.view.OfficerSecurityQuestionsView
+import features.officer.models.view.SecurityQuestionsView
 
 import scala.concurrent.Future
 import scala.language.implicitConversions
@@ -173,7 +173,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
       when(mockIIService.getOfficerList).thenReturn(Seq.empty[Officer].pure)
       when(mockVatRegistrationService.getVatScheme).thenReturn(emptyVatScheme.pure)
       save4laterReturns(S4LVatLodgingOfficer(completionCapacity = Some(completeCapacityView),
-        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.of(1999,1,1), ""))))
+        officerSecurityQuestions = Some(SecurityQuestionsView(LocalDate.of(1999,1,1), ""))))
 
       service.getOfficerList returns Seq()
     }

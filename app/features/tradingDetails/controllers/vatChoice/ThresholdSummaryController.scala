@@ -107,7 +107,7 @@ package controllers.vatTradingDetails.vatChoice {
               case VatThresholdPostIncorp(true, _) =>
                 save(VoluntaryRegistration(REGISTER_NO))
                 save(StartDateView(COMPANY_REGISTRATION_DATE))
-                Redirect(features.officers.controllers.routes.CompletionCapacityController.show())
+                Redirect(features.officer.controllers.routes.OfficerController.showCompletionCapacity())
               case _ => Redirect(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show())
             }
           }

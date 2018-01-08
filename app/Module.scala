@@ -29,8 +29,8 @@ import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsCon
 import controllers.test.{FeatureSwitchController, FeatureSwitchCtrl}
 import features.bankAccountDetails.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
 import features.iv.services.{IVService, IdentityVerificationService}
-import features.officers.controllers._
-import features.officers.services.{LodgingOfficerService, LodgingOfficerServiceImpl}
+import features.officer.controllers._
+import features.officer.services.{LodgingOfficerService, LodgingOfficerServiceImpl}
 import services._
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
@@ -83,8 +83,7 @@ class Module extends AbstractModule {
     bind(classOf[FrsStartDateController]).to(classOf[FrsStartDateControllerImpl]).asEagerSingleton()
     bind(classOf[FeatureSwitchCtrl]).to(classOf[FeatureSwitchController]).asEagerSingleton()
     bind(classOf[BankAccountDetailsController]).to(classOf[BankAccountDetailsControllerImpl]).asEagerSingleton()
-    bind(classOf[CompletionCapacityController]).to(classOf[CompletionCapacityControllerImpl]).asEagerSingleton()
-    bind(classOf[OfficerSecurityQuestionsController]).to(classOf[OfficerSecurityQuestionsControllerImpl]).asEagerSingleton()
+    bind(classOf[OfficerController]).to(classOf[OfficerControllerImpl]).asEagerSingleton()
   }
 
   private def bindServices(): Unit = {

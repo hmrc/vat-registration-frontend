@@ -20,8 +20,8 @@ import java.time.LocalDate
 
 import common.enums.IVResult
 import features.iv.models.{IVSetup, UserData}
-import features.officers.controllers.routes
-import features.officers.models.view.OfficerSecurityQuestionsView
+import features.officer.controllers.routes
+import features.officer.models.view.SecurityQuestionsView
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.S4LVatLodgingOfficer
@@ -50,7 +50,7 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
   }
   val validS4LLodgingOfficer = S4LVatLodgingOfficer(
     completionCapacity = Some(CompletionCapacityView("",Some(completionCapacity))),
-    officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.of(2017,11,5),"nino",Some(officerName)))
+    officerSecurityQuestions = Some(SecurityQuestionsView(LocalDate.of(2017,11,5),"nino",Some(officerName)))
   )
 
   "buildIVSetupData" should {
@@ -102,7 +102,7 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
 
     "return string to formername controller if cp.ivPassed is already true" in new Setup(true) {
       val res = await(service.setupAndGetIVJourneyURL)
-      res mustBe controllers.vatLodgingOfficer.routes.FormerNameController.show().url
+      res mustBe features.officer.controllers.routes.OfficerController.showFormerName().url
     }
   }
   "getIVJourneyID" should {

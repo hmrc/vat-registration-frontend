@@ -31,7 +31,7 @@ import StringUtils.isNotBlank
 import scala.util.Try
 import scala.util.matching.Regex
 
-private[forms] object FormValidation {
+object FormValidation {
 
   type ErrorCode = String
 

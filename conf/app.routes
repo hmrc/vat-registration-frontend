@@ -183,24 +183,24 @@ POST        /your-home-address                                                  
 GET         /your-home-address/acceptFromTxm                                                   controllers.vatLodgingOfficer.OfficerHomeAddressController.acceptFromTxm(id: String ?= "")
 
 ## OFFICER DOB PAGE
-GET         /pass-security                                                                     features.officers.controllers.OfficerSecurityQuestionsController.show
-POST        /pass-security                                                                     features.officers.controllers.OfficerSecurityQuestionsController.submit
+GET         /pass-security                                                                     features.officer.controllers.OfficerController.showSecurityQuestions
+POST        /pass-security                                                                     features.officer.controllers.OfficerController.submitSecurityQuestions
 
 ## COMPLETION CAPACITY PAGE
-GET         /who-is-registering-the-company-for-vat                                            features.officers.controllers.CompletionCapacityController.show
-POST        /who-is-registering-the-company-for-vat                                            features.officers.controllers.CompletionCapacityController.submit
+GET         /who-is-registering-the-company-for-vat                                            features.officer.controllers.OfficerController.showCompletionCapacity
+POST        /who-is-registering-the-company-for-vat                                            features.officer.controllers.OfficerController.submitCompletionCapacity
 
 ## OFFICER CONTACT DETAILS PAGE
 GET         /your-contact-details                                                              controllers.vatLodgingOfficer.OfficerContactDetailsController.show
 POST        /your-contact-details                                                              controllers.vatLodgingOfficer.OfficerContactDetailsController.submit
 
 ## FORMER NAME PAGE
-GET         /changed-name                                                                      controllers.vatLodgingOfficer.FormerNameController.show
-POST        /changed-name                                                                      controllers.vatLodgingOfficer.FormerNameController.submit
+GET         /changed-name                                                                      features.officer.controllers.OfficerController.showFormerName
+POST        /changed-name                                                                      features.officer.controllers.OfficerController.submitFormerName
 
 ## FORMER NAME DATE PAGE
-GET         /when-change                                                                       controllers.vatLodgingOfficer.FormerNameDateController.show
-POST        /when-change                                                                       controllers.vatLodgingOfficer.FormerNameDateController.submit
+GET         /when-change                                                                       features.officer.controllers.OfficerController.showFormerNameDate
+POST        /when-change                                                                       features.officer.controllers.OfficerController.submitFormerNameDate
 
 
 ## PREVIOUS ADDRESS QUESTION

@@ -22,7 +22,7 @@ import cats.data.OptionT
 import cats.instances.FutureInstances
 import common.enums.VatRegStatus
 import config.WSHttp
-import features.officers.models.view.LodgingOfficer
+import features.officer.models.view.LodgingOfficer
 import models.CurrentProfile
 import models.api._
 import models.external.IncorporationInfo

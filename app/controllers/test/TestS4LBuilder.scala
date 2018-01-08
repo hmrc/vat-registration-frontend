@@ -38,7 +38,7 @@ import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.TradingNameView._
 import models.view.vatTradingDetails.vatChoice._
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
-import features.officers.models.view._
+import features.officer.models.view._
 
 @Singleton
 class TestS4LBuilder {
@@ -230,7 +230,7 @@ class TestS4LBuilder {
     S4LVatLodgingOfficer(
       previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
       officerHomeAddress = homeAddress.map(a => OfficerHomeAddressView(a.id, Some(a))),
-      officerSecurityQuestions = dob.map(OfficerSecurityQuestionsView(_, nino.getOrElse(""), completionCapacity.map(_.name))),
+      officerSecurityQuestions = dob.map(SecurityQuestionsView(_, nino.getOrElse(""), completionCapacity.map(_.name))),
       completionCapacity = completionCapacity.map(CompletionCapacityView(_)),
       officerContactDetails = contactDetails.map(OfficerContactDetailsView(_)),
       formerName = formerName,
