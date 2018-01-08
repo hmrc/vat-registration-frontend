@@ -101,7 +101,7 @@ class Setup {
     "display the Unable to confirme identity error page" in new Setup{
       mockGetCurrentProfile()
 
-      callAuthorised(testController.unableToConfirmIdentity)(_ includesText "We can&#x27;t confirm your identity")
+      callAuthorised(testController.unableToConfirmIdentity)(_ includesText "We won&#x27;t be able to confirm your identity")
     }
   }
 
