@@ -19,9 +19,10 @@ package services
 import java.time.LocalDate
 
 import connectors.RegistrationConnector
-import features.financials.models.{Frequency, Returns, Stagger}
+import features.financials.models.{Frequency, Returns, Stagger, Start}
 import helpers.VatRegSpec
 import models.S4LKey
+import models.api.{VatEligibilityChoice, VatExpectedThresholdPostIncorp, VatServiceEligibility, VatThresholdPostIncorp}
 import org.mockito.ArgumentMatchers.any
 import org.scalatest.MustMatchers
 import org.scalatest.mockito.MockitoSugar
@@ -46,9 +47,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
   val mockCacheMap = CacheMap("", Map("" -> JsString("")))
 
   val date         = LocalDate.now
-  val returns      = Returns(Some(true), Some(Frequency.quarterly), Some(Stagger.apr_may_jun), Some(date))
+  val returns      = Returns(Some(true), Some(Frequency.quarterly), Some(Stagger.feb), Some(Start(Some(date))))
   val emptyReturns = Returns(None, None, None, None)
-  val incomplete   = emptyReturns.copy(reclaimVatOnMostReturns = Some(true))
+  val incomplete = emptyReturns.copy(reclaimVatOnMostReturns = Some(true))
 
   "getReturnsViewModel" should {
     "return a model from Save4Later" in new Setup {
@@ -152,10 +153,10 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       await(service.saveFrequency(Frequency.quarterly)) mustBe returns
     }
     "save an incomplete model" in new Setup {
-      val expected = incomplete.copy(frequency = Some(Frequency.monthly))
+      val expected = emptyReturns.copy(frequency = Some(Frequency.monthly))
 
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
-        .thenReturn(Future.successful(Some(incomplete)))
+        .thenReturn(Future.successful(Some(emptyReturns)))
       when(mockS4LService.saveNoAux(any, any)(any, any, any))
         .thenReturn(Future.successful(mockCacheMap))
 
@@ -172,17 +173,17 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockS4LService.clear(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200)))
 
-      await(service.saveStaggerStart(Stagger.apr_may_jun)) mustBe returns
+      await(service.saveStaggerStart(Stagger.feb)) mustBe returns
     }
     "save an incomplete model" in new Setup {
-      val expected = incomplete.copy(staggerStart = Some(Stagger.jan_feb_mar))
+      val expected = incomplete.copy(staggerStart = Some(Stagger.jan))
 
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incomplete)))
       when(mockS4LService.saveNoAux(any, any)(any, any, any))
         .thenReturn(Future.successful(mockCacheMap))
 
-      await(service.saveStaggerStart(Stagger.jan_feb_mar)) mustBe expected
+      await(service.saveStaggerStart(Stagger.jan)) mustBe expected
     }
   }
 
@@ -195,17 +196,119 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockS4LService.clear(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200)))
 
-      await(service.saveVatStartDate(date)) mustBe returns
+      await(service.saveVatStartDate(Some(date))) mustBe returns
     }
     "save an incomplete model" in new Setup {
-      val expected = incomplete.copy(vatStartDate = Some(date))
+      val expected = incomplete.copy(start = Some(Start(Some(date))))
 
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incomplete)))
       when(mockS4LService.saveNoAux(any, any)(any, any, any))
         .thenReturn(Future.successful(mockCacheMap))
 
-      await(service.saveVatStartDate(date)) mustBe expected
+      await(service.saveVatStartDate(Some(date))) mustBe expected
+    }
+  }
+
+  "mandatoryStartDate" should {
+
+    val vatThresholdPostIncorpDate = LocalDate.of(2017, 6, 6)
+    val vatExpectedThresholdPostIncorpDate = LocalDate.of(2017, 12, 12)
+
+    "return a date when both the vatThresholdPostIncorp and vatExpectedThresholdPostIncorp dates are present" in new Setup {
+
+      val eligibilityBothDates = VatServiceEligibility(None, None, None, None, None, None,
+        Some(VatEligibilityChoice(
+          VatEligibilityChoice.NECESSITY_OBLIGATORY,
+          None,
+          Some(VatThresholdPostIncorp(true, Some(vatThresholdPostIncorpDate))),
+          Some(VatExpectedThresholdPostIncorp(true, Some(vatExpectedThresholdPostIncorpDate)))
+        ))
+      )
+
+      when(mockVatRegistrationService.getVatScheme(any(), any()))
+        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibilityBothDates))))
+
+      await(service.retrieveCalculatedStartDate) mustBe Some(vatThresholdPostIncorpDate.withDayOfMonth(1).plusMonths(2))
+    }
+
+    "return a date when just the vatThresholdPostIncorp is present" in new Setup {
+
+      val eligibilityFirstDateOnly = VatServiceEligibility(None, None, None, None, None, None,
+        Some(VatEligibilityChoice(
+          VatEligibilityChoice.NECESSITY_OBLIGATORY,
+          None,
+          Some(VatThresholdPostIncorp(true, Some(vatThresholdPostIncorpDate))),
+          None
+        ))
+      )
+
+      when(mockVatRegistrationService.getVatScheme(any(), any()))
+        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibilityFirstDateOnly))))
+
+      await(service.retrieveCalculatedStartDate) mustBe Some(vatThresholdPostIncorpDate.withDayOfMonth(1).plusMonths(2))
+    }
+
+    "return a date when just the vatExpectedThresholdPostIncorp is present" in new Setup {
+
+      val eligibilitySecondDateOnly = VatServiceEligibility(None, None, None, None, None, None,
+        Some(VatEligibilityChoice(
+          VatEligibilityChoice.NECESSITY_OBLIGATORY,
+          None,
+          None,
+          Some(VatExpectedThresholdPostIncorp(true, Some(vatExpectedThresholdPostIncorpDate)))
+        ))
+      )
+
+      when(mockVatRegistrationService.getVatScheme(any(), any()))
+        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibilitySecondDateOnly))))
+
+      await(service.retrieveCalculatedStartDate) mustBe Some(vatExpectedThresholdPostIncorpDate)
+    }
+
+    "return a None when no dates are present" in new Setup {
+
+      val eligibilityNoDates = VatServiceEligibility(None, None, None, None, None, None,
+        Some(VatEligibilityChoice(VatEligibilityChoice.NECESSITY_OBLIGATORY, None, None, None))
+      )
+
+      when(mockVatRegistrationService.getVatScheme(any(), any()))
+        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibilityNoDates))))
+
+      await(service.retrieveCalculatedStartDate) mustBe None
+    }
+
+    "return a None when the eligibilityChoice section of the scheme is not present" in new Setup {
+      when(mockVatRegistrationService.getVatScheme(any(), any()))
+        .thenReturn(Future.successful(emptyVatScheme))
+
+      await(service.retrieveCalculatedStartDate) mustBe None
+    }
+  }
+
+  "getEligibilityChoice" should {
+    "return true when in a voluntary flow" in new Setup {
+
+      val voluntary = VatServiceEligibility(None, None, None, None, None, None,
+        Some(VatEligibilityChoice(VatEligibilityChoice.NECESSITY_VOLUNTARY, None, None, None))
+      )
+
+      when(service.vatRegConnector.getRegistration(any())(any(), any()))
+        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(voluntary))))
+
+      await(service.getEligibilityChoice) mustBe true
+
+    }
+
+    "return false when in a mandatory flow" in new Setup {
+      val mandatory = VatServiceEligibility(None, None, None, None, None, None,
+        Some(VatEligibilityChoice(VatEligibilityChoice.NECESSITY_OBLIGATORY, None, None, None))
+      )
+
+      when(service.vatRegConnector.getRegistration(any())(any(), any()))
+        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(mandatory))))
+
+      await(service.getEligibilityChoice) mustBe false
     }
   }
 }

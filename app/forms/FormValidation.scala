@@ -17,18 +17,18 @@
 package forms
 
 import java.time.LocalDate
+import java.time.format.{DateTimeFormatter, ResolverStyle}
 
-import cats.Show
 import models.{DateModel, MonthYearModel}
 import org.apache.commons.lang3.StringUtils
+import org.apache.commons.lang3.StringUtils.isNotBlank
 import play.api.Logger
 import play.api.data.format.Formatter
-import play.api.data.validation._
+import play.api.data.validation.{Constraint, _}
 import play.api.data.{FieldMapping, FormError, Forms, Mapping}
-import StringUtils.isNotBlank
 
-import scala.util.{Failure, Success, Try}
 import scala.util.matching.Regex
+import scala.util.{Failure, Success, Try}
 
 private[forms] object FormValidation {
 
@@ -83,7 +83,7 @@ private[forms] object FormValidation {
   private def unconstrained[T] = Constraint[T] { (t: T) => Valid }
 
   def inRange[T](minValue: T, maxValue: T)(implicit ordering: Ordering[T], e: ErrorCode): Constraint[T]
-      = inRangeWithArgs[T](minValue, maxValue)(Seq())(ordering, e)
+  = inRangeWithArgs[T](minValue, maxValue)(Seq())(ordering, e)
 
   def inRangeWithArgs[T](minValue: T, maxValue: T)(args: Seq[Any] = Seq())(implicit ordering: Ordering[T], e: ErrorCode): Constraint[T] =
     Constraint[T] { (t: T) =>
@@ -179,6 +179,10 @@ private[forms] object FormValidation {
       }
   }
 
+  def matches(matchers: List[String], errorMsg: String): Constraint[String] = Constraint[String] {
+    input: String =>
+      if(matchers.contains(input)) Valid else Invalid(errorMsg)
+  }
 
   /* overrides Play's implicit stringFormatter and handles missing options (e.g. no radio button selected) */
   private def stringFormat(suffix: String)(args: Seq[Any] = Seq())(implicit e: ErrorCode): Formatter[String] = new Formatter[String] {
@@ -204,6 +208,39 @@ private[forms] object FormValidation {
 
   def missingBooleanFieldMapping()(implicit e: ErrorCode): Mapping[Boolean] =
     FieldMapping[Boolean]()(booleanFormat()(Seq()))
+
+  def nonEmptyDate(errKey: String): Constraint[(String, String, String)] = Constraint {
+    input: (String, String, String) =>
+      (input._1.nonEmpty, input._2.nonEmpty, input._3.nonEmpty) match {
+        case (true, true, true) => Valid
+        case _ => Invalid(errKey)
+      }
+  }
+
+  def validDate(errKey: String): Constraint[(String, String, String)] = Constraint {
+    input: (String, String, String) =>
+      val date = Try {
+        LocalDate.parse(s"${input._1}-${input._2}-${input._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
+      }.toOption
+      date match {
+        case Some(valid) => Valid
+        case None => Invalid(errKey)
+      }
+  }
+
+  def withinRange(minDate: LocalDate, maxDate: LocalDate, beforeMinErr: String, afterMaxErr: String): Constraint[(String, String, String)] = Constraint {
+    input: (String, String, String) =>
+      val date = LocalDate.parse(s"${input._1}-${input._2}-${input._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
+      if(date.isEqual(minDate) || date.isAfter(minDate))
+        if (date.isEqual(maxDate) || date.isBefore(maxDate)) Valid else Invalid(ValidationError(afterMaxErr, maxDate))
+      else Invalid(ValidationError(beforeMinErr, minDate))
+  }
+
+  def withinFourYearsPast(errKey: String): Constraint[(String, String, String)] = Constraint {
+    input: (String, String, String) =>
+      val date = LocalDate.parse(s"${input._1}-${input._2}-${input._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
+      if(date.isAfter(LocalDate.now().minusYears(4).minusDays(1))) Valid else Invalid(errKey)
+  }
 
   object Dates {
 

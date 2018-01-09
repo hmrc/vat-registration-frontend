@@ -112,7 +112,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
 
             submitAuthorised(Controller.submit(),
               fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
-              _ redirectsTo s"$contextRoot/vat-start-date"
+              _ redirectsTo s"$contextRoot/vat-start-date-legacy"
             }
         }
       }
@@ -129,7 +129,7 @@ class AccountingPeriodControllerSpec extends VatRegSpec with VatRegistrationFixt
 
             submitAuthorised(Controller.submit(),
               fakeRequest.withFormUrlEncodedBody("accountingPeriodRadio" -> accountingPeriod)) {
-              _ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be"
+              _ redirectsTo s"$contextRoot/what-do-you-want-your-vat-start-date-to-be-legacy"
             }
         }
       }

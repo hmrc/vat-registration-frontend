@@ -45,12 +45,18 @@ GET         /will-you-do-the-following                                          
 POST        /will-you-do-the-following                                                         controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "companyWillDoAnyOf")
 
 ## VOLUNTARY START DATE PAGE
-GET         /what-do-you-want-your-vat-start-date-to-be                                        controllers.vatTradingDetails.vatChoice.StartDateController.show
-POST        /what-do-you-want-your-vat-start-date-to-be                                        controllers.vatTradingDetails.vatChoice.StartDateController.submit
+GET         /what-do-you-want-your-vat-start-date-to-be                                        features.returns.ReturnsController.voluntaryStartPage
+POST        /what-do-you-want-your-vat-start-date-to-be                                        features.returns.ReturnsController.submitVoluntaryStart
+GET         /what-do-you-want-your-vat-start-date-to-be-legacy                                        controllers.vatTradingDetails.vatChoice.StartDateController.show
+POST        /what-do-you-want-your-vat-start-date-to-be-legacy                                        controllers.vatTradingDetails.vatChoice.StartDateController.submit
+
 
 ## MANDATORY START DATE PAGE
-GET         /vat-start-date                                                                    controllers.vatTradingDetails.vatChoice.MandatoryStartDateController.show
-POST        /vat-start-date                                                                    controllers.vatTradingDetails.vatChoice.MandatoryStartDateController.submit
+GET         /vat-start-date                                                                    features.returns.ReturnsController.mandatoryStartPage
+POST        /vat-start-date                                                                    features.returns.ReturnsController.submitMandatoryStart
+GET         /vat-start-date-legacy                                                                    controllers.vatTradingDetails.vatChoice.MandatoryStartDateController.show
+POST        /vat-start-date-legacy                                                                    controllers.vatTradingDetails.vatChoice.MandatoryStartDateController.submit
+
 
 ## TRADING NAME PAGE
 GET         /trading-name                                                                      controllers.vatTradingDetails.TradingNameController.show
@@ -86,21 +92,33 @@ POST        /sell-zero-rated-items-next-12-months                               
 GET         /estimate-zero-rated-sales-next-12-months                                          controllers.vatFinancials.EstimateZeroRatedSalesController.show
 POST        /estimate-zero-rated-sales-next-12-months                                          controllers.vatFinancials.EstimateZeroRatedSalesController.submit
 
+## VAT CHARGE EXPECTANCY PAGE - OLD
+GET         /expect-to-reclaim-more-vat-than-you-charge                                        features.returns.ReturnsController.chargeExpectancyPage
+POST        /expect-to-reclaim-more-vat-than-you-charge                                        features.returns.ReturnsController.submitChargeExpectancy
+GET         /expect-to-reclaim-more-vat-than-you-charge-legacy                                        controllers.vatFinancials.VatChargeExpectancyController.show
+POST        /expect-to-reclaim-more-vat-than-you-charge-legacy                                        controllers.vatFinancials.VatChargeExpectancyController.submit
+
 ## VAT CHARGE EXPECTANCY PAGE
-GET         /expect-to-reclaim-more-vat-than-you-charge                                        controllers.vatFinancials.VatChargeExpectancyController.show
-POST        /expect-to-reclaim-more-vat-than-you-charge                                        controllers.vatFinancials.VatChargeExpectancyController.submit
+
+## ACCOUNTING PERIOD PAGE - OLD
+GET         /vat-return-periods-end                                                            features.returns.ReturnsController.accountPeriodsPage
+POST        /vat-return-periods-end                                                            features.returns.ReturnsController.submitAccountPeriods
+GET         /vat-return-periods-end-legacy                                                            controllers.vatFinancials.vatAccountingPeriod.AccountingPeriodController.show
+POST        /vat-return-periods-end-legacy                                                            controllers.vatFinancials.vatAccountingPeriod.AccountingPeriodController.submit
 
 ## ACCOUNTING PERIOD PAGE
-GET         /vat-return-periods-end                                                            controllers.vatFinancials.vatAccountingPeriod.AccountingPeriodController.show
-POST        /vat-return-periods-end                                                            controllers.vatFinancials.vatAccountingPeriod.AccountingPeriodController.submit
 
 ## TAXABLE TURNOVER PAGE
 GET         /do-you-expect-taxable-turnover-to-be-more-than-threshold                          controllers.vatTradingDetails.vatChoice.TaxableTurnoverController.show
 POST        /do-you-expect-taxable-turnover-to-be-more-than-threshold                          controllers.vatTradingDetails.vatChoice.TaxableTurnoverController.submit
 
+## VAT RETURN FREQUENCY - OLD
+GET         /how-often-do-you-want-to-submit-vat-returns                                       features.returns.ReturnsController.returnsFrequencyPage
+POST        /how-often-do-you-want-to-submit-vat-returns                                       features.returns.ReturnsController.submitReturnsFrequency
+GET         /how-often-do-you-want-to-submit-vat-returns-legacy                                       controllers.vatFinancials.vatAccountingPeriod.VatReturnFrequencyController.show
+POST        /how-often-do-you-want-to-submit-vat-returns-legacy                                       controllers.vatFinancials.vatAccountingPeriod.VatReturnFrequencyController.submit
+
 ## VAT RETURN FREQUENCY
-GET         /how-often-do-you-want-to-submit-vat-returns                                       controllers.vatFinancials.vatAccountingPeriod.VatReturnFrequencyController.show
-POST        /how-often-do-you-want-to-submit-vat-returns                                       controllers.vatFinancials.vatAccountingPeriod.VatReturnFrequencyController.submit
 
 ## COMPANY BANK ACCOUNT
 GET         /business-bank-account                                                             features.bankAccountDetails.BankAccountDetailsController.showHasCompanyBankAccountView

@@ -16,13 +16,13 @@
 
 package auth
 
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.config.{RunMode, ServicesConfig}
 
-object VatExternalUrls extends ServicesConfig {
-
+object VatExternalUrls extends RunMode with ServicesConfig {
   private[VatExternalUrls] val companyAuthHost = getConfString("auth.company-auth.url", "")
   private[VatExternalUrls] val loginCallback   = getConfString("auth.login-callback.url", "")
   private[VatExternalUrls] val loginPath       = getConfString("auth.login_path", "")
+
   val loginUrl                                 = s"$companyAuthHost$loginPath"
   val continueUrl                              = s"$loginCallback${controllers.callbacks.routes.SignInOutController.postSignIn()}"
 }
