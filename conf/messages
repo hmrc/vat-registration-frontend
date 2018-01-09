@@ -307,8 +307,9 @@ pages.summary.serviceCriteria.applyingForAnyOf          = Is the company applyin
 
 ## Start Date Page
 pages.startDate.title                                 = What do you want your VAT start date to be?
-pages.startDate.heading                               = What do you want your VAT start date to be?
-pages.startDate.para1                                 = You can choose the date the company becomes VAT registered when you register voluntarily.
+pages.startDate.heading                               = What do you want the company''s VAT start date to be?
+pages.startDate.para1                                 = This is when the company needs to start accounting for VAT.
+pages.startDate.para1.post                            = You can choose the date the company becomes VAT registered when you register voluntarily.
 pages.startDate.radio.whenRegistered                  = The date the company is registered with Companies House
 pages.startDate.radio.wasRegistered                   = The date the company was registered: {0}
 pages.startDate.radio.whenTrading                     = The date the company starts doing business: {0}
@@ -323,6 +324,7 @@ pages.startDate.panels.specificDate.hint              = For example, 30 6 2017
 pages.startDate.panels.specificDate.inputField.day    = Day
 pages.startDate.panels.specificDate.inputField.month  = Month
 pages.startDate.panels.specificDate.inputField.year   = Year
+pages.startDate.warning                               = Once the company is successfully registered for VAT you cannot change its VAT start date.
 validation.startDate.choice.missing                   = Tell us when you want your VAT start date to be
 validation.startDate.range.below                      = Date must be more than 2 working days in the future
 validation.startDate.range.below4y                    = Enter a date which is no more than 4 years in the past

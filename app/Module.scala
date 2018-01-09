@@ -29,14 +29,13 @@ import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsCon
 import controllers.test.{FeatureSwitchController, FeatureSwitchCtrl}
 import features.bankAccountDetails.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
 import features.iv.services.{IVService, IdentityVerificationService}
+import features.returns.{ReturnsController, ReturnsCtrl}
 import features.turnoverEstimates._
 import services._
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import utils.{FeatureManager, FeatureSwitchManager, VATRegFeatureSwitch, VATRegFeatureSwitches}
-
-import scala.reflect.ClassTag
 
 @Singleton
 class LocalDateNow extends Now[LocalDate] {
@@ -85,6 +84,7 @@ class Module extends AbstractModule {
     bind(classOf[FeatureSwitchCtrl]).to(classOf[FeatureSwitchController]).asEagerSingleton()
     bind(classOf[BankAccountDetailsController]).to(classOf[BankAccountDetailsControllerImpl])
     bind(classOf[TurnoverEstimatesController]).to(classOf[TurnoverEstimatesControllerImpl]).asEagerSingleton()
+    bind(classOf[ReturnsCtrl]).to(classOf[ReturnsController]).asEagerSingleton()
   }
 
   private def bindServices(): Unit = {

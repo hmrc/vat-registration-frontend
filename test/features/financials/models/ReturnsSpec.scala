@@ -29,13 +29,15 @@ class ReturnsSpec extends UnitSpec {
   val returnsFrequency = Frequency.monthly
   val startDate        = validDate
 
-  val validReturns = Returns(Some(reclaimOnReturns), Some(returnsFrequency), Some(Stagger.apr_may_jun), Some(startDate))
+  val validReturns = Returns(Some(reclaimOnReturns), Some(returnsFrequency), Some(Stagger.feb), Some(Start(Some(startDate))))
   val validJson    = Json.parse(
     s"""{
        |  "reclaimVatOnMostReturns" : true,
        |  "frequency" : "monthly",
-       |  "staggerStart" : "apr_may_jun",
-       |  "vatStartDate" : "$validDate"
+       |  "staggerStart" : "feb",
+       |  "start" : {
+       |    "date" : "$validDate"
+       |  }
        |}""".stripMargin
   )
 

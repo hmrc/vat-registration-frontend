@@ -44,7 +44,7 @@ class FinancialsConnectorSpec extends VatRegSpec {
   val reclaimOnReturns = true
   val returnsFrequency = Frequency.monthly
   val startDate        = date
-  val returns = Returns(Some(reclaimOnReturns), Some(returnsFrequency), None, Some(startDate))
+  val returns = Returns(Some(reclaimOnReturns), Some(returnsFrequency), None, Some(Start(Some(startDate))))
 
   val bankAccount       = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")))
 
