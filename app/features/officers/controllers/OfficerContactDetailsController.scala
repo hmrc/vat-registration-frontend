@@ -99,16 +99,18 @@ package controllers.vatLodgingOfficer {
 
 package forms.vatLodgingOfficer {
 
+  import forms.FormValidation
   import forms.FormValidation._
+  import forms.vatContact.BusinessContactDetailsForm.{EMAIL, FORM_NAME}
   import models.view.vatLodgingOfficer.OfficerContactDetailsView
   import play.api.data.Form
   import play.api.data.Forms._
   import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
+  import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
   object OfficerContactDetailsForm {
 
     val EMAIL_MAX_LENGTH      = 70
-    val EMAIL_PATTERN         = """^([A-Za-z0-9\-_.]+)@([A-Za-z0-9\-_.]+)\.[A-Za-z0-9\-_.]{2,3}$""".r
     val PHONE_NUMBER_PATTERN  = """[\d]{1,20}""".r
 
     private val FORM_NAME = "officerContactDetails"
@@ -123,7 +125,7 @@ package forms.vatLodgingOfficer {
 
     val form = Form(
       mapping(
-        EMAIL         -> optional(text.verifying(regexPattern(EMAIL_PATTERN)(s"$FORM_NAME.$EMAIL")).verifying(maxLenText(EMAIL_MAX_LENGTH))),
+        EMAIL         -> optional(text.verifying(StopOnFirstFail(FormValidation.IsEmail(s"$FORM_NAME.$EMAIL"),maxLenText(EMAIL_MAX_LENGTH)))),
         DAYTIME_PHONE -> optional(text.transform(removeSpaces, identity[String]).verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$DAYTIME_PHONE"))),
         MOBILE        -> optional(text.transform(removeSpaces, identity[String]).verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$MOBILE")))
       )(OfficerContactDetailsView.apply)(OfficerContactDetailsView.unapply).verifying(atLeastOneContactDetail)
