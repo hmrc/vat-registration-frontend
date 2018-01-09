@@ -20,6 +20,7 @@ import java.time.LocalDate
 
 import features.financials.models.DateSelection
 import features.financials.models.DateSelection._
+import forms.MandatoryDateForm.{MANDATORY_DATE, MANDATORY_SELECTION}
 import forms.VoluntaryDateFormIncorp
 import forms.VoluntaryDateFormIncorp._
 import helpers.VatRegSpec
@@ -48,15 +49,15 @@ class VoluntaryDateFormIncorpSpec extends VatRegSpec {
       form.bind(data).get mustBe (business_start_date, None)
     }
 
-    //TODO: FIX
-//    "Bind successfully for a specific date" in {
-//      val data = Map(
-//        VOLUNTARY_SELECTION -> "specific_date",
-//        s"$VOLUNTARY_DATE.day" -> s"",
-//        s"$VOLUNTARY_DATE.month" -> s"",
-//        s"$VOLUNTARY_DATE.year" -> s""
-//      )
-//    }
+    "Bind successfully for a valid specific date selection" in {
+      val data = Map(
+        MANDATORY_SELECTION -> "specific_date",
+        s"$MANDATORY_DATE.day" -> "5",
+        s"$MANDATORY_DATE.month" -> "1",
+        s"$MANDATORY_DATE.year" -> "2018"
+      )
+      form.bind(data).get mustBe(specific_date, Some(LocalDate.of(2018, 1, 5)))
+    }
 
     "Fail to bind successfully for no selection" in {
       val data = Map(
@@ -66,7 +67,7 @@ class VoluntaryDateFormIncorpSpec extends VatRegSpec {
       val bound = form.bind(data)
       bound.errors.size mustBe 1
       bound.errors.head.key mustBe VOLUNTARY_SELECTION
-      bound.errors.head.message mustBe voluntarySelectionEmptyKey
+      bound.errors.head.message mustBe voluntarySelectionInvalidKey
     }
 
     "Fail to bind successfully for an invalid selection" in {

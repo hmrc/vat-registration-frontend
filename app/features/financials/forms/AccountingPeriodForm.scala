@@ -17,22 +17,33 @@
 package forms
 
 import features.financials.models.Stagger
-import features.financials.models.Stagger._
-import play.api.data.Form
 import play.api.data.Forms._
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
-import forms.FormValidation._
+import play.api.data.format.Formatter
+import play.api.data.{Form, FormError, Forms}
 
 object AccountingPeriodForm {
 
-  val accountingPeriodEmptyKey = "validation.accounting.period.missing"
   val accountingPeriodInvalidKey = "validation.accounting.period.missing"
   val ACCOUNTING_PERIOD: String = "accountingPeriodRadio"
 
+  implicit def formatter: Formatter[Stagger.Value] = new Formatter[Stagger.Value] {
+
+    override val format = Some(("format.string", Nil))
+
+    // default play binding is to data.getOrElse(key, "false")
+    def bind(key: String, data: Map[String, String]) = {
+      Right(data.getOrElse(key,"")).right.flatMap {
+        case e if e == Stagger.jan.toString => Right(Stagger.jan)
+        case e if e == Stagger.feb.toString => Right(Stagger.feb)
+        case e if e == Stagger.mar.toString => Right(Stagger.mar)
+        case _ => Left(Seq(FormError(key, accountingPeriodInvalidKey, Nil)))
+      }
+    }
+
+    def unbind(key: String, value: Stagger.Value) = Map(key -> value.toString)
+  }
+
   val form = Form(
-    single(ACCOUNTING_PERIOD -> text.verifying(StopOnFirstFail(
-      mandatory(accountingPeriodEmptyKey),
-      matches(List(jan, feb, mar), accountingPeriodInvalidKey)
-    )).transform(Stagger.withName, (s:Stagger.Value) => s.toString))
+    single(ACCOUNTING_PERIOD -> Forms.of[Stagger.Value])
   )
 }

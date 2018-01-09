@@ -27,7 +27,7 @@ import features.financials.views.html.vatAccountingPeriod.{accounting_period_vie
 import features.financials.views.html.{charge_expectancy_view => ChargeExpectancyPage}
 import features.tradingDetails.views.html.vatChoice.{mandatory_start_date_confirmation => MandatoryStartDateConfirmationPage, mandatory_start_date_incorp_view => MandatoryStartDateIncorpPage, start_date_incorp_view => VoluntaryStartDateIncorpPage, start_date_view => VoluntaryStartDatePage}
 import forms._
-import models.CurrentProfile
+import models.{CurrentProfile, MonthYearModel}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Result}
 import services.{PrePopService, ReturnsService, SessionProfile}
@@ -262,9 +262,9 @@ trait ReturnsCtrl extends VatRegistrationControllerNoAux with SessionProfile wit
                       form.fill((
                         if (startDate == calcDate) DateSelection.calculated_date else DateSelection.specific_date,
                         vatDate
-                      )), calcDate.toString
+                      )), calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y)
                     ))
-                    case None => Ok(MandatoryStartDateIncorpPage(form, calcDate.toString))
+                    case None => Ok(MandatoryStartDateIncorpPage(form, calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y)))
                   }
                 }
               case None => Future.successful(Ok(MandatoryStartDateConfirmationPage()))
@@ -283,7 +283,7 @@ trait ReturnsCtrl extends VatRegistrationControllerNoAux with SessionProfile wit
                 returnsService.retrieveCalculatedStartDate flatMap {
                   case Some(calcDate) =>
                     MandatoryDateForm.form(incorpDate, calcDate).bindFromRequest.fold(
-                      errors => Future.successful(BadRequest(MandatoryStartDateIncorpPage(errors, calcDate.toString))),
+                      errors => Future.successful(BadRequest(MandatoryStartDateIncorpPage(errors, calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y)))),
                       success => saveStartDate(
                         if (success._1 == DateSelection.calculated_date) Some(calcDate) else success._2
                       )
