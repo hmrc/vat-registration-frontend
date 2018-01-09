@@ -57,7 +57,7 @@ class ReturnFrequencyFormSpec extends VatRegSpec {
       val bound = form.bind(data)
       bound.errors.size mustBe 1
       bound.errors.head.key mustBe RETURN_FREQUENCY
-      bound.errors.head.message mustBe returnFrequencyInvalidKey
+      bound.errors.head.message mustBe returnFrequencyEmptyKey
     }
   }
 }

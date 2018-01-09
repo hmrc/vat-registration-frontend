@@ -54,7 +54,7 @@ class AccountingPeriodFormSpec extends VatRegSpec {
       val bound = form.bind(data)
       bound.errors.size mustBe 1
       bound.errors.head.key mustBe ACCOUNTING_PERIOD
-      bound.errors.head.message mustBe accountingPeriodEmptyKey
+      bound.errors.head.message mustBe accountingPeriodInvalidKey
     }
 
     "Fail to bind successfully if empty" in {

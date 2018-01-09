@@ -51,7 +51,7 @@ class MandatoryDateFormSpec extends VatRegSpec {
       val bound = form.bind(data)
       bound.errors.size mustBe 1
       bound.errors.head.key mustBe MANDATORY_SELECTION
-      bound.errors.head.message mustBe mandatorySelectionEmptyKey
+      bound.errors.head.message mustBe mandatorySelectionInvalidKey
     }
 
     "Fail to bind successfully for an invalid selection" in {

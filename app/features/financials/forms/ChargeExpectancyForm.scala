@@ -21,7 +21,7 @@ import play.api.data.Forms._
 
 object ChargeExpectancyForm extends RequiredBooleanForm {
 
-  override val errorMsg = "validation.company.bank.account.missing"
+  override val errorMsg = "validation.vat.charge.expectancy.missing"
   val EXPECT_CHARGE_MORE_VAT: String = "chargeExpectancyRadio"
 
   val form = Form(

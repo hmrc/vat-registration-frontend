@@ -21,15 +21,14 @@ import java.time.LocalDate
 import features.financials.models.DateSelection
 import features.financials.models.DateSelection._
 import forms.FormValidation._
-import play.api.data.Form
 import play.api.data.Forms._
+import play.api.data.format.Formatter
+import play.api.data.{Form, FormError, Forms}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
-
 object VoluntaryDateFormIncorp {
 
-  val voluntarySelectionEmptyKey = "validation.startDate.choice.missing"
   val voluntarySelectionInvalidKey = "validation.startDate.choice.missing"
   val voluntaryDateEmptyKey = "validation.startDate.missing"
   val voluntaryDateInvalidKey = "validation.startDate.invalid"
@@ -41,12 +40,26 @@ object VoluntaryDateFormIncorp {
   val VOLUNTARY_SELECTION: String = "startDateRadio"
   val VOLUNTARY_DATE: String = "startDate"
 
+  implicit def formatter: Formatter[DateSelection.Value] = new Formatter[DateSelection.Value] {
+
+    override val format = Some(("format.string", Nil))
+
+    // default play binding is to data.getOrElse(key, "false")
+    def bind(key: String, data: Map[String, String]) = {
+      Right(data.getOrElse(key,"")).right.flatMap {
+        case e if e == DateSelection.company_registration_date.toString => Right(DateSelection.company_registration_date)
+        case e if e == DateSelection.business_start_date.toString => Right(DateSelection.business_start_date)
+        case e if e == DateSelection.specific_date.toString => Right(DateSelection.specific_date)
+        case _ => Left(Seq(FormError(key, voluntarySelectionInvalidKey, Nil)))
+      }
+    }
+
+    def unbind(key: String, value: DateSelection.Value) = Map(key -> value.toString)
+  }
+
   def form(incorpDate: LocalDate) = Form(
     tuple(
-      VOLUNTARY_SELECTION -> text.verifying(StopOnFirstFail(
-        mandatory(voluntarySelectionEmptyKey),
-        matches(List(company_registration_date, business_start_date, specific_date), voluntarySelectionInvalidKey)
-      )).transform(DateSelection.withName, (s:DateSelection.Value) => s.toString),
+      VOLUNTARY_SELECTION -> Forms.of[DateSelection.Value],
       VOLUNTARY_DATE      -> mandatoryIf(
         isEqual(VOLUNTARY_SELECTION, specific_date),
         tuple("day" -> text, "month" -> text, "year" -> text).verifying(StopOnFirstFail(
