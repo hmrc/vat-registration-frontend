@@ -26,12 +26,12 @@ import helpers.{S4LMockSugar, VatRegSpec}
 import models.api._
 import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
 import models.view.vatContact.ppob.PpobView
-import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerHomeAddressView}
+import models.view.vatLodgingOfficer.CompletionCapacityView
 import models.{S4LVatContact, S4LVatLodgingOfficer}
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
-import features.officer.models.view.SecurityQuestionsView
+import features.officer.models.view.{HomeAddressView, SecurityQuestionsView}
 
 import scala.concurrent.Future
 import scala.language.implicitConversions
@@ -75,7 +75,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "be non-empty when companyProfile, addressDB and addressS4L are present" in new Setup {
       val scsrAddress = ScrsAddress("premises address_line_1", "address_line_2 po_box", Some("locality"), Some("region"), Some("postal_code"), Some("country"))
-      val officerHomeAddressView = OfficerHomeAddressView(scsrAddress.id, Some(scsrAddress))
+      val officerHomeAddressView = HomeAddressView(scsrAddress.id, Some(scsrAddress))
 
       when(mockIIService.getRegisteredOfficeAddress).thenReturn(OptionT.pure(scsrAddress))
       when(mockVatRegistrationService.getVatScheme).thenReturn(emptyVatScheme.pure)

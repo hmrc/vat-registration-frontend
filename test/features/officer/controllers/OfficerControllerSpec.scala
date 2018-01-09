@@ -19,22 +19,26 @@ package features.officer.controllers
 import java.time.LocalDate
 
 import connectors.KeystoreConnect
-import features.officer.models.view.{FormerNameDateView, FormerNameView, LodgingOfficer, SecurityQuestionsView}
+import features.officer.models.view._
 import features.officer.services.LodgingOfficerService
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
+import models.api.ScrsAddress
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.i18n.MessagesApi
-import play.api.test.FakeRequest
-import services.PrePopService
+import play.api.mvc.Call
+import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
+import services.{AddressLookupService, PrePopService}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
-class OfficerControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages with FutureAssertions {
+class OfficerControllerSpec extends ControllerSpec with FutureAwaits with DefaultAwaitTimeout
+                            with VatRegistrationFixture with MockMessages with FutureAssertions {
   val mockLodgingOfficerService: LodgingOfficerService = mock[LodgingOfficerService]
   val mockPPService: PrePopService = mock[PrePopService]
+  val mockAddressService = mock[AddressLookupService]
 
   val officerSecu = SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA123456Z")
   val partialLodgingOfficer = LodgingOfficer(Some("BobBimblyBobblousBobbings"), Some(officerSecu), None, None, None, None, None)
@@ -46,6 +50,7 @@ class OfficerControllerSpec extends ControllerSpec with VatRegistrationFixture w
       override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
       override val messagesApi: MessagesApi = mockMessagesAPI
       override val authConnector: AuthConnector = mockAuthConnector
+      override val addressLookupService: AddressLookupService = mockAddressService
     }
 
     mockAllMessages
@@ -182,7 +187,7 @@ class OfficerControllerSpec extends ControllerSpec with VatRegistrationFixture w
       submitAuthorised(controller.submitFormerName(), fakeRequest.withFormUrlEncodedBody(
         "formerNameRadio" -> "false"
       )) {
-        _ redirectsTo s"${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show.url}"
+        _ redirectsTo s"${routes.OfficerController.showContactDetails().url}"
       }
     }
 
@@ -216,11 +221,11 @@ class OfficerControllerSpec extends ControllerSpec with VatRegistrationFixture w
       None,
       None)
 
-    "return 500 when the former name is missing" in new Setup {
+    "throw an IllegalStateException when the former name is missing" in new Setup {
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
-      callAuthorised(controller.showFormerNameDate()) {
-        _ isA 500
+      callAuthorised(controller.showFormerNameDate()) { f =>
+        an[IllegalStateException] shouldBe thrownBy(await(f))
       }
     }
 
@@ -256,9 +261,197 @@ class OfficerControllerSpec extends ControllerSpec with VatRegistrationFixture w
           "formerNameDate.month" -> "1",
           "formerNameDate.year" -> "2017"
         )) {
-        _ redirectsTo s"${controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show.url}"
+        _ redirectsTo s"${routes.OfficerController.showContactDetails().url}"
       }
+    }
+  }
 
+  s"GET ${routes.OfficerController.showContactDetails()}" should {
+    "return 200 when there's data" in new Setup {
+      val partialIncompleteLodgingOfficer = LodgingOfficer(
+        Some("BobBimblyBobblousBobbings"),
+        Some(officerSecu),
+        None,
+        Some(ContactDetailsView(Some("t@t.tt.co"))),
+        Some(FormerNameView(true, Some("Old Name"))),
+        None,
+        None)
+
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialIncompleteLodgingOfficer))
+
+      callAuthorised(controller.showContactDetails()) {
+        _ includesText MOCKED_MESSAGE
+      }
+    }
+
+    "return 200 when there's no data" in new Setup {
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+
+      callAuthorised(controller.showContactDetails()) {
+        _ includesText MOCKED_MESSAGE
+      }
+    }
+  }
+
+  s"POST ${routes.OfficerController.submitContactDetails()}" should {
+    val fakeRequest = FakeRequest(routes.OfficerController.showContactDetails())
+
+    "return 400 with Empty data" in new Setup {
+      submitAuthorised(controller.submitContactDetails(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
+    }
+
+    "return 303 with valid Contact Details entered" in new Setup {
+      when(mockLodgingOfficerService.updateLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+
+      submitAuthorised(controller.submitContactDetails(), fakeRequest.withFormUrlEncodedBody(
+        "email" -> "some@email.com",
+        "daytimePhone" -> "01234 567891",
+        "mobile" -> "01234 567891"
+      )) {
+        _ redirectsTo s"${routes.OfficerController.showHomeAddress().url}"
+      }
+    }
+  }
+
+  val address = ScrsAddress(line1 = "TestLine1", line2 = "TestLine1", postcode = Some("TE 1ST"))
+  s"GET ${routes.OfficerController.showHomeAddress()}" should {
+    "return 200 when there's data" in new Setup {
+      val partialIncompleteLodgingOfficer = LodgingOfficer(
+        Some("BobBimblyBobblousBobbings"),
+        Some(officerSecu),
+        Some(HomeAddressView(address.id, Some(address))),
+        Some(ContactDetailsView(Some("t@t.tt.co"))),
+        Some(FormerNameView(true, Some("Old Name"))),
+        None,
+        None)
+
+      when(mockPPService.getOfficerAddressList(any(), any())).thenReturn(Future.successful(Seq(address)))
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialIncompleteLodgingOfficer))
+
+      callAuthorised(controller.showHomeAddress()) {
+        _ includesText MOCKED_MESSAGE
+      }
+    }
+
+    "return 200 when there's no data" in new Setup {
+      when(mockPPService.getOfficerAddressList(any(), any())).thenReturn(Future.successful(Seq(address)))
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+
+      callAuthorised(controller.showHomeAddress()) {
+        _ includesText MOCKED_MESSAGE
+      }
+    }
+  }
+
+  s"POST ${routes.OfficerController.submitHomeAddress()}" should {
+    val fakeRequest = FakeRequest(routes.OfficerController.showHomeAddress())
+
+    "return 400 with Empty data" in new Setup {
+      when(mockPPService.getOfficerAddressList(any(), any())).thenReturn(Future.successful(Seq(address)))
+
+      submitAuthorised(controller.submitHomeAddress(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
+    }
+
+    "return 303 with valid Home address entered" in new Setup {
+      when(mockLodgingOfficerService.updateLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+
+      submitAuthorised(controller.submitHomeAddress(), fakeRequest.withFormUrlEncodedBody(
+        "homeAddressRadio" -> address.id
+      )) {
+        _ redirectsTo s"${routes.OfficerController.showPreviousAddress().url}"
+      }
+    }
+
+    "redirect the user to TxM address capture page with 'other address' selected" in new Setup {
+      when(mockAddressService.getJourneyUrl(any(), any())(any(), any())).thenReturn(Future.successful(Call("GET", "TxM")))
+
+      submitAuthorised(controller.submitHomeAddress(),
+        fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> "other")
+      )(_ redirectsTo "TxM")
+    }
+  }
+
+  s"GET ${routes.OfficerController.acceptFromTxmHomeAddress()}" should {
+    "save an address and redirect to next page" in new Setup {
+      when(mockLodgingOfficerService.updateLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+      when(mockAddressService.getAddressById(any())(any())).thenReturn(Future.successful(address))
+
+      callAuthorised(controller.acceptFromTxmHomeAddress("addressId")) {
+        _ redirectsTo s"${routes.OfficerController.showPreviousAddress().url}"
+      }
+    }
+  }
+
+  s"GET ${routes.OfficerController.showPreviousAddress()}" should {
+    "return 200 when there's data" in new Setup {
+      val partialIncompleteLodgingOfficer = LodgingOfficer(
+        Some("BobBimblyBobblousBobbings"),
+        Some(officerSecu),
+        Some(HomeAddressView(address.id, Some(address))),
+        Some(ContactDetailsView(Some("t@t.tt.co"))),
+        Some(FormerNameView(false, None)),
+        None,
+        Some(PreviousAddressView(true, Some(address))))
+
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialIncompleteLodgingOfficer))
+
+      callAuthorised(controller.showPreviousAddress()) {
+        _ includesText MOCKED_MESSAGE
+      }
+    }
+
+    "return 200 when there's no data" in new Setup {
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+
+      callAuthorised(controller.showPreviousAddress()) {
+        _ includesText MOCKED_MESSAGE
+      }
+    }
+  }
+
+  s"POST ${routes.OfficerController.submitPreviousAddress()}" should {
+    val fakeRequest = FakeRequest(routes.OfficerController.showPreviousAddress())
+
+    "return 400 with Empty data" in new Setup {
+      submitAuthorised(controller.submitPreviousAddress(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
+    }
+
+    "return 303 with Yes selected" in new Setup {
+      submitAuthorised(controller.submitPreviousAddress(), fakeRequest.withFormUrlEncodedBody(
+        "previousAddressQuestionRadio" -> "true"
+      )) {
+        _ redirectsTo s"${controllers.vatContact.ppob.routes.PpobController.show.url}"
+      }
+    }
+
+    "redirect the user to TxM address capture page with No selected" in new Setup {
+      when(mockAddressService.getJourneyUrl(any(), any())(any(), any())).thenReturn(Future.successful(Call("GET", "TxM")))
+
+      submitAuthorised(controller.submitPreviousAddress(),
+        fakeRequest.withFormUrlEncodedBody("previousAddressQuestionRadio" -> "false")
+      )(_ redirectsTo "TxM")
+    }
+  }
+
+  s"GET ${routes.OfficerController.acceptFromTxmPreviousAddress()}" should {
+    "save an address and redirect to next page" in new Setup {
+      when(mockLodgingOfficerService.updateLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+      when(mockAddressService.getAddressById(any())(any())).thenReturn(Future.successful(address))
+
+      callAuthorised(controller.acceptFromTxmPreviousAddress("addressId")) {
+        _ redirectsTo s"${controllers.vatContact.ppob.routes.PpobController.show.url}"
+      }
+    }
+  }
+
+  s"GET ${routes.OfficerController.changePreviousAddress()}" should {
+
+    "save an address and redirect to next page" in new Setup {
+      when(mockAddressService.getJourneyUrl(any(), any())(any(), any())).thenReturn(Future.successful(Call("GET", "TxM")))
+
+      callAuthorised(controller.changePreviousAddress()) {
+        _ redirectsTo "TxM"
+      }
     }
   }
 }

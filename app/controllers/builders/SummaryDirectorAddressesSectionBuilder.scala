@@ -27,20 +27,20 @@ case class SummaryDirectorAddressesSectionBuilder(vatLodgingOfficer: Option[VatL
   val homeAddress: SummaryRow = SummaryRow(
     s"$sectionId.homeAddress",
     vatLodgingOfficer.flatMap( vlo => vlo.currentAddress.map(a => ScrsAddress.normalisedSeq(a))).getOrElse(Seq.empty),
-    Some(controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.show())
+    Some(features.officer.controllers.routes.OfficerController.showHomeAddress())
   )
 
   val currentAddressThreeYears: SummaryRow = yesNoRow(
     "currentAddressThreeYears",
     vatLodgingOfficer.flatMap(_.currentOrPreviousAddress.map(_.currentAddressThreeYears)),
-    controllers.vatLodgingOfficer.routes.PreviousAddressController.show()
+    features.officer.controllers.routes.OfficerController.showPreviousAddress()
   )
   val previousAddress: SummaryRow = SummaryRow(
     s"$sectionId.previousAddress",
     vatLodgingOfficer.flatMap(_.currentOrPreviousAddress).map(_.previousAddress).collect {
       case Some(address) => ScrsAddress.normalisedSeq(address)
     }.getOrElse(Seq.empty),
-    Some(controllers.vatLodgingOfficer.routes.PreviousAddressController.changeAddress())
+    Some(features.officer.controllers.routes.OfficerController.changePreviousAddress())
   )
 
   val section: SummarySection = SummarySection(

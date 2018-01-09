@@ -24,7 +24,6 @@ import models.api._
 import models.external.{IncorporationInfo, Officer}
 import config.WSHttp
 import features.officer.models.view.LodgingOfficer
-import models.view.vatLodgingOfficer.{OfficerContactDetailsView, OfficerHomeAddressView, PreviousAddressView}
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.{JsValue, Json}
 import features.officer.models.view._
@@ -336,8 +335,8 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     val partialLodgingOfficer = LodgingOfficer(
       completionCapacity = Some("FirstLast"),
       securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
-      officerHomeAddress = None,
-      officerContactDetails = None,
+      homeAddress = None,
+      contactDetails = None,
       formerName = None,
       formerNameDate = None,
       previousAddress = None
@@ -363,10 +362,10 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "return a JsValue with a full Lodging Officer view model" in new Setup {
       val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
       val fullLodgingOfficer: LodgingOfficer = partialLodgingOfficer.copy(
-        officerHomeAddress = Some(OfficerHomeAddressView(currentAddress.id, Some(currentAddress))),
-        officerContactDetails = Some(OfficerContactDetailsView(Some("test@t.test"))),
+        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+        contactDetails = Some(ContactDetailsView(Some("test@t.test"))),
         formerName = Some(FormerNameView(false, None)),
-        previousAddress = Some(PreviousAddressView(false, None))
+        previousAddress = Some(PreviousAddressView(true, None))
       )
 
       val fullJson = Json.parse(

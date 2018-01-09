@@ -16,10 +16,11 @@
 
 package models.view.vatLodgingOfficer
 
+import features.officer.models.view.PreviousAddressView
 import fixtures.VatRegistrationFixture
 import models.api._
 import models.external.Officer
-import models.{ApiModelTransformer, S4LVatLodgingOfficer}
+import models.S4LVatLodgingOfficer
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -47,13 +48,13 @@ class PreviousAddressViewSpec extends UnitSpec with VatRegistrationFixture with 
 
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
-      ApiModelTransformer[PreviousAddressView].toViewModel(vs) shouldBe Some(testPreviousAddressView)
+      S4LVatLodgingOfficer.modelTransformerPreviousAddress.toViewModel(vs) shouldBe Some(testPreviousAddressView)
     }
 
 
     "convert VatScheme without VatLodgingOfficer to empty view model" in {
       val vs = vatScheme().copy(lodgingOfficer = None)
-      ApiModelTransformer[PreviousAddressView].toViewModel(vs) shouldBe None
+      S4LVatLodgingOfficer.modelTransformerPreviousAddress.toViewModel(vs) shouldBe None
     }
 
   }
@@ -62,15 +63,15 @@ class PreviousAddressViewSpec extends UnitSpec with VatRegistrationFixture with 
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(previousAddress = Some(testPreviousAddressView))
 
     "extract previousAddressView from lodgingOfficer" in {
-      PreviousAddressView.viewModelFormat.read(s4LVatLodgingOfficer) shouldBe Some(testPreviousAddressView)
+      S4LVatLodgingOfficer.viewModelFormatPreviousAddress.read(s4LVatLodgingOfficer) shouldBe Some(testPreviousAddressView)
     }
 
     "update empty lodgingOfficer with previousAddressView" in {
-      PreviousAddressView.viewModelFormat.update(testPreviousAddressView, Option.empty[S4LVatLodgingOfficer]).previousAddress shouldBe Some(testPreviousAddressView)
+      S4LVatLodgingOfficer.viewModelFormatPreviousAddress.update(testPreviousAddressView, Option.empty[S4LVatLodgingOfficer]).previousAddress shouldBe Some(testPreviousAddressView)
     }
 
     "update non-empty lodgingOfficer with previousAddressView" in {
-      PreviousAddressView.viewModelFormat.update(testPreviousAddressView, Some(s4LVatLodgingOfficer)).previousAddress shouldBe Some(testPreviousAddressView)
+      S4LVatLodgingOfficer.viewModelFormatPreviousAddress.update(testPreviousAddressView, Some(s4LVatLodgingOfficer)).previousAddress shouldBe Some(testPreviousAddressView)
     }
 
   }

@@ -43,8 +43,8 @@ class LodgingOfficerSpec extends UnitSpec {
       val lodgingOfficer = LodgingOfficer(
         completionCapacity = Some("FirstLastMiddle"),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA123456Z")),
-        officerHomeAddress = None,
-        officerContactDetails = None,
+        homeAddress = None,
+        contactDetails = None,
         formerName = None,
         formerNameDate = None,
         previousAddress = None
@@ -69,8 +69,8 @@ class LodgingOfficerSpec extends UnitSpec {
       val lodgingOfficer = LodgingOfficer(
         completionCapacity = Some("FirstLast"),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA123456Z")),
-        officerHomeAddress = None,
-        officerContactDetails = None,
+        homeAddress = None,
+        contactDetails = None,
         formerName = None,
         formerNameDate = None,
         previousAddress = None
@@ -90,8 +90,8 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         completionCapacity = Some("FirstLastMiddle"),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
-        officerHomeAddress = None,
-        officerContactDetails = None,
+        homeAddress = None,
+        contactDetails = None,
         formerName = None,
         formerNameDate = None,
         previousAddress = None
@@ -122,8 +122,8 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         completionCapacity = Some("FirstLast"),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
-        officerHomeAddress = None,
-        officerContactDetails = None,
+        homeAddress = None,
+        contactDetails = None,
         formerName = None,
         formerNameDate = None,
         previousAddress = None
@@ -156,11 +156,11 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         completionCapacity = Some("FirstLastMiddle"),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
-        officerHomeAddress = Some(OfficerHomeAddressView(currentAddress.id, Some(currentAddress))),
-        officerContactDetails = Some(OfficerContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
         formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(true, Some(prevAddress)))
+        previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
       )
 
       val validJson = Json.parse(
@@ -215,11 +215,11 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         completionCapacity = Some("FirstLastMiddle"),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
-        officerHomeAddress = Some(OfficerHomeAddressView(currentAddress.id, Some(currentAddress))),
-        officerContactDetails = Some(OfficerContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
         formerName = Some(FormerNameView(false, None)),
         formerNameDate = None,
-        previousAddress = Some(PreviousAddressView(false, None))
+        previousAddress = Some(PreviousAddressView(true, None))
       )
 
       val validJson = Json.parse(
@@ -261,11 +261,11 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         completionCapacity = Some("FirstLastMiddle"),
         securityQuestions = None,
-        officerHomeAddress = Some(OfficerHomeAddressView(currentAddress.id, Some(currentAddress))),
-        officerContactDetails = Some(OfficerContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
         formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(true, Some(prevAddress)))
+        previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
       )
 
       an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
@@ -283,11 +283,11 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         completionCapacity = Some("FirstLastMiddle"),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
-        officerHomeAddress = None,
-        officerContactDetails = Some(OfficerContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        homeAddress = None,
+        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
         formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(true, Some(prevAddress)))
+        previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
       )
 
       an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
@@ -305,11 +305,11 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         completionCapacity = Some("FirstLastMiddle"),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
-        officerHomeAddress = Some(OfficerHomeAddressView(currentAddress.id, None)),
-        officerContactDetails = Some(OfficerContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        homeAddress = Some(HomeAddressView(currentAddress.id, None)),
+        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
         formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(true, Some(prevAddress)))
+        previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
       )
 
       an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
@@ -327,11 +327,11 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         completionCapacity = Some("FirstLastMiddle"),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
-        officerHomeAddress = Some(OfficerHomeAddressView(currentAddress.id, Some(currentAddress))),
-        officerContactDetails = None,
+        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+        contactDetails = None,
         formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(true, Some(prevAddress)))
+        previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
       )
 
       an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
@@ -349,11 +349,11 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         completionCapacity = Some("FirstLastMiddle"),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
-        officerHomeAddress = Some(OfficerHomeAddressView(currentAddress.id, Some(currentAddress))),
-        officerContactDetails = Some(OfficerContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
         formerName = None,
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(true, Some(prevAddress)))
+        previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
       )
 
       an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
@@ -371,11 +371,11 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         completionCapacity = Some("FirstLastMiddle"),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
-        officerHomeAddress = Some(OfficerHomeAddressView(currentAddress.id, Some(currentAddress))),
-        officerContactDetails = Some(OfficerContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
         formerName = Some(FormerNameView(true, None)),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(true, Some(prevAddress)))
+        previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
       )
 
       an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
@@ -393,11 +393,11 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         completionCapacity = Some("FirstLastMiddle"),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
-        officerHomeAddress = Some(OfficerHomeAddressView(currentAddress.id, Some(currentAddress))),
-        officerContactDetails = Some(OfficerContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
         formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
         formerNameDate = None,
-        previousAddress = Some(PreviousAddressView(true, Some(prevAddress)))
+        previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
       )
 
       an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
@@ -415,8 +415,8 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         completionCapacity = Some("FirstLastMiddle"),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
-        officerHomeAddress = Some(OfficerHomeAddressView(currentAddress.id, Some(currentAddress))),
-        officerContactDetails = Some(OfficerContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
         formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = None
@@ -437,11 +437,11 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         completionCapacity = Some("FirstLastMiddle"),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
-        officerHomeAddress = Some(OfficerHomeAddressView(currentAddress.id, Some(currentAddress))),
-        officerContactDetails = Some(OfficerContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
         formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(true, None))
+        previousAddress = Some(PreviousAddressView(false, None))
       )
 
       an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))

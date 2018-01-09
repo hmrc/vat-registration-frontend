@@ -16,15 +16,16 @@
 
 package models.view.vatLodgingOfficer
 
+import features.officer.models.view.ContactDetailsView
 import fixtures.VatRegistrationFixture
+import models.S4LVatLodgingOfficer
 import models.api._
-import models.{ApiModelTransformer, S4LVatLodgingOfficer}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
-class OfficerContactDetailsViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
+class ContactDetailsViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
-  val officerContactDetailsView = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
+  val officerContactDetailsView = ContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
   val officerContactDetails = OfficerContactDetails(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
 
   val address = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
@@ -45,37 +46,31 @@ class OfficerContactDetailsViewSpec extends UnitSpec with VatRegistrationFixture
         contact = Some(officerContactDetails))
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
-      ApiModelTransformer[OfficerContactDetailsView].toViewModel(vs) shouldBe Some(officerContactDetailsView)
+      S4LVatLodgingOfficer.modelTransformerContactDetails.toViewModel(vs) shouldBe Some(officerContactDetailsView)
     }
 
 
     "convert VatScheme without VatLodgingOfficer to empty view model" in {
       val vs = vatScheme().copy(lodgingOfficer = None)
-      ApiModelTransformer[OfficerContactDetailsView].toViewModel(vs) shouldBe None
+      S4LVatLodgingOfficer.modelTransformerContactDetails.toViewModel(vs) shouldBe None
     }
 
-  }
-
-  "apply" should {
-    "create a OfficerContactDetailsView instance" in {
-      OfficerContactDetailsView(officerContactDetails) shouldBe officerContactDetailsView
-    }
   }
 
   "ViewModelFormat" should {
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(officerContactDetails = Some(officerContactDetailsView))
 
     "extract officerContactDetailsView from lodgingOfficer" in {
-      OfficerContactDetailsView.viewModelFormat.read(s4LVatLodgingOfficer) shouldBe Some(officerContactDetailsView)
+      S4LVatLodgingOfficer.viewModelFormatContactDetails.read(s4LVatLodgingOfficer) shouldBe Some(officerContactDetailsView)
     }
 
     "update empty lodgingOfficer with officerContactDetailsView" in {
-      OfficerContactDetailsView.viewModelFormat.update(officerContactDetailsView, Option.empty[S4LVatLodgingOfficer]).
+      S4LVatLodgingOfficer.viewModelFormatContactDetails.update(officerContactDetailsView, Option.empty[S4LVatLodgingOfficer]).
         officerContactDetails shouldBe Some(officerContactDetailsView)
     }
 
     "update non-empty lodgingOfficer with officerContactDetailsView" in {
-      OfficerContactDetailsView.viewModelFormat.update(officerContactDetailsView, Some(s4LVatLodgingOfficer)).
+      S4LVatLodgingOfficer.viewModelFormatContactDetails.update(officerContactDetailsView, Some(s4LVatLodgingOfficer)).
         officerContactDetails shouldBe Some(officerContactDetailsView)
     }
   }

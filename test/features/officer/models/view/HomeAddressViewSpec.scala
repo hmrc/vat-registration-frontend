@@ -16,6 +16,7 @@
 
 package models.view.vatLodgingOfficer
 
+import features.officer.models.view.HomeAddressView
 import fixtures.VatRegistrationFixture
 import models.api.{ScrsAddress, VatLodgingOfficer}
 import models.{ApiModelTransformer, S4LVatLodgingOfficer}
@@ -23,14 +24,14 @@ import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
 
-class OfficerHomeAddressViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
+class HomeAddressViewSpec extends UnitSpec with VatRegistrationFixture with Inside {
 
 
   "ApiModelTransformer" should {
 
     "convert VatScheme without VatLodgingOfficer to empty view model" in {
       val vs = vatScheme().copy(lodgingOfficer = None)
-      ApiModelTransformer[OfficerHomeAddressView].toViewModel(vs) shouldBe None
+      S4LVatLodgingOfficer.modelTransformerHomeAddress.toViewModel(vs) shouldBe None
     }
 
     "convert VatScheme with VatLodgingOfficer section to view model" in {
@@ -47,29 +48,29 @@ class OfficerHomeAddressViewSpec extends UnitSpec with VatRegistrationFixture wi
           Some(validOfficerContactDetails))
       val vs = vatScheme().copy(lodgingOfficer = Some(vatLodgingOfficer))
 
-      val expectedOfficerHomeAddressView = OfficerHomeAddressView(address.id, Some(address))
+      val expectedOfficerHomeAddressView = HomeAddressView(address.id, Some(address))
 
-      ApiModelTransformer[OfficerHomeAddressView].toViewModel(vs) shouldBe Some(expectedOfficerHomeAddressView)
+      S4LVatLodgingOfficer.modelTransformerHomeAddress.toViewModel(vs) shouldBe Some(expectedOfficerHomeAddressView)
     }
   }
 
 
   "ViewModelFormat" should {
     val testAddress = ScrsAddress(line1 = "current", line2 = "address", postcode = Some("postcode"))
-    val testAddressView = OfficerHomeAddressView(testAddress.id, Some(testAddress))
+    val testAddressView = HomeAddressView(testAddress.id, Some(testAddress))
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(officerHomeAddress = Some(testAddressView))
 
     "extract OfficerHomeAddressView from lodgingOfficer" in {
-      OfficerHomeAddressView.viewModelFormat.read(s4LVatLodgingOfficer) shouldBe Some(testAddressView)
+      S4LVatLodgingOfficer.viewModelFormatHomeAddress.read(s4LVatLodgingOfficer) shouldBe Some(testAddressView)
     }
 
     "update empty lodgingOfficer with OfficerHomeAddressView" in {
-      OfficerHomeAddressView.viewModelFormat.update(testAddressView, Option.empty[S4LVatLodgingOfficer]).
+      S4LVatLodgingOfficer.viewModelFormatHomeAddress.update(testAddressView, Option.empty[S4LVatLodgingOfficer]).
         officerHomeAddress shouldBe Some(testAddressView)
     }
 
     "update non-empty lodgingOfficer with OfficerHomeAddressView" in {
-      OfficerHomeAddressView.viewModelFormat.update(testAddressView, Some(s4LVatLodgingOfficer)).
+      S4LVatLodgingOfficer.viewModelFormatHomeAddress.update(testAddressView, Some(s4LVatLodgingOfficer)).
         officerHomeAddress shouldBe Some(testAddressView)
     }
   }

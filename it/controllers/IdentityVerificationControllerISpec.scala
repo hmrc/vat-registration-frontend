@@ -16,8 +16,6 @@
 
 package controllers
 
-import javax.inject.Inject
-
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
 import common.enums.{IVResult, VatRegStatus}
 import helpers.RequestsFinder
@@ -51,7 +49,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         val response = buildClient(s"/ivComplete").get()
         whenReady(response) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(features.officer.controllers.routes.FormerNameController.show().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(features.officer.controllers.routes.OfficerController.showFormerName().url)
         }
       }
     "return 500 if VAT Backend does not return a 200 status when saving ivPassed" in {

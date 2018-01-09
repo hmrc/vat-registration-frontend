@@ -18,12 +18,13 @@ package features.officer.forms
 
 import java.time.LocalDate
 
-import features.officer.models.view.{FormerNameDateView, FormerNameView, SecurityQuestionsView}
+import features.officer.models.view._
 import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
-import forms.FormValidation.{ErrorCode, inRange, missingBooleanFieldMapping, nonEmptyValidText, textMapping}
+import forms.FormValidation.{ErrorCode, inRange, maxLenText, missingBooleanFieldMapping, nonEmptyValidText, regexPattern, removeSpaces, textMapping}
 import models.DateModel
 import play.api.data.Form
-import play.api.data.Forms.{mapping, single, text}
+import play.api.data.Forms.{mapping, optional, single, text}
+import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
 object CompletionCapacityForm {
@@ -100,5 +101,54 @@ object FormerNameDateForm {
         "year" -> text
       )(DateModel.apply)(DateModel.unapply).verifying(nonEmptyDateModel(validDateModel(inRange(minDate, maxDate))))
     )(FormerNameDateView.bind)(FormerNameDateView.unbind)
+  )
+}
+
+object ContactDetailsForm {
+  val EMAIL_MAX_LENGTH      = 70
+  val EMAIL_PATTERN         = """^([A-Za-z0-9\-_.]+)@([A-Za-z0-9\-_.]+)\.[A-Za-z0-9\-_.]{2,3}$""".r
+  val PHONE_NUMBER_PATTERN  = """[\d]{1,20}""".r
+
+  private val FORM_NAME = "officerContactDetails"
+
+  private val EMAIL         = "email"
+  private val DAYTIME_PHONE = "daytimePhone"
+  private val MOBILE        = "mobile"
+
+  implicit val errorCode: ErrorCode = "officerContactDetails.email"
+
+  private def validationError(field: String) = ValidationError(s"validation.officerContact.missing", field)
+
+  val form = Form(
+    mapping(
+      EMAIL         -> optional(text.verifying(regexPattern(EMAIL_PATTERN)(s"$FORM_NAME.$EMAIL")).verifying(maxLenText(EMAIL_MAX_LENGTH))),
+      DAYTIME_PHONE -> optional(text.transform(removeSpaces, identity[String]).verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$DAYTIME_PHONE"))),
+      MOBILE        -> optional(text.transform(removeSpaces, identity[String]).verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$MOBILE")))
+    )(ContactDetailsView.apply)(ContactDetailsView.unapply).verifying(atLeastOneContactDetail)
+  )
+
+  def atLeastOneContactDetail: Constraint[ContactDetailsView] = Constraint {
+    case ContactDetailsView(None, None, None) => Invalid(Seq(EMAIL, MOBILE, DAYTIME_PHONE).map(validationError))
+    case _                                           => Valid
+  }
+}
+
+object HomeAddressForm {
+  val ADDRESS_ID: String = "homeAddressRadio"
+
+  val form = Form(
+    mapping(
+      ADDRESS_ID -> textMapping()("officerHomeAddress")
+    )(HomeAddressView(_))(view => Option(view.addressId))
+  )
+}
+
+object PreviousAddressForm {
+  val RADIO_YES_NO: String = "previousAddressQuestionRadio"
+
+  val form = Form(
+    mapping(
+      RADIO_YES_NO -> missingBooleanFieldMapping()("previousAddressQuestion")
+    )(PreviousAddressView.apply(_))(view => Option(view.yesNo))
   )
 }

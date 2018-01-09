@@ -18,21 +18,22 @@ package features.officer.models.view
 
 import java.time.LocalDate
 
+import models.S4LKey
 import models.api.ScrsAddress
 import models.external.Officer
-import models.view.vatLodgingOfficer._
 import play.api.libs.json._
 
 case class LodgingOfficer(completionCapacity: Option[String],
                           securityQuestions: Option[SecurityQuestionsView],
-                          officerHomeAddress: Option[OfficerHomeAddressView],
-                          officerContactDetails: Option[OfficerContactDetailsView],
+                          homeAddress: Option[HomeAddressView],
+                          contactDetails: Option[ContactDetailsView],
                           formerName: Option[FormerNameView],
                           formerNameDate: Option[FormerNameDateView],
                           previousAddress: Option[PreviousAddressView])
 
 object LodgingOfficer {
   implicit val format: Format[LodgingOfficer] = Json.format[LodgingOfficer]
+  val lodgingOfficerKey: S4LKey[LodgingOfficer] = S4LKey("LodgingOfficer")
 
   def fromApi(officer: JsValue): LodgingOfficer = {
     val officerId = List((officer \ "name" \ "first").validateOpt[String].get,
@@ -46,8 +47,8 @@ object LodgingOfficer {
     val lodgingOfficer = LodgingOfficer(
       completionCapacity = Some(officerId),
       securityQuestions = Some(officerSecurity),
-      officerHomeAddress = None,
-      officerContactDetails = None,
+      homeAddress = None,
+      contactDetails = None,
       formerName = None,
       formerNameDate = None,
       previousAddress = None
@@ -56,17 +57,17 @@ object LodgingOfficer {
     val detailsBase = (officer \ "details").validateOpt[JsObject].get
     detailsBase.fold(lodgingOfficer) { details =>
       val currentAddress: ScrsAddress = (details \ "currentAddress").as[ScrsAddress]
-      val officerHomeAddress = OfficerHomeAddressView(currentAddress.id, Some(currentAddress))
+      val officerHomeAddress = HomeAddressView(currentAddress.id, Some(currentAddress))
 
-      val digitalContact = OfficerContactDetailsView(
+      val digitalContact = ContactDetailsView(
         email = Some((details \ "contact" \ "email").as[String]),
         daytimePhone = (details \ "contact" \ "tel").validateOpt[String].get,
         mobile = (details \ "contact" \ "mobile").validateOpt[String].get
       )
 
       lodgingOfficer.copy(
-        officerHomeAddress = Some(officerHomeAddress),
-        officerContactDetails = Some(digitalContact)
+        homeAddress = Some(officerHomeAddress),
+        contactDetails = Some(digitalContact)
       )
     }
   }
@@ -88,8 +89,8 @@ object LodgingOfficer {
     (firstName, middleName, lastName)
   }
 
-  private def buildJsonOfficerDetails(currAddr: OfficerHomeAddressView,
-                                      officerContact: OfficerContactDetailsView,
+  private def buildJsonOfficerDetails(currAddr: HomeAddressView,
+                                      officerContact: ContactDetailsView,
                                       formerName: FormerNameView,
                                       formerNameDate: Option[FormerNameDateView],
                                       prevAddr: PreviousAddressView): JsObject = {
@@ -102,7 +103,7 @@ object LodgingOfficer {
     val mobile = officerContact.mobile.fold(Json.obj())(v => Json.obj("mobile" -> v))
     val contact = Json.obj("contact" -> email.++(tel).++(mobile))
 
-    val previousAddress = if (!prevAddr.yesNo) Json.obj() else {
+    val previousAddress = if (prevAddr.yesNo) Json.obj() else {
       Json.obj("previousAddress" ->
         Json.toJson(prevAddr.address.getOrElse(throw new IllegalStateException("Missing officer previous address to save into backend"))).as[JsObject]
       )

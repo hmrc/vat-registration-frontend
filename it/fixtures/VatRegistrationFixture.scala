@@ -19,11 +19,12 @@ package it.fixtures
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
+import features.officer.models.view.SecurityQuestionsView
 import models.S4LVatLodgingOfficer
 import models.api._
 import models.external.Officer
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.QUARTERLY
-import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerSecurityQuestionsView}
+import models.view.vatLodgingOfficer.CompletionCapacityView
 import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 
@@ -65,7 +66,7 @@ trait VatRegistrationFixture {
 
   val validS4LLodgingOfficerPreIv = S4LVatLodgingOfficer (
     completionCapacity = Some(CompletionCapacityView("",Some(completionCapacity))),
-    officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.of(2017,11,5),"nino",Some(officerName)))
+    officerSecurityQuestions = Some(SecurityQuestionsView(LocalDate.of(2017,11,5),"nino",Some(officerName)))
   )
 
   val validOfficer = Officer(
@@ -151,6 +152,6 @@ val validName = Name(Some("foo"),Some("bar"),"fizz",Some("bang"))
   val nameId = validName.id
   val validS4LLodgingOfficer = S4LVatLodgingOfficer(
     completionCapacity = Some(CompletionCapacityView(nameId,Some(CompletionCapacity(validName,"bar")))),
-    officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.of(2017,11,5),"nino",Some(validName))))
+    officerSecurityQuestions = Some(SecurityQuestionsView(LocalDate.of(2017,11,5),"nino",Some(validName))))
 
 }

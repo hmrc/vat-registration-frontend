@@ -1,6 +1,6 @@
-@import models.view.vatLodgingOfficer.OfficerHomeAddressView
+@import features.officer.models.view.HomeAddressView
 @import models.api.ScrsAddress
-@(officerHomeAddressForm: Form[OfficerHomeAddressView], addresses: Seq[ScrsAddress])(implicit request: Request[_], messages: Messages)
+@(officerHomeAddressForm: Form[HomeAddressView], addresses: Seq[ScrsAddress])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
 
@@ -15,7 +15,7 @@
       <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.officerHomeAddress.heading")</h1>
   </header>
 
-  @govHelpers.form(action = controllers.vatLodgingOfficer.routes.OfficerHomeAddressController.submit()) {
+  @govHelpers.form(action = features.officer.controllers.routes.OfficerController.submitHomeAddress()) {
     <div class="form-group" id="homeAddressRadio">
 
         @vatInputRadioGroup(

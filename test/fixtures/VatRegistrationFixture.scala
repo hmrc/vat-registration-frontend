@@ -20,6 +20,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import common.enums.VatRegStatus
+import features.officer.models.view.ContactDetailsView
 import models.S4LVatSicAndCompliance
 import models.api._
 import models.external.{IncorporationInfo, _}
@@ -29,11 +30,10 @@ import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsul
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials.vatBankAccount.ModulusCheckAccount
-import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.http.{ BadRequestException, HttpResponse, InternalServerException, NotFoundException, Upstream4xxResponse, Upstream5xxResponse }
+import uk.gov.hmrc.http.{BadRequestException, HttpResponse, InternalServerException, NotFoundException, Upstream4xxResponse, Upstream5xxResponse}
 
 trait BaseFixture {
   //Test variables
@@ -119,7 +119,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   )
 
   //View models
-  val validOfficerContactDetailsView = OfficerContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
+  val validOfficerContactDetailsView = ContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
   val validNotForProfit = NotForProfit(NotForProfit.NOT_PROFIT_NO)
   val validCompanyProvideWorkers = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
   val validWorkers = Workers(8)

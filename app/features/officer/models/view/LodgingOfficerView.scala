@@ -19,13 +19,12 @@ package features.officer.models.view
 import java.time.LocalDate
 
 import models.DateModel
-import models.api.{Name}
-import play.api.libs.json.Json
+import models.api.{Name, ScrsAddress}
+import play.api.libs.json.{Json, OFormat}
 
 sealed trait LodgingOfficerView
 
 case class SecurityQuestionsView(dob: LocalDate, nino: String, officerName: Option[Name] = None) extends LodgingOfficerView
-
 object SecurityQuestionsView {
 
   def bind(dateModel: DateModel, nino: String): SecurityQuestionsView =
@@ -37,15 +36,12 @@ object SecurityQuestionsView {
   implicit val format = Json.format[SecurityQuestionsView]
 }
 
-case class FormerNameView(yesNo: Boolean,
-                          formerName: Option[String] = None)
-
+case class FormerNameView(yesNo: Boolean, formerName: Option[String] = None)
 object FormerNameView {
   implicit val format = Json.format[FormerNameView]
 }
 
 case class FormerNameDateView(date: LocalDate)
-
 object FormerNameDateView {
 
   def bind(dateModel: DateModel): FormerNameDateView =
@@ -55,4 +51,19 @@ object FormerNameDateView {
     Some(DateModel.fromLocalDate(formerNameDate.date)) // form ensures valid date
 
   implicit val format = Json.format[FormerNameDateView]
+}
+
+case class ContactDetailsView(email: Option[String] = None, daytimePhone: Option[String] = None, mobile: Option[String] = None)
+object ContactDetailsView {
+  implicit val format: OFormat[ContactDetailsView] = Json.format[ContactDetailsView]
+}
+
+case class HomeAddressView(addressId: String, address: Option[ScrsAddress] = None)
+object HomeAddressView {
+  implicit val format = Json.format[HomeAddressView]
+}
+
+case class PreviousAddressView(yesNo: Boolean, address: Option[ScrsAddress] = None)
+object PreviousAddressView {
+  implicit val format = Json.format[PreviousAddressView]
 }

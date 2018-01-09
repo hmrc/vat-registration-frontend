@@ -33,12 +33,12 @@ import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
 import models.view.vatFinancials.vatBankAccount.{CompanyBankAccount, CompanyBankAccountDetails}
 import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, VatChargeExpectancy, ZeroRatedSales}
-import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.TradingNameView._
 import models.view.vatTradingDetails.vatChoice._
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import features.officer.models.view._
+import models.view.vatLodgingOfficer.CompletionCapacityView
 
 @Singleton
 class TestS4LBuilder {
@@ -229,10 +229,10 @@ class TestS4LBuilder {
 
     S4LVatLodgingOfficer(
       previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
-      officerHomeAddress = homeAddress.map(a => OfficerHomeAddressView(a.id, Some(a))),
+      officerHomeAddress = homeAddress.map(a => HomeAddressView(a.id, Some(a))),
       officerSecurityQuestions = dob.map(SecurityQuestionsView(_, nino.getOrElse(""), completionCapacity.map(_.name))),
       completionCapacity = completionCapacity.map(CompletionCapacityView(_)),
-      officerContactDetails = contactDetails.map(OfficerContactDetailsView(_)),
+      officerContactDetails = contactDetails.map(c => ContactDetailsView(c.email, c.tel, c.mobile)),
       formerName = formerName,
       formerNameDate = formerNameDate.map(FormerNameDateView(_))
     )

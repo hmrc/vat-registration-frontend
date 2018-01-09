@@ -68,19 +68,19 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: Option[VatLod
   val email: SummaryRow = SummaryRow(
     s"$sectionId.email",
     vatLodgingOfficer.flatMap(_.contact.flatMap(_.email)).getOrElse(""),
-    Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
+    Some(features.officer.controllers.routes.OfficerController.showContactDetails())
   )
 
   val daytimePhone: SummaryRow = SummaryRow(
     s"$sectionId.daytimePhone",
     vatLodgingOfficer.flatMap(_.contact.flatMap(_.tel)).getOrElse(""),
-    Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
+    Some(features.officer.controllers.routes.OfficerController.showContactDetails())
   )
 
   val mobile: SummaryRow = SummaryRow(
     s"$sectionId.mobile",
     vatLodgingOfficer.flatMap(_.contact.flatMap(_.mobile)).getOrElse(""),
-    Some(controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.show())
+    Some(features.officer.controllers.routes.OfficerController.showContactDetails())
   )
 
   val section: SummarySection = SummarySection(

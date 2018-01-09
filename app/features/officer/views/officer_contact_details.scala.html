@@ -1,5 +1,5 @@
-@import models.view.vatLodgingOfficer.OfficerContactDetailsView
-@(officerContactDetailsForm: Form[OfficerContactDetailsView])(implicit request: Request[_], messages: Messages)
+@import features.officer.models.view.ContactDetailsView
+@(officerContactDetailsForm: Form[ContactDetailsView])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{vatInput, errorSummary}
 
@@ -17,7 +17,7 @@
   </div>
   <br />
 
-  @govHelpers.form(action = controllers.vatLodgingOfficer.routes.OfficerContactDetailsController.submit()) {
+  @govHelpers.form(action = features.officer.controllers.routes.OfficerController.submitContactDetails()) {
       <div class="form-group">
           <fieldset>
 

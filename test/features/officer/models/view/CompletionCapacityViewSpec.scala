@@ -45,13 +45,13 @@ class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture wi
 
       val expected = CompletionCapacityView(officerName.id, Some(CompletionCapacity(officerName, "director")))
 
-      ApiModelTransformer[CompletionCapacityView].toViewModel(vs) shouldBe Some(expected)
+      S4LVatLodgingOfficer.modelTransformerCompletionCapacity.toViewModel(vs) shouldBe Some(expected)
     }
 
 
     "convert VatScheme without VatLodgingOfficer to empty view model" in {
       val vs = vatScheme().copy(lodgingOfficer = None)
-      ApiModelTransformer[CompletionCapacityView].toViewModel(vs) shouldBe None
+      S4LVatLodgingOfficer.modelTransformerCompletionCapacity.toViewModel(vs) shouldBe None
     }
 
   }
@@ -69,15 +69,15 @@ class CompletionCapacityViewSpec extends UnitSpec with VatRegistrationFixture wi
     val s4LVatLodgingOfficer: S4LVatLodgingOfficer = S4LVatLodgingOfficer(completionCapacity = Some(ccv))
 
     "extract completionCapacityView from lodgingOfficer" in {
-      CompletionCapacityView.viewModelFormat.read(s4LVatLodgingOfficer) shouldBe Some(ccv)
+      S4LVatLodgingOfficer.viewModelFormatCompletionCapacity.read(s4LVatLodgingOfficer) shouldBe Some(ccv)
     }
 
     "update empty lodgingOfficer with completionCapacityView" in {
-      CompletionCapacityView.viewModelFormat.update(ccv, Option.empty[S4LVatLodgingOfficer]).completionCapacity shouldBe Some(ccv)
+      S4LVatLodgingOfficer.viewModelFormatCompletionCapacity.update(ccv, Option.empty[S4LVatLodgingOfficer]).completionCapacity shouldBe Some(ccv)
     }
 
     "update non-empty lodgingOfficer with completionCapacityView" in {
-      CompletionCapacityView.viewModelFormat.update(ccv, Some(s4LVatLodgingOfficer)).completionCapacity shouldBe Some(ccv)
+      S4LVatLodgingOfficer.viewModelFormatCompletionCapacity.update(ccv, Some(s4LVatLodgingOfficer)).completionCapacity shouldBe Some(ccv)
     }
   }
 }

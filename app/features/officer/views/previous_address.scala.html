@@ -1,4 +1,4 @@
-@import models.view.vatLodgingOfficer.PreviousAddressView
+@import features.officer.models.view.PreviousAddressView
 @(previousAddressQuestionForm: Form[PreviousAddressView])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
@@ -12,7 +12,7 @@
 
     <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.previousAddressQuestion.heading")</h1>
 
-    @govHelpers.form(action = controllers.vatLodgingOfficer.routes.PreviousAddressController.submit()) {
+    @govHelpers.form(action = features.officer.controllers.routes.OfficerController.submitPreviousAddress()) {
         <div class="form-group">
             <fieldset class="inline">
                 <span id="previousAddressQuestionRadio"/>

@@ -30,7 +30,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.cache.client.CacheMap
-import features.officer.models.view.{FormerNameView, SecurityQuestionsView}
+import features.officer.models.view.{FormerNameView, HomeAddressView, PreviousAddressView, SecurityQuestionsView}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -180,7 +180,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       when(mockRegConnector.upsertVatLodgingOfficer(any(), any())(any(), any())).thenReturn(validLodgingOfficer.pure)
       save4laterReturns(S4LVatLodgingOfficer(
-        officerHomeAddress = Some(OfficerHomeAddressView(scrsAddress.id, Some(scrsAddress))),
+        officerHomeAddress = Some(HomeAddressView(scrsAddress.id, Some(scrsAddress))),
         officerSecurityQuestions = Some(SecurityQuestionsView(testDate, testNino)),
         completionCapacity = Some(CompletionCapacityView("id", Some(completionCapacity))),
         officerContactDetails = Some(validOfficerContactDetailsView),

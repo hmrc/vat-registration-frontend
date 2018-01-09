@@ -160,16 +160,16 @@ package models.api {
 package models {
 
   import models.api._
-  import models.view.vatLodgingOfficer._
   import play.api.libs.json.{Json, OFormat}
-  import features.officer.models.view.{FormerNameDateView, FormerNameView, SecurityQuestionsView}
+  import features.officer.models.view._
+  import models.view.vatLodgingOfficer.CompletionCapacityView
 
   final case class S4LVatLodgingOfficer
   (
-    officerHomeAddress: Option[OfficerHomeAddressView] = None,
+    officerHomeAddress: Option[HomeAddressView] = None,
     officerSecurityQuestions: Option[SecurityQuestionsView] = None,
     completionCapacity: Option[CompletionCapacityView] = None,
-    officerContactDetails: Option[OfficerContactDetailsView] = None,
+    officerContactDetails: Option[ContactDetailsView] = None,
     formerName: Option[FormerNameView] = None,
     formerNameDate: Option[FormerNameDateView] = None,
     previousAddress: Option[PreviousAddressView] = None,
@@ -179,7 +179,19 @@ package models {
   object S4LVatLodgingOfficer {
     implicit val format: OFormat[S4LVatLodgingOfficer] = Json.format[S4LVatLodgingOfficer]
 
+    implicit val viewModelFormatCompletionCapacity = ViewModelFormat(
+      readF = (group: S4LVatLodgingOfficer) => group.completionCapacity,
+      updateF = (c: CompletionCapacityView, g: Option[S4LVatLodgingOfficer]) =>
+        g.getOrElse(S4LVatLodgingOfficer()).copy(completionCapacity = Some(c))
+    )
 
+    // return a view model from a VatScheme instance
+    implicit val modelTransformerCompletionCapacity = ApiModelTransformer[CompletionCapacityView] { vs: VatScheme =>
+      vs.lodgingOfficer match{
+        case Some(VatLodgingOfficer(_,_,_,Some(b),Some(a),_,_,_,_)) => Some(CompletionCapacityView(a.id, Some(CompletionCapacity(a, b))))
+        case _ => None
+      }
+    }
 
     implicit val viewModelFormatSecuQuestions = ViewModelFormat(
       readF = (group: S4LVatLodgingOfficer) => group.officerSecurityQuestions,
@@ -226,18 +238,59 @@ package models {
       }
     }
 
+    implicit val viewModelFormatContactDetails = ViewModelFormat(
+      readF = (group: S4LVatLodgingOfficer) => group.officerContactDetails,
+      updateF = (c: ContactDetailsView, g: Option[S4LVatLodgingOfficer]) =>
+        g.getOrElse(S4LVatLodgingOfficer()).copy(officerContactDetails = Some(c))
+    )
+
+    implicit val modelTransformerContactDetails = ApiModelTransformer[ContactDetailsView] { (vs: VatScheme) =>
+      vs.lodgingOfficer.map(_.contact).collect {
+        case Some(OfficerContactDetails(e, t, m)) =>
+          ContactDetailsView(email = e, daytimePhone = t, mobile = m)
+      }
+    }
+
+    implicit val viewModelFormatHomeAddress = ViewModelFormat(
+      readF = (group: S4LVatLodgingOfficer) => group.officerHomeAddress,
+      updateF = (c: HomeAddressView, g: Option[S4LVatLodgingOfficer]) =>
+        g.getOrElse(S4LVatLodgingOfficer()).copy(officerHomeAddress = Some(c))
+    )
+
+    // return a view model from a VatScheme instance
+    implicit val modelTransformerHomeAddress = ApiModelTransformer[HomeAddressView] { vs: VatScheme =>
+      vs.lodgingOfficer.map(_.currentAddress).collect {
+        case address => HomeAddressView(address.map(_.id).getOrElse(""), address)
+      }
+    }
+
     implicit val modelT = new S4LModelTransformer[S4LVatLodgingOfficer] {
       override def toS4LModel(vs: VatScheme): S4LVatLodgingOfficer =
         S4LVatLodgingOfficer(
-          officerHomeAddress = ApiModelTransformer[OfficerHomeAddressView].toViewModel(vs),
+          officerHomeAddress = ApiModelTransformer[HomeAddressView].toViewModel(vs),
           officerSecurityQuestions = ApiModelTransformer[SecurityQuestionsView].toViewModel(vs),
           completionCapacity = ApiModelTransformer[CompletionCapacityView].toViewModel(vs),
-          officerContactDetails = ApiModelTransformer[OfficerContactDetailsView].toViewModel(vs),
+          officerContactDetails = ApiModelTransformer[ContactDetailsView].toViewModel(vs),
           formerName = ApiModelTransformer[FormerNameView].toViewModel(vs),
           formerNameDate = ApiModelTransformer[FormerNameDateView].toViewModel(vs),
           previousAddress = ApiModelTransformer[PreviousAddressView].toViewModel(vs),
           ivPassed = vs.lodgingOfficer.flatMap(_.ivPassed)
         )
+    }
+
+    implicit val viewModelFormatPreviousAddress = ViewModelFormat(
+      readF = (group: S4LVatLodgingOfficer) => group.previousAddress,
+      updateF = (c: PreviousAddressView, g: Option[S4LVatLodgingOfficer]) =>
+        g.getOrElse(S4LVatLodgingOfficer()).copy(previousAddress = Some(c))
+    )
+
+    // Returns a view model for a specific part of a given VatScheme API model
+    implicit val modelTransformerPreviousAddress = ApiModelTransformer[PreviousAddressView] { vs: VatScheme =>
+      vs.lodgingOfficer match {
+        case Some(VatLodgingOfficer(_, _, _, _, _, _, Some(a), _, _)) => Some(PreviousAddressView(a.currentAddressThreeYears, a.previousAddress))
+        case _ => None
+      }
+
     }
 
     implicit val apiT = new S4LApiTransformer[S4LVatLodgingOfficer, VatLodgingOfficer] {

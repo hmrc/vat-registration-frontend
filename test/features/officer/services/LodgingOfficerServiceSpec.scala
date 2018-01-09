@@ -55,8 +55,8 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
   val validPartialLodgingOfficer = LodgingOfficer(
     completionCapacity = Some("FirstLastMiddle"),
     securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "ZZ987654A")),
-    officerHomeAddress = None,
-    officerContactDetails = None,
+    homeAddress = None,
+    contactDetails = None,
     formerName = None,
     formerNameDate = None,
     previousAddress = None
@@ -66,8 +66,8 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
   val validFullLodgingOfficer = LodgingOfficer(
     completionCapacity = Some("FirstLastMiddle"),
     securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "ZZ987654A")),
-    officerHomeAddress = Some(OfficerHomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
-    officerContactDetails = Some(OfficerContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+    homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
+    contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
     formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
     formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
     previousAddress = Some(PreviousAddressView(true, Some(validPrevAddress)))
@@ -176,8 +176,8 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
       val expected = LodgingOfficer(
         completionCapacity = Some("TestFirstTestLastTestMiddle"),
         securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12), nino = "SR123456Z")),
-        officerHomeAddress = None,
-        officerContactDetails = None,
+        homeAddress = None,
+        contactDetails = None,
         formerName = None,
         formerNameDate = None,
         previousAddress = None
@@ -190,8 +190,8 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
       val expected: LodgingOfficer = LodgingOfficer(
         completionCapacity = Some("TestFirstTestLastTestMiddle"),
         securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12), nino = "SR123456Z")),
-        officerHomeAddress = Some(OfficerHomeAddressView(currentAddress.id, Some(currentAddress))),
-        officerContactDetails = Some(OfficerContactDetailsView(Some("test@t.test"), None, None)),
+        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+        contactDetails = Some(ContactDetailsView(Some("test@t.test"), None, None)),
         formerName = None,
         formerNameDate = None,
         previousAddress = None
@@ -234,32 +234,32 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
 
       "updating current address" that {
         val currentAddress = ScrsAddress(line1 = "Line1", line2 = "Line2", postcode = Some("PO BOX"))
-        val officerHomeAddress = OfficerHomeAddressView(currentAddress.id, Some(currentAddress))
+        val officerHomeAddress = HomeAddressView(currentAddress.id, Some(currentAddress))
 
         "makes the block incomplete and save to S4L" in new SetupForS4LSave(validPartialLodgingOfficer) {
-          val expected = validPartialLodgingOfficer.copy(officerHomeAddress = Some(officerHomeAddress))
+          val expected = validPartialLodgingOfficer.copy(homeAddress = Some(officerHomeAddress))
 
           service.updateLodgingOfficer(officerHomeAddress) returns expected
         }
 
         "makes the block complete and save to backend" in new SetupForBackendSave(validFullLodgingOfficer) {
-          val expected = validFullLodgingOfficer.copy(officerHomeAddress = Some(officerHomeAddress))
+          val expected = validFullLodgingOfficer.copy(homeAddress = Some(officerHomeAddress))
 
           service.updateLodgingOfficer(officerHomeAddress) returns expected
         }
       }
 
       "updating officer contact" that {
-        val officerContactDetails = OfficerContactDetailsView(Some("tt@dd.uk"))
+        val officerContactDetails = ContactDetailsView(Some("tt@dd.uk"))
 
         "makes the block incomplete and save to S4L" in new SetupForS4LSave(validPartialLodgingOfficer) {
-          val expected = validPartialLodgingOfficer.copy(officerContactDetails = Some(officerContactDetails))
+          val expected = validPartialLodgingOfficer.copy(contactDetails = Some(officerContactDetails))
 
           service.updateLodgingOfficer(officerContactDetails) returns expected
         }
 
         "makes the block complete and save to backend" in new SetupForBackendSave(validFullLodgingOfficer) {
-          val expected = validFullLodgingOfficer.copy(officerContactDetails = Some(officerContactDetails))
+          val expected = validFullLodgingOfficer.copy(contactDetails = Some(officerContactDetails))
 
           service.updateLodgingOfficer(officerContactDetails) returns expected
         }

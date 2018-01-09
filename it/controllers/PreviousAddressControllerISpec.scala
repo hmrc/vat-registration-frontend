@@ -19,15 +19,16 @@ package controllers
 import java.time.LocalDate
 
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
+import features.officer.models.view._
 import helpers.RequestsFinder
 import it.fixtures.VatRegistrationFixture
 import models.S4LVatLodgingOfficer
-import models.api.{CompletionCapacity, Name, OfficerContactDetails, ScrsAddress, VatLodgingOfficer}
+import models.api.{CompletionCapacity, Name, ScrsAddress, VatLodgingOfficer}
 import models.view.vatLodgingOfficer._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsBoolean, JsNumber, JsString, JsValue}
+import play.api.libs.json.{JsBoolean, JsString, Json}
 import support.AppAndStubs
 
 class PreviousAddressControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with VatRegistrationFixture{
@@ -40,15 +41,15 @@ class PreviousAddressControllerISpec extends PlaySpec with AppAndStubs with Scal
   val postcode = "TE1 1ST"
 
   val testAddress = ScrsAddress(line1 = addrLine1, line2 = addrLine2, postcode = Some(postcode))
-  val dob = LocalDate.of(1980, 11, 15)
+  val dob = LocalDate.of(1998, 7, 12)
 
   val s4LVatLodgingOfficer = S4LVatLodgingOfficer(
-    officerHomeAddress = Some(OfficerHomeAddressView("12345", Some(testAddress))),
-    officerSecurityQuestions = Some(OfficerSecurityQuestionsView(dob, nino, None)),
+    officerHomeAddress = Some(HomeAddressView("12345", Some(testAddress))),
+    officerSecurityQuestions = Some(SecurityQuestionsView(dob, nino, None)),
     completionCapacity = Some(CompletionCapacityView(CompletionCapacity(
       Name(surname = "Bobble", forename = Some("Jingles"), otherForenames = None),
       role))),
-    officerContactDetails = Some(OfficerContactDetailsView(OfficerContactDetails(email = Some(email), tel = None, mobile = None))),
+    officerContactDetails = Some(ContactDetailsView(email = Some(email), daytimePhone = None, mobile = None)),
     formerName = Some(FormerNameView(false)),
     formerNameDate = None,
     previousAddress = None
@@ -57,15 +58,57 @@ class PreviousAddressControllerISpec extends PlaySpec with AppAndStubs with Scal
   "POST Previous Address page" should {
     val updatedS4LVatLodgingOfficer = s4LVatLodgingOfficer.copy(previousAddress = Some(PreviousAddressView(true)))
 
-    "upsert Vat Lodging Officer in backend" in {
+    val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+    val s4lData = LodgingOfficer(
+      completionCapacity = Some("FirstLastMiddle"),
+      securityQuestions = Some(SecurityQuestionsView(dob, nino)),
+      homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+      contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+      formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
+      formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
+      previousAddress = None
+    )
+
+    val validJson = Json.parse(
+      s"""
+         |{
+         |  "name": {
+         |    "first": "First",
+         |    "middle": "Middle",
+         |    "last": "Last"
+         |  },
+         |  "role": "$role",
+         |  "dob": "$dob",
+         |  "nino": "$nino",
+         |  "details": {
+         |    "currentAddress": {
+         |      "line1": "TestLine1",
+         |      "line2": "TestLine2",
+         |      "postcode": "TE 1ST"
+         |    },
+         |    "contact": {
+         |      "email": "test@t.test",
+         |      "tel": "1234",
+         |      "mobile": "5678"
+         |    },
+         |    "changeOfName": {
+         |      "name": {
+         |        "first": "New",
+         |        "middle": "Name",
+         |        "last": "Cosmo"
+         |      },
+         |      "change": "2000-07-12"
+         |    }
+         |  }
+         |}""".stripMargin)
+
+    "upsert Lodging Officer in backend" in {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
-        .s4lContainerInScenario[S4LVatLodgingOfficer].contains(s4LVatLodgingOfficer, Some(STARTED))
-        .s4lContainerInScenario[S4LVatLodgingOfficer].isUpdatedWith(updatedS4LVatLodgingOfficer, Some(STARTED), Some("Vat Lodging Officer updated"))
-        .vatScheme.contains(validPreIVScheme)
-        .s4lContainerInScenario[S4LVatLodgingOfficer].contains(updatedS4LVatLodgingOfficer, Some("Vat Lodging Officer updated"))
-        .vatScheme.isUpdatedWith[VatLodgingOfficer](S4LVatLodgingOfficer.apiT.toApi(updatedS4LVatLodgingOfficer))
+        .s4lContainer[LodgingOfficer].contains(s4lData)
+        .vatScheme.patched("lodgingOfficer", validJson)
+        .s4lContainer.cleared
         .audit.writesAudit()
 
       val response = buildClient("/current-address-three-years-or-more").post(Map("previousAddressQuestionRadio" -> Seq("true")))
@@ -73,11 +116,11 @@ class PreviousAddressControllerISpec extends PlaySpec with AppAndStubs with Scal
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatContact.ppob.routes.PpobController.show().url)
 
-        val json = getPATCHRequestJsonBody(s"/vatreg/1/lodging-officer")
-        (json \ "currentAddress" \ "line1").as[JsString].value mustBe addrLine1
-        (json \ "currentAddress" \ "line2").as[JsString].value mustBe addrLine2
-        (json \ "currentAddress" \ "postcode").as[JsString].value mustBe postcode
-        (json \ "dob").as[LocalDate] mustBe LocalDate.of(1980,11,15)
+        val json = getPATCHRequestJsonBody(s"/vatreg/1/officer")
+        (json \ "currentAddress" \ "line1").as[JsString].value mustBe currentAddress.line1
+        (json \ "currentAddress" \ "line2").as[JsString].value mustBe currentAddress.line2
+        (json \ "currentAddress" \ "postcode").as[JsString].value mustBe currentAddress.postcode
+        (json \ "dob").as[LocalDate] mustBe dob
         (json \ "nino").as[JsString].value mustBe nino
         (json \ "role").as[JsString].value mustBe role
         (json \ "name" \ "surname").as[JsString].value mustBe "Bobble"
@@ -96,6 +139,44 @@ class PreviousAddressControllerISpec extends PlaySpec with AppAndStubs with Scal
       val addressLine2 = "Holland road"
       val addressCountry = "United Kingdom"
       val addressPostcode = "BN3 1JU"
+
+      val validJson = Json.parse(
+        s"""
+           |{
+           |  "name": {
+           |    "first": "First",
+           |    "middle": "Middle",
+           |    "last": "Last"
+           |  },
+           |  "role": "Director",
+           |  "dob": "1998-07-12",
+           |  "nino": "AA112233Z",
+           |  "details": {
+           |    "currentAddress": {
+           |      "line1": "TestLine1",
+           |      "line2": "TestLine2",
+           |      "postcode": "TE 1ST"
+           |    },
+           |    "contact": {
+           |      "email": "test@t.test",
+           |      "tel": "1234",
+           |      "mobile": "5678"
+           |    },
+           |    "changeOfName": {
+           |      "name": {
+           |        "first": "New",
+           |        "middle": "Name",
+           |        "last": "Cosmo"
+           |      },
+           |      "change": "2000-07-12"
+           |    },
+           |    "previousAddress": {
+           |      "line1": "TestLine11",
+           |      "line2": "TestLine22",
+           |      "postcode": "TE1 1ST"
+           |    }
+           |  }
+           |}""".stripMargin)
 
       val address = ScrsAddress(
         line1 = addressLine1,

@@ -25,7 +25,6 @@ import features.officer.models.view.LodgingOfficer
 import models.CurrentProfile
 import models.external.Officer
 import features.officer.models.view._
-import models.view.vatLodgingOfficer.{OfficerContactDetailsView, OfficerHomeAddressView, PreviousAddressView}
 import services.IncorporationInfoSrv
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
@@ -89,8 +88,8 @@ trait LodgingOfficerService extends Logging {
       data match {
         case cc: String                         => before.copy(completionCapacity = Some(cc))
         case secu: SecurityQuestionsView => before.copy(securityQuestions = Some(secu))
-        case currAddr: OfficerHomeAddressView   => before.copy(officerHomeAddress = Some(currAddr))
-        case contact: OfficerContactDetailsView => before.copy(officerContactDetails = Some(contact))
+        case currAddr: HomeAddressView   => before.copy(homeAddress = Some(currAddr))
+        case contact: ContactDetailsView => before.copy(contactDetails = Some(contact))
         case fName: FormerNameView              => before.copy(formerName = Some(fName))
         case fNameDate: FormerNameDateView      => before.copy(formerNameDate = Some(fNameDate))
         case prevAddr: PreviousAddressView      => before.copy(previousAddress = Some(prevAddr))

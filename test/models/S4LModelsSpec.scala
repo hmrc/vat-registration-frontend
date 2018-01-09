@@ -387,11 +387,11 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
     val testRole = "role"
 
     val s4l = S4LVatLodgingOfficer(
-      officerHomeAddress = Some(OfficerHomeAddressView(address.id, Some(address))),
+      officerHomeAddress = Some(HomeAddressView(address.id, Some(address))),
       officerSecurityQuestions = Some(SecurityQuestionsView(dob = date, nino = testNino, officerName = Some(name))),
       completionCapacity = Some(CompletionCapacityView(id = "id", completionCapacity = Some(CompletionCapacity(name, testRole)))),
       officerContactDetails = Some(
-        OfficerContactDetailsView(email = Some("email"), daytimePhone = Some("daytimePhone"), mobile = Some("mobile"))),
+        ContactDetailsView(email = Some("email"), daytimePhone = Some("daytimePhone"), mobile = Some("mobile"))),
       formerName = Some(FormerNameView(yesNo = true, formerName = Some("formerName"))),
       formerNameDate = Some(FormerNameDateView(date)),
       previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))

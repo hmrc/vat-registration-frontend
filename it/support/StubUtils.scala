@@ -22,7 +22,7 @@ import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import common.enums.{IVResult, VatRegStatus}
 import models.S4LKey
 import models.api.VatScheme
-import play.api.libs.json.{Format, JsObject, Json}
+import play.api.libs.json.{Format, JsObject, JsValue, Json}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.crypto.CompositeSymmetricCrypto.aes
@@ -477,6 +477,13 @@ trait StubUtils {
 
     def deleted: PreconditionBuilder = {
       stubFor(delete(urlPathEqualTo("/vatreg/1/delete-scheme")).willReturn(ok("")))
+      builder
+    }
+
+    def patched(block: String, json: JsValue) = {
+      stubFor(
+        patch(urlPathMatching(s"/vatreg/1/$block"))
+          .willReturn(aResponse().withStatus(202).withBody(json.toString)))
       builder
     }
   }

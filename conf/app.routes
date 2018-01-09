@@ -178,9 +178,9 @@ POST        /where-will-company-carry-out-most-of-its-business-activities       
 GET         /where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm        controllers.vatContact.ppob.PpobController.acceptFromTxm(id: String ?= "")
 
 ## OFFICER ADDRESS PAGE
-GET         /your-home-address                                                                 controllers.vatLodgingOfficer.OfficerHomeAddressController.show
-POST        /your-home-address                                                                 controllers.vatLodgingOfficer.OfficerHomeAddressController.submit
-GET         /your-home-address/acceptFromTxm                                                   controllers.vatLodgingOfficer.OfficerHomeAddressController.acceptFromTxm(id: String ?= "")
+GET         /your-home-address                                                                 features.officer.controllers.OfficerController.showHomeAddress
+POST        /your-home-address                                                                 features.officer.controllers.OfficerController.submitHomeAddress
+GET         /your-home-address/acceptFromTxm                                                   features.officer.controllers.OfficerController.acceptFromTxmHomeAddress(id: String ?= "")
 
 ## OFFICER DOB PAGE
 GET         /pass-security                                                                     features.officer.controllers.OfficerController.showSecurityQuestions
@@ -191,8 +191,8 @@ GET         /who-is-registering-the-company-for-vat                             
 POST        /who-is-registering-the-company-for-vat                                            features.officer.controllers.OfficerController.submitCompletionCapacity
 
 ## OFFICER CONTACT DETAILS PAGE
-GET         /your-contact-details                                                              controllers.vatLodgingOfficer.OfficerContactDetailsController.show
-POST        /your-contact-details                                                              controllers.vatLodgingOfficer.OfficerContactDetailsController.submit
+GET         /your-contact-details                                                              features.officer.controllers.OfficerController.showContactDetails
+POST        /your-contact-details                                                              features.officer.controllers.OfficerController.submitContactDetails
 
 ## FORMER NAME PAGE
 GET         /changed-name                                                                      features.officer.controllers.OfficerController.showFormerName
@@ -204,10 +204,10 @@ POST        /when-change                                                        
 
 
 ## PREVIOUS ADDRESS QUESTION
-GET         /current-address-three-years-or-more                                               controllers.vatLodgingOfficer.PreviousAddressController.show
-POST        /current-address-three-years-or-more                                               controllers.vatLodgingOfficer.PreviousAddressController.submit
-GET         /current-address-three-years-or-more/changePreviousAddress                         controllers.vatLodgingOfficer.PreviousAddressController.changeAddress
-GET         /current-address-three-years-or-more/acceptFromTxm                                 controllers.vatLodgingOfficer.PreviousAddressController.acceptFromTxm(id: String ?= "")
+GET         /current-address-three-years-or-more                                               features.officer.controllers.OfficerController.showPreviousAddress
+POST        /current-address-three-years-or-more                                               features.officer.controllers.OfficerController.submitPreviousAddress
+GET         /current-address-three-years-or-more/changePreviousAddress                         features.officer.controllers.OfficerController.changePreviousAddress
+GET         /current-address-three-years-or-more/acceptFromTxm                                 features.officer.controllers.OfficerController.acceptFromTxmPreviousAddress(id: String ?= "")
 
 ## SUMMARY
 GET         /check-your-answers                                                                controllers.SummaryController.show

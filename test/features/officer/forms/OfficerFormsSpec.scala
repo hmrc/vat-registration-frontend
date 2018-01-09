@@ -19,8 +19,10 @@ package features.officer.forms
 import java.time.LocalDate
 
 import features.officer.forms.CompletionCapacityForm.NAME_ID
-import features.officer.models.view.{FormerNameDateView, FormerNameView, SecurityQuestionsView}
+import features.officer.forms.HomeAddressForm.ADDRESS_ID
+import features.officer.models.view._
 import helpers.FormInspectors._
+import models.api.ScrsAddress
 import uk.gov.hmrc.play.test.UnitSpec
 
 class OfficerFormsSpec extends UnitSpec {
@@ -136,7 +138,7 @@ class OfficerFormsSpec extends UnitSpec {
     val testDataWithName = FormerNameView(true, Some("Test Old Name"))
     val testDataNoName = FormerNameView(false, None)
 
-    "bind successfully with data" in {
+    "bind successfully with data set to true" in {
       val data = Map(
         "formerNameRadio" -> "true",
         "formerName" -> "Test Old Name"
@@ -150,14 +152,28 @@ class OfficerFormsSpec extends UnitSpec {
       result shouldBe testDataWithName
     }
 
+    "bind successfully with data set to false" in {
+      val data = Map(
+        "formerNameRadio" -> "false",
+        "formerName" -> ""
+      )
+
+      val result = testForm.bind(data).fold(
+        errors => errors,
+        success => success
+      )
+
+      result shouldBe testDataNoName
+    }
+
     "have the correct error if nothing is selected" in {
       val data = Map(
         "formerNameRadio" -> "",
-        "formerName" -> ""
+        "formerName" -> "Test Old Name"
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("formerNameRadio" -> "error.required")
+      boundForm shouldHaveErrors Seq("formerNameRadio" -> "validation.formerName.missing")
     }
 
     "have the correct error if true is selected and no name is provided" in {
@@ -167,10 +183,10 @@ class OfficerFormsSpec extends UnitSpec {
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("formerName" -> "error.required")
+      boundForm shouldHaveErrors Seq("formerName" -> "validation.formerName.selected.missing")
     }
 
-    "have the correct error if true is selected and no name is provided" in {
+    "have the correct error if true is selected and invalid name is provided" in {
       val data = Map(
         "formerNameRadio" -> "true",
         "formerName" -> "wrong N@m€"
@@ -191,8 +207,7 @@ class OfficerFormsSpec extends UnitSpec {
 
     "Unbind successfully with false and no name" in {
       val data = Map(
-        "formerNameRadio" -> "false",
-        "formerName" -> ""
+        "formerNameRadio" -> "false"
       )
 
       testForm.fill(testDataNoName).data shouldBe data
@@ -236,7 +251,7 @@ class OfficerFormsSpec extends UnitSpec {
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("dob" -> "validation.formerNameDate.invalid")
+      boundForm shouldHaveErrors Seq("formerNameDate" -> "validation.formerNameDate.invalid")
     }
 
     "Unbind successfully with full data" in {
@@ -245,6 +260,159 @@ class OfficerFormsSpec extends UnitSpec {
         "formerNameDate.month" -> "7",
         "formerNameDate.year" -> "1998"
       )
+
+      testForm.fill(testData).data shouldBe data
+    }
+  }
+
+  "ContactDetailsForm" should {
+    val testForm = ContactDetailsForm.form
+    val testData = ContactDetailsView(Some("t@t.tt.co.tt"), Some("12345678901234567890"), Some("5678"))
+
+    "bind successfully with data" in {
+      val data = Map(
+        "email" -> "t@t.tt.co.tt",
+        "daytimePhone" -> "12345 678 901 23456 7890",
+        "mobile" -> "5678"
+      )
+
+      val result = testForm.bind(data).fold(
+        errors => errors,
+        success => success
+      )
+
+      result shouldBe testData
+    }
+
+    "have the correct error if no contact field is provided" in {
+      val data = Map(
+        "email" -> "",
+        "daytimePhone" -> "",
+        "mobile" -> ""
+      )
+      val boundForm = testForm.bind(data)
+
+      boundForm shouldHaveErrors Seq(
+        "" -> "validation.officerContact.missing",
+        "" -> "validation.officerContact.missing",
+        "" -> "validation.officerContact.missing"
+      )
+    }
+
+    "have the correct error if invalid email is provided" in {
+      val data = Map(
+        "email" -> "dgdfg.co.tt",
+        "daytimePhone" -> "",
+        "mobile" -> ""
+      )
+      val boundForm = testForm.bind(data)
+
+      boundForm shouldHaveErrors Seq("email" -> "validation.officerContactDetails.email.invalid")
+    }
+
+    "have the correct error if too long email is provided" in {
+      val data = Map(
+        "email" -> "dgfffffffffffffffffffffffffgggggggggggggggd@feeeeeeeeg.crrrrrreeero.ttt",
+        "daytimePhone" -> "",
+        "mobile" -> ""
+      )
+      val boundForm = testForm.bind(data)
+
+      boundForm shouldHaveErrors Seq("email" -> "validation.officerContactDetails.email.maxlen")
+    }
+
+    "have the correct error if invalid daytimePhone is provided" in {
+      val data = Map(
+        "email" -> "",
+        "daytimePhone" -> "123 4 5678 9012 3456 789 01",
+        "mobile" -> ""
+      )
+      val boundForm = testForm.bind(data)
+
+      boundForm shouldHaveErrors Seq("daytimePhone" -> "validation.officerContactDetails.daytimePhone.invalid")
+    }
+
+    "have the correct error if invalid mobile is provided" in {
+      val data = Map(
+        "email" -> "",
+        "daytimePhone" -> "",
+        "mobile" -> "123 4 5678 9012 3456 789 01"
+      )
+      val boundForm = testForm.bind(data)
+
+      boundForm shouldHaveErrors Seq("mobile" -> "validation.officerContactDetails.mobile.invalid")
+    }
+
+    "Unbind successfully with full data" in {
+      val data = Map(
+        "email" -> "t@t.tt.co.tt",
+        "daytimePhone" -> "12345678901234567890",
+        "mobile" -> "5678"
+      )
+
+      testForm.fill(testData).data shouldBe data
+    }
+  }
+
+  "OfficerHomeAddressForm" should {
+    val address = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+    val testForm = HomeAddressForm.form
+    val testData = HomeAddressView(address.id, Some(address))
+
+    "bind successfully with data" in {
+      val data = Map(
+        "homeAddressRadio" -> address.id
+      )
+
+      val result = testForm.bind(data).fold(
+        errors => errors,
+        success => success
+      )
+
+      result shouldBe testData.copy(address = None)
+    }
+
+    "have the correct error if no data is provided" in {
+      val data: Map[String, String] = Map()
+      val boundForm = testForm.bind(data)
+
+      boundForm shouldHaveErrors Seq(ADDRESS_ID -> "validation.officerHomeAddress.missing")
+    }
+
+    "Unbind successfully with full data" in {
+      val data = Map(ADDRESS_ID -> address.id)
+
+      testForm.fill(testData).data shouldBe data
+    }
+  }
+
+  "PreviousAddressForm" should {
+    val address = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+    val testForm = PreviousAddressForm.form
+    val testData = PreviousAddressView(false, Some(address))
+
+    "bind successfully with data" in {
+      val data = Map(
+        "previousAddressQuestionRadio" -> "true"
+      )
+
+      val result = testForm.bind(data).fold(
+        errors => errors,
+        success => success
+      )
+
+      result shouldBe PreviousAddressView(true, None)
+    }
+
+    "have the correct error if no data is provided" in {
+      val data: Map[String, String] = Map()
+      val boundForm = testForm.bind(data)
+
+      boundForm shouldHaveErrors Seq("previousAddressQuestionRadio" -> "validation.previousAddressQuestion.missing")
+    }
+
+    "Unbind successfully with full data" in {
+      val data = Map("previousAddressQuestionRadio" -> "false")
 
       testForm.fill(testData).data shouldBe data
     }
