@@ -29,6 +29,8 @@ Note there is also VAT_REG_ALL profile that will run all dependencies plus the v
 
 Alternatively, create an alias for starting the services required for the VAT Registration Frontend
 
+sm --start VAT_REG_ALL -f
+
 ```bash
 alias scrs='sm --start ADDRESS_LOOKUP AUTH AUTH_LOGIN_STUB AUTHENTICATOR BUS_REG CA_FRONTEND COMP_REG GG GG_AUTHENTICATION GG_STUBS USER_DETAILS KEYSTORE SAVE4LATER DATASTREAM ASSETS_FRONTEND INCORP_INFO INCORP_FE_STUBS -f'
 ```
