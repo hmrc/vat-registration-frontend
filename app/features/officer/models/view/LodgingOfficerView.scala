@@ -20,9 +20,17 @@ import java.time.LocalDate
 
 import models.DateModel
 import models.api.{Name, ScrsAddress}
+import models.external.Officer
 import play.api.libs.json.{Json, OFormat}
 
 sealed trait LodgingOfficerView
+
+case class CompletionCapacityView(id: String, officer: Option[Officer] = None)
+object CompletionCapacityView {
+  def apply(officer: Officer): CompletionCapacityView = new CompletionCapacityView(officer.name.id, Some(officer))
+
+  implicit val format = Json.format[CompletionCapacityView]
+}
 
 case class SecurityQuestionsView(dob: LocalDate, nino: String, officerName: Option[Name] = None) extends LodgingOfficerView
 object SecurityQuestionsView {

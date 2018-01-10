@@ -18,6 +18,7 @@ package models
 
 import java.time.LocalDate
 
+import features.officer.models.view.{ContactDetailsView, FormerNameDateView, FormerNameView, HomeAddressView, PreviousAddressView, SecurityQuestionsView}
 import fixtures.VatRegistrationFixture
 import models.api.VatEligibilityChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import models.api._
@@ -52,7 +53,6 @@ import models.view.vatTradingDetails.vatEuTrading.EuGoods.EU_GOODS_YES
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import org.scalatest.Inspectors
 import uk.gov.hmrc.play.test.UnitSpec
-import features.officer.models.view._
 
 class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixture {
 

@@ -24,7 +24,7 @@ import helpers.RequestsFinder
 import it.fixtures.VatRegistrationFixture
 import models.S4LVatLodgingOfficer
 import models.api.{CompletionCapacity, Name, ScrsAddress, VatLodgingOfficer}
-import models.view.vatLodgingOfficer._
+import models.external.Officer
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
@@ -56,11 +56,15 @@ class PreviousAddressControllerISpec extends PlaySpec with AppAndStubs with Scal
   )
 
   "POST Previous Address page" should {
+    val officer = Officer(
+      name = Name(forename = Some("First"), otherForenames = Some("Middle"), surname = "Last"),
+      role = role
+    )
     val updatedS4LVatLodgingOfficer = s4LVatLodgingOfficer.copy(previousAddress = Some(PreviousAddressView(true)))
 
     val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
     val s4lData = LodgingOfficer(
-      completionCapacity = Some("FirstLastMiddle"),
+      completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
       securityQuestions = Some(SecurityQuestionsView(dob, nino)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),

@@ -65,7 +65,6 @@ trait PrePopService extends TraverseSyntax with ListInstances with FutureInstanc
   }
 
   def getOfficerAddressList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
-    import ScrsAddress.modelTransformerOfficerHomeAddressView
     getAddresses((_: S4LVatLodgingOfficer).officerHomeAddress.flatMap(_.address))
   }
 

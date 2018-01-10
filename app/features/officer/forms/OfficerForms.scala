@@ -31,9 +31,9 @@ object CompletionCapacityForm {
   val NAME_ID: String = "completionCapacityRadio"
 
   val form = Form(
-    single(
+    mapping(
       NAME_ID -> textMapping()("completionCapacity")
-    )
+    )(CompletionCapacityView(_))(view => Option(view.id))
   )
 }
 

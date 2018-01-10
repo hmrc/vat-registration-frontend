@@ -88,8 +88,8 @@ trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnect
     }
   }
 
-  def patchLodgingOfficer(data: LodgingOfficer, writes: Writes[LodgingOfficer])(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[JsValue] = {
-    val json = Json.toJson(data)(writes)
+  def patchLodgingOfficer(data: LodgingOfficer)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[JsValue] = {
+    val json = Json.toJson(data)(LodgingOfficer.apiWrites)
     http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/officer", json) map {
       _ => json
     } recover {

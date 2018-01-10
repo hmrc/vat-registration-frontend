@@ -17,6 +17,7 @@
 package features.officer.views
 
 import features.officer.forms.CompletionCapacityForm
+import features.officer.models.view.CompletionCapacityView
 import models.api.Name
 import models.external.Officer
 import org.jsoup.Jsoup
@@ -56,7 +57,9 @@ class CompletionCapacityPageSpec extends UnitSpec with WithFakeApplication with 
     }
 
     "display a list of officers with a pre selection" in {
-      lazy val view = CompletionCapacityPage(form.fill(validOfficer2.name.id), officerList)
+      val cc = CompletionCapacityView(validOfficer2.name.id, Some(validOfficer2))
+
+      lazy val view = CompletionCapacityPage(form.fill(cc), officerList)
       lazy val document = Jsoup.parse(view.body)
 
       document.getElementsByAttributeValue("name", "completionCapacityRadio").size shouldBe 2

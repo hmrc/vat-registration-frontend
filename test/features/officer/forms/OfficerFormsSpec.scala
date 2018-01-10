@@ -29,6 +29,7 @@ class OfficerFormsSpec extends UnitSpec {
   "CompletionCapacityForm" should {
     val testForm = CompletionCapacityForm.form
     val testName = "TestData"
+    val testData = CompletionCapacityView(testName, None)
 
     "bind successfully with data" in {
       val data = Map(NAME_ID -> testName)
@@ -38,7 +39,7 @@ class OfficerFormsSpec extends UnitSpec {
         success => success
       )
 
-      result shouldBe testName
+      result shouldBe testData
     }
 
     "have the correct error if no data is provided" in {
@@ -51,7 +52,7 @@ class OfficerFormsSpec extends UnitSpec {
     "Unbind successfully with full data" in {
       val data = Map(NAME_ID -> testName)
 
-      testForm.fill(testName).data shouldBe data
+      testForm.fill(testData).data shouldBe data
     }
   }
 

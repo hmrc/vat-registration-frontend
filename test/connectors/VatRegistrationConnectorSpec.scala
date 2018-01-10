@@ -333,7 +333,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     )
 
     val partialLodgingOfficer = LodgingOfficer(
-      completionCapacity = Some("FirstLast"),
+      completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
       securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
       homeAddress = None,
       contactDetails = None,
@@ -356,7 +356,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return a JsValue with a partial Lodging Officer view model" in new Setup {
       mockHttpPATCH[JsValue, JsValue]("tst-url", partialJson)
-      connector.patchLodgingOfficer(partialLodgingOfficer, LodgingOfficer.apiWrites(officer)) returns partialJson
+      connector.patchLodgingOfficer(partialLodgingOfficer) returns partialJson
     }
 
     "return a JsValue with a full Lodging Officer view model" in new Setup {
@@ -391,27 +391,27 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
            |}""".stripMargin)
 
       mockHttpPATCH[JsValue, JsValue]("tst-url", fullJson)
-      connector.patchLodgingOfficer(fullLodgingOfficer, LodgingOfficer.apiWrites(officer)) returns fullJson
+      connector.patchLodgingOfficer(fullLodgingOfficer) returns fullJson
     }
 
     "throw a NotFoundException if the registration does not exist" in new Setup {
       mockHttpFailedPATCH[JsValue, JsValue]("tst-url", notFound)
-      connector.patchLodgingOfficer(partialLodgingOfficer, LodgingOfficer.apiWrites(officer)) failedWith notFound
+      connector.patchLodgingOfficer(partialLodgingOfficer) failedWith notFound
     }
 
     "throw an Upstream4xxResponse with Forbidden status" in new Setup {
       mockHttpFailedPATCH[JsValue, JsValue]("tst-url", forbidden)
-      connector.patchLodgingOfficer(partialLodgingOfficer, LodgingOfficer.apiWrites(officer)) failedWith forbidden
+      connector.patchLodgingOfficer(partialLodgingOfficer) failedWith forbidden
     }
 
     "throw an Upstream5xxResponse with Internal Server Error status" in new Setup {
       mockHttpFailedPATCH[JsValue, JsValue]("tst-url", internalServerError)
-      connector.patchLodgingOfficer(partialLodgingOfficer, LodgingOfficer.apiWrites(officer)) failedWith internalServerError
+      connector.patchLodgingOfficer(partialLodgingOfficer) failedWith internalServerError
     }
 
     "throw an Exception if the call failed" in new Setup {
       mockHttpFailedPATCH[JsValue, JsValue]("tst-url", exception)
-      connector.patchLodgingOfficer(partialLodgingOfficer, LodgingOfficer.apiWrites(officer)) failedWith exception
+      connector.patchLodgingOfficer(partialLodgingOfficer) failedWith exception
     }
   }
 }

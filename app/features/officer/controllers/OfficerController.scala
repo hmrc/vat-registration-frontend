@@ -19,6 +19,7 @@ package features.officer.controllers
 import javax.inject.Inject
 
 import common.enums.AddressLookupJourneyIdentifier.{addressThreeYearsOrLess, homeAddress}
+import common.exceptions.InternalExceptions.NoOfficerFoundException
 import connectors.KeystoreConnect
 import controllers.VatRegistrationControllerNoAux
 import features.officer.forms._
@@ -64,9 +65,11 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
             formErrors => prePopService.getOfficerList map { officerList =>
               BadRequest(features.officer.views.html.completion_capacity(formErrors, officerList))
             },
-            cc => lodgingOfficerService.updateLodgingOfficer(cc) map {
-              _ => Redirect(features.officer.controllers.routes.OfficerController.showSecurityQuestions())
-            }
+            cc => for {
+              officerList <- prePopService.getOfficerList
+              officer     = officerList.find(_.name.id == cc.id).getOrElse(throw new NoOfficerFoundException(profile.registrationId))
+              _           <- lodgingOfficerService.saveLodgingOfficer(cc.copy(officer = Some(officer)))
+            } yield Redirect(features.officer.controllers.routes.OfficerController.showSecurityQuestions())
           )
         }
   }
@@ -88,7 +91,7 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
         withCurrentProfile { implicit profile =>
           SecurityQuestionsForm.form.bindFromRequest().fold(
             badForm => Future.successful(BadRequest(features.officer.views.html.officer_security_questions(badForm))),
-            data => lodgingOfficerService.updateLodgingOfficer(data) map {
+            data => lodgingOfficerService.saveLodgingOfficer(data) map {
               _ => Redirect(controllers.iv.routes.IdentityVerificationController.redirectToIV())
             }
           )
@@ -115,7 +118,7 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
           ivPassedCheck {
             FormerNameForm.form.bindFromRequest().fold(
               badForm => Future.successful(BadRequest(features.officer.views.html.former_name(badForm))),
-              data => lodgingOfficerService.updateLodgingOfficer(data) map {
+              data => lodgingOfficerService.saveLodgingOfficer(data) map {
                 _ => if (data.yesNo) {
                   Redirect(routes.OfficerController.showFormerNameDate())
                 } else {
@@ -152,7 +155,7 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
                 officer <- lodgingOfficerService.getLodgingOfficer
                 formerName = officer.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing officer former name"))
               } yield BadRequest(features.officer.views.html.former_name_date(badForm, formerName)),
-              data => lodgingOfficerService.updateLodgingOfficer(data) map {
+              data => lodgingOfficerService.saveLodgingOfficer(data) map {
                 _ => Redirect(routes.OfficerController.showContactDetails())
               }
             )
@@ -179,7 +182,7 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
         withCurrentProfile { implicit profile =>
           ContactDetailsForm.form.bindFromRequest().fold(
             badForm => Future.successful(BadRequest(features.officer.views.html.officer_contact_details(badForm))),
-            data => lodgingOfficerService.updateLodgingOfficer(data) map {
+            data => lodgingOfficerService.saveLodgingOfficer(data) map {
               _ => Redirect(routes.OfficerController.showHomeAddress())
             }
           )
@@ -215,7 +218,7 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
               for {
                 addresses <- prePopService.getOfficerAddressList
                 address   =  addresses.find(_.id == data.addressId)
-                _         <- lodgingOfficerService.updateLodgingOfficer(HomeAddressView(data.addressId, address))
+                _         <- lodgingOfficerService.saveLodgingOfficer(HomeAddressView(data.addressId, address))
               } yield Redirect(features.officer.controllers.routes.OfficerController.showPreviousAddress())
             }
           )
@@ -228,7 +231,7 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
         withCurrentProfile { implicit profile =>
           for {
             address <- addressLookupService.getAddressById(id)
-            _ <- lodgingOfficerService.updateLodgingOfficer(HomeAddressView(address.id, Some(address.normalise())))
+            _ <- lodgingOfficerService.saveLodgingOfficer(HomeAddressView(address.id, Some(address.normalise())))
           } yield Redirect(features.officer.controllers.routes.OfficerController.showPreviousAddress())
         }
   }
@@ -256,7 +259,7 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
               data    => if (!data.yesNo) {
                 addressLookupService.getJourneyUrl(addressThreeYearsOrLess, routes.OfficerController.acceptFromTxmPreviousAddress()) map Redirect
               } else {
-                lodgingOfficerService.updateLodgingOfficer(data) map {
+                lodgingOfficerService.saveLodgingOfficer(data) map {
                  _ => Redirect(controllers.vatContact.ppob.routes.PpobController.show())
                 }
               }
@@ -272,7 +275,7 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
           ivPassedCheck {
             for {
               address <- addressLookupService.getAddressById(id)
-              _       <- lodgingOfficerService.updateLodgingOfficer(PreviousAddressView(false, Some(address)))
+              _       <- lodgingOfficerService.saveLodgingOfficer(PreviousAddressView(false, Some(address)))
             } yield Redirect(controllers.vatContact.ppob.routes.PpobController.show())
           }
         }

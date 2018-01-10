@@ -41,7 +41,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
   val mockAddressService = mock[AddressLookupService]
 
   val officerSecu = SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA123456Z")
-  val partialLodgingOfficer = LodgingOfficer(Some("BobBimblyBobblousBobbings"), Some(officerSecu), None, None, None, None, None)
+  val partialLodgingOfficer = LodgingOfficer(Some(CompletionCapacityView(officer.name.id, Some(officer))), Some(officerSecu), None, None, None, None, None)
 
   trait Setup {
     val controller: OfficerController = new OfficerController {
@@ -70,7 +70,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     }
 
     "return HTML with officer already saved" in new Setup {
-      val partialLodgingOfficer = LodgingOfficer(Some("BobBimblyBobblousBobbings"), None, None, None, None, None, None)
+      val partialLodgingOfficer = LodgingOfficer(Some(CompletionCapacityView(officer.name.id, Some(officer))), None, None, None, None, None, None)
 
       when(mockPPService.getOfficerList(any(), any())).thenReturn(Future.successful(Seq(officer)))
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
@@ -93,7 +93,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
 
     "return 303 with officer completion capacity saved" in new Setup {
       val lodgingOfficer = LodgingOfficer(
-        Some(completionCapacity.name.id),
+        Some(CompletionCapacityView(officer.name.id, Some(officer))),
         None,
         None,
         None,
@@ -102,7 +102,9 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
         None
       )
 
-      when(mockLodgingOfficerService.updateLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(lodgingOfficer))
+      when(mockPPService.getOfficerList(any(), any())).thenReturn(Future.successful(Seq(officer)))
+
+      when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(lodgingOfficer))
 
       submitAuthorised(controller.submitCompletionCapacity(),
         fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> completionCapacity.name.id)
@@ -139,7 +141,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     }
 
     "return 303 with officer security saved" in new Setup {
-      when(mockLodgingOfficerService.updateLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+      when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       submitAuthorised(controller.submitSecurityQuestions(),
         fakeRequest.withFormUrlEncodedBody("dob.day" -> "1", "dob.month" -> "1", "dob.year" -> "1980", "nino" -> testNino)
@@ -149,7 +151,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
 
   s"GET ${routes.OfficerController.showFormerName()}" should {
     val partialIncompleteLodgingOfficer = LodgingOfficer(
-      Some("BobBimblyBobblousBobbings"),
+      Some(CompletionCapacityView(officer.name.id, Some(officer))),
       Some(officerSecu),
       None,
       None,
@@ -182,7 +184,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     }
 
     "return 303 with valid data no former name" in new Setup {
-      when(mockLodgingOfficerService.updateLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+      when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       submitAuthorised(controller.submitFormerName(), fakeRequest.withFormUrlEncodedBody(
         "formerNameRadio" -> "false"
@@ -192,7 +194,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     }
 
     "return 303 with valid data with former name" in new Setup {
-      when(mockLodgingOfficerService.updateLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+      when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       submitAuthorised(controller.submitFormerName(), fakeRequest.withFormUrlEncodedBody(
         "formerNameRadio" -> "true",
@@ -205,7 +207,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
 
   s"GET ${routes.OfficerController.showFormerNameDate()}" should {
     val partialIncompleteLodgingOfficerWithData = LodgingOfficer(
-      Some("BobBimblyBobblousBobbings"),
+      Some(CompletionCapacityView(officer.name.id, Some(officer))),
       Some(officerSecu),
       None,
       None,
@@ -213,7 +215,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       Some(FormerNameDateView(LocalDate.of(2000, 6, 23))),
       None)
     val partialIncompleteLodgingOfficerNoData = LodgingOfficer(
-      Some("BobBimblyBobblousBobbings"),
+      Some(CompletionCapacityView(officer.name.id, Some(officer))),
       Some(officerSecu),
       None,
       None,
@@ -254,7 +256,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     }
 
     "return 303 with Former name Date selected" in new Setup {
-      when(mockLodgingOfficerService.updateLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+      when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       submitAuthorised(controller.submitFormerNameDate(), fakeRequest.withFormUrlEncodedBody(
           "formerNameDate.day" -> "1",
@@ -269,7 +271,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
   s"GET ${routes.OfficerController.showContactDetails()}" should {
     "return 200 when there's data" in new Setup {
       val partialIncompleteLodgingOfficer = LodgingOfficer(
-        Some("BobBimblyBobblousBobbings"),
+        Some(CompletionCapacityView(officer.name.id, Some(officer))),
         Some(officerSecu),
         None,
         Some(ContactDetailsView(Some("t@t.tt.co"))),
@@ -301,7 +303,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     }
 
     "return 303 with valid Contact Details entered" in new Setup {
-      when(mockLodgingOfficerService.updateLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+      when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       submitAuthorised(controller.submitContactDetails(), fakeRequest.withFormUrlEncodedBody(
         "email" -> "some@email.com",
@@ -317,7 +319,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
   s"GET ${routes.OfficerController.showHomeAddress()}" should {
     "return 200 when there's data" in new Setup {
       val partialIncompleteLodgingOfficer = LodgingOfficer(
-        Some("BobBimblyBobblousBobbings"),
+        Some(CompletionCapacityView(officer.name.id, Some(officer))),
         Some(officerSecu),
         Some(HomeAddressView(address.id, Some(address))),
         Some(ContactDetailsView(Some("t@t.tt.co"))),
@@ -353,7 +355,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     }
 
     "return 303 with valid Home address entered" in new Setup {
-      when(mockLodgingOfficerService.updateLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+      when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       submitAuthorised(controller.submitHomeAddress(), fakeRequest.withFormUrlEncodedBody(
         "homeAddressRadio" -> address.id
@@ -373,7 +375,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
 
   s"GET ${routes.OfficerController.acceptFromTxmHomeAddress()}" should {
     "save an address and redirect to next page" in new Setup {
-      when(mockLodgingOfficerService.updateLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+      when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
       when(mockAddressService.getAddressById(any())(any())).thenReturn(Future.successful(address))
 
       callAuthorised(controller.acceptFromTxmHomeAddress("addressId")) {
@@ -385,7 +387,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
   s"GET ${routes.OfficerController.showPreviousAddress()}" should {
     "return 200 when there's data" in new Setup {
       val partialIncompleteLodgingOfficer = LodgingOfficer(
-        Some("BobBimblyBobblousBobbings"),
+        Some(CompletionCapacityView(officer.name.id, Some(officer))),
         Some(officerSecu),
         Some(HomeAddressView(address.id, Some(address))),
         Some(ContactDetailsView(Some("t@t.tt.co"))),
@@ -435,7 +437,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
 
   s"GET ${routes.OfficerController.acceptFromTxmPreviousAddress()}" should {
     "save an address and redirect to next page" in new Setup {
-      when(mockLodgingOfficerService.updateLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+      when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
       when(mockAddressService.getAddressById(any())(any())).thenReturn(Future.successful(address))
 
       callAuthorised(controller.acceptFromTxmPreviousAddress("addressId")) {

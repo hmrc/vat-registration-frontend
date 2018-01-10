@@ -20,7 +20,6 @@ import java.time.LocalDate
 
 import models.api.{Name, ScrsAddress}
 import models.external.Officer
-import models.view.vatLodgingOfficer._
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -35,13 +34,18 @@ class LodgingOfficerSpec extends UnitSpec {
            |    "middle": "Middle",
            |    "last": "Last"
            |  },
+           |  "role": "Director",
            |  "dob": "1998-07-12",
            |  "nino": "AA123456Z"
            |}
          """.stripMargin)
 
+      val officer = Officer(
+        name = Name(forename = Some("First"), otherForenames = Some("Middle"), surname = "Last"),
+        role = "Director"
+      )
       val lodgingOfficer = LodgingOfficer(
-        completionCapacity = Some("FirstLastMiddle"),
+        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA123456Z")),
         homeAddress = None,
         contactDetails = None,
@@ -61,13 +65,18 @@ class LodgingOfficerSpec extends UnitSpec {
            |    "first": "First",
            |    "last": "Last"
            |  },
+           |  "role": "Director",
            |  "dob": "1998-07-12",
            |  "nino": "AA123456Z"
            |}
          """.stripMargin)
 
+      val officer = Officer(
+        name = Name(forename = Some("First"), otherForenames = None, surname = "Last"),
+        role = "Director"
+      )
       val lodgingOfficer = LodgingOfficer(
-        completionCapacity = Some("FirstLast"),
+        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA123456Z")),
         homeAddress = None,
         contactDetails = None,
@@ -88,7 +97,7 @@ class LodgingOfficerSpec extends UnitSpec {
       )
 
       val data = LodgingOfficer(
-        completionCapacity = Some("FirstLastMiddle"),
+        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
         homeAddress = None,
         contactDetails = None,
@@ -110,7 +119,7 @@ class LodgingOfficerSpec extends UnitSpec {
            |  "nino": "AA112233Z"
            |}""".stripMargin)
 
-      Json.toJson(data)(LodgingOfficer.apiWrites(officer)) shouldBe validJson
+      Json.toJson(data)(LodgingOfficer.apiWrites) shouldBe validJson
     }
 
     "return a correct partial JsValue with minimum data" in {
@@ -120,7 +129,7 @@ class LodgingOfficerSpec extends UnitSpec {
       )
 
       val data = LodgingOfficer(
-        completionCapacity = Some("FirstLast"),
+        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
         homeAddress = None,
         contactDetails = None,
@@ -141,7 +150,7 @@ class LodgingOfficerSpec extends UnitSpec {
            |  "nino": "AA112233Z"
            |}""".stripMargin)
 
-      Json.toJson(data)(LodgingOfficer.apiWrites(officer)) shouldBe validJson
+      Json.toJson(data)(LodgingOfficer.apiWrites) shouldBe validJson
     }
 
     "return a correct full JsValue with maximum data" in {
@@ -154,7 +163,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val prevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
       val data = LodgingOfficer(
-        completionCapacity = Some("FirstLastMiddle"),
+        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
@@ -201,7 +210,7 @@ class LodgingOfficerSpec extends UnitSpec {
            |  }
            |}""".stripMargin)
 
-      Json.toJson(data)(LodgingOfficer.apiWrites(officer)) shouldBe validJson
+      Json.toJson(data)(LodgingOfficer.apiWrites) shouldBe validJson
     }
 
     "return a correct full JsValue with minimum data" in {
@@ -213,7 +222,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
 
       val data = LodgingOfficer(
-        completionCapacity = Some("FirstLastMiddle"),
+        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
@@ -246,7 +255,7 @@ class LodgingOfficerSpec extends UnitSpec {
            |  }
            |}""".stripMargin)
 
-      Json.toJson(data)(LodgingOfficer.apiWrites(officer)) shouldBe validJson
+      Json.toJson(data)(LodgingOfficer.apiWrites) shouldBe validJson
     }
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer security data" in {
@@ -259,7 +268,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val prevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
       val data = LodgingOfficer(
-        completionCapacity = Some("FirstLastMiddle"),
+        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = None,
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
@@ -268,7 +277,7 @@ class LodgingOfficerSpec extends UnitSpec {
         previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
       )
 
-      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
+      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
     }
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer current address view data" in {
@@ -277,11 +286,10 @@ class LodgingOfficerSpec extends UnitSpec {
         role = "Director"
       )
 
-      val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
       val prevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
       val data = LodgingOfficer(
-        completionCapacity = Some("FirstLastMiddle"),
+        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
         homeAddress = None,
         contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
@@ -290,7 +298,7 @@ class LodgingOfficerSpec extends UnitSpec {
         previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
       )
 
-      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
+      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
     }
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer current address data" in {
@@ -303,7 +311,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val prevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
       val data = LodgingOfficer(
-        completionCapacity = Some("FirstLastMiddle"),
+        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
         homeAddress = Some(HomeAddressView(currentAddress.id, None)),
         contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
@@ -312,7 +320,7 @@ class LodgingOfficerSpec extends UnitSpec {
         previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
       )
 
-      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
+      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
     }
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer contact data" in {
@@ -325,7 +333,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val prevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
       val data = LodgingOfficer(
-        completionCapacity = Some("FirstLastMiddle"),
+        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = None,
@@ -334,7 +342,7 @@ class LodgingOfficerSpec extends UnitSpec {
         previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
       )
 
-      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
+      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
     }
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer former name view data" in {
@@ -347,7 +355,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val prevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
       val data = LodgingOfficer(
-        completionCapacity = Some("FirstLastMiddle"),
+        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
@@ -356,7 +364,7 @@ class LodgingOfficerSpec extends UnitSpec {
         previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
       )
 
-      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
+      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
     }
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer former name data" in {
@@ -369,7 +377,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val prevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
       val data = LodgingOfficer(
-        completionCapacity = Some("FirstLastMiddle"),
+        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
@@ -378,7 +386,7 @@ class LodgingOfficerSpec extends UnitSpec {
         previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
       )
 
-      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
+      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
     }
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer former name change date" in {
@@ -391,7 +399,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val prevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
       val data = LodgingOfficer(
-        completionCapacity = Some("FirstLastMiddle"),
+        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
@@ -400,7 +408,7 @@ class LodgingOfficerSpec extends UnitSpec {
         previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
       )
 
-      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
+      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
     }
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer previous address view data" in {
@@ -410,10 +418,9 @@ class LodgingOfficerSpec extends UnitSpec {
       )
 
       val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
-      val prevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
       val data = LodgingOfficer(
-        completionCapacity = Some("FirstLastMiddle"),
+        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
@@ -422,7 +429,7 @@ class LodgingOfficerSpec extends UnitSpec {
         previousAddress = None
       )
 
-      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
+      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
     }
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer previous address data" in {
@@ -432,10 +439,9 @@ class LodgingOfficerSpec extends UnitSpec {
       )
 
       val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
-      val prevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
       val data = LodgingOfficer(
-        completionCapacity = Some("FirstLastMiddle"),
+        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
@@ -444,7 +450,7 @@ class LodgingOfficerSpec extends UnitSpec {
         previousAddress = Some(PreviousAddressView(false, None))
       )
 
-      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites(officer)))
+      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
     }
   }
 }
