@@ -37,7 +37,7 @@ trait FinancialsFixture extends BaseFixture {
 
   //Api models
   val monthlyAccountingPeriod = VatAccountingPeriod(VatReturnFrequency.MONTHLY)
-  val validBankAccount = VatBankAccount(testTradingName, testAccountNumber, testSortCode)
+  val validVatBankAccount = VatBankAccount(testTradingName, testAccountNumber, testSortCode)
 
   val validVatFinancials = VatFinancials(
     turnoverEstimate = testTurnoverEstimate,

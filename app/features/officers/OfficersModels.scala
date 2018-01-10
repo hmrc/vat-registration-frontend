@@ -120,7 +120,7 @@ package models.api {
   }
 
   object Name {
-    implicit val format = (
+    implicit val format: OFormat[Name] = (
       (__ \ "forename").formatNullable[String] and
         (__ \ "other_forenames").formatNullable[String] and
         (__ \ "surname").format[String] and
