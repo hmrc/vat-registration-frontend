@@ -17,6 +17,7 @@
 package models.api
 
 import common.enums.VatRegStatus
+import models.BankAccount
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -29,6 +30,7 @@ case class VatScheme(
                       vatSicAndCompliance: Option[VatSicAndCompliance] = None,
                       vatContact: Option[VatContact] = None,
                       vatServiceEligibility: Option[VatServiceEligibility] = None,
+                      bankAccount : Option[BankAccount] = None,
                       vatFlatRateScheme: Option[VatFlatRateScheme] = None,
                       status: VatRegStatus.Value
                     )
@@ -43,6 +45,7 @@ object VatScheme {
       (__ \ "vatSicAndCompliance").formatNullable[VatSicAndCompliance] and
       (__ \ "vatContact").formatNullable[VatContact] and
       (__ \ "vatEligibility").formatNullable[VatServiceEligibility] and
+      (__ \ "bankAccount").formatNullable[BankAccount] and
       (__ \ "vatFlatRateScheme").formatNullable[VatFlatRateScheme] and
       (__ \ "status").format[VatRegStatus.Value]
 

@@ -32,6 +32,7 @@ import play.api.test.Helpers.redirectLocation
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
+import scala.reflect.macros.blackbox
 
 class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -51,7 +52,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
   "Calling summary to show the summary page" should {
 
     "return HTML with a valid summary view pre-incorp" in {
-      when(mockS4LService.clear(any(), any())).thenReturn(validHttpResponse.pure)
+      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
       when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(Future.successful(validVatScheme))
       mockGetCurrentProfile()
@@ -69,18 +70,18 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "getRegistrationSummary maps a valid VatScheme object to a Summary object" in {
-      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(Future.successful(validVatScheme))
       implicit val cp = currentProfile()
       when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
       TestSummaryController.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)
     }
 
     "registrationToSummary maps a valid VatScheme object to a Summary object" in {
-      TestSummaryController.registrationToSummary(validVatScheme).sections.length mustEqual 10
+      TestSummaryController.registrationToSummary(validVatScheme).sections.length mustEqual 11
     }
 
     "registrationToSummary maps a valid empty VatScheme object to a Summary object" in {
-      TestSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency).sections.length mustEqual 10
+      TestSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency).sections.length mustEqual 11
     }
   }
 

@@ -19,7 +19,7 @@ package it.fixtures
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
-import models.S4LVatLodgingOfficer
+import models.{BankAccount, BankAccountDetails, S4LVatLodgingOfficer}
 import models.api._
 import models.external.Officer
 import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.QUARTERLY
@@ -123,6 +123,8 @@ trait VatRegistrationFixture {
 
   val flatRateScheme = VatFlatRateScheme()
 
+  val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
+
   val vatReg = VatScheme(
     id = "1",
     status = VatRegStatus.draft,
@@ -132,7 +134,8 @@ trait VatRegistrationFixture {
     vatSicAndCompliance = Some(sicAndCompliance),
     vatContact = Some(vatContact),
     vatServiceEligibility = Some(eligibility),
-    vatFlatRateScheme = Some(flatRateScheme)
+    vatFlatRateScheme = Some(flatRateScheme),
+    bankAccount = Some(bankAccount)
   )
 
   val vatRegIncorporated = VatScheme(
@@ -144,7 +147,8 @@ trait VatRegistrationFixture {
     vatSicAndCompliance = Some(sicAndCompliance),
     vatContact = Some(vatContact),
     vatServiceEligibility = Some(eligibility.copy(vatEligibilityChoice = Some(eligibilityChoiceIncorporated))),
-    vatFlatRateScheme = Some(flatRateScheme)
+    vatFlatRateScheme = Some(flatRateScheme),
+    bankAccount = Some(bankAccount)
   )
 val validName = Name(Some("foo"),Some("bar"),"fizz",Some("bang"))
   val nameId = validName.id
