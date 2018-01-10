@@ -33,7 +33,7 @@ case class LodgingOfficer(completionCapacity: Option[CompletionCapacityView],
 
 object LodgingOfficer {
   implicit val format: Format[LodgingOfficer] = Json.format[LodgingOfficer]
-  val lodgingOfficerKey: S4LKey[LodgingOfficer] = S4LKey("LodgingOfficer")
+  implicit val lodgingOfficerKey: S4LKey[LodgingOfficer] = S4LKey("LodgingOfficer")
 
   def fromApi(lodgingOfficer: JsValue): LodgingOfficer = {
     val officer: Officer = Officer(

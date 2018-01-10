@@ -40,6 +40,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
+        .audit.writesAuditMerged()
         .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficerPreIv)
         .vatScheme.isUpdatedWith(validLodgingOfficerPreIV)
         .getS4LJourneyID.stubS4LGetIV()
@@ -59,6 +60,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
+        .audit.writesAuditMerged()
         .getS4LJourneyID.stubS4LGetIV()
         .iv.outcome(journeyId, IVResult.Success)
         .setIvStatus.setStatus(status = 404)
@@ -80,6 +82,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .getS4LJourneyID.stubS4LPutIV(currentState = Some("Lodging Officer retrieved from S4L"), nextState = Some("IV updated in S4L"))
         .getS4LJourneyID.stubS4LGetIV(currentState = Some("IV updated in S4L"), nextState = Some("IV retrieved from S4L"))
         .audit.writesAudit()
+        .audit.writesAuditMerged()
         .iv.startJourney(200)
 
         val response = buildClient(s"/start-iv-journey").get()
@@ -98,6 +101,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .getS4LJourneyID.stubS4LPutIV(currentState = Some("Lodging Officer retrieved from S4L"), nextState = Some("IV updated in S4L"))
         .getS4LJourneyID.stubS4LGetIV(currentState = Some("IV updated in S4L"), nextState = Some("IV retrieved from S4L"))
         .audit.writesAudit()
+        .audit.writesAuditMerged()
         val response = buildClient(s"/start-iv-journey").get()
         whenReady(response){res =>
           res.status mustBe 303
@@ -114,6 +118,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
+        .audit.writesAuditMerged()
         .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficerPreIv)
         .vatScheme.isUpdatedWith(validLodgingOfficerPreIV)
         .getS4LJourneyID.stubS4LGetIV()
@@ -134,6 +139,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
+        .audit.writesAuditMerged()
         .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficerPreIv)
         .vatScheme.isUpdatedWith(validLodgingOfficerPreIV)
         .iv.outcome(journeyId, IVResult.InsufficientEvidence)
@@ -154,6 +160,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
+        .audit.writesAuditMerged()
         .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficerPreIv)
         .vatScheme.isUpdatedWith(validLodgingOfficerPreIV)
         .getS4LJourneyID.stubS4LGetIV()
@@ -174,6 +181,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
           .user.isAuthorised
           .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
           .audit.writesAudit()
+          .audit.writesAuditMerged()
           .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficerPreIv)
           .vatScheme.isUpdatedWith(validLodgingOfficerPreIV)
           .getS4LJourneyID.stubS4LGetIV()
@@ -194,7 +202,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .audit.writesAudit()
-          .audit.writesAuditMerged()
+        .audit.writesAuditMerged()
         .s4lContainerInScenario[S4LVatLodgingOfficer].contains(validS4LLodgingOfficerPreIv)
         .vatScheme.isUpdatedWith(validLodgingOfficerPreIV)
         .getS4LJourneyID.stubS4LGetIV()

@@ -33,6 +33,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .vatScheme.contains(vatReg)
           .s4lContainer[S4LVatSicAndCompliance].cleared
           .audit.writesAudit()
+          .audit.writesAuditMerged()
 
         val response = buildClient("/check-your-answers").get()
         whenReady(response) { res =>
@@ -61,6 +62,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .vatScheme.contains(vatRegIncorporated)
           .s4lContainer[S4LVatSicAndCompliance].cleared
           .audit.writesAudit()
+          .audit.writesAuditMerged()
 
         val response = buildClient("/check-your-answers").get()
         whenReady(response) { res =>

@@ -22,7 +22,8 @@ import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import common.enums.{IVResult, VatRegStatus}
 import models.S4LKey
 import models.api.VatScheme
-import play.api.libs.json.{Format, JsObject, JsValue, Json}
+import models.external.{CoHoRegisteredOfficeAddress, Officer}
+import play.api.libs.json.{Format, JsArray, JsObject, JsValue, Json}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.crypto.CompositeSymmetricCrypto.aes
@@ -316,15 +317,10 @@ trait StubUtils {
     }
   }
 
-
-  case class IncorporationStub
-  ()
-  (implicit builder: PreconditionBuilder) extends KeystoreStub {
-
+  case class IncorporationStub()(implicit builder: PreconditionBuilder) extends KeystoreStub {
     def isIncorporated: PreconditionBuilder = {
-
       stubFor(
-        get(urlPathEqualTo("/vatreg/incorporation-information/000-434-1"))
+        get(urlPathEqualTo("/incorporation-information/000-434-1"))
           .willReturn(ok(
             s"""
                |{
@@ -346,14 +342,35 @@ trait StubUtils {
       builder
     }
 
-    def incorporationStatusNotKnown(): PreconditionBuilder = {
+    def hasOfficerList(officerList: Seq[Officer]): PreconditionBuilder = {
       stubFor(
-        get(urlPathEqualTo(s"/vatreg/incorporation-information/000-434-1"))
-          .willReturn(notFound().withBody(
+        get(urlPathEqualTo(s"/incorporation-information/000-434-1/officer-list"))
+          .willReturn(ok(
             s"""
                |{
-               |  "errorCode": 404,
-               |  "errorMessage": "Incorporation Status not known. A subscription has been setup"
+               |  "officers": ${Json.toJson(officerList).as[JsArray]}
+               |}
+             """.stripMargin
+          )))
+      builder
+    }
+
+    def hasROAddress(roAddress: CoHoRegisteredOfficeAddress): PreconditionBuilder = {
+      def getAddressObj: JsObject = {
+        Json.obj("premises" -> roAddress.premises, "address_line_1" -> roAddress.addressLine1, "locality" -> roAddress.locality) ++
+          roAddress.addressLine2.fold(Json.obj())(x => Json.obj("address_line_2" -> x)) ++
+          roAddress.postcode.fold(Json.obj())(x => Json.obj("postal_code" -> x)) ++
+          roAddress.poBox.fold(Json.obj())(x => Json.obj("po_box" -> x)) ++
+          roAddress.country.fold(Json.obj())(x => Json.obj("country" -> x)) ++
+          roAddress.region.fold(Json.obj())(x => Json.obj("region" -> x))
+      }
+
+      stubFor(
+        get(urlPathEqualTo(s"/incorporation-information/000-434-1/company-profile"))
+          .willReturn(ok(
+            s"""
+               |{
+               |  "registered_office_address": $getAddressObj
                |}
              """.stripMargin
           )))
@@ -361,11 +378,7 @@ trait StubUtils {
     }
   }
 
-
-  case class CorporationTaxRegistrationStub
-  ()
-  (implicit builder: PreconditionBuilder) {
-
+  case class CorporationTaxRegistrationStub()(implicit builder: PreconditionBuilder) {
     def existsWithStatus(status: String): PreconditionBuilder = {
       stubFor(
         get(urlPathEqualTo(s"/incorporation-frontend-stubs/1/corporation-tax-registration"))
@@ -628,7 +641,7 @@ trait StubUtils {
 
   case class AuditStub()(implicit builder: PreconditionBuilder) {
     def writesAudit(status:Int =200) = {
-      stubFor(post(urlMatching("/write/audit/merged"))
+      stubFor(post(urlMatching("/write/audit"))
         .willReturn(
           aResponse().
             withStatus(status).
@@ -639,7 +652,7 @@ trait StubUtils {
     }
 
     def writesAuditMerged(status:Int =200) = {
-      stubFor(post(urlMatching("/write/audit"))
+      stubFor(post(urlMatching("/write/audit/merged"))
         .willReturn(
           aResponse().
             withStatus(status).

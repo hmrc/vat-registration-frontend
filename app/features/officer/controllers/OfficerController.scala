@@ -61,16 +61,17 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          CompletionCapacityForm.form.bindFromRequest.fold(
-            formErrors => prePopService.getOfficerList map { officerList =>
-              BadRequest(features.officer.views.html.completion_capacity(formErrors, officerList))
-            },
-            cc => for {
-              officerList <- prePopService.getOfficerList
-              officer     = officerList.find(_.name.id == cc.id).getOrElse(throw new NoOfficerFoundException(profile.registrationId))
-              _           <- lodgingOfficerService.saveLodgingOfficer(cc.copy(officer = Some(officer)))
-            } yield Redirect(features.officer.controllers.routes.OfficerController.showSecurityQuestions())
-          )
+          prePopService.getOfficerList flatMap { officerList =>
+            CompletionCapacityForm.form.bindFromRequest.fold(
+              formErrors => Future.successful(BadRequest(features.officer.views.html.completion_capacity(formErrors, officerList))),
+              cc => {
+                val officer = officerList.find(_.name.id == cc.id).getOrElse(throw new NoOfficerFoundException(profile.registrationId))
+                lodgingOfficerService.saveLodgingOfficer(cc.copy(officer = Some(officer))) map {
+                  _ => Redirect(routes.OfficerController.showSecurityQuestions())
+                }
+              }
+            )
+          }
         }
   }
 
@@ -195,8 +196,8 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
             for {
-              addresses  <- prePopService.getOfficerAddressList
               officer    <- lodgingOfficerService.getLodgingOfficer
+              addresses  <- prePopService.getOfficerAddressList(officer)
               filledForm = officer.homeAddress.fold(HomeAddressForm.form)(HomeAddressForm.form.fill)
             } yield Ok(features.officer.views.html.officer_home_address(filledForm, addresses))
           }
@@ -208,20 +209,22 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          HomeAddressForm.form.bindFromRequest.fold(
-            badForm => prePopService.getOfficerAddressList map { addresses =>
-              BadRequest(features.officer.views.html.officer_home_address(badForm, addresses))
-            },
-            data    => if(data.addressId == "other") {
-              addressLookupService.getJourneyUrl(homeAddress, routes.OfficerController.acceptFromTxmHomeAddress()) map Redirect
-            } else {
-              for {
-                addresses <- prePopService.getOfficerAddressList
-                address   =  addresses.find(_.id == data.addressId)
-                _         <- lodgingOfficerService.saveLodgingOfficer(HomeAddressView(data.addressId, address))
-              } yield Redirect(features.officer.controllers.routes.OfficerController.showPreviousAddress())
-            }
-          )
+          lodgingOfficerService.getLodgingOfficer.flatMap {
+            officer => HomeAddressForm.form.bindFromRequest.fold(
+              badForm => prePopService.getOfficerAddressList(officer) map { addresses =>
+                BadRequest(features.officer.views.html.officer_home_address(badForm, addresses))
+              },
+              data    => if(data.addressId == "other") {
+                addressLookupService.getJourneyUrl(homeAddress, routes.OfficerController.acceptFromTxmHomeAddress()) map Redirect
+              } else {
+                for {
+                  addresses <- prePopService.getOfficerAddressList(officer)
+                  address   =  addresses.find(_.id == data.addressId)
+                  _         <- lodgingOfficerService.saveLodgingOfficer(HomeAddressView(data.addressId, address))
+                } yield Redirect(routes.OfficerController.showPreviousAddress())
+              }
+            )
+          }
         }
   }
 
@@ -232,7 +235,7 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
           for {
             address <- addressLookupService.getAddressById(id)
             _ <- lodgingOfficerService.saveLodgingOfficer(HomeAddressView(address.id, Some(address.normalise())))
-          } yield Redirect(features.officer.controllers.routes.OfficerController.showPreviousAddress())
+          } yield Redirect(routes.OfficerController.showPreviousAddress())
         }
   }
 

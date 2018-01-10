@@ -27,7 +27,7 @@ sealed trait LodgingOfficerView
 
 case class CompletionCapacityView(id: String, officer: Option[Officer] = None)
 object CompletionCapacityView {
-  def apply(officer: Officer): CompletionCapacityView = new CompletionCapacityView(officer.name.id, Some(officer))
+  def apply(officer: Officer): CompletionCapacityView = CompletionCapacityView(officer.name.id, Some(officer))
 
   implicit val format = Json.format[CompletionCapacityView]
 }

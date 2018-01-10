@@ -55,6 +55,7 @@ class CompanyBankAccountDetailsControllerISpec extends PlaySpec with AppAndStubs
         .s4lContainerInScenario[S4LVatFinancials].contains(updatedS4lVatFinancials, Some("Vat Financials Updated"), Some("Flat Rate Scheme Updated"))
         .s4lContainerInScenario[S4LFlatRateScheme].isUpdatedWith(S4LFlatRateScheme(), Some("Flat Rate Scheme Updated"))
         .vatScheme.isUpdatedWith[VatFinancials](S4LVatFinancials.apiT.toApi(updatedS4lVatFinancials))
+        .audit.writesAuditMerged()
 
       whenReady(controller.submit(request))(res => res.header.status mustBe 303)
     }
@@ -65,6 +66,7 @@ class CompanyBankAccountDetailsControllerISpec extends PlaySpec with AppAndStubs
         .user.isAuthorised
         .currentProfile.withProfile()
         .bankAccountReputation.fails
+        .audit.writesAuditMerged()
 
       whenReady(controller.submit(request))(res => res.header.status mustBe 400)
     }

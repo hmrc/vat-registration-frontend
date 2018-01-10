@@ -36,6 +36,7 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .company.isIncorporated
           .currentProfile.setup(currentState = Some("Vat Reg Footprint created"))
           .vatScheme.contains(vatRegIncorporated.copy(lodgingOfficer = Some(lodgingOfficer.copy(ivPassed = Some(true)))))
+          .audit.writesAuditMerged()
 
         whenReady(controller.start(request))(res => res.header.status mustBe 200)
       }
