@@ -16,6 +16,12 @@
 
     <p>@messages("pages.startDate.para1")</p>
 
+    <div class="form-group">
+        <div class="panel panel-border-wide">
+            @messages("pages.startDate.warning")
+        </div>
+    </div>
+
     @govHelpers.form(action = controllers.vatTradingDetails.vatChoice.routes.StartDateController.submit()) {
         <div class="form-group">
 
