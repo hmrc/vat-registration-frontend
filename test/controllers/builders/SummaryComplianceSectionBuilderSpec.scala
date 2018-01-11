@@ -32,18 +32,6 @@ class SummaryComplianceSectionBuilderSpec extends VatRegSpec with VatRegistratio
       summarySection.section.id mustBe "labourCompliance"
     }
 
-    "cultural questions have been answered by user" in {
-      val vs = VatScheme("ID",status = VatRegStatus.draft, vatSicAndCompliance = Some(VatSicAndCompliance("TEST", culturalCompliance = Some(validVatCulturalCompliance), mainBusinessActivity = sicCode)))
-      val summarySection = SummaryComplianceSectionBuilder(vatSicAndCompliance = vs.vatSicAndCompliance)
-      summarySection.section.id mustBe "culturalCompliance"
-    }
-
-    "financial questions have been answered by user" in {
-      val vs = VatScheme("ID", status = VatRegStatus.draft, vatSicAndCompliance = Some(VatSicAndCompliance("TEST", financialCompliance = Some(validVatFinancialCompliance), mainBusinessActivity = sicCode)))
-      val summarySection = SummaryComplianceSectionBuilder(vatSicAndCompliance = vs.vatSicAndCompliance)
-      summarySection.section.id mustBe "financialCompliance"
-    }
-
     "No compliance questions have been answered by user" in {
       val vs = VatScheme("ID", status = VatRegStatus.draft, vatSicAndCompliance = None)
       val summarySection = SummaryComplianceSectionBuilder(vatSicAndCompliance = vs.vatSicAndCompliance)

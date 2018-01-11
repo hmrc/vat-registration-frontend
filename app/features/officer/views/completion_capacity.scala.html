@@ -1,8 +1,7 @@
 @import models.external.Officer
 @import features.officer.models.view.CompletionCapacityView
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
-@import views.html.helpers.templates.newWindowLink
+@import views.html.helpers.templates.{errorSummary, newWindowLink, vatInputRadioGroup}
 
 @(completionCapacityForm: Form[CompletionCapacityView], officerList: Seq[Officer])(implicit request: Request[_], messages: Messages)
 

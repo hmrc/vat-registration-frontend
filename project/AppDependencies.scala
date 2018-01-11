@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import play.core.PlayVersion
-import sbt._
 import play.sbt.PlayImport._
+import sbt._
 
 object AppDependencies {
   def apply(): Seq[ModuleID] = CompileDependencies() ++ UnitTestDependencies() ++ IntegrationTestDependencies()

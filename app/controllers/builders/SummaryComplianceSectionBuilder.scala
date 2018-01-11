@@ -26,12 +26,8 @@ case class SummaryComplianceSectionBuilder(vatSicAndCompliance: Option[VatSicAnd
 
   val section =
     List(
-      vatSicAndCompliance.flatMap(_.culturalCompliance),
-      vatSicAndCompliance.flatMap(_.financialCompliance),
       vatSicAndCompliance.flatMap(_.labourCompliance)
     ).flatten.map {
-      case c: VatComplianceCultural => SummaryCulturalComplianceSectionBuilder(vatSicAndCompliance).section
-      case c: VatComplianceFinancial => SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance).section
       case c: VatComplianceLabour => SummaryLabourComplianceSectionBuilder(vatSicAndCompliance).section
     }.headOption.getOrElse(SummarySection(id = "none", rows = Seq(), display = false))
 

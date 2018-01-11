@@ -4,7 +4,7 @@
 @fieldSetClasses = @{
     if(workersForm.hasErrors && (workersForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
-@import views.html.helpers.templates.{vatInput, errorSummary}
+@import views.html.helpers.templates.{errorSummary, vatInput}
 
 @main_template(title = messages("pages.labourCompliance.workers.title")) {
 

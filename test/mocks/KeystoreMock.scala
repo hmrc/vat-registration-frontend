@@ -23,11 +23,11 @@ import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Format
-import uk.gov.hmrc.http.cache.client.CacheMap
-import scala.concurrent.ExecutionContext.Implicits.global
-
-import scala.concurrent.Future
 import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.http.cache.client.CacheMap
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait KeystoreMock {
   this: MockitoSugar =>

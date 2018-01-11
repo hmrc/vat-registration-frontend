@@ -20,30 +20,6 @@ import play.api.libs.json._
 
 sealed trait VatCompliance extends Product with Serializable
 
-case class VatComplianceCultural(notForProfit: Boolean) extends VatCompliance
-
-object VatComplianceCultural {
-
-  implicit val format: OFormat[VatComplianceCultural] = Json.format[VatComplianceCultural]
-
-}
-
-case class VatComplianceFinancial(adviceOrConsultancyOnly: Boolean,
-                                  actAsIntermediary: Boolean,
-                                  chargeFees: Option[Boolean] = None,
-                                  additionalNonSecuritiesWork: Option[Boolean] = None,
-                                  discretionaryInvestmentManagementServices: Option[Boolean] = None,
-                                  vehicleOrEquipmentLeasing: Option[Boolean] = None,
-                                  investmentFundManagementServices: Option[Boolean] = None,
-                                  manageFundsAdditional: Option[Boolean] = None
-                                 ) extends VatCompliance
-
-object VatComplianceFinancial {
-
-  implicit val format: OFormat[VatComplianceFinancial] = Json.format[VatComplianceFinancial]
-
-}
-
 case class VatComplianceLabour(labour: Boolean,
                                workers: Option[Int] = None,
                                temporaryContracts: Option[Boolean] = None,

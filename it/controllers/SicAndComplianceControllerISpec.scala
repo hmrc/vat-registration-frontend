@@ -16,18 +16,17 @@
 
 package controllers
 
-import helpers.RequestsFinder
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.PlaySpec
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
-import support.AppAndStubs
+import helpers.RequestsFinder
 import models.ModelKeys.SIC_CODES_KEY
 import models.S4LVatSicAndCompliance
 import models.api.{SicCode, VatSicAndCompliance}
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
-import models.view.sicAndCompliance.cultural.NotForProfit
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.libs.json.JsString
+import support.AppAndStubs
 
 class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder {
   "POST Main Business Activity page" should {
@@ -61,11 +60,10 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
       val s4l = S4LVatSicAndCompliance(
         description = Some(BusinessActivityDescription(businessActivityDescription)),
-        mainBusinessActivity = Some(mainBusinessActivityView),
-        notForProfit = Some(NotForProfit(NotForProfit.NOT_PROFIT_NO))
+        mainBusinessActivity = Some(mainBusinessActivityView)
       )
 
-      val s4lWithoutCompliance = S4LVatSicAndCompliance.dropAllCompliance(s4l)
+      val s4lWithoutCompliance = S4LVatSicAndCompliance.dropLabour(s4l)
 
       given()
         .user.isAuthorised
@@ -84,7 +82,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       val response = buildClient("/main-source-of-income").post(Map("mainBusinessActivityRadio" -> Seq(sicCodeId)))
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingDetailsController.tradingNamePage().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/sic-and-compliance")
         (json \ "businessDescription").as[JsString].value mustBe businessActivityDescription

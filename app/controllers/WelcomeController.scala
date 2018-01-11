@@ -19,7 +19,7 @@ package controllers
 import javax.inject.Inject
 
 import play.api.mvc._
-import services.{CurrentProfileService, CurrentProfileSrv, RegistrationService}
+import services.{CurrentProfileSrv, RegistrationService}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import views.html.pages.welcome
 

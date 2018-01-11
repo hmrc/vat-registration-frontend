@@ -18,8 +18,8 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import connectors.{KeystoreConnect, Success}
 import common.enums.VatRegStatus
+import connectors.{KeystoreConnect, Success}
 import controllers.builders._
 import features.returns.{Returns, ReturnsService}
 import features.officer.services.LodgingOfficerService

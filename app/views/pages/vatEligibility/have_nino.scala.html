@@ -1,7 +1,7 @@
 @import models.YesOrNoQuestion
 @(haveNinoForm: Form[YesOrNoQuestion])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
+@import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
 
 @main_template(title = messages("pages.eligibility.haveNino.title")) {
 

@@ -19,7 +19,7 @@ package controllers.sicAndCompliance {
   import javax.inject.Singleton
 
   import controllers.{CommonPlayDependencies, VatRegistrationController}
-  import models.S4LVatSicAndCompliance.dropAllCompliance
+  import models.S4LVatSicAndCompliance.dropLabour
   import models._
   import models.api.SicCode
   import play.api.mvc._
@@ -30,7 +30,10 @@ package controllers.sicAndCompliance {
   import scala.concurrent.Future
 
   @Singleton
-  class ComplianceExitController(ds: CommonPlayDependencies,
+  class
+
+
+  ComplianceExitController(ds: CommonPlayDependencies,
                                  val authConnector: AuthConnector,
                                  implicit val vrs: RegistrationService,
                                  implicit val s4lService: S4LService) extends VatRegistrationController(ds) {
@@ -39,9 +42,9 @@ package controllers.sicAndCompliance {
       ComplianceQuestions(sicCodesList) match {
         case NoComplianceQuestions => for {
           container <- s4lContainer[S4LVatSicAndCompliance]()
-          _         <- s4lService.save(dropAllCompliance(container))
+          _         <- s4lService.save(dropLabour(container))
           _         <- vrs.submitSicAndCompliance
-        } yield Redirect(controllers.routes.TradingDetailsController.tradingNamePage())
+        } yield Redirect(features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
         case _ => Redirect(controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()).pure
       }
     }

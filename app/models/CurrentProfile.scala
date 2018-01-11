@@ -17,9 +17,10 @@
 package models
 
 import java.time.LocalDate
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
+
 import common.enums.VatRegStatus
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 case class CurrentProfile(companyName: String,
                           registrationId: String,

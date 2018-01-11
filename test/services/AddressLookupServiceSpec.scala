@@ -20,8 +20,8 @@ import com.typesafe.config.ConfigFactory
 import common.enums.AddressLookupJourneyIdentifier
 import helpers.VatRegSpec
 import models.api.ScrsAddress
-import org.mockito.Mockito.when
 import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.when
 import play.api.i18n.MessagesApi
 import play.api.mvc.Call
 

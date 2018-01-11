@@ -26,9 +26,9 @@ import helpers.VatRegSpec
 import models.S4LKey
 import models.api.{VatEligibilityChoice, VatExpectedThresholdPostIncorp, VatServiceEligibility, VatThresholdPostIncorp}
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito._
 import org.scalatest.MustMatchers
 import org.scalatest.mockito.MockitoSugar
-import org.mockito.Mockito._
 import play.api.libs.json.JsString
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HttpResponse, NotFoundException}

@@ -24,8 +24,6 @@ import features.tradingDetails.TradingDetails
 import models._
 import models.api._
 import models.external.{Name, Officer}
-import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.test.TestSetup
@@ -57,27 +55,14 @@ class TestS4LBuilder {
 
   def vatSicAndComplianceFromData(data: TestSetup): S4LVatSicAndCompliance = {
     val base = data.sicAndCompliance
-    val compliance: S4LVatSicAndCompliance =
-      (base.culturalNotForProfit, base.labourCompanyProvideWorkers, base.financialAdviceOrConsultancy) match {
-        case (Some(_), None, None) => S4LVatSicAndCompliance(
-          notForProfit = Some(NotForProfit(base.culturalNotForProfit.get)))
-        case (None, Some(_), None) => S4LVatSicAndCompliance(
+    val compliance: S4LVatSicAndCompliance = base.labourCompanyProvideWorkers.fold(S4LVatSicAndCompliance())(_ =>
+      S4LVatSicAndCompliance(
           companyProvideWorkers = base.labourCompanyProvideWorkers.flatMap(x => Some(CompanyProvideWorkers(x))),
           workers = base.labourWorkers.flatMap(x => Some(Workers(x.toInt))),
           temporaryContracts = base.labourTemporaryContracts.flatMap(x => Some(TemporaryContracts(x))),
-          skilledWorkers = base.labourSkilledWorkers.flatMap(x => Some(SkilledWorkers(x))))
-        case (None, None, Some(_)) => S4LVatSicAndCompliance(
-          adviceOrConsultancy = base.financialAdviceOrConsultancy.flatMap(x => Some(AdviceOrConsultancy(x.toBoolean))),
-          actAsIntermediary = base.financialActAsIntermediary.flatMap(x => Some(ActAsIntermediary(x.toBoolean))),
-          chargeFees = base.financialChargeFees.flatMap(x => Some(ChargeFees(x.toBoolean))),
-          leaseVehicles = base.financialLeaseVehiclesOrEquipment.flatMap(x => Some(LeaseVehicles(x.toBoolean))),
-          additionalNonSecuritiesWork = base.financialAdditionalNonSecuritiesWork.flatMap(x => Some(AdditionalNonSecuritiesWork(x.toBoolean))),
-          discretionaryInvestmentManagementServices =
-            base.financialDiscretionaryInvestment.flatMap(x => Some(DiscretionaryInvestmentManagementServices(x.toBoolean))),
-          investmentFundManagement = base.financialInvestmentFundManagement.flatMap(x => Some(InvestmentFundManagement(x.toBoolean))),
-          manageAdditionalFunds = base.financialManageAdditionalFunds.flatMap(x => Some(ManageAdditionalFunds(x.toBoolean))))
-        case (_, _, _) => S4LVatSicAndCompliance()
-      }
+          skilledWorkers = base.labourSkilledWorkers.flatMap(x => Some(SkilledWorkers(x)))))
+
+
 
     compliance.copy(
       description = base.businessActivityDescription.map(BusinessActivityDescription(_)),

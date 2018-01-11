@@ -19,11 +19,11 @@ package features.turnoverEstimates
 import connectors.KeystoreConnector
 import forms.EstimateVatTurnoverForm.TURNOVER_ESTIMATE
 import helpers.{ControllerSpec, MockMessages}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import org.mockito.Mockito.when
-import org.mockito.ArgumentMatchers.any
 
 import scala.concurrent.Future
 

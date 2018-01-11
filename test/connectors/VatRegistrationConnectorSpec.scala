@@ -28,9 +28,9 @@ import features.officer.models.view.LodgingOfficer
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.{JsValue, Json}
 import features.officer.models.view._
+import uk.gov.hmrc.http.HttpResponse
 
 import scala.language.postfixOps
-import uk.gov.hmrc.http.HttpResponse
 
 class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 

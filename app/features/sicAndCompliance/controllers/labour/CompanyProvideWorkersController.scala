@@ -22,7 +22,7 @@ package controllers.sicAndCompliance.labour {
   import controllers.{CommonPlayDependencies, VatRegistrationController}
   import forms.sicAndCompliance.labour.CompanyProvideWorkersForm
   import models.S4LVatSicAndCompliance
-  import models.S4LVatSicAndCompliance.{dropFromCompanyProvideWorkers, labourOnly}
+  import models.S4LVatSicAndCompliance.dropFromCompanyProvideWorkers
   import models.view.sicAndCompliance.labour.CompanyProvideWorkers
   import models.view.sicAndCompliance.labour.CompanyProvideWorkers.PROVIDE_WORKERS_YES
   import play.api.mvc.{Action, AnyContent}
@@ -59,12 +59,12 @@ package controllers.sicAndCompliance.labour {
                 view => (if (PROVIDE_WORKERS_YES == view.yesNo) {
                   for {
                     container <- s4lContainer[S4LVatSicAndCompliance]()
-                    _         <- s4lService.save(labourOnly(container.copy(companyProvideWorkers = Some(view))))
+                    _         <- s4lService.save(container.copy(companyProvideWorkers = Some(view)))
                   } yield controllers.sicAndCompliance.labour.routes.WorkersController.show()
                 } else {
                   for {
                     container <- s4lContainer[S4LVatSicAndCompliance]()
-                    _         <- s4lService.save(dropFromCompanyProvideWorkers(labourOnly(container.copy(companyProvideWorkers = Some(view)))))
+                    _         <- s4lService.save(dropFromCompanyProvideWorkers(container.copy(companyProvideWorkers = Some(view))))
                     _         <- vrs.submitSicAndCompliance
                   } yield controllers.routes.TradingDetailsController.tradingNamePage()
                 }).map(Redirect))

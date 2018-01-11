@@ -16,11 +16,9 @@
 
 package models
 
+import common.ErrorUtil.fail
 import models.api.VatEligibilityChoice._
 import models.api._
-import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.cultural.NotForProfit.NOT_PROFIT_YES
-import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers.PROVIDE_WORKERS_YES
 import models.view.sicAndCompliance.labour.SkilledWorkers.SKILLED_WORKERS_YES
 import models.view.sicAndCompliance.labour.TemporaryContracts.TEMP_CONTRACTS_YES
@@ -28,10 +26,9 @@ import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorker
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatContact.ppob.PpobView
-import play.api.libs.json.{Json, OFormat}
-import common.ErrorUtil.fail
-import models.view.vatTradingDetails.vatChoice.{OverThresholdView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration._
+import models.view.vatTradingDetails.vatChoice.{OverThresholdView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
+import play.api.libs.json.{Json, OFormat}
 
 
 trait S4LModelTransformer[C] {
@@ -45,44 +42,20 @@ trait S4LApiTransformer[C, API] {
 }
 
 
-final case class S4LVatSicAndCompliance
-(
+final case class S4LVatSicAndCompliance(
   description: Option[BusinessActivityDescription] = None,
   mainBusinessActivity: Option[MainBusinessActivityView] = None,
-
-  //Cultural Compliance
-  notForProfit: Option[NotForProfit] = None,
 
   //Labour Compliance
   companyProvideWorkers: Option[CompanyProvideWorkers] = None,
   workers: Option[Workers] = None,
   temporaryContracts: Option[TemporaryContracts] = None,
-  skilledWorkers: Option[SkilledWorkers] = None,
-
-  //Financial Compliance
-  adviceOrConsultancy: Option[AdviceOrConsultancy] = None,
-  actAsIntermediary: Option[ActAsIntermediary] = None,
-  chargeFees: Option[ChargeFees] = None,
-  leaseVehicles: Option[LeaseVehicles] = None,
-  additionalNonSecuritiesWork: Option[AdditionalNonSecuritiesWork] = None,
-  discretionaryInvestmentManagementServices: Option[DiscretionaryInvestmentManagementServices] = None,
-  investmentFundManagement: Option[InvestmentFundManagement] = None,
-  manageAdditionalFunds: Option[ManageAdditionalFunds] = None
-)
+  skilledWorkers: Option[SkilledWorkers] = None)
 
 object S4LVatSicAndCompliance {
   // utilities
-  def dropAllCompliance(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
-    deleteCultural(deleteLabour(deleteFinance(container)))
-
-  def financeOnly(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
-    deleteCultural(deleteLabour(container))
-
-  def labourOnly(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
-    deleteCultural(deleteFinance(container))
-
-  def culturalOnly(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
-    deleteLabour(deleteFinance(container))
+  def dropLabour(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
+    deleteLabour((container))
 
   // labour List(LabProvidesWorkersPath, LabWorkersPath, LabTempContractsPath, LabSkilledWorkersPath)
   def dropFromCompanyProvideWorkers(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
@@ -95,44 +68,6 @@ object S4LVatSicAndCompliance {
     container.copy(skilledWorkers = None)
 
 
-  // finance
-  def dropFromActAsIntermediary(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
-    container.copy(chargeFees = None,
-      additionalNonSecuritiesWork = None,
-      discretionaryInvestmentManagementServices = None,
-      leaseVehicles = None,
-      investmentFundManagement = None,
-      manageAdditionalFunds = None)
-
-  def dropFromAddNonSecurities(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
-    container.copy(
-      discretionaryInvestmentManagementServices = None,
-      leaseVehicles = None,
-      investmentFundManagement = None,
-      manageAdditionalFunds = None)
-
-  def dropFromDiscInvManServices(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
-    container.copy(leaseVehicles = None, investmentFundManagement = None, manageAdditionalFunds = None)
-
-  def dropFromLeaseVehicles(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
-    container.copy(investmentFundManagement = None, manageAdditionalFunds = None)
-
-  def dropFromInvFundManagement(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
-    container.copy(manageAdditionalFunds = None)
-
-
-
-  private def deleteFinance(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
-    container.copy(
-      adviceOrConsultancy = None,
-      actAsIntermediary = None,
-      chargeFees = None,
-      leaseVehicles = None,
-      additionalNonSecuritiesWork = None,
-      discretionaryInvestmentManagementServices = None,
-      investmentFundManagement = None,
-      manageAdditionalFunds = None
-    )
 
   private def deleteLabour(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
     container.copy(
@@ -142,9 +77,6 @@ object S4LVatSicAndCompliance {
       skilledWorkers = None
     )
 
-  private def deleteCultural(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
-    container.copy(notForProfit = None)
-
   implicit val format: OFormat[S4LVatSicAndCompliance] = Json.format[S4LVatSicAndCompliance]
 
   implicit val modelT = new S4LModelTransformer[S4LVatSicAndCompliance] {
@@ -152,22 +84,11 @@ object S4LVatSicAndCompliance {
       S4LVatSicAndCompliance(
         description = ApiModelTransformer[BusinessActivityDescription].toViewModel(vs),
         mainBusinessActivity = ApiModelTransformer[MainBusinessActivityView].toViewModel(vs),
-
-        notForProfit = ApiModelTransformer[NotForProfit].toViewModel(vs),
-
         companyProvideWorkers = ApiModelTransformer[CompanyProvideWorkers].toViewModel(vs),
         workers = ApiModelTransformer[Workers].toViewModel(vs),
         temporaryContracts = ApiModelTransformer[TemporaryContracts].toViewModel(vs),
-        skilledWorkers = ApiModelTransformer[SkilledWorkers].toViewModel(vs),
+        skilledWorkers = ApiModelTransformer[SkilledWorkers].toViewModel(vs)
 
-        adviceOrConsultancy = ApiModelTransformer[AdviceOrConsultancy].toViewModel(vs),
-        actAsIntermediary = ApiModelTransformer[ActAsIntermediary].toViewModel(vs),
-        chargeFees = ApiModelTransformer[ChargeFees].toViewModel(vs),
-        leaseVehicles = ApiModelTransformer[LeaseVehicles].toViewModel(vs),
-        additionalNonSecuritiesWork = ApiModelTransformer[AdditionalNonSecuritiesWork].toViewModel(vs),
-        discretionaryInvestmentManagementServices = ApiModelTransformer[DiscretionaryInvestmentManagementServices].toViewModel(vs),
-        investmentFundManagement = ApiModelTransformer[InvestmentFundManagement].toViewModel(vs),
-        manageAdditionalFunds = ApiModelTransformer[ManageAdditionalFunds].toViewModel(vs)
       )
   }
 
@@ -179,28 +100,12 @@ object S4LVatSicAndCompliance {
         businessDescription = c.description.map(_.description).getOrElse(error),
         mainBusinessActivity = c.mainBusinessActivity.flatMap(_.mainBusinessActivity).getOrElse(error),
 
-        culturalCompliance = c.notForProfit.map(nfp => VatComplianceCultural(nfp.yesNo == NOT_PROFIT_YES)),
-
         labourCompliance = c.companyProvideWorkers.map(cpw =>
                                 VatComplianceLabour(
                                   labour = cpw.yesNo == PROVIDE_WORKERS_YES,
                                   workers = c.workers.map(_.numberOfWorkers),
                                   temporaryContracts = c.temporaryContracts.map(_.yesNo == TEMP_CONTRACTS_YES),
-                                  skilledWorkers = c.skilledWorkers.map(_.yesNo == SKILLED_WORKERS_YES))),
-
-        financialCompliance = c.adviceOrConsultancy.map(ac =>
-                                VatComplianceFinancial(
-                                  adviceOrConsultancyOnly = ac.yesNo,
-                                  actAsIntermediary = c.actAsIntermediary.exists(_.yesNo),
-                                  chargeFees = c.chargeFees.map(_.yesNo),
-                                  additionalNonSecuritiesWork = c.additionalNonSecuritiesWork.map(_.yesNo),
-                                  discretionaryInvestmentManagementServices = c.discretionaryInvestmentManagementServices.map(_.yesNo),
-                                  vehicleOrEquipmentLeasing = c.leaseVehicles.map(_.yesNo),
-                                  investmentFundManagementServices = c.investmentFundManagement.map(_.yesNo),
-                                  manageFundsAdditional = c.manageAdditionalFunds.map(_.yesNo)
-                                ))
-
-      )
+                                  skilledWorkers = c.skilledWorkers.map(_.yesNo == SKILLED_WORKERS_YES))))
   }
 }
 

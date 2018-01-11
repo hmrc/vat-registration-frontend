@@ -18,7 +18,6 @@ package controllers.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._

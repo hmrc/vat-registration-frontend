@@ -18,14 +18,13 @@ package controllers.vatTradingDetails.vatChoice
 
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 

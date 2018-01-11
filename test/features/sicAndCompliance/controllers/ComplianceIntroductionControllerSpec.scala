@@ -19,7 +19,6 @@ package controllers.sicAndCompliance
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.CurrentProfile
 import models.view.test.SicStub
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -45,13 +44,13 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
   }
 
   s"POST ${sicAndCompliance.routes.ComplianceIntroductionController.submit()}" should {
-    "redirect the user to the next page in the flow" in {
+    "redirect the user to the next page in the flow (which is bank account page for non compliance)" in {
       when(mockS4LService.fetchAndGet[SicStub](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(SicStub(Some("12345678"), None, None, None))))
       mockGetCurrentProfile()
       callAuthorised(ComplianceIntroductionController.submit) {
         result =>
-          result redirectsTo s"$contextRoot/trading-name"
+          result redirectsTo s"$contextRoot/business-bank-account"
       }
     }
 
@@ -64,14 +63,14 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
       }
     }
 
-    "redirect the user to the first question about cultural compliance" in {
+    "redirect the user to the 'have you got a bank account' page" in {
       mockGetCurrentProfile()
       when(mockS4LService.fetchAndGet[SicStub](any(), any(), any(), any())).thenReturn(Future.successful(
-        Some(SicStub(Some("90010123"), Some("90020123"), None, None))
+        Some(SicStub(Some("12345678"), Some("12345678"), None, None))
       ))
       callAuthorised(ComplianceIntroductionController.submit) {
         result =>
-          result redirectsTo s"$contextRoot/not-for-profit-or-public-body"
+          result redirectsTo s"$contextRoot/business-bank-account"
       }
     }
 
@@ -86,15 +85,5 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
       }
     }
 
-    "redirect the user to the first question about financial compliance" in {
-      mockGetCurrentProfile()
-      when(mockS4LService.fetchAndGet[SicStub](any(), any(), any(), any())).thenReturn(Future.successful(
-        Some(SicStub(Some("70221123"), Some("64921123"), None, None))
-      ))
-      callAuthorised(ComplianceIntroductionController.submit) {
-        result =>
-          result redirectsTo s"$contextRoot/provides-advice-only-or-consultancy-services"
-      }
-    }
   }
 }

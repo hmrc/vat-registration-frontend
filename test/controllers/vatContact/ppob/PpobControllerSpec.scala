@@ -16,7 +16,6 @@
 
 package controllers.vatContact.ppob
 
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.api.ScrsAddress

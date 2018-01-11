@@ -26,8 +26,6 @@ import features.returns.{Frequency, Returns, Start}
 import features.tradingDetails.TradingDetails
 import models.api._
 import models.external.{IncorporationInfo, _}
-import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.vatContact.BusinessContactDetails
@@ -95,39 +93,24 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val validSicAndCompliance = VatSicAndCompliance(
     businessDescription = testBusinessActivityDescription,
-    culturalCompliance = Some(VatComplianceCultural(notForProfit = false)),
     labourCompliance = None,
-    financialCompliance = None,
     mainBusinessActivity = sicCode
   )
 
   val s4LVatSicAndCompliance = S4LVatSicAndCompliance(
     description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
     mainBusinessActivity = Some(MainBusinessActivityView(sicCode.id, Some(sicCode))),
-    notForProfit = Some(NotForProfit(NotForProfit.NOT_PROFIT_NO)),
     companyProvideWorkers = None,
     workers = None,
     temporaryContracts = None,
-    skilledWorkers = None,
-    adviceOrConsultancy = None,
-    actAsIntermediary = None,
-    chargeFees = None,
-    leaseVehicles = None,
-    additionalNonSecuritiesWork = None,
-    discretionaryInvestmentManagementServices = None,
-    investmentFundManagement = None,
-    manageAdditionalFunds = None
-  )
+    skilledWorkers = None)
 
   //View models
   val validOfficerContactDetailsView = ContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
-  val validNotForProfit = NotForProfit(NotForProfit.NOT_PROFIT_NO)
   val validCompanyProvideWorkers = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
   val validWorkers = Workers(8)
   val validTemporaryContracts = TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)
   val validSkilledWorkers = SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO)
-  val validAdviceOrConsultancy = AdviceOrConsultancy(true)
-  val validActAsIntermediary = ActAsIntermediary(true)
   val validBusinessActivityDescription = BusinessActivityDescription(testBusinessActivityDescription)
   val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
 
@@ -149,9 +132,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
   val validVatThresholdPostIncorp = VatThresholdPostIncorp(overThresholdSelection = false, None)
-  val validVatCulturalCompliance = VatComplianceCultural(notForProfit = true)
   val validVatLabourCompliance = VatComplianceLabour(labour = false)
-  val validVatFinancialCompliance = VatComplianceFinancial(adviceOrConsultancyOnly = false, actAsIntermediary = false)
   val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
 
   val emptyVatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
@@ -208,24 +189,15 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   def vatSicAndCompliance(
                            activityDescription: String = "Some business activity",
-                           culturalComplianceSection: Option[VatComplianceCultural] = Some(VatComplianceCultural(
-                             notForProfit = false)),
                            labourComplianceSection: Option[VatComplianceLabour] = Some(VatComplianceLabour(
                              labour = true,
                              workers = Some(8),
                              temporaryContracts = Some(true),
                              skilledWorkers = Some(true))),
-                           financialComplianceSection: Option[VatComplianceFinancial] = Some(VatComplianceFinancial(
-                             adviceOrConsultancyOnly = true,
-                             actAsIntermediary = false,
-                             chargeFees = Some(true),
-                             additionalNonSecuritiesWork = Some(true))),
                            mainBusinessActivitySection: SicCode): VatSicAndCompliance =
     VatSicAndCompliance(
       businessDescription = activityDescription,
-      culturalCompliance = culturalComplianceSection,
       labourCompliance = labourComplianceSection,
-      financialCompliance = financialComplianceSection,
       mainBusinessActivity = mainBusinessActivitySection
     )
 

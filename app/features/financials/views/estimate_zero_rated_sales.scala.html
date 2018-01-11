@@ -4,8 +4,7 @@
 @fieldSetClasses = @{
     if(estimateZeroRatedSalesForm.hasErrors && (estimateZeroRatedSalesForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
-@import views.html.helpers.templates.{vatInput, errorSummary}
-@import views.html.helpers.templates.newWindowLink
+@import views.html.helpers.templates.{errorSummary, newWindowLink, vatInput}
 
 @main_template(title = messages("pages.estimate.zero.rated.sales.title")) {
 

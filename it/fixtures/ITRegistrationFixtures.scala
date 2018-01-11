@@ -41,9 +41,7 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
 
   val sicAndCompliance = VatSicAndCompliance(
     businessDescription = "test company desc",
-    culturalCompliance = None,
     labourCompliance = None,
-    financialCompliance = None,
     mainBusinessActivity = SicCode("AB123", "super business", "super business by super people")
   )
 

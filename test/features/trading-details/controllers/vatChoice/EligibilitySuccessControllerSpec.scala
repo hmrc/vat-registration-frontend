@@ -16,17 +16,11 @@
 
 package controllers.vatTradingDetails.vatChoice
 
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.ModelKeys._
 import models.external.IncorporationInfo
-import org.mockito.Matchers
-import org.mockito.Mockito.when
 import play.api.test.FakeRequest
-
-import scala.concurrent.Future
 
 class EligibilitySuccessControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 

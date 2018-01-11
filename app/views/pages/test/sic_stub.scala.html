@@ -8,9 +8,7 @@
         <h1 class="form-title heading-xlarge" id="pageHeading">Enter 1-4, 8 digit SIC codes:</h1>
     </header>
 
-    <p><button class="btn button" type="button" onclick="fillCulturalCodes()">Cultural compliance</button></p>
     <p><button class="btn button" type="button" onclick="fillLabourCodes()">Labour compliance</button></p>
-    <p><button class="btn button" type="button" onclick="fillFinancialCodes()">Financial compliance</button></p>
     <p><button class="btn button" type="button" onclick="fillSingleCode()">Single code - no compliance</button></p>
     <p><button class="btn button" type="button" onclick="fillMultipleCodes()">Multiple codes - no compliance</button></p>
     <p><button class="btn button" type="button" onclick="clearCodes()">Clear</button></p>
@@ -40,9 +38,7 @@
         var blanks = ["", "", "", ""];
         var single = ["36000008", "", "", ""];
         var multiple = ["01110004", "81300003", "82190004", ""];
-        var culturalSicCodes = ["90040001", "91012002", "91040003", ""];
         var labourSicCodes = ["81221001", "81222002", "81223003", ""];
-        var financialSicCodes = ["70221001", "66110002", "66300001"];
 
         function fillInputs(arr) {
             $('input[type=text]').each(function (index) {
@@ -63,16 +59,8 @@
             return fillInputs(multiple)
         }
 
-        function fillCulturalCodes() {
-            return fillInputs(culturalSicCodes)
-        }
-
         function fillLabourCodes() {
             return fillInputs(labourSicCodes)
-        }
-
-        function fillFinancialCodes() {
-            return fillInputs(financialSicCodes)
         }
 
 </script>

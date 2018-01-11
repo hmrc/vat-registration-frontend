@@ -18,13 +18,10 @@ package controllers.vatTradingDetails.vatChoice
 
 import java.time.LocalDate
 
-import cats.data.OptionT
 import common.Now
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import forms.vatTradingDetails.vatChoice.OverThresholdFormFactory
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.CurrentProfile
 import models.ModelKeys._
 import models.external.IncorporationInfo
 import models.view.vatTradingDetails.vatChoice.OverThresholdView
@@ -35,9 +32,9 @@ import org.scalatest.exceptions.TestFailedException
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 

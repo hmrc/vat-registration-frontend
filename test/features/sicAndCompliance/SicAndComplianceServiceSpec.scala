@@ -20,8 +20,8 @@ import connectors.{CompanyRegistrationConnector, KeystoreConnector, VatRegistrat
 import features.turnoverEstimates.TurnoverEstimatesService
 import helpers.VatSpec
 import models.S4LVatSicAndCompliance
-import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito._
 
 import scala.concurrent.Future
 

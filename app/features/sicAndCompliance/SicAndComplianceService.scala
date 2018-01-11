@@ -19,8 +19,6 @@ package services
 import models._
 import models.api.VatScheme
 import models.view.sicAndCompliance._
-import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
@@ -47,20 +45,10 @@ trait SicAndComplianceService {
   private[services] def sicApiToS4L(vs: VatScheme): S4LVatSicAndCompliance = S4LVatSicAndCompliance(
     description                               = ApiModelTransformer[BusinessActivityDescription].toViewModel(vs),
     mainBusinessActivity                      = ApiModelTransformer[MainBusinessActivityView].toViewModel(vs),
-    notForProfit                              = ApiModelTransformer[NotForProfit].toViewModel(vs),
     companyProvideWorkers                     = ApiModelTransformer[CompanyProvideWorkers].toViewModel(vs),
     workers                                   = ApiModelTransformer[Workers].toViewModel(vs),
     temporaryContracts                        = ApiModelTransformer[TemporaryContracts].toViewModel(vs),
-    skilledWorkers                            = ApiModelTransformer[SkilledWorkers].toViewModel(vs),
-    adviceOrConsultancy                       = ApiModelTransformer[AdviceOrConsultancy].toViewModel(vs),
-    actAsIntermediary                         = ApiModelTransformer[ActAsIntermediary].toViewModel(vs),
-    chargeFees                                = ApiModelTransformer[ChargeFees].toViewModel(vs),
-    leaseVehicles                             = ApiModelTransformer[LeaseVehicles].toViewModel(vs),
-    additionalNonSecuritiesWork               = ApiModelTransformer[AdditionalNonSecuritiesWork].toViewModel(vs),
-    discretionaryInvestmentManagementServices = ApiModelTransformer[DiscretionaryInvestmentManagementServices].toViewModel(vs),
-    investmentFundManagement                  = ApiModelTransformer[InvestmentFundManagement].toViewModel(vs),
-    manageAdditionalFunds                     = ApiModelTransformer[ManageAdditionalFunds].toViewModel(vs)
-  )
+    skilledWorkers                            = ApiModelTransformer[SkilledWorkers].toViewModel(vs))
 
   private[services] def fetchSicFromS4L(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Option[S4LVatSicAndCompliance]] = {
     s4LService.fetchAndGetNoAux(sicAndComplianceS4LKey)

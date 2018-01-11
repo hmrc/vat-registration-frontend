@@ -17,12 +17,7 @@
 package controllers
 
 import helpers.VatRegSpec
-import models.CurrentProfile
-import org.mockito.Matchers
 import org.mockito.Mockito.when
-import play.api.http.Status
-
-import scala.concurrent.Future
 
 class TwirlViewControllerSpec extends VatRegSpec {
 

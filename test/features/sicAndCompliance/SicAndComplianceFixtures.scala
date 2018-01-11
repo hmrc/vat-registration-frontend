@@ -17,8 +17,7 @@
 package fixtures
 
 import models.S4LVatSicAndCompliance
-import models.api.{VatComplianceCultural, VatSicAndCompliance}
-import models.view.sicAndCompliance.cultural.NotForProfit
+import models.api.VatSicAndCompliance
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 
 trait SicAndComplianceFixtures {
@@ -26,27 +25,15 @@ trait SicAndComplianceFixtures {
 
   val validSicAndCompliance = VatSicAndCompliance(
     businessDescription = testBusinessActivityDescription,
-    culturalCompliance = Some(VatComplianceCultural(notForProfit = false)),
     labourCompliance = None,
-    financialCompliance = None,
     mainBusinessActivity = sicCode
   )
 
   val s4LVatSicAndCompliance = S4LVatSicAndCompliance(
     description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
     mainBusinessActivity = Some(MainBusinessActivityView(sicCode.id, Some(sicCode))),
-    notForProfit = Some(NotForProfit(NotForProfit.NOT_PROFIT_NO)),
     companyProvideWorkers = None,
     workers = None,
     temporaryContracts = None,
-    skilledWorkers = None,
-    adviceOrConsultancy = None,
-    actAsIntermediary = None,
-    chargeFees = None,
-    leaseVehicles = None,
-    additionalNonSecuritiesWork = None,
-    discretionaryInvestmentManagementServices = None,
-    investmentFundManagement = None,
-    manageAdditionalFunds = None
-  )
+    skilledWorkers = None)
 }

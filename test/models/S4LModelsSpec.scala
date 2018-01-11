@@ -21,9 +21,6 @@ import java.time.LocalDate
 import fixtures.VatRegistrationFixture
 import models.api.VatEligibilityChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import models.api._
-import models.view.sicAndCompliance.cultural.NotForProfit
-import models.view.sicAndCompliance.cultural.NotForProfit.NOT_PROFIT_YES
-import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.TemporaryContracts.TEMP_CONTRACTS_NO
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
@@ -76,15 +73,12 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
 
       val s4l = S4LVatSicAndCompliance(
         description = Some(bad),
-        mainBusinessActivity = Some(mbav),
-        // cultural
-        notForProfit = Some(NotForProfit(NOT_PROFIT_YES))
+        mainBusinessActivity = Some(mbav)
       )
 
       val expected = VatSicAndCompliance(
         businessDescription = description,
-        mainBusinessActivity = sicCode,
-        culturalCompliance = Some(VatComplianceCultural(notForProfit = true))
+        mainBusinessActivity = sicCode
       )
 
       S4LVatSicAndCompliance.apiT.toApi(s4l) shouldBe expected
@@ -120,31 +114,12 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
 
       val s4l = S4LVatSicAndCompliance(
         description = Some(bad),
-        mainBusinessActivity = Some(mbav),
-        // finance
-        adviceOrConsultancy = Some(AdviceOrConsultancy(true)),
-        actAsIntermediary = Some(ActAsIntermediary(false)),
-        chargeFees = Some(ChargeFees(false)),
-        leaseVehicles = Some(LeaseVehicles(false)),
-        additionalNonSecuritiesWork = Some(AdditionalNonSecuritiesWork(false)),
-        discretionaryInvestmentManagementServices = Some(DiscretionaryInvestmentManagementServices(false)),
-        investmentFundManagement = Some(InvestmentFundManagement(false)),
-        manageAdditionalFunds = Some(ManageAdditionalFunds(false))
+        mainBusinessActivity = Some(mbav)
       )
 
       val expected = VatSicAndCompliance(
         businessDescription = description,
-        mainBusinessActivity = sicCode,
-        financialCompliance = Some(VatComplianceFinancial(
-          adviceOrConsultancyOnly = true,
-          actAsIntermediary = false,
-          chargeFees = Some(false),
-          additionalNonSecuritiesWork = Some(false),
-          discretionaryInvestmentManagementServices = Some(false),
-          vehicleOrEquipmentLeasing = Some(false),
-          investmentFundManagementServices = Some(false),
-          manageFundsAdditional = Some(false)
-        ))
+        mainBusinessActivity = sicCode
       )
 
       S4LVatSicAndCompliance.apiT.toApi(s4l) shouldBe expected

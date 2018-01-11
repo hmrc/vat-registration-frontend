@@ -28,11 +28,11 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 import scala.language.postfixOps
-import uk.gov.hmrc.http.HeaderCarrier
 
 class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 

@@ -17,17 +17,17 @@
 package client
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import itutil.{IntegrationSpecBase, WiremockHelper}
 import features.bankAccountDetails.routes
-import helpers.ClientHelper
-import play.api.Application
-import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.ws.WSResponse
-import forms.HasCompanyBankAccountForm.HAS_COMPANY_BANK_ACCOUNT_RADIO
 import forms.EnterBankAccountDetailsForm._
+import forms.HasCompanyBankAccountForm.HAS_COMPANY_BANK_ACCOUNT_RADIO
+import helpers.ClientHelper
+import itutil.{IntegrationSpecBase, WiremockHelper}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsObject, Json}
+import play.api.libs.ws.WSResponse
 
 class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
 

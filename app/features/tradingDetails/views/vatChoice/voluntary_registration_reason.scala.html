@@ -1,7 +1,7 @@
 @import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 @(voluntaryRegistrationForm:  Form[VoluntaryRegistrationReason])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
+@import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
 
 @main_template(title = messages("pages.voluntary.registration.reason.title")) {
 

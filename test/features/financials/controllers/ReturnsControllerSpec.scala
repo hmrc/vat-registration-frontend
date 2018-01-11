@@ -20,7 +20,6 @@ import java.time.LocalDate
 
 import cats.data.OptionT
 import connectors.KeystoreConnect
-import features.financials.models._
 import features.returns._
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, MockMessages}
@@ -29,7 +28,6 @@ import org.mockito.Mockito._
 import play.api.i18n.MessagesApi
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import services.PrePopService
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future

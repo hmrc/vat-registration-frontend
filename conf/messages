@@ -581,17 +581,6 @@ pages.summary.annualAccountingScheme.accountingPeriod.jan               = Januar
 pages.summary.annualAccountingScheme.accountingPeriod.feb               = February, May, August and November
 pages.summary.annualAccountingScheme.accountingPeriod.mar               = March, June, September and December
 
-## Summary Page Financial Compliance
-pages.summary.financialCompliance.sectionHeading                                 = Providing financial services
-pages.summary.financialCompliance.provides.advice.or.consultancy                 = Provide ''advice only'' or consultancy services
-pages.summary.financialCompliance.acts.as.intermediary                           = Act as an intermediary
-pages.summary.financialCompliance.charges.fees                                   = Charge fees for introducing clients to financial service providers
-pages.summary.financialCompliance.does.additional.work.when.introducing.client   = Additional work when introducing a client to a financial service provider
-pages.summary.financialCompliance.provides.discretionary.investment.management   = Provide discretionary investment management services
-pages.summary.financialCompliance.involved.in.leasing.vehicles.or.equipment      = Involved in leasing vehicles or equipment to customers
-pages.summary.financialCompliance.provides.investment.fund.management            = Provide investment fund management services
-pages.summary.financialCompliance.manages.funds.not.included.in.this.list        = Manage any funds that are not included in this list
-
 ## Summary Page Labour Compliance
 pages.summary.labourCompliance.sectionHeading                 = Providing workers to other employers
 pages.summary.labourCompliance.providesWorkers                = Providing workers to other employers
@@ -599,9 +588,6 @@ pages.summary.labourCompliance.numberOfWorkers                = Number of worker
 pages.summary.labourCompliance.workersOnTemporaryContracts    = Provides workers on temporary contracts
 pages.summary.labourCompliance.providesSkilledWorkers         = Provides skilled workers
 
-## Summary Page Cultural Compliance section
-pages.summary.culturalCompliance.sectionHeading               = Organisation type
-pages.summary.culturalCompliance.notForProfitOrganisation     = Not-for-profit organisation or public body
 
 ## Error Pages
 errorPages.title                        = We are experiencing technical problems
@@ -645,12 +631,6 @@ pages.compliance.introduction.title                          = Compliance questi
 pages.compliance.introduction.heading                        = Tell us more about your company
 pages.compliance.introduction.para1                          = So we can understand what your company does, we''re going to ask you a few questions about your business activities.
 
-## Cultural Compliance Questions
-## Not For Profit
-pages.culturalCompliance.notForProfit.title                  = Not-for-profit organisation
-pages.culturalCompliance.notForProfit.heading                = Is your company a not-for-profit organisation or public body?
-validation.notForProfitRadio.missing                         = Tell us if your company is a not-for-profit organisation or public body
-
 ## Labour Compliance
 ## Does Company Provide Workers
 pages.labourCompliance.companyProvideWorkers.title         = Does the company provide workers to other employers?
@@ -677,60 +657,6 @@ pages.labourCompliance.skilledWorkers.heading       = Does the company provide s
 pages.labourCompliance.skilledWorkers.para          = For example, workers who have special skills, training, knowledge or ability.
 validation.skilledWorkers.missing                   = Tell us if your company provides skilled workers
 
-## Financial Compliance Questions
-## Advice Or Consultancy
-pages.financialCompliance.adviceOrConsultancy.title             = Does the company provide ''advice only'' or consultancy services?
-pages.financialCompliance.adviceOrConsultancy.heading           = Does the company provide ''advice only'' or consultancy services?
-validation.adviceOrConsultancy.missing                          = Tell us if the company provides advice-only or consultancy services
-
-## Act As Intermediary
-pages.financialCompliance.actAsIntermediary.title               = Does the company act as an intermediary?
-pages.financialCompliance.actAsIntermediary.heading             = Does the company act as an intermediary?
-pages.financialCompliance.actAsIntermediary.para                = ''Intermediaries'' introduce people seeking a financial service to financial service providers. They are also known as brokers or agents.
-validation.actAsIntermediary.missing                            = Tell us if the company acts as an intermediary
-
-## Charge Fees
-pages.financialCompliance.chargeFees.title            = Does the company charge fees for introducing clients to financial service providers?
-pages.financialCompliance.chargeFees.heading          = Does the company charge fees for introducing clients to financial service providers?
-validation.chargeFees.missing                         = Tell us if the company charges fees for introducing clients to financial service providers
-
-## Discretionary Investment Management Services
-pages.financialCompliance.discretionaryInvestmentManagementServices.title            = Does the company provide discretionary investment management services, or introduce clients to companies who do?
-pages.financialCompliance.discretionaryInvestmentManagementServices.heading          = Does the company provide discretionary investment management services, or introduce clients to companies who do?
-pages.financialCompliance.discretionaryInvestmentManagementServices.para             = ''Discretionary investment management'' is a service in which investment decisions are made by the company on behalf of the client.
-validation.discretionaryInvestmentManagementServices.missing                         = Tell us if the company provides discretionary investment management services, or introduces clients to companies who do
-
-## Additional Non Securities Work
-pages.financialCompliance.additionalNonSecuritiesWork.title            = Does the company do additional work (excluding securities) when introducing a client to a financial service provider?
-pages.financialCompliance.additionalNonSecuritiesWork.para             = For example, helping to set the terms of a contract or making representations on behalf of a client.
-pages.financialCompliance.additionalNonSecuritiesWork.heading          = Does the company do additional work (excluding securities) when introducing a client to a financial service provider?
-validation.additionalNonSecuritiesWork.missing                         = Tell us if the company does additional work (excluding securities) when introducing a client to a financial service provider
-
-## Lease Vehicles or Equipment
-pages.financialCompliance.leaseVehicles.title            = Is the company involved in leasing vehicles or equipment to customers?
-pages.financialCompliance.leaseVehicles.heading          = Is the company involved in leasing vehicles or equipment to customers?
-pages.financialCompliance.leaseVehicles.para             = This includes leasing vehicles or equipment to customers, or receiving a commission for introducing customers to a leasing company.
-validation.leaseVehicles.missing                         = Tell us if the company is involved in leasing vehicles or equipment to customers
-
-## Investment Fund Management Services
-pages.financialCompliance.investmentFundManagement.title            = Does the company provide investment fund management services?
-pages.financialCompliance.investmentFundManagement.heading          = Does the company provide investment fund management services?
-validation.investmentFundManagement.missing                         = Tell us if the company provides investment fund management services
-
-## Manage Additional Funds
-pages.financialCompliance.manageAdditionalFunds.title            = Does the company manage any funds that are not included in this list?
-pages.financialCompliance.manageAdditionalFunds.heading          = Does the company manage any funds that are not included in this list?
-pages.financialCompliance.manageAdditionalFunds.bullet1          = Authorised open-ended investment companies
-pages.financialCompliance.manageAdditionalFunds.bullet2          = Authorised contractual schemes
-pages.financialCompliance.manageAdditionalFunds.bullet3          = Authorised unit trust schemes
-pages.financialCompliance.manageAdditionalFunds.bullet4          = Gibraltar collective investment schemes that aren''t umbrella schemes
-pages.financialCompliance.manageAdditionalFunds.bullet5          = Sub-funds of any other Gibraltar collective investment schemes
-pages.financialCompliance.manageAdditionalFunds.bullet6          = Individually recognised overseas schemes that aren''t umbrella schemes
-pages.financialCompliance.manageAdditionalFunds.bullet7          = Sub-funds of any other individually recognised overseas schemes
-pages.financialCompliance.manageAdditionalFunds.bullet8          = Recognised collective investment schemes constituted in another EEA state that aren''t umbrella schemes
-pages.financialCompliance.manageAdditionalFunds.bullet9          = Sub-funds of any other recognised collective investment schemes constituted in another EEA state
-pages.financialCompliance.manageAdditionalFunds.bullet10         = Closed-ended collective investment undertakings
-validation.manageAdditionalFunds.missing                         = Tell us if the company manages any funds that are not included in this list
 
 ## EORI Apply
 pages.applyEori.title                          = You need an Economic Operator Registration and Identification (EORI) number

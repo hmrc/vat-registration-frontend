@@ -19,17 +19,16 @@ package controllers.sicAndCompliance.labour
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.{CurrentProfile, S4LVatSicAndCompliance}
+import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.labour.TemporaryContracts
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
