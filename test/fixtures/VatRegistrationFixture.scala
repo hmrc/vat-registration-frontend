@@ -20,7 +20,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import common.enums.VatRegStatus
-import models.S4LVatSicAndCompliance
+import models.{BankAccount, BankAccountDetails, S4LVatSicAndCompliance}
 import models.api._
 import models.external.{IncorporationInfo, _}
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
@@ -32,7 +32,7 @@ import models.view.vatLodgingOfficer.OfficerContactDetailsView
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.http.{ BadRequestException, HttpResponse, InternalServerException, NotFoundException, Upstream4xxResponse, Upstream5xxResponse }
+import uk.gov.hmrc.http.{BadRequestException, HttpResponse, InternalServerException, NotFoundException, Upstream4xxResponse, Upstream5xxResponse}
 
 trait BaseFixture {
   //Test variables
@@ -183,6 +183,9 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     website = None,
     ppob = scrsAddress
   )
+
+  val validBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
+
   val validVatScheme = VatScheme(
     id = testRegId,
     tradingDetails = Some(validVatTradingDetails),
@@ -191,8 +194,10 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     lodgingOfficer = Some(validLodgingOfficer),
     vatSicAndCompliance = Some(validSicAndCompliance),
     vatFlatRateScheme = Some(validVatFlatRateScheme),
+    bankAccount = Some(validBankAccount),
     status = VatRegStatus.draft
   )
+
   val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
     status = VatRegStatus.draft,
     id = testRegId,
@@ -204,7 +209,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
         reclaimVatOnMostReturns = false,
         accountingPeriods = monthlyAccountingPeriod
       )
-    )
+    ),
+    bankAccount = Some(validBankAccount)
   )
 
   val testIncorporationInfo = IncorporationInfo(
