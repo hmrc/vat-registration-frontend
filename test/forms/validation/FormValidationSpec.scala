@@ -289,6 +289,22 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
     }
 
   }
+  "isEmail" must {
+    implicit val e:ErrorCode = "test"
+    val constraint = FormValidation.IsEmail
+    "validate a valid email" in {
+      constraint.apply("foo@foo.com") shouldBe Valid
+    }
+    "invalidate an invalid email" in {
+      constraint.apply("foo@foo.com;") shouldBe Invalid("validation.test.invalid")
+    }
+    "invalidate a blank email" in {
+      constraint.apply("") shouldBe Invalid("validation.test.invalid")
+    }
+    "invalidate a email with no structure of an email" in {
+      constraint.apply("fooBAR78&./,/.s$%£&^*%$£'a;") shouldBe Invalid("validation.test.invalid")
+    }
+  }
 
   "onOrAfter validation" must {
 

@@ -26,9 +26,12 @@ import play.api.Logger
 import play.api.data.format.Formatter
 import play.api.data.validation.{Constraint, _}
 import play.api.data.{FieldMapping, FormError, Forms, Mapping}
+import play.api.libs.json.Reads.email
+import play.api.libs.json.{JsString, JsSuccess}
 
 import scala.util.matching.Regex
 import scala.util.{Failure, Success, Try}
+
 
 private[forms] object FormValidation {
 
@@ -61,6 +64,12 @@ private[forms] object FormValidation {
       case _ => Invalid(errKey)
     }
   }
+  def IsEmail(implicit e: ErrorCode):Constraint[String] = Constraint { input: String =>
+    JsString(input).validateOpt[String](email) match {
+      case JsSuccess(Some(_),_) => Valid
+      case _ => Invalid(s"validation.$e.invalid")
+    }
+  }
 
   def mandatoryText()(implicit e: ErrorCode): Constraint[String] = Constraint { input: String =>
     if (StringUtils.isNotBlank(input)) Valid else Invalid(s"validation.$e.missing")
@@ -69,7 +78,6 @@ private[forms] object FormValidation {
   def maxLenText(maxlen: Integer)(implicit e: ErrorCode): Constraint[String] = Constraint { input: String =>
     if (StringUtils.length(input) > maxlen) Invalid(s"validation.$e.maxlen") else Valid
   }
-
   def mandatoryNumericText()(implicit e: ErrorCode): Constraint[String] = Constraint {
     val NumericText = """[0-9]+""".r
     (input: String) =>
