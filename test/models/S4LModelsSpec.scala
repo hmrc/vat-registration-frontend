@@ -378,45 +378,6 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
     }
   }
 
-  "S4LVatLodgingOfficer.S4LApiTransformer.toApi" should {
-    val address = ScrsAddress(line1 = "l1", line2 = "l2", postcode = Some("postcode"))
-    val prevAddress = ScrsAddress(line1 = "pal1", line2 = "pal2", postcode = Some("paPostcode"))
-    val date = LocalDate.of(2017, 11, 12)
-    val name = Name(forename = Some("first"), otherForenames = None, surname = "surname", title = None)
-    val testNino = "nino"
-    val testRole = "role"
-
-    val s4l = S4LVatLodgingOfficer(
-      officerHomeAddress = Some(HomeAddressView(address.id, Some(address))),
-      officerSecurityQuestions = Some(SecurityQuestionsView(dob = date, nino = testNino, officerName = Some(name))),
-      completionCapacity = Some(CompletionCapacityView(id = "id", completionCapacity = Some(CompletionCapacity(name, testRole)))),
-      officerContactDetails = Some(
-        ContactDetailsView(email = Some("email"), daytimePhone = Some("daytimePhone"), mobile = Some("mobile"))),
-      formerName = Some(FormerNameView(yesNo = true, formerName = Some("formerName"))),
-      formerNameDate = Some(FormerNameDateView(date)),
-      previousAddress = Some(PreviousAddressView(false, Some(prevAddress)))
-    )
-
-    "transform complete s4l container to API" in {
-
-      val expected = VatLodgingOfficer(
-        currentAddress = Some(address),
-        dob = Some(DateOfBirth(date)),
-        nino = Some(testNino),
-        role = Some(testRole),
-        name = Some(name),
-        changeOfName =
-          Some(ChangeOfName(
-            nameHasChanged = true,
-            formerName = Some(FormerName(formerName = "formerName", dateOfNameChange = Some(date))))),
-        currentOrPreviousAddress = Some(CurrentOrPreviousAddress(currentAddressThreeYears = false, previousAddress = Some(prevAddress))),
-        contact = Some(OfficerContactDetails(Some("email"), Some("daytimePhone"), Some("mobile")))
-      )
-
-      S4LVatLodgingOfficer.apiT.toApi(s4l) shouldBe expected
-    }
-  }
-
   "S4LVatEligibilityChoice.S4LModelTransformer.toS4LModel" should {
     "transform VatScheme to S4L container" in {
       val vs = emptyVatScheme.copy(

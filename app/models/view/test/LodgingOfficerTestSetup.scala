@@ -16,11 +16,9 @@
 
 package models.view.test
 
-import java.time.LocalDate
-
 import play.api.libs.json.Json
 
-case class VatLodgingOfficerTestSetup(
+case class LodgingOfficerTestSetup(
                                   dobDay: Option[String] = None,
                                   dobMonth: Option[String] = None,
                                   dobYear: Option[String] = None,
@@ -39,6 +37,6 @@ case class VatLodgingOfficerTestSetup(
                                   formernameChangeYear: Option[String] = None
                                      )
 
-object VatLodgingOfficerTestSetup {
-  implicit val format = Json.format[VatLodgingOfficerTestSetup]
+object LodgingOfficerTestSetup {
+  implicit val format = Json.format[LodgingOfficerTestSetup]
 }

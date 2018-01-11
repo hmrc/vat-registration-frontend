@@ -19,7 +19,7 @@ package features.officer.models.view
 import java.time.LocalDate
 
 import models.DateModel
-import models.api.{Name, ScrsAddress}
+import models.api.ScrsAddress
 import models.external.Officer
 import play.api.libs.json.{Json, OFormat}
 
@@ -32,7 +32,7 @@ object CompletionCapacityView {
   implicit val format = Json.format[CompletionCapacityView]
 }
 
-case class SecurityQuestionsView(dob: LocalDate, nino: String, officerName: Option[Name] = None) extends LodgingOfficerView
+case class SecurityQuestionsView(dob: LocalDate, nino: String) extends LodgingOfficerView
 object SecurityQuestionsView {
 
   def bind(dateModel: DateModel, nino: String): SecurityQuestionsView =

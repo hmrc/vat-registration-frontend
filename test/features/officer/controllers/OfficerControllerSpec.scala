@@ -107,7 +107,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(lodgingOfficer))
 
       submitAuthorised(controller.submitCompletionCapacity(),
-        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> completionCapacity.name.id)
+        fakeRequest.withFormUrlEncodedBody("completionCapacityRadio" -> officer.name.id)
       )(_ redirectsTo s"${routes.OfficerController.showSecurityQuestions.url}")
     }
   }
@@ -327,7 +327,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
         None,
         None)
 
-      when(mockPPService.getOfficerAddressList(any(), any())).thenReturn(Future.successful(Seq(address)))
+      when(mockPPService.getOfficerAddressList(any())(any(), any())).thenReturn(Future.successful(Seq(address)))
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialIncompleteLodgingOfficer))
 
       callAuthorised(controller.showHomeAddress()) {
@@ -336,7 +336,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     }
 
     "return 200 when there's no data" in new Setup {
-      when(mockPPService.getOfficerAddressList(any(), any())).thenReturn(Future.successful(Seq(address)))
+      when(mockPPService.getOfficerAddressList(any())(any(), any())).thenReturn(Future.successful(Seq(address)))
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       callAuthorised(controller.showHomeAddress()) {
@@ -349,7 +349,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     val fakeRequest = FakeRequest(routes.OfficerController.showHomeAddress())
 
     "return 400 with Empty data" in new Setup {
-      when(mockPPService.getOfficerAddressList(any(), any())).thenReturn(Future.successful(Seq(address)))
+      when(mockPPService.getOfficerAddressList(any())(any(), any())).thenReturn(Future.successful(Seq(address)))
 
       submitAuthorised(controller.submitHomeAddress(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }

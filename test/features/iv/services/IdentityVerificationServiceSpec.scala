@@ -50,7 +50,7 @@ class IdentityVerificationServiceSpec extends VatRegSpec with Inspectors with Va
   }
   val validS4LLodgingOfficer = S4LVatLodgingOfficer(
     completionCapacity = Some(CompletionCapacityView("",Some(completionCapacity))),
-    officerSecurityQuestions = Some(SecurityQuestionsView(LocalDate.of(2017,11,5),"nino",Some(officerName)))
+    officerSecurityQuestions = Some(SecurityQuestionsView(LocalDate.of(2017,11,5),"nino"))
   )
 
   "buildIVSetupData" should {

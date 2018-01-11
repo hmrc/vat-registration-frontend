@@ -20,6 +20,7 @@ package models.view.vatLodgingOfficer {
   import models.{ApiModelTransformer, _}
   import play.api.libs.json.Json
 
+  @deprecated
   case class CompletionCapacityView(id: String, completionCapacity: Option[CompletionCapacity] = None)
 
   object CompletionCapacityView {

@@ -38,7 +38,7 @@ import models.view.vatTradingDetails.TradingNameView._
 import models.view.vatTradingDetails.vatChoice._
 import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import features.officer.models.view._
-import models.view.vatLodgingOfficer.CompletionCapacityView
+import models.external.Officer
 
 @Singleton
 class TestS4LBuilder {
@@ -173,7 +173,7 @@ class TestS4LBuilder {
       ppob = ppob)
   }
 
-  def vatLodgingOfficerFromData(data: TestSetup): S4LVatLodgingOfficer = {
+  def buildLodgingOfficerFromTestData(data: TestSetup): LodgingOfficer = {
     val homeAddress: Option[ScrsAddress] = data.officerHomeAddress.line1.map(_ =>
       ScrsAddress(
         line1 = data.officerHomeAddress.line1.getOrElse(""),
@@ -194,47 +194,49 @@ class TestS4LBuilder {
         postcode = data.officerPreviousAddress.postcode,
         country = data.officerPreviousAddress.country))
 
-    val dob: Option[LocalDate] = data.vatLodgingOfficer.dobDay.map(_ =>
+    val dob: Option[LocalDate] = data.lodgingOfficer.dobDay.map(_ =>
       LocalDate.of(
-        data.vatLodgingOfficer.dobYear.getOrElse("1900").toInt,
-        data.vatLodgingOfficer.dobMonth.getOrElse("1").toInt,
-        data.vatLodgingOfficer.dobDay.getOrElse("1").toInt))
+        data.lodgingOfficer.dobYear.getOrElse("1900").toInt,
+        data.lodgingOfficer.dobMonth.getOrElse("1").toInt,
+        data.lodgingOfficer.dobDay.getOrElse("1").toInt))
 
-    val nino = data.vatLodgingOfficer.nino
+    val nino = data.lodgingOfficer.nino
 
-    val completionCapacity = data.vatLodgingOfficer.role.map(_ => {
-      CompletionCapacity(
-        name = Name(data.vatLodgingOfficer.firstname,
-          data.vatLodgingOfficer.othernames,
-          data.vatLodgingOfficer.surname.getOrElse("")),
-        role = data.vatLodgingOfficer.role.getOrElse(""))
+    val completionCapacity = data.lodgingOfficer.role.map(_ => {
+      val officer = Officer(
+        name = Name(data.lodgingOfficer.firstname,
+          data.lodgingOfficer.othernames,
+          data.lodgingOfficer.surname.getOrElse("")),
+        role = data.lodgingOfficer.role.getOrElse(""))
+      CompletionCapacityView(officer)
     })
 
-    val contactDetails: Option[OfficerContactDetails] = data.vatLodgingOfficer.email.map(_ =>
-      OfficerContactDetails(
-        email = data.vatLodgingOfficer.email,
-        mobile = data.vatLodgingOfficer.mobile,
-        tel = data.vatLodgingOfficer.phone))
+    val contactDetails: Option[ContactDetailsView] = data.lodgingOfficer.email.map(_ =>
+      ContactDetailsView(
+        email = data.lodgingOfficer.email,
+        mobile = data.lodgingOfficer.mobile,
+        daytimePhone = data.lodgingOfficer.phone))
 
-    val formerName: Option[FormerNameView] = data.vatLodgingOfficer.formernameChoice.collect {
-      case "true" => FormerNameView(true, data.vatLodgingOfficer.formername)
+    val formerName: Option[FormerNameView] = data.lodgingOfficer.formernameChoice.collect {
+      case "true" => FormerNameView(true, data.lodgingOfficer.formername)
       case "false" => FormerNameView(false, None)
     }
 
-    val formerNameDate: Option[LocalDate] = data.vatLodgingOfficer.formernameChangeDay.map(_ =>
-      LocalDate.of(
-        data.vatLodgingOfficer.formernameChangeYear.getOrElse("1900").toInt,
-        data.vatLodgingOfficer.formernameChangeMonth.getOrElse("1").toInt,
-        data.vatLodgingOfficer.formernameChangeDay.getOrElse("1").toInt))
+    val formerNameDate: Option[FormerNameDateView] = data.lodgingOfficer.formernameChangeDay.map(_ => {
+      FormerNameDateView(LocalDate.of(
+        data.lodgingOfficer.formernameChangeYear.getOrElse("1900").toInt,
+        data.lodgingOfficer.formernameChangeMonth.getOrElse("1").toInt,
+        data.lodgingOfficer.formernameChangeDay.getOrElse("1").toInt))
+    })
 
-    S4LVatLodgingOfficer(
+    LodgingOfficer(
       previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
-      officerHomeAddress = homeAddress.map(a => HomeAddressView(a.id, Some(a))),
-      officerSecurityQuestions = dob.map(SecurityQuestionsView(_, nino.getOrElse(""), completionCapacity.map(_.name))),
-      completionCapacity = completionCapacity.map(CompletionCapacityView(_)),
-      officerContactDetails = contactDetails.map(c => ContactDetailsView(c.email, c.tel, c.mobile)),
+      homeAddress = homeAddress.map(a => HomeAddressView(a.id, Some(a))),
+      securityQuestions = dob.map(SecurityQuestionsView(_, nino.getOrElse(""))),
+      completionCapacity = completionCapacity,
+      contactDetails = contactDetails,
       formerName = formerName,
-      formerNameDate = formerNameDate.map(FormerNameDateView(_))
+      formerNameDate = formerNameDate
     )
   }
 

@@ -25,18 +25,21 @@ package models.api {
   import play.api.libs.functional.syntax._
   import play.api.libs.json.{Json, OFormat, __}
 
+  @deprecated
   case class FormerName(formerName: String, dateOfNameChange: Option[LocalDate] = None)
 
   object FormerName {
     implicit val format: OFormat[FormerName] = Json.format[FormerName]
   }
 
+  @deprecated
   case class ChangeOfName(nameHasChanged: Boolean, formerName: Option[FormerName] = None)
 
   object ChangeOfName {
     implicit val format: OFormat[ChangeOfName] = Json.format[ChangeOfName]
   }
 
+  @deprecated
   case class VatLodgingOfficer(currentAddress: Option[ScrsAddress],
                                dob: Option[LocalDate],
                                nino: Option[String],
@@ -51,7 +54,7 @@ package models.api {
     implicit val format: OFormat[VatLodgingOfficer] = Json.format[VatLodgingOfficer]
   }
 
-
+  @deprecated
   case class CurrentOrPreviousAddress(currentAddressThreeYears: Boolean,
                                       previousAddress: Option[ScrsAddress] = None)
 
@@ -92,6 +95,7 @@ package models.api {
 
   }
 
+  @deprecated
   case class CompletionCapacity(name: Name, role: String)
 
   object CompletionCapacity {
@@ -202,7 +206,7 @@ package models {
     // return a view model from a VatScheme instance
     implicit val modelTransformerSecuQuestions = ApiModelTransformer[SecurityQuestionsView] { vs: VatScheme =>
       vs.lodgingOfficer.collect {
-        case VatLodgingOfficer(_,Some(a),Some(b),_,Some(c),_,_,_,_) => SecurityQuestionsView(a, b, Some(c))
+        case VatLodgingOfficer(_,Some(a),Some(b),_,_,_,_,_,_) => SecurityQuestionsView(a, b)
       }
     }
 
