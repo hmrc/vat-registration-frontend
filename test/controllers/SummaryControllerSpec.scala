@@ -40,9 +40,10 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
     mockVATFeatureSwitch,
     mockVatRegistrationService,
     mockReturnsService,
-    mockKeystoreConnector,
+    mockKeystoreConnect,
     mockAuthConnector,
     mockLodgingOfficerService,
+    mockSicAndComplianceService,
     mockS4LService
   )
 
@@ -62,6 +63,8 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       mockGetCurrentProfile()
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
+      when(mockSicAndComplianceService.getSicAndCompliance(any(),any()))
+        .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
@@ -73,6 +76,8 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       mockGetCurrentProfile()
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
+      when(mockSicAndComplianceService.getSicAndCompliance(any(),any()))
+        .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 

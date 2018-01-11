@@ -37,7 +37,7 @@ class IdentityVerificationControllerSpec extends VatRegSpec {
       ds,
       mockIVService,
       mockAuthConnector,
-      mockKeystoreConnector
+      mockKeystoreConnect
     ) {
       override def withCurrentProfile(f: CurrentProfile => Future[Result])(implicit request: Request[_], hc: HeaderCarrier): Future[Result] = f(cp)
     }

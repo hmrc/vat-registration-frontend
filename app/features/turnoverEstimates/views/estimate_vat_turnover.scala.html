@@ -1,8 +1,7 @@
 @(estimateVatTurnoverForm: Form[Long])(implicit request: Request[_], messages: Messages)
 
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.templates.newWindowLink
-@import views.html.helpers.templates.{vatInput, errorSummary}
+@import views.html.helpers.templates.{errorSummary, newWindowLink, vatInput}
 
 @fieldSetClasses = @{
     if(estimateVatTurnoverForm.hasErrors && estimateVatTurnoverForm.errors.exists(_.args.nonEmpty)) "form-field--error" else ""

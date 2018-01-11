@@ -17,9 +17,9 @@
 package features.financials.forms
 
 import forms.ReturnFrequencyForm
-import helpers.VatRegSpec
 import forms.ReturnFrequencyForm._
 import features.returns.Frequency._
+import helpers.VatRegSpec
 
 class ReturnFrequencyFormSpec extends VatRegSpec {
 

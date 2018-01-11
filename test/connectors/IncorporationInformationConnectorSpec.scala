@@ -16,10 +16,10 @@
 
 package connectors
 
+import config.WSHttp
 import helpers.VatRegSpec
 import models.external.{CoHoRegisteredOfficeAddress, Name, Officer, OfficerList}
 import org.joda.time.DateTime
-import config.WSHttp
 
 class IncorporationInformationConnectorSpec extends VatRegSpec {
 

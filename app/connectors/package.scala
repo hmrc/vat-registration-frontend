@@ -17,9 +17,9 @@
 import cats.data.OptionT
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.http.Status
+import uk.gov.hmrc.http.{BadRequestException, NotFoundException, Upstream4xxResponse, Upstream5xxResponse}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{BadRequestException, NotFoundException, Upstream4xxResponse, Upstream5xxResponse}
 
 package object connectors {
 

@@ -16,7 +16,6 @@
 
 package controllers.vatContact.ppob
 
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.api.ScrsAddress
@@ -33,7 +32,7 @@ class PpobControllerSpec extends VatRegSpec with VatRegistrationFixture with S4L
     mockPPService,
     mockAddressService,
     mockAuthConnector,
-    mockKeystoreConnector,
+    mockKeystoreConnect,
     mockS4LService,
     mockVatRegistrationService
   )

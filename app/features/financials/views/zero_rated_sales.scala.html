@@ -1,8 +1,7 @@
 @import models.view.vatFinancials.ZeroRatedSales
 @(zeroRatedSalesForm:  Form[ZeroRatedSales])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
-@import views.html.helpers.templates.newWindowLink
+@import views.html.helpers.templates.{errorSummary, newWindowLink, vatInputRadioGroup}
 
 @main_template(title = messages("pages.zero.rated.sales.title")) {
 

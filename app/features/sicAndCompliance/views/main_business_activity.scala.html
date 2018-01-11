@@ -1,8 +1,8 @@
 @import models.api.SicCode
-@import models.view.sicAndCompliance.MainBusinessActivityView
+@import features.sicAndCompliance.models.MainBusinessActivityView
 @(mainBusinessActivityForm: Form[MainBusinessActivityView], sicCodeList: Seq[SicCode])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
+@import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
 
 @main_template(title = messages("pages.mainBusinessActivity.title")) {
 
@@ -15,7 +15,7 @@
         <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.mainBusinessActivity.heading")</h1>
     </header>
 
-    @govHelpers.form(action = controllers.sicAndCompliance.routes.MainBusinessActivityController.submit()) {
+    @govHelpers.form(action = features.sicAndCompliance.controllers.routes.SicAndComplianceController.submitMainBusinessActivity()) {
         <div class="form-group" id="mainBusinessActivityRadio">
 
             @vatInputRadioGroup(

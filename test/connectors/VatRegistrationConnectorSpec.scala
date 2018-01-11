@@ -28,9 +28,10 @@ import features.officer.models.view.LodgingOfficer
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.{JsValue, Json}
 import features.officer.models.view._
+import features.sicAndCompliance.models.{BusinessActivityDescription, CompanyProvideWorkers, MainBusinessActivityView, SicAndCompliance, SkilledWorkers, TemporaryContracts, Workers}
+import uk.gov.hmrc.http.HttpResponse
 
 import scala.language.postfixOps
-import uk.gov.hmrc.http.HttpResponse
 
 class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -127,28 +128,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "return the notFound exception when trying to DELETE non-existent registration" in new Setup {
       mockHttpFailedDELETE[HttpResponse]("tst-url", notFound)
       connector.deleteVatScheme("regId") failedWith notFound
-    }
-  }
-
-  "Calling upsertSicAndCompliance" should {
-
-    val compliance = VatSicAndCompliance(businessDescription = "", mainBusinessActivity = sicCode)
-
-    "return the correct VatResponse when the microservice completes and returns a SicAndCompliance model" in new Setup {
-      mockHttpPATCH[VatFinancials, VatSicAndCompliance]("tst-url", compliance)
-      connector.upsertSicAndCompliance("tstID", compliance) returns compliance
-    }
-    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatSicAndCompliance, VatSicAndCompliance]("tst-url", forbidden)
-      connector.upsertSicAndCompliance("tstID", compliance) failedWith forbidden
-    }
-    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[VatSicAndCompliance, VatSicAndCompliance]("tst-url", notFound)
-      connector.upsertSicAndCompliance("tstID", compliance) failedWith notFound
-    }
-    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatSicAndCompliance, VatSicAndCompliance]("tst-url", internalServiceException)
-      connector.upsertSicAndCompliance("tstID", compliance) failedWith internalServiceException
     }
   }
 
@@ -426,6 +405,108 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "throw an Exception if the call failed" in new Setup {
       mockHttpFailedPATCH[JsValue, JsValue]("tst-url", exception)
       connector.patchLodgingOfficer(partialLodgingOfficer) failedWith exception
+    }
+  }
+
+  "Calling getSicAndCompliance" should {
+    val validJson = Json.parse(
+      s"""
+         |{
+         |  "businessDescription": "Test Description",
+         |  "labourCompliance": {
+         |    "numberOfWorkers": 8,
+         |    "temporaryContracts": true,
+         |    "skilledWorkers": true
+         |  },
+         |  "mainBusinessActivity": {
+         |    "id": "testId",
+         |    "description": "test Desc",
+         |    "displayDetails": "test Details"
+         |  }
+         |}""".stripMargin)
+    val httpRespOK = HttpResponse(OK, Some(validJson))
+    val httpRespNOCONTENT = HttpResponse(NO_CONTENT, None)
+
+    "return a JsValue" in new Setup {
+      mockHttpGET[HttpResponse]("tst-url", httpRespOK)
+      connector.getSicAndCompliance returns Some(validJson)
+    }
+
+    "return None if there is no data for the registration" in new Setup {
+      mockHttpGET[HttpResponse]("tst-url", httpRespNOCONTENT)
+      connector.getSicAndCompliance returns None
+    }
+
+    "throw a NotFoundException if the registration does not exist" in new Setup {
+      mockHttpFailedGET[HttpResponse]("tst-url", notFound)
+      connector.getSicAndCompliance failedWith notFound
+    }
+
+    "throw an Upstream4xxResponse with Forbidden status" in new Setup {
+      mockHttpFailedGET[HttpResponse]("tst-url", forbidden)
+      connector.getSicAndCompliance failedWith forbidden
+    }
+
+    "throw an Upstream5xxResponse with Internal Server Error status" in new Setup {
+      mockHttpFailedGET[HttpResponse]("tst-url", internalServerError)
+      connector.getSicAndCompliance failedWith internalServerError
+    }
+
+    "throw an Exception if the call failed" in new Setup {
+      mockHttpFailedGET[HttpResponse]("tst-url", exception)
+      connector.getSicAndCompliance failedWith exception
+    }
+  }
+
+  "Calling updateSicAndCompliance" should {
+    val sicAndCompliance = SicAndCompliance(
+      description = Some(BusinessActivityDescription("test Bus Desc")),
+      mainBusinessActivity = Some(MainBusinessActivityView(SicCode("testId", "test Desc", "test Details"))),
+      companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
+      workers = Some(Workers(8)),
+      temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
+      skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
+    )
+
+    val json = Json.parse(
+      s"""
+         |{
+         |  "businessDescription": "test Bus Desc",
+         |  "labourCompliance": {
+         |    "numberOfWorkers": 8,
+         |    "temporaryContracts": true,
+         |    "skilledWorkers": true
+         |  },
+         |  "mainBusinessActivity": {
+         |    "id": "testId",
+         |    "description": "test Desc",
+         |    "displayDetails": "test Details"
+         |  }
+         |}""".stripMargin)
+
+    "return a JsValue with a Sic and Compliance view model" in new Setup {
+      mockHttpPATCH[JsValue, JsValue]("tst-url", json)
+      connector.updateSicAndCompliance(sicAndCompliance) returns json
+    }
+
+    "throw a NotFoundException if the registration does not exist" in new Setup {
+      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", notFound)
+      connector.updateSicAndCompliance(sicAndCompliance) failedWith notFound
+    }
+
+    "throw an Upstream4xxResponse with Forbidden status" in new Setup {
+      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", forbidden)
+      connector.updateSicAndCompliance(sicAndCompliance) failedWith forbidden
+    }
+
+    "throw an Upstream5xxResponse with Internal Server Error status" in new Setup {
+      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", internalServerError)
+      connector.updateSicAndCompliance(sicAndCompliance) failedWith internalServerError
+    }
+
+    "throw an Exception if the call failed" in new Setup {
+      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", exception)
+      connector.updateSicAndCompliance(sicAndCompliance) failedWith exception
     }
   }
 }

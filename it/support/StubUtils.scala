@@ -65,8 +65,8 @@ trait StubUtils {
 
     def s4lContainer[C: S4LKey]: ViewModelStub[C] = new ViewModelStub[C]()
     def s4lContainerInScenario[C: S4LKey]: ViewModelScenarioStub[C] = new ViewModelScenarioStub[C]()
-    def audit = AuditStub()
 
+    def audit = AuditStub()
     def keystore = new KeystoreStubWrapper()
     def keystoreInScenario = new KeystoreStubScenarioWrapper()
     def iv = IVStub()
@@ -165,6 +165,25 @@ trait StubUtils {
     def encrypt(str: String): String = crypto.encrypt(PlainText(str)).value
 
 
+    def stubS4LGetNoAux(key:String,data:String) :MappingBuilder =
+    get(urlPathMatching("/save4later/vat-registration-frontend/1"))
+      .willReturn(ok(
+        s"""
+           |{
+           |  "atomicId": { "$$oid": "598830cf5e00005e00b3401e" },
+           |  "data": {
+           |    "${key}": "${encrypt(data)}"
+           |  },
+           |  "id": "1",
+           |  "modifiedDetails": {
+           |    "createdAt": { "$$date": 1502097615710 },
+           |    "lastUpdated": { "$$date": 1502189409725 }
+           |  }
+           |}
+            """.stripMargin
+      ))
+
+
     def stubS4LPut(key: String, data: String): MappingBuilder =
       put(urlPathMatching(s"/save4later/vat-registration-frontend/1/data/$key"))
         .willReturn(ok(
@@ -177,6 +196,7 @@ trait StubUtils {
              |      "lastUpdated": { "$$date": 1502265526026 }}}
           """.stripMargin
         ))
+
 
     def stubS4LGet[C, T](t: T)(implicit key: S4LKey[C], fmt: Format[T]): MappingBuilder =
         get(urlPathMatching("/save4later/vat-registration-frontend/1"))
@@ -256,6 +276,7 @@ trait StubUtils {
       builder
     }
 }
+  @deprecated("please change the types on this once all refactoring has been completed, both should be same type instead of C & T")
   class ViewModelStub[C]()(implicit builder: PreconditionBuilder, s4LKey: S4LKey[C]) extends S4LStub with KeystoreStub {
 
     def contains[T](t: T)(implicit fmt: Format[T]): PreconditionBuilder = {
@@ -264,6 +285,7 @@ trait StubUtils {
     }
 
     def isUpdatedWith[T](t: T)(implicit key: S4LKey[C], fmt: Format[T]): PreconditionBuilder = {
+
       stubFor(stubS4LPut(key.key, fmt.writes(t).toString()))
       builder
     }
@@ -473,6 +495,13 @@ trait StubUtils {
           .willReturn(ok(
             s"""{ "registrationId" : "1" , "status" : "draft"}"""
           )))
+      builder
+    }
+
+    def isNotUpdatedWith[T](t:T,statusCode:Int = 500)(implicit tFmt: Format[T]) = {
+      stubFor(
+        patch(urlPathMatching(s"/vatreg/1/.*"))
+          .willReturn(aResponse().withStatus(statusCode).withBody(tFmt.writes(t).toString())))
       builder
     }
 

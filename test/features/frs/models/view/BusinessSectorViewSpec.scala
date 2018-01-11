@@ -17,6 +17,7 @@
 package models.view.frs
 
 import fixtures.VatRegistrationFixture
+import models.ApiModelTransformer
 import models.api._
 import models.{ApiModelTransformer, BusinessSectorView}
 import org.scalatest.Inspectors
