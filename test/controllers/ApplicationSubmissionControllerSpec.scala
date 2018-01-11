@@ -34,7 +34,7 @@ class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistratio
     mockVatRegistrationService,
     mockReturnsService,
     mockAuthConnector,
-    mockKeystoreConnector,
+    mockKeystoreConnect,
     mockS4LService
   )
 

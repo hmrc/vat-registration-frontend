@@ -18,11 +18,12 @@ package services
 
 import java.time.LocalDate
 
-import connectors.{CompanyRegistrationConnector, ConfigConnector, KeystoreConnector, VatRegistrationConnector}
+import connectors.{ConfigConnector, VatRegistrationConnector}
+import features.sicAndCompliance.services.SicAndComplianceService
 import features.turnoverEstimates.{TurnoverEstimates, TurnoverEstimatesService}
 import helpers.VatSpec
 import models._
-import models.api.VatFlatRateScheme
+import models.api.{SicCode, VatFlatRateScheme}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
@@ -39,6 +40,7 @@ class FlatRateServiceSpec extends VatSpec {
       override val configConnect: ConfigConnector = mockConfigConnector
       override val turnoverEstimateService : TurnoverEstimatesService = mockTurnoverEstimatesService
       override val vatService : VatRegistrationService = mockVatRegistrationService
+      override val sicAndComplianceService: SicAndComplianceService = mockSicAndComplianceService
     }
   }
 
@@ -49,6 +51,7 @@ class FlatRateServiceSpec extends VatSpec {
       override val configConnect: ConfigConnector = mockConfigConnector
       override val turnoverEstimateService : TurnoverEstimatesService = mockTurnoverEstimatesService
       override val vatService : VatRegistrationService = mockVatRegistrationService
+      override val sicAndComplianceService: SicAndComplianceService = mockSicAndComplianceService
 
       override def getFlatRateSchemeThreshold()(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Long] =
         Future.successful(threshold)
@@ -83,7 +86,7 @@ class FlatRateServiceSpec extends VatSpec {
     val s4LFlatRateSchemeNoBusinessSector = validS4LFlatRateScheme.copy(categoryOfBusiness = None)
     val s4LFlatRateSchemeBusinessSectorIsBlank = validS4LFlatRateScheme.copy(categoryOfBusiness = Some(BusinessSectorView("", 1)))
 
-    val s4LVatSicAndComplianceNoMainBusinessActivity = s4LVatSicAndCompliance.copy(mainBusinessActivity = None)
+    val s4LVatSicAndComplianceNoMainBusinessActivity = s4lVatSicAndComplianceWithoutLabour.copy(mainBusinessActivity = None)
 
     "retrieve a businessSectorView if one is saved" in new Setup {
       when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
@@ -96,8 +99,8 @@ class FlatRateServiceSpec extends VatSpec {
       when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(validS4LFlatRateScheme)))
 
-      when(mockVatRegistrationService.fetchSicAndCompliance(any(), any()))
-        .thenReturn(Future.successful(s4LVatSicAndCompliance))
+      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
+        .thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
 
       when(mockConfigConnector.getBusinessSectorDetails(any()))
         .thenReturn(validBusinessSectorView)
@@ -109,8 +112,8 @@ class FlatRateServiceSpec extends VatSpec {
       when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(s4LFlatRateSchemeBusinessSectorIsBlank)))
 
-      when(mockVatRegistrationService.fetchSicAndCompliance(any(), any()))
-        .thenReturn(Future.successful(s4LVatSicAndCompliance))
+      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
+        .thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
 
       when(mockConfigConnector.getBusinessSectorDetails(any()))
         .thenReturn(validBusinessSectorView)
@@ -122,7 +125,7 @@ class FlatRateServiceSpec extends VatSpec {
       when(mockS4LService.fetchAndGetNoAux[S4LFlatRateScheme](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(s4LFlatRateSchemeBusinessSectorIsBlank)))
 
-      when(mockVatRegistrationService.fetchSicAndCompliance(any(), any()))
+      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
         .thenReturn(Future.successful(s4LVatSicAndComplianceNoMainBusinessActivity))
 
       when(mockConfigConnector.getBusinessSectorDetails(any()))
@@ -488,6 +491,17 @@ class FlatRateServiceSpec extends VatSpec {
       val result: VatFlatRateScheme = await(service.saveFRStoAPI(validVatFlatRateScheme))
 
       result mustBe validVatFlatRateScheme
+    }
+  }
+
+  "resetFRS" should {
+    "reset Flat Rate Scheme if the Main Business Activity Sic Code has changed" in new Setup {
+      val newSicCode = SicCode("newId", "new Desc", "new Details")
+
+      when(mockSicAndComplianceService.getSicAndCompliance(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
+      when(mockS4LService.saveNoAux[S4LFlatRateScheme](any(), any())(any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
+
+      await(service.resetFRS(newSicCode)) mustBe newSicCode
     }
   }
 

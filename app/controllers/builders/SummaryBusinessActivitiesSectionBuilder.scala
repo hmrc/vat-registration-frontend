@@ -16,30 +16,31 @@
 
 package controllers.builders
 
-import models.api._
+import features.sicAndCompliance.models.SicAndCompliance
 import models.view.{SummaryRow, SummarySection}
-import org.apache.commons.lang3.StringUtils
 
-case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[VatSicAndCompliance] = None)
+case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[SicAndCompliance] = None)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "businessActivities"
 
+  val sicAndComp = vatSicAndCompliance.fold(SicAndCompliance())(a => a)
+
   val companyBusinessDescriptionRow: SummaryRow = SummaryRow(
     s"$sectionId.businessDescription",
-    vatSicAndCompliance.collect {
-      case VatSicAndCompliance(description, _, _, _,_) if StringUtils.isNotBlank(description) => description
-    }.getOrElse("app.common.no"),
-    Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+    sicAndComp.description.fold("app.common.no")(desc =>
+      if(desc.description.isEmpty) "app.common.no" else desc.description),
+    Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
   )
 
   val companyMainBusinessActivityRow: SummaryRow = SummaryRow(
     s"$sectionId.mainBusinessActivity",
-    vatSicAndCompliance.collect {
-      case VatSicAndCompliance(_, _, _, _, mainBusinessActivity)
-        if StringUtils.isNotBlank(mainBusinessActivity.description) => mainBusinessActivity.description
-    }.getOrElse("app.common.no"),
-    Some(controllers.sicAndCompliance.routes.MainBusinessActivityController.show())
+      sicAndComp.mainBusinessActivity.fold("app.common.no")(main =>
+        main.mainBusinessActivity collect {
+          case sicCode if sicCode.description.nonEmpty => sicCode.description
+        } getOrElse "app.common.no"
+      ),
+    Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showMainBusinessActivity())
   )
 
   val section: SummarySection = SummarySection(

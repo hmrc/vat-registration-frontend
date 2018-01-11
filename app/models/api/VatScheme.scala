@@ -19,6 +19,7 @@ package models.api
 import common.enums.VatRegStatus
 import features.officer.models.view.LodgingOfficer
 import features.returns.Returns
+import features.sicAndCompliance.models.SicAndCompliance
 import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimates
 import models.BankAccount
@@ -31,7 +32,7 @@ case class VatScheme(
                       lodgingOfficer: Option[LodgingOfficer] = None,
                       tradingDetails: Option[TradingDetails] = None,
                       financials: Option[VatFinancials] = None,
-                      vatSicAndCompliance: Option[VatSicAndCompliance] = None,
+                      sicAndCompliance: Option[SicAndCompliance] = None,
                       vatContact: Option[VatContact] = None,
                       threshold: Option[Threshold] = None,
                       returns: Option[Returns] = None,
@@ -48,7 +49,7 @@ object VatScheme {
       (__ \ "lodgingOfficer").formatNullable[LodgingOfficer].inmap[Option[LodgingOfficer]](_ => Option.empty[LodgingOfficer], _ => Option.empty[LodgingOfficer]) and
       (__ \ "tradingDetails").formatNullable[TradingDetails] and
       (__ \ "financials").formatNullable[VatFinancials] and
-      (__ \ "vatSicAndCompliance").formatNullable[VatSicAndCompliance] and
+      (__ \ "sicAndCompliance").formatNullable[SicAndCompliance].inmap[Option[SicAndCompliance]](_ => Option.empty[SicAndCompliance], _ => Option.empty[SicAndCompliance]) and
       (__ \ "vatContact").formatNullable[VatContact] and
       (__ \ "threshold").formatNullable[Threshold] and
       (__ \ "returns").formatNullable[Returns] and
@@ -56,6 +57,5 @@ object VatScheme {
       (__ \ "bankAccount").formatNullable[BankAccount] and
       (__ \ "vatFlatRateScheme").formatNullable[VatFlatRateScheme] and
       (__ \ "status").format[VatRegStatus.Value]
-    ) (VatScheme.apply, unlift(VatScheme.unapply))
-
+    )(VatScheme.apply, unlift(VatScheme.unapply))
 }

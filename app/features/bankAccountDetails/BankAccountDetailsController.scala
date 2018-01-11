@@ -21,12 +21,12 @@ import javax.inject.Inject
 import config.FrontendAuthConnector
 import connectors.KeystoreConnect
 import controllers.VatRegistrationControllerNoAux
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService, SessionProfile}
 import forms.{EnterBankAccountDetailsForm, HasCompanyBankAccountForm}
 import models.{BankAccount, BankAccountDetails}
 import play.api.data.Form
+import play.api.i18n.MessagesApi
+import play.api.mvc.{Action, AnyContent}
+import services.{BankAccountDetailsService, SessionProfile}
 
 import scala.concurrent.Future
 

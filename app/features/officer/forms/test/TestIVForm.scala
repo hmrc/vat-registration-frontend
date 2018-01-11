@@ -17,7 +17,7 @@
 package forms.test
 
 import common.enums.IVResult
-import forms.FormValidation.{textMapping, mandatoryText}
+import forms.FormValidation.{mandatoryText, textMapping}
 import models.view.test.TestIVResponse
 import play.api.data.Forms._
 import play.api.data.format.Formatter

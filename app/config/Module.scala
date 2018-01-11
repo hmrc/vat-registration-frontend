@@ -49,8 +49,13 @@ import features.officer.controllers._
 import features.officer.services.{IVService, IVServiceImpl, LodgingOfficerService, LodgingOfficerServiceImpl}
 import features.returns.{ReturnsController, ReturnsControllerImpl, ReturnsService, ReturnsServiceImpl}
 import features.tradingDetails.{TradingDetailsService, TradingDetailsServiceImpl}
+import features.sicAndCompliance.services.{SicAndComplianceService, SicAndComplianceServiceImpl}
 import features.turnoverEstimates._
 import services._
+import features.officer.controllers._
+import features.officer.services.{IVService, IVServiceImpl, LodgingOfficerService, LodgingOfficerServiceImpl}
+import features.sicAndCompliance.controllers._
+import features.sicAndCompliance.controllers.test.{SicStubController, SicStubControllerImpl}
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
@@ -68,6 +73,7 @@ class Module extends AbstractModule {
     bind(new TypeLiteral[Now[LocalDate]] {}).to(classOf[LocalDateNow]).asEagerSingleton()
     hmrcDependencyBindings()
     bindControllers()
+    bindTestControllers()
     bindInternalRoutes()
     bindServices()
     bindConnectors()
@@ -100,6 +106,12 @@ class Module extends AbstractModule {
     bind(classOf[ReturnsController]).to(classOf[ReturnsControllerImpl]).asEagerSingleton()
     bind(classOf[OfficerController]).to(classOf[OfficerControllerImpl]).asEagerSingleton()
     bind(classOf[TradingDetailsController]).to(classOf[TradingDetailsControllerImpl]).asEagerSingleton()
+    bind(classOf[SicAndComplianceController]).to(classOf[SicAndComplianceControllerImpl]).asEagerSingleton()
+    bind(classOf[LabourComplianceController]).to(classOf[LabourComplianceControllerImpl]).asEagerSingleton()
+  }
+
+  private def bindTestControllers(): Unit = {
+    bind(classOf[SicStubController]).to(classOf[SicStubControllerImpl]).asEagerSingleton()
   }
 
   private def bindServices(): Unit = {
@@ -119,6 +131,7 @@ class Module extends AbstractModule {
     bind(classOf[LodgingOfficerService]).to(classOf[LodgingOfficerServiceImpl]).asEagerSingleton()
     bind(classOf[TradingDetailsService]).to(classOf[TradingDetailsServiceImpl]).asEagerSingleton()
     bind(classOf[FlatRateService]).to(classOf[FlatRateServiceImpl]).asEagerSingleton()
+    bind(classOf[SicAndComplianceService]).to(classOf[SicAndComplianceServiceImpl]).asEagerSingleton()
   }
 
   private def bindConnectors(): Unit = {

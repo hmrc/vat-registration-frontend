@@ -23,6 +23,7 @@ import cats.instances.FutureInstances
 import common.enums.VatRegStatus
 import config.WSHttp
 import features.officer.models.view.LodgingOfficer
+import features.sicAndCompliance.models.SicAndCompliance
 import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimates
 import models.CurrentProfile
@@ -67,14 +68,6 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
       case e: Exception => throw logResponse(e, "getAckRef")
     }
   )
-
-
-  def upsertSicAndCompliance(regId: String, sicAndCompliance: VatSicAndCompliance)
-                            (implicit hc: HeaderCarrier, rds: HttpReads[VatSicAndCompliance]): Future[VatSicAndCompliance] = {
-    http.PATCH[VatSicAndCompliance, VatSicAndCompliance](s"$vatRegUrl/vatreg/$regId/sic-and-compliance", sicAndCompliance).recover{
-      case e: Exception => throw logResponse(e, "upsertSicAndCompliance")
-    }
-  }
 
   def upsertVatContact(regId: String, vatContact: VatContact)(implicit hc: HeaderCarrier, rds: HttpReads[VatContact]): Future[VatContact] = {
     http.PATCH[VatContact, VatContact](s"$vatRegUrl/vatreg/$regId/vat-contact", vatContact).recover{
@@ -194,6 +187,24 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
                              (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] = {
     http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", vatFrs).recover{
       case e: Exception => throw logResponse(e, "upsertVatFrsAnswers")
+    }
+  }
+
+  def getSicAndCompliance(implicit hc:HeaderCarrier,profile:CurrentProfile) : Future[Option[JsValue]] = {
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${profile.registrationId}/sicAndComp").map{ res =>
+      res.status match {
+        case OK => Some(res.json)
+        case NO_CONTENT => None
+      }
+    }.recover{
+          case e: Exception => throw logResponse(e, "getSicAndCompliance")
+    }
+  }
+
+  def updateSicAndCompliance(sac: SicAndCompliance)(implicit hc:HeaderCarrier,profile:CurrentProfile) :Future[JsValue] = {
+    http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/sicAndComp", Json.toJson(sac)(SicAndCompliance.toApiWrites)).recover{
+      case e: Exception => throw logResponse(e,"updateSicAndCompliance")
+
     }
   }
 }

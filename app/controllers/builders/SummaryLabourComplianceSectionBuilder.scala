@@ -16,49 +16,47 @@
 
 package controllers.builders
 
-import models.api._
+import features.sicAndCompliance.models.{CompanyProvideWorkers, SicAndCompliance, SkilledWorkers, TemporaryContracts}
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryLabourComplianceSectionBuilder(vatSicAndCompliance: Option[VatSicAndCompliance] = None)
+case class SummaryLabourComplianceSectionBuilder(vatSicAndCompliance: Option[SicAndCompliance] = None)
   extends SummarySectionBuilder {
 
   val sectionId = "labourCompliance"
 
-  val labourCompliance = vatSicAndCompliance.flatMap(_.labourCompliance)
-
   val providingWorkersRow: SummaryRow = yesNoRow(
     "providesWorkers",
-    labourCompliance.map(_.labour),
-    controllers.sicAndCompliance.labour.routes.CompanyProvideWorkersController.show()
+    vatSicAndCompliance.flatMap(_.companyProvideWorkers).flatMap(v => CompanyProvideWorkers.toBool(v.yesNo)),
+    features.sicAndCompliance.controllers.routes.LabourComplianceController.showProvideWorkers()
   )
 
   val numberOfWorkersRow: SummaryRow = SummaryRow(
     s"$sectionId.numberOfWorkers",
-    labourCompliance.flatMap(_.workers).getOrElse(0).toString,
-    Some(controllers.sicAndCompliance.labour.routes.WorkersController.show())
+    vatSicAndCompliance.flatMap(_.workers).fold("")(_.numberOfWorkers.toString),
+    Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showWorkers())
   )
 
   val temporaryContractsRow: SummaryRow = yesNoRow(
     "workersOnTemporaryContracts",
-    labourCompliance.flatMap(_.temporaryContracts),
-    controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show()
+    vatSicAndCompliance.flatMap(_.temporaryContracts).flatMap(v => TemporaryContracts.toBool(v.yesNo)),
+    features.sicAndCompliance.controllers.routes.LabourComplianceController.showTemporaryContracts()
   )
 
   val skilledWorkersRow: SummaryRow = yesNoRow(
     "providesSkilledWorkers",
-    labourCompliance.flatMap(_.skilledWorkers),
-    controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show()
+    vatSicAndCompliance.flatMap(_.skilledWorkers).flatMap(v => SkilledWorkers.toBool(v.yesNo)),
+    features.sicAndCompliance.controllers.routes.LabourComplianceController.showSkilledWorkers()
   )
 
 
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
-      (providingWorkersRow, true),
-      (numberOfWorkersRow, labourCompliance.flatMap(_.workers).exists(_ > 0)),
-      (temporaryContractsRow, labourCompliance.flatMap(_.temporaryContracts).isDefined),
-      (skilledWorkersRow, labourCompliance.flatMap(_.skilledWorkers).isDefined)
+      (providingWorkersRow, vatSicAndCompliance.flatMap(_.companyProvideWorkers).isDefined),
+      (numberOfWorkersRow,vatSicAndCompliance.flatMap(_.workers).isDefined),
+      (temporaryContractsRow, vatSicAndCompliance.flatMap(_.temporaryContracts).isDefined),
+      (skilledWorkersRow, vatSicAndCompliance.flatMap(_.skilledWorkers).isDefined)
     ),
-    vatSicAndCompliance.flatMap(_.labourCompliance).isDefined
+    vatSicAndCompliance.flatMap(_.companyProvideWorkers).isDefined
   )
 }

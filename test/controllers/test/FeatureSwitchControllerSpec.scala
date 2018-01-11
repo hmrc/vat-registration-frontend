@@ -16,11 +16,11 @@
 
 package controllers.test
 
+import helpers.VatRegSpec
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{BAD_REQUEST, OK}
-import helpers.VatRegSpec
 
 class FeatureSwitchControllerSpec extends VatRegSpec {
 
