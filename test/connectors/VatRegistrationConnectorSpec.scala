@@ -130,27 +130,27 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  "Calling upsertSicAndCompliance" should {
-
-    val compliance = VatSicAndCompliance(businessDescription = "", mainBusinessActivity = sicCode)
-
-    "return the correct VatResponse when the microservice completes and returns a SicAndCompliance model" in new Setup {
-      mockHttpPATCH[VatFinancials, VatSicAndCompliance]("tst-url", compliance)
-      connector.upsertSicAndCompliance("tstID", compliance) returns compliance
-    }
-    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatSicAndCompliance, VatSicAndCompliance]("tst-url", forbidden)
-      connector.upsertSicAndCompliance("tstID", compliance) failedWith forbidden
-    }
-    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[VatSicAndCompliance, VatSicAndCompliance]("tst-url", notFound)
-      connector.upsertSicAndCompliance("tstID", compliance) failedWith notFound
-    }
-    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatSicAndCompliance, VatSicAndCompliance]("tst-url", internalServiceException)
-      connector.upsertSicAndCompliance("tstID", compliance) failedWith internalServiceException
-    }
-  }
+//  "Calling upsertSicAndCompliance" should {
+//
+//    val compliance = VatSicAndCompliance(businessDescription = "", mainBusinessActivity = sicCode)
+//
+//    "return the correct VatResponse when the microservice completes and returns a SicAndCompliance model" in new Setup {
+//      mockHttpPATCH[VatFinancials, VatSicAndCompliance]("tst-url", compliance)
+//      connector.upsertSicAndCompliance("tstID", compliance) returns compliance
+//    }
+//    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
+//      mockHttpFailedPATCH[VatSicAndCompliance, VatSicAndCompliance]("tst-url", forbidden)
+//      connector.upsertSicAndCompliance("tstID", compliance) failedWith forbidden
+//    }
+//    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
+//      mockHttpFailedPATCH[VatSicAndCompliance, VatSicAndCompliance]("tst-url", notFound)
+//      connector.upsertSicAndCompliance("tstID", compliance) failedWith notFound
+//    }
+//    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
+//      mockHttpFailedPATCH[VatSicAndCompliance, VatSicAndCompliance]("tst-url", internalServiceException)
+//      connector.upsertSicAndCompliance("tstID", compliance) failedWith internalServiceException
+//    }
+//  }
 
   "Calling upsertVatContact" should {
 

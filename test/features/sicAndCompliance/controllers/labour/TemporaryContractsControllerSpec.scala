@@ -19,33 +19,34 @@ package controllers.sicAndCompliance.labour
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.labour.TemporaryContracts
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object TemporaryContractsController extends TemporaryContractsController(
-    ds,
-    mockKeystoreConnector,
-    mockAuthConnector,
-    mockS4LService,
-    mockVatRegistrationService
-  )
+  trait Setup {
+    object TemporaryContractsController extends TemporaryContractsController(
+      ds,
+      mockKeystoreConnector,
+      mockAuthConnector,
+      mockS4LService,
+      mockSicAndComplianceSrv,
+      mockVatRegistrationService
+    )
+
+    mockGetCurrentProfile()
+  }
 
   val fakeRequest = FakeRequest(sicAndCompliance.labour.routes.TemporaryContractsController.show())
 
   s"GET ${sicAndCompliance.labour.routes.TemporaryContractsController.show()}" should {
-    "return HTML when there's a Temporary Contracts model in S4L" in {
-      save4laterReturnsViewModel(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO))()
-      mockGetCurrentProfile()
+    "return HTML when there's a Temporary Contracts model in S4L" in new Setup {
+      mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+
       submitAuthorised(TemporaryContractsController.show(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> ""
       )) {
@@ -57,47 +58,20 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
           contentAsString(result) must include("Does the company provide workers on temporary contracts?")
       }
     }
-
-    "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNoViewModel[TemporaryContracts]()
-      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(Future.successful(validVatScheme))
-      mockGetCurrentProfile()
-      callAuthorised(TemporaryContractsController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Does the company provide workers on temporary contracts?")
-      }
-    }
-
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNoViewModel[TemporaryContracts]()
-    when(mockVatRegistrationService.getVatScheme(any(),any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-    mockGetCurrentProfile()
-      callAuthorised(TemporaryContractsController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Does the company provide workers on temporary contracts?")
-      }
-    }
   }
 
   s"POST ${sicAndCompliance.labour.routes.TemporaryContractsController.submit()}" should {
-    "return 400 with Empty data" in {
-      mockGetCurrentProfile()
+    "return 400 with Empty data" in new Setup {
+
       submitAuthorised(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result => status(result) mustBe Status.BAD_REQUEST
       }
     }
 
-    "return 303 with TemporaryContracts Yes selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance(any(),any())).thenReturn(Future.successful(validSicAndCompliance))
-      save4laterExpectsSave[TemporaryContracts]()
-      mockGetCurrentProfile()
+    "return 303 with TemporaryContracts Yes selected" in new Setup {
+      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+
       submitAuthorised(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> TemporaryContracts.TEMP_CONTRACTS_YES
       )) {
@@ -107,18 +81,15 @@ class TemporaryContractsControllerSpec extends VatRegSpec with VatRegistrationFi
       }
     }
 
-    "return 303 with TemporaryContracts No selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterExpectsSave[TemporaryContracts]()
-      save4laterReturns(S4LVatSicAndCompliance())
-      mockGetCurrentProfile()
+    "return 303 with TemporaryContracts No selected" in new Setup {
+      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+
       submitAuthorised(TemporaryContractsController.submit(), fakeRequest.withFormUrlEncodedBody(
         "temporaryContractsRadio" -> TemporaryContracts.TEMP_CONTRACTS_NO
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/trading-name"
+          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingDetailsController.euGoodsPage().url
       }
     }
   }

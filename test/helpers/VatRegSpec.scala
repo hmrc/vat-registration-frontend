@@ -86,5 +86,4 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite with AuthBuilder
   override protected def beforeEach(): Unit = {
     resetMocks()
   }
-
 }

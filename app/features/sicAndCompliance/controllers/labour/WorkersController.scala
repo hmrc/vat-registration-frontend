@@ -20,6 +20,7 @@ package controllers.sicAndCompliance.labour {
 
   import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import features.sicAndCompliance.services.SicAndComplianceService
   import forms.sicAndCompliance.labour.WorkersForm
   import models.S4LVatSicAndCompliance
   import models.S4LVatSicAndCompliance.dropFromWorkers
@@ -33,6 +34,7 @@ package controllers.sicAndCompliance.labour {
                                     val keystoreConnector: KeystoreConnect,
                                     val authConnector: AuthConnector,
                                     implicit val s4lService: S4LService,
+                                    val sicAndCompService: SicAndComplianceService,
                                     implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     import cats.syntax.flatMap._
@@ -44,8 +46,10 @@ package controllers.sicAndCompliance.labour {
         implicit request =>
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
-              viewModel[Workers]().fold(form)(form.fill)
-                .map(f => Ok(features.sicAndCompliance.views.html.labour.workers(f)))
+              sicAndCompService.getSicAndCompliance.map { sicAndComp =>
+                val formFilled = sicAndComp.workers.fold(form)(form.fill)
+                Ok(features.sicAndCompliance.views.html.labour.workers(formFilled))
+              }
             }
           }
     }
@@ -57,18 +61,17 @@ package controllers.sicAndCompliance.labour {
             ivPassedCheck {
               form.bindFromRequest().fold(
                 badForm => BadRequest(features.sicAndCompliance.views.html.labour.workers(badForm)).pure,
-                data => save(data).map(_ => data.numberOfWorkers >= 8).ifM(
-                  ifTrue = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show().pure,
-                  ifFalse = for {
-                    container <- s4lContainer[S4LVatSicAndCompliance]()
-                    _         <- s4lService.save(dropFromWorkers(container))
-                    _         <- vrs.submitSicAndCompliance
-                  } yield controllers.routes.TradingDetailsController.tradingNamePage()
-                ).map(Redirect))
+                data => sicAndCompService.updateSicAndCompliance(data) map { _ =>
+                  if (data.numberOfWorkers >= 8) {
+                    controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show()
+                  } else {
+                    controllers.routes.TradingDetailsController.euGoodsPage()
+                  }
+                } map Redirect
+              )
             }
           }
     }
-
   }
 
 }

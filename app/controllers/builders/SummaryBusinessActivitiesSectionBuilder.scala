@@ -16,29 +16,30 @@
 
 package controllers.builders
 
-import models.api._
+import models.S4LVatSicAndCompliance
 import models.view.{SummaryRow, SummarySection}
-import org.apache.commons.lang3.StringUtils
 
-case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[VatSicAndCompliance] = None)
+case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[S4LVatSicAndCompliance] = None)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "businessActivities"
 
+  val sicAndComp = vatSicAndCompliance.fold(S4LVatSicAndCompliance())(a => a)
+
   val companyBusinessDescriptionRow: SummaryRow = SummaryRow(
     s"$sectionId.businessDescription",
-    vatSicAndCompliance.collect {
-      case VatSicAndCompliance(description, _, _) if StringUtils.isNotBlank(description) => description
-    }.getOrElse("app.common.no"),
+    sicAndComp.description.fold("app.common.no")(desc =>
+      if(desc.description.isEmpty) "app.common.no" else desc.description),
     Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
   )
 
   val companyMainBusinessActivityRow: SummaryRow = SummaryRow(
     s"$sectionId.mainBusinessActivity",
-    vatSicAndCompliance.collect {
-      case VatSicAndCompliance(_, _, mainBusinessActivity)
-        if StringUtils.isNotBlank(mainBusinessActivity.description) => mainBusinessActivity.description
-    }.getOrElse("app.common.no"),
+      sicAndComp.mainBusinessActivity.fold("app.common.no")(main =>
+        main.mainBusinessActivity collect {
+          case sicCode if sicCode.description.nonEmpty => sicCode.description
+        } getOrElse "app.common.no"
+      ),
     Some(controllers.sicAndCompliance.routes.MainBusinessActivityController.show())
   )
 

@@ -17,8 +17,7 @@
 package mocks
 
 import connectors._
-import features.officer.services.IVServiceImpl
-import features.officer.services.LodgingOfficerService
+import features.officer.services.{IVServiceImpl, LodgingOfficerService}
 import features.returns.ReturnsService
 import features.turnoverEstimates.TurnoverEstimatesService
 import org.mockito.Mockito.reset
@@ -33,7 +32,8 @@ import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 trait VatMocks
   extends SaveForLaterMock
     with KeystoreMock
-    with WSHTTPMock {
+    with WSHTTPMock
+    with SicAndComplianceServiceMock{
 
   this: MockitoSugar =>
 
@@ -92,7 +92,8 @@ trait VatMocks
       mockReturnsService,
       mockLodgingOfficerService,
       mockTurnoverEstimatesService,
-      mockFlatRateService
+      mockFlatRateService,
+      mockSicAndComplianceSrv
     )
   }
 }

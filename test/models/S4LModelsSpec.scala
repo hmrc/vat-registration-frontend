@@ -63,76 +63,31 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
     }
   }
 
-  "S4LVatSicAndCompliance.S4LApiTransformer.toApi" should {
-    val sicCode = SicCode("a", "b", "c")
-    val description = "bad"
-    val mbav = MainBusinessActivityView(id = "id", mainBusinessActivity = Some(sicCode))
-    val bad = BusinessActivityDescription(description)
-
-    "transform cultural S4L model to API" in {
-
-      val s4l = S4LVatSicAndCompliance(
-        description = Some(bad),
-        mainBusinessActivity = Some(mbav)
-      )
-
-      val expected = VatSicAndCompliance(
-        businessDescription = description,
-        mainBusinessActivity = sicCode
-      )
-
-      S4LVatSicAndCompliance.apiT.toApi(s4l) shouldBe expected
-    }
-
-    "transform labour S4L model to API" in {
-
-      val s4l = S4LVatSicAndCompliance(
-        description = Some(bad),
-        mainBusinessActivity = Some(mbav),
-        // labour
-        companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
-        workers = Some(Workers(8)),
-        temporaryContracts = Some(TemporaryContracts(TEMP_CONTRACTS_NO)),
-        skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
-      )
-
-      val expected = VatSicAndCompliance(
-        businessDescription = description,
-        mainBusinessActivity = sicCode,
-        labourCompliance = Some(VatComplianceLabour(
-          labour = true,
-          workers = Some(8),
-          temporaryContracts = Some(false),
-          skilledWorkers = Some(true)
-        ))
-      )
-
-      S4LVatSicAndCompliance.apiT.toApi(s4l) shouldBe expected
-    }
-
-    "transform finance S4L model to API" in {
-
-      val s4l = S4LVatSicAndCompliance(
-        description = Some(bad),
-        mainBusinessActivity = Some(mbav)
-      )
-
-      val expected = VatSicAndCompliance(
-        businessDescription = description,
-        mainBusinessActivity = sicCode
-      )
-
-      S4LVatSicAndCompliance.apiT.toApi(s4l) shouldBe expected
-    }
-
-    "transform S4L model with incomplete data error" in {
-      val s4lNoDescription = S4LVatSicAndCompliance(description = None, mainBusinessActivity = Some(mbav))
-      an[IllegalStateException] should be thrownBy S4LVatSicAndCompliance.apiT.toApi(s4lNoDescription)
-
-      val s4lNoMBA = S4LVatSicAndCompliance(description = Some(bad), mainBusinessActivity = None)
-      an[IllegalStateException] should be thrownBy S4LVatSicAndCompliance.apiT.toApi(s4lNoMBA)
-    }
-  }
+//    "transform labour S4L model to API" in {
+//
+//      val s4l = S4LVatSicAndCompliance(
+//        description = Some(bad),
+//        mainBusinessActivity = Some(mbav),
+//        // labour
+//        companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
+//        workers = Some(Workers(8)),
+//        temporaryContracts = Some(TemporaryContracts(TEMP_CONTRACTS_NO)),
+//        skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
+//      )
+//
+//      val expected = VatSicAndCompliance(
+//        businessDescription = description,
+//        mainBusinessActivity = sicCode,
+//        labourCompliance = Some(VatComplianceLabour(
+//          labour = true,
+//          workers = Some(8),
+//          temporaryContracts = Some(false),
+//          skilledWorkers = Some(true)
+//        ))
+//      )
+//
+//      S4LVatSicAndCompliance.apiT.toApi(s4l) shouldBe expected
+//    }
 
   "S4LFlatRateScheme.S4LApiTransformer.toApi" should {
     val specificDate = LocalDate.of(2017, 11, 12)

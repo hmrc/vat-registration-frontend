@@ -21,6 +21,7 @@ import java.time.LocalDate
 import builders.AuthBuilder
 import common.enums.VatRegStatus
 import connectors.{ConfigConnector, KeystoreConnector}
+import features.sicAndCompliance.services.SicAndComplianceService
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -50,6 +51,7 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite with
   val mockConfigConnector: ConfigConnector = mock[ConfigConnector]
   val mockDateService: DateService = mock[DateService]
   val mockPrePopService: PrePopService = mock[PrePopService]
+  val mockSicAndComplianceSrv: SicAndComplianceService = mock[SicAndComplianceService]
 
   val regId = "VAT123456"
 

@@ -26,16 +26,22 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 
+import scala.concurrent.Future
+
 class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object Controller extends MainBusinessActivityController(
-    ds,
-    mockKeystoreConnector,
-    mockAuthConnector,
-    mockS4LService,
-    mockFlatRateService,
-    mockVatRegistrationService
-  )
+  trait Setup {
+    object Controller extends MainBusinessActivityController(
+      ds,
+      mockKeystoreConnector,
+      mockAuthConnector,
+      mockS4LService,
+      mockSicAndComplianceSrv,
+      mockVatRegistrationService
+    )
+
+    mockGetCurrentProfile()
+  }
 
 
   val validLabourSicCode = SicCode("81221001", "BarFoo", "BarFoo")
@@ -43,19 +49,10 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
   val fakeRequest = FakeRequest(controllers.sicAndCompliance.routes.MainBusinessActivityController.show())
 
   s"GET ${routes.MainBusinessActivityController.show()}" should {
-    "return HTML when there's nothing in S4L" in {
-      mockGetCurrentProfile()
-      save4laterReturnsNoViewModel[MainBusinessActivityView]()
+    "return HTML when view present in S4L" in new Setup {
+      mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
-      callAuthorised(Controller.show()) {
-        _ includesText "Which activity is the company&#x27;s main source of income?"
-      }
-    }
 
-    "return HTML when view present in S4L" in {
-      mockGetCurrentProfile()
-      save4laterReturnsViewModel(MainBusinessActivityView(sicCode.id, Some(sicCode)))()
-      mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
       callAuthorised(Controller.show()) {
         _ includesText "Which activity is the company&#x27;s main source of income?"
       }
@@ -63,87 +60,52 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
   }
 
   s"POST ${routes.MainBusinessActivityController.submit()}" should {
-    "return 400" in {
-      mockGetCurrentProfile()
+    "return 400" in new Setup {
       mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
+
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
     }
 
-    "return 400 with selected sicCode but no sicCode list in keystore" in {
-      mockGetCurrentProfile()
-      save4laterExpectsSave[MainBusinessActivityView]()
+    "return 400 with selected sicCode but no sicCode list in keystore" in new Setup {
+      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       mockKeystoreFetchAndGet(SIC_CODES_KEY, Option.empty[List[SicCode]])
-      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
+
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> sicCode.id)
       )(_ isA 400)
 
     }
 
-    "return 303 with selected sicCode" in {
-      mockGetCurrentProfile()
-      save4laterReturnsViewModel(MainBusinessActivityView(validLabourSicCode))()
-      save4laterExpectsSave[MainBusinessActivityView]()
+    "return 303 with selected sicCode" in new Setup {
       mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(List(validLabourSicCode)))
-      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(validSicAndCompliance.pure)
-      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterReturns(S4LVatSicAndCompliance())
+      when(mockSicAndComplianceSrv.saveMainBusinessActivity(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
+      when(mockSicAndComplianceSrv.needComplianceQuestions(any())).thenReturn(true)
+
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> validLabourSicCode.id)
       )(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company")
 
     }
-    "return 303 with selected sicCode (noCompliance) and sicCode list in keystore" in {
-      mockGetCurrentProfile()
-      save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
-      save4laterExpectsSave[MainBusinessActivityView]()
+    "return 303 with selected sicCode (noCompliance) and sicCode list in keystore" in new Setup {
       mockKeystoreFetchAndGet(SIC_CODES_KEY, Some(List(validNoCompliance)))
-      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(validSicAndCompliance.pure)
-      when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(validVatFlatRateScheme.pure)
-      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterReturns(S4LVatSicAndCompliance())
+      when(mockSicAndComplianceSrv.saveMainBusinessActivity(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
+      when(mockSicAndComplianceSrv.needComplianceQuestions(any())).thenReturn(false)
+
       submitAuthorised(Controller.submit(),
 
         fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> validNoCompliance.id)
       )(_ redirectsTo s"$contextRoot/business-bank-account")
     }
 
-    "return 303 with selected sicCode (Labour) and sicCode list in keystore" in {
-      mockGetCurrentProfile()
-      save4laterReturnsViewModel(MainBusinessActivityView(sicCode))()
-      save4laterExpectsSave[MainBusinessActivityView]()
+    "return 303 with selected sicCode (Labour) and sicCode list in keystore" in new Setup {
       mockKeystoreFetchAndGet(SIC_CODES_KEY, Some(List(validLabourSicCode)))
-      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(validSicAndCompliance.pure)
-      when(mockFlatRateService.submitVatFlatRateScheme()(any(), any())).thenReturn(validVatFlatRateScheme.pure)
-      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterReturns(S4LVatSicAndCompliance())
+      when(mockSicAndComplianceSrv.saveMainBusinessActivity(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
+      when(mockSicAndComplianceSrv.needComplianceQuestions(any())).thenReturn(true)
+
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> validLabourSicCode.id)
       )(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company")
-
-    }
-
-  }
-
-  s"POST ${routes.MainBusinessActivityController.redirectToNext()}" should {
-    "return 303 sicCode list (labour) in keystore and redirect to redirectToNext method" in {
-      mockGetCurrentProfile()
-      save4laterExpectsSave[MainBusinessActivityView]()
-      mockKeystoreFetchAndGet(SIC_CODES_KEY, Some(List(validLabourSicCode)))
-      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
-      callAuthorised(Controller.redirectToNext())(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company")
-    }
-
-    "return 303 Empty Sic Code list in keystore and redirect to redirectToNext method" in {
-      mockGetCurrentProfile()
-      save4laterExpectsSave[MainBusinessActivityView]()
-      mockKeystoreFetchAndGet(SIC_CODES_KEY, None)
-      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(validSicAndCompliance.pure)
-      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterReturns(S4LVatSicAndCompliance())
-
-      callAuthorised(Controller.redirectToNext())(_ redirectsTo s"$contextRoot/business-bank-account")
     }
   }
 }

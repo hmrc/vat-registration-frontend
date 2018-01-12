@@ -20,6 +20,7 @@ package controllers.sicAndCompliance.labour {
 
   import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import features.sicAndCompliance.services.SicAndComplianceService
   import forms.sicAndCompliance.labour.SkilledWorkersForm
   import models.view.sicAndCompliance.labour.SkilledWorkers
   import play.api.mvc.{Action, AnyContent}
@@ -31,6 +32,7 @@ package controllers.sicAndCompliance.labour {
                                            val keystoreConnector: KeystoreConnect,
                                            val authConnector: AuthConnector,
                                            implicit val vrs: RegistrationService,
+                                           val sicAndCompService: SicAndComplianceService,
                                            implicit val s4lService: S4LService) extends VatRegistrationController(ds) with SessionProfile {
 
     val form = SkilledWorkersForm.form
@@ -40,8 +42,10 @@ package controllers.sicAndCompliance.labour {
         implicit request =>
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
-              viewModel[SkilledWorkers]().fold(form)(form.fill)
-                .map(f => Ok(features.sicAndCompliance.views.html.labour.skilled_workers(f)))
+              sicAndCompService.getSicAndCompliance.map { sicAndComp =>
+                val formFilled = sicAndComp.skilledWorkers.fold(form)(form.fill)
+                Ok(features.sicAndCompliance.views.html.labour.skilled_workers(formFilled))
+              }
             }
           }
     }
@@ -53,9 +57,8 @@ package controllers.sicAndCompliance.labour {
             SkilledWorkersForm.form.bindFromRequest().fold(
               badForm => BadRequest(features.sicAndCompliance.views.html.labour.skilled_workers(badForm)).pure,
               view => for {
-                _ <- save(view)
-                _ <- vrs.submitSicAndCompliance
-              } yield Redirect(controllers.routes.TradingDetailsController.tradingNamePage())
+               _ <- sicAndCompService.updateSicAndCompliance(view)
+              } yield Redirect(controllers.routes.TradingDetailsController.euGoodsPage())
             )
           }
     }

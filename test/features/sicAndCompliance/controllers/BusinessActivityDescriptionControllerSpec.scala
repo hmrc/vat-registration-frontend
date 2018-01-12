@@ -30,55 +30,40 @@ class BusinessActivityDescriptionControllerSpec extends VatRegSpec with VatRegis
 
   val DESCRIPTION = "Testing"
 
-  object TestController extends BusinessActivityDescriptionController(
-    ds,
-    mockKeystoreConnector,
-    mockAuthConnector,
-    mockS4LService,
-    mockVatRegistrationService
-  )
+  trait Setup {
+    object TestController extends BusinessActivityDescriptionController(
+      ds,
+      mockKeystoreConnector,
+      mockSicAndComplianceSrv,
+      mockAuthConnector,
+      mockS4LService,
+      mockVatRegistrationService
+    )
+
+    mockGetCurrentProfile()
+  }
 
   val fakeRequest = FakeRequest(routes.BusinessActivityDescriptionController.show())
 
   s"GET ${routes.BusinessActivityDescriptionController.show()}" should {
-    "return HTML Business Activity Description page with no data in the form" in {
-      save4laterReturnsViewModel(BusinessActivityDescription(DESCRIPTION))()
-      mockGetCurrentProfile()
+    "return HTML Business Activity Description page with no data in the form" in new Setup {
+      mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+
       submitAuthorised(TestController.show(), fakeRequest.withFormUrlEncodedBody(
         "description" -> ""
       ))(_ includesText "Enter a description of the type of goods or services the company sells.")
     }
-
-
-    "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNoViewModel[BusinessActivityDescription]()
-      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]())).thenReturn(Future.successful(validVatScheme))
-      mockGetCurrentProfile()
-      callAuthorised(TestController.show) {
-        _ includesText "Enter a description of the type of goods or services the company sells."
-      }
-    }
-
-    "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-      save4laterReturnsNoViewModel[BusinessActivityDescription]()
-      when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-      mockGetCurrentProfile()
-      callAuthorised(TestController.show) {
-        _ includesText "Enter a description of the type of goods or services the company sells."
-      }
-    }
   }
 
   s"POST ${routes.BusinessActivityDescriptionController.submit()} with Empty data" should {
-    "return 400" in {
-      mockGetCurrentProfile()
+    "return 400" in new Setup {
       submitAuthorised(TestController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
 
-    "return 303" in {
-      mockGetCurrentProfile()
-      save4laterExpectsSave[BusinessActivityDescription]()
+    "return 303" in new Setup {
+      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+
       submitAuthorised(TestController.submit(), fakeRequest.withFormUrlEncodedBody("description" -> DESCRIPTION)) {
         _ redirectsTo "/sic-stub"
       }

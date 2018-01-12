@@ -16,12 +16,13 @@
 
 package controllers.sicAndCompliance {
 
- 
+
   import javax.inject.{Inject, Singleton}
 
   import cats.data.OptionT
   import connectors.KeystoreConnect
   import controllers.CommonPlayDependencies
+  import features.sicAndCompliance.services.SicAndComplianceService
   import forms.sicAndCompliance.MainBusinessActivityForm
   import models.ModelKeys._
   import models.S4LFlatRateScheme
@@ -39,9 +40,9 @@ package controllers.sicAndCompliance {
                                                  val keystoreConnector: KeystoreConnect,
                                                  override val authConnector: AuthConnector,
                                                  implicit val s4l: S4LService,
-                                                 val flatRateService: FlatRateService,
+                                                 override val sicAndCompService: SicAndComplianceService,
                                                  override implicit val vrs: RegistrationService)
-    extends ComplianceExitController(ds, authConnector, vrs, s4l) with SessionProfile {
+    extends ComplianceExitController(ds, authConnector, vrs, sicAndCompService, s4l) with SessionProfile {
 
     import common.ConditionalFlatMap._
 
@@ -57,7 +58,7 @@ package controllers.sicAndCompliance {
             ivPassedCheck {
               for {
                 sicCodeList <- fetchSicCodeList
-                res <- viewModel[MainBusinessActivityView]().fold(form)(form.fill)
+                res <- sicAndCompService.getSicAndCompliance.map(a => a.mainBusinessActivity.fold(form)(form.fill))
               } yield Ok(features.sicAndCompliance.views.html.main_business_activity(res, sicCodeList))
             }
           }
@@ -68,36 +69,41 @@ package controllers.sicAndCompliance {
         implicit request =>
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
-              form.bindFromRequest().fold(
-                badForm => fetchSicCodeList().map(sicCodeList =>
-                  BadRequest(features.sicAndCompliance.views.html.main_business_activity(badForm, sicCodeList))),
-                view => fetchSicCodeList().flatMap(sicCodeList =>
-                  sicCodeList.find(_.id == view.id).fold(
-                    BadRequest(features.sicAndCompliance.views.html.main_business_activity(form, sicCodeList)).pure
-                  )(selected => for {
-                    mainSic <- viewModel[MainBusinessActivityView]().value
-                    selectionChanged = mainSic.exists(_.id != selected.id)
-                    _ <- s4l.save(S4LFlatRateScheme()).flatMap(_ => flatRateService.submitVatFlatRateScheme()) onlyIf selectionChanged
-                    _ <- save(MainBusinessActivityView(selected))
-                    result <- selectNextPage(sicCodeList)
-                  } yield result)))
-            }
-          }
-    }
-
-    def redirectToNext: Action[AnyContent] = authorised.async {
-      implicit user =>
-        implicit request =>
-          withCurrentProfile { implicit profile =>
-            ivPassedCheck {
-              fetchSicCodeList().flatMap {
-                case Nil => selectNextPage(Nil)
-                case sicCodeList@(head :: _) => save(MainBusinessActivityView(head)).flatMap(_ => selectNextPage(sicCodeList))
+              fetchSicCodeList flatMap { sicCodeList =>
+                form.bindFromRequest().fold(
+                  badForm => Future.successful(BadRequest(features.sicAndCompliance.views.html.main_business_activity(badForm, sicCodeList))),
+                  data => sicCodeList.find(_.id == data.id).fold(
+                    Future.successful(BadRequest(features.sicAndCompliance.views.html.main_business_activity(form, sicCodeList)))
+                  )(selected => sicAndCompService.saveMainBusinessActivity(selected) map { _ =>
+                    if (sicAndCompService.needComplianceQuestions(sicCodeList)) {
+                      controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()
+                    } else {
+                      features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView()
+                    }
+                  } map Redirect)
+                )
               }
             }
           }
     }
 
+//    def redirectToNext: Action[AnyContent] = authorised.async {
+//      implicit user =>
+//        implicit request =>
+//          withCurrentProfile { implicit profile =>
+//            ivPassedCheck {
+//              fetchSicCodeList().flatMap { sicCodeList =>
+//                if (!sicAndCompService.needComplianceQuestions(sicCodeList)) {
+//                  Future.successful(features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
+//                } else {
+//                  sicAndCompService.updateSicAndCompliance(MainBusinessActivityView(sicCodeList.head)) map {
+//                    _ => controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()
+//                  }
+//                }
+//              } map Redirect
+//            }
+//          }
+//    }
   }
 
 }

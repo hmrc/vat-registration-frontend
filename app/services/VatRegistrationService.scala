@@ -40,7 +40,7 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val keystoreConnector: KeystoreConnect,
                                        val turnoverEstimatesService: TurnoverEstimatesService) extends RegistrationService
 
-trait RegistrationService extends FinancialsService with LegacyServiceToBeRefactored with SicAndComplianceService {
+trait RegistrationService extends FinancialsService with LegacyServiceToBeRefactored {
   val s4LService: S4LService
   val vatRegConnector: RegistrationConnector
   val compRegConnector: CompanyRegistrationConnect
@@ -74,18 +74,18 @@ trait LegacyServiceToBeRefactored extends CommonService {
       }.value
     } yield (vatScheme.id, txId)
 
-  def submitSicAndCompliance(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatSicAndCompliance] = {
-    def merge(fresh: Option[S4LVatSicAndCompliance], vs: VatScheme) =
-      fresh.fold(
-        vs.vatSicAndCompliance.getOrElse(throw fail("VatSicAndCompliance"))
-      )(s4l => S4LVatSicAndCompliance.apiT.toApi(s4l))
-
-    for {
-      vs       <- getVatScheme
-      vsc      <- s4l[S4LVatSicAndCompliance]
-      response <- vatRegConnector.upsertSicAndCompliance(profile.registrationId, merge(vsc, vs))
-    } yield response
-  }
+//  def submitSicAndCompliance(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatSicAndCompliance] = {
+//    def merge(fresh: Option[S4LVatSicAndCompliance], vs: VatScheme) =
+//      fresh.fold(
+//        vs.vatSicAndCompliance.getOrElse(throw fail("VatSicAndCompliance"))
+//      )(s4l => S4LVatSicAndCompliance.apiT.toApi(s4l))
+//
+//    for {
+//      vs       <- getVatScheme
+//      vsc      <- s4l[S4LVatSicAndCompliance]
+//      response <- vatRegConnector.upsertSicAndCompliance(profile.registrationId, merge(vsc, vs))
+//    } yield response
+//  }
 
   def submitVatContact(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatContact] = {
     def merge(fresh: Option[S4LVatContact], vs: VatScheme): VatContact =

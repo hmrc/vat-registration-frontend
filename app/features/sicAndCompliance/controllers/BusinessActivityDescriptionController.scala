@@ -20,6 +20,7 @@ package controllers.sicAndCompliance {
 
   import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import features.sicAndCompliance.services.SicAndComplianceService
   import forms.sicAndCompliance.BusinessActivityDescriptionForm
   import models.view.sicAndCompliance.BusinessActivityDescription
   import play.api.data.Form
@@ -27,9 +28,12 @@ package controllers.sicAndCompliance {
   import services.{RegistrationService, S4LService, SessionProfile}
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
+  import scala.concurrent.Future
+
   @Singleton
   class BusinessActivityDescriptionController @Inject()(ds: CommonPlayDependencies,
                                                         val keystoreConnector: KeystoreConnect,
+                                                        val sicAndCompService: SicAndComplianceService,
                                                         val authConnector: AuthConnector,
                                                         implicit val s4l: S4LService,
                                                         implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
@@ -41,12 +45,13 @@ package controllers.sicAndCompliance {
         implicit request =>
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
-              viewModel[BusinessActivityDescription]().fold(form)(form.fill)
-                .map(f => Ok(features.sicAndCompliance.views.html.business_activity_description(f)))
+              sicAndCompService.getSicAndCompliance map { sicCompliance =>
+                val formFilled = sicCompliance.description.fold(form)(form.fill)
+                Ok(features.sicAndCompliance.views.html.business_activity_description(formFilled))
+              }
             }
           }
     }
-
 
     def submit: Action[AnyContent] = authorised.async {
       implicit user =>
@@ -55,30 +60,31 @@ package controllers.sicAndCompliance {
             ivPassedCheck {
               form.bindFromRequest().fold(
                 badForm => BadRequest(features.sicAndCompliance.views.html.business_activity_description(badForm)).pure,
-                data => save(data.copy(description = data.description.trim)).map(_ =>
-                  Redirect(controllers.test.routes.SicStubController.show())))
+                data => sicAndCompService.updateSicAndCompliance(data.copy(description = data.description.trim)).map(_ => Redirect(controllers.test.routes.SicStubController.show())))
             }
           }
     }
   }
+
 }
 
-package forms.sicAndCompliance {
+  package forms.sicAndCompliance {
 
-  import forms.FormValidation._
-  import models.view.sicAndCompliance.BusinessActivityDescription
-  import play.api.data.Form
-  import play.api.data.Forms._
+    import forms.FormValidation._
+    import models.view.sicAndCompliance.BusinessActivityDescription
+    import play.api.data.Form
+    import play.api.data.Forms._
 
-  object BusinessActivityDescriptionForm {
-    val INPUT_DESCRIPTION: String = "description"
-    val PartPattern = """^[A-Za-z0-9\-',/& ]{1,250}$""".r
+    object BusinessActivityDescriptionForm {
+      val INPUT_DESCRIPTION: String = "description"
+      val PartPattern = """^[A-Za-z0-9\-',/& ]{1,250}$""".r
 
-    val form = Form(
-      mapping(
-        INPUT_DESCRIPTION -> text.transform(removeNewlineAndTrim, identity[String]).verifying(regexPattern(PartPattern)("BusinessActivity.description"))
-      )(BusinessActivityDescription.apply)(BusinessActivityDescription.unapply)
-    )
+      val form = Form(
+        mapping(
+          INPUT_DESCRIPTION -> text.transform(removeNewlineAndTrim, identity[String]).verifying(regexPattern(PartPattern)("BusinessActivity.description"))
+        )(BusinessActivityDescription.apply)(BusinessActivityDescription.unapply)
+      )
+    }
+
   }
 
-}

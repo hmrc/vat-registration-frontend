@@ -49,6 +49,7 @@ import features.officer.controllers._
 import features.officer.services.{IVService, IVServiceImpl, LodgingOfficerService, LodgingOfficerServiceImpl}
 import features.returns.{ReturnsController, ReturnsControllerImpl, ReturnsService, ReturnsServiceImpl}
 import features.tradingDetails.{TradingDetailsService, TradingDetailsServiceImpl}
+import features.sicAndCompliance.services.{SicAndComplianceServiceImpl, SicAndComplianceService}
 import features.turnoverEstimates._
 import services._
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
@@ -119,6 +120,7 @@ class Module extends AbstractModule {
     bind(classOf[LodgingOfficerService]).to(classOf[LodgingOfficerServiceImpl]).asEagerSingleton()
     bind(classOf[TradingDetailsService]).to(classOf[TradingDetailsServiceImpl]).asEagerSingleton()
     bind(classOf[FlatRateService]).to(classOf[FlatRateServiceImpl]).asEagerSingleton()
+    bind(classOf[SicAndComplianceService]).to(classOf[SicAndComplianceServiceImpl]).asEagerSingleton()
   }
 
   private def bindConnectors(): Unit = {

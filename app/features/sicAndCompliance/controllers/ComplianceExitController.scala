@@ -19,9 +19,11 @@ package controllers.sicAndCompliance {
   import javax.inject.Singleton
 
   import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import features.sicAndCompliance.services.SicAndComplianceService
   import models.S4LVatSicAndCompliance.dropLabour
   import models._
   import models.api.SicCode
+  import models.view.sicAndCompliance.BusinessActivityDescription
   import play.api.mvc._
   import services.{RegistrationService, S4LService}
   import uk.gov.hmrc.http.HeaderCarrier
@@ -36,14 +38,14 @@ package controllers.sicAndCompliance {
   ComplianceExitController(ds: CommonPlayDependencies,
                                  val authConnector: AuthConnector,
                                  implicit val vrs: RegistrationService,
+                                 val sicAndCompService: SicAndComplianceService,
                                  implicit val s4lService: S4LService) extends VatRegistrationController(ds) {
 
     def selectNextPage(sicCodesList: List[SicCode])(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[Result] = {
       ComplianceQuestions(sicCodesList) match {
         case NoComplianceQuestions => for {
-          container <- s4lContainer[S4LVatSicAndCompliance]()
-          _         <- s4lService.save(dropLabour(container))
-          _         <- vrs.submitSicAndCompliance
+          container <- sicAndCompService.dropLabour
+          _         <- sicAndCompService.updateSicAndCompliance(None)
         } yield Redirect(features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
         case _ => Redirect(controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()).pure
       }

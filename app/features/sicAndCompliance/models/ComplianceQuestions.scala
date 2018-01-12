@@ -22,20 +22,16 @@ import play.api.mvc.Call
 sealed trait ComplianceQuestions {
 
   def firstQuestion: Call
-
 }
-
 
 case object LabourComplianceQuestions extends ComplianceQuestions {
 
   override def firstQuestion: Call = controllers.sicAndCompliance.labour.routes.CompanyProvideWorkersController.show()
-
 }
 
 case object NoComplianceQuestions extends ComplianceQuestions {
 
   override def firstQuestion: Call = features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView()
-
 }
 
 object ComplianceQuestions {

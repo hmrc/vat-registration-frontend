@@ -32,20 +32,25 @@ import scala.concurrent.Future
 
 class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object WorkersController extends WorkersController(
-    ds,
-    mockKeystoreConnector,
-    mockAuthConnector,
-    mockS4LService,
-    mockVatRegistrationService
-  )
+  trait Setup {
+    object WorkersController extends WorkersController(
+      ds,
+      mockKeystoreConnector,
+      mockAuthConnector,
+      mockS4LService,
+      mockSicAndComplianceSrv,
+      mockVatRegistrationService
+    )
+
+    mockGetCurrentProfile()
+  }
 
   val fakeRequest = FakeRequest(sicAndCompliance.labour.routes.WorkersController.show())
 
   s"GET ${sicAndCompliance.labour.routes.WorkersController.show()}" should {
-    "return HTML when there's a Workers model in S4L" in {
-      save4laterReturnsViewModel(Workers(5))()
-      mockGetCurrentProfile()
+    "return HTML when there's a Workers model in S4L" in new Setup {
+      mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+
       submitAuthorised(WorkersController.show(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
@@ -56,61 +61,31 @@ class WorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with 
           contentAsString(result) must include("How many workers does the company provide at any one time?")
       }
     }
-
-    "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNoViewModel[Workers]()
-      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(Future.successful(validVatScheme))
-      mockGetCurrentProfile()
-      callAuthorised(WorkersController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("How many workers does the company provide at any one time?")
-      }
-    }
-
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNoViewModel[Workers]()
-    when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-    mockGetCurrentProfile()
-      callAuthorised(WorkersController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("How many workers does the company provide at any one time?")
-      }
-    }
   }
 
   s"POST ${sicAndCompliance.labour.routes.WorkersController.submit()}" should {
-    "return 400 with Empty data" in {
-      mockGetCurrentProfile()
+    "return 400 with Empty data" in new Setup {
+
       submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result => status(result) mustBe Status.BAD_REQUEST
       }
     }
 
-    "return 303 with less than 8 workers entered" in {
-      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      save4laterExpectsSave[Workers]()
-      save4laterReturns(S4LVatSicAndCompliance())
-      mockGetCurrentProfile()
+    "return 303 with less than 8 workers entered" in new Setup {
+      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+
       submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
         result =>
-          result redirectsTo s"$contextRoot/trading-name"
+          result redirectsTo controllers.routes.TradingDetailsController.euGoodsPage().url
       }
     }
 
-    "return 303 with 8 or more workers entered" in {
-      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
-      save4laterExpectsSave[Workers]()
-      mockGetCurrentProfile()
+    "return 303 with 8 or more workers entered" in new Setup {
+      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+
       submitAuthorised(WorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "8"
       )) {

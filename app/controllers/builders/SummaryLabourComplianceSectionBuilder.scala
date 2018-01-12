@@ -16,37 +16,36 @@
 
 package controllers.builders
 
-import models.api._
+import models.S4LVatSicAndCompliance
+import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts}
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryLabourComplianceSectionBuilder(vatSicAndCompliance: Option[VatSicAndCompliance] = None)
+case class SummaryLabourComplianceSectionBuilder(vatSicAndCompliance: Option[S4LVatSicAndCompliance] = None)
   extends SummarySectionBuilder {
 
   val sectionId = "labourCompliance"
 
-  val labourCompliance = vatSicAndCompliance.flatMap(_.labourCompliance)
-
   val providingWorkersRow: SummaryRow = yesNoRow(
     "providesWorkers",
-    labourCompliance.map(_.labour),
+    vatSicAndCompliance.flatMap(_.companyProvideWorkers).flatMap(v => CompanyProvideWorkers.toBool(v.yesNo)),
     controllers.sicAndCompliance.labour.routes.CompanyProvideWorkersController.show()
   )
 
   val numberOfWorkersRow: SummaryRow = SummaryRow(
     s"$sectionId.numberOfWorkers",
-    labourCompliance.flatMap(_.workers).getOrElse(0).toString,
+    vatSicAndCompliance.flatMap(_.workers).fold("")(_.numberOfWorkers.toString),
     Some(controllers.sicAndCompliance.labour.routes.WorkersController.show())
   )
 
   val temporaryContractsRow: SummaryRow = yesNoRow(
     "workersOnTemporaryContracts",
-    labourCompliance.flatMap(_.temporaryContracts),
+    vatSicAndCompliance.flatMap(_.temporaryContracts).flatMap(v => TemporaryContracts.toBool(v.yesNo)),
     controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show()
   )
 
   val skilledWorkersRow: SummaryRow = yesNoRow(
     "providesSkilledWorkers",
-    labourCompliance.flatMap(_.skilledWorkers),
+    vatSicAndCompliance.flatMap(_.skilledWorkers).flatMap(v => SkilledWorkers.toBool(v.yesNo)),
     controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show()
   )
 
@@ -54,11 +53,11 @@ case class SummaryLabourComplianceSectionBuilder(vatSicAndCompliance: Option[Vat
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
-      (providingWorkersRow, true),
-      (numberOfWorkersRow, labourCompliance.flatMap(_.workers).exists(_ > 0)),
-      (temporaryContractsRow, labourCompliance.flatMap(_.temporaryContracts).isDefined),
-      (skilledWorkersRow, labourCompliance.flatMap(_.skilledWorkers).isDefined)
+      (providingWorkersRow, vatSicAndCompliance.flatMap(_.companyProvideWorkers).isDefined),
+      (numberOfWorkersRow,vatSicAndCompliance.flatMap(_.workers).isDefined),
+      (temporaryContractsRow, vatSicAndCompliance.flatMap(_.temporaryContracts).isDefined),
+      (skilledWorkersRow, vatSicAndCompliance.flatMap(_.skilledWorkers).isDefined)
     ),
-    vatSicAndCompliance.flatMap(_.labourCompliance).isDefined
+    vatSicAndCompliance.flatMap(_.companyProvideWorkers).isDefined
   )
 }

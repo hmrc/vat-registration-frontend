@@ -21,20 +21,25 @@ import javax.inject.{Inject, Singleton}
 import connectors.{ConfigConnector, KeystoreConnect}
 import controllers.CommonPlayDependencies
 import controllers.sicAndCompliance.ComplianceExitController
+import features.sicAndCompliance.services.SicAndComplianceService
 import forms.test.SicStubForm
 import models.ModelKeys.SIC_CODES_KEY
+import models.view.sicAndCompliance.MainBusinessActivityView
 import models.view.test.SicStub
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService, SessionProfile}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+
+import scala.concurrent.Future
 
 @Singleton
 class SicStubController @Inject()(ds: CommonPlayDependencies,
                                   configConnect: ConfigConnector,
                                   val keystoreConnector: KeystoreConnect,
                                   implicit val s4LService: S4LService,
+                                  override val sicAndCompService: SicAndComplianceService,
                                   override val authConnector: AuthConnector,
-                                  override implicit val vrs: RegistrationService) extends ComplianceExitController(ds, authConnector, vrs, s4LService) with SessionProfile {
+                                  override implicit val vrs: RegistrationService) extends ComplianceExitController(ds, authConnector, vrs,sicAndCompService, s4LService) with SessionProfile {
 
   def show: Action[AnyContent] = authorised.async {
     implicit user =>
@@ -62,12 +67,18 @@ class SicStubController @Inject()(ds: CommonPlayDependencies,
             data    => s4LService.save[SicStub](data).flatMap { _ =>
               val sicCodesList = data.fullSicCodes.map(configConnect.getSicCodeDetails)
               keystoreConnector.cache(SIC_CODES_KEY, sicCodesList).flatMap { _ =>
-                data.sicCodes match {
-                  case head :: Nil  => Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.redirectToNext()).pure
-                  case _ :: tail    => Redirect(controllers.sicAndCompliance.routes.MainBusinessActivityController.show()).pure
-                  case Nil          => selectNextPage(sicCodesList)
+                if (data.sicCodes.lengthCompare(1) == 0) {
+                  sicAndCompService.updateSicAndCompliance(MainBusinessActivityView(sicCodesList.head)) map { _ =>
+                    if (sicAndCompService.needComplianceQuestions(sicCodesList)) {
+                      controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()
+                    } else {
+                      features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView()
+                    }
+                  }
+                } else {
+                  Future.successful(controllers.sicAndCompliance.routes.MainBusinessActivityController.show())
                 }
-              }
+              } map Redirect
             }
           )
         }

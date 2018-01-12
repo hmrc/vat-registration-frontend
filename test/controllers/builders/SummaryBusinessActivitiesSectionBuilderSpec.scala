@@ -18,8 +18,10 @@ package controllers.builders
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.S4LVatSicAndCompliance
 import models.api._
 import models.view.SummaryRow
+import models.view.sicAndCompliance.BusinessActivityDescription
 
 class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -40,23 +42,21 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
       }
 
       "a business activity description in sic and compliance should be shown when one is entered by the user" in {
-        val compliance = VatSicAndCompliance("Business Described", None, mainBusinessActivity = sicCode)
-        val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(compliance))
+        val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(s4lVatSicAndComplianceWithLabour))
         builder.companyBusinessDescriptionRow mustBe
           SummaryRow(
             "businessActivities.businessDescription",
-            "Business Described",
+            testBusinessActivityDescription,
             Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
           )
       }
 
       "a main business activity in sic and compliance should be shown when one is entered by the user" in {
-        val compliance = VatSicAndCompliance("Business Described", None, mainBusinessActivity = sicCode)
-        val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(compliance))
+        val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(s4lVatSicAndComplianceWithLabour))
         builder.companyMainBusinessActivityRow mustBe
           SummaryRow(
             "businessActivities.mainBusinessActivity",
-            "description",
+            sicCode.description,
             Some(controllers.sicAndCompliance.routes.MainBusinessActivityController.show())
           )
       }
@@ -65,7 +65,7 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
     "with section generate" should {
 
       "a valid summary section" in {
-        val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(validSicAndCompliance))
+        val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(s4lVatSicAndComplianceWithLabour))
         builder.section.id mustBe "businessActivities"
         builder.section.rows.length mustEqual 2
       }

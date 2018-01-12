@@ -22,6 +22,7 @@ import features.returns.Returns
 import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimates
 import models.BankAccount
+import models.S4LVatSicAndCompliance
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -31,7 +32,7 @@ case class VatScheme(
                       lodgingOfficer: Option[LodgingOfficer] = None,
                       tradingDetails: Option[TradingDetails] = None,
                       financials: Option[VatFinancials] = None,
-                      vatSicAndCompliance: Option[VatSicAndCompliance] = None,
+                      sicAndCompliance: Option[S4LVatSicAndCompliance] = None,
                       vatContact: Option[VatContact] = None,
                       vatServiceEligibility: Option[VatServiceEligibility] = None,
                       returns: Option[Returns] = None,
@@ -48,7 +49,7 @@ object VatScheme {
       (__ \ "lodgingOfficer").formatNullable[LodgingOfficer].inmap[Option[LodgingOfficer]](_ => Option.empty[LodgingOfficer], _ => Option.empty[LodgingOfficer]) and
       (__ \ "tradingDetails").formatNullable[TradingDetails] and
       (__ \ "financials").formatNullable[VatFinancials] and
-      (__ \ "vatSicAndCompliance").formatNullable[VatSicAndCompliance] and
+      (__ \ "sicAndCompliance").formatNullable[S4LVatSicAndCompliance].inmap[Option[S4LVatSicAndCompliance]](_ => Option.empty[S4LVatSicAndCompliance], _ => Option.empty[S4LVatSicAndCompliance]) and
       (__ \ "vatContact").formatNullable[VatContact] and
       (__ \ "vatEligibility").formatNullable[VatServiceEligibility] and
       (__ \ "returns").formatNullable[Returns] and
@@ -56,7 +57,5 @@ object VatScheme {
       (__ \ "bankAccount").formatNullable[BankAccount] and
       (__ \ "vatFlatRateScheme").formatNullable[VatFlatRateScheme] and
       (__ \ "status").format[VatRegStatus.Value]
-
-    ) (VatScheme.apply, unlift(VatScheme.unapply))
-
+    )(VatScheme.apply, unlift(VatScheme.unapply))
 }

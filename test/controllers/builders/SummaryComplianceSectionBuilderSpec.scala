@@ -16,28 +16,23 @@
 
 package controllers
 
-import common.enums.VatRegStatus
 import controllers.builders.SummaryComplianceSectionBuilder
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{VatScheme, VatSicAndCompliance}
 
 class SummaryComplianceSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 
   "Correct compliance section should be rendered" when {
 
     "labour questions have been answered by user" in {
-      val vs = VatScheme("ID",status = VatRegStatus.draft, vatSicAndCompliance = Some(VatSicAndCompliance("TEST", labourCompliance = Some(validVatLabourCompliance), mainBusinessActivity = sicCode)))
-      val summarySection = SummaryComplianceSectionBuilder(vatSicAndCompliance = vs.vatSicAndCompliance)
+      val summarySection = SummaryComplianceSectionBuilder(vatSicAndCompliance = Some(s4lVatSicAndComplianceWithLabour))
       summarySection.section.id mustBe "labourCompliance"
     }
 
     "No compliance questions have been answered by user" in {
-      val vs = VatScheme("ID", status = VatRegStatus.draft, vatSicAndCompliance = None)
-      val summarySection = SummaryComplianceSectionBuilder(vatSicAndCompliance = vs.vatSicAndCompliance)
+      val summarySection = SummaryComplianceSectionBuilder(vatSicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour))
       summarySection.section.id mustBe "none"
     }
-
   }
 
 }

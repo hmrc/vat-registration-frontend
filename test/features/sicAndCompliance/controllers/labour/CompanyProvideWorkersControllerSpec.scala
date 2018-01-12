@@ -19,84 +19,69 @@ package controllers.sicAndCompliance.labour
 import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.S4LVatSicAndCompliance
 import models.view.sicAndCompliance.labour.CompanyProvideWorkers
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
 class CompanyProvideWorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object CompanyProvideWorkersController extends CompanyProvideWorkersController(
-    ds,
-    mockKeystoreConnector,
-    mockAuthConnector,
-    mockS4LService,
-    mockVatRegistrationService
-  )
+  trait Setup {
+    object CompanyProvideWorkersController extends CompanyProvideWorkersController(
+      ds,
+      mockKeystoreConnector,
+      mockAuthConnector,
+      mockS4LService,
+      mockSicAndComplianceSrv,
+      mockVatRegistrationService
+    )
+
+    mockGetCurrentProfile()
+  }
 
   val fakeRequest = FakeRequest(sicAndCompliance.labour.routes.CompanyProvideWorkersController.show())
 
   s"GET ${sicAndCompliance.labour.routes.CompanyProvideWorkersController.show()}" should {
-    "return HTML when there's a Company Provide Workers model in S4L" in {
-      save4laterReturnsViewModel(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO))()
-      mockGetCurrentProfile()
-      submitAuthorised(CompanyProvideWorkersController.show(), fakeRequest.withFormUrlEncodedBody(
-        "companyProvideWorkersRadio" -> ""
-      )) {
-        _ includesText "Does the company provide workers to other employers?"
+    "return HTML where getSicAndCompliance returns the view models wih labour already entered" in new Setup {
+      mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+
+      callAuthorised(CompanyProvideWorkersController.show()) {result =>
+        result includesText "Does the company provide workers to other employers?"
+        status(result) mustBe 200
       }
     }
 
-    "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNoViewModel[CompanyProvideWorkers]()
-      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(Future.successful(validVatScheme))
-      mockGetCurrentProfile()
-      callAuthorised(CompanyProvideWorkersController.show) {
-        _ includesText "Does the company provide workers to other employers?"
-      }
-    }
+    "return HTML where getSicAndCompliance returns empty viewModels for labour" in new Setup {
+      mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithoutLabour))
 
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNoViewModel[CompanyProvideWorkers]()
-    when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-    mockGetCurrentProfile()
-      callAuthorised(CompanyProvideWorkersController.show) {
-        _ includesText "Does the company provide workers to other employers?"
+      callAuthorised(CompanyProvideWorkersController.show) {result =>
+        result includesText "Does the company provide workers to other employers?"
+        status(result) mustBe 200
       }
     }
   }
 
   s"POST ${sicAndCompliance.labour.routes.CompanyProvideWorkersController.submit()}" should {
-    "return 400 with Empty data" in {
-      mockGetCurrentProfile()
+    "return 400 with Empty data" in new Setup {
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
       ))(result => result isA 400)
     }
 
-    "return 303 with company provide workers Yes selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      mockGetCurrentProfile()
-      save4laterReturns(S4LVatSicAndCompliance())
+    "return 303 with company provide workers Yes selected" in new Setup {
+      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour.copy(companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)))))
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_YES
-      ))(_ redirectsTo s"$contextRoot/how-many-workers-does-company-provide-at-one-time")
+      ))(_ redirectsTo controllers.sicAndCompliance.labour.routes.WorkersController.show().url)
     }
 
-    "return 303 with company provide workers No selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
-      when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
-      mockGetCurrentProfile()
-      save4laterReturns(S4LVatSicAndCompliance())
+    "return 303 with company provide workers No selected" in new Setup {
+      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour.copy(companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)))))
 
       submitAuthorised(CompanyProvideWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_NO
-      ))(_ redirectsTo s"$contextRoot/trading-name")
+      ))(_ redirectsTo controllers.routes.TradingDetailsController.euGoodsPage().url)
     }
   }
 }

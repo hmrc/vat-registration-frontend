@@ -20,8 +20,9 @@ package controllers.sicAndCompliance.labour {
 
   import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import features.sicAndCompliance.services.SicAndComplianceService
   import forms.sicAndCompliance.labour.CompanyProvideWorkersForm
-  import models.S4LVatSicAndCompliance
+  import models.{S4LKey, S4LVatSicAndCompliance}
   import models.S4LVatSicAndCompliance.dropFromCompanyProvideWorkers
   import models.view.sicAndCompliance.labour.CompanyProvideWorkers
   import models.view.sicAndCompliance.labour.CompanyProvideWorkers.PROVIDE_WORKERS_YES
@@ -34,6 +35,7 @@ package controllers.sicAndCompliance.labour {
                                                   val keystoreConnector: KeystoreConnect,
                                                   val authConnector: AuthConnector,
                                                   implicit val s4lService: S4LService,
+                                                  val sicAndCompService: SicAndComplianceService,
                                                   implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     val form = CompanyProvideWorkersForm.form
@@ -43,8 +45,10 @@ package controllers.sicAndCompliance.labour {
         implicit request =>
           withCurrentProfile { implicit profile =>
             ivPassedCheck {
-              viewModel[CompanyProvideWorkers]().fold(form)(form.fill)
-                .map(f => Ok(features.sicAndCompliance.views.html.labour.company_provide_workers(f)))
+              sicAndCompService.getSicAndCompliance.map { sicAndComp =>
+                val formFilled = sicAndComp.companyProvideWorkers.fold(form)(form.fill)
+                Ok(features.sicAndCompliance.views.html.labour.company_provide_workers(formFilled))
+              }
             }
           }
     }
@@ -56,24 +60,22 @@ package controllers.sicAndCompliance.labour {
             ivPassedCheck {
               form.bindFromRequest().fold(
                 badForm => BadRequest(features.sicAndCompliance.views.html.labour.company_provide_workers(badForm)).pure,
-                view => (if (PROVIDE_WORKERS_YES == view.yesNo) {
-                  for {
-                    container <- s4lContainer[S4LVatSicAndCompliance]()
-                    _         <- s4lService.save(container.copy(companyProvideWorkers = Some(view)))
-                  } yield controllers.sicAndCompliance.labour.routes.WorkersController.show()
-                } else {
-                  for {
-                    container <- s4lContainer[S4LVatSicAndCompliance]()
-                    _         <- s4lService.save(dropFromCompanyProvideWorkers(container.copy(companyProvideWorkers = Some(view))))
-                    _         <- vrs.submitSicAndCompliance
-                  } yield controllers.routes.TradingDetailsController.tradingNamePage()
-                }).map(Redirect))
+                view => sicAndCompService.updateSicAndCompliance(view).map { _ =>
+                  if (PROVIDE_WORKERS_YES == view.yesNo) {
+                    controllers.sicAndCompliance.labour.routes.WorkersController.show()
+                  } else {
+                    controllers.routes.TradingDetailsController.euGoodsPage()
+                  }
+                } map Redirect
+              )
             }
           }
     }
   }
 
 }
+
+
 
 package forms.sicAndCompliance.labour {
 

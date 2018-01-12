@@ -19,16 +19,16 @@ package models
 import common.ErrorUtil.fail
 import models.api.VatEligibilityChoice._
 import models.api._
-import models.view.sicAndCompliance.labour.CompanyProvideWorkers.PROVIDE_WORKERS_YES
-import models.view.sicAndCompliance.labour.SkilledWorkers.SKILLED_WORKERS_YES
-import models.view.sicAndCompliance.labour.TemporaryContracts.TEMP_CONTRACTS_YES
+import models.view.sicAndCompliance.labour.CompanyProvideWorkers.{PROVIDE_WORKERS_NO, PROVIDE_WORKERS_YES}
+import models.view.sicAndCompliance.labour.SkilledWorkers.{SKILLED_WORKERS_YES, SKILLED_WORKERS_NO}
+import models.view.sicAndCompliance.labour.TemporaryContracts.{TEMP_CONTRACTS_NO, TEMP_CONTRACTS_YES}
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatContact.ppob.PpobView
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration._
 import models.view.vatTradingDetails.vatChoice.{OverThresholdView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json._
 
 
 trait S4LModelTransformer[C] {
@@ -41,7 +41,6 @@ trait S4LApiTransformer[C, API] {
   def toApi(container: C): API
 }
 
-
 final case class S4LVatSicAndCompliance(
   description: Option[BusinessActivityDescription] = None,
   mainBusinessActivity: Option[MainBusinessActivityView] = None,
@@ -53,6 +52,70 @@ final case class S4LVatSicAndCompliance(
   skilledWorkers: Option[SkilledWorkers] = None)
 
 object S4LVatSicAndCompliance {
+
+  def fromApiReads(json: JsValue): S4LVatSicAndCompliance = {
+
+    val sicCode = (json \ "mainBusinessActivity").as[SicCode]
+    val labourComp = (json \ "labourCompliance").validateOpt[JsObject].get
+    val numOfWorkers = labourComp.map(a => (a \ "numberOfWorkers").as[Int])
+    val workers = numOfWorkers.flatMap(num => if (num == 0) None else Some(Workers(num)))
+    val temporaryContracts = workers.flatMap { _ =>
+      (json \ "labourCompliance" \ "temporaryContracts").validateOpt[Boolean].get.map { b =>
+        if (b) TemporaryContracts(TEMP_CONTRACTS_YES) else TemporaryContracts(TEMP_CONTRACTS_NO)
+      }
+    }
+    val skilledWorkers = workers.flatMap { a =>
+      (json \ "labourCompliance" \ "skilledWorkers").validateOpt[Boolean].get.map { b =>
+        if (b) SkilledWorkers(SKILLED_WORKERS_YES) else SkilledWorkers(SKILLED_WORKERS_NO)
+      }
+    }
+
+    S4LVatSicAndCompliance(
+      description = Some(BusinessActivityDescription((json \ "businessDescription").as[String])),
+      mainBusinessActivity = Some(MainBusinessActivityView(id = sicCode.id, mainBusinessActivity = Some(sicCode))),
+      companyProvideWorkers = numOfWorkers.map(n => CompanyProvideWorkers(if (n == 0) PROVIDE_WORKERS_NO else PROVIDE_WORKERS_YES)),
+      workers = workers,
+      temporaryContracts = temporaryContracts,
+      skilledWorkers = skilledWorkers
+    )
+  }
+
+  implicit val toApiWrites = new Writes[S4LVatSicAndCompliance] {
+    override def writes(o: S4LVatSicAndCompliance): JsValue = {
+
+      val provideWorkers = o.companyProvideWorkers.map(a => a.yesNo)
+
+      val numOfWorkers =   o.workers.map{a =>
+        if(provideWorkers.exists(b => b == PROVIDE_WORKERS_NO)) 0
+        else a.numberOfWorkers
+      }
+      val temp = o.temporaryContracts.map{a =>
+        if(provideWorkers.exists(b => b == PROVIDE_WORKERS_NO)) None
+        else if(a.yesNo == TEMP_CONTRACTS_YES) Some(true)
+        else Some(false)
+      }
+      val skill =  o.skilledWorkers.map { a =>
+        if (provideWorkers.exists(b => b == PROVIDE_WORKERS_NO)) None
+        else if (a.yesNo == SKILLED_WORKERS_YES) Some(true)
+        else Some(false)
+      }
+      
+      val businessDesc =  Json.obj("businessDescription" -> o.description.get.description).asOpt[JsObject]
+
+      val numberOfWorkers = Json.obj("numberOfWorkers" -> numOfWorkers).asOpt[JsObject]
+
+      val temporaryCont = Json.obj("temporaryContracts" -> temp).asOpt[JsObject]
+
+      val skilledWork = Json.obj("skilledWorkers" -> skill).asOpt[JsObject]
+
+      val labour = provideWorkers.map(_ => Seq(numberOfWorkers, temporaryCont,skilledWork).flatten.fold(Json.obj())((a,b) => a ++ b))
+
+      val mainBus = Json.obj("mainBusinessActivity" ->
+        Json.toJson(o.mainBusinessActivity.get.mainBusinessActivity.get)(SicCode.format)).asOpt[JsObject]
+
+      Seq(businessDesc, labour,mainBus).flatten.fold[JsObject](Json.obj())((a,b) => a ++ b)
+    }
+  }
   // utilities
   def dropLabour(container: S4LVatSicAndCompliance): S4LVatSicAndCompliance =
     deleteLabour((container))
@@ -79,34 +142,8 @@ object S4LVatSicAndCompliance {
 
   implicit val format: OFormat[S4LVatSicAndCompliance] = Json.format[S4LVatSicAndCompliance]
 
-  implicit val modelT = new S4LModelTransformer[S4LVatSicAndCompliance] {
-    override def toS4LModel(vs: VatScheme): S4LVatSicAndCompliance =
-      S4LVatSicAndCompliance(
-        description = ApiModelTransformer[BusinessActivityDescription].toViewModel(vs),
-        mainBusinessActivity = ApiModelTransformer[MainBusinessActivityView].toViewModel(vs),
-        companyProvideWorkers = ApiModelTransformer[CompanyProvideWorkers].toViewModel(vs),
-        workers = ApiModelTransformer[Workers].toViewModel(vs),
-        temporaryContracts = ApiModelTransformer[TemporaryContracts].toViewModel(vs),
-        skilledWorkers = ApiModelTransformer[SkilledWorkers].toViewModel(vs)
-
-      )
-  }
-
   def error = throw fail("VatSicAndCompliance")
 
-  implicit val apiT = new S4LApiTransformer[S4LVatSicAndCompliance, VatSicAndCompliance] {
-    override def toApi(c: S4LVatSicAndCompliance): VatSicAndCompliance =
-      VatSicAndCompliance(
-        businessDescription = c.description.map(_.description).getOrElse(error),
-        mainBusinessActivity = c.mainBusinessActivity.flatMap(_.mainBusinessActivity).getOrElse(error),
-
-        labourCompliance = c.companyProvideWorkers.map(cpw =>
-                                VatComplianceLabour(
-                                  labour = cpw.yesNo == PROVIDE_WORKERS_YES,
-                                  workers = c.workers.map(_.numberOfWorkers),
-                                  temporaryContracts = c.temporaryContracts.map(_.yesNo == TEMP_CONTRACTS_YES),
-                                  skilledWorkers = c.skilledWorkers.map(_.yesNo == SKILLED_WORKERS_YES))))
-  }
 }
 
 final case class S4LVatContact

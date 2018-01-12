@@ -33,6 +33,7 @@ import models.{BankAccount, BankAccountDetails, S4LVatSicAndCompliance}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.cache.client.CacheMap
 
 trait BaseFixture {
   //Test variables
@@ -54,6 +55,9 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val upstream4xx = Upstream4xxResponse(IM_A_TEAPOT.toString, IM_A_TEAPOT, IM_A_TEAPOT)
   val upstream5xx = Upstream5xxResponse(INTERNAL_SERVER_ERROR.toString, INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)
   val validHttpResponse = HttpResponse(OK)
+
+  // CacheMap from S4l
+  val validCacheMap = CacheMap("fooBarWizzBand",Map("foo" -> Json.toJson("wizz")))
 
   //Exceptions
   val badRequest = new BadRequestException(BAD_REQUEST.toString)
@@ -90,20 +94,21 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val invalidBankCheckJsonResponse = Json.parse(invalidBankCheckJsonResponseString)
 
-
-  val validSicAndCompliance = VatSicAndCompliance(
-    businessDescription = testBusinessActivityDescription,
-    labourCompliance = None,
-    mainBusinessActivity = sicCode
-  )
-
-  val s4LVatSicAndCompliance = S4LVatSicAndCompliance(
+  val s4lVatSicAndComplianceWithoutLabour = S4LVatSicAndCompliance(
     description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
     mainBusinessActivity = Some(MainBusinessActivityView(sicCode.id, Some(sicCode))),
     companyProvideWorkers = None,
     workers = None,
     temporaryContracts = None,
     skilledWorkers = None)
+
+  val s4lVatSicAndComplianceWithLabour = S4LVatSicAndCompliance(
+    description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
+    mainBusinessActivity = Some(MainBusinessActivityView(sicCode.id, Some(sicCode))),
+    companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
+    workers = Some(Workers(20)),
+    temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
+    skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES)))
 
   //View models
   val validOfficerContactDetailsView = ContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
@@ -132,7 +137,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
   val validVatThresholdPostIncorp = VatThresholdPostIncorp(overThresholdSelection = false, None)
-  val validVatLabourCompliance = VatComplianceLabour(labour = false)
   val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
 
   val emptyVatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
@@ -155,7 +159,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     financials = Some(validVatFinancials),
     vatContact = Some(validVatContact),
     lodgingOfficer = Some(validFullLodgingOfficer),
-    vatSicAndCompliance = Some(validSicAndCompliance),
+    sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     vatFlatRateScheme = Some(validVatFlatRateScheme),
     bankAccount = Some(validBankAccount),
     returns = Some(validReturns),
@@ -165,7 +169,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
     status = VatRegStatus.draft,
     id = testRegId,
-    vatSicAndCompliance = Some(validSicAndCompliance),
+    sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     lodgingOfficer = Some(emptyLodgingOfficer),
     financials = Some(
       VatFinancials(
@@ -187,31 +191,17 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
       incorporationDate = Some(LocalDate.of(2016, 8, 5)),
       description = Some("Some description")))
 
-  def vatSicAndCompliance(
-                           activityDescription: String = "Some business activity",
-                           labourComplianceSection: Option[VatComplianceLabour] = Some(VatComplianceLabour(
-                             labour = true,
-                             workers = Some(8),
-                             temporaryContracts = Some(true),
-                             skilledWorkers = Some(true))),
-                           mainBusinessActivitySection: SicCode): VatSicAndCompliance =
-    VatSicAndCompliance(
-      businessDescription = activityDescription,
-      labourCompliance = labourComplianceSection,
-      mainBusinessActivity = mainBusinessActivitySection
-    )
-
   def vatScheme(
                  id: String = testRegId,
                  tradingDetails: Option[TradingDetails] = None,
-                 sicAndCompliance: Option[VatSicAndCompliance] = None,
+                 sicAndComp: Option[S4LVatSicAndCompliance] = None,
                  contact: Option[VatContact] = None,
                  vatFlatRateScheme: Option[VatFlatRateScheme] = None,
                  vatEligibility: Option[VatServiceEligibility] = None
                ): VatScheme = VatScheme(
     id = id,
     tradingDetails = tradingDetails,
-    vatSicAndCompliance = sicAndCompliance,
+    sicAndCompliance = sicAndComp,
     vatContact = contact,
     vatFlatRateScheme = vatFlatRateScheme,
     vatServiceEligibility = vatEligibility,

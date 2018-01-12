@@ -20,31 +20,33 @@ import controllers.sicAndCompliance
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.view.sicAndCompliance.labour.SkilledWorkers
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
-  object SkilledWorkersController extends SkilledWorkersController(
-    ds,
-    mockKeystoreConnector,
-    mockAuthConnector,
-    mockVatRegistrationService,
-    mockS4LService
-  )
+  trait Setup {
+    object SkilledWorkersController extends SkilledWorkersController(
+      ds,
+      mockKeystoreConnector,
+      mockAuthConnector,
+      mockVatRegistrationService,
+      mockSicAndComplianceSrv,
+      mockS4LService
+    )
+
+    mockGetCurrentProfile()
+  }
 
   val fakeRequest = FakeRequest(sicAndCompliance.labour.routes.SkilledWorkersController.show())
 
   s"GET ${sicAndCompliance.labour.routes.SkilledWorkersController.show()}" should {
-    "return HTML when there's a Company Provide Skilled Workers model in S4L" in {
-      save4laterReturnsViewModel(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO))()
-      mockGetCurrentProfile()
+    "return HTML when there's a Company Provide Skilled Workers model in S4L" in new Setup {
+      mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+
       submitAuthorised(SkilledWorkersController.show(), fakeRequest.withFormUrlEncodedBody(
         "skilledWorkersRadio" -> ""
       )) {
@@ -55,66 +57,38 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
           contentAsString(result) must include("Does the company provide skilled workers?")
       }
     }
-
-    "return HTML when there's nothing in S4L and vatScheme contains data" in {
-      save4laterReturnsNoViewModel[SkilledWorkers]()
-      when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(Future.successful(validVatScheme))
-      mockGetCurrentProfile()
-      callAuthorised(SkilledWorkersController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Does the company provide skilled workers?")
-      }
-    }
-
-  "return HTML when there's nothing in S4L and vatScheme contains no data" in {
-    save4laterReturnsNoViewModel[SkilledWorkers]()
-    when(mockVatRegistrationService.getVatScheme(any(), any[HeaderCarrier]())).thenReturn(Future.successful(emptyVatScheme))
-    mockGetCurrentProfile()
-      callAuthorised(SkilledWorkersController.show) {
-        result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("Does the company provide skilled workers?")
-      }
-    }
   }
 
   s"POST ${sicAndCompliance.labour.routes.SkilledWorkersController.submit()}" should {
-    "return 400 with Empty data" in {
-      mockGetCurrentProfile()
+    "return 400 with Empty data" in new Setup {
+
       submitAuthorised(SkilledWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
       )) {
         result => status(result) mustBe Status.BAD_REQUEST
       }
     }
 
-    "return 303 with company provide Skilled workers Yes selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
-      save4laterExpectsSave[SkilledWorkers]()
-      mockGetCurrentProfile()
+    "return 303 with company provide Skilled workers Yes selected" in new Setup {
+      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+
       submitAuthorised(SkilledWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "skilledWorkersRadio" -> SkilledWorkers.SKILLED_WORKERS_YES
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/trading-name"
+          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingDetailsController.euGoodsPage().url
       }
     }
 
-    "return 303 with company provide Skilled workers No selected" in {
-      when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(Future.successful(validSicAndCompliance))
-      save4laterExpectsSave[SkilledWorkers]()
-      mockGetCurrentProfile()
+    "return 303 with company provide Skilled workers No selected" in new Setup {
+      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+
       submitAuthorised(SkilledWorkersController.submit(), fakeRequest.withFormUrlEncodedBody(
         "skilledWorkersRadio" -> SkilledWorkers.SKILLED_WORKERS_NO
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/trading-name"
+          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingDetailsController.euGoodsPage().url
       }
     }
   }

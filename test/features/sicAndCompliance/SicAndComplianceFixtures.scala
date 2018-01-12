@@ -17,17 +17,10 @@
 package fixtures
 
 import models.S4LVatSicAndCompliance
-import models.api.VatSicAndCompliance
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 
 trait SicAndComplianceFixtures {
   self: VatRegistrationFixture =>
-
-  val validSicAndCompliance = VatSicAndCompliance(
-    businessDescription = testBusinessActivityDescription,
-    labourCompliance = None,
-    mainBusinessActivity = sicCode
-  )
 
   val s4LVatSicAndCompliance = S4LVatSicAndCompliance(
     description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
