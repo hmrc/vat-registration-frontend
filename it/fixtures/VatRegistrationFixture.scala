@@ -22,59 +22,16 @@ import common.enums.VatRegStatus
 import features.returns.{Frequency, Returns, Stagger}
 import models.api._
 import models.external.Officer
-import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerSecurityQuestionsView}
+import features.officer.fixtures.LodgingOfficerFixture
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
-import models.{BankAccount, BankAccountDetails, S4LVatLodgingOfficer}
+import models.{BankAccount, BankAccountDetails}
 
-trait VatRegistrationFixture {
+trait VatRegistrationFixture extends LodgingOfficerFixture {
   val address = ScrsAddress(line1 = "3 Test Building", line2 = "5 Test Road", postcode = Some("TE1 1ST"))
 
   val tradingDetails = VatTradingDetails(
     tradingName = TradingName(selection = false, tradingName = None),
     euTrading = VatEuTrading(false, Some(false))
-  )
-
-  val lodgingOfficer = VatLodgingOfficer(
-    currentAddress = Some(address),
-    dob = Some(DateOfBirth(31, 12, 1980)),
-    nino = Some("SR123456C"),
-    role = Some("Director"),
-    name = Some(Name(forename = Some("Firstname"), surname = "lastname", otherForenames = None)),
-    changeOfName = Some(ChangeOfName(nameHasChanged = false)),
-    currentOrPreviousAddress = Some(CurrentOrPreviousAddress(true)),
-    contact = Some(OfficerContactDetails(Some("test@test.com"), None, None))
-  )
-
-  val validLodgingOfficerPreIV = VatLodgingOfficer(
-    currentAddress = None,
-    dob = Some(DateOfBirth(31, 12, 1980)),
-    nino = Some("SR123456C"),
-    role = Some("Director"),
-    name = Some(Name(forename = Some("Firstname"), surname = "lastname", otherForenames = None)),
-    changeOfName = None,
-    currentOrPreviousAddress = None,
-    contact = None
-  )
-
-  val validPreIVScheme = VatScheme(id="1", lodgingOfficer = Some(validLodgingOfficerPreIV), status = VatRegStatus.draft)
-  val completionCapacity = CompletionCapacity(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director")
-
-  val officerName = Name(forename = Some("Firstname"), surname = "lastname", otherForenames = None)
-
-  val validS4LLodgingOfficerPreIv = S4LVatLodgingOfficer (
-    completionCapacity = Some(CompletionCapacityView("",Some(completionCapacity))),
-    officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.of(2017,11,5),"nino",Some(officerName)))
-  )
-
-  val validOfficer = Officer(
-    name = officerName,
-    role = "Director",
-    dateOfBirth = Some(DateOfBirth(31, 12, 1980))
-  )
-
-  val validCompletionCapacity = CompletionCapacity(
-    name = Name(forename = Some("Firstname"), surname = "lastname", otherForenames = None),
-    role = "Director"
   )
 
   val financials = VatFinancials(
@@ -127,7 +84,7 @@ trait VatRegistrationFixture {
     id = "1",
     status = VatRegStatus.draft,
     tradingDetails = Some(tradingDetails),
-    lodgingOfficer = Some(lodgingOfficer),
+    lodgingOfficer = None,
     financials = Some(financials),
     vatSicAndCompliance = Some(sicAndCompliance),
     vatContact = Some(vatContact),
@@ -141,7 +98,7 @@ trait VatRegistrationFixture {
     id = "1",
     status =VatRegStatus.draft,
     tradingDetails = Some(tradingDetails),
-    lodgingOfficer = Some(lodgingOfficer),
+    lodgingOfficer = None,
     financials = Some(financials),
     vatSicAndCompliance = Some(sicAndCompliance),
     vatContact = Some(vatContact),
@@ -149,10 +106,5 @@ trait VatRegistrationFixture {
     vatFlatRateScheme = Some(flatRateScheme),
     bankAccount = Some(bankAccount)
   )
-val validName = Name(Some("foo"),Some("bar"),"fizz",Some("bang"))
-  val nameId = validName.id
-  val validS4LLodgingOfficer = S4LVatLodgingOfficer(
-    completionCapacity = Some(CompletionCapacityView(nameId,Some(CompletionCapacity(validName,"bar")))),
-    officerSecurityQuestions = Some(OfficerSecurityQuestionsView(LocalDate.of(2017,11,5),"nino",Some(validName))))
 
 }

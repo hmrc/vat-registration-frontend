@@ -79,6 +79,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
         .s4lContainerInScenario[S4LVatSicAndCompliance].contains(s4lWithoutCompliance, Some("Drop all compliance updated"))
         .vatScheme.isUpdatedWith[VatSicAndCompliance](S4LVatSicAndCompliance.apiT.toApi(s4lWithoutCompliance))
         .audit.writesAudit()
+        .audit.writesAuditMerged()
 
       val response = buildClient("/main-source-of-income").post(Map("mainBusinessActivityRadio" -> Seq(sicCodeId)))
       whenReady(response) { res =>

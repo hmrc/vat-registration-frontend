@@ -1,0 +1,53 @@
+@import models.external.Officer
+@import features.officer.models.view.CompletionCapacityView
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
+@import views.html.helpers.templates.newWindowLink
+
+@(completionCapacityForm: Form[CompletionCapacityView], officerList: Seq[Officer])(implicit request: Request[_], messages: Messages)
+
+
+@main_template(title = messages("pages.completionCapacity.title")) {
+
+    @errorSummary(
+    messages("app.common.errorSummaryLabel"),
+    completionCapacityForm
+    )
+
+    <header class="page-header">
+        <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.completionCapacity.heading")</h1>
+    </header>
+
+
+    @govHelpers.form(action = features.officer.controllers.routes.OfficerController.submitCompletionCapacity()) {
+        <div class="form-group" id="completionCapacityRadio">
+
+        @vatInputRadioGroup(
+            field = completionCapacityForm("completionCapacityRadio"),
+            officerList.map(officer => (officer.name.id, officer.name.asLabel)),
+            '_labelAfter -> true,
+            '_legend -> messages("pages.completionCapacity.heading"),
+            '_legendClass -> "hidden",
+            '_labelClass -> "block-label"
+        )
+
+        </div>
+        <details role="group">
+            <summary role="button" aria-controls="details-content-0" aria-expanded="false">
+                <span class="summary">@messages("pages.completionCapacity.panel.title")</span>
+            </summary>
+            <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
+                <p>@messages("pages.completionCapacity.panel.p1")
+                    @newWindowLink("https://ewf.companieshouse.gov.uk//seclogin?tc=1", messages("pages.completionCapacity.panel.p1.link")). @messages("pages.completionCapacity.panel.p1.1") </p>
+                <p>@Html(messages("pages.completionCapacity.panel.p2"))
+                    @newWindowLink("https://www.gov.uk/limited-company-formation/register-your-company", messages("pages.completionCapacity.panel.p2.link")) @messages("pages.completionCapacity.panel.p2.1")</p>
+
+                <p>@Html(messages("pages.completionCapacity.panel.p3"))  @newWindowLink("https://online.hmrc.gov.uk/registration/newbusiness/business-allowed", messages("pages.completionCapacity.panel.p3.link"))</p>
+            </div>
+        </details>
+        <div class="form-group">
+            <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+        </div>
+    }
+
+}

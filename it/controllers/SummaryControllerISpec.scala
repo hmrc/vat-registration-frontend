@@ -17,14 +17,50 @@
 package controllers
 
 import features.returns.{Frequency, Returns, Stagger}
+import features.officer.models.view.LodgingOfficer
 import it.fixtures.VatRegistrationFixture
 import models.S4LVatSicAndCompliance
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
+import play.api.libs.json.Json
 import support.AppAndStubs
 
 class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with VatRegistrationFixture {
+
+  val officerJson = Json.parse(
+    s"""
+       |{
+       |  "name": {
+       |    "first": "${validOfficer.name.forename}",
+       |    "middle": "${validOfficer.name.otherForenames}",
+       |    "last": "${validOfficer.name.surname}"
+       |  },
+       |  "role": "${validOfficer.role}",
+       |  "dob": "$officerDob",
+       |  "nino": "$officerNino",
+       |  "details": {
+       |    "currentAddress": {
+       |      "line1": "${validCurrentAddress.line1}",
+       |      "line2": "${validCurrentAddress.line2}",
+       |      "postcode": "${validCurrentAddress.postcode}"
+       |    },
+       |    "contact": {
+       |      "email": "$officerEmail",
+       |      "tel": "1234",
+       |      "mobile": "5678"
+       |    },
+       |    "changeOfName": {
+       |      "name": {
+       |        "first": "New",
+       |        "middle": "Name",
+       |        "last": "Cosmo"
+       |      },
+       |      "change": "2000-07-12"
+       |    }
+       |  }
+       |}""".stripMargin)
+
   "GET Summary page" should {
     "display the summary page correctly" when {
       "the company is NOT incorporated" in {
@@ -32,16 +68,19 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .user.isAuthorised
           .currentProfile.withProfile()
           .vatScheme.contains(vatReg)
+          .vatScheme.has("officer", officerJson)
+          .s4lContainer[LodgingOfficer].isUpdatedWith(validFullLodgingOfficer)
           .s4lContainer[S4LVatSicAndCompliance].cleared
           .s4lContainer[Returns].contains(Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None))
           .audit.writesAudit()
+          .audit.writesAuditMerged()
 
         val response = buildClient("/check-your-answers").get()
         whenReady(response) { res =>
           res.status mustBe 200
           val document = Jsoup.parse(res.body)
           document.title() mustBe "Summary"
-          
+
           a[NullPointerException] mustBe thrownBy(document.getElementById("threshold.overThresholdSelectionQuestion").text)
           document.getElementById("vatDetails.taxableTurnoverAnswer").text mustBe "No"
           document.getElementById("vatDetails.taxableTurnoverChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/vat-taxable-sales-over-threshold"
@@ -50,7 +89,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           document.getElementById("vatDetails.voluntaryRegistrationReasonAnswer").text mustBe "The company is already selling goods or services"
           document.getElementById("vatDetails.voluntaryRegistrationReasonChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/applies-company"
 
-          document.getElementById("directorDetails.formerNameAnswer").text mustBe "No former name"
+          document.getElementById("directorDetails.formerNameAnswer").text mustBe "New Name Cosmo"
           document.getElementById("taxableSales.estimatedSalesValueAnswer").text mustBe "£30000"
           document.getElementById("annualAccountingScheme.accountingPeriodAnswer").text mustBe "January, April, July and October"
         }
@@ -61,8 +100,11 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .user.isAuthorised
           .currentProfile.withProfileAndIncorpDate()
           .vatScheme.contains(vatRegIncorporated)
+          .vatScheme.has("officer", officerJson)
+          .s4lContainer[LodgingOfficer].contains(validFullLodgingOfficer)
           .s4lContainer[S4LVatSicAndCompliance].cleared
           .audit.writesAudit()
+          .audit.writesAuditMerged()
 
         val response = buildClient("/check-your-answers").get()
         whenReady(response) { res =>

@@ -53,6 +53,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .s4lContainerInScenario[S4LVatContact].contains(s4lVatContact, Some("Vat Contact updated"))
         .vatScheme.isUpdatedWith[VatContact](S4LVatContact.apiT.toApi(s4lVatContact))
         .audit.writesAudit()
+        .audit.writesAuditMerged()
 
       val response = buildClient("/company-contact-details").post(Map("email" -> Seq(email), "mobile" -> Seq(mobile)))
       whenReady(response) { res =>

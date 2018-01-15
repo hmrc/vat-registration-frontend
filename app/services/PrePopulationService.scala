@@ -25,6 +25,7 @@ import cats.data.OptionT.fromOption
 import cats.instances.{FutureInstances, ListInstances}
 import cats.syntax.TraverseSyntax
 import connectors.{OptionalResponse, PPConnector}
+import features.officer.models.view.LodgingOfficer
 import models._
 import models.api._
 import models.external.Officer
@@ -64,9 +65,10 @@ trait PrePopService extends TraverseSyntax with ListInstances with FutureInstanc
     ).traverse(_.value).map(_.flatten.distinct)
   }
 
-  def getOfficerAddressList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
-    import ScrsAddress.modelTransformerOfficerHomeAddressView
-    getAddresses((_: S4LVatLodgingOfficer).officerHomeAddress.flatMap(_.address))
+  def getOfficerAddressList(officer: LodgingOfficer)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
+    incorpInfoService.getRegisteredOfficeAddress.value map {
+      address => Seq(address, officer.homeAddress.fold(Option.empty[ScrsAddress])(_.address)).flatten.distinct
+    }
   }
 
   def getPpobAddressList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {

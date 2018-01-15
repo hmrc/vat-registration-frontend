@@ -25,7 +25,8 @@ import models.ModelKeys.REGISTERING_OFFICER_KEY
 import models.api._
 import models.external.Officer
 import models.view.test._
-import models.{S4LKey, S4LVatContact, S4LVatFinancials, S4LVatLodgingOfficer, S4LVatSicAndCompliance, _}
+import models.{S4LKey, S4LVatContact, S4LVatFinancials, S4LVatSicAndCompliance, _}
+import features.officer.models.view.LodgingOfficer
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService, SessionProfile}
@@ -55,7 +56,7 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
             vatSicAndCompliance <- s4LService.fetchAndGet[S4LVatSicAndCompliance]
             tradingDetails <- s4LService.fetchAndGet[S4LTradingDetails]
             vatContact <- s4LService.fetchAndGet[S4LVatContact]
-            vatLodgingOfficer <- s4LService.fetchAndGet[S4LVatLodgingOfficer]
+            lodgingOfficer <- s4LService.fetchAndGet[LodgingOfficer]
             eligibility <- s4LService.fetchAndGet[S4LVatEligibility]
             frs <- s4LService.fetchAndGet[S4LFlatRateScheme]
 
@@ -123,39 +124,40 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                 doAnyApplyToYou = eligibility.flatMap(_.vatEligibility).map(_.doAnyApplyToYou.getOrElse("").toString),
                 applyingForAnyOf = eligibility.flatMap(_.vatEligibility).map(_.applyingForAnyOf.getOrElse("").toString),
                 applyingForVatExemption = eligibility.flatMap(_.vatEligibility).map(_.applyingForVatExemption.getOrElse("").toString),
-                companyWillDoAnyOf = eligibility.flatMap(_.vatEligibility).map(_.companyWillDoAnyOf.getOrElse("").toString)),
+                companyWillDoAnyOf = eligibility.flatMap(_.vatEligibility).map(_.companyWillDoAnyOf.getOrElse("").toString)
+              ),
               officerHomeAddress = OfficerHomeAddressTestSetup(
-                line1 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).map(_.line1),
-                line2 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).map(_.line2),
-                line3 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.line3),
-                line4 = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.line4),
-                postcode = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.postcode),
-                country = vatLodgingOfficer.flatMap(_.officerHomeAddress).flatMap(_.address).flatMap(_.country)),
+                line1 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).map(_.line1),
+                line2 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).map(_.line2),
+                line3 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.line3),
+                line4 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.line4),
+                postcode = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.postcode),
+                country = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.country)),
               officerPreviousAddress = OfficerPreviousAddressTestSetup(
-                threeYears = vatLodgingOfficer.flatMap(_.previousAddress).map(_.yesNo.toString),
-                line1 = vatLodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).map(_.line1),
-                line2 = vatLodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).map(_.line2),
-                line3 = vatLodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.line3),
-                line4 = vatLodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.line4),
-                postcode = vatLodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.postcode),
-                country = vatLodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.country)),
-              vatLodgingOfficer = VatLodgingOfficerTestSetup(
-                dobDay = vatLodgingOfficer.flatMap(_.officerSecurityQuestions).map(_.dob.getDayOfMonth.toString),
-                dobMonth = vatLodgingOfficer.flatMap(_.officerSecurityQuestions).map(_.dob.getMonthValue.toString),
-                dobYear = vatLodgingOfficer.flatMap(_.officerSecurityQuestions).map(_.dob.getYear.toString),
-                nino = vatLodgingOfficer.flatMap(_.officerSecurityQuestions).map(_.nino),
-                role = vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).map(_.role),
-                firstname = vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).flatMap(_.name.forename),
-                othernames = vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).flatMap(_.name.otherForenames),
-                surname = vatLodgingOfficer.flatMap(_.completionCapacity).flatMap(_.completionCapacity).map(_.name.surname),
-                email = vatLodgingOfficer.flatMap(_.officerContactDetails).flatMap(_.email),
-                mobile = vatLodgingOfficer.flatMap(_.officerContactDetails).flatMap(_.daytimePhone),
-                phone = vatLodgingOfficer.flatMap(_.officerContactDetails).flatMap(_.mobile),
-                formernameChoice = vatLodgingOfficer.flatMap(_.formerName).map(_.yesNo.toString),
-                formername = vatLodgingOfficer.flatMap(_.formerName).flatMap(_.formerName),
-                formernameChangeDay = vatLodgingOfficer.flatMap(_.formerNameDate).map(_.date.getDayOfMonth.toString),
-                formernameChangeMonth = vatLodgingOfficer.flatMap(_.formerNameDate).map(_.date.getMonthValue.toString),
-                formernameChangeYear = vatLodgingOfficer.flatMap(_.formerNameDate).map(_.date.getYear.toString)
+                threeYears = lodgingOfficer.flatMap(_.previousAddress).map(_.yesNo.toString),
+                line1 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).map(_.line1),
+                line2 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).map(_.line2),
+                line3 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.line3),
+                line4 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.line4),
+                postcode = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.postcode),
+                country = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.country)),
+              lodgingOfficer = LodgingOfficerTestSetup(
+                dobDay = lodgingOfficer.flatMap(_.securityQuestions).map(_.dob.getDayOfMonth.toString),
+                dobMonth = lodgingOfficer.flatMap(_.securityQuestions).map(_.dob.getMonthValue.toString),
+                dobYear = lodgingOfficer.flatMap(_.securityQuestions).map(_.dob.getYear.toString),
+                nino = lodgingOfficer.flatMap(_.securityQuestions).map(_.nino),
+                role = lodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).map(_.role),
+                firstname = lodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).flatMap(_.name.forename),
+                othernames = lodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).flatMap(_.name.otherForenames),
+                surname = lodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).map(_.name.surname),
+                email = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.email),
+                mobile = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.daytimePhone),
+                phone = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.mobile),
+                formernameChoice = lodgingOfficer.flatMap(_.formerName).map(_.yesNo.toString),
+                formername = lodgingOfficer.flatMap(_.formerName).flatMap(_.formerName),
+                formernameChangeDay = lodgingOfficer.flatMap(_.formerNameDate).map(_.date.getDayOfMonth.toString),
+                formernameChangeMonth = lodgingOfficer.flatMap(_.formerNameDate).map(_.date.getMonthValue.toString),
+                formernameChangeYear = lodgingOfficer.flatMap(_.formerNameDate).map(_.date.getYear.toString)
               ),
               vatFlatRateScheme = VatFlatRateSchemeTestSetup(
                 joinFrs = frs.flatMap(_.joinFrs).map(_.selection.toString),
@@ -212,16 +214,10 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                   _ <- s4LService.save(s4LBuilder.tradingDetailsFromData(data))
                   _ <- s4LService.save(s4LBuilder.vatContactFromData(data))
 
-                  vatLodgingOfficer = s4LBuilder.vatLodgingOfficerFromData(data)
-                  _ <- s4LService.save(vatLodgingOfficer)
+                  lodgingOfficer = s4LBuilder.buildLodgingOfficerFromTestData(data)
+                  _ <- s4LService.save(lodgingOfficer)
 
                   _ <- s4LService.save(s4LBuilder.vatFrsFromData(data))
-
-                  // Keystore hack for Officer DOB page
-                  officer = vatLodgingOfficer.completionCapacity.
-                    flatMap(ccv => ccv.completionCapacity.
-                      map(cc => Officer(cc.name, cc.role, None)))
-                  _ <- keystoreConnector.cache(REGISTERING_OFFICER_KEY, officer.getOrElse(Officer.empty))
 
                   // Bank Account
 //                  _ <- saveToS4L(data.bankAccountBlock.fold(BankAccount(isProvided = false, None))(identity))

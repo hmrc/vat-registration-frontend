@@ -17,7 +17,8 @@
 package mocks
 
 import connectors._
-import features.iv.services.IdentityVerificationService
+import features.officer.services.IVServiceImpl
+import features.officer.services.LodgingOfficerService
 import features.returns.ReturnsService
 import org.mockito.Mockito.reset
 import org.scalatest.mockito.MockitoSugar
@@ -53,12 +54,13 @@ trait VatMocks
   implicit lazy val mockAddressLookupConnector = mock[AddressLookupConnector]
   implicit lazy val mockDateService = mock[DateService]
   implicit lazy val mockIncorpInfoService = mock[IncorporationInfoSrv]
-  implicit lazy val mockIdentityVerificationConnector = mock[IdentityVerificationConnector]
+  implicit lazy val mockIdentityVerificationConnector = mock[IVConnectorImpl]
   implicit lazy val mockBankAccountReputationService = mock[BankAccountReputationServiceImpl]
   implicit lazy val mockBankAccountReputationConnector = mock[BankAccountReputationConnector]
-  implicit lazy val mockIVService = mock[IdentityVerificationService]
+  implicit lazy val mockIVService = mock[IVServiceImpl]
   implicit lazy val mockConfig = mock[ServicesConfig]
   implicit lazy val mockReturnsService = mock[ReturnsService]
+  implicit lazy val mockLodgingOfficerService = mock[LodgingOfficerService]
 
   def resetMocks() {
     reset(
@@ -84,7 +86,8 @@ trait VatMocks
       mockCurrentProfile,
       mockIdentityVerificationConnector,
       mockIVService,
-      mockReturnsService
+      mockReturnsService,
+      mockLodgingOfficerService
     )
   }
 }

@@ -38,6 +38,7 @@ class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .user.isAuthorised
           .currentProfile.withProfile()
           .s4lContainer[S4LFlatRateScheme].contains(JoinFrsView(selection = true))
+          .audit.writesAuditMerged()
 
         whenReady(controller.show(request)) { res =>
           res.header.status mustBe 200
@@ -50,6 +51,7 @@ class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .currentProfile.withProfile()
           .s4lContainer[S4LFlatRateScheme].isEmpty
           .vatScheme.isBlank
+          .audit.writesAuditMerged()
 
         whenReady(controller.show(request))(res => res.header.status mustBe 200)
       }
@@ -66,6 +68,7 @@ class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .currentProfile.withProfile()
           .s4lContainer[S4LFlatRateScheme].contains(JoinFrsView(selection = false))
           .s4lContainer[S4LFlatRateScheme].isUpdatedWith(JoinFrsView(selection = true))
+          .audit.writesAuditMerged()
 
         whenReady(controller.submit(request))(res => res.header.status mustBe 303)
       }
@@ -79,6 +82,7 @@ class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .s4lContainer[S4LFlatRateScheme].isUpdatedWith(JoinFrsView(selection = false))
           .vatScheme.isBlank
           .vatScheme.isUpdatedWith(VatFlatRateScheme(joinFrs = true))
+          .audit.writesAuditMerged()
 
         whenReady(controller.submit(request))(res => res.header.status mustBe 303)
       }

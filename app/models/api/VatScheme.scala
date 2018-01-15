@@ -19,6 +19,7 @@ package models.api
 import common.enums.VatRegStatus
 import features.returns.Returns
 import models.BankAccount
+import features.officer.models.view.LodgingOfficer
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -26,7 +27,7 @@ import play.api.libs.json._
 case class VatScheme(
                       id: String,
                       tradingDetails: Option[VatTradingDetails] = None,
-                      lodgingOfficer: Option[VatLodgingOfficer] = None,
+                      lodgingOfficer: Option[LodgingOfficer] = None,
                       financials: Option[VatFinancials] = None,
                       vatSicAndCompliance: Option[VatSicAndCompliance] = None,
                       vatContact: Option[VatContact] = None,
@@ -38,11 +39,10 @@ case class VatScheme(
                     )
 
 object VatScheme {
-
   implicit val format: OFormat[VatScheme] = (
     (__ \ "registrationId").format[String] and
       (__ \ "tradingDetails").formatNullable[VatTradingDetails] and
-      (__ \ "lodgingOfficer").formatNullable[VatLodgingOfficer] and
+      (__ \ "lodgingOfficer").formatNullable[LodgingOfficer].inmap[Option[LodgingOfficer]](_ => Option.empty[LodgingOfficer], _ => Option.empty[LodgingOfficer]) and
       (__ \ "financials").formatNullable[VatFinancials] and
       (__ \ "vatSicAndCompliance").formatNullable[VatSicAndCompliance] and
       (__ \ "vatContact").formatNullable[VatContact] and

@@ -24,7 +24,6 @@ import models._
 import models.external.IncorporationInfo
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.vatContact.ppob.PpobView
-import models.view.vatLodgingOfficer._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -114,17 +113,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     }
   }
 
-  "Calling submitEligibility" should {
-    "return a success response when VatEligibility is submitted" in new Setup {
-      save4laterReturns(S4LVatEligibility(Some(validServiceEligibility())))
-
-      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(validVatScheme.pure)
-      when(mockRegConnector.upsertVatEligibility(any(), any())(any(), any())).thenReturn(validServiceEligibility().pure)
-
-      service.submitVatEligibility returns validServiceEligibility()
-    }
-  }
-
   "Calling deleteVatScheme" should {
     "return a success response when the delete VatScheme is successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
@@ -158,43 +146,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturnsNothing[S4LVatContact]()
 
       service.submitVatContact failedWith classOf[IllegalStateException]
-    }
-
-    "submitVatEligibility should process the submission even if VatScheme does not contain a VatEligibility object" in new Setup {
-
-      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-      when(mockRegConnector.upsertVatEligibility(any(), any())(any(), any())).thenReturn(validServiceEligibility().pure)
-      save4laterReturns(S4LVatEligibility(Some(validServiceEligibility())))
-      service.submitVatEligibility returns validServiceEligibility()
-    }
-
-    "submitVatEligibility should fail if there's not trace of VatEligibility in neither backend nor S4L" in new Setup {
-      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-      save4laterReturnsNothing[S4LVatEligibility]()
-
-      service.submitVatEligibility failedWith classOf[IllegalStateException]
-    }
-
-    "submitVatLodgingOfficer should process the submission even if VatScheme does not contain a VatLodgingOfficer object" in new Setup {
-      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-      when(mockRegConnector.upsertVatLodgingOfficer(any(), any())(any(), any())).thenReturn(validLodgingOfficer.pure)
-      save4laterReturns(S4LVatLodgingOfficer(
-        officerHomeAddress = Some(OfficerHomeAddressView(scrsAddress.id, Some(scrsAddress))),
-        officerSecurityQuestions = Some(OfficerSecurityQuestionsView(testDate, testNino)),
-        completionCapacity = Some(CompletionCapacityView("id", Some(completionCapacity))),
-        officerContactDetails = Some(validOfficerContactDetailsView),
-        formerName = Some(FormerNameView(yesNo = false)),
-        previousAddress = Some(PreviousAddressView(yesNo = false))
-      ))
-
-      service.submitVatLodgingOfficer returns validLodgingOfficer
-    }
-
-    "submitVatLodgingOfficer should fail if there's not trace of VatLodgingOfficer in neither backend nor S4L" in new Setup {
-      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-      save4laterReturnsNothing[S4LVatLodgingOfficer]()
-
-      service.submitVatLodgingOfficer failedWith classOf[IllegalStateException]
     }
 
     "submitSicAndCompliance should fail if VatSicAndCompliance not in backend and S4L" in new Setup {
