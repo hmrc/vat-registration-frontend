@@ -16,7 +16,7 @@
 
 package features.financials.forms
 
-import features.financials.models.Stagger._
+import features.returns.Stagger._
 import forms.AccountingPeriodForm
 import forms.AccountingPeriodForm._
 import helpers.VatRegSpec

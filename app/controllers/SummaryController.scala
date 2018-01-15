@@ -21,6 +21,7 @@ import javax.inject.{Inject, Singleton}
 import connectors.{KeystoreConnect, Success}
 import common.enums.VatRegStatus
 import controllers.builders._
+import features.returns.{Returns, ReturnsService}
 import models.api._
 import models.view._
 import models.{CurrentProfile, MonthYearModel}
@@ -36,6 +37,7 @@ import scala.concurrent.Future
 class SummaryController @Inject()(ds: CommonPlayDependencies,
                                   vatRegFeatureSwitch: VATRegFeatureSwitches,
                                   vrs: RegistrationService,
+                                  val returnsService: ReturnsService,
                                   val keystoreConnector: KeystoreConnect,
                                   val authConnector: AuthConnector,
                                   implicit val s4LService: S4LService) extends VatRegistrationController(ds) with SessionProfile {
@@ -56,7 +58,13 @@ class SummaryController @Inject()(ds: CommonPlayDependencies,
         }
   }
 
-  def getRegistrationSummary()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = vrs.getVatScheme.map(registrationToSummary)
+  def getRegistrationSummary()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = {
+    for {
+      vs <- vrs.getVatScheme
+    } yield {
+      registrationToSummary(vs)
+    }
+  }
 
   def submitRegistration: Action[AnyContent] = authorised.async {
     implicit user =>
@@ -74,7 +82,13 @@ class SummaryController @Inject()(ds: CommonPlayDependencies,
 
   def registrationToSummary(vs: VatScheme)(implicit profile : CurrentProfile): Summary = {
     Summary(Seq(
-      SummaryVatDetailsSectionBuilder(vs.tradingDetails, vs.vatServiceEligibility.flatMap(_.vatEligibilityChoice), useEligibilityFrontend, profile.incorporationDate).section,
+      SummaryVatDetailsSectionBuilder(
+        vs.tradingDetails,
+        vs.vatServiceEligibility.flatMap(_.vatEligibilityChoice),
+        vs.returns,
+        useEligibilityFrontend,
+        profile.incorporationDate
+      ).section,
       SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer).section,
       SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer).section,
       SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
@@ -83,7 +97,7 @@ class SummaryController @Inject()(ds: CommonPlayDependencies,
       SummaryComplianceSectionBuilder(vs.vatSicAndCompliance).section,
       SummaryBusinessBankDetailsSectionBuilder(vs.bankAccount).section,
       SummaryTaxableSalesSectionBuilder(vs.financials).section,
-      SummaryAnnualAccountingSchemeSectionBuilder(vs.financials).section,
+      SummaryAnnualAccountingSchemeSectionBuilder(vs.returns).section,
       SummaryFrsSectionBuilder(vs.vatFlatRateScheme).section
     ))
   }

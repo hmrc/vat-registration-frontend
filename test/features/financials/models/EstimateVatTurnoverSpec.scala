@@ -30,14 +30,10 @@ class EstimateVatTurnoverSpec extends UnitSpec with VatRegistrationFixture {
   val newEstimateVatTurnover = EstimateVatTurnover(turnoverNew)
 
   val vatFinancials = VatFinancials(
-    turnoverEstimate = estimatedVatTurnover.vatTurnoverEstimate,
-    reclaimVatOnMostReturns = true,
-    accountingPeriods = monthlyAccountingPeriod
+    turnoverEstimate = estimatedVatTurnover.vatTurnoverEstimate
   )
   val differentVatFinancials = VatFinancials(
-    turnoverEstimate = newEstimateVatTurnover.vatTurnoverEstimate,
-    reclaimVatOnMostReturns = true,
-    accountingPeriods = monthlyAccountingPeriod
+    turnoverEstimate = newEstimateVatTurnover.vatTurnoverEstimate
   )
   val vatScheme = VatScheme(id = testRegId, status = VatRegStatus.draft, financials = Some(vatFinancials))
 

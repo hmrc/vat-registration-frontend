@@ -19,7 +19,7 @@ package features.financials.forms
 import forms.ReturnFrequencyForm
 import helpers.VatRegSpec
 import forms.ReturnFrequencyForm._
-import features.financials.models.Frequency._
+import features.returns.Frequency._
 
 class ReturnFrequencyFormSpec extends VatRegSpec {
 
