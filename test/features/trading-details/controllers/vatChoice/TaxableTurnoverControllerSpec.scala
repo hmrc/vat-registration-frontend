@@ -16,9 +16,10 @@
 
 package controllers.vatTradingDetails.vatChoice
 
+import features.returns.Returns
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration}
+import models.view.vatTradingDetails.vatChoice.{TaxableTurnover, VoluntaryRegistration}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -32,6 +33,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
     ds,
     mockKeystoreConnector,
     mockAuthConnector,
+    mockReturnsService,
     mockS4LService,
     mockVatRegistrationService
   )
@@ -97,7 +99,9 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
     "return 303" in {
       save4laterExpectsSave[TaxableTurnover]()
       save4laterExpectsSave[VoluntaryRegistration]()
-      save4laterExpectsSave[StartDateView]()
+
+      when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
+        .thenReturn(Future.successful(Returns(None, None, None, None)))
 
       mockGetCurrentProfile()
 

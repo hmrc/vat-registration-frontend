@@ -16,6 +16,7 @@
 
 package controllers
 
+import features.returns.{Frequency, Returns, Stagger}
 import it.fixtures.VatRegistrationFixture
 import models.S4LVatSicAndCompliance
 import org.jsoup.Jsoup
@@ -32,6 +33,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .currentProfile.withProfile()
           .vatScheme.contains(vatReg)
           .s4lContainer[S4LVatSicAndCompliance].cleared
+          .s4lContainer[Returns].contains(Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None))
           .audit.writesAudit()
 
         val response = buildClient("/check-your-answers").get()

@@ -18,8 +18,8 @@ package features.financials.forms
 
 import java.time.LocalDate
 
-import features.financials.models.DateSelection
-import features.financials.models.DateSelection._
+import features.returns.DateSelection
+import features.returns.DateSelection._
 import forms.MandatoryDateForm
 import forms.MandatoryDateForm._
 import helpers.VatRegSpec

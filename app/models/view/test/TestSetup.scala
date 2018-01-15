@@ -16,6 +16,7 @@
 
 package models.view.test
 
+import features.returns.Returns
 import models.BankAccount
 import play.api.libs.json.Json
 
@@ -30,7 +31,8 @@ case class TestSetup(
                       officerPreviousAddress: OfficerPreviousAddressTestSetup,
                       vatLodgingOfficer: VatLodgingOfficerTestSetup,
                       vatFlatRateScheme: VatFlatRateSchemeTestSetup,
-                      bankAccountBlock: Option[BankAccount]
+                      bankAccountBlock: Option[BankAccount],
+                      returnsBlock: Option[Returns]
                     )
 
 

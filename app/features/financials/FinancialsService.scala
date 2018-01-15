@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpReads }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 
 package services {
 
   import common.ErrorUtil.fail
-  import models.{ApiModelTransformer, CurrentProfile, S4LKey, S4LVatFinancials}
   import models.api.{VatFinancials, VatScheme}
-  import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, VatChargeExpectancy, ZeroRatedSales}
-  import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
+  import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, ZeroRatedSales}
+  import models.{ApiModelTransformer, CurrentProfile, S4LKey, S4LVatFinancials}
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
   import scala.concurrent.Future
@@ -59,10 +58,7 @@ package services {
     private[services] def apiToView(vs: VatScheme): S4LVatFinancials = S4LVatFinancials(
       estimateVatTurnover       = ApiModelTransformer[EstimateVatTurnover].toViewModel(vs),
       zeroRatedTurnover         = ApiModelTransformer[ZeroRatedSales].toViewModel(vs),
-      zeroRatedTurnoverEstimate = ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vs),
-      vatChargeExpectancy       = ApiModelTransformer[VatChargeExpectancy].toViewModel(vs),
-      vatReturnFrequency        = ApiModelTransformer[VatReturnFrequency].toViewModel(vs),
-      accountingPeriod          = ApiModelTransformer[AccountingPeriod].toViewModel(vs)
+      zeroRatedTurnoverEstimate = ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vs)
     )
 
     private[services] def fetchFinancialsFromS4L(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Option[S4LVatFinancials]] = {
@@ -74,11 +70,11 @@ package services {
 package connectors {
 
   import cats.instances.FutureInstances
-  import features.financials.models.{Returns, TurnoverEstimates}
+  import features.financials.models.TurnoverEstimates
+  import features.returns.Returns
   import models.BankAccount
   import models.api.VatFinancials
-  import uk.gov.hmrc.http.HttpResponse
-  import uk.gov.hmrc.http.NotFoundException
+  import uk.gov.hmrc.http.{HttpResponse, NotFoundException}
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
   import scala.concurrent.Future

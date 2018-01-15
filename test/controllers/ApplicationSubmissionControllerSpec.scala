@@ -17,6 +17,7 @@
 package controllers
 
 import cats.data.OptionT
+import features.returns.Returns
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import org.mockito.ArgumentMatchers
@@ -24,11 +25,14 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 
+import scala.concurrent.Future
+
 class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistrationFixture{
 
   object Controller extends ApplicationSubmissionController(
     ds,
     mockVatRegistrationService,
+    mockReturnsService,
     mockAuthConnector,
     mockKeystoreConnector,
     mockS4LService
@@ -41,6 +45,9 @@ class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistratio
       mockGetCurrentProfile()
       when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.pure)
       when(mockVatRegistrationService.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any())).thenReturn(OptionT.some("testAckRef"))
+
+      when(mockReturnsService.getReturns(any(), any(), any()))
+        .thenReturn(Future.successful(Returns(None, None, None, None)))
 
       callAuthorised(Controller.show) {
         _ includesText "Application submitted"

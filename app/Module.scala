@@ -29,7 +29,7 @@ import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsCon
 import controllers.test.{FeatureSwitchController, FeatureSwitchCtrl}
 import features.bankAccountDetails.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
 import features.iv.services.{IVService, IdentityVerificationService}
-import features.returns.{ReturnsController, ReturnsCtrl}
+import features.returns.{ReturnsController, ReturnsControllerImpl, ReturnsService, ReturnsServiceImpl}
 import features.turnoverEstimates._
 import services._
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
@@ -84,7 +84,7 @@ class Module extends AbstractModule {
     bind(classOf[FeatureSwitchCtrl]).to(classOf[FeatureSwitchController]).asEagerSingleton()
     bind(classOf[BankAccountDetailsController]).to(classOf[BankAccountDetailsControllerImpl])
     bind(classOf[TurnoverEstimatesController]).to(classOf[TurnoverEstimatesControllerImpl]).asEagerSingleton()
-    bind(classOf[ReturnsCtrl]).to(classOf[ReturnsController]).asEagerSingleton()
+    bind(classOf[ReturnsController]).to(classOf[ReturnsControllerImpl]).asEagerSingleton()
   }
 
   private def bindServices(): Unit = {

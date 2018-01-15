@@ -19,9 +19,7 @@ package controllers.builders
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.{BankAccount, BankAccountDetails}
-import models.api._
 import models.view.SummaryRow
-import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 
 class SummaryBusinessBankDetailsSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 

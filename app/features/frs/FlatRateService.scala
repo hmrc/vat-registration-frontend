@@ -20,12 +20,16 @@ import scala.concurrent.Future
 
 package services {
 
+  import java.time.LocalDate
+
   import common.ErrorUtil.fail
+  import features.returns.Returns
   import models._
   import models.api.{VatFlatRateScheme, VatScheme}
   import models.view.frs.AnnualCostsLimitedView.{NO, YES, YES_WITHIN_12_MONTHS}
   import models.view.frs._
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+
 
   trait FlatRateService {
     self: RegistrationService =>
@@ -106,6 +110,14 @@ package services {
         _        <- saveBusinessSector(businessSector)
         savedFRS <- buildRegisterForFRS(frs)
       } yield savedFRS
+    }
+
+    private[services] def fetchVatStartDate(implicit headerCarrier: HeaderCarrier, currentProfile: CurrentProfile) : Future[Option[LocalDate]] = {
+      vatRegConnector.getReturns(currentProfile.registrationId) map {returns =>
+        returns.start.flatMap(_.date)
+      } recover {
+        case e => None
+      }
     }
 
     def saveFRSStartDate(frsStartDateView: FrsStartDateView)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {

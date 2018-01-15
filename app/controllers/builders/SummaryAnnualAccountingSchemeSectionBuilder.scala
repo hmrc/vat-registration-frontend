@@ -16,31 +16,31 @@
 
 package controllers.builders
 
-import models.api._
-import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
+import features.returns.{Frequency, Returns}
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryAnnualAccountingSchemeSectionBuilder(vatFinancials: Option[VatFinancials] = None)
+case class SummaryAnnualAccountingSchemeSectionBuilder(returns: Option[Returns])
   extends SummarySectionBuilder {
 
   override val sectionId: String = "annualAccountingScheme"
 
   val vatChargeExpectancyRow: SummaryRow = SummaryRow(
     s"$sectionId.reclaimMoreVat",
-    vatFinancials.filter(_.reclaimVatOnMostReturns).fold(s"pages.summary.$sectionId.reclaimMoreVat.no") {
-      _ => s"pages.summary.$sectionId.reclaimMoreVat.yes"
+    returns.flatMap(_.reclaimVatOnMostReturns).fold("") {
+      reclaim => s"pages.summary.$sectionId.reclaimMoreVat.${if (reclaim) "yes" else "no"}"
     },
-    Some(controllers.vatFinancials.routes.VatChargeExpectancyController.show())
+    Some(features.returns.routes.ReturnsController.chargeExpectancyPage())
   )
 
   val accountingPeriodRow: SummaryRow = SummaryRow(
     s"$sectionId.accountingPeriod",
-    vatFinancials.map(_.accountingPeriods).collect {
-      case VatAccountingPeriod(VatReturnFrequency.MONTHLY, _) => s"pages.summary.$sectionId.accountingPeriod.monthly"
-      case VatAccountingPeriod(VatReturnFrequency.QUARTERLY, Some(period)) =>
+    (returns.flatMap(_.frequency), returns.flatMap(_.staggerStart)) match {
+      case (Some(Frequency.monthly), _) => s"pages.summary.$sectionId.accountingPeriod.monthly"
+      case (Some(Frequency.quarterly), Some(period)) =>
         s"pages.summary.$sectionId.accountingPeriod.${period.substring(0, 3)}"
-    }.getOrElse(""),
-    Some(controllers.vatFinancials.vatAccountingPeriod.routes.VatReturnFrequencyController.show())
+      case _ => ""
+    },
+    Some(features.returns.routes.ReturnsController.accountPeriodsPage())
   )
 
   val section: SummarySection = SummarySection(

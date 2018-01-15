@@ -79,7 +79,7 @@ package controllers.vatFinancials {
             ivPassedCheck {
               form.bindFromRequest().fold(
                 badForm => BadRequest(features.financials.views.html.estimate_zero_rated_sales(badForm)).pure,
-                view => save(view) map (_ => Redirect(controllers.vatFinancials.routes.VatChargeExpectancyController.show()))
+                view => save(view) map (_ => Redirect(features.returns.routes.ReturnsController.chargeExpectancyPage()))
               )
             }
           }

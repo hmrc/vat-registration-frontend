@@ -17,12 +17,11 @@
 package fixtures
 
 import models.S4LVatFinancials
-import models.view.vatFinancials._
-import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
-import models.api.{VatAccountingPeriod, VatBankAccount, VatFinancials}
+import models.api.{VatBankAccount, VatFinancials}
 import models.view.vatFinancials.ZeroRatedSales.ZERO_RATED_SALES_YES
+import models.view.vatFinancials._
 
-trait FinancialsFixture extends BaseFixture {
+trait FinancialsFixtures extends BaseFixture {
 
   //Test variables
   val testTurnoverEstimate = 50000L
@@ -31,27 +30,18 @@ trait FinancialsFixture extends BaseFixture {
   //View models
   val validEstimateVatTurnover = EstimateVatTurnover(testTurnoverEstimate)
   val validEstimateZeroRatedSales = EstimateZeroRatedSales(testEstimatedSales)
-  val validVatChargeExpectancy = VatChargeExpectancy(VatChargeExpectancy.VAT_CHARGE_YES)
-  val validVatReturnFrequency = VatReturnFrequency(VatReturnFrequency.QUARTERLY)
-  val validAccountingPeriod = AccountingPeriod(AccountingPeriod.MAR_JUN_SEP_DEC)
 
   //Api models
-  val monthlyAccountingPeriod = VatAccountingPeriod(VatReturnFrequency.MONTHLY)
   val validVatBankAccount = VatBankAccount(testTradingName, testAccountNumber, testSortCode)
 
   val validVatFinancials = VatFinancials(
     turnoverEstimate = testTurnoverEstimate,
-    zeroRatedTurnoverEstimate = Some(testEstimatedSales),
-    reclaimVatOnMostReturns = true,
-    accountingPeriods = monthlyAccountingPeriod
+    zeroRatedTurnoverEstimate = Some(testEstimatedSales)
   )
 
   val validS4LVatFinancials = S4LVatFinancials(
     estimateVatTurnover = Some(validEstimateVatTurnover),
     zeroRatedTurnover = Some(ZeroRatedSales(ZERO_RATED_SALES_YES)),
-    zeroRatedTurnoverEstimate = Some(validEstimateZeroRatedSales),
-    vatChargeExpectancy = Some(validVatChargeExpectancy),
-    vatReturnFrequency = Some(validVatReturnFrequency),
-    accountingPeriod = Some(validAccountingPeriod)
+    zeroRatedTurnoverEstimate = Some(validEstimateZeroRatedSales)
   )
 }

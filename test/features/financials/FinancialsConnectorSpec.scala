@@ -23,7 +23,8 @@ import models.api.VatFinancials
 import config.WSHttp
 import features.financials.models._
 import models.{BankAccount, BankAccountDetails}
-import features.financials.models.{Returns, TurnoverEstimates}
+import features.financials.models.TurnoverEstimates
+import features.returns.{Frequency, Returns, Start}
 
 import scala.language.postfixOps
 

@@ -14,29 +14,56 @@
  * limitations under the License.
  */
 
-package features.financials.models
+package features.returns
 
 import java.time.LocalDate
 
+import play.api.data.FormError
+import play.api.data.format.Formatter
 import play.api.libs.json._
 
 import scala.language.implicitConversions
 
 object Frequency extends Enumeration {
+  type Frequency = Value
   val monthly   = Value
   val quarterly = Value
 
   implicit def toString(f : Frequency.Value) : String = f.toString
   implicit val format = Format(Reads.enumNameReads(Frequency), Writes.enumNameWrites)
+
+  implicit def formatter : Formatter[Frequency] = new Formatter[Frequency] {
+    def bind(key: String, data: Map[String, String]) = {
+      Right(data.getOrElse(key,"")).right.flatMap {
+        case "monthly"              => Right(Frequency.monthly)
+        case "quarterly"            => Right(Frequency.quarterly)
+        case _                      => Left(Seq(FormError(key, "error.required", Nil)))
+      }
+    }
+    def unbind(key: String, value: Frequency) = Map(key -> value.toString)
+  }
 }
 
 object Stagger extends Enumeration {
+  type Stagger = Value
   val jan = Value
   val feb = Value
   val mar = Value
 
   implicit def toString(f : Stagger.Value) : String = f.toString
   implicit val format = Format(Reads.enumNameReads(Stagger), Writes.enumNameWrites)
+
+  implicit def formatter : Formatter[Stagger] = new Formatter[Stagger] {
+    def bind(key: String, data: Map[String, String]) = {
+      Right(data.getOrElse(key,"")).right.flatMap {
+        case "jan"              => Right(Stagger.jan)
+        case "feb"              => Right(Stagger.feb)
+        case "mar"              => Right(Stagger.mar)
+        case _                  => Left(Seq(FormError(key, "error.required", Nil)))
+      }
+    }
+    def unbind(key: String, value: Stagger) = Map(key -> value.toString)
+  }
 }
 
 object DateSelection extends Enumeration {

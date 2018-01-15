@@ -21,7 +21,7 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models._
 import models.external.IncorporationInfo
-import models.view.vatTradingDetails.vatChoice.StartDateView
+import models.view.vatTradingDetails.TradingNameView
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -59,16 +59,16 @@ class TradingDetailsServiceSpec extends VatRegSpec with VatRegistrationFixture w
     }
 
     "return a success response when start date choice is BUSINESS_START_DATE" in new Setup {
-      val tradingDetailsWithCtActiveDateSelected = tradingDetails(startDateSelection = StartDateView.BUSINESS_START_DATE)
+      val tradingDetailsWithNewTradingName = tradingDetails(tradingName = Some("test"))
 
       save4laterReturns(s4LTradingDetails.copy(
-        startDate = Some(StartDateView(dateType = StartDateView.BUSINESS_START_DATE, ctActiveDate = Some(testDate)))
+        tradingName = Some(TradingNameView("yes", Some("test")))
       ))
 
       when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(validVatScheme.pure)
-      when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(tradingDetailsWithCtActiveDateSelected.pure)
+      when(mockRegConnector.upsertVatTradingDetails(any(), any())(any(), any())).thenReturn(tradingDetailsWithNewTradingName.pure)
 
-      service.submitTradingDetails() returns tradingDetailsWithCtActiveDateSelected
+      service.submitTradingDetails() returns tradingDetailsWithNewTradingName
     }
 
     "return a success response when VatTradingDetails is submitted and no Trading Name is found in S4L" in new Setup {

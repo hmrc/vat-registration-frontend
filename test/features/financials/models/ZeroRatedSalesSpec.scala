@@ -30,9 +30,7 @@ class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
     "convert VatFinancials with zero rated sales to view model" in {
       val vatFinancialsWithZeroRated = VatFinancials(
         turnoverEstimate = 100L,
-        zeroRatedTurnoverEstimate = Some(200L),
-        reclaimVatOnMostReturns = true,
-        accountingPeriods = monthlyAccountingPeriod
+        zeroRatedTurnoverEstimate = Some(200L)
       )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithZeroRated))
       ApiModelTransformer[ZeroRatedSales].toViewModel(vs) shouldBe Some(ZeroRatedSales.yes)
@@ -40,9 +38,7 @@ class ZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
 
     "convert VatFinancials without zero rated sales to view model" in {
       val vatFinancialsWithoutZeroRated = VatFinancials(
-        turnoverEstimate = 100L,
-        reclaimVatOnMostReturns = true,
-        accountingPeriods = monthlyAccountingPeriod
+        turnoverEstimate = 100L
       )
       val vs = vatScheme.copy(financials = Some(vatFinancialsWithoutZeroRated))
 

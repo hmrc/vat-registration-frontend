@@ -16,19 +16,13 @@
 
 package controllers.vatTradingDetails.vatChoice
 
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.ModelKeys.INCORPORATION_STATUS
-import models.{CurrentProfile, S4LTradingDetails, S4LVatEligibilityChoice}
 import models.external.IncorporationInfo
-import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
-import models.view.vatTradingDetails.vatChoice.{OverThresholdView, StartDateView}
-import org.mockito.Matchers
-import org.mockito.Mockito.when
+import models.view.vatTradingDetails.vatChoice.OverThresholdView
+import models.{S4LTradingDetails, S4LVatEligibilityChoice}
 import play.api.test.FakeRequest
-
-import scala.concurrent.Future
 
 class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
@@ -36,6 +30,7 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
     ds,
     mockKeystoreConnector,
     mockAuthConnector,
+    mockReturnsService,
     mockS4LService,
     mockVatRegistrationService
   )
@@ -91,10 +86,6 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
     "redirect the user to the completion capacity page if any answers to threshold questions are yes" in {
       save4laterReturns(S4LVatEligibilityChoice(
         overThreshold = Some(OverThresholdView(true, Some(testDate)))
-      ))
-
-      save4laterReturns(S4LTradingDetails(
-        startDate = Some(StartDateView(COMPANY_REGISTRATION_DATE))
       ))
 
       mockGetCurrentProfile()
