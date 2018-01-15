@@ -100,23 +100,13 @@ trait LegacyServiceToBeRefactored extends CommonService {
     } yield response
   }
 
-  def submitVatEligibility(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatServiceEligibility] = {
-    def merge(fresh: Option[S4LVatEligibility], vs: VatScheme): VatServiceEligibility =
-      fresh.fold(
-        vs.vatServiceEligibility.getOrElse(throw fail("VatServiceEligibility"))
-      )(s4l => S4LVatEligibility.apiT.toApi(s4l))
-
-    for {
-      vs       <- getVatScheme
-      ve       <- s4l[S4LVatEligibility]
-      response <- vatRegConnector.upsertVatEligibility(profile.registrationId, merge(ve, vs))
-    } yield response
-  }
-
   def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = vatRegConnector.getStatus(regId)
 
   def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[DESResponse] = {
     vatRegConnector.submitRegistration(profile.registrationId)
   }
+
+  def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Threshold] =
+    vatRegConnector.getThreshold(regId) map (_.getOrElse(throw new IllegalStateException(s"No threshold block found in the back end for regId: $regId")))
 
 }

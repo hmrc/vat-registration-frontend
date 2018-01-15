@@ -18,17 +18,15 @@ package services
 
 import java.time.LocalDate
 
-import cats.data.OptionT
 import connectors.RegistrationConnector
-import features.financials.models._
 import features.returns._
 import helpers.VatRegSpec
 import models.S4LKey
-import models.api.{VatEligibilityChoice, VatExpectedThresholdPostIncorp, VatServiceEligibility, VatThresholdPostIncorp}
+import models.api.Threshold
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito._
 import org.scalatest.MustMatchers
 import org.scalatest.mockito.MockitoSugar
-import org.mockito.Mockito._
 import play.api.libs.json.JsString
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HttpResponse, NotFoundException}
@@ -228,63 +226,46 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
 
     "return a date when both the vatThresholdPostIncorp and vatExpectedThresholdPostIncorp dates are present" in new Setup {
 
-      val eligibilityBothDates = VatServiceEligibility(None, None, None, None, None, None,
-        Some(VatEligibilityChoice(
-          VatEligibilityChoice.NECESSITY_OBLIGATORY,
+      val thresholdBothDates = Threshold(
+          true,
           None,
-          Some(VatThresholdPostIncorp(true, Some(vatThresholdPostIncorpDate))),
-          Some(VatExpectedThresholdPostIncorp(true, Some(vatExpectedThresholdPostIncorpDate)))
-        ))
-      )
+          Some(vatThresholdPostIncorpDate),
+          Some(vatExpectedThresholdPostIncorpDate)
+        )
 
-      when(mockVatRegistrationService.getVatScheme(any(), any()))
-        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibilityBothDates))))
+
+      when(service.vatService.getThreshold(any())(any()))
+        .thenReturn(Future.successful(thresholdBothDates))
 
       await(service.retrieveCalculatedStartDate) mustBe vatThresholdPostIncorpDate.withDayOfMonth(1).plusMonths(2)
     }
 
     "return a date when just the vatThresholdPostIncorp is present" in new Setup {
 
-      val eligibilityFirstDateOnly = VatServiceEligibility(None, None, None, None, None, None,
-        Some(VatEligibilityChoice(
-          VatEligibilityChoice.NECESSITY_OBLIGATORY,
-          None,
-          Some(VatThresholdPostIncorp(true, Some(vatThresholdPostIncorpDate))),
-          None
-        ))
-      )
+      val thresholdFirstDateOnly = Threshold(true, None, Some(vatThresholdPostIncorpDate), None)
 
-      when(mockVatRegistrationService.getVatScheme(any(), any()))
-        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibilityFirstDateOnly))))
+      when(service.vatService.getThreshold(any())(any()))
+        .thenReturn(Future.successful(thresholdFirstDateOnly))
 
       await(service.retrieveCalculatedStartDate) mustBe vatThresholdPostIncorpDate.withDayOfMonth(1).plusMonths(2)
     }
 
     "return a date when just the vatExpectedThresholdPostIncorp is present" in new Setup {
 
-      val eligibilitySecondDateOnly = VatServiceEligibility(None, None, None, None, None, None,
-        Some(VatEligibilityChoice(
-          VatEligibilityChoice.NECESSITY_OBLIGATORY,
-          None,
-          None,
-          Some(VatExpectedThresholdPostIncorp(true, Some(vatExpectedThresholdPostIncorpDate)))
-        ))
-      )
+      val thresholdSecondDateOnly = generateThreshold(expectedOverThreshold = Some(vatExpectedThresholdPostIncorpDate))
 
-      when(mockVatRegistrationService.getVatScheme(any(), any()))
-        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibilitySecondDateOnly))))
+      when(service.vatService.getThreshold(any())(any()))
+        .thenReturn(Future.successful(thresholdSecondDateOnly))
 
       await(service.retrieveCalculatedStartDate) mustBe vatExpectedThresholdPostIncorpDate
     }
 
     "throw a RuntimeException when no dates are present" in new Setup {
 
-      val eligibilityNoDates = VatServiceEligibility(None, None, None, None, None, None,
-        Some(VatEligibilityChoice(VatEligibilityChoice.NECESSITY_OBLIGATORY, None, None, None))
-      )
+      val thresholdNoDates = generateThreshold()
 
-      when(mockVatRegistrationService.getVatScheme(any(), any()))
-        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibilityNoDates))))
+      when(service.vatService.getThreshold(any())(any()))
+        .thenReturn(Future.successful(thresholdNoDates))
 
       intercept[RuntimeException](await(service.retrieveCalculatedStartDate))
     }
@@ -297,43 +278,32 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
     }
   }
 
-  "getEligibilityChoice" should {
+  "getThreshold" should {
     "return true when in a voluntary flow" in new Setup {
 
-      val voluntary = VatServiceEligibility(None, None, None, None, None, None,
-        Some(VatEligibilityChoice(VatEligibilityChoice.NECESSITY_VOLUNTARY, None, None, None))
-      )
+      val voluntary = generateThreshold()
 
-      when(service.vatRegConnector.getRegistration(any())(any(), any()))
-        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(voluntary))))
+      when(service.vatService.getThreshold(any())(any()))
+        .thenReturn(Future.successful(voluntary))
 
-      await(service.getEligibilityChoice) mustBe true
+      await(service.getThreshold) mustBe true
 
     }
 
     "return false when in a mandatory flow" in new Setup {
-      val mandatory = VatServiceEligibility(None, None, None, None, None, None,
-        Some(VatEligibilityChoice(VatEligibilityChoice.NECESSITY_OBLIGATORY, None, None, None))
-      )
+      val mandatory = generateThreshold(overThreshold = Some(testDate))
 
-      when(service.vatRegConnector.getRegistration(any())(any(), any()))
-        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(mandatory))))
+      when(service.vatService.getThreshold(any())(any()))
+        .thenReturn(Future.successful(mandatory))
 
-      await(service.getEligibilityChoice) mustBe false
+      await(service.getThreshold) mustBe false
     }
   }
 
   "retrieveMandatoryDates" should {
     val calculatedDate: LocalDate = LocalDate.of(2017, 12, 25)
 
-    val eligibility = VatServiceEligibility(None, None, None, None, None, None,
-      Some(VatEligibilityChoice(
-        VatEligibilityChoice.NECESSITY_OBLIGATORY,
-        None,
-        None,
-        Some(VatExpectedThresholdPostIncorp(expectedOverThresholdSelection = true, Some(calculatedDate)))
-      ))
-    )
+    val threshold = generateThreshold(expectedOverThreshold = Some(calculatedDate))
 
     "return a full MandatoryDateModel with a selection of calculated_date if the vatStartDate is present and is equal to the calculated date" in new Setup {
       val vatStartDate: LocalDate = LocalDate.of(2017, 12, 25)
@@ -341,8 +311,8 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(returnsFixed)))
 
-      when(mockVatRegistrationService.getVatScheme(any(), any()))
-        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibility))))
+      when(service.vatService.getThreshold(any())(any()))
+        .thenReturn(Future.successful(threshold))
 
       await(service.retrieveMandatoryDates) mustBe MandatoryDateModel(calculatedDate, Some(vatStartDate), Some(DateSelection.calculated_date))
     }
@@ -353,8 +323,8 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(returnsAlt)))
 
-      when(mockVatRegistrationService.getVatScheme(any(), any()))
-        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibility))))
+      when(service.vatService.getThreshold(any())(any()))
+        .thenReturn(Future.successful(threshold))
 
       await(service.retrieveMandatoryDates) mustBe MandatoryDateModel(calculatedDate, Some(vatStartDate), Some(DateSelection.specific_date))
     }
@@ -363,8 +333,8 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationService.getVatScheme(any(), any()))
-        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibility))))
+      when(service.vatService.getThreshold(any())(any()))
+        .thenReturn(Future.successful(threshold))
 
       await(service.retrieveMandatoryDates) mustBe MandatoryDateModel(calculatedDate, None, None)
     }
@@ -373,7 +343,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
   "retrieveCTActiveDate" should {
     "return the CT Active Date" in new Setup {
       when(mockPPService.getCTActiveDate(any(), any()))
-        .thenReturn(OptionT[Future, LocalDate](Future.successful(Some(date))))
+        .thenReturn(Future.successful(Some(date)))
 
       await(service.retrieveCTActiveDate) mustBe Some(date)
     }
@@ -403,7 +373,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
         .thenReturn(Future.successful(Some(returnsWithVatDate(Some(businessStartDate)))))
 
       when(mockPPService.getCTActiveDate(any(), any()))
-        .thenReturn(OptionT[Future, LocalDate](Future.successful(Some(businessStartDate))))
+        .thenReturn(Future.successful(Some(businessStartDate)))
 
       await(service.voluntaryStartPageViewModel(None)) mustBe VoluntaryPageViewModel(
         Some((DateSelection.business_start_date, Some(businessStartDate))),
@@ -418,7 +388,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
         .thenReturn(Future.successful(Some(returnsWithVatDate(Some(incorpDate)))))
 
       when(mockPPService.getCTActiveDate(any(), any()))
-        .thenReturn(OptionT[Future, LocalDate](Future.successful(None)))
+        .thenReturn(Future.successful(None))
 
       await(service.voluntaryStartPageViewModel(Some(incorpDate))) mustBe VoluntaryPageViewModel(
         Some((DateSelection.company_registration_date, Some(incorpDate))),
@@ -431,7 +401,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
         .thenReturn(Future.successful(Some(returnsWithVatDate(None))))
 
       when(mockPPService.getCTActiveDate(any(), any()))
-        .thenReturn(OptionT[Future, LocalDate](Future.successful(None)))
+        .thenReturn(Future.successful(None))
 
       await(service.voluntaryStartPageViewModel(None)) mustBe VoluntaryPageViewModel(
         Some((DateSelection.company_registration_date, None)),
@@ -446,7 +416,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
         .thenReturn(Future.successful(Some(returnsWithVatDate(Some(specificdate)))))
 
       when(mockPPService.getCTActiveDate(any(), any()))
-        .thenReturn(OptionT[Future, LocalDate](Future.successful(None)))
+        .thenReturn(Future.successful(None))
 
       await(service.voluntaryStartPageViewModel(None)) mustBe VoluntaryPageViewModel(
         Some((DateSelection.specific_date, Some(specificdate))),
@@ -459,7 +429,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
         .thenReturn(Future.successful(None))
 
       when(mockPPService.getCTActiveDate(any(), any()))
-        .thenReturn(OptionT[Future, LocalDate](Future.successful(None)))
+        .thenReturn(Future.successful(None))
 
       await(service.voluntaryStartPageViewModel(None)) mustBe VoluntaryPageViewModel(None, None)
     }

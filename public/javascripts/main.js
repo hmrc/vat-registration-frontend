@@ -69,14 +69,6 @@ $(document).ready($(function () {
     }
 }(window.TradingNamePage = window.TradingNamePage || {}, jQuery));
 
-// VoluntaryRegistrationReasonPage module
-(function (VoluntaryRegistrationReasonPage, $, undefined) {
-    VoluntaryRegistrationReasonPage.init = function() {
-        UI.hideShowOnRadioButton("voluntaryRegistrationReasonRadio",
-            { "#voluntaryRegistrationReasonRadio-neither": "#neither_panel" });
-    }
-}(window.VoluntaryRegistrationReasonPage = window.VoluntaryRegistrationReasonPage || {}, jQuery));
-
 // Company Bank Account Details module
 (function (CompanyBankAccountDetailsPage, $, undefined) {
     CompanyBankAccountDetailsPage.init = function() {
@@ -167,14 +159,4 @@ $(document).ready($(function () {
         UI.preventNonNumericInput(numericInputs);
     }
 }(window.FormerNameDatePage = window.FormerNameDatePage || {}, jQuery));
-
-// OverThreshold page module
-(function (OverThresholdPage, $, undefined) {
-    OverThresholdPage.init = function() {
-        UI.hideShowOnRadioButton("overThresholdRadio",
-            { "#overThresholdRadio-true": "#overThreshold_date_panel" });
-        var numericInputs = ["overThreshold\\.month", "overThreshold\\.year"];
-        UI.preventNonNumericInput(numericInputs);
-    }
-}(window.OverThresholdPage = window.OverThresholdPage || {}, jQuery));
 

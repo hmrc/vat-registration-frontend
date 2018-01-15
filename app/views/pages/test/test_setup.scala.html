@@ -6,20 +6,14 @@
 <h1 class="form-title heading-xlarge" id="pageHeading">Test Setup</h1>
 
 @govHelpers.form(action = controllers.test.routes.TestSetupController.submit()) {
-    <div class="form-group">
+    <div class="form-group" id="vrfe-test-setup-form">
         <fieldset>
 
             <b>VAT CHOICE</b>
-            <p>@vatInput(testSetupForm("vatChoice.taxableTurnoverChoice"), '_label -> "Taxable turnover choice (TAXABLE_YES or TAXABLE_NO)")</p>
-            <p>@vatInput(testSetupForm("vatChoice.voluntaryChoice"), '_label -> "Voluntary registration choice (REGISTER_YES or REGISTER_NO)")</p>
-            <p>@vatInput(testSetupForm("vatChoice.voluntaryRegistrationReason"), '_label -> "Voluntary registration reason (COMPANY_ALREADY_SELLS_TAXABLE_GOODS_OR_SERVICES or COMPANY_INTENDS_TO_SELLS_TAXABLE_GOODS_OR_SERVICES_IN_THE_FUTURE or NEITHER)")</p>
             <p>@vatInput(testSetupForm("vatChoice.startDateChoice"), '_label -> "Start date choice (COMPANY_REGISTRATION_DATE or BUSINESS_START_DATE or SPECIFIC_DATE)")</p>
             <p>@vatInput(testSetupForm("vatChoice.startDateDay"), '_label -> "Start date day (DD)")</p>
             <p>@vatInput(testSetupForm("vatChoice.startDateMonth"), '_label -> "Start date month (MM)")</p>
             <p>@vatInput(testSetupForm("vatChoice.startDateYear"), '_label -> "Start date year (YYYY)")</p>
-            <p>@vatInput(testSetupForm("vatChoice.overThresholdSelection"), '_label -> "Over threshold selection (true or false)")</p>
-            <p>@vatInput(testSetupForm("vatChoice.overThresholdMonth"), '_label -> "Over threshold month (MM)")</p>
-            <p>@vatInput(testSetupForm("vatChoice.overThresholdYear"), '_label -> "Over threshold year (YYYY)")</p>
 
             <b>VAT TRADING DETAILS</b>
             <p>@vatInput(testSetupForm("vatTradingDetails.tradingNameChoice"), '_label -> "Trading name choice (TRADING_NAME_YES or TRADING_NAME_NO)")</p>
@@ -85,14 +79,6 @@
             <p>@vatInput(testSetupForm("sicAndCompliance.financialInvestmentFundManagement"), '_label -> "Investment Fund Management (true or false)")</p>
             <p>@vatInput(testSetupForm("sicAndCompliance.financialManageAdditionalFunds"), '_label -> "Manage Additional Funds (true or false)")</p>
 
-            <b>VAT SERVICE ELIGIBILITY</b>
-            <p>@vatInput(testSetupForm("vatServiceEligibility.haveNino"), '_label -> "Have nino (true or false)") </p>
-            <p>@vatInput(testSetupForm("vatServiceEligibility.doingBusinessAbroad"), '_label -> "Doing business abroad (true or false)")</p>
-            <p>@vatInput(testSetupForm("vatServiceEligibility.doAnyApplyToYou"), '_label -> "Do any apply to you (true or false)")</p>
-            <p>@vatInput(testSetupForm("vatServiceEligibility.applyingForAnyOf"), '_label -> "Applying for any of (true or false)")</p>
-            <p>@vatInput(testSetupForm("vatServiceEligibility.applyingForVatExemption"), '_label -> "Applying for a VAT exemption or exception (true or false)")</p>
-            <p>@vatInput(testSetupForm("vatServiceEligibility.companyWillDoAnyOf"), '_label -> "Company will do any of (true or false)")</p>
-
             <b>VAT LODGING OFFICER</b>
 
             <p><em>Officer's Role and Name</em></p>
@@ -151,6 +137,12 @@
             <p>@vatInput(testSetupForm("vatFlatRateScheme.frsStartDateDay"), '_label -> "Frs Start date day (DD)")</p>
             <p>@vatInput(testSetupForm("vatFlatRateScheme.frsStartDateMonth"), '_label -> "Frs Start date month (MM)")</p>
             <p>@vatInput(testSetupForm("vatFlatRateScheme.frsStartDateYear"), '_label -> "Frs Start date year (YYYY)")</p>
+
+            <b>Returns</b>
+            <p>@vatInput(testSetupForm("returns.reclaimVatOnMostReturns"), '_label -> "Will reclaim on most Returns (true or false)")</p>
+            <p>@vatInput(testSetupForm("returns.frequency"), '_label -> "Frequency Of Returns (monthly or quarterly)")</p>
+            <p>@vatInput(testSetupForm("returns.staggerStart"), '_label -> "Staggered Start Date (jan, feb or march)")</p>
+            <p>@vatInput(testSetupForm("returns.start.date"), '_label -> "Vat Start Date")</p>
         </fieldset>
 
     </div>

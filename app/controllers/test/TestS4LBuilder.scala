@@ -33,6 +33,7 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
 
+
 @Singleton
 class TestS4LBuilder {
 

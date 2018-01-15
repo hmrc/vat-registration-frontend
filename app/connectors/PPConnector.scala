@@ -20,15 +20,15 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
-import cats.data.OptionT
-import cats.instances.future._
+import models.CurrentProfile
+import models.api.Threshold
 import models.external.{AccountingDetails, CorporationTaxRegistration}
-import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
-import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason.INTENDS_TO_SELL
-import models.{ApiModelTransformer, CurrentProfile, S4LVatEligibilityChoice}
+import play.api.Logger
 import services.{RegistrationService, S4LService}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+
+import scala.concurrent.Future
 
 class PrePopConnector @Inject()(val s4l: S4LService, val vrs: RegistrationService) extends PPConnector
 
@@ -41,11 +41,14 @@ trait PPConnector {
 
   def getCompanyRegistrationDetails(implicit hc: HeaderCarrier,
                                              profile: CurrentProfile,
-                                             rds: HttpReads[CorporationTaxRegistration]): OptionalResponse[CorporationTaxRegistration] = OptionT(
-    s4l.fetchAndGet[S4LVatEligibilityChoice]).subflatMap(_.voluntaryRegistrationReason).orElseF(
-      vrs.getVatScheme map ApiModelTransformer[VoluntaryRegistrationReason].toViewModel
-    ).collect {
-      case VoluntaryRegistrationReason(INTENDS_TO_SELL) => CorporationTaxRegistration(
+                                             rds: HttpReads[CorporationTaxRegistration]): Future[Option[CorporationTaxRegistration]] = {
+
+    vrs.getThreshold(profile.registrationId).map(_.voluntaryReason collect  {
+      case Threshold.INTENDS_TO_SELL => CorporationTaxRegistration(
         Some(AccountingDetails("", Some(LocalDate.now.plusDays(7) format expectedFormat))))
+    }) recover {
+      case e => Logger.error(s"[PPConnector][getCompanyRegistrationDetails] an error occured for regId: ${profile.registrationId} with message: ${e.getMessage}")
+        throw e
     }
+  }
 }

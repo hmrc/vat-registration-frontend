@@ -50,6 +50,14 @@ trait FutureAssertions extends ScalaFutures {
 
   }
 
+  implicit class FutureOptionReturns[T](fo: Future[Option[T]]) {
+
+    def returnsSome(o: T): Assertion = whenReady(fo)(_ mustBe Some(o))
+
+    def returnsNone: Assertion = whenReady(fo)(_ mustBe Option.empty[T])
+
+  }
+
   implicit class OptionTReturns[T](ot: OptionT[Future, T]) {
 
     def returnsSome(t: T): Assertion = whenReady(ot.value)(_ mustBe Some(t))
