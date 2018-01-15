@@ -43,8 +43,8 @@ package models.view.vatFinancials {
     // Returns a view model for a specific part of a given VatScheme API model
     implicit val modelTransformer = ApiModelTransformer[ZeroRatedSales] { (vs: VatScheme) =>
       vs.financials.map {
-        case VatFinancials(_, Some(_), _, _) => ZeroRatedSales(ZERO_RATED_SALES_YES)
-        case VatFinancials(_, None, _, _) => ZeroRatedSales(ZERO_RATED_SALES_NO)
+        case VatFinancials(_, Some(_)) => ZeroRatedSales(ZERO_RATED_SALES_YES)
+        case VatFinancials(_, None) => ZeroRatedSales(ZERO_RATED_SALES_NO)
       }
     }
   }
@@ -100,7 +100,7 @@ package controllers.vatFinancials {
                   ifFalse =
                     OptionT(s4lService.fetchAndGet[S4LVatFinancials])
                       .semiflatMap(container => s4lService.save(container.copy(zeroRatedTurnoverEstimate = None))).value
-                      .map(_ => financialRoutes.VatChargeExpectancyController.show())
+                      .map(_ => features.returns.routes.ReturnsController.chargeExpectancyPage())
                 ).map(Redirect)
               )
             }

@@ -16,17 +16,17 @@
 
 package connectors
 
-import models.view.vatTradingDetails.vatChoice.StartDateView
+import features.tradingDetails.models.TradingNameView
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 class S4LConnectorSpec extends UnitSpec with MockitoSugar {
 
@@ -38,28 +38,28 @@ class S4LConnectorSpec extends UnitSpec with MockitoSugar {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val sDateModel = StartDateView(StartDateView.COMPANY_REGISTRATION_DATE, None)
-  val cacheMap = CacheMap("", Map("" -> Json.toJson(sDateModel)))
+  val sTradingModel = TradingNameView("yes", Some("test"))
+  val cacheMap = CacheMap("", Map("" -> Json.toJson(sTradingModel)))
 
   "Fetching from save4later" should {
     "return the correct model" in {
 
-      when(mockShortLivedCache.fetchAndGetEntry[StartDateView](ArgumentMatchers.anyString(), ArgumentMatchers.anyString())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(Option(sDateModel)))
+      when(mockShortLivedCache.fetchAndGetEntry[TradingNameView](ArgumentMatchers.anyString(), ArgumentMatchers.anyString())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Option(sTradingModel)))
 
-      val result = S4LConnectorTest.fetchAndGet[StartDateView]("", "")
-      await(result) shouldBe Some(sDateModel)
+      val result = S4LConnectorTest.fetchAndGet[TradingNameView]("", "")
+      await(result) shouldBe Some(sTradingModel)
     }
   }
 
   "Saving a model into save4later" should {
     "save the model" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(sDateModel)))
+      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(sTradingModel)))
 
-      when(mockShortLivedCache.cache[StartDateView](ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockShortLivedCache.cache[TradingNameView](ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(returnCacheMap))
 
-      val result = S4LConnectorTest.save[StartDateView]("", "", sDateModel)
+      val result = S4LConnectorTest.save[TradingNameView]("", "", sTradingModel)
       await(result) shouldBe returnCacheMap
     }
   }

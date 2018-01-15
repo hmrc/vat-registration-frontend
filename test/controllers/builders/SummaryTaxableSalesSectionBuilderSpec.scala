@@ -20,7 +20,6 @@ import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api._
 import models.view.SummaryRow
-import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency
 
 class SummaryTaxableSalesSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -42,9 +41,7 @@ class SummaryTaxableSalesSectionBuilderSpec extends VatRegSpec with VatRegistrat
 
       "a real value should be returned as an estimated sales with vat financials containing a turnover estimate" in {
         val financials = VatFinancials(
-          turnoverEstimate = 15000000L,
-          accountingPeriods = monthlyAccountingPeriod,
-          reclaimVatOnMostReturns = false
+          turnoverEstimate = 15000000L
         )
         val builder = SummaryTaxableSalesSectionBuilder(vatFinancials = Some(financials))
         builder.estimatedSalesValueRow mustBe
@@ -71,8 +68,6 @@ class SummaryTaxableSalesSectionBuilderSpec extends VatRegSpec with VatRegistrat
       "a 'Yes' value should be returned with a zero rated sales estimate in vat financials" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
-          accountingPeriods = monthlyAccountingPeriod,
-          reclaimVatOnMostReturns = false,
           zeroRatedTurnoverEstimate = Some(10000L)
         )
         val builder = SummaryTaxableSalesSectionBuilder(vatFinancials = Some(financials))
@@ -100,8 +95,6 @@ class SummaryTaxableSalesSectionBuilderSpec extends VatRegSpec with VatRegistrat
       "a real value should be returned with a zero rated sales estimate in vat financials" in {
         val financials = VatFinancials(
           turnoverEstimate = 0L,
-          accountingPeriods = monthlyAccountingPeriod,
-          reclaimVatOnMostReturns = false,
           zeroRatedTurnoverEstimate = Some(10000L)
         )
         val builder = SummaryTaxableSalesSectionBuilder(vatFinancials = Some(financials))
@@ -119,8 +112,6 @@ class SummaryTaxableSalesSectionBuilderSpec extends VatRegSpec with VatRegistrat
       "a valid summary section" in {
         val financials = VatFinancials(
           turnoverEstimate = 50000L,
-          accountingPeriods = VatAccountingPeriod(VatReturnFrequency.MONTHLY),
-          reclaimVatOnMostReturns = false,
           zeroRatedTurnoverEstimate = Some(10000L)
         )
         val builder = SummaryTaxableSalesSectionBuilder(vatFinancials = Some(financials))

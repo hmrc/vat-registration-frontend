@@ -30,8 +30,7 @@ import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessAc
 import models.view.test.TestSetup
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatContact.ppob.PpobView
-import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
-import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, VatChargeExpectancy, ZeroRatedSales}
+import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, ZeroRatedSales}
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.TradingNameView._
@@ -43,21 +42,6 @@ class TestS4LBuilder {
 
   def tradingDetailsFromData(data: TestSetup): S4LTradingDetails = {
     val taxableTurnover: Option[String] = data.vatChoice.taxableTurnoverChoice
-
-    val startDate = data.vatChoice.startDateChoice match {
-      case None => StartDateView()
-      case Some("SPECIFIC_DATE") => StartDateView(dateType = "SPECIFIC_DATE", date = Some(LocalDate.of(
-        data.vatChoice.startDateYear.map(_.toInt).get,
-        data.vatChoice.startDateMonth.map(_.toInt).get,
-        data.vatChoice.startDateDay.map(_.toInt).get
-      )))
-      case Some("BUSINESS_START_DATE") => StartDateView(dateType = "BUSINESS_START_DATE", ctActiveDate = Some(LocalDate.of(
-        data.vatChoice.startDateYear.map(_.toInt).get,
-        data.vatChoice.startDateMonth.map(_.toInt).get,
-        data.vatChoice.startDateDay.map(_.toInt).get
-      )))
-      case Some(t) => StartDateView(t, None)
-    }
 
     val overThresholdView: Option[OverThresholdView] = data.vatChoice.overThresholdSelection match {
       case Some("true") => Some(OverThresholdView(selection = true, Some(LocalDate.of(
@@ -81,7 +65,6 @@ class TestS4LBuilder {
     val applyEori: Option[String] = data.vatTradingDetails.applyEori
 
     S4LTradingDetails(
-      startDate = Some(startDate),
       tradingName = tradingName.map(t => TradingNameView(if (t.selection) TRADING_NAME_YES else TRADING_NAME_NO, t.tradingName)),
       euGoods = euGoods.map(EuGoods(_)),
       applyEori = applyEori.map(a => ApplyEori(a.toBoolean))
@@ -94,17 +77,11 @@ class TestS4LBuilder {
     val estimateVatTurnover = fin.estimateVatTurnover.map(x => EstimateVatTurnover(x.toLong))
     val zeroRatedTurnover = fin.zeroRatedSalesChoice.map(ZeroRatedSales.apply)
     val zeroRatedTurnoverEstimate = fin.zeroRatedTurnoverEstimate.map(x => EstimateZeroRatedSales(x.toLong))
-    val vatChargeExpectancy = fin.vatChargeExpectancyChoice.map(VatChargeExpectancy.apply)
-    val vatReturnFrequency = fin.vatReturnFrequency.map(VatReturnFrequency.apply)
-    val accountingPeriod = fin.accountingPeriod.map(AccountingPeriod.apply)
 
     S4LVatFinancials(
       estimateVatTurnover = estimateVatTurnover,
       zeroRatedTurnover = zeroRatedTurnover,
-      zeroRatedTurnoverEstimate = zeroRatedTurnoverEstimate,
-      vatChargeExpectancy = vatChargeExpectancy,
-      vatReturnFrequency = vatReturnFrequency,
-      accountingPeriod = accountingPeriod
+      zeroRatedTurnoverEstimate = zeroRatedTurnoverEstimate
     )
   }
 

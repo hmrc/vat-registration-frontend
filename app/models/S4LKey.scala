@@ -16,7 +16,7 @@
 
 package models
 
-import features.financials.models.Returns
+import features.returns.Returns
 import features.turnoverEstimates.TurnoverEstimates
 import models.view.test.SicStub
 

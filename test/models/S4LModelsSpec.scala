@@ -31,16 +31,11 @@ import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorker
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatContact.ppob.PpobView
-import models.view.vatFinancials.VatChargeExpectancy.VAT_CHARGE_YES
 import models.view.vatFinancials.ZeroRatedSales.ZERO_RATED_SALES_YES
-import models.view.vatFinancials.vatAccountingPeriod.AccountingPeriod.FEB_MAY_AUG_NOV
-import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.{MONTHLY, QUARTERLY}
-import models.view.vatFinancials.vatAccountingPeriod.{AccountingPeriod, VatReturnFrequency}
-import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, VatChargeExpectancy, ZeroRatedSales}
+import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, ZeroRatedSales}
 import models.view.vatLodgingOfficer._
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.TradingNameView.TRADING_NAME_YES
-import models.view.vatTradingDetails.vatChoice.StartDateView.SPECIFIC_DATE
 import models.view.vatTradingDetails.vatChoice.TaxableTurnover.TAXABLE_NO
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.{REGISTER_NO, REGISTER_YES}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason.INTENDS_TO_SELL
@@ -58,33 +53,24 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
     val s4l = S4LVatFinancials(
       estimateVatTurnover = Some(EstimateVatTurnover(10)),
       zeroRatedTurnover = Some(ZeroRatedSales(ZERO_RATED_SALES_YES)),
-      zeroRatedTurnoverEstimate = Some(EstimateZeroRatedSales(1)),
-      vatChargeExpectancy = Some(VatChargeExpectancy(VAT_CHARGE_YES)),
-      vatReturnFrequency = Some(VatReturnFrequency(QUARTERLY)),
-      accountingPeriod = Some(AccountingPeriod(FEB_MAY_AUG_NOV))
+      zeroRatedTurnoverEstimate = Some(EstimateZeroRatedSales(1))
     )
 
     "transform complete S4L model to API" in {
       val expected = VatFinancials(
         turnoverEstimate = 10,
-        zeroRatedTurnoverEstimate = Some(1),
-        reclaimVatOnMostReturns = true,
-        accountingPeriods = VatAccountingPeriod(QUARTERLY, Some(FEB_MAY_AUG_NOV.toLowerCase))
+        zeroRatedTurnoverEstimate = Some(1)
       )
 
       S4LVatFinancials.apiT.toApi(s4l) shouldBe expected
     }
 
     "transform valid partial S4L model to API" in {
-      val s4lWithoutAccountingPeriod = s4l.copy(
-        vatReturnFrequency = None,
-        accountingPeriod = None)
+      val s4lWithoutAccountingPeriod = s4l.copy()
 
       val expected = VatFinancials(
         turnoverEstimate = 10,
-        zeroRatedTurnoverEstimate = Some(1),
-        reclaimVatOnMostReturns = true,
-        accountingPeriods = VatAccountingPeriod(MONTHLY, None)
+        zeroRatedTurnoverEstimate = Some(1)
       )
 
       S4LVatFinancials.apiT.toApi(s4lWithoutAccountingPeriod) shouldBe expected
@@ -93,9 +79,6 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
     "transform S4L model with incomplete data error" in {
       val s4lNoTurnover = s4l.copy(estimateVatTurnover = None)
       an[IllegalStateException] should be thrownBy S4LVatFinancials.apiT.toApi(s4lNoTurnover)
-
-      val s4lNoVatChargeExpectancy = s4l.copy(vatChargeExpectancy = None)
-      an[IllegalStateException] should be thrownBy S4LVatFinancials.apiT.toApi(s4lNoVatChargeExpectancy)
     }
   }
 
@@ -106,9 +89,6 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
     "transform VatScheme to S4L container" in {
       val vs = emptyVatScheme.copy(
         tradingDetails = Some(VatTradingDetails(
-          vatChoice = VatChoice(
-            vatStartDate = VatStartDate(selection = SPECIFIC_DATE, startDate = Some(specificDate))
-          ),
           tradingName = TradingName(selection = true, tradingName = Some(tradingName)),
           euTrading = VatEuTrading(selection = true, eoriApplication = Some(true))
         ))
@@ -116,10 +96,6 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
 
       val expected = S4LTradingDetails(
         tradingName = Some(TradingNameView(yesNo = TRADING_NAME_YES, tradingName = Some(tradingName))),
-        startDate = Some(StartDateView(
-          dateType = SPECIFIC_DATE,
-          date = Some(specificDate),
-          ctActiveDate = None)),
         euGoods = Some(EuGoods(EU_GOODS_YES)),
         applyEori = Some(ApplyEori(APPLY_EORI_YES))
       )
@@ -134,19 +110,12 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
 
     val s4l = S4LTradingDetails(
       tradingName = Some(TradingNameView(yesNo = TRADING_NAME_YES, tradingName = Some(tradingName))),
-      startDate = Some(StartDateView(
-        dateType = SPECIFIC_DATE,
-        date = Some(specificDate),
-        ctActiveDate = None)),
       euGoods = Some(EuGoods(EU_GOODS_YES)),
       applyEori = Some(ApplyEori(APPLY_EORI_YES))
     )
 
     "transform complete S4L with voluntary registration model to API" in {
       val expected = VatTradingDetails(
-        vatChoice = VatChoice(
-          vatStartDate = VatStartDate(selection = SPECIFIC_DATE, startDate = Some(specificDate))
-        ),
         tradingName = TradingName(selection = true, tradingName = Some(tradingName)),
         euTrading = VatEuTrading(selection = true, eoriApplication = Some(true))
       )
@@ -155,15 +124,11 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
     }
 
     "transform S4L model with incomplete data error" in {
-      val s4lNoStartDate = s4l.copy(startDate = None)
-      an[IllegalStateException] should be thrownBy S4LTradingDetails.apiT.toApi(s4lNoStartDate)
-
       val s4lNoTradingName = s4l.copy(tradingName = None)
       an[IllegalStateException] should be thrownBy S4LTradingDetails.apiT.toApi(s4lNoTradingName)
 
       val s4lNoEuGoods = s4l.copy(euGoods = None)
       an[IllegalStateException] should be thrownBy S4LTradingDetails.apiT.toApi(s4lNoEuGoods)
-
     }
   }
 

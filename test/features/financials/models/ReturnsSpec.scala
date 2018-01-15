@@ -18,6 +18,7 @@ package features.financials.models
 
 import java.time.LocalDate
 
+import features.returns.{Frequency, Returns, Stagger, Start}
 import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.play.test.UnitSpec
 

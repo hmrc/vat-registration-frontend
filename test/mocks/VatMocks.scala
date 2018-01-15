@@ -18,6 +18,7 @@ package mocks
 
 import connectors._
 import features.iv.services.IdentityVerificationService
+import features.returns.ReturnsService
 import org.mockito.Mockito.reset
 import org.scalatest.mockito.MockitoSugar
 import play.api.i18n.MessagesApi
@@ -57,6 +58,7 @@ trait VatMocks
   implicit lazy val mockBankAccountReputationConnector = mock[BankAccountReputationConnector]
   implicit lazy val mockIVService = mock[IdentityVerificationService]
   implicit lazy val mockConfig = mock[ServicesConfig]
+  implicit lazy val mockReturnsService = mock[ReturnsService]
 
   def resetMocks() {
     reset(
@@ -81,7 +83,8 @@ trait VatMocks
       mockWSHttp,
       mockCurrentProfile,
       mockIdentityVerificationConnector,
-      mockIVService
+      mockIVService,
+      mockReturnsService
     )
   }
 }
