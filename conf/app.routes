@@ -16,15 +16,15 @@ POST        /feedback                                                           
 GET         /thankyou                                                                          controllers.feedback.FeedbackController.thankyou
 
 ##IDENTITY VERIFICATION
-GET         /start-iv-journey                                                                  controllers.iv.IdentityVerificationController.redirectToIV
-GET         /timed-out-inactivity                                                              controllers.iv.IdentityVerificationController.timeoutIV
-GET         /cant-confirm-identity                                                             controllers.iv.IdentityVerificationController.unableToConfirmIdentity
-GET         /couldnt-confirm-identity                                                          controllers.iv.IdentityVerificationController.failedIV
-GET         /locked-out                                                                        controllers.iv.IdentityVerificationController.lockedOut
-GET         /incomplete-identity-check                                                         controllers.iv.IdentityVerificationController.userAborted
+GET         /start-iv-journey                                                                  features.officer.controllers.IdentityVerificationController.redirectToIV
+GET         /timed-out-inactivity                                                              features.officer.controllers.IdentityVerificationController.timeoutIV
+GET         /cant-confirm-identity                                                             features.officer.controllers.IdentityVerificationController.unableToConfirmIdentity
+GET         /couldnt-confirm-identity                                                          features.officer.controllers.IdentityVerificationController.failedIV
+GET         /locked-out                                                                        features.officer.controllers.IdentityVerificationController.lockedOut
+GET         /incomplete-identity-check                                                         features.officer.controllers.IdentityVerificationController.userAborted
 
-GET         /ivComplete                                                                        controllers.iv.IdentityVerificationController.completedIVJourney
-GET         /ivFailure                                                                         controllers.iv.IdentityVerificationController.failedIVJourney(journeyId: String)
+GET         /ivComplete                                                                        features.officer.controllers.IdentityVerificationController.completedIVJourney
+GET         /ivFailure                                                                         features.officer.controllers.IdentityVerificationController.failedIVJourney(journeyId: String)
 
 ## WELCOME PAGE
 GET         /                                                                                  controllers.WelcomeController.show
@@ -180,36 +180,36 @@ POST        /where-will-company-carry-out-most-of-its-business-activities       
 GET         /where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm        controllers.vatContact.ppob.PpobController.acceptFromTxm(id: String ?= "")
 
 ## OFFICER ADDRESS PAGE
-GET         /your-home-address                                                                 controllers.vatLodgingOfficer.OfficerHomeAddressController.show
-POST        /your-home-address                                                                 controllers.vatLodgingOfficer.OfficerHomeAddressController.submit
-GET         /your-home-address/acceptFromTxm                                                   controllers.vatLodgingOfficer.OfficerHomeAddressController.acceptFromTxm(id: String ?= "")
+GET         /your-home-address                                                                 features.officer.controllers.OfficerController.showHomeAddress
+POST        /your-home-address                                                                 features.officer.controllers.OfficerController.submitHomeAddress
+GET         /your-home-address/acceptFromTxm                                                   features.officer.controllers.OfficerController.acceptFromTxmHomeAddress(id: String ?= "")
 
 ## OFFICER DOB PAGE
-GET         /pass-security                                                                     controllers.vatLodgingOfficer.OfficerSecurityQuestionsController.show
-POST        /pass-security                                                                     controllers.vatLodgingOfficer.OfficerSecurityQuestionsController.submit
+GET         /pass-security                                                                     features.officer.controllers.OfficerController.showSecurityQuestions
+POST        /pass-security                                                                     features.officer.controllers.OfficerController.submitSecurityQuestions
 
 ## COMPLETION CAPACITY PAGE
-GET         /who-is-registering-the-company-for-vat                                            controllers.vatLodgingOfficer.CompletionCapacityController.show
-POST        /who-is-registering-the-company-for-vat                                            controllers.vatLodgingOfficer.CompletionCapacityController.submit
+GET         /who-is-registering-the-company-for-vat                                            features.officer.controllers.OfficerController.showCompletionCapacity
+POST        /who-is-registering-the-company-for-vat                                            features.officer.controllers.OfficerController.submitCompletionCapacity
 
 ## OFFICER CONTACT DETAILS PAGE
-GET         /your-contact-details                                                              controllers.vatLodgingOfficer.OfficerContactDetailsController.show
-POST        /your-contact-details                                                              controllers.vatLodgingOfficer.OfficerContactDetailsController.submit
+GET         /your-contact-details                                                              features.officer.controllers.OfficerController.showContactDetails
+POST        /your-contact-details                                                              features.officer.controllers.OfficerController.submitContactDetails
 
 ## FORMER NAME PAGE
-GET         /changed-name                                                                      controllers.vatLodgingOfficer.FormerNameController.show
-POST        /changed-name                                                                      controllers.vatLodgingOfficer.FormerNameController.submit
+GET         /changed-name                                                                      features.officer.controllers.OfficerController.showFormerName
+POST        /changed-name                                                                      features.officer.controllers.OfficerController.submitFormerName
 
 ## FORMER NAME DATE PAGE
-GET         /when-change                                                                       controllers.vatLodgingOfficer.FormerNameDateController.show
-POST        /when-change                                                                       controllers.vatLodgingOfficer.FormerNameDateController.submit
+GET         /when-change                                                                       features.officer.controllers.OfficerController.showFormerNameDate
+POST        /when-change                                                                       features.officer.controllers.OfficerController.submitFormerNameDate
 
 
 ## PREVIOUS ADDRESS QUESTION
-GET         /current-address-three-years-or-more                                               controllers.vatLodgingOfficer.PreviousAddressController.show
-POST        /current-address-three-years-or-more                                               controllers.vatLodgingOfficer.PreviousAddressController.submit
-GET         /current-address-three-years-or-more/changePreviousAddress                         controllers.vatLodgingOfficer.PreviousAddressController.changeAddress
-GET         /current-address-three-years-or-more/acceptFromTxm                                 controllers.vatLodgingOfficer.PreviousAddressController.acceptFromTxm(id: String ?= "")
+GET         /current-address-three-years-or-more                                               features.officer.controllers.OfficerController.showPreviousAddress
+POST        /current-address-three-years-or-more                                               features.officer.controllers.OfficerController.submitPreviousAddress
+GET         /current-address-three-years-or-more/changePreviousAddress                         features.officer.controllers.OfficerController.changePreviousAddress
+GET         /current-address-three-years-or-more/acceptFromTxm                                 features.officer.controllers.OfficerController.acceptFromTxmPreviousAddress(id: String ?= "")
 
 ## SUMMARY
 GET         /check-your-answers                                                                controllers.SummaryController.show

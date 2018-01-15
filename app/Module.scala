@@ -28,10 +28,11 @@ import controllers.frs._
 import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsControllerImpl}
 import controllers.test.{FeatureSwitchController, FeatureSwitchCtrl}
 import features.bankAccountDetails.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
-import features.iv.services.{IVService, IdentityVerificationService}
 import features.returns.{ReturnsController, ReturnsControllerImpl, ReturnsService, ReturnsServiceImpl}
 import features.turnoverEstimates._
 import services._
+import features.officer.controllers._
+import features.officer.services.{IVService, IVServiceImpl, LodgingOfficerService, LodgingOfficerServiceImpl}
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
@@ -85,6 +86,7 @@ class Module extends AbstractModule {
     bind(classOf[BankAccountDetailsController]).to(classOf[BankAccountDetailsControllerImpl])
     bind(classOf[TurnoverEstimatesController]).to(classOf[TurnoverEstimatesControllerImpl]).asEagerSingleton()
     bind(classOf[ReturnsController]).to(classOf[ReturnsControllerImpl]).asEagerSingleton()
+    bind(classOf[OfficerController]).to(classOf[OfficerControllerImpl]).asEagerSingleton()
   }
 
   private def bindServices(): Unit = {
@@ -95,12 +97,13 @@ class Module extends AbstractModule {
     bind(classOf[S4LService]).to(classOf[PersistenceService]).asEagerSingleton()
     bind(classOf[RegistrationService]).to(classOf[VatRegistrationService]).asEagerSingleton()
     bind(classOf[PrePopService]).to(classOf[PrePopulationService]).asEagerSingleton()
-    bind(classOf[IVService]).to(classOf[IdentityVerificationService]).asEagerSingleton()
+    bind(classOf[IVService]).to(classOf[IVServiceImpl]).asEagerSingleton()
     bind(classOf[CurrentProfileSrv]).to(classOf[CurrentProfileService]).asEagerSingleton()
     bind(classOf[ReturnsService]).to(classOf[ReturnsServiceImpl]).asEagerSingleton()
     bind(classOf[BankAccountReputationService]).to(classOf[BankAccountReputationServiceImpl]).asEagerSingleton()
     bind(classOf[BankAccountDetailsService]).to(classOf[BankAccountDetailsServiceImpl]).asEagerSingleton()
     bind(classOf[TurnoverEstimatesService]).to(classOf[TurnoverEstimatesServiceImpl]).asEagerSingleton()
+    bind(classOf[LodgingOfficerService]).to(classOf[LodgingOfficerServiceImpl]).asEagerSingleton()
   }
 
   private def bindConnectors(): Unit = {
@@ -109,7 +112,7 @@ class Module extends AbstractModule {
     bind(classOf[TestRegistrationConnector]).to(classOf[TestVatRegistrationConnector]).asEagerSingleton()
     bind(classOf[BankHolidaysConnector]).annotatedWith(Names.named("fallback")).to(classOf[FallbackBankHolidaysConnector]).asEagerSingleton()
     bind(classOf[BankHolidaysConnector]).to(classOf[WSBankHolidaysConnector]).asEagerSingleton()
-    bind(classOf[IVConnector]).to(classOf[IdentityVerificationConnector]).asEagerSingleton()
+    bind(classOf[IVConnector]).to(classOf[IVConnectorImpl]).asEagerSingleton()
     bind(classOf[BankAccountReputationConnect]).to(classOf[BankAccountReputationConnector]).asEagerSingleton()
     bind(classOf[CompanyRegistrationConnect]).to(classOf[CompanyRegistrationConnector]).asEagerSingleton()
     bind(classOf[S4LConnect]).to(classOf[S4LConnector]).asEagerSingleton()

@@ -16,14 +16,18 @@
 
 package connectors
 
+import java.time.LocalDate
+
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api._
-import models.external.IncorporationInfo
-import uk.gov.hmrc.play.http._
+import models.external.{IncorporationInfo, Name, Officer}
 import config.WSHttp
 import features.turnoverEstimates.TurnoverEstimates
-import play.api.libs.json.Json
+import features.officer.models.view.LodgingOfficer
+import play.api.http.Status.{NO_CONTENT, OK}
+import play.api.libs.json.{JsValue, Json}
+import features.officer.models.view._
 
 import scala.language.postfixOps
 import uk.gov.hmrc.http.HttpResponse
@@ -195,28 +199,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  "Calling upsertLodgingOfficer" should {
-
-    val vatLodgingOfficer = validLodgingOfficer
-
-    "return the correct VatResponse when the microservice completes and returns a VatLodgingOfficer model" in new Setup {
-      mockHttpPATCH[VatLodgingOfficer, VatLodgingOfficer]("tst-url", vatLodgingOfficer)
-      connector.upsertVatLodgingOfficer("tstID", vatLodgingOfficer) returns vatLodgingOfficer
-    }
-    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatLodgingOfficer, VatLodgingOfficer]("tst-url", forbidden)
-      connector.upsertVatLodgingOfficer("tstID", vatLodgingOfficer) failedWith forbidden
-    }
-    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[VatLodgingOfficer, VatLodgingOfficer]("tst-url", notFound)
-      connector.upsertVatLodgingOfficer("tstID", vatLodgingOfficer) failedWith notFound
-    }
-    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatLodgingOfficer, VatLodgingOfficer]("tst-url", internalServiceException)
-      connector.upsertVatLodgingOfficer("tstID", vatLodgingOfficer) failedWith internalServiceException
-    }
-  }
-
   "Calling upsertPpob" should {
 
     "return the correct VatResponse when the microservice completes and returns a upsertPpob model" in new Setup {
@@ -309,6 +291,141 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
       val result: HttpResponse = await(connector.patchTurnoverEstimates(turnoverEstimates))
       result.status mustBe httpResponse.status
+    }
+  }
+
+  "Calling getLodgingOfficer(testRegId)" should {
+    val validJson = Json.parse(
+      s"""
+         |{
+         |  "name": {
+         |    "first": "First",
+         |    "last": "Last"
+         |  },
+         |  "role": "Director",
+         |  "dob": "1998-07-12",
+         |  "nino": "AA112233Z"
+         |}""".stripMargin)
+    val httpRespOK = HttpResponse(OK, Some(validJson))
+    val httpRespNOCONTENT = HttpResponse(NO_CONTENT, None)
+
+    "return a JsValue" in new Setup {
+      mockHttpGET[HttpResponse]("tst-url", httpRespOK)
+      connector.getLodgingOfficer(testRegId) returns Some(validJson)
+    }
+
+    "return None if there is no data for the registration" in new Setup {
+      mockHttpGET[HttpResponse]("tst-url", httpRespNOCONTENT)
+      connector.getLodgingOfficer(testRegId) returns None
+    }
+
+    "throw a NotFoundException if the registration does not exist" in new Setup {
+      mockHttpFailedGET[HttpResponse]("tst-url", notFound)
+      connector.getLodgingOfficer(testRegId) failedWith notFound
+    }
+
+    "throw an Upstream4xxResponse with Forbidden status" in new Setup {
+      mockHttpFailedGET[HttpResponse]("tst-url", forbidden)
+      connector.getLodgingOfficer(testRegId) failedWith forbidden
+    }
+
+    "throw an Upstream5xxResponse with Internal Server Error status" in new Setup {
+      mockHttpFailedGET[HttpResponse]("tst-url", internalServerError)
+      connector.getLodgingOfficer(testRegId) failedWith internalServerError
+    }
+
+    "throw an Exception if the call failed" in new Setup {
+      mockHttpFailedGET[HttpResponse]("tst-url", exception)
+      connector.getLodgingOfficer(testRegId) failedWith exception
+    }
+  }
+
+  "Calling patchLodgingOfficer" should {
+    val officer = Officer(
+      name = Name(forename = Some("First"), otherForenames = None, surname = "Last"),
+      role = "Director"
+    )
+
+    val partialLodgingOfficer = LodgingOfficer(
+      completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
+      securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
+      homeAddress = None,
+      contactDetails = None,
+      formerName = None,
+      formerNameDate = None,
+      previousAddress = None
+    )
+
+    val partialJson = Json.parse(
+      s"""
+         |{
+         |  "name": {
+         |    "first": "First",
+         |    "last": "Last"
+         |  },
+         |  "role": "Director",
+         |  "dob": "1998-07-12",
+         |  "nino": "AA112233Z"
+         |}""".stripMargin)
+
+    "return a JsValue with a partial Lodging Officer view model" in new Setup {
+      mockHttpPATCH[JsValue, JsValue]("tst-url", partialJson)
+      connector.patchLodgingOfficer(partialLodgingOfficer) returns partialJson
+    }
+
+    "return a JsValue with a full Lodging Officer view model" in new Setup {
+      val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+      val fullLodgingOfficer: LodgingOfficer = partialLodgingOfficer.copy(
+        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+        contactDetails = Some(ContactDetailsView(Some("test@t.test"))),
+        formerName = Some(FormerNameView(false, None)),
+        previousAddress = Some(PreviousAddressView(true, None))
+      )
+
+      val fullJson = Json.parse(
+        s"""
+           |{
+           |  "name": {
+           |    "first": "First",
+           |    "last": "Last"
+           |  },
+           |  "role": "Director",
+           |  "dob": "1998-07-12",
+           |  "nino": "AA112233Z",
+           |  "details": {
+           |    "currentAddress": {
+           |      "line1": "TestLine1",
+           |      "line2": "TestLine2",
+           |      "postcode": "TE 1ST"
+           |    },
+           |    "contact": {
+           |      "email": "test@t.test"
+           |    }
+           |  }
+           |}""".stripMargin)
+
+      mockHttpPATCH[JsValue, JsValue]("tst-url", fullJson)
+      connector.patchLodgingOfficer(fullLodgingOfficer) returns fullJson
+    }
+
+    "throw a NotFoundException if the registration does not exist" in new Setup {
+      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", notFound)
+      connector.patchLodgingOfficer(partialLodgingOfficer) failedWith notFound
+    }
+
+    "throw an Upstream4xxResponse with Forbidden status" in new Setup {
+      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", forbidden)
+      connector.patchLodgingOfficer(partialLodgingOfficer) failedWith forbidden
+    }
+
+    "throw an Upstream5xxResponse with Internal Server Error status" in new Setup {
+      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", internalServerError)
+      connector.patchLodgingOfficer(partialLodgingOfficer) failedWith internalServerError
+    }
+
+    "throw an Exception if the call failed" in new Setup {
+      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", exception)
+      connector.patchLodgingOfficer(partialLodgingOfficer) failedWith exception
     }
   }
 }

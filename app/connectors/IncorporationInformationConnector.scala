@@ -56,7 +56,7 @@ trait IncorporationInformationConnect {
   )
 
   private def filterRelevantOfficers(ol: OfficerList): OfficerList = {
-    OfficerList(ol.items filter(o => (o.role.equals("director") || o.role.equals("secretary")) && o.resignedOn.isEmpty))
+    OfficerList(ol.items filter(o => (o.role.toLowerCase.equals("director") || o.role.toLowerCase.equals("secretary")) && o.resignedOn.isEmpty))
   }
 
   def getCompanyName(redId: String, transactionId: String)(implicit hc: HeaderCarrier): Future[JsValue] = {

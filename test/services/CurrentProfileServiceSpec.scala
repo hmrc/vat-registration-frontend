@@ -20,16 +20,16 @@ import java.time.LocalDate
 
 import cats.data.OptionT
 import common.enums.VatRegStatus
+import features.officer.services.IVService
 import helpers.VatRegSpec
 import models.CurrentProfile
-import models.external.{CoHoCompanyProfile, IncorpStatusEvent, IncorpSubscription, IncorporationInfo}
+import models.external.{IncorpStatusEvent, IncorpSubscription, IncorporationInfo}
 import org.mockito.Mockito.when
 import org.mockito.{ArgumentMatchers => Matchers}
-import play.api.libs.json.Format
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 class CurrentProfileServiceSpec extends VatRegSpec {
 
@@ -37,6 +37,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
     override val vatRegistrationService = mockVatRegistrationService
     override val keystoreConnector = mockKeystoreConnector
     override val incorpInfoService = mockIIService
+    override val ivService: IVService = mockIVService
   }
 
   val now = LocalDate.now()
@@ -53,11 +54,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
   "buildCurrentProfile" should {
     "return a CurrentProfile" when {
       "the a CurrentProfile has been cached in Keystore" in {
-
         implicit val hc = HeaderCarrier()
-
-        when(mockKeystoreConnector.fetchAndGet[CoHoCompanyProfile](Matchers.any())(Matchers.any[HeaderCarrier](), Matchers.any[Format[CoHoCompanyProfile]]()))
-          .thenReturn(Future.successful(Some(CoHoCompanyProfile("status", "testTxId"))))
 
         when(mockIIService.getCompanyName(Matchers.any(), Matchers.any())(Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful("testCompanyName"))
@@ -70,7 +67,9 @@ class CurrentProfileServiceSpec extends VatRegSpec {
 
         when(mockVatRegistrationService.getStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful(VatRegStatus.draft))
-        when(mockVatRegistrationService.getVatScheme(Matchers.any(),Matchers.any())).thenReturn(Future.successful(validVatScheme))
+
+        when(mockIVService.getIVStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
+            .thenReturn(Future.successful(None))
 
         when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
@@ -78,25 +77,31 @@ class CurrentProfileServiceSpec extends VatRegSpec {
         val result = await(testService.buildCurrentProfile("testRegId", "testTxId"))
         result mustBe testCurrentProfile
       }
-    }
-  }
-  "updateIVStatusInCurrentProfile" should {
-    "update current profile and return new cp if ivPassed = true" in {
-      when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CacheMap("", Map())))
 
-      val result = await(testService.updateIVStatusInCurrentProfile(Some(true))(hc,testCurrentProfile))
+      "the a CurrentProfile has been cached in Keystore with ivPassed set to true" in {
+        implicit val hc = HeaderCarrier()
+
+        when(mockIIService.getCompanyName(Matchers.any(), Matchers.any())(Matchers.any[HeaderCarrier]()))
+          .thenReturn(Future.successful("testCompanyName"))
+
+        when(mockIIService.getIncorporationInfo(Matchers.any())(Matchers.any()))
+          .thenReturn(OptionT.liftF(Future.successful(IncorporationInfo(
+            IncorpSubscription("","","",""),
+            IncorpStatusEvent("", None, Some(now), None)
+          ))))
+
+        when(mockVatRegistrationService.getStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
+          .thenReturn(Future.successful(VatRegStatus.draft))
+
+        when(mockIVService.getIVStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
+          .thenReturn(Future.successful(Some(true)))
+
+        when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(CacheMap("", Map())))
+
+        val result = await(testService.buildCurrentProfile("testRegId", "testTxId"))
         result mustBe testCurrentProfile.copy(ivPassed = Some(true))
-    }
-  }
-
-  "getIVStatusFromVRServiceAndUpdateCurrentProfile" should {
-    "getIV status from vr backend and return a current profile modified" in {
-      when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CacheMap("", Map())))
-      when(mockVatRegistrationService.getVatScheme(Matchers.any(),Matchers.any())).thenReturn(Future.successful(validVatScheme.copy(lodgingOfficer = Some(validLodgingOfficer.copy(ivPassed = Some(true))))))
-      val result = await(testService.getIVStatusFromVRServiceAndUpdateCurrentProfile(testCurrentProfile))
-      result mustBe testCurrentProfile.copy(ivPassed = Some(true))
+      }
     }
   }
 }

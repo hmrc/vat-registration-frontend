@@ -27,6 +27,7 @@ import models.ModelKeys.INCORPORATION_STATUS
 import models.external.IncorporationInfo
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import org.scalatest.Matchers
 import play.api.http.Status
 import play.api.mvc.Result
 import play.api.test.FakeRequest
@@ -42,6 +43,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
     mockReturnsService,
     mockKeystoreConnector,
     mockAuthConnector,
+    mockLodgingOfficerService,
     mockS4LService
   )
 
@@ -58,15 +60,19 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
       when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(Future.successful(validVatScheme))
       mockGetCurrentProfile()
+      when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
+        .thenReturn(Future.successful(validFullLodgingOfficer))
       when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
     "return HTML with a valid summary view post-incorp" in {
-      when(mockS4LService.clear(any(),any())).thenReturn(validHttpResponse.pure)
+      when(mockS4LService.clear(any(),any())).thenReturn(Future.successful(validHttpResponse))
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, None)
-      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.pure)
+      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(Future.successful(validVatScheme))
       mockGetCurrentProfile()
+      when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
+        .thenReturn(Future.successful(validFullLodgingOfficer))
       when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
@@ -74,6 +80,8 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "getRegistrationSummary maps a valid VatScheme object to a Summary object" in {
       when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(Future.successful(validVatScheme))
       implicit val cp = currentProfile()
+      when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
+        .thenReturn(Future.successful(validFullLodgingOfficer))
       when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
       TestSummaryController.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)
     }
@@ -83,6 +91,8 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "registrationToSummary maps a valid empty VatScheme object to a Summary object" in {
+      when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
+        .thenReturn(Future.successful(validFullLodgingOfficer))
       TestSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency).sections.length mustEqual 11
     }
   }

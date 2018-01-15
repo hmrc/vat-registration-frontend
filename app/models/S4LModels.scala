@@ -28,7 +28,6 @@ import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorker
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatContact.ppob.PpobView
-import models.view.vatLodgingOfficer._
 import play.api.libs.json.{Json, OFormat}
 import common.ErrorUtil.fail
 import models.view.vatTradingDetails.vatChoice.{OverThresholdView, TaxableTurnover, VoluntaryRegistration, VoluntaryRegistrationReason}

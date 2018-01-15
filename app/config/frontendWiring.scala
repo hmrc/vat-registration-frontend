@@ -18,6 +18,7 @@ package config
 
 import javax.inject.Inject
 
+import org.slf4j.{Logger, LoggerFactory}
 import play.api.mvc.Call
 import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
 import uk.gov.hmrc.http._
@@ -78,4 +79,8 @@ object WhitelistFilter extends AkamaiWhitelistFilter with MicroserviceFilterSupp
   override def whitelist: Seq[String]   = FrontendAppConfig.whitelist
   override def excludedPaths: Seq[Call] = FrontendAppConfig.whitelistExcluded map(Call("GET", _))
   override def destination: Call        = Call("GET", "https://www.tax.service.gov.uk/outage-register-for-vat")
+}
+
+trait Logging {
+  val logger: Logger = LoggerFactory.getLogger(getClass)
 }

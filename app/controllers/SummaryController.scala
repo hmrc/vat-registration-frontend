@@ -22,6 +22,7 @@ import connectors.{KeystoreConnect, Success}
 import common.enums.VatRegStatus
 import controllers.builders._
 import features.returns.{Returns, ReturnsService}
+import features.officer.services.LodgingOfficerService
 import models.api._
 import models.view._
 import models.{CurrentProfile, MonthYearModel}
@@ -40,6 +41,7 @@ class SummaryController @Inject()(ds: CommonPlayDependencies,
                                   val returnsService: ReturnsService,
                                   val keystoreConnector: KeystoreConnect,
                                   val authConnector: AuthConnector,
+                                  val lodgingOfficerService: LodgingOfficerService,
                                   implicit val s4LService: S4LService) extends VatRegistrationController(ds) with SessionProfile {
 
   def useEligibilityFrontend: Boolean = !vatRegFeatureSwitch.disableEligibilityFrontend.enabled
@@ -60,10 +62,9 @@ class SummaryController @Inject()(ds: CommonPlayDependencies,
 
   def getRegistrationSummary()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = {
     for {
-      vs <- vrs.getVatScheme
-    } yield {
-      registrationToSummary(vs)
-    }
+      officer <- lodgingOfficerService.getLodgingOfficer
+      summary <- vrs.getVatScheme.map(scheme => registrationToSummary(scheme.copy(lodgingOfficer = Some(officer))))
+    } yield summary
   }
 
   def submitRegistration: Action[AnyContent] = authorised.async {
@@ -89,8 +90,8 @@ class SummaryController @Inject()(ds: CommonPlayDependencies,
         useEligibilityFrontend,
         profile.incorporationDate
       ).section,
-      SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer).section,
-      SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer).section,
+      SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer.getOrElse(throw new IllegalStateException("Missing Lodging Officer data to show summary"))).section,
+      SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer.getOrElse(throw new IllegalStateException("Missing Lodging Officer data to show summary"))).section,
       SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
       SummaryCompanyContactDetailsSectionBuilder(vs.vatContact).section,
       SummaryBusinessActivitiesSectionBuilder(vs.vatSicAndCompliance).section,
