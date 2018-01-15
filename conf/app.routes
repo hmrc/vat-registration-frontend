@@ -31,18 +31,7 @@ GET         /                                                                   
 GET         /before-you-register-for-vat                                                       controllers.WelcomeController.start
 
 ## SERVICE CRITERIA QUESTIONS
-GET         /use-this-service                                                                  controllers.TwirlViewController.renderViewAuthorised(viewName="use-this-service")
-
-GET         /do-you-have-national-insurance-number                                             controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "haveNino")
-POST        /do-you-have-national-insurance-number                                             controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "haveNino")
-GET         /will-you-do-any-of-the-following                                                  controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "doingBusinessAbroad")
-POST        /will-you-do-any-of-the-following                                                  controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "doingBusinessAbroad")
-GET         /do-the-following-apply-to-you-or-the-business                                     controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "doAnyApplyToYou")
-POST        /do-the-following-apply-to-you-or-the-business                                     controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "doAnyApplyToYou")
-GET         /will-you-apply-for-following                                                      controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "applyingForAnyOf")
-POST        /will-you-apply-for-following                                                      controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "applyingForAnyOf")
-GET         /will-you-do-the-following                                                         controllers.vatEligibility.ServiceCriteriaQuestionsController.show(question = "companyWillDoAnyOf")
-POST        /will-you-do-the-following                                                         controllers.vatEligibility.ServiceCriteriaQuestionsController.submit(question = "companyWillDoAnyOf")
+GET         /use-this-service                                                                  controllers.TwirlViewController.renderViewAuthorised
 
 ## VOLUNTARY START DATE PAGE
 GET         /what-do-you-want-your-vat-start-date-to-be                                        features.returns.ReturnsController.voluntaryStartPage
@@ -63,14 +52,6 @@ POST        /trade-goods-services-with-countries-outside-uk                     
 ## EU GOODS APPLY EORI
 GET         /apply-economic-operator-registration-identification-number                        controllers.TradingDetailsController.applyEoriPage
 POST        /apply-economic-operator-registration-identification-number                        controllers.TradingDetailsController.submitApplyEori
-
-## VOLUNTARY REGISTRATION PAGE
-GET         /do-you-want-to-register-voluntarily                                               controllers.vatTradingDetails.vatChoice.VoluntaryRegistrationController.show
-POST        /do-you-want-to-register-voluntarily                                               controllers.vatTradingDetails.vatChoice.VoluntaryRegistrationController.submit
-
-## VOLUNTARY REGISTRATION REASON PAGE
-GET         /reason-for-registering                                                            controllers.vatTradingDetails.vatChoice.VoluntaryRegistrationReasonController.show
-POST        /reason-for-registering                                                            controllers.vatTradingDetails.vatChoice.VoluntaryRegistrationReasonController.submit
 
 ## ESTIMATE VAT TAXABLE TURNOVER PAGE
 GET         /estimate-vat-taxable-turnover-next-12-months                                      features.turnoverEstimates.TurnoverEstimatesController.showEstimateVatTurnover
@@ -94,11 +75,8 @@ POST        /vat-return-periods-end                                             
 
 ## ACCOUNTING PERIOD PAGE
 
-## TAXABLE TURNOVER PAGE
-GET         /do-you-expect-taxable-turnover-to-be-more-than-threshold                          controllers.vatTradingDetails.vatChoice.TaxableTurnoverController.show
-POST        /do-you-expect-taxable-turnover-to-be-more-than-threshold                          controllers.vatTradingDetails.vatChoice.TaxableTurnoverController.submit
 
-## VAT RETURN FREQUENCY
+## VAT RETURN FREQUENCY - OLD
 GET         /how-often-do-you-want-to-submit-vat-returns                                       features.returns.ReturnsController.returnsFrequencyPage
 POST        /how-often-do-you-want-to-submit-vat-returns                                       features.returns.ReturnsController.submitReturnsFrequency
 
@@ -223,12 +201,6 @@ GET         /post-sign-in                                                       
 ## APPLICATION SUBMISSION CONFIRMATION
 GET         /submission-confirmation                                                           controllers.ApplicationSubmissionController.show
 
-## CAN OR CAN'T REGISTER
-GET         /you-can-register-for-vat-with-this-service                                        controllers.vatTradingDetails.vatChoice.EligibilitySuccessController.show
-POST        /you-can-register-for-vat-with-this-service                                        controllers.vatTradingDetails.vatChoice.EligibilitySuccessController.submit
-
-GET         /you-cant-register-for-vat-with-this-service                                       controllers.vatEligibility.ServiceCriteriaQuestionsController.ineligible()
-
 
 ## FRS FLOW
 ##
@@ -260,10 +232,5 @@ POST        /confirm-business-type                                              
 GET         /flat-rate-scheme-join-date                                                        controllers.FlatRateController.frsStartDatePage
 POST        /flat-rate-scheme-join-date                                                        controllers.FlatRateController.submitFrsStartDate
 
-## Post incorp threshold question 1
-GET         /gone-over-threshold                                                               controllers.vatTradingDetails.vatChoice.OverThresholdController.show
-POST        /gone-over-threshold                                                               controllers.vatTradingDetails.vatChoice.OverThresholdController.submit
 
-## Threshold summary
-GET         /check-confirm-answers                                                             controllers.vatTradingDetails.vatChoice.ThresholdSummaryController.show
-POST        /check-confirm-answers                                                             controllers.vatTradingDetails.vatChoice.ThresholdSummaryController.submit
+

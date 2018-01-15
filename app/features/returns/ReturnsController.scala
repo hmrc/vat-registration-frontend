@@ -101,7 +101,7 @@ trait ReturnsController extends VatRegistrationControllerNoAux with SessionProfi
   }
 
   private def vatStartDatePage()(implicit hc : HeaderCarrier, currentProfile : CurrentProfile) =
-    returnsService.getEligibilityChoice.ifM(
+    returnsService.getThreshold.ifM(
       ifTrue = ReturnsController.voluntaryStartPage().pure,
       ifFalse = ReturnsController.mandatoryStartPage().pure
     ) map Redirect

@@ -42,6 +42,27 @@ trait BaseFixture {
   val testTradingName = "ACME INC"
   val testSortCode = "12-34-56"
   val testAccountNumber = "12345678"
+  val validExpectedOverTrue = Some(testDate)
+  val validVatThresholdPostIncorp = None
+  def generateThreshold(reason: Option[String] = None, overThreshold: Option[LocalDate] = None, expectedOverThreshold: Option[LocalDate] = None) =
+    (reason, overThreshold, expectedOverThreshold) match {
+      case (r@Some(_), _, _)            => Threshold(false,r)
+      case (_, od@Some(_), eod@Some(_)) => Threshold(true, None, od, eod)
+      case (_, od@Some(_), _)           => Threshold(true, None, od, None)
+      case (_, _, eod@Some(_))          => Threshold(true, None, None, eod)
+      case _                            => Threshold(false)
+    }
+  def generateOptionalThreshold(reason: Option[String] = None, overThreshold: Option[LocalDate] = None, expectedOverThreshold: Option[LocalDate] = None) = {
+    Some(generateThreshold(reason, overThreshold, expectedOverThreshold))
+  }
+  val validVoluntaryRegistration            = generateThreshold()
+  val validVoluntaryRegistrationWithReason  = generateThreshold(reason = Some(Threshold.INTENDS_TO_SELL))
+  val validMandatoryRegistration            = generateThreshold(overThreshold = Some(testDate))
+  val validMandatoryRegistrationBothDates   = generateThreshold(overThreshold = Some(testDate), expectedOverThreshold = Some(testDate))
+  val optVoluntaryRegistration              = Some(validVoluntaryRegistration)
+  val optVoluntaryRegistrationWithReason    = Some(validVoluntaryRegistrationWithReason)
+  val optMandatoryRegistration              = Some(validMandatoryRegistration)
+  val optMandatoryRegistrationBothDates     = Some(validMandatoryRegistrationBothDates)
 }
 
 trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixtures
@@ -133,22 +154,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   //Api models
   val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", None, None)
-  val validExpectedOverTrue = Some(VatExpectedThresholdPostIncorp(true,Some(testDate)))
-  val validExpectedOverTrueNoDate = Some(VatExpectedThresholdPostIncorp(true,None))
-  val validExpectedOverFalse = Some(VatExpectedThresholdPostIncorp(false,None))
-  def validServiceEligibility(nes : String = VatEligibilityChoice.NECESSITY_VOLUNTARY, reason : Option[String] = None, expectedThreshold: Option[VatExpectedThresholdPostIncorp] = None) =
-      VatServiceEligibility(
-        Some(true),
-        Some(false),
-        Some(false),
-        Some(false),
-        Some(false),
-        Some(false),
-        Some(VatEligibilityChoice(
-          nes, reason, None, expectedThreshold)))
-
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
-  val validVatThresholdPostIncorp = VatThresholdPostIncorp(overThresholdSelection = false, None)
   val validVatCulturalCompliance = VatComplianceCultural(notForProfit = true)
   val validVatLabourCompliance = VatComplianceLabour(labour = false)
   val validVatFinancialCompliance = VatComplianceFinancial(adviceOrConsultancyOnly = false, actAsIntermediary = false)
@@ -235,14 +241,14 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
                  sicAndCompliance: Option[VatSicAndCompliance] = None,
                  contact: Option[VatContact] = None,
                  vatFlatRateScheme: Option[VatFlatRateScheme] = None,
-                 vatEligibility: Option[VatServiceEligibility] = None
+                 threshold: Option[Threshold] = None
                ): VatScheme = VatScheme(
     id = id,
     tradingDetails = tradingDetails,
     vatSicAndCompliance = sicAndCompliance,
     vatContact = contact,
     vatFlatRateScheme = vatFlatRateScheme,
-    vatServiceEligibility = vatEligibility,
+    threshold = threshold,
     status = VatRegStatus.draft
   )
 

@@ -27,7 +27,6 @@ import models.ModelKeys.INCORPORATION_STATUS
 import models.external.IncorporationInfo
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatest.Matchers
 import play.api.http.Status
 import play.api.mvc.Result
 import play.api.test.FakeRequest
@@ -58,42 +57,42 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
     "return HTML with a valid summary view pre-incorp" in {
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
-      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme(any(),any()))
+        .thenReturn(Future.successful(validVatScheme.copy(threshold = optMandatoryRegistration)))
       mockGetCurrentProfile()
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
-      when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
     "return HTML with a valid summary view post-incorp" in {
       when(mockS4LService.clear(any(),any())).thenReturn(Future.successful(validHttpResponse))
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, None)
-      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme(any(),any()))
+        .thenReturn(Future.successful(validVatScheme.copy(threshold = optMandatoryRegistration)))
       mockGetCurrentProfile()
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
-      when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
     "getRegistrationSummary maps a valid VatScheme object to a Summary object" in {
-      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(Future.successful(validVatScheme))
+      when(mockVatRegistrationService.getVatScheme(any(),any()))
+        .thenReturn(Future.successful(validVatScheme.copy(threshold = optMandatoryRegistration)))
       implicit val cp = currentProfile()
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
-      when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
       TestSummaryController.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)
     }
 
     "registrationToSummary maps a valid VatScheme object to a Summary object" in {
-      TestSummaryController.registrationToSummary(validVatScheme).sections.length mustEqual 11
+      TestSummaryController.registrationToSummary(validVatScheme.copy(threshold = optMandatoryRegistration)).sections.length mustEqual 11
     }
 
     "registrationToSummary maps a valid empty VatScheme object to a Summary object" in {
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
-      TestSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency).sections.length mustEqual 11
+      TestSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency.copy(threshold = optMandatoryRegistration)).sections.length mustEqual 11
     }
   }
 

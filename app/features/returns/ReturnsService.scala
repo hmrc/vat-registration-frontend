@@ -20,8 +20,6 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 import connectors.RegistrationConnector
-import features.financials.models._
-import models.api.{VatEligibilityChoice, VatExpectedThresholdPostIncorp, VatThresholdPostIncorp}
 import models.{CurrentProfile, S4LKey}
 import play.api.Logger
 import services._
@@ -64,19 +62,19 @@ trait ReturnsService {
   }
 
   //TODO: Refactor this to use the eligibility functions once this has been rebased onto it.
-  def calculateMandatoryStartDate(threshold : Option[VatThresholdPostIncorp], expectedThreshold : Option[VatExpectedThresholdPostIncorp]): LocalDate = {
+  def calculateMandatoryStartDate(overThresholdDate : Option[LocalDate], expectedOverThresholdDate : Option[LocalDate]): LocalDate = {
     def calculatedCrossedThresholdDate(thresholdDate : LocalDate) = thresholdDate.withDayOfMonth(1).plusMonths(2)
 
-    (threshold.flatMap(_.overThresholdDate), expectedThreshold.flatMap(_.expectedOverThresholdDate)) match {
+    (overThresholdDate, expectedOverThresholdDate) match {
       case (Some(td), Some(ed)) =>
         val calculatedThresholdDate = calculatedCrossedThresholdDate(td)
         if (calculatedThresholdDate.isBefore(ed)) calculatedThresholdDate else ed
       case (Some(td), None) => calculatedCrossedThresholdDate(td)
       case (None, Some(ed)) => ed
-      case _ => {
+      case _ =>
         Logger.error("[ReturnsService] [calculateMandatoryStartDate] No dates could be retrieved from eligibility threshold in a mandatory flow")
         throw new RuntimeException("[ReturnsService] [calculateMandatoryStartDate] No dates could be retrieved from eligibility threshold in a mandatory flow")
-      }
+
     }
   }
 
@@ -100,20 +98,16 @@ trait ReturnsService {
 
   //TODO: Refactor this to use the eligibility functions once this has been rebased onto it.
   def retrieveCalculatedStartDate(implicit profile : CurrentProfile, hc : HeaderCarrier, ec : ExecutionContext) : Future[LocalDate] = {
-    vatService.getVatScheme.map(
-      _.vatServiceEligibility.fold(
-        throw new RuntimeException("[ReturnsService] [retrieveCalculatedStartDate] Could not retrieve the vat service eligibility")
-      ) { _.vatEligibilityChoice.fold(
-          throw new RuntimeException("[ReturnsService] [retrieveCalculatedStartDate] Could not retrieve the vat eligibility choice")
-        ) { vec =>
-          calculateMandatoryStartDate(vec.vatThresholdPostIncorp, vec.vatExpectedThresholdPostIncorp)
-        }
-      }
+    vatService.getThreshold(profile.registrationId).map( threshold =>
+      calculateMandatoryStartDate(threshold.overThresholdDate, threshold.expectedOverThresholdDate)
     )
   }
 
   def retrieveCTActiveDate(implicit hc: HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext) : Future[Option[LocalDate]] = {
-    prePopService.getCTActiveDate.value
+    prePopService.getCTActiveDate recover {
+      case e => Logger.error(s"[ReturnsService][retrieveCTActiveDate] an error occured for regId: ${profile.registrationId} with message: ${e.getMessage}")
+        throw e
+    }
   }
 
   def voluntaryStartPageViewModel(incorpDate : Option[LocalDate])
@@ -207,12 +201,9 @@ trait ReturnsService {
     )
   }
 
-  def getEligibilityChoice()
-                          (implicit hc:HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext): Future[Boolean] = {
-    vatRegConnector.getRegistration(profile.registrationId) map { vs =>
-      vs.vatServiceEligibility.flatMap(_.vatEligibilityChoice).map(_.necessity.contains(VatEligibilityChoice.NECESSITY_VOLUNTARY))
-        .fold(throw new RuntimeException(""))(contains => contains)
-    }
+  def getThreshold()
+                  (implicit hc:HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext): Future[Boolean] = {
+    vatService.getThreshold(profile.registrationId) map (!_.mandatoryRegistration)
   }
 
 }

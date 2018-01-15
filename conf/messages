@@ -146,8 +146,6 @@ pages.useraborted.body1.url            = You need to <a href="{0}">restart the i
 pages.useraborted.body2.url            = If you have the company''s name and registration date, you can
 pages.useraborted.body2.link           = use another HMRC service.
 
-
-
 ## Welcome Page
 pages.welcome.title                     = Before you start
 pages.welcome.heading                   = Register for VAT
@@ -170,140 +168,6 @@ pages.welcome.p4                        = You''ll need:
 pages.welcome.bullet6                   = to be a company director or company secretary
 pages.welcome.bullet7                   = personal information we can use to identify you (for example, details from a UK passport, a P60 or payslips)
 pages.welcome.bullet8                   = your UK National Insurance number
-
-
-## Service Criteria Questions (VAT Service Eligibility)
-## Service Criteria Success
-pages.serviceCriteriaSuccess.title                                     = Eligible to register
-pages.serviceCriteriaSuccess.heading                                   = You can register for VAT using this service
-pages.serviceCriteriaSuccess.para1                                     = To register for VAT you''ll need:
-pages.serviceCriteriaSuccess.bullet.details.bullet1                    = details of the person making the application (for example, National Insurance number)
-pages.serviceCriteriaSuccess.bullet.details.bullet2                    = estimate of the company''s VAT taxable sales for the next 12 months
-pages.serviceCriteriaSuccess.note.registrationTime                     = This application should take no more than 30 minutes.
-pages.serviceCriteriaSuccess.panels.vatVoluntarily.title               = Can you register voluntarily for VAT?
-pages.serviceCriteriaSuccess.panels.vatVoluntarily.para1               = You can register voluntarily if the company''s VAT taxable turnover is less than £85,000 in the 30 days after it''s registered with Companies House.
-pages.serviceCriteriaSuccess.panels.vatVoluntarily.para2               = If you''re registered for VAT you:
-pages.serviceCriteriaSuccess.panels.vatVoluntarily.bullet.charge       = must <a href="https://www.gov.uk/vat-businesses/how-vat-works">charge VAT</a> on the goods or services you sell
-pages.serviceCriteriaSuccess.panels.vatVoluntarily.bullet.reclaim      = can <a href="https://www.gov.uk/reclaim-vat">reclaim VAT</a> on your business-related purchases
-pages.serviceCriteriaSuccess.panels.vatVoluntarily.bullet.invoices     = must send VAT invoices to VAT-registered customers
-pages.serviceCriteriaSuccess.panels.vatVoluntarily.para3               = Smaller companies that are registered for VAT can appear larger and more established to customers. However, charging VAT on goods and services may put off customers who aren''t VAT registered and can''t reclaim VAT.
-pages.serviceCriteriaSuccess.panels.vatVoluntarily.para4               = You can apply to cancel your VAT registration at any time if it turns out to be the wrong decision.
-pages.serviceCriteriaSuccess.panels.vatResponsibilities.title          = What are your VAT responsibilities?
-pages.serviceCriteriaSuccess.panels.vatResponsibilities.para1          = From the date you''re registered for VAT you must:
-pages.serviceCriteriaSuccess.panels.vatResponsibilities.bullet.charge  = charge the <a href="https://www.gov.uk/vat-businesses/when-to-charge-vat">right amount of VAT</a>
-pages.serviceCriteriaSuccess.panels.vatResponsibilities.bullet.pay     = pay any VAT due to HMRC
-pages.serviceCriteriaSuccess.panels.vatResponsibilities.bullet.submit  = submit VAT Returns
-pages.serviceCriteriaSuccess.panels.vatResponsibilities.bullet.records = keep VAT records and a VAT account
-
-## Service Criteria Failure
-pages.serviceCriteriaFailure.title                      = You can''t register for VAT using this service
-pages.serviceCriteriaFailure.heading                    = You can''t register for VAT using this service
-pages.serviceCriteriaFailure.linkToLegacyApp            = You need to register using HMRC''s existing service.
-pages.serviceCriteriaFailure.linkToLegacyApp2           = You need to <a href="https://online.hmrc.gov.uk/registration/newbusiness/business-allowed">register using HMRC''s existing service</a> if:
-pages.serviceCriteriaFailure.button.linkToLegacyApp     = Register using HMRC''s existing service
-
-pages.serviceCriteriaFailure.nino.p1                    = You must have a National Insurance number to register for VAT with this service.
-
-pages.serviceCriteriaFailure.businessAbroad.bullet1     = the company sells goods outside the UK but not in the UK
-pages.serviceCriteriaFailure.businessAbroad.bullet2     = the company''s head office is based outside the UK
-pages.serviceCriteriaFailure.businessAbroad.p1          = If the company distance sells goods into the UK from another EU country, you need to <a href="https://www.gov.uk/government/publications/vat-application-for-registration-distance-selling-vat1a">register using form VAT1A</a>.
-pages.serviceCriteriaFailure.businessAbroad.p2          = If the company buys goods from other EU countries and brings them into the UK, you need to <a href="https://www.gov.uk/government/publications/vat-application-for-registration-acquisitions-vat1b">register using form VAT1B</a>.
-pages.serviceCriteriaFailure.businessAbroad.p3          = If the company is selling assets you bought and claimed a VAT refund on from a country outside the UK, you need to <a href="https://www.gov.uk/government/publications/vat-registration-notification-vat1c">register using form VAT1C</a>.
-
-pages.serviceCriteriaFailure.doAnyApplyToYou.bullet1    = you changed the legal status of the company when you registered it with Companies House
-pages.serviceCriteriaFailure.doAnyApplyToYou.bullet2    = you''ve taken over a VAT-registered business which is operating and making a profit
-pages.serviceCriteriaFailure.doAnyApplyToYou.bullet3    = you want to register a VAT group
-pages.serviceCriteriaFailure.doAnyApplyToYou.bullet4    = you''ve been involved with other businesses in the last 2 years
-pages.serviceCriteriaFailure.doAnyApplyToYou.p1         = If your VAT taxable turnover went over the £85,000 threshold temporarily but has since dropped below the threshold, you need to <a href="https://www.gov.uk/government/publications/vat-application-for-registration-vat1">register using form VAT1</a>.
-
-pages.serviceCriteriaFailure.applyingForAnyOf.bullet1    = the company is applying for the Annual Accounting Scheme
-pages.serviceCriteriaFailure.applyingForAnyOf.bullet2    = the company is applying for an exemption from VAT registration
-pages.serviceCriteriaFailure.applyingForAnyOf.p1         = If the company is applying for the Agricultural Flat Rate Scheme, you need to <a href="https://www.gov.uk/government/publications/vat-agricultural-flat-rate-scheme-application-for-certification-vat98">register using form VAT98</a>.
-pages.serviceCriteriaFailure.applyingForAnyOf.p2         = If the company is applying for an exception from VAT registration, you need to <a href="https://www.gov.uk/government/publications/vat-application-for-registration-vat1">register using form VAT1</a>.
-
-pages.serviceCriteriaFailure.companyWillDoAnyOf.p1         = You can''t register with this service if the company:
-pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet1    = hires out boats or aircraft to clients
-pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet2    = owns one or more racehorses
-pages.serviceCriteriaFailure.companyWillDoAnyOf.bullet3    = buys, sells or rents out land or property
-
-## Service Eligibility
-pages.eligibility.start.title                               = Can you use this service?
-pages.eligibility.start.heading                             = Can you use this service?
-pages.eligibility.start.para1                               = Before you register for VAT, we need to ask some eligibility questions.
-
-## Service Eligibility Questions Validation
-validation.eligibility.haveNino.missing                     = Tell us if you have a National Insurance number
-validation.eligibility.doingBusinessAbroad.missing          = Tell us if you''ll do any of the following once you''re registered for VAT
-validation.eligibility.doAnyApplyToYou.missing              = Tell us if any of the following apply to you or your business
-validation.eligibility.applyingForAnyOf.missing             = Tell us if you''ll apply for any of the following
-validation.eligibility.companyWillDoAnyOf.missing           = Tell us if you''ll do any of the following
-
-## Have Nino
-pages.eligibility.haveNino.title                            = Do you have a National Insurance number?
-pages.eligibility.haveNino.heading                          = Do you have a National Insurance number?
-
-## Doing Business Abroad
-pages.eligibility.doingBusinessAbroad.title                 = Will the company do international business once it''s registered for VAT?
-pages.eligibility.doingBusinessAbroad.heading               = Will the company do international business once it''s registered for VAT?
-pages.eligibility.doingBusinessAbroad.p1                    = Tell us if the company will do any of the following:
-pages.eligibility.doingBusinessAbroad.bullet1               = sell goods into the UK from another EU country via the internet, digital TV, mail order, phone or text message (known as <a href="https://www.gov.uk/online-and-distance-selling-for-businesses/distance-selling">''distance selling''</a>)
-pages.eligibility.doingBusinessAbroad.bullet2               = buy goods from other EU countries and bring them into the UK
-pages.eligibility.doingBusinessAbroad.bullet3               = sell assets that it bought from a country outside the UK and claimed a VAT refund on
-pages.eligibility.doingBusinessAbroad.bullet4               = sell goods or services outside the UK but not in the UK
-pages.eligibility.doingBusinessAbroad.bullet5               = do business from a head office based outside the UK
-
-## Do any of the following apply to you or the business?
-pages.eligibility.doAnyApplyToYou.title                     = Are you involved with more than one business or changing the legal status of your business?
-pages.eligibility.doAnyApplyToYou.heading                   = Are you involved with more than one business or changing the legal status of your business?
-pages.eligibility.doAnyApplyToYou.p1                        = Tell us if any of the following apply:
-pages.eligibility.doAnyApplyToYou.bullet1                   = you''ve been involved with other businesses as a sole trader, partner or director in the last 2 years
-pages.eligibility.doAnyApplyToYou.bullet2                   = you want to <a href="https://www.gov.uk/guidance/vat-registration-for-groups-divisions-and-joint-ventures">set up a VAT group</a>
-pages.eligibility.doAnyApplyToYou.bullet3                   = you''ve taken over a VAT-registered business which is operating and making a profit
-pages.eligibility.doAnyApplyToYou.bullet4                   = you changed the legal status of your business when you registered it with Companies House (for example, from sole trader to limited company)
-
-## Will you apply for any of the following?
-pages.eligibility.applyingForAnyOf.title                    = Is the company applying for either the Agricultural Flat Rate Scheme or the Annual Accounting Scheme?
-pages.eligibility.applyingForAnyOf.heading                  = Is the company applying for either the Agricultural Flat Rate Scheme or the Annual Accounting Scheme?
-pages.eligibility.applyingForAnyOf.p1                       = The Agricultural Flat Rate Scheme is an alternative to VAT registration for farmers.
-pages.eligibility.applyingForAnyOf.p2                       = The Annual Accounting Scheme allows you to submit 1 VAT return a year and make advance payments towards your next VAT bill.
-
-pages.eligibility.applyingForAnyOf.panel1.title             = What is the Agricultural Flat Rate Scheme?
-pages.eligibility.applyingForAnyOf.panel1.p1                = The Agricultural Flat Rate Scheme is an alternative to VAT registration. If you register as a flat rate farmer you:
-pages.eligibility.applyingForAnyOf.panel1.bullet1           = don''t charge VAT on your sales
-pages.eligibility.applyingForAnyOf.panel1.bullet2           = can''t reclaim VAT on your purchases
-pages.eligibility.applyingForAnyOf.panel1.p2                = But you can charge and keep a Flat Rate Addition (FRA) when you sell goods or services to VAT-registered customers.
-
-pages.eligibility.applyingForAnyOf.panel2.title             = What is the Annual Accounting Scheme?
-pages.eligibility.applyingForAnyOf.panel2.p1                = With the Annual Accounting Scheme you:
-pages.eligibility.applyingForAnyOf.panel2.bullet1           = make advance VAT payments towards your VAT bill - based on your last return (or estimated if you''re new to VAT)
-pages.eligibility.applyingForAnyOf.panel2.bullet2           = submit one VAT Return a year
-pages.eligibility.applyingForAnyOf.panel2.p2                = When you submit your VAT Return you either:
-pages.eligibility.applyingForAnyOf.panel2.bullet3           = make a final payment - the difference between your advance payments and actual VAT bill
-pages.eligibility.applyingForAnyOf.panel2.bullet4           = apply for a refund - if you''ve overpaid your VAT bill
-
-pages.eligibility.applyingForAnyOf.panel3.title             = What is a registration exception?
-pages.eligibility.applyingForAnyOf.panel3.p1                = You can apply for a registration exception if the company''s turnover went over £85,000 temporarily.
-pages.eligibility.applyingForAnyOf.panel3.p2                = You''ll need to tell HMRC why you believe your turnover won''t go over the de-registration threshold of £83,000 in the next 12 months.
-
-pages.eligibility.applyingForAnyOf.panel4.title             = What is an exemption from VAT registration?
-pages.eligibility.applyingForAnyOf.panel4.p1                = You can apply for an exemption from VAT registration if you sell mainly or only zero-rated items. If you''re exempted from VAT registration you won''t be able to reclaim any VAT.
-
-pages.eligibility.companyWillDoAnyOf.title                   = Will the company do any of the following once it''s registered for VAT?
-pages.eligibility.companyWillDoAnyOf.heading                 = Will the company do any of the following once it''s registered for VAT?
-pages.eligibility.companyWillDoAnyOf.p1                      = Tell us if the company will do any of the following:
-pages.eligibility.companyWillDoAnyOf.bullet1                 = hire out boats or aircraft to clients
-pages.eligibility.companyWillDoAnyOf.bullet2                 = own one or more racehorses
-pages.eligibility.companyWillDoAnyOf.bullet3                 = buy, sell or rent out land or property
-
-## Summary Service Criteria
-pages.summary.serviceCriteria.sectionHeading            = Service criteria questions
-pages.summary.serviceCriteria.companyWillDoAnyOf        = Will the company do any of the following?
-pages.summary.serviceCriteria.nino                      = Do you have a National Insurance number?
-pages.summary.serviceCriteria.businessAbroad            = Will the company do international business once it''s registered for VAT?
-pages.summary.serviceCriteria.doAnyApplyToYou           = Are you involved with more than one business or changing the legal status of your business?
-pages.summary.serviceCriteria.applyingForVatExemption   = Is the company applying for a VAT registration exemption?
-pages.summary.serviceCriteria.applyingForVatException   = Is the company applying for a VAT registration exception?
-pages.summary.serviceCriteria.applyingForAnyOf          = Is the company applying for either the Agricultural Flat Rate Scheme or the Annual Accounting Scheme?
 
 ## Start Date Page
 pages.startDate.title                                 = What do you want your VAT start date to be?
@@ -345,31 +209,9 @@ validation.tradingName.invalid                      = Enter a valid trading name
 validation.tradingName.missing                      = Enter a trading name
 validation.tradingNameRadio.missing                 = Tell us if the company will trade under another name
 
-## Voluntary Registration Page
-pages.voluntary.registration.title                            = Do you want to register voluntarily for VAT?
-pages.voluntary.registration.heading                          = Do you want to register voluntarily for VAT?
-pages.voluntary.registration.para1                            = Based on your answers, you don''t need to register for VAT right now.
-pages.voluntary.registration.para2                            = You can still register voluntarily if the company will supply VAT taxable goods or services in the UK.
-pages.voluntary.registration.reason.panels.neither.para       = If none of these apply you won''t be able to register voluntarily for VAT.
-validation.voluntary.registration.missing                     = Tell us if you want to register voluntarily for VAT
-
-## Voluntary Registration Reason Page
-pages.voluntary.registration.reason.title                     = Which one applies to the company?
-pages.voluntary.registration.reason.heading                   = Which one applies to the company?
-pages.voluntary.registration.reason.radio.sells               = It already sells VAT taxable goods or services
-pages.voluntary.registration.reason.radio.intendsToSell       = It intends to sell VAT goods or services
-pages.voluntary.registration.reason.radio.neither             = Neither of these
-validation.voluntary.registration.reason.missing              = Tell us why you intend to register voluntarily for VAT
-
 ## Voluntary Registration Reason Summary
 pages.summary.voluntaryReason.sells                           = The company is already selling goods or services
 pages.summary.voluntaryReason.intendsToSell                   = The company intends to sell good or services in the future
-
-## Taxable Turnover Page
-pages.taxable.turnover.title                            = Do you expect the company to make VAT taxable sales of more than £85,000 in the 30 days after it''s registered with Companies House?
-pages.taxable.turnover.heading                          = Do you expect the company to make VAT taxable sales of more than £85,000 in the 30 days after it''s registered with Companies House?
-pages.taxable.turnover.p1                               = You must register immediately if you expect the company''s VAT taxable sales to be over £85,000 in the 30 days after it''s registered with Companies House.
-validation.taxable.turnover.missing                     = Tell us if you expect the company''s turnover to be more than £85,000 in the 30 days after it''s registered
 
 ## Mandatory Start Date Confirmation page
 pages.start.date.confirmation.title                          = The company''s VAT start date
@@ -939,24 +781,3 @@ pages.summary.frs.businessSector                        = Business sector
 pages.summary.frs.flatRate                              = Your flat rate (%)
 pages.summary.frs.startDate                             = Start date
 pages.summary.frs.startDate.dateOfRegistration          = Date of registration
-
-## Post Incorp Threshold Questions
-## Over Threshold
-pages.thresholdQuestion1.title                            = In any 12-month period has your company gone over the VAT registration threshold?
-pages.thresholdQuestion1.heading                          = Since {0} has your company''s VAT taxable turnover gone over £85,000?
-pages.thresholdQuestion1.p1                               = £85,000 is the VAT registration threshold for the current financial year.
-pages.thresholdQuestion1.panel.heading                    = When did this first happen?
-pages.thresholdQuestion1.panel.hint                       = For example, 02 2017
-pages.thresholdQuestion1.month                            = Month
-pages.thresholdQuestion1.year                             = Year
-validation.overThreshold.date.invalid                     = Enter a valid date
-validation.overThreshold.date.missing                     = Enter a valid date
-validation.overThreshold.selection.missing                = Tell us if since {0} the company''s VAT taxable turnover gone over £85,000
-validation.overThreshold.date.range.above                 = This date must be before the current month
-validation.overThreshold.date.range.below                 = This date must be after {0}
-
-## Threshold Summary Page
-pages.thresholdSummary.title                              = Check and confirm your answers
-pages.thresholdSummary.heading                            = Check and confirm your answers
-pages.summary.threshold.overThresholdSelection            = Since {0} has the company''s VAT taxable turnover gone over £85,000?
-pages.summary.threshold.overThresholdDate                 = Month turnover went over £85,000

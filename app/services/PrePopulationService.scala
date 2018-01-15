@@ -28,7 +28,7 @@ import connectors.{OptionalResponse, PPConnector}
 import features.officer.models.view.LodgingOfficer
 import models._
 import models.api._
-import models.external.Officer
+import models.external.{AccountingDetails, Officer}
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
@@ -49,12 +49,11 @@ trait PrePopService extends TraverseSyntax with ListInstances with FutureInstanc
 
   private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-  def getCTActiveDate(implicit hc: HeaderCarrier, profile: CurrentProfile): OptionalResponse[LocalDate] =
+  def getCTActiveDate(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[LocalDate]] =
     for {
-      ctReg             <- ppConnector.getCompanyRegistrationDetails
-      accountingDetails <- fromOption[Future](ctReg.accountingDetails)
-      dateString        <- fromOption[Future](accountingDetails.activeDate)
-    } yield LocalDate.parse(dateString, formatter)
+      ctReg       <- ppConnector.getCompanyRegistrationDetails
+      optDate     = ctReg.flatMap(_.accountingDetails).flatMap(_.activeDate)
+    } yield optDate.map(dateString => LocalDate.parse(dateString, formatter))
 
   private def getAddresses[T: S4LKey : Format](save4laterExtractor: T => Option[ScrsAddress])
                                               (implicit mt: ApiModelTransformer[ScrsAddress], hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
