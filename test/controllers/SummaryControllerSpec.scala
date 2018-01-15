@@ -16,11 +16,13 @@
 
 package controllers
 
+import java.time.LocalDate
+
 import common.enums.VatRegStatus
-import connectors.{KeystoreConnector, Success, VatRegistrationConnector}
+import connectors.{Success, VatRegistrationConnector}
+import features.returns.{Frequency, Returns, Start}
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.CurrentProfile
 import models.ModelKeys.INCORPORATION_STATUS
 import models.external.IncorporationInfo
 import org.mockito.ArgumentMatchers.any
@@ -28,11 +30,8 @@ import org.mockito.Mockito.when
 import play.api.http.Status
 import play.api.mvc.Result
 import play.api.test.FakeRequest
-import play.api.test.Helpers.redirectLocation
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
-import scala.reflect.macros.blackbox
 
 class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -40,6 +39,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
     ds,
     mockVATFeatureSwitch,
     mockVatRegistrationService,
+    mockReturnsService,
     mockKeystoreConnector,
     mockAuthConnector,
     mockS4LService
@@ -48,6 +48,8 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
   val mockVatRegistrationConnector: VatRegistrationConnector = mock[VatRegistrationConnector]
 
   val fakeRequest = FakeRequest(routes.SummaryController.show())
+  val returns = Returns(Some(true), Some(Frequency.monthly), None, Some(Start(Some(LocalDate.of(2018, 1, 1)))))
+  val emptyReturns = Returns(None, None, None, None)
 
   "Calling summary to show the summary page" should {
 

@@ -20,7 +20,6 @@ package models.api {
   import play.api.libs.json._
 
   case class VatTradingDetails(
-                                vatChoice: VatChoice,
                                 tradingName: TradingName,
                                 euTrading: VatEuTrading
                               ) {
@@ -35,21 +34,16 @@ package models.api {
 package models {
 
   import common.ErrorUtil.fail
-  import models.api.VatEligibilityChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
   import models.api._
   import models.view.vatTradingDetails.TradingNameView
   import models.view.vatTradingDetails.TradingNameView.TRADING_NAME_YES
-  import models.view.vatTradingDetails.vatChoice._
-  import models.view.vatTradingDetails.vatChoice.StartDateView.BUSINESS_START_DATE
-  import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.REGISTER_YES
-  import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
   import models.view.vatTradingDetails.vatEuTrading.EuGoods.EU_GOODS_YES
+  import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
   import play.api.libs.json.{Json, OFormat}
 
   final case class S4LTradingDetails
   (
     tradingName: Option[TradingNameView] = None,
-    startDate: Option[StartDateView] = None,
     euGoods: Option[EuGoods] = None,
     applyEori: Option[ApplyEori] = None
   )
@@ -63,7 +57,6 @@ package models {
       override def toS4LModel(vs: VatScheme): S4LTradingDetails =
         S4LTradingDetails(
           tradingName = ApiModelTransformer[TradingNameView].toViewModel(vs),
-          startDate = ApiModelTransformer[StartDateView].toViewModel(vs),
           euGoods = ApiModelTransformer[EuGoods].toViewModel(vs),
           applyEori = ApiModelTransformer[ApplyEori].toViewModel(vs)
         )
@@ -75,10 +68,6 @@ package models {
       // map S4LTradingDetails to VatTradingDetails
       override def toApi(c: S4LTradingDetails): VatTradingDetails =
         VatTradingDetails(
-          vatChoice = VatChoice(vatStartDate = c.startDate.map(sd => VatStartDate(
-          selection = sd.dateType,
-                        startDate = if (sd.dateType == BUSINESS_START_DATE) sd.ctActiveDate else sd.date)
-                      ).getOrElse(error)),
           tradingName = c.tradingName.map(tnv =>
             TradingName(tnv.yesNo == TRADING_NAME_YES, tnv.tradingName)).getOrElse(error),
 

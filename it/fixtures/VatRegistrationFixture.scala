@@ -19,19 +19,17 @@ package it.fixtures
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
-import models.{BankAccount, BankAccountDetails, S4LVatLodgingOfficer}
+import features.returns.{Frequency, Returns, Stagger}
 import models.api._
 import models.external.Officer
-import models.view.vatFinancials.vatAccountingPeriod.VatReturnFrequency.QUARTERLY
 import models.view.vatLodgingOfficer.{CompletionCapacityView, OfficerSecurityQuestionsView}
-import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
+import models.{BankAccount, BankAccountDetails, S4LVatLodgingOfficer}
 
 trait VatRegistrationFixture {
   val address = ScrsAddress(line1 = "3 Test Building", line2 = "5 Test Road", postcode = Some("TE1 1ST"))
 
   val tradingDetails = VatTradingDetails(
-    vatChoice = VatChoice(vatStartDate = VatStartDate(COMPANY_REGISTRATION_DATE, None)),
     tradingName = TradingName(selection = false, tradingName = None),
     euTrading = VatEuTrading(false, Some(false))
   )
@@ -58,7 +56,7 @@ trait VatRegistrationFixture {
     contact = None
   )
 
-  val validPreIVScheme = VatScheme(id="1",lodgingOfficer = Some(validLodgingOfficerPreIV), status = VatRegStatus.draft)
+  val validPreIVScheme = VatScheme(id="1", lodgingOfficer = Some(validLodgingOfficerPreIV), status = VatRegStatus.draft)
   val completionCapacity = CompletionCapacity(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director")
 
   val officerName = Name(forename = Some("Firstname"), surname = "lastname", otherForenames = None)
@@ -81,9 +79,7 @@ trait VatRegistrationFixture {
 
   val financials = VatFinancials(
     turnoverEstimate = 30000,
-    zeroRatedTurnoverEstimate = None,
-    reclaimVatOnMostReturns = false,
-    accountingPeriods = VatAccountingPeriod(QUARTERLY, Some("jan_apr_jul_oct"))
+    zeroRatedTurnoverEstimate = None
   )
 
   val sicAndCompliance = VatSicAndCompliance(
@@ -125,6 +121,8 @@ trait VatRegistrationFixture {
 
   val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
 
+  val returns = Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None)
+
   val vatReg = VatScheme(
     id = "1",
     status = VatRegStatus.draft,
@@ -135,7 +133,8 @@ trait VatRegistrationFixture {
     vatContact = Some(vatContact),
     vatServiceEligibility = Some(eligibility),
     vatFlatRateScheme = Some(flatRateScheme),
-    bankAccount = Some(bankAccount)
+    bankAccount = Some(bankAccount),
+    returns = Some(returns)
   )
 
   val vatRegIncorporated = VatScheme(

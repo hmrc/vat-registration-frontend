@@ -21,7 +21,7 @@ import java.time.LocalDate
 import cats.data.OptionT
 import connectors.KeystoreConnect
 import features.financials.models._
-import features.returns.ReturnsCtrl
+import features.returns._
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, MockMessages}
 import org.mockito.ArgumentMatchers.any
@@ -29,8 +29,7 @@ import org.mockito.Mockito._
 import play.api.i18n.MessagesApi
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.{PrePopService, ReturnsService, ReturnsServiceImpl}
+import services.PrePopService
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
@@ -40,12 +39,11 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   val mockReturnsService: ReturnsServiceImpl = mock[ReturnsServiceImpl]
 
   trait Setup {
-    val testController = new ReturnsCtrl {
+    val testController = new ReturnsController {
       override val authConnector: AuthConnector = mockAuthConnector
       override val returnsService: ReturnsService = mockReturnsService
       override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
       override def messagesApi: MessagesApi = mockMessagesAPI
-      override val prePopService: PrePopService = mockPrePopService
     }
     mockAllMessages
   }
@@ -59,7 +57,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
   "chargeExpectancyPage" should {
     "return OK when returns are found" in new Setup {
-      when(mockReturnsService.getReturns(any(), any()))
+      when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reclaimVatOnMostReturns = Some(true))))
 
       mockWithCurrentProfile(Some(currentProfile))
@@ -70,7 +68,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "return OK when returns are not found" in new Setup {
-      when(mockReturnsService.getReturns(any(), any()))
+      when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       mockWithCurrentProfile(Some(currentProfile))
@@ -85,7 +83,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     val fakeRequest = FakeRequest(features.returns.routes.ReturnsController.submitChargeExpectancy())
 
     "return SEE_OTHER when they expect to reclaim more vat than they charge" in new Setup {
-      when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any()))
+      when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reclaimVatOnMostReturns = Some(true))))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -101,7 +99,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "return SEE_OTHER when they don't expect to reclaim more vat than they charge" in new Setup {
-      when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any()))
+      when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reclaimVatOnMostReturns = Some(false))))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -143,7 +141,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
   "accountsPeriodPage" should {
     "return OK when returns are present" in new Setup {
-      when(mockReturnsService.getReturns(any(), any()))
+      when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(Stagger.jan))))
 
       mockWithCurrentProfile(Some(currentProfile))
@@ -154,7 +152,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "return OK when returns are not present" in new Setup {
-      when(mockReturnsService.getReturns(any(), any()))
+      when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       mockWithCurrentProfile(Some(currentProfile))
@@ -169,10 +167,10 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     val fakeRequest = FakeRequest(features.returns.routes.ReturnsController.submitAccountPeriods())
 
     "redirect to the mandatory date page when they select the jan apr jul oct option when on a mandatory flow" in new Setup {
-      when(mockReturnsService.saveStaggerStart(any())(any(), any()))
+      when(mockReturnsService.saveStaggerStart(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(Stagger.jan))))
 
-      when(mockReturnsService.getEligibilityChoice()(any(), any()))
+      when(mockReturnsService.getEligibilityChoice()(any(), any(), any()))
         .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -188,10 +186,10 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "redirect to the voluntary date page when they select the jan apr jul oct option when on a voluntary flow" in new Setup {
-      when(mockReturnsService.saveStaggerStart(any())(any(), any()))
+      when(mockReturnsService.saveStaggerStart(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(Stagger.jan))))
 
-      when(mockReturnsService.getEligibilityChoice()(any(), any()))
+      when(mockReturnsService.getEligibilityChoice()(any(), any(), any()))
         .thenReturn(Future.successful(voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -207,10 +205,10 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "return SEE_OTHER when they select the feb may aug nov option" in new Setup {
-      when(mockReturnsService.saveStaggerStart(any())(any(),any()))
+      when(mockReturnsService.saveStaggerStart(any())(any(),any(),any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(Stagger.feb))))
 
-      when(mockReturnsService.getEligibilityChoice()(any(), any()))
+      when(mockReturnsService.getEligibilityChoice()(any(), any(), any()))
         .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -226,10 +224,10 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "return SEE_OTHER when they select the mar may sep dec option" in new Setup {
-      when(mockReturnsService.saveStaggerStart(any())(any(),any()))
+      when(mockReturnsService.saveStaggerStart(any())(any(),any(),any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(Stagger.mar))))
 
-      when(mockReturnsService.getEligibilityChoice()(any(), any()))
+      when(mockReturnsService.getEligibilityChoice()(any(), any(), any()))
         .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -271,7 +269,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
   "returnsFrequencyPage" should {
     "return OK when returns are present" in new Setup {
-      when(mockReturnsService.getReturns(any(), any()))
+      when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(frequency = Some(Frequency.monthly))))
 
       mockWithCurrentProfile(Some(currentProfile))
@@ -282,7 +280,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "return OK when returns are not present" in new Setup {
-      when(mockReturnsService.getReturns(any(), any()))
+      when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       mockWithCurrentProfile(Some(currentProfile))
@@ -297,10 +295,10 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     val fakeRequest = FakeRequest(features.returns.routes.ReturnsController.submitReturnsFrequency())
 
     "redirect to the mandatory date page when they select the monthly option on the mandatory flow" in new Setup {
-      when(mockReturnsService.saveFrequency(any())(any(),any()))
+      when(mockReturnsService.saveFrequency(any())(any(),any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(frequency = Some(Frequency.monthly))))
 
-      when(mockReturnsService.getEligibilityChoice()(any(), any()))
+      when(mockReturnsService.getEligibilityChoice()(any(), any(), any()))
         .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -316,10 +314,10 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "redirect to the voluntary date page when they select the monthly option on the voluntary flow" in new Setup {
-      when(mockReturnsService.saveFrequency(any())(any(),any()))
+      when(mockReturnsService.saveFrequency(any())(any(),any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(frequency = Some(Frequency.monthly))))
 
-      when(mockReturnsService.getEligibilityChoice()(any(), any()))
+      when(mockReturnsService.getEligibilityChoice()(any(), any(), any()))
         .thenReturn(Future.successful(voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -335,10 +333,10 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "redirect to the account periods page when they select the quarterly option" in new Setup {
-      when(mockReturnsService.saveFrequency(any())(any(),any()))
+      when(mockReturnsService.saveFrequency(any())(any(),any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(frequency = Some(Frequency.quarterly))))
 
-      when(mockReturnsService.getEligibilityChoice()(any(), any()))
+      when(mockReturnsService.getEligibilityChoice()(any(), any(), any()))
         .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -380,14 +378,17 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   }
 
   "mandatoryStartPage" should {
+    val incorpDate = currentProfile.incorporationDate.get
+    val testDate = LocalDate.of(2018, 1, 1)
+
     "return OK when the company is incorporated, returns are present and calc date equals stored date" in new Setup {
-      when(mockReturnsService.getReturns(any(), any()))
+      when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorp))))
 
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockReturnsService.retrieveCalculatedStartDate(any(), any()))
-        .thenReturn(Future.successful(currentProfile.incorporationDate))
+      when(mockReturnsService.retrieveMandatoryDates(any(), any(), any()))
+        .thenReturn(Future.successful(MandatoryDateModel(testDate, Some(testDate), Some(DateSelection.calculated_date))))
 
       callAuthorised(testController.mandatoryStartPage) { result =>
         status(result) mustBe OK
@@ -395,13 +396,13 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "return OK when the company is not incorporated" in new Setup {
-      when(mockReturnsService.getReturns(any(), any()))
+      when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorp))))
 
       mockWithCurrentProfile(Some(currentProfile.copy(incorporationDate = None)))
 
-      when(mockReturnsService.retrieveCalculatedStartDate(any(), any()))
-        .thenReturn(Future.successful(currentProfile.incorporationDate))
+      when(mockReturnsService.retrieveMandatoryDates(any(), any(), any()))
+        .thenReturn(Future.successful(MandatoryDateModel(testDate, Some(testDate), Some(DateSelection.calculated_date))))
 
       callAuthorised(testController.mandatoryStartPage) { result =>
         status(result) mustBe OK
@@ -409,13 +410,14 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "return an OK when returns are not present" in new Setup {
-      when(mockReturnsService.getReturns(any(), any()))
+      when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockReturnsService.retrieveCalculatedStartDate(any(), any()))
-        .thenReturn(Future.successful(currentProfile.incorporationDate))
+      when(mockReturnsService.retrieveMandatoryDates(any(), any(), any()))
+        .thenReturn(Future.successful(MandatoryDateModel(testDate, Some(testDate), Some(DateSelection.calculated_date))))
+
 
       callAuthorised(testController.mandatoryStartPage) { result =>
         status(result) mustBe OK
@@ -423,13 +425,14 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "return an OK when the calc date does not equal the stored start date" in new Setup {
-      when(mockReturnsService.getReturns(any(), any()))
+      when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorp))))
 
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockReturnsService.retrieveCalculatedStartDate(any(), any()))
-        .thenReturn(Future.successful(Some(LocalDate.now())))
+      when(mockReturnsService.retrieveMandatoryDates(any(), any(), any()))
+        .thenReturn(Future.successful(MandatoryDateModel(LocalDate.of(2018, 1, 1), Some(testDate), Some(DateSelection.calculated_date))))
+
 
       callAuthorised(testController.mandatoryStartPage) { result =>
         status(result) mustBe OK
@@ -441,7 +444,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     val fakeRequest = FakeRequest(features.returns.routes.ReturnsController.submitMandatoryStart())
 
     "redirect to the company bank account page if confirmed without an incorp date" in new Setup {
-      when(mockReturnsService.saveVatStartDate(any())(any(), any()))
+      when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
@@ -455,9 +458,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "redirect to the company bank account page, if they are incorped and select the calculated date" in new Setup {
-      when(mockReturnsService.retrieveCalculatedStartDate(any(), any()))
-        .thenReturn(Future.successful(Some(LocalDate.now())))
-      when(mockReturnsService.saveVatStartDate(any())(any(), any()))
+      when(mockReturnsService.retrieveCalculatedStartDate(any(), any(), any()))
+        .thenReturn(Future.successful(LocalDate.now()))
+      when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -473,9 +476,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "redirect to the company bank account page, if they are incorped and select a custom date" in new Setup {
-      when(mockReturnsService.retrieveCalculatedStartDate(any(), any()))
-        .thenReturn(Future.successful(Some(LocalDate.now())))
-      when(mockReturnsService.saveVatStartDate(any())(any(), any()))
+      when(mockReturnsService.retrieveCalculatedStartDate(any(), any(), any()))
+        .thenReturn(Future.successful(LocalDate.now()))
+      when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val incorpDatePlusTwo: LocalDate = currentProfile.incorporationDate.get.plusDays(2)
@@ -495,9 +498,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "return a bad request, if they are incorped and select a custom date before the incorp date" in new Setup {
-      when(mockReturnsService.retrieveCalculatedStartDate(any(), any()))
-        .thenReturn(Future.successful(Some(LocalDate.now())))
-      when(mockReturnsService.saveVatStartDate(any())(any(), any()))
+      when(mockReturnsService.retrieveCalculatedStartDate(any(), any(), any()))
+        .thenReturn(Future.successful(LocalDate.now()))
+      when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val incorpDatePlusTwo: LocalDate = currentProfile.incorporationDate.get.minusDays(2)
@@ -514,33 +517,23 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         status(result) mustBe BAD_REQUEST
       }
     }
-
-
-    "return an internal server error if they are incorped but have no calculated date" in new Setup {
-      when(mockReturnsService.retrieveCalculatedStartDate(any(), any()))
-        .thenReturn(Future.successful(None))
-      when(mockReturnsService.saveVatStartDate(any())(any(), any()))
-        .thenReturn(Future.successful(emptyReturns))
-
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
-
-      mockWithCurrentProfile(Some(currentProfile))
-
-      submitAuthorised(testController.submitMandatoryStart, request) { result =>
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
-    }
   }
 
   "voluntaryStartPage" should {
+    val dateSelection = (DateSelection.calculated_date, Some(LocalDate.now()))
+    val calcDate = LocalDate.now()
+    val voluntaryViewModel = VoluntaryPageViewModel(Some(dateSelection),Some(calcDate))
     "return OK when the company is incorporated, returns are present and calc date equals stored date" in new Setup {
-      when(mockReturnsService.getReturns(any(), any()))
+      when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorp))))
 
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockPrePopService.getCTActiveDate(any(), any()))
         .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
+
+      when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
+        .thenReturn(Future.successful(voluntaryViewModel))
 
       callAuthorised(testController.voluntaryStartPage) { result =>
         status(result) mustBe OK
@@ -548,7 +541,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "return OK when the company is not incorporated" in new Setup {
-      when(mockReturnsService.getReturns(any(), any()))
+      when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorp))))
 
       mockWithCurrentProfile(Some(currentProfile.copy(incorporationDate = None)))
@@ -556,13 +549,16 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       when(mockPrePopService.getCTActiveDate(any(), any()))
         .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
 
+      when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
+        .thenReturn(Future.successful(voluntaryViewModel))
+
       callAuthorised(testController.voluntaryStartPage) { result =>
         status(result) mustBe OK
       }
     }
 
     "return OK when the company is not incorporated and there is nothing to prepop" in new Setup {
-      when(mockReturnsService.getReturns(any(), any()))
+      when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(start = None)))
 
       mockWithCurrentProfile(Some(currentProfile.copy(incorporationDate = None)))
@@ -570,13 +566,16 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       when(mockPrePopService.getCTActiveDate(any(), any()))
         .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
 
+      when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
+        .thenReturn(Future.successful(voluntaryViewModel))
+
       callAuthorised(testController.voluntaryStartPage) { result =>
         status(result) mustBe OK
       }
     }
 
     "return an OK when returns are not present" in new Setup {
-      when(mockReturnsService.getReturns(any(), any()))
+      when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       mockWithCurrentProfile(Some(currentProfile))
@@ -584,19 +583,25 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       when(mockPrePopService.getCTActiveDate(any(), any()))
         .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
 
+      when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
+        .thenReturn(Future.successful(voluntaryViewModel))
+
       callAuthorised(testController.voluntaryStartPage) { result =>
         status(result) mustBe OK
       }
     }
 
     "return an OK when the specific date does not equal the incorp date" in new Setup {
-      when(mockReturnsService.getReturns(any(), any()))
+      when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorpMinusTwo))))
 
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockPrePopService.getCTActiveDate(any(), any()))
         .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
+
+      when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
+        .thenReturn(Future.successful(voluntaryViewModel))
 
       callAuthorised(testController.voluntaryStartPage) { result =>
         status(result) mustBe OK
@@ -605,16 +610,25 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   }
 
   "submitVoluntaryStartPage" should {
+
+    val date = LocalDate.of(2017, 1, 1)
+    val returns = Returns(Some(true), Some(Frequency.quarterly), Some(Stagger.jan), Some(Start(Some(date))))
     val fakeRequest = FakeRequest(features.returns.routes.ReturnsController.submitVoluntaryStart())
     val incorpDatePlusTwo: LocalDate = currentProfile.incorporationDate.get.plusDays(2)
 
     "redirect to the company bank account page if they select the date of incorp being not incorped" in new Setup {
-      when(mockReturnsService.saveVatStartDate(any())(any(), any()))
+      when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> DateSelection.company_registration_date
       )
+
+      when(mockReturnsService.retrieveCTActiveDate(any(), any(), any()))
+        .thenReturn(Future.successful(Some(LocalDate.of(2017, 1, 1))))
+
+      when(mockReturnsService.saveVoluntaryStartDate(any(), any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(returns))
 
       mockWithCurrentProfile(Some(currentProfile.copy(incorporationDate = None)))
 
@@ -625,7 +639,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "redirect to the company bank account page if they submit a valid start date without being incorped" in new Setup {
-      when(mockReturnsService.saveVatStartDate(any())(any(), any()))
+      when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val nowPlusFive: LocalDate = LocalDate.now().plusDays(5)
@@ -638,6 +652,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       mockWithCurrentProfile(Some(currentProfile.copy(incorporationDate = None)))
 
+      when(mockReturnsService.saveVoluntaryStartDate(any(), any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(returns))
+
       submitAuthorised(testController.submitVoluntaryStart, request) { result =>
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some("/register-for-vat/business-bank-account")
@@ -645,7 +662,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "provide a bad request if they submit an invalid start date without being incorped" in new Setup {
-      when(mockReturnsService.saveVatStartDate(any())(any(), any()))
+      when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val nowMinusFive: LocalDate = LocalDate.now().minusDays(5)
@@ -666,7 +683,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     "redirect to the company bank account page, if they are incorped and select the incorp date" in new Setup {
       when(mockPrePopService.getCTActiveDate(any(), any()))
         .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
-      when(mockReturnsService.saveVatStartDate(any())(any(), any()))
+      when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -684,7 +701,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     "redirect to the company bank account page, if they are incorped and select the start of business date" in new Setup {
       when(mockPrePopService.getCTActiveDate(any(), any()))
         .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
-      when(mockReturnsService.saveVatStartDate(any())(any(), any()))
+      when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -702,7 +719,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     "redirect to the company bank account page, if they are incorped and select a custom date" in new Setup {
       when(mockPrePopService.getCTActiveDate(any(), any()))
         .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
-      when(mockReturnsService.saveVatStartDate(any())(any(), any()))
+      when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -723,7 +740,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     "return a bad request, if they are incorped and select a custom date before the incorp date" in new Setup {
       when(mockPrePopService.getCTActiveDate(any(), any()))
         .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
-      when(mockReturnsService.saveVatStartDate(any())(any(), any()))
+      when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val incorpDateMinusTwo: LocalDate = currentProfile.incorporationDate.get.minusDays(2)

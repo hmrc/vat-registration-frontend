@@ -20,12 +20,9 @@ import scala.concurrent.Future
 
 package services {
 
-  import java.time.LocalDate
-
   import common.ErrorUtil.fail
   import models.api.{VatScheme, VatTradingDetails}
   import models.view.vatTradingDetails.TradingNameView
-  import models.view.vatTradingDetails.vatChoice.StartDateView
   import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
   import models.{ApiModelTransformer, CurrentProfile, S4LKey, S4LTradingDetails}
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
@@ -47,10 +44,6 @@ package services {
       }
     }
 
-    def fetchVatStartDate(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Option[LocalDate]] = {
-      fetchTradingDetails map (_.startDate flatMap (_.date))
-    }
-
     def submitTradingDetails()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatTradingDetails] = {
       def merge(fresh: Option[S4LTradingDetails], vs: VatScheme): VatTradingDetails = fresh.fold(
         vs.tradingDetails.getOrElse(throw fail("VatTradingDetails"))
@@ -65,7 +58,6 @@ package services {
 
     private[services] def tradingDetailsApiToView(vs: VatScheme): S4LTradingDetails = S4LTradingDetails(
       tradingName = ApiModelTransformer[TradingNameView].toViewModel(vs),
-      startDate   = ApiModelTransformer[StartDateView].toViewModel(vs),
       euGoods     = ApiModelTransformer[EuGoods].toViewModel(vs),
       applyEori   = ApiModelTransformer[ApplyEori].toViewModel(vs)
     )
@@ -80,7 +72,7 @@ package connectors {
 
   import cats.instances.FutureInstances
   import features.tradingDetails.models.TradingDetails
-  import models.api.{VatChoice, VatTradingDetails}
+  import models.api.VatTradingDetails
   import uk.gov.hmrc.http.NotFoundException
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 

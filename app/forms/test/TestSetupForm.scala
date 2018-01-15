@@ -16,10 +16,13 @@
 
 package forms.test
 
-import models.{BankAccount, BankAccountDetails}
+import features.returns.Frequency.Frequency
+import features.returns.Stagger.Stagger
+import features.returns.{Returns, Start}
 import models.view.test._
-import play.api.data.{Form, Mapping}
+import models.{BankAccount, BankAccountDetails}
 import play.api.data.Forms._
+import play.api.data.{Form, Mapping}
 
 object TestSetupForm {
 
@@ -27,10 +30,6 @@ object TestSetupForm {
     "taxableTurnoverChoice" -> optional(text),
     "voluntaryChoice" -> optional(text),
     "voluntaryRegistrationReason" -> optional(text),
-    "startDateChoice" -> optional(text),
-    "startDateDay" -> optional(text),
-    "startDateMonth" -> optional(text),
-    "startDateYear" -> optional(text),
     "overThresholdSelection" -> optional(text),
     "overThresholdMonth" -> optional(text),
     "overThresholdYear" -> optional(text)
@@ -83,10 +82,7 @@ object TestSetupForm {
   val vatFinancialsTestSetupMapping = mapping(
     "estimateVatTurnover" -> optional(text),
     "zeroRatedSalesChoice" -> optional(text),
-    "zeroRatedTurnoverEstimate" -> optional(text),
-    "vatChargeExpectancyChoice" -> optional(text),
-    "vatReturnFrequency" -> optional(text),
-    "accountingPeriod" -> optional(text)
+    "zeroRatedTurnoverEstimate" -> optional(text)
   )(VatFinancialsTestSetup.apply)(VatFinancialsTestSetup.unapply)
 
   val vatServiceEligibilityTestSetupMapping = mapping(
@@ -156,6 +152,15 @@ object TestSetupForm {
     )(BankAccountDetails.apply)(BankAccountDetails.unapply))
   )(BankAccount.apply)(BankAccount.unapply)
 
+  val returnsMapping: Mapping[Returns] = mapping(
+    "reclaimVatOnMostReturns" -> optional(boolean),
+    "frequency"    -> optional(of[Frequency]),
+    "staggerStart" -> optional(of[Stagger]),
+    "start" -> optional(mapping(
+      "date" -> optional(localDate)
+    )(Start.apply)(Start.unapply))
+  )(Returns.apply)(Returns.unapply)
+
   val form = Form(mapping(
     "vatChoice" -> vatChoiceTestSetupMapping,
     "vatTradingDetails" -> vatTradingDetailsTestSetupMapping,
@@ -167,7 +172,8 @@ object TestSetupForm {
     "officerPreviousAddress" -> officePreviousAddressMapping,
     "vatLodgingOfficer" -> vatLodgingOfficerTestSetup,
     "vatFlatRateScheme" -> flatRateSchemeMapping,
-    "bankAccount" -> optional(bankAccountMapping)
+    "bankAccount" -> optional(bankAccountMapping),
+    "returns" -> optional(returnsMapping)
   )(TestSetup.apply)(TestSetup.unapply))
 
 }

@@ -53,11 +53,11 @@ package controllers.vatTradingDetails.vatChoice {
 
   import connectors.KeystoreConnect
   import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import features.returns.ReturnsService
   import forms.vatTradingDetails.vatChoice.TaxableTurnoverForm
-  import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
   import models.view.vatTradingDetails.vatChoice.TaxableTurnover.TAXABLE_YES
   import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.REGISTER_NO
-  import models.view.vatTradingDetails.vatChoice.{StartDateView, TaxableTurnover, VoluntaryRegistration}
+  import models.view.vatTradingDetails.vatChoice.{TaxableTurnover, VoluntaryRegistration}
   import play.api.mvc.{Action, AnyContent}
   import services.{RegistrationService, S4LService, SessionProfile}
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
@@ -66,6 +66,7 @@ package controllers.vatTradingDetails.vatChoice {
   class TaxableTurnoverController @Inject()(ds: CommonPlayDependencies,
                                             val keystoreConnector: KeystoreConnect,
                                             val authConnector: AuthConnector,
+                                            val returnsService : ReturnsService,
                                             implicit val s4LService: S4LService,
                                             implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
@@ -91,7 +92,7 @@ package controllers.vatTradingDetails.vatChoice {
               (data: TaxableTurnover) => save(data).map(_ => data.yesNo == TAXABLE_YES).ifM(
                 for {
                   _ <- save(VoluntaryRegistration(REGISTER_NO))
-                  _ <- save(StartDateView(COMPANY_REGISTRATION_DATE))
+                  _ <- returnsService.saveVatStartDate(None)
                 } yield controllers.vatLodgingOfficer.routes.CompletionCapacityController.show(),
                 controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show().pure
               ) map Redirect)

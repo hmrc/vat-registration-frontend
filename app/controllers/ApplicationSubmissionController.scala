@@ -19,6 +19,7 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import connectors.KeystoreConnect
+import features.returns.ReturnsService
 import play.api.mvc._
 import services.{RegistrationService, S4LService, SessionProfile}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
@@ -27,6 +28,7 @@ import views.html.pages.application_submission_confirmation
 @Singleton
 class ApplicationSubmissionController @Inject()(ds: CommonPlayDependencies,
                                                 vrs: RegistrationService,
+                                                val returnsService:  ReturnsService,
                                                 val authConnector: AuthConnector,
                                                 val keystoreConnector: KeystoreConnect,
                                                 implicit val s4LService: S4LService) extends VatRegistrationController(ds) with SessionProfile {
@@ -37,9 +39,9 @@ class ApplicationSubmissionController @Inject()(ds: CommonPlayDependencies,
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
             for {
-              vs <- vrs.getVatScheme
               Some(ackRef) <- vrs.getAckRef(profile.registrationId).value
-            } yield Ok(application_submission_confirmation(ackRef, vs.financials))
+              returns <- returnsService.getReturns
+            } yield Ok(application_submission_confirmation(ackRef, returns.staggerStart))
           }
         }
   }

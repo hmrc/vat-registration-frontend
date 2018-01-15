@@ -42,8 +42,8 @@ trait BaseFixture {
   val testAccountNumber = "12345678"
 }
 
-trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
-  with FinancialsFixture {
+trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixtures
+  with FinancialsFixtures {
 
   val sicCode = SicCode("88888888", "description", "displayDetails")
 
@@ -205,9 +205,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     financials = Some(
       VatFinancials(
         turnoverEstimate = 0L,
-        zeroRatedTurnoverEstimate = None,
-        reclaimVatOnMostReturns = false,
-        accountingPeriods = monthlyAccountingPeriod
+        zeroRatedTurnoverEstimate = None
       )
     ),
     bankAccount = Some(validBankAccount)

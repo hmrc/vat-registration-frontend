@@ -18,8 +18,10 @@ package services
 
 import java.time.LocalDate
 
+import cats.data.OptionT
 import connectors.RegistrationConnector
-import features.financials.models.{Frequency, Returns, Stagger, Start}
+import features.financials.models._
+import features.returns._
 import helpers.VatRegSpec
 import models.S4LKey
 import models.api.{VatEligibilityChoice, VatExpectedThresholdPostIncorp, VatServiceEligibility, VatThresholdPostIncorp}
@@ -41,6 +43,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       override val s4lService: S4LService = mockS4LService
       override val vatService: RegistrationService = mockVatRegistrationService
       override val vatRegConnector: RegistrationConnector = mockRegConnector
+      override val prePopService: PrePopService = mockPPService
     }
   }
 
@@ -48,6 +51,11 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
 
   val date         = LocalDate.now
   val returns      = Returns(Some(true), Some(Frequency.quarterly), Some(Stagger.feb), Some(Start(Some(date))))
+  val returnsFixed = returns.copy(start = Some(Start(Some(LocalDate.of(2017, 12, 25)))))
+  val returnsAlt   = returns.copy(start = Some(Start(Some(LocalDate.of(2017, 12, 12)))))
+
+  def returnsWithVatDate(vd : Option[LocalDate]) = returns.copy(start = Some(Start(vd)))
+
   val emptyReturns = Returns(None, None, None, None)
   val incomplete = emptyReturns.copy(reclaimVatOnMostReturns = Some(true))
 
@@ -130,7 +138,10 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       await(service.saveReclaimVATOnMostReturns(reclaimView = true)) mustBe returns
     }
     "save an incomplete model" in new Setup {
-      val expected = incomplete.copy(reclaimVatOnMostReturns = Some(false))
+      val expected = incomplete.copy(
+        reclaimVatOnMostReturns = Some(false),
+        frequency = Some(Frequency.quarterly)
+      )
 
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incomplete)))
@@ -210,7 +221,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
     }
   }
 
-  "mandatoryStartDate" should {
+  "retrieveCalculatedStartDate" should {
 
     val vatThresholdPostIncorpDate = LocalDate.of(2017, 6, 6)
     val vatExpectedThresholdPostIncorpDate = LocalDate.of(2017, 12, 12)
@@ -229,7 +240,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockVatRegistrationService.getVatScheme(any(), any()))
         .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibilityBothDates))))
 
-      await(service.retrieveCalculatedStartDate) mustBe Some(vatThresholdPostIncorpDate.withDayOfMonth(1).plusMonths(2))
+      await(service.retrieveCalculatedStartDate) mustBe vatThresholdPostIncorpDate.withDayOfMonth(1).plusMonths(2)
     }
 
     "return a date when just the vatThresholdPostIncorp is present" in new Setup {
@@ -246,7 +257,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockVatRegistrationService.getVatScheme(any(), any()))
         .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibilityFirstDateOnly))))
 
-      await(service.retrieveCalculatedStartDate) mustBe Some(vatThresholdPostIncorpDate.withDayOfMonth(1).plusMonths(2))
+      await(service.retrieveCalculatedStartDate) mustBe vatThresholdPostIncorpDate.withDayOfMonth(1).plusMonths(2)
     }
 
     "return a date when just the vatExpectedThresholdPostIncorp is present" in new Setup {
@@ -263,10 +274,10 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockVatRegistrationService.getVatScheme(any(), any()))
         .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibilitySecondDateOnly))))
 
-      await(service.retrieveCalculatedStartDate) mustBe Some(vatExpectedThresholdPostIncorpDate)
+      await(service.retrieveCalculatedStartDate) mustBe vatExpectedThresholdPostIncorpDate
     }
 
-    "return a None when no dates are present" in new Setup {
+    "throw a RuntimeException when no dates are present" in new Setup {
 
       val eligibilityNoDates = VatServiceEligibility(None, None, None, None, None, None,
         Some(VatEligibilityChoice(VatEligibilityChoice.NECESSITY_OBLIGATORY, None, None, None))
@@ -275,14 +286,14 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockVatRegistrationService.getVatScheme(any(), any()))
         .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibilityNoDates))))
 
-      await(service.retrieveCalculatedStartDate) mustBe None
+      intercept[RuntimeException](await(service.retrieveCalculatedStartDate))
     }
 
-    "return a None when the eligibilityChoice section of the scheme is not present" in new Setup {
+    "return a RuntimeException when the eligibilityChoice section of the scheme is not present" in new Setup {
       when(mockVatRegistrationService.getVatScheme(any(), any()))
         .thenReturn(Future.successful(emptyVatScheme))
 
-      await(service.retrieveCalculatedStartDate) mustBe None
+      intercept[RuntimeException](await(service.retrieveCalculatedStartDate))
     }
   }
 
@@ -311,4 +322,232 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       await(service.getEligibilityChoice) mustBe false
     }
   }
+
+  "retrieveMandatoryDates" should {
+    val calculatedDate: LocalDate = LocalDate.of(2017, 12, 25)
+
+    val eligibility = VatServiceEligibility(None, None, None, None, None, None,
+      Some(VatEligibilityChoice(
+        VatEligibilityChoice.NECESSITY_OBLIGATORY,
+        None,
+        None,
+        Some(VatExpectedThresholdPostIncorp(expectedOverThresholdSelection = true, Some(calculatedDate)))
+      ))
+    )
+
+    "return a full MandatoryDateModel with a selection of calculated_date if the vatStartDate is present and is equal to the calculated date" in new Setup {
+      val vatStartDate: LocalDate = LocalDate.of(2017, 12, 25)
+
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(returnsFixed)))
+
+      when(mockVatRegistrationService.getVatScheme(any(), any()))
+        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibility))))
+
+      await(service.retrieveMandatoryDates) mustBe MandatoryDateModel(calculatedDate, Some(vatStartDate), Some(DateSelection.calculated_date))
+    }
+
+    "return a full MandatoryDateModel with a selection of specific_date if the vatStartDate does not equal the calculated date" in new Setup {
+      val vatStartDate: LocalDate = LocalDate.of(2017, 12, 12)
+
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(returnsAlt)))
+
+      when(mockVatRegistrationService.getVatScheme(any(), any()))
+        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibility))))
+
+      await(service.retrieveMandatoryDates) mustBe MandatoryDateModel(calculatedDate, Some(vatStartDate), Some(DateSelection.specific_date))
+    }
+
+    "return a MandatoryDateModel with just a calculated date if the vatStartDate is not present" in new Setup {
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockVatRegistrationService.getVatScheme(any(), any()))
+        .thenReturn(Future.successful(emptyVatScheme.copy(vatServiceEligibility = Some(eligibility))))
+
+      await(service.retrieveMandatoryDates) mustBe MandatoryDateModel(calculatedDate, None, None)
+    }
+  }
+
+  "retrieveCTActiveDate" should {
+    "return the CT Active Date" in new Setup {
+      when(mockPPService.getCTActiveDate(any(), any()))
+        .thenReturn(OptionT[Future, LocalDate](Future.successful(Some(date))))
+
+      await(service.retrieveCTActiveDate) mustBe Some(date)
+    }
+  }
+
+  "getVatStartDate" should {
+    "return the vat start if it exists" in new Setup {
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(returnsFixed)))
+
+      await(service.getVatStartDate) mustBe Some(LocalDate.of(2017, 12, 25))
+    }
+
+    "return nothing if it doesn't exist" in new Setup {
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(None))
+
+      await(service.getVatStartDate) mustBe None
+    }
+  }
+
+  "voluntaryStartPageViewModel" should {
+    "return a business start date view model" in new Setup {
+      val businessStartDate = LocalDate.of(2017, 10, 10)
+
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(returnsWithVatDate(Some(businessStartDate)))))
+
+      when(mockPPService.getCTActiveDate(any(), any()))
+        .thenReturn(OptionT[Future, LocalDate](Future.successful(Some(businessStartDate))))
+
+      await(service.voluntaryStartPageViewModel(None)) mustBe VoluntaryPageViewModel(
+        Some((DateSelection.business_start_date, Some(businessStartDate))),
+        Some(businessStartDate)
+      )
+    }
+
+    "return a incorp date view model when the company is incorped" in new Setup {
+      val incorpDate = LocalDate.of(2017, 11, 11)
+
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(returnsWithVatDate(Some(incorpDate)))))
+
+      when(mockPPService.getCTActiveDate(any(), any()))
+        .thenReturn(OptionT[Future, LocalDate](Future.successful(None)))
+
+      await(service.voluntaryStartPageViewModel(Some(incorpDate))) mustBe VoluntaryPageViewModel(
+        Some((DateSelection.company_registration_date, Some(incorpDate))),
+        None
+      )
+    }
+
+    "return a future incorp date view model when the company is not incorped" in new Setup {
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(returnsWithVatDate(None))))
+
+      when(mockPPService.getCTActiveDate(any(), any()))
+        .thenReturn(OptionT[Future, LocalDate](Future.successful(None)))
+
+      await(service.voluntaryStartPageViewModel(None)) mustBe VoluntaryPageViewModel(
+        Some((DateSelection.company_registration_date, None)),
+        None
+      )
+    }
+
+    "return a specific date when it is selected" in new Setup {
+      val specificdate = LocalDate.of(2017, 12, 12)
+
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(returnsWithVatDate(Some(specificdate)))))
+
+      when(mockPPService.getCTActiveDate(any(), any()))
+        .thenReturn(OptionT[Future, LocalDate](Future.successful(None)))
+
+      await(service.voluntaryStartPageViewModel(None)) mustBe VoluntaryPageViewModel(
+        Some((DateSelection.specific_date, Some(specificdate))),
+        None
+      )
+    }
+
+    "return an empty view model if nothing has been previously selected" in new Setup {
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockPPService.getCTActiveDate(any(), any()))
+        .thenReturn(OptionT[Future, LocalDate](Future.successful(None)))
+
+      await(service.voluntaryStartPageViewModel(None)) mustBe VoluntaryPageViewModel(None, None)
+    }
+  }
+
+  "saveVoluntaryStartDate" should {
+    "save a company registration date when the incorp date is known" in new Setup {
+      val incorpDate = LocalDate.of(2017, 10, 10)
+      val expected = incomplete.copy(start = Some(Start(Some(incorpDate))))
+
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(incomplete)))
+      when(mockS4LService.saveNoAux(any, any)(any, any, any))
+        .thenReturn(Future.successful(mockCacheMap))
+
+      await(service.saveVoluntaryStartDate(
+        DateSelection.company_registration_date, None, Some(incorpDate), None
+      )) mustBe expected
+    }
+
+    "save a company registration date when the incorp date in the future, to be incorped" in new Setup {
+      val expected = incomplete.copy(start = Some(Start(None)))
+
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(incomplete)))
+      when(mockS4LService.saveNoAux(any, any)(any, any, any))
+        .thenReturn(Future.successful(mockCacheMap))
+
+      await(service.saveVoluntaryStartDate(
+        DateSelection.company_registration_date, None, None, None
+      )) mustBe expected
+    }
+
+    "save a business start date as the vat start date" in new Setup {
+      val businessStartDate = LocalDate.of(2017, 11, 11)
+      val expected = incomplete.copy(start = Some(Start(Some(businessStartDate))))
+
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(incomplete)))
+      when(mockS4LService.saveNoAux(any, any)(any, any, any))
+        .thenReturn(Future.successful(mockCacheMap))
+
+      await(service.saveVoluntaryStartDate(
+        DateSelection.business_start_date, None, None, Some(businessStartDate)
+      )) mustBe expected
+    }
+
+    "save a specific start date" in new Setup {
+      val specificStartDate = LocalDate.of(2017, 12, 12)
+      val expected = incomplete.copy(start = Some(Start(Some(specificStartDate))))
+
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(incomplete)))
+      when(mockS4LService.saveNoAux(any, any)(any, any, any))
+        .thenReturn(Future.successful(mockCacheMap))
+
+      await(service.saveVoluntaryStartDate(
+        DateSelection.specific_date, Some(specificStartDate), None, None
+      )) mustBe expected
+    }
+
+    "save an empty start if no start date is provided" in new Setup {
+      val expected = incomplete.copy(start = Some(Start(None)))
+
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(incomplete)))
+      when(mockS4LService.saveNoAux(any, any)(any, any, any))
+        .thenReturn(Future.successful(mockCacheMap))
+
+      await(service.saveVoluntaryStartDate(
+        DateSelection.specific_date, None, None, None
+      )) mustBe expected
+    }
+  }
+
+  /*
+  def saveVoluntaryStartDate
+  (dateChoice : DateSelection.Value, startDate : Option[LocalDate], incorpDate : Option[LocalDate], ctActive : Option[LocalDate])
+  (implicit hc: HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext): Future[Returns] = {
+    saveVatStartDate((dateChoice, startDate, incorpDate, ctActive) match {
+      case (DateSelection.company_registration_date, _, Some(icd), _)   => Some(icd)
+      case (DateSelection.company_registration_date, _, _, _)           => None
+      case (DateSelection.business_start_date,       _, _, Some(cta))   => Some(cta)
+      case (DateSelection.specific_date,             Some(vsd), _, _)   => Some(vsd)
+      case _                                                            => None
+    })
+  }
+   */
+
+
 }

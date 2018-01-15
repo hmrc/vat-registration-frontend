@@ -16,7 +16,7 @@
 
 package services
 
-import fixtures.{S4LFixture, VatRegistrationFixture}
+import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api.VatServiceEligibility
 import models.view.vatContact.BusinessContactDetails
@@ -28,7 +28,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
-class S4LServiceSpec extends VatRegSpec with S4LFixture with VatRegistrationFixture {
+class S4LServiceSpec extends VatRegSpec with VatRegistrationFixture {
 
   private final case class TestView(property: String)
   private final case class TestGroup(testView: Option[TestView] = None)

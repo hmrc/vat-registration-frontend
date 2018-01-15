@@ -411,14 +411,6 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
     }
   }
 
-  /*
-  def withinFourYearsPast(errKey: String): Constraint[(String, String, String)] = Constraint {
-    input: (String, String, String) =>
-      val date = LocalDate.parse(s"${input._1}-${input._2}-${input._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
-      if(date.isAfter(LocalDate.now().minusYears(4))) Valid else Invalid(errKey)
-  }
-   */
-
   "withinFourYearsPast" should {
     val constraint = FormValidation.withinFourYearsPast("testErrMsg")
     val lessThan4 = LocalDate.now().minusYears(2)

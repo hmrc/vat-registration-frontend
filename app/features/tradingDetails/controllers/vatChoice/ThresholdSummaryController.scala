@@ -63,11 +63,11 @@ package controllers.vatTradingDetails.vatChoice {
   import connectors.KeystoreConnect
   import controllers.builders._
   import controllers.{CommonPlayDependencies, VatRegistrationController}
+  import features.returns.ReturnsService
   import models.api._
   import models.view._
-  import models.view.vatTradingDetails.vatChoice.StartDateView.COMPANY_REGISTRATION_DATE
+  import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration
   import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.REGISTER_NO
-  import models.view.vatTradingDetails.vatChoice.{StartDateView, VoluntaryRegistration}
   import models.{CurrentProfile, MonthYearModel, S4LVatEligibilityChoice}
   import play.api.mvc._
   import services.{RegistrationService, S4LService, SessionProfile}
@@ -80,6 +80,7 @@ package controllers.vatTradingDetails.vatChoice {
   class ThresholdSummaryController @Inject()(ds: CommonPlayDependencies,
                                              val keystoreConnector: KeystoreConnect,
                                              val authConnector: AuthConnector,
+                                             val returnsService : ReturnsService,
                                              implicit val s4LService: S4LService,
                                              implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
@@ -106,7 +107,7 @@ package controllers.vatTradingDetails.vatChoice {
             getVatThresholdPostIncorp.map {
               case VatThresholdPostIncorp(true, _) =>
                 save(VoluntaryRegistration(REGISTER_NO))
-                save(StartDateView(COMPANY_REGISTRATION_DATE))
+                returnsService.saveVatStartDate(None)
                 Redirect(controllers.vatLodgingOfficer.routes.CompletionCapacityController.show())
               case _ => Redirect(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show())
             }

@@ -18,7 +18,7 @@ package features.financials.forms
 
 import java.time.LocalDate
 
-import features.financials.models.DateSelection.{business_start_date, company_registration_date, specific_date}
+import features.returns.DateSelection.{business_start_date, company_registration_date, specific_date}
 import forms.VoluntaryDateForm
 import forms.VoluntaryDateForm._
 import forms.VoluntaryDateFormIncorp.{VOLUNTARY_DATE, VOLUNTARY_SELECTION}
@@ -105,6 +105,19 @@ class VoluntaryDateFormSpec extends VatRegSpec {
       bound.errors.size mustBe 1
       bound.errors.head.key mustBe VOLUNTARY_DATE
       bound.errors.head.message mustBe dateInvalidKey
+    }
+
+    "Fail to bind for an invalid selection" in {
+      val data = Map(
+        VOLUNTARY_SELECTION -> "invalid_selection",
+        s"$VOLUNTARY_DATE.day" -> s"${validDate.getDayOfMonth}",
+        s"$VOLUNTARY_DATE.month" -> s"${validDate.getMonthValue}",
+        s"$VOLUNTARY_DATE.year" -> s"${validDate.getYear}"
+      )
+      val bound = form.bind(data)
+      bound.errors.size mustBe 1
+      bound.errors.head.key mustBe VOLUNTARY_SELECTION
+      bound.errors.head.message mustBe voluntarySelectionInvalidKey
     }
   }
 }

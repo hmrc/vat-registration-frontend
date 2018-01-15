@@ -1,8 +1,8 @@
 @import java.time.format.DateTimeFormatter
 @import java.time.LocalDate
-
-@import models.view.vatTradingDetails.vatChoice.StartDateView
-@(mandStartDateForm: Form[StartDateView], calculatedDate : String)(implicit request: Request[_], messages: Messages)
+@import features.returns.DateSelection
+@import features.returns.DateSelection._
+@(mandStartDateForm: Form[(DateSelection.Value, Option[LocalDate])], calculatedDate : String)(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{vatInputRadioGroup, vatInput, errorSummary}
 
@@ -26,7 +26,7 @@
 
     <p>@messages("pages.start.date.incorp.para1")</p>
 
-    @govHelpers.form(action = controllers.vatTradingDetails.vatChoice.routes.MandatoryStartDateController.submit()) {
+    @govHelpers.form(action = features.returns.routes.ReturnsController.submitMandatoryStart()) {
         <div class="form-group">
 
             @defining(DateTimeFormatter
@@ -35,8 +35,8 @@
                 @vatInputRadioGroup(
                     mandStartDateForm("startDateRadio"),
                     Seq(
-                        StartDateView.COMPANY_REGISTRATION_DATE -> calculatedDate,
-                        StartDateView.SPECIFIC_DATE -> Messages("pages.start.date.incorp.earlierDate")
+                        calculated_date.toString -> calculatedDate,
+                        specific_date.toString -> Messages("pages.start.date.incorp.earlierDate")
                     ),
                     '_labelAfter -> true,
                     '_labelClass -> "block-label",

@@ -60,15 +60,13 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
             frs <- s4LService.fetchAndGet[S4LFlatRateScheme]
 
             bankAccount <- s4LService.fetchAndGetNoAux(S4LKey.bankAccountKey)
+            returns <- s4LService.fetchAndGetNoAux(S4LKey.returns)
+
             testSetup = TestSetup(
               VatChoiceTestSetup(
                 taxableTurnoverChoice =   eligibilityChoice.flatMap(_.taxableTurnover.map(_.yesNo)),
                 voluntaryChoice = eligibilityChoice.flatMap(_.voluntaryRegistration).map(_.yesNo),
                 voluntaryRegistrationReason = eligibilityChoice.flatMap(_.voluntaryRegistrationReason).map(_.reason),
-                startDateChoice = tradingDetails.flatMap(_.startDate).map(_.dateType),
-                startDateDay = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getDayOfMonth.toString),
-                startDateMonth = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getMonthValue.toString),
-                startDateYear = tradingDetails.flatMap(_.startDate).flatMap(_.date).map(_.getYear.toString),
                 overThresholdSelection = eligibilityChoice.flatMap(_.overThreshold).map(_.selection.toString),
                 overThresholdMonth = eligibilityChoice.flatMap(_.overThreshold).flatMap(_.date).map(_.getMonthValue.toString),
                 overThresholdYear = eligibilityChoice.flatMap(_.overThreshold).flatMap(_.date).map(_.getYear.toString)
@@ -94,10 +92,8 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
               VatFinancialsTestSetup(
                 vatFinancials.flatMap(_.estimateVatTurnover).map(_.vatTurnoverEstimate.toString),
                 vatFinancials.flatMap(_.zeroRatedTurnover).map(_.yesNo),
-                vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).map(_.zeroRatedTurnoverEstimate.toString),
-                vatFinancials.flatMap(_.vatChargeExpectancy).map(_.yesNo),
-                vatFinancials.flatMap(_.vatReturnFrequency).map(_.frequencyType),
-                vatFinancials.flatMap(_.accountingPeriod).map(_.accountingPeriod)),
+                vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).map(_.zeroRatedTurnoverEstimate.toString)
+              ),
               SicAndComplianceTestSetup(
                 businessActivityDescription = vatSicAndCompliance.flatMap(_.description.map(_.description)),
                 sicCode1 = sicStub.map(_.sicCode1.getOrElse("")),
@@ -171,7 +167,8 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                 frsStartDateMonth = frs.flatMap(_.frsStartDate).flatMap(_.date).map(_.getMonthValue.toString),
                 frsStartDateYear = frs.flatMap(_.frsStartDate).flatMap(_.date).map(_.getYear.toString)
               ),
-              bankAccountBlock = bankAccount
+              bankAccountBlock = bankAccount,
+              returnsBlock = returns
             )
             form = TestSetupForm.form.fill(testSetup)
           } yield Ok(views.html.pages.test.test_setup(form))

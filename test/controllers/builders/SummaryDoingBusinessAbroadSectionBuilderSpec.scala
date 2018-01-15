@@ -79,7 +79,7 @@ class SummaryDoingBusinessAbroadSectionBuilderSpec extends VatRegSpec with VatRe
     "with section generate" should {
 
       "a valid summary section" in {
-        val tradingDetails = VatTradingDetails(vatChoice = validVatChoice, tradingName = validTradingName, VatEuTrading(true, Some(true)))
+        val tradingDetails = VatTradingDetails(tradingName = validTradingName, VatEuTrading(true, Some(true)))
         val builder = SummaryDoingBusinessAbroadSectionBuilder(vatTradingDetails = Some(tradingDetails))
         builder.section.id mustBe "doingBusinessAbroad"
         builder.section.rows.length mustEqual 2
