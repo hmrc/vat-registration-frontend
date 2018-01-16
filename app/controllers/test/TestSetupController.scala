@@ -27,6 +27,7 @@ import models.external.Officer
 import models.view.test._
 import models.{S4LKey, S4LVatContact, S4LVatFinancials, S4LVatSicAndCompliance, _}
 import features.officer.models.view.LodgingOfficer
+import features.turnoverEstimates.TurnoverEstimatesService
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService, SessionProfile}
@@ -41,7 +42,8 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                                     s4LBuilder: TestS4LBuilder,
                                     ds: CommonPlayDependencies,
                                     val authConnector: AuthConnector,
-                                    val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
+                                    val keystoreConnector: KeystoreConnect,
+                                    val turnoverService: TurnoverEstimatesService) extends VatRegistrationController(ds) with SessionProfile {
 
   private val empty = Future.successful(CacheMap("", Map.empty))
 
@@ -60,8 +62,9 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
             eligibility <- s4LService.fetchAndGet[S4LVatEligibility]
             frs <- s4LService.fetchAndGet[S4LFlatRateScheme]
 
-            bankAccount <- s4LService.fetchAndGetNoAux(S4LKey.bankAccountKey)
-            returns <- s4LService.fetchAndGetNoAux(S4LKey.returns)
+            bankAccount       <- s4LService.fetchAndGetNoAux(S4LKey.bankAccountKey)
+            returns           <- s4LService.fetchAndGetNoAux(S4LKey.returns)
+            turnoverEstimates <- turnoverService.fetchTurnoverEstimates
 
             testSetup = TestSetup(
               VatChoiceTestSetup(
@@ -169,6 +172,7 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                 frsStartDateMonth = frs.flatMap(_.frsStartDate).flatMap(_.date).map(_.getMonthValue.toString),
                 frsStartDateYear = frs.flatMap(_.frsStartDate).flatMap(_.date).map(_.getYear.toString)
               ),
+              turnoverEstimatesBlock = turnoverEstimates,
               bankAccountBlock = bankAccount,
               returnsBlock = returns
             )
@@ -219,9 +223,8 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
 
                   _ <- s4LService.save(s4LBuilder.vatFrsFromData(data))
 
-                  // Bank Account
-//                  _ <- saveToS4L(data.bankAccountBlock.fold(BankAccount(isProvided = false, None))(identity))
                   _ <- data.bankAccountBlock.fold(empty)(saveToS4L)
+                  _ <- data.turnoverEstimatesBlock.fold(empty)(t => turnoverService.saveTurnoverEstimates(t).flatMap(_ => empty))
                 } yield Ok("Test setup complete")
               }
             })
