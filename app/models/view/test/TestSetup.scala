@@ -17,8 +17,9 @@
 package models.view.test
 
 import features.returns.Returns
+import features.turnoverEstimates.TurnoverEstimates
 import models.BankAccount
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class TestSetup(
                       vatChoice: VatChoiceTestSetup,
@@ -31,11 +32,12 @@ case class TestSetup(
                       officerPreviousAddress: OfficerPreviousAddressTestSetup,
                       lodgingOfficer: LodgingOfficerTestSetup,
                       vatFlatRateScheme: VatFlatRateSchemeTestSetup,
+                      turnoverEstimatesBlock: Option[TurnoverEstimates],
                       bankAccountBlock: Option[BankAccount],
                       returnsBlock: Option[Returns]
                     )
 
 
 object TestSetup {
-  implicit val format = Json.format[TestSetup]
+  implicit val format: OFormat[TestSetup] = Json.format[TestSetup]
 }
