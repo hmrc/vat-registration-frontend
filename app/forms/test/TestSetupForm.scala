@@ -19,6 +19,8 @@ package forms.test
 import features.returns.Frequency.Frequency
 import features.returns.Stagger.Stagger
 import features.returns.{Returns, Start}
+import features.turnoverEstimates.TurnoverEstimates
+import forms.EstimateVatTurnoverForm
 import models.view.test._
 import models.{BankAccount, BankAccountDetails}
 import play.api.data.Forms._
@@ -161,6 +163,10 @@ object TestSetupForm {
     )(Start.apply)(Start.unapply))
   )(Returns.apply)(Returns.unapply)
 
+  val turnoverEstimatesMapping: Mapping[TurnoverEstimates] = mapping(
+    "vatTaxable" -> longNumber
+  )(TurnoverEstimates.apply)(TurnoverEstimates.unapply)
+
   val form = Form(mapping(
     "vatChoice" -> vatChoiceTestSetupMapping,
     "vatTradingDetails" -> vatTradingDetailsTestSetupMapping,
@@ -172,6 +178,7 @@ object TestSetupForm {
     "officerPreviousAddress" -> officePreviousAddressMapping,
     "vatLodgingOfficer" -> vatLodgingOfficerTestSetup,
     "vatFlatRateScheme" -> flatRateSchemeMapping,
+    "turnoverEstimates" -> optional(turnoverEstimatesMapping),
     "bankAccount" -> optional(bankAccountMapping),
     "returns" -> optional(returnsMapping)
   )(TestSetup.apply)(TestSetup.unapply))
