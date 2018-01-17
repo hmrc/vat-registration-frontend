@@ -40,6 +40,7 @@ class FinancialsServiceSpec extends VatRegSpec with VatRegistrationFixture with 
       override val compRegConnector = mockCompanyRegConnector
       override val incorporationService = mockIIService
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      override val turnoverEstimatesService = mockTurnoverEstimatesService
     }
   }
 
@@ -52,13 +53,9 @@ class FinancialsServiceSpec extends VatRegSpec with VatRegistrationFixture with 
   "When this is the first time the user starts a journey and we're persisting to the backend" should {
 
     "submitVatFinancials should process the submission even if VatScheme does not contain a VatFinancials object" in new Setup {
-      val mergedVatFinancials = VatFinancials(
-        turnoverEstimate = validEstimateVatTurnover.vatTurnoverEstimate,
-        zeroRatedTurnoverEstimate = Some(validEstimateZeroRatedSales.zeroRatedTurnoverEstimate)
-      )
+      val mergedVatFinancials = VatFinancials(zeroRatedTurnoverEstimate = Some(validEstimateZeroRatedSales.zeroRatedTurnoverEstimate))
 
       save4laterReturns(S4LVatFinancials(
-        estimateVatTurnover = Some(validEstimateVatTurnover),
         zeroRatedTurnover = Some(ZeroRatedSales.yes),
         zeroRatedTurnoverEstimate = Some(validEstimateZeroRatedSales)
       ))

@@ -16,6 +16,7 @@
 
 package controllers.builders
 
+import features.turnoverEstimates.TurnoverEstimates
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api._
@@ -35,20 +36,20 @@ class SummaryTaxableSalesSectionBuilderSpec extends VatRegSpec with VatRegistrat
           SummaryRow(
             "taxableSales.estimatedSalesValue",
             "£0",
-            Some(controllers.vatFinancials.routes.EstimateVatTurnoverController.show())
+            Some(features.turnoverEstimates.routes.TurnoverEstimatesController.showEstimateVatTurnover())
           )
       }
 
-      "a real value should be returned as an estimated sales with vat financials containing a turnover estimate" in {
-        val financials = VatFinancials(
-          turnoverEstimate = 15000000L
+      "a real value should be returned as an estimated sales containing a turnover estimate" in {
+        val turnOEstimate = TurnoverEstimates(
+          vatTaxable = 15000000L
         )
-        val builder = SummaryTaxableSalesSectionBuilder(vatFinancials = Some(financials))
+        val builder = SummaryTaxableSalesSectionBuilder(turnoverEstimates = Some(turnOEstimate))
         builder.estimatedSalesValueRow mustBe
           SummaryRow(
             "taxableSales.estimatedSalesValue",
             "£15000000",
-            Some(controllers.vatFinancials.routes.EstimateVatTurnoverController.show())
+            Some(features.turnoverEstimates.routes.TurnoverEstimatesController.showEstimateVatTurnover())
           )
       }
     }
@@ -66,11 +67,9 @@ class SummaryTaxableSalesSectionBuilderSpec extends VatRegSpec with VatRegistrat
       }
 
       "a 'Yes' value should be returned with a zero rated sales estimate in vat financials" in {
-        val financials = VatFinancials(
-          turnoverEstimate = 0L,
-          zeroRatedTurnoverEstimate = Some(10000L)
-        )
-        val builder = SummaryTaxableSalesSectionBuilder(vatFinancials = Some(financials))
+        val financials = VatFinancials(zeroRatedTurnoverEstimate = Some(10000L))
+        val turnoverEstimates = TurnoverEstimates(0L)
+        val builder = SummaryTaxableSalesSectionBuilder(vatFinancials = Some(financials),turnoverEstimates = Some(turnoverEstimates))
         builder.zeroRatedSalesRow mustBe
           SummaryRow(
             "taxableSales.zeroRatedSales",
@@ -93,11 +92,9 @@ class SummaryTaxableSalesSectionBuilderSpec extends VatRegSpec with VatRegistrat
       }
 
       "a real value should be returned with a zero rated sales estimate in vat financials" in {
-        val financials = VatFinancials(
-          turnoverEstimate = 0L,
-          zeroRatedTurnoverEstimate = Some(10000L)
-        )
-        val builder = SummaryTaxableSalesSectionBuilder(vatFinancials = Some(financials))
+        val financials = VatFinancials(zeroRatedTurnoverEstimate = Some(10000L))
+        val turnoverEstimates = TurnoverEstimates(0L)
+        val builder = SummaryTaxableSalesSectionBuilder(vatFinancials = Some(financials),turnoverEstimates = Some(turnoverEstimates))
         builder.estimatedZeroRatedSalesRow mustBe
           SummaryRow(
             "taxableSales.zeroRatedSalesValue",
@@ -110,11 +107,9 @@ class SummaryTaxableSalesSectionBuilderSpec extends VatRegSpec with VatRegistrat
     "with section generate" should {
 
       "a valid summary section" in {
-        val financials = VatFinancials(
-          turnoverEstimate = 50000L,
-          zeroRatedTurnoverEstimate = Some(10000L)
-        )
-        val builder = SummaryTaxableSalesSectionBuilder(vatFinancials = Some(financials))
+        val financials = VatFinancials(zeroRatedTurnoverEstimate = Some(10000L))
+        val turnoverEstimates = TurnoverEstimates(50000L)
+        val builder = SummaryTaxableSalesSectionBuilder(vatFinancials = Some(financials),turnoverEstimates = Some(turnoverEstimates))
         builder.section.id mustBe "taxableSales"
         builder.section.rows.length mustEqual 3
       }

@@ -21,6 +21,7 @@ import java.util.UUID
 
 import common.enums.VatRegStatus
 import connectors._
+import features.turnoverEstimates.TurnoverEstimatesService
 import itutil.{IntegrationSpecBase, WiremockHelper}
 import models.CurrentProfile
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -39,6 +40,7 @@ class VatRegistrationServiceISpec extends IntegrationSpecBase {
   lazy val companyRegistrationConnector = Play.current.injector.instanceOf[CompanyRegistrationConnector]
   lazy val incorpInfoService = Play.current.injector.instanceOf[IncorporationInformationService]
   lazy val keystoreConnector = Play.current.injector.instanceOf[KeystoreConnector]
+  lazy val turnoverEstimateService = Play.current.injector.instanceOf[TurnoverEstimatesService]
 
   val additionalConfiguration = Map(
     "microservice.services.vat-registration.host" -> s"$mockHost",
@@ -71,7 +73,7 @@ class VatRegistrationServiceISpec extends IntegrationSpecBase {
 
       stubPut(s"/vatreg/$regId/submit-registration", 200, "")
 
-      val vatRegistrationService = new VatRegistrationService(s4lService, vatRegistrationConnector, companyRegistrationConnector, incorpInfoService, keystoreConnector)
+      val vatRegistrationService = new VatRegistrationService(s4lService, vatRegistrationConnector, companyRegistrationConnector, incorpInfoService, keystoreConnector, turnoverEstimateService)
       val response = vatRegistrationService.submitRegistration()(hc, currentProfile(regId))
 
       await(response) shouldBe Success

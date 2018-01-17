@@ -32,7 +32,7 @@ import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessAc
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.ZeroRatedSales.ZERO_RATED_SALES_YES
-import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, ZeroRatedSales}
+import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.TradingNameView.TRADING_NAME_YES
 import models.view.vatTradingDetails.vatChoice.TaxableTurnover.TAXABLE_NO
@@ -50,14 +50,12 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
   "S4LVatFinancials.S4LApiTransformer.toApi" should {
 
     val s4l = S4LVatFinancials(
-      estimateVatTurnover = Some(EstimateVatTurnover(10)),
       zeroRatedTurnover = Some(ZeroRatedSales(ZERO_RATED_SALES_YES)),
       zeroRatedTurnoverEstimate = Some(EstimateZeroRatedSales(1))
     )
 
     "transform complete S4L model to API" in {
       val expected = VatFinancials(
-        turnoverEstimate = 10,
         zeroRatedTurnoverEstimate = Some(1)
       )
 
@@ -68,16 +66,10 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
       val s4lWithoutAccountingPeriod = s4l.copy()
 
       val expected = VatFinancials(
-        turnoverEstimate = 10,
         zeroRatedTurnoverEstimate = Some(1)
       )
 
       S4LVatFinancials.apiT.toApi(s4lWithoutAccountingPeriod) shouldBe expected
-    }
-
-    "transform S4L model with incomplete data error" in {
-      val s4lNoTurnover = s4l.copy(estimateVatTurnover = None)
-      an[IllegalStateException] should be thrownBy S4LVatFinancials.apiT.toApi(s4lNoTurnover)
     }
   }
 
