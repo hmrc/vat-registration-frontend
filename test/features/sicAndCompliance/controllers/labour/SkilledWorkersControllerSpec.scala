@@ -101,7 +101,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/trade-goods-services-with-countries-outside-uk"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/trading-name"
       }
     }
 
@@ -114,7 +114,7 @@ class SkilledWorkersControllerSpec extends VatRegSpec with VatRegistrationFixtur
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/trade-goods-services-with-countries-outside-uk"
+          redirectLocation(response).getOrElse("") mustBe s"${contextRoot}/trading-name"
       }
     }
   }

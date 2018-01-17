@@ -19,8 +19,8 @@ package forms.test
 import features.returns.Frequency.Frequency
 import features.returns.Stagger.Stagger
 import features.returns.{Returns, Start}
+import features.tradingDetails.{TradingDetails, TradingNameView}
 import features.turnoverEstimates.TurnoverEstimates
-import forms.EstimateVatTurnoverForm
 import models.view.test._
 import models.{BankAccount, BankAccountDetails}
 import play.api.data.Forms._
@@ -60,13 +60,6 @@ object TestSetupForm {
     "mainBusinessActivityDescription" -> optional(text),
     "mainBusinessActivityDisplayDetails" -> optional(text)
   )(SicAndComplianceTestSetup.apply)(SicAndComplianceTestSetup.unapply)
-
-  val vatTradingDetailsTestSetupMapping = mapping(
-    "tradingNameChoice" -> optional(text),
-    "tradingName" -> optional(text),
-    "euGoods" -> optional(text),
-    "applyEori" -> optional(text)
-  )(VatTradingDetailsTestSetup.apply)(VatTradingDetailsTestSetup.unapply)
 
   val vatContactTestSetupMapping = mapping(
     "email" -> optional(text),
@@ -166,9 +159,17 @@ object TestSetupForm {
     "vatTaxable" -> longNumber
   )(TurnoverEstimates.apply)(TurnoverEstimates.unapply)
 
+  val tradingDetailsMapping = mapping(
+    "tradingName" -> optional(mapping(
+      "yesNo" -> boolean,
+      "tradingName" -> optional(text)
+    )(TradingNameView.apply)(TradingNameView.unapply)),
+    "euGoods" -> optional(boolean),
+    "applyEori" -> optional(boolean)
+  )(TradingDetails.apply)(TradingDetails.unapply)
+
   val form = Form(mapping(
     "vatChoice" -> vatChoiceTestSetupMapping,
-    "vatTradingDetails" -> vatTradingDetailsTestSetupMapping,
     "vatContact" -> vatContactTestSetupMapping,
     "vatFinancials" -> vatFinancialsTestSetupMapping,
     "sicAndCompliance" -> sicAndComplianceTestSetupMapping,
@@ -179,7 +180,8 @@ object TestSetupForm {
     "vatFlatRateScheme" -> flatRateSchemeMapping,
     "turnoverEstimates" -> optional(turnoverEstimatesMapping),
     "bankAccount" -> optional(bankAccountMapping),
-    "returns" -> optional(returnsMapping)
+    "returns" -> optional(returnsMapping),
+    "tradingDetails" -> optional(tradingDetailsMapping)
   )(TestSetup.apply)(TestSetup.unapply))
 
 }

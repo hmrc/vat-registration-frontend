@@ -16,35 +16,31 @@
 
 package controllers.builders
 
-import models.api._
+import features.tradingDetails.TradingDetails
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryDoingBusinessAbroadSectionBuilder(vatTradingDetails: Option[VatTradingDetails] = None)
+case class SummaryDoingBusinessAbroadSectionBuilder(tradingDetails: Option[TradingDetails] = None)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "doingBusinessAbroad"
 
   val euGoodsRow: SummaryRow = SummaryRow(
     s"$sectionId.eori.euGoods",
-    vatTradingDetails.map(_.euTrading.selection).collect {
-      case true => "app.common.yes"
-    }.getOrElse("app.common.no"),
-    Some(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
+    tradingDetails.flatMap(_.euGoods).foldLeft("app.common.no")((default, eori) => if (eori) "app.common.yes" else default),
+    Some(controllers.routes.TradingDetailsController.euGoodsPage())
   )
 
   val applyEoriRow: SummaryRow = SummaryRow(
     s"$sectionId.eori",
-    vatTradingDetails.flatMap(_.euTrading.eoriApplication).collect {
-      case true => "app.common.yes"
-    }.getOrElse("app.common.no"),
-    Some(controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show())
+    tradingDetails.flatMap(_.applyEori).foldLeft("app.common.no")((default, eori) => if (eori) "app.common.yes" else default),
+    Some(controllers.routes.TradingDetailsController.applyEoriPage())
   )
 
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
       (euGoodsRow, true),
-      (applyEoriRow, vatTradingDetails.exists(_.euTrading.selection))
+      (applyEoriRow, tradingDetails.flatMap(_.euGoods).getOrElse(false))
     )
   )
 }

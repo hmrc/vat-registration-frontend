@@ -18,7 +18,7 @@ package controllers
 
 import features.returns.{Frequency, Returns, Stagger}
 import features.officer.models.view.LodgingOfficer
-import it.fixtures.VatRegistrationFixture
+import it.fixtures.ITRegistrationFixtures
 import models.S4LVatSicAndCompliance
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
@@ -26,7 +26,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 import support.AppAndStubs
 
-class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with VatRegistrationFixture {
+class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
 
   val officerJson = Json.parse(
     s"""

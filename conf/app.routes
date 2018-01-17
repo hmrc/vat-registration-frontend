@@ -53,16 +53,16 @@ GET         /vat-start-date                                                     
 POST        /vat-start-date                                                                    features.returns.ReturnsController.submitMandatoryStart
 
 ## TRADING NAME PAGE
-GET         /trading-name                                                                      controllers.vatTradingDetails.TradingNameController.show
-POST        /trading-name                                                                      controllers.vatTradingDetails.TradingNameController.submit
+GET         /trading-name                                                                      controllers.TradingDetailsController.tradingNamePage
+POST        /trading-name                                                                      controllers.TradingDetailsController.submitTradingName
 
 ## EU GOODS PAGE
-GET         /trade-goods-services-with-countries-outside-uk                                    controllers.vatTradingDetails.vatEuTrading.EuGoodsController.show
-POST        /trade-goods-services-with-countries-outside-uk                                    controllers.vatTradingDetails.vatEuTrading.EuGoodsController.submit
+GET         /trade-goods-services-with-countries-outside-uk                                    controllers.TradingDetailsController.euGoodsPage
+POST        /trade-goods-services-with-countries-outside-uk                                    controllers.TradingDetailsController.submitEuGoods
 
 ## EU GOODS APPLY EORI
-GET         /apply-economic-operator-registration-identification-number                        controllers.vatTradingDetails.vatEuTrading.ApplyEoriController.show
-POST        /apply-economic-operator-registration-identification-number                        controllers.vatTradingDetails.vatEuTrading.ApplyEoriController.submit
+GET         /apply-economic-operator-registration-identification-number                        controllers.TradingDetailsController.applyEoriPage
+POST        /apply-economic-operator-registration-identification-number                        controllers.TradingDetailsController.submitApplyEori
 
 ## VOLUNTARY REGISTRATION PAGE
 GET         /do-you-want-to-register-voluntarily                                               controllers.vatTradingDetails.vatChoice.VoluntaryRegistrationController.show

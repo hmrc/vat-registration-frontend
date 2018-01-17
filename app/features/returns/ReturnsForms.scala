@@ -54,7 +54,6 @@ object AccountingPeriodForm {
 }
 
 object ChargeExpectancyForm extends RequiredBooleanForm {
-
   override val errorMsg = "validation.vat.charge.expectancy.missing"
   val EXPECT_CHARGE_MORE_VAT: String = "chargeExpectancyRadio"
 

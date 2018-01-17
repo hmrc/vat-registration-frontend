@@ -19,7 +19,7 @@ package models.view.vatTradingDetails.vatChoice
 import fixtures.VatRegistrationFixture
 import models.api.{VatEligibilityChoice, VatServiceEligibility}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason.{INTENDS_TO_SELL, NEITHER, SELLS}
-import models.{ApiModelTransformer, S4LTradingDetails, S4LVatEligibilityChoice}
+import models.{ApiModelTransformer, S4LVatEligibilityChoice}
 import org.scalatest.{Inspectors, Matchers}
 import uk.gov.hmrc.play.test.UnitSpec
 

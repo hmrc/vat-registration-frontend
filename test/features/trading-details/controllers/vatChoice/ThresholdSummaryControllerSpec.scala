@@ -19,9 +19,9 @@ package controllers.vatTradingDetails.vatChoice
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.ModelKeys.INCORPORATION_STATUS
+import models.S4LVatEligibilityChoice
 import models.external.IncorporationInfo
 import models.view.vatTradingDetails.vatChoice.OverThresholdView
-import models.{S4LTradingDetails, S4LVatEligibilityChoice}
 import play.api.test.FakeRequest
 
 class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {

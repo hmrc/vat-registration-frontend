@@ -20,14 +20,12 @@ import javax.inject.{Inject, Singleton}
 
 import connectors.KeystoreConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import forms.test.TestSetupForm
-import models.ModelKeys.REGISTERING_OFFICER_KEY
-import models.api._
-import models.external.Officer
-import models.view.test._
-import models.{S4LKey, S4LVatContact, S4LVatFinancials, S4LVatSicAndCompliance, _}
 import features.officer.models.view.LodgingOfficer
 import features.turnoverEstimates.TurnoverEstimatesService
+import forms.test.TestSetupForm
+import models.api._
+import models.view.test._
+import models.{S4LKey, S4LVatContact, S4LVatFinancials, S4LVatSicAndCompliance, _}
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService, SessionProfile}
@@ -56,7 +54,6 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
             vatFinancials <- s4LService.fetchAndGet[S4LVatFinancials]
             sicStub <- s4LService.fetchAndGet[SicStub]
             vatSicAndCompliance <- s4LService.fetchAndGet[S4LVatSicAndCompliance]
-            tradingDetails <- s4LService.fetchAndGet[S4LTradingDetails]
             vatContact <- s4LService.fetchAndGet[S4LVatContact]
             lodgingOfficer <- s4LService.fetchAndGet[LodgingOfficer]
             eligibility <- s4LService.fetchAndGet[S4LVatEligibility]
@@ -65,6 +62,7 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
             bankAccount       <- s4LService.fetchAndGetNoAux(S4LKey.bankAccountKey)
             returns           <- s4LService.fetchAndGetNoAux(S4LKey.returns)
             turnoverEstimates <- turnoverService.fetchTurnoverEstimates
+            tradingDetails    <- s4LService.fetchAndGetNoAux(S4LKey.tradingDetails)
 
             testSetup = TestSetup(
               VatChoiceTestSetup(
@@ -74,12 +72,6 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                 overThresholdSelection = eligibilityChoice.flatMap(_.overThreshold).map(_.selection.toString),
                 overThresholdMonth = eligibilityChoice.flatMap(_.overThreshold).flatMap(_.date).map(_.getMonthValue.toString),
                 overThresholdYear = eligibilityChoice.flatMap(_.overThreshold).flatMap(_.date).map(_.getYear.toString)
-              ),
-              VatTradingDetailsTestSetup(
-                tradingNameChoice = tradingDetails.flatMap(_.tradingName).map(_.yesNo),
-                tradingName = tradingDetails.flatMap(_.tradingName).flatMap(_.tradingName),
-                euGoods = tradingDetails.flatMap(_.euGoods).map(_.yesNo),
-                applyEori = tradingDetails.flatMap(_.applyEori).map(_.yesNo.toString)
               ),
               VatContactTestSetup(
                 email = vatContact.flatMap(_.businessContactDetails).map(_.email),
@@ -173,7 +165,8 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
               ),
               turnoverEstimatesBlock = turnoverEstimates,
               bankAccountBlock = bankAccount,
-              returnsBlock = returns
+              returnsBlock = returns,
+              tradingDetailsBlock = tradingDetails
             )
             form = TestSetupForm.form.fill(testSetup)
           } yield Ok(views.html.pages.test.test_setup(form))
@@ -214,7 +207,7 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                   })
 
                   _ <- s4LService.save(s4LBuilder.vatFinancialsFromData(data))
-                  _ <- s4LService.save(s4LBuilder.tradingDetailsFromData(data))
+                  _ <- s4LService.saveNoAux(s4LBuilder.tradingDetailsFromData(data), S4LKey.tradingDetails)
                   _ <- s4LService.save(s4LBuilder.vatContactFromData(data))
 
                   lodgingOfficer = s4LBuilder.buildLodgingOfficerFromTestData(data)

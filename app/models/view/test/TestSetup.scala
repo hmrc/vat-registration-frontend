@@ -17,13 +17,13 @@
 package models.view.test
 
 import features.returns.Returns
+import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimates
 import models.BankAccount
 import play.api.libs.json.{Json, OFormat}
 
 case class TestSetup(
                       vatChoice: VatChoiceTestSetup,
-                      vatTradingDetails: VatTradingDetailsTestSetup,
                       vatContact: VatContactTestSetup,
                       vatFinancials: VatFinancialsTestSetup,
                       sicAndCompliance: SicAndComplianceTestSetup,
@@ -34,7 +34,8 @@ case class TestSetup(
                       vatFlatRateScheme: VatFlatRateSchemeTestSetup,
                       turnoverEstimatesBlock: Option[TurnoverEstimates],
                       bankAccountBlock: Option[BankAccount],
-                      returnsBlock: Option[Returns]
+                      returnsBlock: Option[Returns],
+                      tradingDetailsBlock: Option[TradingDetails]
                     )
 
 

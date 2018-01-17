@@ -20,19 +20,20 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import common.enums.VatRegStatus
-import models.{BankAccount, BankAccountDetails, S4LVatSicAndCompliance}
 import features.officer.fixtures.LodgingOfficerFixtures
 import features.officer.models.view._
+import features.tradingDetails.TradingDetails
 import models.api._
 import models.external.{IncorporationInfo, _}
-import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial.{ActAsIntermediary, AdviceOrConsultancy}
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
+import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.vatContact.BusinessContactDetails
+import models.{BankAccount, BankAccountDetails, S4LVatSicAndCompliance}
 import play.api.http.Status._
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{BadRequestException, HttpResponse, InternalServerException, NotFoundException, Upstream4xxResponse, Upstream5xxResponse}
+import uk.gov.hmrc.http._
 
 trait BaseFixture {
   //Test variables
@@ -164,7 +165,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val validVatScheme = VatScheme(
     id = testRegId,
-    tradingDetails = Some(validVatTradingDetails),
+    tradingDetails = Some(generateTradingDetails()),
     financials = Some(validVatFinancials),
     vatContact = Some(validVatContact),
     lodgingOfficer = Some(validFullLodgingOfficer),
@@ -224,14 +225,14 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   def vatScheme(
                  id: String = testRegId,
-                 vatTradingDetails: Option[VatTradingDetails] = None,
+                 tradingDetails: Option[TradingDetails] = None,
                  sicAndCompliance: Option[VatSicAndCompliance] = None,
                  contact: Option[VatContact] = None,
                  vatFlatRateScheme: Option[VatFlatRateScheme] = None,
                  vatEligibility: Option[VatServiceEligibility] = None
                ): VatScheme = VatScheme(
     id = id,
-    tradingDetails = vatTradingDetails,
+    tradingDetails = tradingDetails,
     vatSicAndCompliance = sicAndCompliance,
     vatContact = contact,
     vatFlatRateScheme = vatFlatRateScheme,
