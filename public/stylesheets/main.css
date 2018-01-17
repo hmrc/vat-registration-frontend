@@ -1,4 +1,5 @@
 @import 'form-validation.css';
+@import 'taas.css';
 /* position labels above input fields in cascading forms */
 label.cascading span {
 	display: block;
@@ -55,6 +56,7 @@ td {
 }
 
 
-.fill-width {
-	width: 95%
+.char-counter .fill-width {
+	width: 100%
 }
+

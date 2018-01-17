@@ -2,9 +2,7 @@
 
 @backButton = {
     @if(backButtonEnabled) {
-        <div style="width:40%; display: inline-block" align="left" class="form-group-compound">
-            <a id="back" class="back-link" href="javascript:history.back()">@messages("app.common.back")</a>
-        </div>
+        <a id="back" class="link-back" href="javascript:history.back()">@messages("app.common.back")</a>
     }
 }
 
