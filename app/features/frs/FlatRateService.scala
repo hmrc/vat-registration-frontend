@@ -23,7 +23,6 @@ package services {
   import java.time.LocalDate
 
   import common.ErrorUtil.fail
-  import features.returns.Returns
   import models._
   import models.api.{VatFlatRateScheme, VatScheme}
   import models.view.frs.AnnualCostsLimitedView.{NO, YES, YES_WITHIN_12_MONTHS}
@@ -33,7 +32,6 @@ package services {
 
   trait FlatRateService {
     self: RegistrationService =>
-
     private val flatRateSchemeS4LKey: S4LKey[S4LFlatRateScheme] = S4LFlatRateScheme.vatFlatRateScheme
     private val LIMITED_COST_TRADER_THRESHOLD                   = 1000L
     private val defaultFlatRate: BigDecimal                     = 16.5
@@ -41,11 +39,10 @@ package services {
     type SavedFlatRateScheme = Either[S4LFlatRateScheme, VatFlatRateScheme]
 
     def getFlatRateSchemeThreshold()(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Long] = {
-      fetchFinancials map {
-        _.estimateVatTurnover match {
-          case Some(estimate) => Math.round(estimate.vatTurnoverEstimate * 0.02)
+      turnoverEstimatesService.fetchTurnoverEstimates map {
+          case Some(estimate) => Math.round(estimate.vatTaxable * 0.02)
           case None           => 0L
-        }
+
       }
     }
 

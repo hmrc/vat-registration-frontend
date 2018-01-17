@@ -18,6 +18,7 @@ package models.api
 
 import common.enums.VatRegStatus
 import features.returns.Returns
+import features.turnoverEstimates.TurnoverEstimates
 import models.BankAccount
 import features.officer.models.view.LodgingOfficer
 import play.api.libs.functional.syntax._
@@ -33,6 +34,7 @@ case class VatScheme(
                       vatContact: Option[VatContact] = None,
                       vatServiceEligibility: Option[VatServiceEligibility] = None,
                       returns: Option[Returns] = None,
+                      turnOverEstimates: Option[TurnoverEstimates] = None,
                       bankAccount : Option[BankAccount] = None,
                       vatFlatRateScheme: Option[VatFlatRateScheme] = None,
                       status: VatRegStatus.Value
@@ -48,6 +50,7 @@ object VatScheme {
       (__ \ "vatContact").formatNullable[VatContact] and
       (__ \ "vatEligibility").formatNullable[VatServiceEligibility] and
       (__ \ "returns").formatNullable[Returns] and
+      (__ \ "turnoverEstimates").formatNullable[TurnoverEstimates] and
       (__ \ "bankAccount").formatNullable[BankAccount] and
       (__ \ "vatFlatRateScheme").formatNullable[VatFlatRateScheme] and
       (__ \ "status").format[VatRegStatus.Value]

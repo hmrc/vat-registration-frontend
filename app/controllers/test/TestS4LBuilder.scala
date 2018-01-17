@@ -30,7 +30,7 @@ import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessAc
 import models.view.test.TestSetup
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatContact.ppob.PpobView
-import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, ZeroRatedSales}
+import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
 import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.TradingNameView._
 import models.view.vatTradingDetails.vatChoice._
@@ -75,12 +75,10 @@ class TestS4LBuilder {
   def vatFinancialsFromData(data: TestSetup): S4LVatFinancials = {
     val fin = data.vatFinancials
 
-    val estimateVatTurnover = fin.estimateVatTurnover.map(x => EstimateVatTurnover(x.toLong))
     val zeroRatedTurnover = fin.zeroRatedSalesChoice.map(ZeroRatedSales.apply)
     val zeroRatedTurnoverEstimate = fin.zeroRatedTurnoverEstimate.map(x => EstimateZeroRatedSales(x.toLong))
 
     S4LVatFinancials(
-      estimateVatTurnover = estimateVatTurnover,
       zeroRatedTurnover = zeroRatedTurnover,
       zeroRatedTurnoverEstimate = zeroRatedTurnoverEstimate
     )

@@ -20,7 +20,7 @@ package services {
 
   import common.ErrorUtil.fail
   import models.api.{VatFinancials, VatScheme}
-  import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, ZeroRatedSales}
+  import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
   import models.{ApiModelTransformer, CurrentProfile, S4LKey, S4LVatFinancials}
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -56,7 +56,6 @@ package services {
     }
 
     private[services] def apiToView(vs: VatScheme): S4LVatFinancials = S4LVatFinancials(
-      estimateVatTurnover       = ApiModelTransformer[EstimateVatTurnover].toViewModel(vs),
       zeroRatedTurnover         = ApiModelTransformer[ZeroRatedSales].toViewModel(vs),
       zeroRatedTurnoverEstimate = ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vs)
     )

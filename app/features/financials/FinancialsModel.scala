@@ -17,8 +17,7 @@
 package models.api {
   import play.api.libs.json._
 
-  case class VatFinancials(turnoverEstimate: Long,
-                           zeroRatedTurnoverEstimate: Option[Long] = None)
+  case class VatFinancials(zeroRatedTurnoverEstimate: Option[Long] = None)
 
   object VatFinancials {
     implicit val format: OFormat[VatFinancials] = Json.format[VatFinancials]
@@ -29,11 +28,10 @@ package models {
 
   import common.ErrorUtil.fail
   import models.api.{VatFinancials, VatScheme}
-  import models.view.vatFinancials.{EstimateVatTurnover, EstimateZeroRatedSales, ZeroRatedSales}
+  import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
   import play.api.libs.json.{Json, OFormat}
 
-  final case class S4LVatFinancials(estimateVatTurnover: Option[EstimateVatTurnover] = None,
-                                    zeroRatedTurnover: Option[ZeroRatedSales] = None,
+  final case class S4LVatFinancials(zeroRatedTurnover: Option[ZeroRatedSales] = None,
                                     zeroRatedTurnoverEstimate: Option[EstimateZeroRatedSales] = None)
 
   object S4LVatFinancials {
@@ -44,7 +42,6 @@ package models {
       // map VatScheme to S4LVatFinancials
       override def toS4LModel(vs: VatScheme): S4LVatFinancials =
         S4LVatFinancials(
-          estimateVatTurnover = ApiModelTransformer[EstimateVatTurnover].toViewModel(vs),
           zeroRatedTurnover = ApiModelTransformer[ZeroRatedSales].toViewModel(vs),
           zeroRatedTurnoverEstimate = ApiModelTransformer[EstimateZeroRatedSales].toViewModel(vs)
         )
@@ -55,7 +52,6 @@ package models {
     implicit val apiT = new S4LApiTransformer[S4LVatFinancials, VatFinancials] {
       override def toApi(c: S4LVatFinancials): VatFinancials =
         VatFinancials(
-          turnoverEstimate = c.estimateVatTurnover.map(_.vatTurnoverEstimate).getOrElse(error),
           zeroRatedTurnoverEstimate = c.zeroRatedTurnoverEstimate.map(_.zeroRatedTurnoverEstimate)
         )
     }

@@ -17,7 +17,6 @@
 package controllers
 
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.view.vatFinancials.EstimateVatTurnover
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
@@ -97,32 +96,4 @@ class VatRegistrationControllerSpec extends VatRegSpec with S4LMockSugar {
       formUpdate(form) shouldHaveErrors Seq("" -> "message.code", "text" -> "message.code")
     }
   }
-
-  "Calling getFlatRateSchemeThreshold" should {
-
-    "return 0 if no EstimateVatTurnover can be found anywhere" in {
-      save4laterReturnsNoViewModel[EstimateVatTurnover]()
-      TestController.getFlatRateSchemeThreshold() returns 0L
-    }
-
-    "return 1000 if EstimateVatTurnover in the backend is 50,000" in {
-      save4laterReturnsViewModel(EstimateVatTurnover(50000))()
-      TestController.getFlatRateSchemeThreshold() returns 1000L
-    }
-
-    "return correct number (2% rounded to nearest pound if EstimateVatTurnover is in Save 4 Later" in{
-      forAll(Seq[(Int, Double)](
-        1000 -> 20d,
-        100 -> 2d,
-        49 -> 1d,
-        12324 -> 246d, // 246.48 rounded down
-        12325 -> 247d // 246.5 rounded up
-      )) {
-        case (estimate, expectedFlatRateThreshold) =>
-          save4laterReturnsViewModel(EstimateVatTurnover(estimate))()
-          TestController.getFlatRateSchemeThreshold() returns expectedFlatRateThreshold
-      }
-    }
-  }
-
 }

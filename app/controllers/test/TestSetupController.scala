@@ -94,7 +94,6 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                 country = vatContact.flatMap(_.ppob).flatMap(_.address).flatMap(_.country)
               ),
               VatFinancialsTestSetup(
-                vatFinancials.flatMap(_.estimateVatTurnover).map(_.vatTurnoverEstimate.toString),
                 vatFinancials.flatMap(_.zeroRatedTurnover).map(_.yesNo),
                 vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).map(_.zeroRatedTurnoverEstimate.toString)
               ),
