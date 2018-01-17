@@ -106,7 +106,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
       mockGetCurrentProfile()
       submitAuthorised(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> NotForProfit.NOT_PROFIT_YES
-      ))(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
+      ))(_ redirectsTo s"$contextRoot/trading-name")
 
     }
 
@@ -117,7 +117,7 @@ class NotForProfitControllerSpec extends VatRegSpec with VatRegistrationFixture 
       mockGetCurrentProfile()
       submitAuthorised(NotForProfitController.submit(), fakeRequest.withFormUrlEncodedBody(
         "notForProfitRadio" -> NotForProfit.NOT_PROFIT_NO
-      ))(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
+      ))(_ redirectsTo s"$contextRoot/trading-name")
     }
   }
 }

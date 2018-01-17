@@ -88,7 +88,7 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
       save4laterReturns(S4LVatSicAndCompliance())
       submitAuthorised(Controller.submit(),
         fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> sicCode.id)
-      )(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
+      )(_ redirectsTo s"$contextRoot/trading-name")
 
     }
 
@@ -124,7 +124,7 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
       when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(validSicAndCompliance.pure)
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
-      callAuthorised(Controller.redirectToNext())(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
+      callAuthorised(Controller.redirectToNext())(_ redirectsTo s"$contextRoot/trading-name")
     }
   }
 }

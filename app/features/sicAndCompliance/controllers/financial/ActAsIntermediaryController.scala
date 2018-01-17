@@ -63,7 +63,7 @@ package controllers.sicAndCompliance.financial {
                     container <- s4lContainer[S4LVatSicAndCompliance]()
                     _         <- s4lService.save(dropFromActAsIntermediary(container))
                     _         <- vrs.submitSicAndCompliance
-                  } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show(),
+                  } yield controllers.routes.TradingDetailsController.tradingNamePage(),
                   ifFalse = controllers.sicAndCompliance.financial.routes.ChargeFeesController.show().pure
                 ).map(Redirect))
             }

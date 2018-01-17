@@ -85,7 +85,7 @@ class DiscretionaryInvestmentManagementServicesControllerSpec extends VatRegSpec
       mockGetCurrentProfile()
       submitAuthorised(DiscretionaryInvestmentManagementServicesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "discretionaryInvestmentManagementServicesRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
+      ))(_ redirectsTo s"$contextRoot/trading-name")
     }
 
     "return 303 with Provide Discretionary Investment Management Services No selected" in {

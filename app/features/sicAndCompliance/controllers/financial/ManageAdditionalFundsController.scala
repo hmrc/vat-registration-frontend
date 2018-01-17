@@ -55,7 +55,8 @@ package controllers.sicAndCompliance.financial {
               view => for {
                 _ <- save(view)
                 _ <- vrs.submitSicAndCompliance
-              } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()))
+              } yield Redirect(controllers.routes.TradingDetailsController.tradingNamePage())
+            )
           }
     }
 

@@ -51,7 +51,7 @@ class ComplianceIntroductionControllerSpec extends VatRegSpec with VatRegistrati
       mockGetCurrentProfile()
       callAuthorised(ComplianceIntroductionController.submit) {
         result =>
-          result redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk"
+          result redirectsTo s"$contextRoot/trading-name"
       }
     }
 

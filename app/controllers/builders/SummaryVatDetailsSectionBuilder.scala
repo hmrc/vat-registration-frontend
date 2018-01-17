@@ -20,14 +20,15 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import features.returns.Returns
-import models.api.{VatEligibilityChoice, VatTradingDetails}
+import features.tradingDetails.TradingDetails
+import models.api.VatEligibilityChoice
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 import models.view.{SummaryRow, SummarySection}
 import play.api.mvc.Call
 import uk.gov.hmrc.play.config.ServicesConfig
 
 
-case class SummaryVatDetailsSectionBuilder (vatTradingDetails: Option[VatTradingDetails] = None,
+case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetails] = None,
                                             vatEligiblityChoice: Option[VatEligibilityChoice] = None,
                                             returnsBlock : Option[Returns],
                                             useEligibilityFrontend: Boolean = true,
@@ -133,8 +134,8 @@ case class SummaryVatDetailsSectionBuilder (vatTradingDetails: Option[VatTrading
 
   val tradingNameRow: SummaryRow = SummaryRow(
     s"$sectionId.tradingName",
-    vatTradingDetails.flatMap(_.tradingName.tradingName).getOrElse("app.common.no"),
-    Some(controllers.vatTradingDetails.routes.TradingNameController.show())
+    tradingDetails.flatMap(_.tradingNameView).flatMap(_.tradingName).getOrElse("app.common.no"),
+    Some(controllers.routes.TradingDetailsController.tradingNamePage())
   )
 
   val section: SummarySection =

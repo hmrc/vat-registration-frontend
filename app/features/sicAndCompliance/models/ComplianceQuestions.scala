@@ -46,7 +46,7 @@ case object FinancialComplianceQuestions extends ComplianceQuestions {
 
 case object NoComplianceQuestions extends ComplianceQuestions {
 
-  override def firstQuestion: Call = controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
+  override def firstQuestion: Call = controllers.routes.TradingDetailsController.tradingNamePage()
 
 }
 

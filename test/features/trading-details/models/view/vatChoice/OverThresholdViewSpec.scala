@@ -77,7 +77,7 @@ class OverThresholdViewSpec extends UnitSpec with VatRegistrationFixture with In
 
       "produce empty view model from an empty frs start date" in {
         val vm = ApiModelTransformer[OverThresholdView]
-          .toViewModel(vatScheme(vatTradingDetails = None))
+          .toViewModel(vatScheme(tradingDetails = Some(generateTradingDetails())))
         vm shouldBe None
       }
 

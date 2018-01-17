@@ -16,50 +16,32 @@
 
 package fixtures
 
-import features.tradingDetails.models.TradingDetails
+import features.tradingDetails.{TradingDetails, TradingNameView}
 import models.api._
-import models.view.vatTradingDetails.TradingNameView
 import models.view.vatTradingDetails.vatChoice.TaxableTurnover
-import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 
 trait TradingDetailsFixtures extends BaseFixture {
-
-  //View models
-  val validTradingNameView = TradingNameView("TRADING_NAME_YES", Some("Test Trading Name"))
   val validTaxableTurnover = TaxableTurnover("TAXABLE_YES")
-  val validEuGoods = EuGoods(EuGoods.EU_GOODS_YES)
-  val validApplyEori = ApplyEori(ApplyEori.APPLY_EORI_YES)
-
-  // Api models
   val validEuTrading = VatEuTrading(selection = false, eoriApplication = None)
   val validTradingName = TradingName(selection = true, tradingName = Some(testTradingName))
 
-
   val validEligibilityChoice = VatEligibilityChoice(
     VatEligibilityChoice.NECESSITY_VOLUNTARY,
-    vatThresholdPostIncorp = Some(VatThresholdPostIncorp(true, Some(testDate)))
+    vatThresholdPostIncorp = Some(VatThresholdPostIncorp(overThresholdSelection = true, Some(testDate)))
   )
 
-  val validVatTradingDetails = VatTradingDetails(
-    tradingName = validTradingName,
-    validEuTrading
-  )
-
-  val validTradingDetails = TradingDetails(Some(testTradingName), None)
-
-  def tradingDetails(
+  def generateTradingDetails(
                       tradingNameSelection: Boolean = true,
                       tradingName: Option[String] = Some("ACME Ltd."),
                       euGoodsSelection: Boolean = true,
                       eoriApplication: Option[Boolean] = Some(true)
-                    ): VatTradingDetails = VatTradingDetails(
-    tradingName = TradingName(
-      selection = tradingNameSelection,
-      tradingName = tradingName
-    ),
-    euTrading = VatEuTrading(
-      euGoodsSelection,
-      eoriApplication
+                    ): TradingDetails =
+    TradingDetails(
+      tradingNameView = Some(TradingNameView(
+        yesNo = tradingNameSelection,
+        tradingName = tradingName
+      )),
+      euGoods = Some(euGoodsSelection),
+      applyEori = eoriApplication
     )
-  )
 }
