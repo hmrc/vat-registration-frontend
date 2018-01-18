@@ -20,6 +20,7 @@ import java.time.LocalDate
 
 import common.enums.VatRegStatus
 import features.returns.{Frequency, Returns, Stagger}
+import features.turnoverEstimates.TurnoverEstimates
 import models.api._
 import models.external.Officer
 import features.officer.fixtures.LodgingOfficerFixture
@@ -35,7 +36,6 @@ trait VatRegistrationFixture extends LodgingOfficerFixture {
   )
 
   val financials = VatFinancials(
-    turnoverEstimate = 30000,
     zeroRatedTurnoverEstimate = None
   )
 
@@ -76,6 +76,7 @@ trait VatRegistrationFixture extends LodgingOfficerFixture {
 
   val flatRateScheme = VatFlatRateScheme()
 
+  val turnOverEstimates = TurnoverEstimates(vatTaxable = 30000)
   val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
 
   val returns = Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None)
@@ -90,6 +91,7 @@ trait VatRegistrationFixture extends LodgingOfficerFixture {
     vatContact = Some(vatContact),
     vatServiceEligibility = Some(eligibility),
     vatFlatRateScheme = Some(flatRateScheme),
+    turnOverEstimates = Some(turnOverEstimates),
     bankAccount = Some(bankAccount),
     returns = Some(returns)
   )

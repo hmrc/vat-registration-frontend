@@ -82,7 +82,6 @@ object TestSetupForm {
   )(VatContactTestSetup.apply)(VatContactTestSetup.unapply)
 
   val vatFinancialsTestSetupMapping = mapping(
-    "estimateVatTurnover" -> optional(text),
     "zeroRatedSalesChoice" -> optional(text),
     "zeroRatedTurnoverEstimate" -> optional(text)
   )(VatFinancialsTestSetup.apply)(VatFinancialsTestSetup.unapply)

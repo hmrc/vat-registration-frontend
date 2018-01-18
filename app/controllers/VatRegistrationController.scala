@@ -23,7 +23,6 @@ import cats.data.OptionT
 import cats.instances.FutureInstances
 import cats.syntax.ApplicativeSyntax
 import config.FrontendAuthConnector
-import models.view.vatFinancials.EstimateVatTurnover
 import models._
 import play.api.Configuration
 import play.api.data.{Form, FormError}
@@ -77,12 +76,6 @@ abstract class VatRegistrationController(ds: CommonPlayDependencies) extends Fro
                                              s4lTransformer: S4LModelTransformer[G]
                                             ): Future[G] =
     OptionT(s4l.fetchAndGet[G]).getOrElseF(vrs.getVatScheme map s4lTransformer.toS4LModel)
-
-
-  def getFlatRateSchemeThreshold()(implicit s4l: S4LService, vrs: RegistrationService, profile: CurrentProfile, hc: HeaderCarrier): Future[Long] =
-    viewModel[EstimateVatTurnover]()
-      .map(_.vatTurnoverEstimate).fold(0L)(estimate => Math.round(estimate * 0.02))
-
 
   protected[controllers] def save[T] = new ViewModelUpdateHelper[T]
 

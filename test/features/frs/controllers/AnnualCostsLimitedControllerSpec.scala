@@ -17,12 +17,12 @@
 package controllers.frs
 
 import connectors.KeystoreConnector
+import features.turnoverEstimates.TurnoverEstimates
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, MockMessages}
 import models.S4LFlatRateScheme
 import play.api.test.Helpers._
 import models.view.frs.AnnualCostsLimitedView
-import models.view.vatFinancials.EstimateVatTurnover
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.i18n.MessagesApi
@@ -47,7 +47,7 @@ class AnnualCostsLimitedControllerSpec extends ControllerSpec with VatRegistrati
   }
 
     val fakeRequest = FakeRequest(routes.AnnualCostsLimitedController.show())
-    val estimateVatTurnover = EstimateVatTurnover(1000000L)
+    val estimateVatTurnover = TurnoverEstimates(1000000L)
 
     val s4LFlatRateSchemeNoAnnualCostsLimited: S4LFlatRateScheme = validS4LFlatRateScheme.copy(annualCostsLimited = None)
 

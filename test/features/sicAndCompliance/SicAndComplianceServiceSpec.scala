@@ -17,6 +17,7 @@
 package services
 
 import connectors.{CompanyRegistrationConnector, KeystoreConnector, VatRegistrationConnector}
+import features.turnoverEstimates.TurnoverEstimatesService
 import helpers.VatSpec
 import models.S4LVatSicAndCompliance
 import org.mockito.Mockito._
@@ -33,6 +34,7 @@ class SicAndComplianceServiceSpec extends VatSpec {
       override val compRegConnector: CompanyRegistrationConnector = mockCompanyRegConnector
       override val incorporationService: IncorporationInformationService = mockIIService
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      override val turnoverEstimatesService: TurnoverEstimatesService = mockTurnoverEstimatesService
     }
   }
 

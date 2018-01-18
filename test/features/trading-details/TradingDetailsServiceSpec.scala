@@ -17,6 +17,7 @@
 package services
 
 import cats.data.OptionT
+import features.turnoverEstimates.TurnoverEstimatesService
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models._
@@ -38,6 +39,7 @@ class TradingDetailsServiceSpec extends VatRegSpec with VatRegistrationFixture w
       override val compRegConnector = mockCompanyRegConnector
       override val incorporationService = mockIncorpInfoService
       override val keystoreConnector = mockKeystoreConnector
+      override val turnoverEstimatesService: TurnoverEstimatesService = mockTurnoverEstimatesService
     }
   }
 

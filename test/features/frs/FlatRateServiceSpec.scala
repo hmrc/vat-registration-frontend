@@ -18,16 +18,18 @@ package services
 
 import connectors.{CompanyRegistrationConnector, KeystoreConnector, VatRegistrationConnector}
 import helpers.VatSpec
-import models.{CurrentProfile, S4LFlatRateScheme, S4LVatFinancials}
+import models.{CurrentProfile, S4LFlatRateScheme}
 import models.api.VatFlatRateScheme
 import models.view.frs._
-import models.view.vatFinancials.EstimateVatTurnover
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import AnnualCostsInclusiveView.{YES, NO}
+import AnnualCostsInclusiveView.{NO, YES}
+import features.turnoverEstimates.TurnoverEstimatesService
+import features.turnoverEstimates.TurnoverEstimates
+import play.api.libs.json.Json
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 class FlatRateServiceSpec extends VatSpec {
 
@@ -38,6 +40,7 @@ class FlatRateServiceSpec extends VatSpec {
       override val compRegConnector: CompanyRegistrationConnector = mockCompanyRegConnector
       override val incorporationService: IncorporationInformationService = mockIIService
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      override val turnoverEstimatesService: TurnoverEstimatesService = mockTurnoverEstimatesService
     }
   }
 
@@ -48,12 +51,12 @@ class FlatRateServiceSpec extends VatSpec {
       override val compRegConnector: CompanyRegistrationConnector = mockCompanyRegConnector
       override val incorporationService: IncorporationInformationService = mockIIService
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      override val turnoverEstimatesService: TurnoverEstimatesService = mockTurnoverEstimatesService
 
       override def getFlatRateSchemeThreshold()(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Long] =
         Future.successful(threshold)
     }
   }
-
 
   // TODO old tests - look to change
 //  "When this is the first time the user starts a journey and we're persisting to the backend" should {
@@ -81,11 +84,11 @@ class FlatRateServiceSpec extends VatSpec {
   "getFlatRateSchemeThreshold" should {
 
     "return 2000L when the estimated Vat turnover is 100000 (rounded 2%)" in new Setup {
+      val jsonBody = Json.obj("vatTaxable" -> 100000)
+      val testUrl = "testUrl"
+      val financialsWithEstimateVatTurnoverIs100000: TurnoverEstimates = TurnoverEstimates(vatTaxable = 100000L)
 
-      val financialsWithEstimateVatTurnoverIs100000: S4LVatFinancials =
-        validS4LVatFinancials.copy(estimateVatTurnover = Some(EstimateVatTurnover(100000L)))
-
-      when(mockS4LService.fetchAndGetNoAux[S4LVatFinancials](any())(any(), any(), any()))
+      when(mockTurnoverEstimatesService.fetchTurnoverEstimates(any(), any(), any()))
         .thenReturn(Future.successful(Some(financialsWithEstimateVatTurnoverIs100000)))
 
       val flatRateThreshold: Long = await(service.getFlatRateSchemeThreshold())
@@ -93,12 +96,9 @@ class FlatRateServiceSpec extends VatSpec {
 
     }
 
-    "return 0L if there is no EstimateVatTurnover in the S4LVatFinancials" in new Setup {
-
-      val financialsWithNoEstimateVatTurnover: S4LVatFinancials = validS4LVatFinancials.copy(estimateVatTurnover = None)
-
-      when(mockS4LService.fetchAndGetNoAux[S4LVatFinancials](any())(any(), any(), any()))
-        .thenReturn(Future.successful(Some(financialsWithNoEstimateVatTurnover)))
+    "return 0L if there is no EstimateVatTurnover in the fetched turnover estimate" in new Setup {
+      when(mockTurnoverEstimatesService.fetchTurnoverEstimates(any(), any(), any()))
+        .thenReturn(Future.successful(None))
 
       val flatRateThreshold: Long = await(service.getFlatRateSchemeThreshold())
       flatRateThreshold mustBe 0L
