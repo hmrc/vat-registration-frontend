@@ -63,7 +63,7 @@ package controllers.sicAndCompliance.financial {
                     container <- s4lContainer[S4LVatSicAndCompliance]()
                     _         <- s4lService.save(dropFromInvFundManagement(container))
                     _         <- vrs.submitSicAndCompliance
-                  } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
+                  } yield controllers.routes.TradingDetailsController.tradingNamePage()
                 ).map(Redirect))
             }
           }

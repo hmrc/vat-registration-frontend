@@ -93,7 +93,7 @@ class ActAsIntermediaryControllerSpec extends VatRegSpec with VatRegistrationFix
       mockGetCurrentProfile()
       submitAuthorised(ActAsIntermediaryController.submit(), fakeRequest.withFormUrlEncodedBody(
         "actAsIntermediaryRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
+      ))(_ redirectsTo s"$contextRoot/trading-name")
     }
 
     "return 303 with Act As Intermediary No selected" in {

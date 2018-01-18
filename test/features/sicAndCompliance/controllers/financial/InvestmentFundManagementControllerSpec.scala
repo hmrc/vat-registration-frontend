@@ -94,7 +94,7 @@ class InvestmentFundManagementControllerSpec extends VatRegSpec with VatRegistra
       mockGetCurrentProfile()
       submitAuthorised(InvestmentFundManagementController.submit(), fakeRequest.withFormUrlEncodedBody(
         "investmentFundManagementRadio" -> "false"
-      ))(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
+      ))(_ redirectsTo s"$contextRoot/trading-name")
     }
   }
 }

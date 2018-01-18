@@ -14,21 +14,40 @@
  * limitations under the License.
  */
 
+package config
+
+/*
+ * Copyright 2017 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import java.time.LocalDate
 import javax.inject.Singleton
 
 import com.google.inject.name.Names
 import com.google.inject.{AbstractModule, TypeLiteral}
 import common.Now
-import config._
 import config.startup.{VerifyCrypto, VerifyCryptoConfig}
 import connectors._
 import connectors.test.{TestRegistrationConnector, TestVatRegistrationConnector}
 import controllers.frs._
 import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsControllerImpl}
 import controllers.test.{FeatureSwitchController, FeatureSwitchCtrl}
+import controllers.{TradingDetailsController, TradingDetailsControllerImpl}
 import features.bankAccountDetails.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
 import features.returns.{ReturnsController, ReturnsControllerImpl, ReturnsService, ReturnsServiceImpl}
+import features.tradingDetails.{TradingDetailsService, TradingDetailsServiceImpl}
 import features.turnoverEstimates._
 import services._
 import features.officer.controllers._
@@ -87,6 +106,7 @@ class Module extends AbstractModule {
     bind(classOf[TurnoverEstimatesController]).to(classOf[TurnoverEstimatesControllerImpl]).asEagerSingleton()
     bind(classOf[ReturnsController]).to(classOf[ReturnsControllerImpl]).asEagerSingleton()
     bind(classOf[OfficerController]).to(classOf[OfficerControllerImpl]).asEagerSingleton()
+    bind(classOf[TradingDetailsController]).to(classOf[TradingDetailsControllerImpl]).asEagerSingleton()
   }
 
   private def bindServices(): Unit = {
@@ -104,6 +124,7 @@ class Module extends AbstractModule {
     bind(classOf[BankAccountDetailsService]).to(classOf[BankAccountDetailsServiceImpl]).asEagerSingleton()
     bind(classOf[TurnoverEstimatesService]).to(classOf[TurnoverEstimatesServiceImpl]).asEagerSingleton()
     bind(classOf[LodgingOfficerService]).to(classOf[LodgingOfficerServiceImpl]).asEagerSingleton()
+    bind(classOf[TradingDetailsService]).to(classOf[TradingDetailsServiceImpl]).asEagerSingleton()
   }
 
   private def bindConnectors(): Unit = {

@@ -33,15 +33,10 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.ZeroRatedSales.ZERO_RATED_SALES_YES
 import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
-import models.view.vatTradingDetails.TradingNameView
-import models.view.vatTradingDetails.TradingNameView.TRADING_NAME_YES
 import models.view.vatTradingDetails.vatChoice.TaxableTurnover.TAXABLE_NO
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.{REGISTER_NO, REGISTER_YES}
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason.INTENDS_TO_SELL
 import models.view.vatTradingDetails.vatChoice._
-import models.view.vatTradingDetails.vatEuTrading.ApplyEori.APPLY_EORI_YES
-import models.view.vatTradingDetails.vatEuTrading.EuGoods.EU_GOODS_YES
-import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
 import org.scalatest.Inspectors
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -70,56 +65,6 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
       )
 
       S4LVatFinancials.apiT.toApi(s4lWithoutAccountingPeriod) shouldBe expected
-    }
-  }
-
-  "S4LTradingDetails.S4LModelTransformer.toS4LModel" should {
-    val specificDate = LocalDate.of(2017, 11, 12)
-    val tradingName = "name"
-
-    "transform VatScheme to S4L container" in {
-      val vs = emptyVatScheme.copy(
-        tradingDetails = Some(VatTradingDetails(
-          tradingName = TradingName(selection = true, tradingName = Some(tradingName)),
-          euTrading = VatEuTrading(selection = true, eoriApplication = Some(true))
-        ))
-      )
-
-      val expected = S4LTradingDetails(
-        tradingName = Some(TradingNameView(yesNo = TRADING_NAME_YES, tradingName = Some(tradingName))),
-        euGoods = Some(EuGoods(EU_GOODS_YES)),
-        applyEori = Some(ApplyEori(APPLY_EORI_YES))
-      )
-
-      S4LTradingDetails.modelT.toS4LModel(vs) shouldBe expected
-    }
-  }
-
-  "S4LTradingDetails.S4LApiTransformer.toApi" should {
-    val specificDate = LocalDate.of(2017, 11, 12)
-    val tradingName = "name"
-
-    val s4l = S4LTradingDetails(
-      tradingName = Some(TradingNameView(yesNo = TRADING_NAME_YES, tradingName = Some(tradingName))),
-      euGoods = Some(EuGoods(EU_GOODS_YES)),
-      applyEori = Some(ApplyEori(APPLY_EORI_YES))
-    )
-
-    "transform complete S4L with voluntary registration model to API" in {
-      val expected = VatTradingDetails(
-        tradingName = TradingName(selection = true, tradingName = Some(tradingName)),
-        euTrading = VatEuTrading(selection = true, eoriApplication = Some(true))
-      )
-
-      S4LTradingDetails.apiT.toApi(s4l) shouldBe expected
-    }
-
-    "transform S4L model with incomplete data error" in {
-      val s4lNoTradingName = s4l.copy(tradingName = None)
-      an[IllegalStateException] should be thrownBy S4LTradingDetails.apiT.toApi(s4lNoTradingName)
-
-      val s4lNoEuGoods = s4l.copy(euGoods = None)
-      an[IllegalStateException] should be thrownBy S4LTradingDetails.apiT.toApi(s4lNoEuGoods)
     }
   }
 

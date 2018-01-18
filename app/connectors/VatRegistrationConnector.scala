@@ -22,16 +22,17 @@ import cats.data.OptionT
 import cats.instances.FutureInstances
 import common.enums.VatRegStatus
 import config.WSHttp
-import features.turnoverEstimates.TurnoverEstimates
 import features.officer.models.view.LodgingOfficer
+import features.tradingDetails.TradingDetails
+import features.turnoverEstimates.TurnoverEstimates
 import models.CurrentProfile
 import models.api._
 import models.external.IncorporationInfo
-import play.api.libs.json._
+import play.api.http.Status._
+import play.api.libs.json.{JsObject, JsValue, Json}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import uk.gov.hmrc.http._
-import play.api.http.Status._
 
 import scala.concurrent.Future
 
@@ -43,7 +44,7 @@ class VatRegistrationConnector @Inject()(val http: WSHttp, config: ServicesConfi
   lazy val vatRegElUrl = config.baseUrl("vat-registration-eligibility-frontend")
 }
 
-trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnector with FinancialsConnector with FutureInstances {
+trait RegistrationConnector extends FlatRateConnector with FinancialsConnector with FutureInstances {
 
   val vatRegUrl: String
   val vatRegElUrl: String
@@ -162,6 +163,29 @@ trait RegistrationConnector extends FlatRateConnector with TradingDetailsConnect
       _.status match {
         case OK => Success
       }
+    }
+  }
+
+  def getTradingDetails(regId: String)
+                       (implicit hc: HeaderCarrier): Future[Option[TradingDetails]] = {
+    implicit val frmt = TradingDetails.apiFormat
+
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/trading-details") map { res =>
+      res.status match {
+        case OK         => Some(res.json.as[TradingDetails])
+        case NO_CONTENT => None
+      }
+    } recover {
+      case e: Exception => throw logResponse(e, "getTradingDetails")
+    }
+  }
+
+  def upsertTradingDetails(regId: String, tradingDetails: TradingDetails)
+                          (implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    implicit val frmt = TradingDetails.apiFormat
+
+    http.PATCH[TradingDetails, HttpResponse](s"$vatRegUrl/vatreg/$regId/trading-details", tradingDetails) recover {
+      case e: Exception => throw logResponse(e, "upsertNEW")
     }
   }
 }

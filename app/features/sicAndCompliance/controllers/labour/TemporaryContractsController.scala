@@ -64,7 +64,7 @@ package controllers.sicAndCompliance.labour {
                     container <- s4lContainer[S4LVatSicAndCompliance]()
                     _         <- s4lService.save(dropFromTemporaryContracts(container))
                     _         <- vrs.submitSicAndCompliance
-                  } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show()
+                  } yield controllers.routes.TradingDetailsController.tradingNamePage()
                 ).map(Redirect))
             }
           }

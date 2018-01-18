@@ -30,24 +30,24 @@ class SummaryDoingBusinessAbroadSectionBuilderSpec extends VatRegSpec with VatRe
     "with EU Goods render" should {
 
       "a false value should be returned with a row displaying 'No'" in {
-        val details =  tradingDetails( euGoodsSelection = false)
-        val builder = SummaryDoingBusinessAbroadSectionBuilder(vatTradingDetails = Some(details))
+        val details = generateTradingDetails(euGoodsSelection = false)
+        val builder = SummaryDoingBusinessAbroadSectionBuilder(tradingDetails = Some(details))
         builder.euGoodsRow mustBe
           SummaryRow(
             "doingBusinessAbroad.eori.euGoods",
             "app.common.no",
-            Some(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
+            Some(controllers.routes.TradingDetailsController.euGoodsPage())
           )
       }
 
       "a true value should be returned with a row displaying 'Yes'" in {
-        val details =  tradingDetails( euGoodsSelection = true)
-        val builder = SummaryDoingBusinessAbroadSectionBuilder(vatTradingDetails = Some(details))
+        val details =  generateTradingDetails()
+        val builder = SummaryDoingBusinessAbroadSectionBuilder(tradingDetails = Some(details))
         builder.euGoodsRow mustBe
           SummaryRow(
             "doingBusinessAbroad.eori.euGoods",
             "app.common.yes",
-            Some(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
+            Some(controllers.routes.TradingDetailsController.euGoodsPage())
           )
       }
     }
@@ -60,18 +60,18 @@ class SummaryDoingBusinessAbroadSectionBuilderSpec extends VatRegSpec with VatRe
           SummaryRow(
             "doingBusinessAbroad.eori",
             "app.common.no",
-            Some(controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show())
+            Some(controllers.routes.TradingDetailsController.applyEoriPage())
           )
       }
 
       "a 'Yes' value should be returned with a 'Yes' " in {
-        val details =  tradingDetails( eoriApplication = Some(true))
-        val builder = SummaryDoingBusinessAbroadSectionBuilder(vatTradingDetails = Some(details))
+        val details =  generateTradingDetails( eoriApplication = Some(true))
+        val builder = SummaryDoingBusinessAbroadSectionBuilder(tradingDetails = Some(details))
         builder.applyEoriRow mustBe
           SummaryRow(
             "doingBusinessAbroad.eori",
             "app.common.yes",
-            Some(controllers.vatTradingDetails.vatEuTrading.routes.ApplyEoriController.show())
+            Some(controllers.routes.TradingDetailsController.applyEoriPage())
           )
       }
     }
@@ -79,8 +79,8 @@ class SummaryDoingBusinessAbroadSectionBuilderSpec extends VatRegSpec with VatRe
     "with section generate" should {
 
       "a valid summary section" in {
-        val tradingDetails = VatTradingDetails(tradingName = validTradingName, VatEuTrading(true, Some(true)))
-        val builder = SummaryDoingBusinessAbroadSectionBuilder(vatTradingDetails = Some(tradingDetails))
+        val tradingDetails = generateTradingDetails()
+        val builder = SummaryDoingBusinessAbroadSectionBuilder(tradingDetails = Some(tradingDetails))
         builder.section.id mustBe "doingBusinessAbroad"
         builder.section.rows.length mustEqual 2
       }

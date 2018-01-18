@@ -83,7 +83,7 @@ class LeaseVehiclesControllerSpec extends VatRegSpec with VatRegistrationFixture
       mockGetCurrentProfile()
       submitAuthorised(LeaseVehiclesController.submit(), fakeRequest.withFormUrlEncodedBody(
         "leaseVehiclesRadio" -> "true"
-      ))(_ redirectsTo s"$contextRoot/trade-goods-services-with-countries-outside-uk")
+      ))(_ redirectsTo s"$contextRoot/trading-name")
     }
 
     "redirects to next screen in the flow -  with Lease Vehicles or Equipment - No selected" in {

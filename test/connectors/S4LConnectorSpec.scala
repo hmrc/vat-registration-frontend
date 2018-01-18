@@ -16,7 +16,7 @@
 
 package connectors
 
-import features.tradingDetails.models.TradingNameView
+import features.tradingDetails.TradingNameView
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
@@ -38,7 +38,7 @@ class S4LConnectorSpec extends UnitSpec with MockitoSugar {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val sTradingModel = TradingNameView("yes", Some("test"))
+  val sTradingModel = TradingNameView(true, Some("test"))
   val cacheMap = CacheMap("", Map("" -> Json.toJson(sTradingModel)))
 
   "Fetching from save4later" should {

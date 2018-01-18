@@ -57,7 +57,7 @@ class BusinessContactDetailsController @Inject()(ds: CommonPlayDependencies,
               contactDetails => for {
                 _ <- save(contactDetails)
                 _ <- vrs.submitVatContact
-              } yield Redirect(controllers.vatTradingDetails.routes.TradingNameController.show()))
+              } yield Redirect(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show()))
           }
         }
   }

@@ -17,11 +17,13 @@
 package controllers.test
 
 import java.time.LocalDate
-import java.time.temporal.TemporalAdjusters
 import javax.inject.Singleton
 
+import features.officer.models.view._
+import features.tradingDetails.TradingDetails
 import models._
 import models.api._
+import models.external.{Name, Officer}
 import models.view.frs._
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
@@ -31,45 +33,15 @@ import models.view.test.TestSetup
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
-import models.view.vatTradingDetails.TradingNameView
-import models.view.vatTradingDetails.TradingNameView._
-import models.view.vatTradingDetails.vatChoice._
-import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
-import features.officer.models.view._
-import models.external.{Name, Officer}
 
 @Singleton
 class TestS4LBuilder {
 
-  def tradingDetailsFromData(data: TestSetup): S4LTradingDetails = {
-    val taxableTurnover: Option[String] = data.vatChoice.taxableTurnoverChoice
-
-    val overThresholdView: Option[OverThresholdView] = data.vatChoice.overThresholdSelection match {
-      case Some("true") => Some(OverThresholdView(selection = true, Some(LocalDate.of(
-        data.vatChoice.overThresholdYear.map(_.toInt).get,
-        data.vatChoice.overThresholdMonth.map(_.toInt).get,
-        1
-      ).`with`(TemporalAdjusters.lastDayOfMonth()))))
-      case Some("false") => Some(OverThresholdView(selection = false, None))
-      case _ => None
+  def tradingDetailsFromData(data: TestSetup): TradingDetails = {
+    data.tradingDetailsBlock match {
+      case Some(tdb) => TradingDetails(tdb.tradingNameView, tdb.euGoods, tdb.applyEori)
+      case None => TradingDetails()
     }
-
-    val voluntaryRegistration: Option[String] = data.vatChoice.voluntaryChoice
-    val voluntaryRegistrationReason: Option[String] = data.vatChoice.voluntaryRegistrationReason
-
-    val tradingName = data.vatTradingDetails.tradingNameChoice.map(_ =>
-      TradingName(
-        selection = data.vatTradingDetails.tradingNameChoice.fold(false)(_ == TRADING_NAME_YES),
-        tradingName = data.vatTradingDetails.tradingName))
-
-    val euGoods: Option[String] = data.vatTradingDetails.euGoods
-    val applyEori: Option[String] = data.vatTradingDetails.applyEori
-
-    S4LTradingDetails(
-      tradingName = tradingName.map(t => TradingNameView(if (t.selection) TRADING_NAME_YES else TRADING_NAME_NO, t.tradingName)),
-      euGoods = euGoods.map(EuGoods(_)),
-      applyEori = applyEori.map(a => ApplyEori(a.toBoolean))
-    )
   }
 
   def vatFinancialsFromData(data: TestSetup): S4LVatFinancials = {

@@ -17,18 +17,19 @@
 package models.api
 
 import common.enums.VatRegStatus
+import features.officer.models.view.LodgingOfficer
 import features.returns.Returns
+import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimates
 import models.BankAccount
-import features.officer.models.view.LodgingOfficer
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 
 case class VatScheme(
                       id: String,
-                      tradingDetails: Option[VatTradingDetails] = None,
                       lodgingOfficer: Option[LodgingOfficer] = None,
+                      tradingDetails: Option[TradingDetails] = None,
                       financials: Option[VatFinancials] = None,
                       vatSicAndCompliance: Option[VatSicAndCompliance] = None,
                       vatContact: Option[VatContact] = None,
@@ -41,10 +42,11 @@ case class VatScheme(
                     )
 
 object VatScheme {
+  implicit val frmt = TradingDetails.apiFormat
   implicit val format: OFormat[VatScheme] = (
     (__ \ "registrationId").format[String] and
-      (__ \ "tradingDetails").formatNullable[VatTradingDetails] and
       (__ \ "lodgingOfficer").formatNullable[LodgingOfficer].inmap[Option[LodgingOfficer]](_ => Option.empty[LodgingOfficer], _ => Option.empty[LodgingOfficer]) and
+      (__ \ "tradingDetails").formatNullable[TradingDetails] and
       (__ \ "financials").formatNullable[VatFinancials] and
       (__ \ "vatSicAndCompliance").formatNullable[VatSicAndCompliance] and
       (__ \ "vatContact").formatNullable[VatContact] and

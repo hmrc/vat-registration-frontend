@@ -40,7 +40,7 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val keystoreConnector: KeystoreConnect,
                                        val turnoverEstimatesService: TurnoverEstimatesService) extends RegistrationService
 
-trait RegistrationService extends FlatRateService with TradingDetailsService with FinancialsService
+trait RegistrationService extends FlatRateService with FinancialsService
   with LegacyServiceToBeRefactored with SicAndComplianceService {
 
   val s4LService: S4LService
