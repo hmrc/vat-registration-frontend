@@ -97,8 +97,9 @@ class SummaryController @Inject()(ds: CommonPlayDependencies,
       SummaryBusinessActivitiesSectionBuilder(vs.vatSicAndCompliance).section,
       SummaryComplianceSectionBuilder(vs.vatSicAndCompliance).section,
       SummaryBusinessBankDetailsSectionBuilder(vs.bankAccount).section,
-      SummaryTaxableSalesSectionBuilder(vs.financials).section,
       SummaryAnnualAccountingSchemeSectionBuilder(vs.returns).section,
+      SummaryTaxableSalesSectionBuilder(vs.financials,vs.turnOverEstimates).section,
+
       SummaryFrsSectionBuilder(vs.vatFlatRateScheme).section
     ))
   }

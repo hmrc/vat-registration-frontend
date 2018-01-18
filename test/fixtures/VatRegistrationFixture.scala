@@ -181,7 +181,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     lodgingOfficer = Some(emptyLodgingOfficer),
     financials = Some(
       VatFinancials(
-        turnoverEstimate = 0L,
         zeroRatedTurnoverEstimate = None
       )
     ),

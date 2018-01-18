@@ -75,8 +75,6 @@ POST        /reason-for-registering                                             
 ## ESTIMATE VAT TAXABLE TURNOVER PAGE
 GET         /estimate-vat-taxable-turnover-next-12-months                                      features.turnoverEstimates.TurnoverEstimatesController.showEstimateVatTurnover
 POST        /estimate-vat-taxable-turnover-next-12-months                                      features.turnoverEstimates.TurnoverEstimatesController.submitEstimateVatTurnover
-GET         /estimate-vat-taxable-turnover-next-12-months-legacy                               controllers.vatFinancials.EstimateVatTurnoverController.show
-POST        /estimate-vat-taxable-turnover-next-12-months-legacy                               controllers.vatFinancials.EstimateVatTurnoverController.submit
 
 ## ZERO RATED SALES PAGE
 GET         /sell-zero-rated-items-next-12-months                                              controllers.vatFinancials.ZeroRatedSalesController.show

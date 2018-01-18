@@ -29,8 +29,7 @@ class EstimateZeroRatedSalesSpec extends UnitSpec with VatRegistrationFixture {
   val estimateZeroRatedSales = EstimateZeroRatedSales(sales)
 
   val vatFinancials = VatFinancials(
-    turnoverEstimate = turnover,
-    zeroRatedTurnoverEstimate = Some(estimateZeroRatedSales.zeroRatedTurnoverEstimate)
+      zeroRatedTurnoverEstimate = Some(estimateZeroRatedSales.zeroRatedTurnoverEstimate)
   )
 
   "apply" should {

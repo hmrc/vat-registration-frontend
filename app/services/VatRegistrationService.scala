@@ -21,6 +21,7 @@ import javax.inject.Inject
 import common.ErrorUtil.fail
 import common.enums.VatRegStatus
 import connectors._
+import features.turnoverEstimates.TurnoverEstimatesService
 import models.ModelKeys._
 import models._
 import models.api._
@@ -36,7 +37,8 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val vatRegConnector: RegistrationConnector,
                                        val compRegConnector: CompanyRegistrationConnect,
                                        val incorporationService: IncorporationInfoSrv,
-                                       val keystoreConnector: KeystoreConnect) extends RegistrationService
+                                       val keystoreConnector: KeystoreConnect,
+                                       val turnoverEstimatesService: TurnoverEstimatesService) extends RegistrationService
 
 trait RegistrationService extends FlatRateService with TradingDetailsService with FinancialsService
   with LegacyServiceToBeRefactored with SicAndComplianceService {
@@ -45,6 +47,7 @@ trait RegistrationService extends FlatRateService with TradingDetailsService wit
   val vatRegConnector: RegistrationConnector
   val compRegConnector: CompanyRegistrationConnect
   val incorporationService: IncorporationInfoSrv
+  val turnoverEstimatesService : TurnoverEstimatesService
 }
 
 // TODO refactor in a similar way to FRS

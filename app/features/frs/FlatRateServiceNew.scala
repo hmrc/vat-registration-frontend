@@ -23,6 +23,7 @@ package services.frs {
   import com.google.inject.Inject
   import common.ErrorUtil.fail
   import connectors.RegistrationConnector
+  import features.turnoverEstimates.TurnoverEstimatesService
   import models._
   import models.api.{VatFlatRateScheme, VatScheme}
   import models.view.frs.AnnualCostsLimitedView.{NO, YES, YES_WITHIN_12_MONTHS}
@@ -30,11 +31,13 @@ package services.frs {
   import services.{RegistrationService, S4LService}
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-  class FlatRateServiceImpl @Inject()(val s4LService: S4LService,
+  class FlatRateServiceImpl @Inject()(val turnoverEstimateService: TurnoverEstimatesService,
+                                      val s4LService: S4LService,
                                       val vatService: RegistrationService,
                                       val vatRegConnector: RegistrationConnector) extends FlatRateService
 
   trait FlatRateService  {
+    protected val turnoverEstimateService : TurnoverEstimatesService
     val s4LService: S4LService
     val vatService: RegistrationService
     val vatRegConnector: RegistrationConnector
@@ -45,12 +48,10 @@ package services.frs {
     type SavedFlatRateScheme = Either[S4LFlatRateScheme, VatFlatRateScheme]
 
     def getFlatRateSchemeThreshold()(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Long] = {
-      vatService.fetchFinancials map {
-        _.estimateVatTurnover match {
-          case Some(estimate) => Math.round(estimate.vatTurnoverEstimate * 0.02)
+      turnoverEstimateService.fetchTurnoverEstimates map {
+          case Some(estimate) => Math.round(estimate.vatTaxable * 0.02)
           case None           => 0L
         }
-      }
     }
 
     def fetchFlatRateScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[S4LFlatRateScheme] = {

@@ -43,8 +43,8 @@ package models.view.vatFinancials {
     // Returns a view model for a specific part of a given VatScheme API model
     implicit val modelTransformer = ApiModelTransformer[ZeroRatedSales] { (vs: VatScheme) =>
       vs.financials.map {
-        case VatFinancials(_, Some(_)) => ZeroRatedSales(ZERO_RATED_SALES_YES)
-        case VatFinancials(_, None) => ZeroRatedSales(ZERO_RATED_SALES_NO)
+        case VatFinancials(Some(_)) => ZeroRatedSales(ZERO_RATED_SALES_YES)
+        case VatFinancials(None) => ZeroRatedSales(ZERO_RATED_SALES_NO)
       }
     }
   }

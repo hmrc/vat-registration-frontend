@@ -28,19 +28,16 @@ trait FinancialsFixtures extends BaseFixture {
   val testEstimatedSales = 60000L
 
   //View models
-  val validEstimateVatTurnover = EstimateVatTurnover(testTurnoverEstimate)
   val validEstimateZeroRatedSales = EstimateZeroRatedSales(testEstimatedSales)
 
   //Api models
   val validVatBankAccount = VatBankAccount(testTradingName, testAccountNumber, testSortCode)
 
   val validVatFinancials = VatFinancials(
-    turnoverEstimate = testTurnoverEstimate,
     zeroRatedTurnoverEstimate = Some(testEstimatedSales)
   )
 
   val validS4LVatFinancials = S4LVatFinancials(
-    estimateVatTurnover = Some(validEstimateVatTurnover),
     zeroRatedTurnover = Some(ZeroRatedSales(ZERO_RATED_SALES_YES)),
     zeroRatedTurnoverEstimate = Some(validEstimateZeroRatedSales)
   )
