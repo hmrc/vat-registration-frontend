@@ -120,7 +120,7 @@ package services {
     def saveFRSStartDate(frsStartDateView: FrsStartDateView)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[SavedFlatRateScheme] = {
       fetchFlatRateScheme flatMap { frs =>
         if(frsStartDateView.dateType == FrsStartDateView.VAT_REGISTRATION_DATE) {
-          fetchVatStartDate flatMap { vatStartDate =>
+          fetchVatStartDate flatMap {vatStartDate =>
             saveFRS(frs.copy(frsStartDate = Some(frsStartDateView.copy(date = vatStartDate))))
           }
         } else {
@@ -133,7 +133,7 @@ package services {
       getFlatRateSchemeThreshold map (_ > LIMITED_COST_TRADER_THRESHOLD)
     }
 
-    @Deprecated
+    @deprecated
     // TODO other FRS controllers still use this
     def submitVatFlatRateScheme()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatFlatRateScheme] = {
       def merge(fresh: Option[S4LFlatRateScheme], vs: VatScheme): VatFlatRateScheme = fresh.fold(

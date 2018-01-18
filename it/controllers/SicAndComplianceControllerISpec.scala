@@ -84,7 +84,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       val response = buildClient("/main-source-of-income").post(Map("mainBusinessActivityRadio" -> Seq(sicCodeId)))
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingDetailsController.tradingNamePage().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/sic-and-compliance")
         (json \ "businessDescription").as[JsString].value mustBe businessActivityDescription

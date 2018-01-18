@@ -64,7 +64,7 @@ package controllers.sicAndCompliance.financial {
                     container <- s4lContainer[S4LVatSicAndCompliance]()
                     _ <- s4lService.save(dropFromDiscInvManServices(container))
                     _ <- vrs.submitSicAndCompliance
-                  } yield controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show(),
+                  } yield controllers.routes.TradingDetailsController.tradingNamePage(),
                   ifFalse = controllers.sicAndCompliance.financial.routes.LeaseVehiclesController.show().pure
                 ).map(Redirect))
             }

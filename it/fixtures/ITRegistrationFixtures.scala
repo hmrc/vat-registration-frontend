@@ -19,20 +19,20 @@ package it.fixtures
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
+import features.officer.fixtures.LodgingOfficerFixture
 import features.returns.{Frequency, Returns, Stagger}
+import features.tradingDetails.{TradingDetails, TradingNameView}
 import features.turnoverEstimates.TurnoverEstimates
 import models.api._
-import models.external.Officer
-import features.officer.fixtures.LodgingOfficerFixture
 import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 import models.{BankAccount, BankAccountDetails}
 
-trait VatRegistrationFixture extends LodgingOfficerFixture {
+trait ITRegistrationFixtures extends LodgingOfficerFixture {
   val address = ScrsAddress(line1 = "3 Test Building", line2 = "5 Test Road", postcode = Some("TE1 1ST"))
 
-  val tradingDetails = VatTradingDetails(
-    tradingName = TradingName(selection = false, tradingName = None),
-    euTrading = VatEuTrading(false, Some(false))
+  val tradingDetails = TradingDetails(
+    tradingNameView = Some(TradingNameView(yesNo = false, tradingName = None)),
+    euGoods = Some(false)
   )
 
   val financials = VatFinancials(

@@ -14,95 +14,77 @@
  * limitations under the License.
  */
 
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
+package features.tradingDetails
 
+import javax.inject.Inject
+
+import connectors.RegistrationConnector
+import models.{CurrentProfile, S4LKey}
+import services.{Complete, Completion, Incomplete, S4LService}
+import uk.gov.hmrc.http.HeaderCarrier
+
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-package services {
-
-  import common.ErrorUtil.fail
-  import models.api.{VatScheme, VatTradingDetails}
-  import models.view.vatTradingDetails.TradingNameView
-  import models.view.vatTradingDetails.vatEuTrading.{ApplyEori, EuGoods}
-  import models.{ApiModelTransformer, CurrentProfile, S4LKey, S4LTradingDetails}
-  import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-
-  trait TradingDetailsService {
-    self: RegistrationService =>
-
-    private val tradingDetailsS4LKey: S4LKey[S4LTradingDetails] = S4LKey[S4LTradingDetails]("VatTradingDetails")
-
-    def fetchTradingDetails(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[S4LTradingDetails] = {
-      fetchTradingDetailsFromS4L flatMap {
-        case Some(tradingDetails) => Future.successful(tradingDetails)
-        case None                 => getVatScheme map { vatScheme =>
-          vatScheme.tradingDetails match {
-            case Some(_) => tradingDetailsApiToView(vatScheme)
-            case None    => S4LTradingDetails()
-          }
-        }
-      }
-    }
-
-    def submitTradingDetails()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatTradingDetails] = {
-      def merge(fresh: Option[S4LTradingDetails], vs: VatScheme): VatTradingDetails = fresh.fold(
-        vs.tradingDetails.getOrElse(throw fail("VatTradingDetails"))
-      )(s4l => S4LTradingDetails.apiT.toApi(s4l))
-
-      for {
-        vs       <- getVatScheme
-        vlo      <- s4l[S4LTradingDetails]
-        response <- vatRegConnector.upsertVatTradingDetails(profile.registrationId, merge(vlo, vs))
-      } yield response
-    }
-
-    private[services] def tradingDetailsApiToView(vs: VatScheme): S4LTradingDetails = S4LTradingDetails(
-      tradingName = ApiModelTransformer[TradingNameView].toViewModel(vs),
-      euGoods     = ApiModelTransformer[EuGoods].toViewModel(vs),
-      applyEori   = ApiModelTransformer[ApplyEori].toViewModel(vs)
-    )
-
-    private[services] def fetchTradingDetailsFromS4L(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Option[S4LTradingDetails]] = {
-      s4LService.fetchAndGetNoAux(tradingDetailsS4LKey)
-    }
-  }
+class TradingDetailsServiceImpl @Inject()(val s4lservice : S4LService,
+                                          val regConnector : RegistrationConnector) extends TradingDetailsService {
+  val s4lService: S4LService = s4lservice
+  val registrationConnector : RegistrationConnector = regConnector
 }
 
-package connectors {
+trait TradingDetailsService {
+  val s4lService : S4LService
+  val registrationConnector : RegistrationConnector
 
-  import cats.instances.FutureInstances
-  import features.tradingDetails.models.TradingDetails
-  import models.api.VatTradingDetails
-  import uk.gov.hmrc.http.NotFoundException
-  import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+  private val tradingDetailsS4LKey: S4LKey[TradingDetails] = S4LKey[TradingDetails]("tradingDetails")
 
-  import scala.concurrent.Future
-
-  trait TradingDetailsConnector extends FutureInstances {
-    self: RegistrationConnector =>
-
-    def upsertVatTradingDetails(regId: String, vatTradingDetails: VatTradingDetails)
-                               (implicit hc: HeaderCarrier, rds: HttpReads[VatTradingDetails]): Future[VatTradingDetails] = {
-      http.PATCH[VatTradingDetails, VatTradingDetails](s"$vatRegUrl/vatreg/$regId/trading-details", vatTradingDetails).recover{
-        case e: Exception => throw logResponse(e, "upsertVatTradingDetails")
+  def getTradingDetailsViewModel(regId : String)(implicit hc : HeaderCarrier, profile : CurrentProfile): Future[TradingDetails] =
+    s4lService.fetchAndGetNoAux(tradingDetailsS4LKey) flatMap {
+      case Some(s4l) => Future.successful(s4l)
+      case None => registrationConnector.getTradingDetails(regId) map {
+        case Some(td) => td
+        case None => TradingDetails()
       }
     }
 
-    def getTradingDetails(regId: String)
-                         (implicit hc: HeaderCarrier, rds: HttpReads[TradingDetails]): Future[Option[TradingDetails]] = {
-      http.GET[TradingDetails](s"$vatRegUrl/vatreg/$regId/trading-details").map {resp =>
-        Some(resp)
-      } recover {
-        case _: NotFoundException => None
-        case e: Exception => throw logResponse(e, "getTradingDetails")
-      }
-    }
+  def getS4LCompletion(data : TradingDetails) : Completion[TradingDetails] = data match {
+    case TradingDetails(Some(tn), Some(eu), Some(ae)) if eu => Complete(data)
+    case TradingDetails(Some(tn), Some(eu), _)        if !eu => Complete(data)
+    case _ => Incomplete(data)
+  }
 
-    def upsertTradingDetails(regId: String, tradingDetails: TradingDetails)
-                            (implicit hc: HeaderCarrier, rds: HttpReads[TradingDetails]): Future[TradingDetails] = {
-      http.PATCH[TradingDetails, TradingDetails](s"$vatRegUrl/vatreg/$regId/trading-details", tradingDetails).recover {
-        case e: Exception => throw logResponse(e, "upsertTradingDetails")
-      }
-    }
+  def submitTradingDetails(regId : String, data : TradingDetails)(implicit hc : HeaderCarrier, currentProfile: CurrentProfile): Future[TradingDetails] = {
+    getS4LCompletion(data).fold(
+      incomplete  => s4lService.saveNoAux(incomplete, tradingDetailsS4LKey) map {
+        _ => incomplete
+      },
+      complete    =>
+        for {
+          _ <- registrationConnector.upsertTradingDetails(regId, complete)
+          _ <- s4lService.clear
+        } yield {
+          complete
+        }
+    )
+  }
+
+  def updateTradingDetails(regId : String)(newS4L : (TradingDetails => TradingDetails))
+                          (implicit hc : HeaderCarrier, currentProfile: CurrentProfile): Future[TradingDetails] = {
+    getTradingDetailsViewModel(regId) flatMap { storedData => submitTradingDetails(regId, newS4L(storedData))}
+  }
+
+  def saveTradingName(regId : String, hasName: Boolean, name : Option[String])
+                     (implicit hc : HeaderCarrier, currentProfile: CurrentProfile): Future[TradingDetails] = {
+    updateTradingDetails(regId) { storedData => storedData.copy(tradingNameView = Some(TradingNameView(hasName, name)))}
+  }
+
+  def saveEuGoods(regId : String, euGoods: Boolean)
+                 (implicit hc : HeaderCarrier, currentProfile: CurrentProfile) : Future[TradingDetails] = {
+    updateTradingDetails(regId) { storedData => storedData.copy(euGoods = Some(euGoods))}
+  }
+
+  def saveEori(regId : String, applyEori: Boolean)
+              (implicit hc : HeaderCarrier, currentProfile: CurrentProfile) : Future[TradingDetails] = {
+    updateTradingDetails(regId) { storedData => storedData.copy(applyEori = Some(applyEori))}
   }
 }

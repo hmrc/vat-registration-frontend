@@ -65,7 +65,7 @@ $(document).ready($(function () {
 (function (TradingNamePage, $, undefined) {
     TradingNamePage.init = function() {
         UI.hideShowOnRadioButton("tradingNameRadio",
-            { "#tradingNameRadio-trading_name_yes": "#trading_name_panel" });
+            { "#tradingNameRadio-true": "#trading_name_panel" });
     }
 }(window.TradingNamePage = window.TradingNamePage || {}, jQuery));
 

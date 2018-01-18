@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import features.officer.models.view._
 import helpers.RequestsFinder
-import it.fixtures.VatRegistrationFixture
+import it.fixtures.ITRegistrationFixtures
 import models.api.ScrsAddress
 import models.external.{CoHoRegisteredOfficeAddress, Name, Officer}
 import org.scalatest.concurrent.ScalaFutures
@@ -29,7 +29,7 @@ import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, JsString, Json}
 import support.AppAndStubs
 
-class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with VatRegistrationFixture {
+class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
   val keyBlock = "officer"
 
   val email = "test@test.com"

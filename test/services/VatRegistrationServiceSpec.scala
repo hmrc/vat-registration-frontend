@@ -125,13 +125,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
   "When this is the first time the user starts a journey and we're persisting to the backend" should {
 
-    "submitTradingDetails should fail if there's not trace of VatTradingDetails in neither backend nor S4L" in new Setup {
-      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-      save4laterReturnsNothing[S4LTradingDetails]()
-
-      service.submitTradingDetails() failedWith classOf[IllegalStateException]
-    }
-
     "submitVatContact should process the submission even if VatScheme does not contain a VatContact object" in new Setup {
       when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
       when(mockRegConnector.upsertVatContact(any(), any())(any(), any())).thenReturn(validVatContact.pure)

@@ -60,7 +60,7 @@ package controllers.sicAndCompliance.cultural {
                   container <- s4lContainer[S4LVatSicAndCompliance]()
                   _         <- s4lService.save(culturalOnly(container.copy(notForProfit = Some(view))))
                   _         <- vrs.submitSicAndCompliance
-                } yield Redirect(controllers.vatTradingDetails.vatEuTrading.routes.EuGoodsController.show())
+                } yield Redirect(controllers.routes.TradingDetailsController.tradingNamePage())
               )
             }
           }

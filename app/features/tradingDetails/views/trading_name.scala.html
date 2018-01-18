@@ -1,5 +1,5 @@
-@import models.view.vatTradingDetails.TradingNameView
-@(tradingNameForm: Form[TradingNameView])(implicit request: Request[_], messages: Messages)
+@import forms.TradingNameForm
+@(tradingNameForm: Form[(Boolean, Option[String])])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @fieldSetClasses = @{
     if(tradingNameForm.hasErrors && (tradingNameForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
@@ -26,15 +26,15 @@
         </div>
     </details>
 
-    @govHelpers.form(action = controllers.vatTradingDetails.routes.TradingNameController.submit()) {
+    @govHelpers.form(action = controllers.routes.TradingDetailsController.submitTradingName()) {
         <div class="form-group">
             <fieldset class="inline">
                 <span id="tradingNameRadio"/>
                 @vatInputRadioGroup(
                     field = tradingNameForm("tradingNameRadio"),
                     Seq(
-                        TradingNameView.TRADING_NAME_YES -> Messages("app.common.yes"),
-                        TradingNameView.TRADING_NAME_NO -> Messages("app.common.no")
+                        "true" -> Messages("app.common.yes"),
+                        "false" -> Messages("app.common.no")
                     ),
                     '_labelAfter -> true,
                     '_labelClass -> "block-label"

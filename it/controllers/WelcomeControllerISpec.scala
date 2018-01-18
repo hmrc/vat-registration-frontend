@@ -17,13 +17,13 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
-import it.fixtures.VatRegistrationFixture
+import it.fixtures.ITRegistrationFixtures
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 import support.AppAndStubs
 
-class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with VatRegistrationFixture {
+class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
 
   def controller: WelcomeController = app.injector.instanceOf(classOf[WelcomeController])
 
