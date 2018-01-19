@@ -16,10 +16,8 @@
 
 package fixtures
 
-import models.S4LFlatRateScheme
+import models._
 import models.api.VatFlatRateScheme
-import models.view.frs._
-import models.view.frs.AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS
 
 trait FlatRateFixtures {
 
@@ -29,8 +27,8 @@ trait FlatRateFixtures {
 
   val validS4LFlatRateScheme = S4LFlatRateScheme(
     joinFrs = Some(JoinFrsView(true)),
-    annualCostsInclusive = Some(AnnualCostsInclusiveView(YES_WITHIN_12_MONTHS)),
-    annualCostsLimited = Some(AnnualCostsLimitedView(YES_WITHIN_12_MONTHS)),
+    annualCostsInclusive = Some(AnnualCostsInclusiveView(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS)),
+    annualCostsLimited = Some(AnnualCostsLimitedView(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS)),
     registerForFrs = Some(RegisterForFrsView(false)),
     categoryOfBusiness = Some(validBusinessSectorView)
   )

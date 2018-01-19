@@ -233,32 +233,32 @@ GET         /you-cant-register-for-vat-with-this-service                        
 ## FRS FLOW
 ##
 ##Are you interested in FRS Page
-GET         /join-flat-rate-scheme                                                             controllers.frs.JoinFrsController.show
-POST        /join-flat-rate-scheme                                                             controllers.frs.JoinFrsController.submit
+GET         /join-flat-rate-scheme                                                             controllers.FlatRateController.joinFrsPage
+POST        /join-flat-rate-scheme                                                             controllers.FlatRateController.submitJoinFRS
 
 ##Do you spend less than £1000 a year Page
-GET         /spends-less-including-vat-on-goods                                                controllers.frs.AnnualCostsInclusiveController.show
-POST        /spends-less-including-vat-on-goods                                                controllers.frs.AnnualCostsInclusiveController.submit
+GET         /spends-less-including-vat-on-goods                                                controllers.FlatRateController.annualCostsInclusivePage
+POST        /spends-less-including-vat-on-goods                                                controllers.FlatRateController.submitAnnualInclusiveCosts
 
 ## Do you want to register for FRS page
-GET         /use-limited-cost-business-flat-rate                                               controllers.frs.RegisterForFrsController.show
-POST        /use-limited-cost-business-flat-rate                                               controllers.frs.RegisterForFrsController.submit
+GET         /use-limited-cost-business-flat-rate                                               controllers.FlatRateController.registerForFrsPage
+POST        /use-limited-cost-business-flat-rate                                               controllers.FlatRateController.submitRegisterForFrs
 
 ## Do you want to register for FRS page - Business Sector selected
-GET         /your-flat-rate                                                                    controllers.frs.RegisterForFrsWithSectorController.show
-POST        /your-flat-rate                                                                    controllers.frs.RegisterForFrsWithSectorController.submit
+GET         /your-flat-rate                                                                    controllers.FlatRateController.yourFlatRatePage
+POST        /your-flat-rate                                                                    controllers.FlatRateController.submitYourFlatRate
 
 ##Do you spend less than 2% of turnover a year Page
-GET         /spends-less-than-two-percent-of-turnover-a-year-on-goods                          controllers.frs.AnnualCostsLimitedController.show
-POST        /spends-less-than-two-percent-of-turnover-a-year-on-goods                          controllers.frs.AnnualCostsLimitedController.submit
+GET         /spends-less-than-two-percent-of-turnover-a-year-on-goods                          controllers.FlatRateController.annualCostsLimitedPage
+POST        /spends-less-than-two-percent-of-turnover-a-year-on-goods                          controllers.FlatRateController.submitAnnualCostsLimited
 
 ## FRS Confirm business sector page
-GET         /confirm-business-type                                                             controllers.frs.ConfirmBusinessSectorController.show
-POST        /confirm-business-type                                                             controllers.frs.ConfirmBusinessSectorController.submit
+GET         /confirm-business-type                                                             controllers.FlatRateController.confirmSectorFrsPage
+POST        /confirm-business-type                                                             controllers.FlatRateController.submitConfirmSectorFrs
 
 ## When do you want to join the Flat Rate Scheme?
-GET         /flat-rate-scheme-join-date                                                        controllers.frs.FrsStartDateController.show
-POST        /flat-rate-scheme-join-date                                                        controllers.frs.FrsStartDateController.submit
+GET         /flat-rate-scheme-join-date                                                        controllers.FlatRateController.frsStartDatePage
+POST        /flat-rate-scheme-join-date                                                        controllers.FlatRateController.submitFrsStartDate
 
 ## Post incorp threshold question 1
 GET         /gone-over-threshold                                                               controllers.vatTradingDetails.vatChoice.OverThresholdController.show

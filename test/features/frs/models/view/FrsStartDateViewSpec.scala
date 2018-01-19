@@ -20,8 +20,7 @@ import java.time.LocalDate
 
 import fixtures.VatRegistrationFixture
 import models.api.VatFlatRateScheme
-import models.view.frs.FrsStartDateView
-import models.{ApiModelTransformer, DateModel, S4LFlatRateScheme}
+import models.{ApiModelTransformer, DateModel, FrsStartDateView, S4LFlatRateScheme}
 import org.scalatest.Inside
 import uk.gov.hmrc.play.test.UnitSpec
 
