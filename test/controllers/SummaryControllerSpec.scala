@@ -41,10 +41,10 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
     mockVATFeatureSwitch,
     mockVatRegistrationService,
     mockReturnsService,
-    mockKeystoreConnector,
+    mockKeystoreConnect,
     mockAuthConnector,
     mockLodgingOfficerService,
-    mockSicAndComplianceSrv,
+    mockSicAndComplianceService,
     mockS4LService
   )
 
@@ -63,7 +63,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       mockGetCurrentProfile()
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
-      when(mockSicAndComplianceSrv.getSicAndCompliance(any(),any()))
+      when(mockSicAndComplianceService.getSicAndCompliance(any(),any()))
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
@@ -76,7 +76,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       mockGetCurrentProfile()
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
-      when(mockSicAndComplianceSrv.getSicAndCompliance(any(),any()))
+      when(mockSicAndComplianceService.getSicAndCompliance(any(),any()))
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
       callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")

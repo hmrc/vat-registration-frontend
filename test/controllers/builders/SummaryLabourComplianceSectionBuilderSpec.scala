@@ -18,15 +18,13 @@ package controllers.builders
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.S4LVatSicAndCompliance
 import models.view.SummaryRow
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
-import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
+import features.sicAndCompliance.models._
 
 class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 
 
-  val defaultSicAndCompliance = S4LVatSicAndCompliance(
+  val defaultSicAndCompliance = SicAndCompliance(
     description = Some(BusinessActivityDescription("TEST")),
     mainBusinessActivity = Some(MainBusinessActivityView("TEST",Some(sicCode))),
     companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
@@ -47,7 +45,7 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
           SummaryRow(
             "labourCompliance.providesWorkers",
             "app.common.yes",
-            Some(controllers.sicAndCompliance.labour.routes.CompanyProvideWorkersController.show())
+            Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showProvideWorkers())
           )
       }
 
@@ -59,7 +57,7 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
           SummaryRow(
             "labourCompliance.providesWorkers",
             "app.common.no",
-            Some(controllers.sicAndCompliance.labour.routes.CompanyProvideWorkersController.show())
+            Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showProvideWorkers())
           )
       }
     }
@@ -73,7 +71,7 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
           SummaryRow(
             "labourCompliance.numberOfWorkers",
             "12",
-            Some(controllers.sicAndCompliance.labour.routes.WorkersController.show())
+            Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showWorkers())
           )
       }
     }
@@ -89,7 +87,7 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
           SummaryRow(
             "labourCompliance.workersOnTemporaryContracts",
             "app.common.no",
-            Some(controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show())
+            Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showTemporaryContracts())
           )
       }
 
@@ -100,7 +98,7 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
           SummaryRow(
             "labourCompliance.workersOnTemporaryContracts",
             "app.common.yes",
-            Some(controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show())
+            Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showTemporaryContracts())
           )
       }
     }
@@ -114,7 +112,7 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
           SummaryRow(
             "labourCompliance.providesSkilledWorkers",
             "app.common.no",
-            Some(controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show())
+            Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showSkilledWorkers())
           )
       }
 
@@ -125,7 +123,7 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
           SummaryRow(
             "labourCompliance.providesSkilledWorkers",
             "app.common.yes",
-            Some(controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show())
+            Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showSkilledWorkers())
           )
       }
     }

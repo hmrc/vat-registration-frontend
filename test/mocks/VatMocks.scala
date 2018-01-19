@@ -19,6 +19,7 @@ package mocks
 import connectors._
 import features.officer.services.{IVServiceImpl, LodgingOfficerService}
 import features.returns.ReturnsService
+import features.sicAndCompliance.services.SicAndComplianceService
 import features.turnoverEstimates.TurnoverEstimatesService
 import org.mockito.Mockito.reset
 import org.scalatest.mockito.MockitoSugar
@@ -32,8 +33,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 trait VatMocks
   extends SaveForLaterMock
     with KeystoreMock
-    with WSHTTPMock
-    with SicAndComplianceServiceMock{
+    with WSHTTPMock {
 
   this: MockitoSugar =>
 
@@ -62,6 +62,7 @@ trait VatMocks
   implicit lazy val mockConfig = mock[ServicesConfig]
   implicit lazy val mockReturnsService = mock[ReturnsService]
   implicit lazy val mockLodgingOfficerService = mock[LodgingOfficerService]
+  implicit lazy val mockSicAndComplianceService = mock[SicAndComplianceService]
   implicit lazy val mockTurnoverEstimatesService = mock[TurnoverEstimatesService]
   implicit lazy val mockFlatRateService = mock[FlatRateService]
 
@@ -71,7 +72,7 @@ trait VatMocks
       mockS4LConnector,
       mockS4LConnector,
       mockS4LService,
-      mockKeystoreConnector,
+      mockKeystoreConnect,
       mockAuthConnector,
       mockSessionCache,
       mockAudit,
@@ -93,7 +94,7 @@ trait VatMocks
       mockLodgingOfficerService,
       mockTurnoverEstimatesService,
       mockFlatRateService,
-      mockSicAndComplianceSrv
+      mockSicAndComplianceService
     )
   }
 }

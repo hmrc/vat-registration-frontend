@@ -21,10 +21,11 @@ import java.time.LocalDate
 import com.google.inject.Inject
 import common.ErrorUtil.fail
 import connectors.{ConfigConnector, RegistrationConnector}
+import features.sicAndCompliance.services.SicAndComplianceService
 import features.turnoverEstimates.TurnoverEstimatesService
 import models.AnnualCostsLimitedView.{NO, YES, YES_WITHIN_12_MONTHS}
 import models._
-import models.api.{VatFlatRateScheme, VatScheme}
+import models.api.{SicCode, VatFlatRateScheme, VatScheme}
 import org.apache.commons.lang3.StringUtils
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
@@ -34,6 +35,7 @@ import scala.concurrent.Future
 class FlatRateServiceImpl @Inject()(val turnoverEstimateService: TurnoverEstimatesService,
                                     val s4LService: S4LService,
                                     val vatService: RegistrationService,
+                                    val sicAndComplianceService: SicAndComplianceService,
                                     val configConnect : ConfigConnector,
                                     val vatRegConnector: RegistrationConnector) extends FlatRateService
 
@@ -41,6 +43,7 @@ trait FlatRateService  {
   protected val turnoverEstimateService : TurnoverEstimatesService
   val s4LService: S4LService
   val vatService: RegistrationService
+  val sicAndComplianceService: SicAndComplianceService
   val configConnect: ConfigConnector
   val vatRegConnector: RegistrationConnector
 
@@ -84,7 +87,7 @@ trait FlatRateService  {
       //TODO StringUtils.isNotBlank(???) - use ???.trim.nonEmpty ?
       flatRateScheme.categoryOfBusiness match {
         case Some(categoryOfBusiness) if StringUtils.isNotBlank(categoryOfBusiness.businessSector) => Future.successful(categoryOfBusiness)
-        case _ => vatService.fetchSicAndCompliance map { sicAndCompliance =>
+        case _ => sicAndComplianceService.getSicAndCompliance map { sicAndCompliance =>
           sicAndCompliance.mainBusinessActivity match {
             case Some(mainBusinessActivity) => configConnect.getBusinessSectorDetails(mainBusinessActivity.id)
             case None => throw new IllegalStateException("Can't determine main business activity")
@@ -201,6 +204,17 @@ trait FlatRateService  {
 
   private[services] def saveFRStoAPI(frs: VatFlatRateScheme)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatFlatRateScheme] = {
     vatRegConnector.upsertVatFlatRateScheme(profile.registrationId, frs)
+  }
+
+  def resetFRS(sicCode: SicCode)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[SicCode] = {
+    for {
+      mainSic          <- sicAndComplianceService.getSicAndCompliance.map(_.mainBusinessActivity)
+      selectionChanged = mainSic.exists(_.id != sicCode.id)
+    } yield {
+      if (selectionChanged) s4LService.saveNoAux(S4LFlatRateScheme(), flatRateSchemeS4LKey).flatMap(_ => submitVatFlatRateScheme())
+
+      sicCode
+    }
   }
 
   @deprecated

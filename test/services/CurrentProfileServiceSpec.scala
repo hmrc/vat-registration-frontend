@@ -35,7 +35,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
 
   val testService = new CurrentProfileSrv {
     override val vatRegistrationService = mockVatRegistrationService
-    override val keystoreConnector = mockKeystoreConnector
+    override val keystoreConnector = mockKeystoreConnect
     override val incorpInfoService = mockIIService
     override val ivService: IVService = mockIVService
   }
@@ -71,7 +71,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
         when(mockIVService.getIVStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
             .thenReturn(Future.successful(None))
 
-        when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockKeystoreConnect.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
         val result = await(testService.buildCurrentProfile("testRegId", "testTxId"))
@@ -96,7 +96,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
         when(mockIVService.getIVStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful(Some(true)))
 
-        when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockKeystoreConnect.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
         val result = await(testService.buildCurrentProfile("testRegId", "testTxId"))

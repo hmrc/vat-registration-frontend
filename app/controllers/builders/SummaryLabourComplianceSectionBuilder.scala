@@ -16,11 +16,10 @@
 
 package controllers.builders
 
-import models.S4LVatSicAndCompliance
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts}
+import features.sicAndCompliance.models.{CompanyProvideWorkers, SicAndCompliance, SkilledWorkers, TemporaryContracts}
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryLabourComplianceSectionBuilder(vatSicAndCompliance: Option[S4LVatSicAndCompliance] = None)
+case class SummaryLabourComplianceSectionBuilder(vatSicAndCompliance: Option[SicAndCompliance] = None)
   extends SummarySectionBuilder {
 
   val sectionId = "labourCompliance"
@@ -28,25 +27,25 @@ case class SummaryLabourComplianceSectionBuilder(vatSicAndCompliance: Option[S4L
   val providingWorkersRow: SummaryRow = yesNoRow(
     "providesWorkers",
     vatSicAndCompliance.flatMap(_.companyProvideWorkers).flatMap(v => CompanyProvideWorkers.toBool(v.yesNo)),
-    controllers.sicAndCompliance.labour.routes.CompanyProvideWorkersController.show()
+    features.sicAndCompliance.controllers.routes.LabourComplianceController.showProvideWorkers()
   )
 
   val numberOfWorkersRow: SummaryRow = SummaryRow(
     s"$sectionId.numberOfWorkers",
     vatSicAndCompliance.flatMap(_.workers).fold("")(_.numberOfWorkers.toString),
-    Some(controllers.sicAndCompliance.labour.routes.WorkersController.show())
+    Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showWorkers())
   )
 
   val temporaryContractsRow: SummaryRow = yesNoRow(
     "workersOnTemporaryContracts",
     vatSicAndCompliance.flatMap(_.temporaryContracts).flatMap(v => TemporaryContracts.toBool(v.yesNo)),
-    controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show()
+    features.sicAndCompliance.controllers.routes.LabourComplianceController.showTemporaryContracts()
   )
 
   val skilledWorkersRow: SummaryRow = yesNoRow(
     "providesSkilledWorkers",
     vatSicAndCompliance.flatMap(_.skilledWorkers).flatMap(v => SkilledWorkers.toBool(v.yesNo)),
-    controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show()
+    features.sicAndCompliance.controllers.routes.LabourComplianceController.showSkilledWorkers()
   )
 
 

@@ -23,9 +23,10 @@ import cats.instances.FutureInstances
 import common.enums.VatRegStatus
 import config.WSHttp
 import features.officer.models.view.LodgingOfficer
+import features.sicAndCompliance.models.SicAndCompliance
 import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimates
-import models.{CurrentProfile, S4LVatSicAndCompliance}
+import models.CurrentProfile
 import models.api._
 import models.external.IncorporationInfo
 import play.api.http.Status._
@@ -199,9 +200,9 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
     }
   }
 
-  def updateSicAndCompliance(sac: S4LVatSicAndCompliance)(implicit hc:HeaderCarrier,profile:CurrentProfile) :Future[JsValue] = {
-    http.PATCH[JsValue,JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/bar", Json.toJson(sac)).recover {
-      case e:Exception => throw logResponse(e,"updateSicAndCompliance")
+  def updateSicAndCompliance(sac: SicAndCompliance)(implicit hc:HeaderCarrier,profile:CurrentProfile) :Future[JsValue] = {
+    http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/sicAndComp", Json.toJson(sac)(SicAndCompliance.toApiWrites)).recover{
+      case e: Exception => throw logResponse(e,"updateSicAndCompliance")
     }
   }
 }

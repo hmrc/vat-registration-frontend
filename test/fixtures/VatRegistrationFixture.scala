@@ -26,10 +26,10 @@ import features.returns.{Frequency, Returns, Start}
 import features.tradingDetails.TradingDetails
 import models.api._
 import models.external.{IncorporationInfo, _}
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
-import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
+import features.sicAndCompliance.models.SicAndCompliance
+import features.sicAndCompliance.models._
 import models.view.vatContact.BusinessContactDetails
-import models.{BankAccount, BankAccountDetails, S4LVatSicAndCompliance}
+import models.{BankAccount, BankAccountDetails}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
@@ -94,7 +94,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val invalidBankCheckJsonResponse = Json.parse(invalidBankCheckJsonResponseString)
 
-  val s4lVatSicAndComplianceWithoutLabour = S4LVatSicAndCompliance(
+  val s4lVatSicAndComplianceWithoutLabour = SicAndCompliance(
     description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
     mainBusinessActivity = Some(MainBusinessActivityView(sicCode.id, Some(sicCode))),
     companyProvideWorkers = None,
@@ -102,7 +102,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     temporaryContracts = None,
     skilledWorkers = None)
 
-  val s4lVatSicAndComplianceWithLabour = S4LVatSicAndCompliance(
+  val s4lVatSicAndComplianceWithLabour = SicAndCompliance(
     description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
     mainBusinessActivity = Some(MainBusinessActivityView(sicCode.id, Some(sicCode))),
     companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
@@ -194,7 +194,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   def vatScheme(
                  id: String = testRegId,
                  tradingDetails: Option[TradingDetails] = None,
-                 sicAndComp: Option[S4LVatSicAndCompliance] = None,
+                 sicAndComp: Option[SicAndCompliance] = None,
                  contact: Option[VatContact] = None,
                  vatFlatRateScheme: Option[VatFlatRateScheme] = None,
                  vatEligibility: Option[VatServiceEligibility] = None

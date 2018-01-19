@@ -21,11 +21,12 @@ import javax.inject.{Inject, Singleton}
 import connectors.KeystoreConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import features.officer.models.view.LodgingOfficer
+import features.sicAndCompliance.models.SicAndCompliance
 import features.turnoverEstimates.TurnoverEstimatesService
 import forms.test.TestSetupForm
 import models.api._
 import models.view.test._
-import models.{S4LKey, S4LVatContact, S4LVatFinancials, S4LVatSicAndCompliance, _}
+import models.{S4LKey, S4LVatContact, S4LVatFinancials, _}
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService, SessionProfile}
@@ -53,7 +54,7 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
             eligibilityChoice <- s4LService.fetchAndGet[S4LVatEligibilityChoice]
             vatFinancials <- s4LService.fetchAndGet[S4LVatFinancials]
             sicStub <- s4LService.fetchAndGet[SicStub]
-            vatSicAndCompliance <- s4LService.fetchAndGet[S4LVatSicAndCompliance]
+            vatSicAndCompliance <- s4LService.fetchAndGet[SicAndCompliance]
             vatContact <- s4LService.fetchAndGet[S4LVatContact]
             lodgingOfficer <- s4LService.fetchAndGet[LodgingOfficer]
             eligibility <- s4LService.fetchAndGet[S4LVatEligibility]

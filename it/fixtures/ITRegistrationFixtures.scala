@@ -21,6 +21,7 @@ import java.time.LocalDate
 import common.enums.VatRegStatus
 import features.officer.fixtures.LodgingOfficerFixture
 import features.returns.{Frequency, Returns, Stagger}
+import features.sicAndCompliance.models.{BusinessActivityDescription, MainBusinessActivityView, SicAndCompliance}
 import features.tradingDetails.{TradingDetails, TradingNameView}
 import features.turnoverEstimates.TurnoverEstimates
 import models.api._
@@ -39,10 +40,9 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
     zeroRatedTurnoverEstimate = None
   )
 
-  val sicAndCompliance = VatSicAndCompliance(
-    businessDescription = "test company desc",
-    labourCompliance = None,
-    mainBusinessActivity = SicCode("AB123", "super business", "super business by super people")
+  val sicAndCompliance = SicAndCompliance(
+    description = Some(BusinessActivityDescription("test company desc")),
+    mainBusinessActivity = Some(MainBusinessActivityView(SicCode("AB123", "super business", "super business by super people")))
   )
 
   val vatContact = VatContact(
@@ -85,7 +85,7 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
     tradingDetails = Some(tradingDetails),
     lodgingOfficer = None,
     financials = Some(financials),
-    vatSicAndCompliance = Some(sicAndCompliance),
+    sicAndCompliance = Some(sicAndCompliance),
     vatContact = Some(vatContact),
     vatServiceEligibility = Some(eligibility),
     vatFlatRateScheme = Some(flatRateScheme),
@@ -100,7 +100,7 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
     tradingDetails = Some(tradingDetails),
     lodgingOfficer = None,
     financials = Some(financials),
-    vatSicAndCompliance = Some(sicAndCompliance),
+    sicAndCompliance = Some(sicAndCompliance),
     vatContact = Some(vatContact),
     vatServiceEligibility = Some(eligibility.copy(vatEligibilityChoice = Some(eligibilityChoiceIncorporated))),
     vatFlatRateScheme = Some(flatRateScheme),

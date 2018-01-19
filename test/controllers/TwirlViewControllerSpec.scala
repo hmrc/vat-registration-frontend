@@ -25,7 +25,7 @@ class TwirlViewControllerSpec extends VatRegSpec {
     ds,
     mockVATFeatureSwitch,
     mockAuthConnector,
-    mockKeystoreConnector
+    mockKeystoreConnect
   )
 
   val redirectUrl = "http://localhost:9894/check-if-you-can-register-for-vat/national-insurance-number"

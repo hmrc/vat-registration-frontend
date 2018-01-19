@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package controllers.builders
+package features.sicAndCompliance.models
 
-import features.sicAndCompliance.models.SicAndCompliance
-import models.view.SummarySection
+import models.api.SicCode
+import play.api.libs.json.Json
 
-case class SummaryComplianceSectionBuilder(vatSicAndCompliance: Option[SicAndCompliance] = None)
-  extends SummarySectionBuilder {
+case class BusinessActivityDescription(description: String)
+object BusinessActivityDescription {
+  implicit val format = Json.format[BusinessActivityDescription]
+}
 
-  override val sectionId: String = "compliance"
+case class MainBusinessActivityView(id: String, mainBusinessActivity: Option[SicCode] = None)
+object MainBusinessActivityView {
+  def apply(cc: SicCode): MainBusinessActivityView = new MainBusinessActivityView(cc.id, Some(cc))
 
-  val section = {
-    val default = SummarySection(id = "none", rows = Seq(), display = false)
-      vatSicAndCompliance.fold(default) { sic =>
-        sic.companyProvideWorkers.map(_ =>
-          SummaryLabourComplianceSectionBuilder(vatSicAndCompliance).section).getOrElse(default)
-      }
-  }
+  implicit val format = Json.format[MainBusinessActivityView]
 }

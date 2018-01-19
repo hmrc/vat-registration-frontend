@@ -17,11 +17,10 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
+import features.sicAndCompliance.models.{BusinessActivityDescription, MainBusinessActivityView, SicAndCompliance}
 import helpers.RequestsFinder
 import models.ModelKeys.SIC_CODES_KEY
-import models.S4LVatSicAndCompliance
-import models.api.{SicCode, VatSicAndCompliance}
-import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
+import models.api.SicCode
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
@@ -58,24 +57,23 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
       val mainBusinessActivityView = MainBusinessActivityView(sicCodeId, Some(SicCode(sicCodeId, sicCodeDesc, sicCodeDisplay)))
 
-      val s4l = S4LVatSicAndCompliance(
+      val s4l = SicAndCompliance(
         description = Some(BusinessActivityDescription(businessActivityDescription)),
         mainBusinessActivity = Some(mainBusinessActivityView)
       )
 
-      val s4lWithoutCompliance = S4LVatSicAndCompliance.dropLabour(s4l)
+      val s4lWithoutCompliance = SicAndCompliance
 
       given()
         .user.isAuthorised
         .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .keystoreInScenario.hasKeyStoreValue(SIC_CODES_KEY, jsonListSicCode, Some("Current Profile"))
-        .s4lContainerInScenario[S4LVatSicAndCompliance].isEmpty(Some(STARTED))
+        .s4lContainerInScenario[SicAndCompliance].isEmpty(Some(STARTED))
         .vatScheme.isBlank
-        .s4lContainerInScenario[S4LVatSicAndCompliance].isUpdatedWith(mainBusinessActivityView, Some(STARTED), Some("Sic Code updated"))
-        .s4lContainerInScenario[S4LVatSicAndCompliance].contains(s4l, Some("Sic Code updated"))
-        .s4lContainerInScenario[S4LVatSicAndCompliance].isUpdatedWith(s4lWithoutCompliance, Some("Sic Code updated"), Some("Drop all compliance updated"))
-        .s4lContainerInScenario[S4LVatSicAndCompliance].contains(s4lWithoutCompliance, Some("Drop all compliance updated"))
-        .vatScheme.isUpdatedWith[VatSicAndCompliance](S4LVatSicAndCompliance.apiT.toApi(s4lWithoutCompliance))
+        .s4lContainerInScenario[SicAndCompliance].isUpdatedWith(mainBusinessActivityView, Some(STARTED), Some("Sic Code updated"))
+        .s4lContainerInScenario[SicAndCompliance].contains(s4l, Some("Sic Code updated"))
+        .s4lContainerInScenario[SicAndCompliance].isUpdatedWith(s4lWithoutCompliance, Some("Sic Code updated"), Some("Drop all compliance updated"))
+        .s4lContainerInScenario[SicAndCompliance].contains(s4lWithoutCompliance, Some("Drop all compliance updated"))
         .audit.writesAudit()
         .audit.writesAuditMerged()
 

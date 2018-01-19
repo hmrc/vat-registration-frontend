@@ -32,7 +32,7 @@ class PpobControllerSpec extends VatRegSpec with VatRegistrationFixture with S4L
     mockPPService,
     mockAddressService,
     mockAuthConnector,
-    mockKeystoreConnector,
+    mockKeystoreConnect,
     mockS4LService,
     mockVatRegistrationService
   )

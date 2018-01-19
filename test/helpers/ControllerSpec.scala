@@ -51,7 +51,6 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite with
   val mockConfigConnector: ConfigConnector = mock[ConfigConnector]
   val mockDateService: DateService = mock[DateService]
   val mockPrePopService: PrePopService = mock[PrePopService]
-  val mockSicAndComplianceSrv: SicAndComplianceService = mock[SicAndComplianceService]
 
   val regId = "VAT123456"
 

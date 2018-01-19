@@ -1,4 +1,4 @@
-@import models.view.sicAndCompliance.labour.TemporaryContracts
+@import features.sicAndCompliance.models.TemporaryContracts
 @(temporaryContractsForm: Form[TemporaryContracts])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
@@ -12,7 +12,7 @@
 
     <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.labourCompliance.temporaryContracts.heading")</h1>
 
-    @govHelpers.form(action = controllers.sicAndCompliance.labour.routes.TemporaryContractsController.submit()) {
+    @govHelpers.form(action = features.sicAndCompliance.controllers.routes.LabourComplianceController.submitTemporaryContracts()) {
         <div class="form-group">
             <fieldset class="inline">
                 <span id="temporaryContractsRadio"/>

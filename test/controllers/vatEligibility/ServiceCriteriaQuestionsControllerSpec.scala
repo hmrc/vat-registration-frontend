@@ -33,14 +33,14 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
   val testController = new ServiceCriteriaQuestionsController(
     ds,
     new ServiceCriteriaFormFactory(),
-    mockKeystoreConnector,
+    mockKeystoreConnect,
     mockAuthConnector,
     mockVatRegistrationService,
     mockS4LService
   )
 
   private def setupIneligibilityReason(keystoreConnector: KeystoreConnector, question: EligibilityQuestion) =
-    when(mockKeystoreConnector.fetchAndGet[String](ArgumentMatchers.eq(testController.INELIGIBILITY_REASON_KEY))(any(), any()))
+    when(mockKeystoreConnect.fetchAndGet[String](ArgumentMatchers.eq(testController.INELIGIBILITY_REASON_KEY))(any(), any()))
       .thenReturn(Some(question.name).pure)
 
   "GET ServiceCriteriaQuestionsController.show()" should {
@@ -81,7 +81,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
       when(mockVatRegistrationService.submitVatEligibility(any(),any())).thenReturn(validServiceEligibility().pure)
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
-        setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
+        setupIneligibilityReason(mockKeystoreConnect, currentQuestion)
         save4laterReturnsViewModel(validServiceEligibility())()
         save4laterExpectsSave[VatServiceEligibility]()
 
@@ -98,7 +98,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
       when(mockVatRegistrationService.submitVatEligibility(any(),any())).thenReturn(validServiceEligibility().pure)
       forAll(questions) { case (currentQuestion, nextScreenUrl) =>
-        setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
+        setupIneligibilityReason(mockKeystoreConnect, currentQuestion)
         save4laterReturnsNoViewModel[VatServiceEligibility]()
         when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.copy(vatServiceEligibility = None).pure)
         save4laterExpectsSave[VatServiceEligibility]()
@@ -117,10 +117,10 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
       when(mockVatRegistrationService.submitVatEligibility(any(),any())).thenReturn(validServiceEligibility().pure)
       save4laterReturnsViewModel(validServiceEligibility())()
       save4laterExpectsSave[VatServiceEligibility]()
-      when(mockKeystoreConnector.cache[String](any(), any())(any(), any())).thenReturn(CacheMap("id", Map()).pure)
+      when(mockKeystoreConnect.cache[String](any(), any())(any(), any())).thenReturn(CacheMap("id", Map()).pure)
 
       forAll(questions) { case (currentQuestion, _) =>
-        setupIneligibilityReason(mockKeystoreConnector, currentQuestion)
+        setupIneligibilityReason(mockKeystoreConnect, currentQuestion)
 
         submitAuthorised(testController.submit(currentQuestion.name),
           FakeRequest().withFormUrlEncodedBody(
@@ -131,7 +131,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
         }
 
       }
-      verify(mockKeystoreConnector, times(questions.size)).cache[String](ArgumentMatchers.eq(testController.INELIGIBILITY_REASON_KEY), any())(any(), any())
+      verify(mockKeystoreConnect, times(questions.size)).cache[String](ArgumentMatchers.eq(testController.INELIGIBILITY_REASON_KEY), any())(any(), any())
     }
 
     "400 for malformed requests" in {
@@ -162,7 +162,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
       )
 
       forAll(eligibilityQuestions) { case (question, expectedTitle) =>
-        setupIneligibilityReason(mockKeystoreConnector, question)
+        setupIneligibilityReason(mockKeystoreConnect, question)
         callAuthorised(testController.ineligible())(_ includesText expectedTitle)
       }
     }
@@ -178,7 +178,7 @@ class ServiceCriteriaQuestionsControllerSpec extends VatRegSpec with VatRegistra
 
       mockGetCurrentProfile()
 
-      when(mockKeystoreConnector.fetchAndGet[String](ArgumentMatchers.eq(testController.INELIGIBILITY_REASON_KEY))(any(), any()))
+      when(mockKeystoreConnect.fetchAndGet[String](ArgumentMatchers.eq(testController.INELIGIBILITY_REASON_KEY))(any(), any()))
         .thenReturn(Option.empty[String].pure)
       when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(validVatScheme.copy(vatServiceEligibility = None).pure)
 

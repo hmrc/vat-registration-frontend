@@ -16,9 +16,10 @@
 
 package mocks
 
+import features.sicAndCompliance.models.SicAndCompliance
 import org.mockito.{ArgumentMatchers => Matchers}
 import features.sicAndCompliance.services.SicAndComplianceService
-import models.{CurrentProfile, S4LVatSicAndCompliance}
+import models.CurrentProfile
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.mockito.MockitoSugar
 import org.mockito.Mockito._
@@ -29,14 +30,14 @@ import scala.concurrent.Future
 trait SicAndComplianceServiceMock {
   this: MockitoSugar =>
 
-  lazy val mockSicAndComplianceSrv = mock[SicAndComplianceService]
+  lazy val mockSicAndComplianceService = mock[SicAndComplianceService]
 
-  def mockGetSicAndCompliance(res: Future[S4LVatSicAndCompliance]) : OngoingStubbing[Future[S4LVatSicAndCompliance]] = {
-    when(mockSicAndComplianceSrv.getSicAndCompliance(Matchers.any[HeaderCarrier],Matchers.any[CurrentProfile])).thenReturn(res)
+  def mockGetSicAndCompliance(res: Future[SicAndCompliance]) : OngoingStubbing[Future[SicAndCompliance]] = {
+    when(mockSicAndComplianceService.getSicAndCompliance(Matchers.any[HeaderCarrier],Matchers.any[CurrentProfile])).thenReturn(res)
   }
 
-  def mockUpdateSicAndCompliance(res:Future[S4LVatSicAndCompliance]) : OngoingStubbing[Future[S4LVatSicAndCompliance]] = {
-    when(mockSicAndComplianceSrv.updateSicAndCompliance(Matchers.any)(Matchers.any[HeaderCarrier],Matchers.any[CurrentProfile])).thenReturn(res)
+  def mockUpdateSicAndCompliance(res:Future[SicAndCompliance]) : OngoingStubbing[Future[SicAndCompliance]] = {
+    when(mockSicAndComplianceService.updateSicAndCompliance(Matchers.any)(Matchers.any[HeaderCarrier],Matchers.any[CurrentProfile])).thenReturn(res)
   }
 
 }

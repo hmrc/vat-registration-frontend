@@ -21,9 +21,6 @@ import java.time.LocalDate
 import fixtures.VatRegistrationFixture
 import models.api.VatEligibilityChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import models.api._
-import models.view.sicAndCompliance.labour.TemporaryContracts.TEMP_CONTRACTS_NO
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
-import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.ZeroRatedSales.ZERO_RATED_SALES_YES
@@ -62,32 +59,6 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
       S4LVatFinancials.apiT.toApi(s4lWithoutAccountingPeriod) shouldBe expected
     }
   }
-
-//    "transform labour S4L model to API" in {
-//
-//      val s4l = S4LVatSicAndCompliance(
-//        description = Some(bad),
-//        mainBusinessActivity = Some(mbav),
-//        // labour
-//        companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
-//        workers = Some(Workers(8)),
-//        temporaryContracts = Some(TemporaryContracts(TEMP_CONTRACTS_NO)),
-//        skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
-//      )
-//
-//      val expected = VatSicAndCompliance(
-//        businessDescription = description,
-//        mainBusinessActivity = sicCode,
-//        labourCompliance = Some(VatComplianceLabour(
-//          labour = true,
-//          workers = Some(8),
-//          temporaryContracts = Some(false),
-//          skilledWorkers = Some(true)
-//        ))
-//      )
-//
-//      S4LVatSicAndCompliance.apiT.toApi(s4l) shouldBe expected
-//    }
 
   "S4LFlatRateScheme.S4LApiTransformer.toApi" should {
     val specificDate = LocalDate.of(2017, 11, 12)

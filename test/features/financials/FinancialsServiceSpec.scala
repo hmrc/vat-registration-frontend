@@ -39,7 +39,7 @@ class FinancialsServiceSpec extends VatRegSpec with VatRegistrationFixture with 
       override val vatRegConnector = mockRegConnector
       override val compRegConnector = mockCompanyRegConnector
       override val incorporationService = mockIIService
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnect
       override val turnoverEstimatesService = mockTurnoverEstimatesService
     }
   }

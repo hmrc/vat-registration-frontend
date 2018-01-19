@@ -16,13 +16,12 @@
 
 package fixtures
 
-import models.S4LVatSicAndCompliance
-import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
+import features.sicAndCompliance.models.{BusinessActivityDescription, MainBusinessActivityView, SicAndCompliance}
 
 trait SicAndComplianceFixtures {
   self: VatRegistrationFixture =>
 
-  val s4LVatSicAndCompliance = S4LVatSicAndCompliance(
+  val s4LVatSicAndCompliance = SicAndCompliance(
     description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
     mainBusinessActivity = Some(MainBusinessActivityView(sicCode.id, Some(sicCode))),
     companyProvideWorkers = None,

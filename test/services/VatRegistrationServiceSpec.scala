@@ -22,7 +22,6 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models._
 import models.external.IncorporationInfo
-import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.vatContact.ppob.PpobView
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -42,7 +41,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       mockRegConnector,
       mockCompanyRegConnector,
       mockIIService,
-      mockKeystoreConnector,
+      mockKeystoreConnect,
       mockTurnoverEstimatesService
     )
   }

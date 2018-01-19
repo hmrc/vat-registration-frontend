@@ -28,7 +28,7 @@ class ThresholdSummaryControllerSpec extends VatRegSpec with VatRegistrationFixt
 
   object TestThresholdSummaryController extends ThresholdSummaryController(
     ds,
-    mockKeystoreConnector,
+    mockKeystoreConnect,
     mockAuthConnector,
     mockReturnsService,
     mockS4LService,

@@ -46,7 +46,7 @@ class OverThresholdControllerSpec extends VatRegSpec with VatRegistrationFixture
     overThresholdFormFactory,
     ds,
     mockAuthConnector,
-    mockKeystoreConnector,
+    mockKeystoreConnect,
     mockS4LService,
     mockVatRegistrationService
   )

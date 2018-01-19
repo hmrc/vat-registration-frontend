@@ -49,7 +49,7 @@ class S4LServiceSpec extends VatRegSpec with VatRegistrationFixture {
   trait Setup {
     val service = new S4LService {
       override val s4LConnector = mockS4LConnector
-      override val keystoreConnector = mockKeystoreConnector
+      override val keystoreConnector = mockKeystoreConnect
     }
 
     val key = TestGroup.s4lKey.key

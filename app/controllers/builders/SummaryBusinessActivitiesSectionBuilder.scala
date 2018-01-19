@@ -16,21 +16,21 @@
 
 package controllers.builders
 
-import models.S4LVatSicAndCompliance
+import features.sicAndCompliance.models.SicAndCompliance
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[S4LVatSicAndCompliance] = None)
+case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[SicAndCompliance] = None)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "businessActivities"
 
-  val sicAndComp = vatSicAndCompliance.fold(S4LVatSicAndCompliance())(a => a)
+  val sicAndComp = vatSicAndCompliance.fold(SicAndCompliance())(a => a)
 
   val companyBusinessDescriptionRow: SummaryRow = SummaryRow(
     s"$sectionId.businessDescription",
     sicAndComp.description.fold("app.common.no")(desc =>
       if(desc.description.isEmpty) "app.common.no" else desc.description),
-    Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+    Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
   )
 
   val companyMainBusinessActivityRow: SummaryRow = SummaryRow(
@@ -40,7 +40,7 @@ case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[S
           case sicCode if sicCode.description.nonEmpty => sicCode.description
         } getOrElse "app.common.no"
       ),
-    Some(controllers.sicAndCompliance.routes.MainBusinessActivityController.show())
+    Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showMainBusinessActivity())
   )
 
   val section: SummarySection = SummarySection(

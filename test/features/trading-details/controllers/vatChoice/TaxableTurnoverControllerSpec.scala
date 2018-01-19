@@ -31,7 +31,7 @@ class TaxableTurnoverControllerSpec extends VatRegSpec with VatRegistrationFixtu
 
   object TestTaxableTurnoverController extends TaxableTurnoverController(
     ds,
-    mockKeystoreConnector,
+    mockKeystoreConnect,
     mockAuthConnector,
     mockReturnsService,
     mockS4LService,

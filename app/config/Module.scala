@@ -49,9 +49,12 @@ import features.officer.controllers._
 import features.officer.services.{IVService, IVServiceImpl, LodgingOfficerService, LodgingOfficerServiceImpl}
 import features.returns.{ReturnsController, ReturnsControllerImpl, ReturnsService, ReturnsServiceImpl}
 import features.tradingDetails.{TradingDetailsService, TradingDetailsServiceImpl}
-import features.sicAndCompliance.services.{SicAndComplianceServiceImpl, SicAndComplianceService}
+import features.sicAndCompliance.services.{SicAndComplianceService, SicAndComplianceServiceImpl}
 import features.turnoverEstimates._
 import services._
+import features.officer.controllers._
+import features.officer.services.{IVService, IVServiceImpl, LodgingOfficerService, LodgingOfficerServiceImpl}
+import features.sicAndCompliance.controllers._
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
@@ -101,6 +104,8 @@ class Module extends AbstractModule {
     bind(classOf[ReturnsController]).to(classOf[ReturnsControllerImpl]).asEagerSingleton()
     bind(classOf[OfficerController]).to(classOf[OfficerControllerImpl]).asEagerSingleton()
     bind(classOf[TradingDetailsController]).to(classOf[TradingDetailsControllerImpl]).asEagerSingleton()
+    bind(classOf[SicAndComplianceController]).to(classOf[SicAndComplianceControllerImpl]).asEagerSingleton()
+    bind(classOf[LabourComplianceController]).to(classOf[LabourComplianceControllerImpl]).asEagerSingleton()
   }
 
   private def bindServices(): Unit = {

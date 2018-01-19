@@ -24,8 +24,7 @@ import features.tradingDetails.TradingDetails
 import models._
 import models.api._
 import models.external.{Name, Officer}
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
-import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
+import features.sicAndCompliance.models._
 import models.view.test.TestSetup
 import models.view.vatContact.BusinessContactDetails
 import models.view.vatContact.ppob.PpobView
@@ -53,10 +52,10 @@ class TestS4LBuilder {
     )
   }
 
-  def vatSicAndComplianceFromData(data: TestSetup): S4LVatSicAndCompliance = {
+  def vatSicAndComplianceFromData(data: TestSetup): SicAndCompliance = {
     val base = data.sicAndCompliance
-    val compliance: S4LVatSicAndCompliance = base.labourCompanyProvideWorkers.fold(S4LVatSicAndCompliance())(_ =>
-      S4LVatSicAndCompliance(
+    val compliance: SicAndCompliance = base.labourCompanyProvideWorkers.fold(SicAndCompliance())(_ =>
+      SicAndCompliance(
           companyProvideWorkers = base.labourCompanyProvideWorkers.flatMap(x => Some(CompanyProvideWorkers(x))),
           workers = base.labourWorkers.flatMap(x => Some(Workers(x.toInt))),
           temporaryContracts = base.labourTemporaryContracts.flatMap(x => Some(TemporaryContracts(x))),

@@ -18,8 +18,8 @@ package controllers
 
 import features.returns.{Frequency, Returns, Stagger}
 import features.officer.models.view.LodgingOfficer
+import features.sicAndCompliance.models.SicAndCompliance
 import it.fixtures.ITRegistrationFixtures
-import models.S4LVatSicAndCompliance
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
@@ -70,7 +70,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .vatScheme.contains(vatReg)
           .vatScheme.has("officer", officerJson)
           .s4lContainer[LodgingOfficer].isUpdatedWith(validFullLodgingOfficer)
-          .s4lContainer[S4LVatSicAndCompliance].cleared
+          .s4lContainer[SicAndCompliance].cleared
           .s4lContainer[Returns].contains(Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None))
           .audit.writesAudit()
           .audit.writesAuditMerged()
@@ -102,7 +102,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .vatScheme.contains(vatRegIncorporated)
           .vatScheme.has("officer", officerJson)
           .s4lContainer[LodgingOfficer].contains(validFullLodgingOfficer)
-          .s4lContainer[S4LVatSicAndCompliance].cleared
+          .s4lContainer[SicAndCompliance].cleared
           .audit.writesAudit()
           .audit.writesAuditMerged()
 

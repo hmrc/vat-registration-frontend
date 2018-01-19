@@ -30,7 +30,7 @@ class VoluntaryRegistrationControllerSpec extends VatRegSpec with VatRegistratio
 
   object TestVoluntaryRegistrationController extends VoluntaryRegistrationController(
     ds,
-    mockKeystoreConnector,
+    mockKeystoreConnect,
     mockAuthConnector,
     mockS4LService,
     mockVatRegistrationService

@@ -113,30 +113,30 @@ GET         /business-bank-account-details                                      
 POST        /business-bank-account-details                                                     features.bankAccountDetails.BankAccountDetailsController.submitEnterCompanyBankAccountDetails
 
 ## BUSINESS ACTIVITY DESCRIPTION
-GET         /describe-what-company-does                                                        controllers.sicAndCompliance.BusinessActivityDescriptionController.show
-POST        /describe-what-company-does                                                        controllers.sicAndCompliance.BusinessActivityDescriptionController.submit
+GET         /describe-what-company-does                                                        features.sicAndCompliance.controllers.SicAndComplianceController.showBusinessActivityDescription
+POST        /describe-what-company-does                                                        features.sicAndCompliance.controllers.SicAndComplianceController.submitBusinessActivityDescription
 
 ## MAIN BUSINESS ACTIVITY
-GET         /main-source-of-income                                                             controllers.sicAndCompliance.MainBusinessActivityController.show
-POST        /main-source-of-income                                                             controllers.sicAndCompliance.MainBusinessActivityController.submit
+GET         /main-source-of-income                                                             features.sicAndCompliance.controllers.SicAndComplianceController.showMainBusinessActivity
+POST        /main-source-of-income                                                             features.sicAndCompliance.controllers.SicAndComplianceController.submitMainBusinessActivity
 
 ## COMPLIANCE INTRODUCTION
-GET         /tell-us-more-about-the-company                                                    controllers.sicAndCompliance.ComplianceIntroductionController.show
-POST        /tell-us-more-about-the-company                                                    controllers.sicAndCompliance.ComplianceIntroductionController.submit
+GET         /tell-us-more-about-the-company                                                    features.sicAndCompliance.controllers.SicAndComplianceController.showComplianceIntro
+POST        /tell-us-more-about-the-company                                                    features.sicAndCompliance.controllers.SicAndComplianceController.submitComplianceIntro
 
 
 ## LABOUR COMPLIANCE QUESTIONS
-GET         /provides-workers-to-other-employers                                               controllers.sicAndCompliance.labour.CompanyProvideWorkersController.show
-POST        /provides-workers-to-other-employers                                               controllers.sicAndCompliance.labour.CompanyProvideWorkersController.submit
+GET         /provides-workers-to-other-employers                                               features.sicAndCompliance.controllers.LabourComplianceController.showProvideWorkers
+POST        /provides-workers-to-other-employers                                               features.sicAndCompliance.controllers.LabourComplianceController.submitProvideWorkers
 
-GET         /how-many-workers-does-company-provide-at-one-time                                 controllers.sicAndCompliance.labour.WorkersController.show
-POST        /how-many-workers-does-company-provide-at-one-time                                 controllers.sicAndCompliance.labour.WorkersController.submit
+GET         /how-many-workers-does-company-provide-at-one-time                                 features.sicAndCompliance.controllers.LabourComplianceController.showWorkers
+POST        /how-many-workers-does-company-provide-at-one-time                                 features.sicAndCompliance.controllers.LabourComplianceController.submitWorkers
 
-GET         /provides-workers-on-temporary-contracts                                           controllers.sicAndCompliance.labour.TemporaryContractsController.show
-POST        /provides-workers-on-temporary-contracts                                           controllers.sicAndCompliance.labour.TemporaryContractsController.submit
+GET         /provides-workers-on-temporary-contracts                                           features.sicAndCompliance.controllers.LabourComplianceController.showTemporaryContracts
+POST        /provides-workers-on-temporary-contracts                                           features.sicAndCompliance.controllers.LabourComplianceController.submitTemporaryContracts
 
-GET         /provides-skilled-workers                                                          controllers.sicAndCompliance.labour.SkilledWorkersController.show
-POST        /provides-skilled-workers                                                          controllers.sicAndCompliance.labour.SkilledWorkersController.submit
+GET         /provides-skilled-workers                                                          features.sicAndCompliance.controllers.LabourComplianceController.showSkilledWorkers
+POST        /provides-skilled-workers                                                          features.sicAndCompliance.controllers.LabourComplianceController.submitSkilledWorkers
 
 ## BUSINESS CONTACT DETAILS PAGE
 GET         /company-contact-details                                                           controllers.vatContact.BusinessContactDetailsController.show

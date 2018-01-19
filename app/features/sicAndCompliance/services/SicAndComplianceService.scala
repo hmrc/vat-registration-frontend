@@ -19,15 +19,12 @@ package features.sicAndCompliance.services
 import javax.inject.Inject
 
 import connectors.RegistrationConnector
-import models.S4LKey.sicAndCompliance
+import features.sicAndCompliance.models.CompanyProvideWorkers.PROVIDE_WORKERS_NO
+import features.sicAndCompliance.models.TemporaryContracts.TEMP_CONTRACTS_NO
+import features.sicAndCompliance.models._
+import models.CurrentProfile
 import models.api.SicCode
-import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
-import models.view.sicAndCompliance.labour.CompanyProvideWorkers.{PROVIDE_WORKERS_NO, PROVIDE_WORKERS_YES}
-import models.view.sicAndCompliance.labour.TemporaryContracts.{TEMP_CONTRACTS_NO, TEMP_CONTRACTS_YES}
-import models.view.sicAndCompliance.labour.SkilledWorkers.{SKILLED_WORKERS_NO, SKILLED_WORKERS_YES}
-import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
-import models.{CurrentProfile, S4LFlatRateScheme, S4LKey, S4LVatSicAndCompliance}
-import services.{FlatRateService, S4LService, VatRegistrationService}
+import services.{S4LService, VatRegistrationService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -48,28 +45,28 @@ trait SicAndComplianceService {
   val Complete     = scala.util.Right
 
 
-  def getSicAndCompliance(implicit hc:HeaderCarrier, cp:CurrentProfile):Future[S4LVatSicAndCompliance] = {
-    s4lService.fetchAndGetNoAux[S4LVatSicAndCompliance](sicAndCompliance).flatMap{
+  def getSicAndCompliance(implicit hc:HeaderCarrier, cp:CurrentProfile):Future[SicAndCompliance] = {
+    s4lService.fetchAndGetNoAux[SicAndCompliance](SicAndCompliance.sicAndCompliance).flatMap{
       _.fold(getFromApi)(a => Future.successful(a))
     }
   }
 
-  def updateSicAndCompliance[T](newData: T)(implicit hc:HeaderCarrier, cp:CurrentProfile): Future[S4LVatSicAndCompliance] = {
+  def updateSicAndCompliance[T](newData: T)(implicit hc:HeaderCarrier, cp:CurrentProfile): Future[SicAndCompliance] = {
     getSicAndCompliance.flatMap(sac => isModelComplete(updateModel(sac, newData)).fold(
-      incomplete => s4lService.saveNoAux[S4LVatSicAndCompliance](incomplete,S4LKey.sicAndCompliance).map(_ => incomplete),
+      incomplete => s4lService.saveNoAux[SicAndCompliance](incomplete, SicAndCompliance.sicAndCompliance).map(_ => incomplete),
       complete => updateVatRegAndClearS4l(complete)
     ))
   }
 
-  private def getFromApi(implicit cp:CurrentProfile, hc:HeaderCarrier): Future[S4LVatSicAndCompliance] = {
+  private def getFromApi(implicit cp:CurrentProfile, hc:HeaderCarrier): Future[SicAndCompliance] = {
     for {
       optView <- registrationConnector.getSicAndCompliance
-      view    =  optView.fold(S4LVatSicAndCompliance())(S4LVatSicAndCompliance.fromApiReads)
-      _       <- s4lService.saveNoAux[S4LVatSicAndCompliance](view, sicAndCompliance)
+      view    =  optView.fold(SicAndCompliance())(SicAndCompliance.fromApi)
+      _       <- s4lService.saveNoAux[SicAndCompliance](view, SicAndCompliance.sicAndCompliance)
     } yield view
   }
 
-  private def updateModel[T](before: S4LVatSicAndCompliance, newData: T):S4LVatSicAndCompliance = {
+  private def updateModel[T](before: SicAndCompliance, newData: T):SicAndCompliance = {
     newData match {
       case a: BusinessActivityDescription => before.copy(description = Some(a))
       case b: MainBusinessActivityView    => before.copy(mainBusinessActivity = Some(b))
@@ -81,44 +78,25 @@ trait SicAndComplianceService {
     }
   }
 
-  private def isModelComplete(view: S4LVatSicAndCompliance): Completion[S4LVatSicAndCompliance] = view match {
-    case S4LVatSicAndCompliance(Some(_),Some(MainBusinessActivityView(_,Some(_))),Some(CompanyProvideWorkers(PROVIDE_WORKERS_NO)),_,_,_) =>
+  private def isModelComplete(view: SicAndCompliance): Completion[SicAndCompliance] = view match {
+    case SicAndCompliance(Some(_),Some(MainBusinessActivityView(_,Some(_))),Some(CompanyProvideWorkers(PROVIDE_WORKERS_NO)),_,_,_) =>
       Complete(view)
-    case S4LVatSicAndCompliance(Some(_),Some(MainBusinessActivityView(_,Some(_))),Some(_),Some(Workers(nb)),_,_) if nb < 8 =>
+    case SicAndCompliance(Some(_),Some(MainBusinessActivityView(_,Some(_))),Some(_),Some(Workers(nb)),_,_) if nb < 8 =>
       Complete(view)
-    case S4LVatSicAndCompliance(Some(_),Some(MainBusinessActivityView(_,Some(_))),Some(_), Some(_), Some(TemporaryContracts(TEMP_CONTRACTS_NO)),_) =>
+    case SicAndCompliance(Some(_),Some(MainBusinessActivityView(_,Some(_))),Some(_), Some(_), Some(TemporaryContracts(TEMP_CONTRACTS_NO)),_) =>
       Complete(view)
-    case S4LVatSicAndCompliance(Some(_),Some(MainBusinessActivityView(_,Some(_))),Some(_),Some(_),Some(_),Some(_)) =>
+    case SicAndCompliance(Some(_),Some(MainBusinessActivityView(_,Some(_))),Some(_),Some(_),Some(_),Some(_)) =>
       Complete(view)
-    case S4LVatSicAndCompliance(Some(_),Some(MainBusinessActivityView(_,Some(_))),None,None,None,None) =>
+    case SicAndCompliance(Some(_),Some(MainBusinessActivityView(_,Some(_))),None,None,None,None) =>
       Complete(view)
     case _ => Incomplete(view)
   }
 
-  private def updateVatRegAndClearS4l(completeModel: S4LVatSicAndCompliance)(implicit hc:HeaderCarrier, cp:CurrentProfile): Future[S4LVatSicAndCompliance] = {
+  private def updateVatRegAndClearS4l(completeModel: SicAndCompliance)(implicit hc:HeaderCarrier, cp:CurrentProfile): Future[SicAndCompliance] = {
     for {
       _ <- registrationConnector.updateSicAndCompliance(completeModel)
       _ <- s4lService.clear
     } yield completeModel
-  }
-
-  def dropLabour(implicit cp:CurrentProfile,hc:HeaderCarrier) = {
-    getSicAndCompliance.map{sic =>
-      val updated = S4LVatSicAndCompliance.dropLabour(sic)
-      s4lService.saveNoAux[S4LVatSicAndCompliance](updated, sicAndCompliance)
-    }
-  }
-
-  def saveMainBusinessActivity(sicCode: SicCode)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[S4LVatSicAndCompliance] = {
-    for {
-      mainSic          <- getSicAndCompliance.map(_.mainBusinessActivity)
-      selectionChanged = mainSic.exists(_.id != sicCode.id)
-      viewModel        <- updateSicAndCompliance(MainBusinessActivityView(sicCode))
-    } yield {
-      if (selectionChanged) s4lService.save(S4LFlatRateScheme()).flatMap(_ => vrs.submitVatFlatRateScheme())
-
-      viewModel
-    }
   }
 
   def needComplianceQuestions(sicCodes: List[SicCode]): Boolean = {

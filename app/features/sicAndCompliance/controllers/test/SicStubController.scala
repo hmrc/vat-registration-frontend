@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package controllers.test
+package features.sicAndCompliance.controllers.test
 
 import javax.inject.{Inject, Singleton}
 
 import connectors.{ConfigConnector, KeystoreConnect}
-import controllers.CommonPlayDependencies
-import controllers.sicAndCompliance.ComplianceExitController
+import controllers.{CommonPlayDependencies, VatRegistrationController}
 import features.sicAndCompliance.services.SicAndComplianceService
 import forms.test.SicStubForm
 import models.ModelKeys.SIC_CODES_KEY
-import models.view.sicAndCompliance.MainBusinessActivityView
+import features.sicAndCompliance.models.MainBusinessActivityView
 import models.view.test.SicStub
+import features.sicAndCompliance.views.html.test._
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService, SessionProfile}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
@@ -37,9 +37,9 @@ class SicStubController @Inject()(ds: CommonPlayDependencies,
                                   configConnect: ConfigConnector,
                                   val keystoreConnector: KeystoreConnect,
                                   implicit val s4LService: S4LService,
-                                  override val sicAndCompService: SicAndComplianceService,
-                                  override val authConnector: AuthConnector,
-                                  override implicit val vrs: RegistrationService) extends ComplianceExitController(ds, authConnector, vrs,sicAndCompService, s4LService) with SessionProfile {
+                                  val sicAndCompService: SicAndComplianceService,
+                                  val authConnector: AuthConnector,
+                                  implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
   def show: Action[AnyContent] = authorised.async {
     implicit user =>
@@ -54,7 +54,7 @@ class SicStubController @Inject()(ds: CommonPlayDependencies,
               sicCodes.map(_.sicCode4.getOrElse(""))
             )
             form       =  SicStubForm.form.fill(sicStub)
-          } yield Ok(views.html.pages.test.sic_stub(form))
+          } yield Ok(sic_stub(form))
         }
   }
 
@@ -63,20 +63,20 @@ class SicStubController @Inject()(ds: CommonPlayDependencies,
       implicit request =>
         withCurrentProfile { implicit profile =>
           SicStubForm.form.bindFromRequest().fold(
-            badForm => BadRequest(views.html.pages.test.sic_stub(badForm)).pure,
+            badForm => BadRequest(sic_stub(badForm)).pure,
             data    => s4LService.save[SicStub](data).flatMap { _ =>
               val sicCodesList = data.fullSicCodes.map(configConnect.getSicCodeDetails)
               keystoreConnector.cache(SIC_CODES_KEY, sicCodesList).flatMap { _ =>
                 if (data.sicCodes.lengthCompare(1) == 0) {
                   sicAndCompService.updateSicAndCompliance(MainBusinessActivityView(sicCodesList.head)) map { _ =>
                     if (sicAndCompService.needComplianceQuestions(sicCodesList)) {
-                      controllers.sicAndCompliance.routes.ComplianceIntroductionController.show()
+                      features.sicAndCompliance.controllers.routes.SicAndComplianceController.submitComplianceIntro()
                     } else {
                       features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView()
                     }
                   }
                 } else {
-                  Future.successful(controllers.sicAndCompliance.routes.MainBusinessActivityController.show())
+                  Future.successful(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showMainBusinessActivity())
                 }
               } map Redirect
             }

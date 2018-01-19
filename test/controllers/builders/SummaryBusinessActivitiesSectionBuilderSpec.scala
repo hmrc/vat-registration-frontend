@@ -18,10 +18,8 @@ package controllers.builders
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.S4LVatSicAndCompliance
 import models.api._
 import models.view.SummaryRow
-import models.view.sicAndCompliance.BusinessActivityDescription
 
 class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -37,7 +35,7 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
           SummaryRow(
             "businessActivities.businessDescription",
             "app.common.no",
-            Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+            Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
           )
       }
 
@@ -47,7 +45,7 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
           SummaryRow(
             "businessActivities.businessDescription",
             testBusinessActivityDescription,
-            Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+            Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
           )
       }
 
@@ -57,7 +55,7 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
           SummaryRow(
             "businessActivities.mainBusinessActivity",
             sicCode.description,
-            Some(controllers.sicAndCompliance.routes.MainBusinessActivityController.show())
+            Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showMainBusinessActivity())
           )
       }
     }

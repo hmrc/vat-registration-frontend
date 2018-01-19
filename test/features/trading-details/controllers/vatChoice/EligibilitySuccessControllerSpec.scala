@@ -27,7 +27,7 @@ class EligibilitySuccessControllerSpec extends VatRegSpec with VatRegistrationFi
   object TestEligibilitySuccessController extends EligibilitySuccessController(
     ds,
     mockAuthConnector,
-    mockKeystoreConnector
+    mockKeystoreConnect
   )
 
   val fakeRequest = FakeRequest(routes.EligibilitySuccessController.show())
