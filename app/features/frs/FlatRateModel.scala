@@ -38,7 +38,6 @@ package models.api {
 package models {
 
   import models.api.{VatFlatRateScheme, VatScheme}
-  import models.view.frs._
   import play.api.libs.json.{Json, OFormat}
 
   final case class S4LFlatRateScheme
@@ -70,7 +69,7 @@ package models {
     implicit val apiT = new S4LApiTransformer[S4LFlatRateScheme, VatFlatRateScheme] {
       override def toApi(c: S4LFlatRateScheme): VatFlatRateScheme =
         VatFlatRateScheme(
-          joinFrs = c.joinFrs.map(_.selection).getOrElse(false),
+          joinFrs = c.joinFrs.exists(_.selection),
           annualCostsInclusive = c.annualCostsInclusive.map(_.selection),
           annualCostsLimited = c.annualCostsLimited.map(_.selection),
           doYouWantToUseThisRate = c.registerForFrs.map(_.selection),

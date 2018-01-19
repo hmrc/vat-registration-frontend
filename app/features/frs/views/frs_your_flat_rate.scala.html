@@ -1,4 +1,4 @@
-@import models.view.frs.BusinessSectorView
+@import models.BusinessSectorView
 @import forms.genericForms.YesOrNoAnswer
 @(businessSectorView: BusinessSectorView, registerForFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
@@ -34,7 +34,7 @@
 
     <h3>@messages("pages.frs.registerForWithSector.subheading1")</h3>
 
-    @govHelpers.form(action = controllers.frs.routes.RegisterForFrsWithSectorController.submit()) {
+    @govHelpers.form(action = controllers.routes.FlatRateController.submitYourFlatRate()) {
         <div class="form-group">
             <fieldset class="inline">
                 <span id="registerForFrsWithSectorRadio"></span>

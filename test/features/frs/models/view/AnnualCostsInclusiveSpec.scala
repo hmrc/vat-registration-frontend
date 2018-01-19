@@ -18,7 +18,7 @@ package models.view.frs
 
 import fixtures.VatRegistrationFixture
 import models.api.VatFlatRateScheme
-import models.{ApiModelTransformer, S4LFlatRateScheme}
+import models.{AnnualCostsInclusiveView, ApiModelTransformer}
 import org.scalatest.{Inspectors, Matchers}
 import uk.gov.hmrc.play.test.UnitSpec
 

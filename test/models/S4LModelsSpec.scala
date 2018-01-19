@@ -21,8 +21,6 @@ import java.time.LocalDate
 import fixtures.VatRegistrationFixture
 import models.api.VatEligibilityChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import models.api._
-import models.view.frs.FrsStartDateView.DIFFERENT_DATE
-import models.view.frs._
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.cultural.NotForProfit.NOT_PROFIT_YES
 import models.view.sicAndCompliance.financial._
@@ -173,7 +171,7 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
         annualCostsInclusive = Some(AnnualCostsInclusiveView(AnnualCostsInclusiveView.NO)),
         annualCostsLimited = Some(AnnualCostsLimitedView(AnnualCostsLimitedView.NO)),
         registerForFrs = Some(RegisterForFrsView(true)),
-        frsStartDate = Some(FrsStartDateView(DIFFERENT_DATE, Some(specificDate))),
+        frsStartDate = Some(FrsStartDateView(FrsStartDateView.DIFFERENT_DATE, Some(specificDate))),
         categoryOfBusiness = Some(BusinessSectorView(category, percent))
       )
 
@@ -182,7 +180,7 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
         annualCostsInclusive = Some(AnnualCostsInclusiveView.NO),
         annualCostsLimited = Some(AnnualCostsLimitedView.NO),
         doYouWantToUseThisRate = Some(true),
-        whenDoYouWantToJoinFrs = Some(DIFFERENT_DATE),
+        whenDoYouWantToJoinFrs = Some(FrsStartDateView.DIFFERENT_DATE),
         startDate = Some(specificDate),
         categoryOfBusiness = Some(category),
         percentage = Some(percent)

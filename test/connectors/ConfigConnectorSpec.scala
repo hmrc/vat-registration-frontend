@@ -18,10 +18,10 @@ package connectors
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.BusinessSectorView
 import models.api.SicCode
-import models.view.frs.BusinessSectorView
-import org.mockito.Mockito.when
 import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.when
 
 class ConfigConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
