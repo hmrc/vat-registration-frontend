@@ -16,20 +16,15 @@
 
 package controllers
 
-import controllers.frs.JoinFrsController
-import models.S4LFlatRateScheme
 import models.api.VatFlatRateScheme
-import models.view.frs.JoinFrsView
+import models.{JoinFrsView, S4LFlatRateScheme}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
-import play.api.Logger
 import support.AppAndStubs
-
-
 
 class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures {
 
-  def controller: JoinFrsController = app.injector.instanceOf(classOf[JoinFrsController])
+  def controller: FlatRateController = app.injector.instanceOf(classOf[FlatRateController])
 
   "accessing the Join FRS page" must {
     "return an OK status" when {
@@ -40,7 +35,7 @@ class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .s4lContainer[S4LFlatRateScheme].contains(JoinFrsView(selection = true))
           .audit.writesAuditMerged()
 
-        whenReady(controller.show(request)) { res =>
+        whenReady(controller.joinFrsPage(request)) { res =>
           res.header.status mustBe 200
         }
       }
@@ -53,7 +48,7 @@ class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .vatScheme.isBlank
           .audit.writesAuditMerged()
 
-        whenReady(controller.show(request))(res => res.header.status mustBe 200)
+        whenReady(controller.joinFrsPage(request))(res => res.header.status mustBe 200)
       }
     }
   }
@@ -70,7 +65,7 @@ class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .s4lContainer[S4LFlatRateScheme].isUpdatedWith(JoinFrsView(selection = true))
           .audit.writesAuditMerged()
 
-        whenReady(controller.submit(request))(res => res.header.status mustBe 303)
+        whenReady(controller.submitJoinFRS(request))(res => res.header.status mustBe 303)
       }
 
       "user answered No" in {
@@ -84,7 +79,7 @@ class JoinFrsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .vatScheme.isUpdatedWith(VatFlatRateScheme(joinFrs = true))
           .audit.writesAuditMerged()
 
-        whenReady(controller.submit(request))(res => res.header.status mustBe 303)
+        whenReady(controller.submitJoinFRS(request))(res => res.header.status mustBe 303)
       }
 
     }

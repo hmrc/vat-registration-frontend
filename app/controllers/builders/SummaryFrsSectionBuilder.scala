@@ -19,8 +19,8 @@ package controllers.builders
 import java.text.DecimalFormat
 
 import models.api._
-import models.view.frs.{AnnualCostsInclusiveView, AnnualCostsLimitedView, FrsStartDateView}
 import models.view.{SummaryRow, SummarySection}
+import models.{AnnualCostsInclusiveView, AnnualCostsLimitedView, FrsStartDateView}
 import org.apache.commons.lang3.StringUtils
 
 case class SummaryFrsSectionBuilder(vatFrs: Option[VatFlatRateScheme] = None)
@@ -33,7 +33,7 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[VatFlatRateScheme] = None)
   val joinFrsRow: SummaryRow = yesNoRow(
     "joinFrs",
     vatFrs.map(_.joinFrs),
-    controllers.frs.routes.JoinFrsController.show()
+    controllers.routes.FlatRateController.joinFrsPage()
   )
 
   val costsInclusiveRow: SummaryRow = SummaryRow(
@@ -43,7 +43,7 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[VatFlatRateScheme] = None)
       case AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS => "pages.summary.frs.yes12Months"
       case AnnualCostsInclusiveView.NO => "pages.summary.frs.no"
     }.getOrElse(""),
-    Some(controllers.frs.routes.AnnualCostsInclusiveController.show())
+    Some(controllers.routes.FlatRateController.annualCostsInclusivePage())
   )
 
   val costsLimitedRow: SummaryRow = SummaryRow(
@@ -53,15 +53,15 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[VatFlatRateScheme] = None)
       case AnnualCostsLimitedView.YES_WITHIN_12_MONTHS => "pages.summary.frs.yes12Months"
       case AnnualCostsLimitedView.NO => "pages.summary.frs.no"
     }.getOrElse(""),
-    Some(controllers.frs.routes.AnnualCostsLimitedController.show())
+    Some(controllers.routes.FlatRateController.annualCostsLimitedPage())
   )
 
   val useThisRateRow: SummaryRow = yesNoRow(
     "registerForFrs",
     vatFrs.flatMap(_.doYouWantToUseThisRate),
     vatFrs.flatMap(_.categoryOfBusiness) match {
-      case Some("") | None => controllers.frs.routes.RegisterForFrsController.show()
-      case Some(_) => controllers.frs.routes.RegisterForFrsWithSectorController.show()
+      case Some("") | None => controllers.routes.FlatRateController.registerForFrsPage()
+      case Some(_) => controllers.routes.FlatRateController.confirmSectorFrsPage()
     }
   )
 
@@ -72,20 +72,20 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[VatFlatRateScheme] = None)
       case FrsStartDateView.DIFFERENT_DATE => vatFrs.flatMap(_.startDate).map(d => d.format(presentationFormatter))
       case _ => None
     }.getOrElse(""),
-    Some(controllers.frs.routes.FrsStartDateController.show())
+    Some(controllers.routes.FlatRateController.frsStartDatePage())
   )
 
   val flatRatePercentageRow: SummaryRow = SummaryRow(
     s"$sectionId.flatRate",
     vatFrs.flatMap(_.percentage).map(p => decimalFormat.format(p)).getOrElse(""),
     vatFrs.flatMap(_.categoryOfBusiness).collect{
-    case s if StringUtils.isNotBlank(s) => controllers.frs.routes.ConfirmBusinessSectorController.show() }
+    case s if StringUtils.isNotBlank(s) => controllers.routes.FlatRateController.confirmSectorFrsPage() }
   )
 
   val businessSectorRow: SummaryRow = SummaryRow(
     s"$sectionId.businessSector",
     vatFrs.flatMap(_.categoryOfBusiness).getOrElse(""),
-    Some(controllers.frs.routes.ConfirmBusinessSectorController.show())
+    Some(controllers.routes.FlatRateController.confirmSectorFrsPage())
   )
 
   val section: SummarySection = SummarySection(

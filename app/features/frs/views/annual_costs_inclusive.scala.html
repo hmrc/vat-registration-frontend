@@ -1,4 +1,4 @@
-@import models.view.frs.AnnualCostsInclusiveView
+@import models.AnnualCostsInclusiveView
 @(annualCostsInclusiveForm:  Form[AnnualCostsInclusiveView])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{vatInputRadioGroup, errorSummary}
@@ -14,7 +14,7 @@
 
   <p>@Html(messages("pages.frs.costsInclusive.p1"))</p>
 
-  @govHelpers.form(action = controllers.frs.routes.AnnualCostsInclusiveController.submit()) {
+  @govHelpers.form(action = controllers.routes.FlatRateController.submitAnnualInclusiveCosts()) {
   <div class="form-group">
     <fieldset class="block">
         <span id="annualCostsInclusiveRadio"/>

@@ -41,17 +41,16 @@ import common.Now
 import config.startup.{VerifyCrypto, VerifyCryptoConfig}
 import connectors._
 import connectors.test.{TestRegistrationConnector, TestVatRegistrationConnector}
-import controllers.frs._
 import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsControllerImpl}
 import controllers.test.{FeatureSwitchController, FeatureSwitchCtrl}
-import controllers.{TradingDetailsController, TradingDetailsControllerImpl}
+import controllers.{FlatRateController, FlatRateControllerImpl, TradingDetailsController, TradingDetailsControllerImpl}
 import features.bankAccountDetails.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
+import features.officer.controllers._
+import features.officer.services.{IVService, IVServiceImpl, LodgingOfficerService, LodgingOfficerServiceImpl}
 import features.returns.{ReturnsController, ReturnsControllerImpl, ReturnsService, ReturnsServiceImpl}
 import features.tradingDetails.{TradingDetailsService, TradingDetailsServiceImpl}
 import features.turnoverEstimates._
 import services._
-import features.officer.controllers._
-import features.officer.services.{IVService, IVServiceImpl, LodgingOfficerService, LodgingOfficerServiceImpl}
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
@@ -94,13 +93,7 @@ class Module extends AbstractModule {
 
   private def bindControllers(): Unit = {
     bind(classOf[DeleteSessionItemsController]).to(classOf[DeleteSessionItemsControllerImpl]).asEagerSingleton()
-    bind(classOf[JoinFrsController]).to(classOf[JoinFrsControllerImpl]).asEagerSingleton()
-    bind(classOf[AnnualCostsInclusiveController]).to(classOf[AnnualCostsInclusiveControllerImpl]).asEagerSingleton()
-    bind(classOf[AnnualCostsLimitedController]).to(classOf[AnnualCostsLimitedControllerImpl]).asEagerSingleton()
-    bind(classOf[RegisterForFrsWithSectorController]).to(classOf[RegisterForFrsWithSectorControllerImpl]).asEagerSingleton()
-    bind(classOf[RegisterForFrsController]).to(classOf[RegisterForFrsControllerImpl]).asEagerSingleton()
-    bind(classOf[ConfirmBusinessSectorController]).to(classOf[ConfirmBusinessSectorControllerImpl]).asEagerSingleton()
-    bind(classOf[FrsStartDateController]).to(classOf[FrsStartDateControllerImpl]).asEagerSingleton()
+    bind(classOf[FlatRateController]).to(classOf[FlatRateControllerImpl]).asEagerSingleton()
     bind(classOf[FeatureSwitchCtrl]).to(classOf[FeatureSwitchController]).asEagerSingleton()
     bind(classOf[BankAccountDetailsController]).to(classOf[BankAccountDetailsControllerImpl])
     bind(classOf[TurnoverEstimatesController]).to(classOf[TurnoverEstimatesControllerImpl]).asEagerSingleton()
@@ -125,6 +118,7 @@ class Module extends AbstractModule {
     bind(classOf[TurnoverEstimatesService]).to(classOf[TurnoverEstimatesServiceImpl]).asEagerSingleton()
     bind(classOf[LodgingOfficerService]).to(classOf[LodgingOfficerServiceImpl]).asEagerSingleton()
     bind(classOf[TradingDetailsService]).to(classOf[TradingDetailsServiceImpl]).asEagerSingleton()
+    bind(classOf[FlatRateService]).to(classOf[FlatRateServiceImpl]).asEagerSingleton()
   }
 
   private def bindConnectors(): Unit = {

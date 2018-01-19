@@ -68,7 +68,7 @@ trait BankAccountDetailsController extends VatRegistrationControllerNoAux with S
             if(hasBankAccount){
               Redirect(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
             } else {
-              Redirect(controllers.frs.routes.JoinFrsController.show())
+              Redirect(controllers.routes.FlatRateController.joinFrsPage())
             }
           }
         )
@@ -95,7 +95,7 @@ trait BankAccountDetailsController extends VatRegistrationControllerNoAux with S
           errors => Future.successful(BadRequest(views.html.enter_company_bank_account_details(errors))),
           accountDetails => bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails) map { accountDetailsValid =>
             if(accountDetailsValid){
-              Redirect(controllers.frs.routes.JoinFrsController.show())
+              Redirect(controllers.routes.FlatRateController.joinFrsPage())
             } else {
               val invalidDetails = EnterBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)
               Ok(views.html.enter_company_bank_account_details(invalidDetails))

@@ -18,8 +18,8 @@ package connectors
 
 import javax.inject.{Inject, Singleton}
 
+import models.BusinessSectorView
 import models.api.SicCode
-import models.view.frs.BusinessSectorView
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 
 @Singleton
