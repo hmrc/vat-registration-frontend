@@ -63,6 +63,7 @@ trait VatMocks
   implicit lazy val mockReturnsService = mock[ReturnsService]
   implicit lazy val mockLodgingOfficerService = mock[LodgingOfficerService]
   implicit lazy val mockTurnoverEstimatesService = mock[TurnoverEstimatesService]
+  implicit lazy val mockFlatRateService = mock[FlatRateService]
 
   def resetMocks() {
     reset(
@@ -90,7 +91,8 @@ trait VatMocks
       mockIVService,
       mockReturnsService,
       mockLodgingOfficerService,
-      mockTurnoverEstimatesService
+      mockTurnoverEstimatesService,
+      mockFlatRateService
     )
   }
 }

@@ -1,6 +1,6 @@
 @import java.time.format.DateTimeFormatter
 
-@import models.view.frs.FrsStartDateView
+@import models.FrsStartDateView
 @(frsStartDateForm: Form[FrsStartDateView])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{vatInputRadioGroup, vatInput, errorSummary}
@@ -14,7 +14,7 @@
 
     <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.frs.startDate.heading")</h1>
 
-    @govHelpers.form(action = controllers.frs.routes.FrsStartDateController.submit()) {
+    @govHelpers.form(action = controllers.routes.FlatRateController.submitFrsStartDate()) {
         <div class="form-group">
 
             @defining(DateTimeFormatter

@@ -28,7 +28,7 @@ package controllers.sicAndCompliance {
   import models.api.SicCode
   import models.view.sicAndCompliance.MainBusinessActivityView
   import play.api.mvc.{Action, AnyContent}
-  import services.{RegistrationService, S4LService, SessionProfile}
+  import services.{FlatRateService, RegistrationService, S4LService, SessionProfile}
   import uk.gov.hmrc.http.HeaderCarrier
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
@@ -39,6 +39,7 @@ package controllers.sicAndCompliance {
                                                  val keystoreConnector: KeystoreConnect,
                                                  override val authConnector: AuthConnector,
                                                  implicit val s4l: S4LService,
+                                                 val flatRateService: FlatRateService,
                                                  override implicit val vrs: RegistrationService)
     extends ComplianceExitController(ds, authConnector, vrs, s4l) with SessionProfile {
 
@@ -76,7 +77,7 @@ package controllers.sicAndCompliance {
                   )(selected => for {
                     mainSic <- viewModel[MainBusinessActivityView]().value
                     selectionChanged = mainSic.exists(_.id != selected.id)
-                    _ <- s4l.save(S4LFlatRateScheme()).flatMap(_ => vrs.submitVatFlatRateScheme()) onlyIf selectionChanged
+                    _ <- s4l.save(S4LFlatRateScheme()).flatMap(_ => flatRateService.submitVatFlatRateScheme()) onlyIf selectionChanged
                     _ <- save(MainBusinessActivityView(selected))
                     result <- selectNextPage(sicCodeList)
                   } yield result)))

@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter
 import common.enums.VatRegStatus
 import features.officer.fixtures.LodgingOfficerFixtures
 import features.officer.models.view._
+import features.returns.{Frequency, Returns, Start}
 import features.tradingDetails.TradingDetails
 import models.api._
 import models.external.{IncorporationInfo, _}
@@ -161,6 +162,10 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     ppob = scrsAddress
   )
 
+  val validReturns = Returns(
+    Some(false), Some(Frequency.monthly), None, Some(Start(Some(LocalDate.of(2017, 10, 10))))
+  )
+
   val validBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
 
   val validVatScheme = VatScheme(
@@ -172,6 +177,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     vatSicAndCompliance = Some(validSicAndCompliance),
     vatFlatRateScheme = Some(validVatFlatRateScheme),
     bankAccount = Some(validBankAccount),
+    returns = Some(validReturns),
     status = VatRegStatus.draft
   )
 

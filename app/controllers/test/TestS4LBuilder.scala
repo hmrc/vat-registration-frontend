@@ -24,7 +24,6 @@ import features.tradingDetails.TradingDetails
 import models._
 import models.api._
 import models.external.{Name, Officer}
-import models.view.frs._
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}

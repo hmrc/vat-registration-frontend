@@ -41,7 +41,7 @@
     <p>@messages("pages.frs.join.para2")
         @newWindowLink("https://www.gov.uk/vat-flat-rate-scheme", messages("pages.frs.join.para2.1"))@messages("pages.frs.join.para3")</p>
 
-    @govHelpers.form(action = controllers.frs.routes.JoinFrsController.submit()) {
+    @govHelpers.form(action = controllers.routes.FlatRateController.submitJoinFRS()) {
         <div class="form-group">
             <fieldset class="inline">
                 <span id="joinFrsRadio"></span>

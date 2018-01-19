@@ -1,4 +1,4 @@
-@import models.view.frs.BusinessSectorView
+@import models.BusinessSectorView
 @(businessSectorView: BusinessSectorView)(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 
@@ -33,7 +33,7 @@
         <a id="changeBusinessType" href="#">@messages("pages.frs.confirmBusinessSector.changeLink")</a>
     </div>
 
-    @govHelpers.form(action = controllers.frs.routes.ConfirmBusinessSectorController.submit()) {
+    @govHelpers.form(action = controllers.routes.FlatRateController.submitConfirmSectorFrs()) {
         <div class="form-group">
             <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.confirmAndContinue")</button>
         </div>

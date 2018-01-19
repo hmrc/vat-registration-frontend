@@ -44,7 +44,7 @@ class VatRegistrationConnector @Inject()(val http: WSHttp, config: ServicesConfi
   lazy val vatRegElUrl = config.baseUrl("vat-registration-eligibility-frontend")
 }
 
-trait RegistrationConnector extends FlatRateConnector with FinancialsConnector with FutureInstances {
+trait RegistrationConnector extends FinancialsConnector with FutureInstances {
 
   val vatRegUrl: String
   val vatRegElUrl: String
@@ -186,6 +186,13 @@ trait RegistrationConnector extends FlatRateConnector with FinancialsConnector w
 
     http.PATCH[TradingDetails, HttpResponse](s"$vatRegUrl/vatreg/$regId/trading-details", tradingDetails) recover {
       case e: Exception => throw logResponse(e, "upsertNEW")
+    }
+  }
+
+  def upsertVatFlatRateScheme(regId: String, vatFrs: VatFlatRateScheme)
+                             (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] = {
+    http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", vatFrs).recover{
+      case e: Exception => throw logResponse(e, "upsertVatFrsAnswers")
     }
   }
 }

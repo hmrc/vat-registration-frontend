@@ -33,6 +33,7 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
     mockKeystoreConnector,
     mockAuthConnector,
     mockS4LService,
+    mockFlatRateService,
     mockVatRegistrationService
   )
 
@@ -98,7 +99,7 @@ class MainBusinessActivityControllerSpec extends VatRegSpec with VatRegistration
       save4laterExpectsSave[MainBusinessActivityView]()
       mockKeystoreFetchAndGet(SIC_CODES_KEY, Some(List(validSicCode)))
       when(mockVatRegistrationService.submitSicAndCompliance(any(), any())).thenReturn(validSicAndCompliance.pure)
-      when(mockVatRegistrationService.submitVatFlatRateScheme()(any(), any())).thenReturn(validVatFlatRateScheme.pure)
+      when(mockFlatRateService.submitVatFlatRateScheme()(any(), any())).thenReturn(validVatFlatRateScheme.pure)
       when(mockS4LService.save(any())(any(), any(), any(), any())).thenReturn(dummyCacheMap.pure)
       save4laterReturns(S4LVatSicAndCompliance())
       submitAuthorised(Controller.submit(),
