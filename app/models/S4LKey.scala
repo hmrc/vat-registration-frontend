@@ -17,8 +17,8 @@
 package models
 
 import features.returns.Returns
+import features.sicAndCompliance.models.test.SicStub
 import features.tradingDetails.TradingDetails
-import models.view.test.SicStub
 
 trait S4LKey[T] {
 
@@ -34,7 +34,6 @@ object S4LKey {
     override val key = k
   }
 
-  implicit val sicStub: S4LKey[SicStub] = S4LKey("SicStub")
   implicit val vatServiceEligibility: S4LKey[S4LVatEligibility] = S4LKey("VatServiceEligibility")
   implicit val vatContact: S4LKey[S4LVatContact] = S4LKey("VatContact")
   implicit val returns: S4LKey[Returns] = S4LKey("returns")

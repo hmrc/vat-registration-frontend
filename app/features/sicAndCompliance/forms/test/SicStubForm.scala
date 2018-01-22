@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package forms.test
+package features.sicAndCompliance.forms.test
 
-import models.view.test.SicStub
+import features.sicAndCompliance.models.test.SicStub
 import play.api.data.Form
 import play.api.data.Forms._
 

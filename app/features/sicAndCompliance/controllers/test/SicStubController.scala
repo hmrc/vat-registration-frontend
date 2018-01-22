@@ -19,27 +19,33 @@ package features.sicAndCompliance.controllers.test
 import javax.inject.{Inject, Singleton}
 
 import connectors.{ConfigConnector, KeystoreConnect}
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import features.sicAndCompliance.services.SicAndComplianceService
-import forms.test.SicStubForm
-import models.ModelKeys.SIC_CODES_KEY
+import controllers.VatRegistrationControllerNoAux
+import features.sicAndCompliance.forms.test.SicStubForm
 import features.sicAndCompliance.models.MainBusinessActivityView
-import models.view.test.SicStub
+import features.sicAndCompliance.models.test.SicStub
+import features.sicAndCompliance.services.SicAndComplianceService
 import features.sicAndCompliance.views.html.test._
+import models.ModelKeys.SIC_CODES_KEY
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
-import services.{RegistrationService, S4LService, SessionProfile}
+import services.{S4LService, SessionProfile}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
 @Singleton
-class SicStubController @Inject()(ds: CommonPlayDependencies,
-                                  configConnect: ConfigConnector,
-                                  val keystoreConnector: KeystoreConnect,
-                                  implicit val s4LService: S4LService,
-                                  val sicAndCompService: SicAndComplianceService,
-                                  val authConnector: AuthConnector,
-                                  implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
+class SicStubControllerImpl @Inject()(implicit val messagesApi: MessagesApi,
+                                      val configConnect: ConfigConnector,
+                                      val keystoreConnector: KeystoreConnect,
+                                      val s4LService: S4LService,
+                                      val sicAndCompService: SicAndComplianceService,
+                                      val authConnector: AuthConnector) extends SicStubController
+
+trait SicStubController extends VatRegistrationControllerNoAux with SessionProfile {
+  val configConnect: ConfigConnector
+  val keystoreConnector: KeystoreConnect
+  val s4LService: S4LService
+  val sicAndCompService: SicAndComplianceService
 
   def show: Action[AnyContent] = authorised.async {
     implicit user =>
@@ -63,14 +69,14 @@ class SicStubController @Inject()(ds: CommonPlayDependencies,
       implicit request =>
         withCurrentProfile { implicit profile =>
           SicStubForm.form.bindFromRequest().fold(
-            badForm => BadRequest(sic_stub(badForm)).pure,
+            badForm => Future.successful(BadRequest(sic_stub(badForm))),
             data    => s4LService.save[SicStub](data).flatMap { _ =>
               val sicCodesList = data.fullSicCodes.map(configConnect.getSicCodeDetails)
               keystoreConnector.cache(SIC_CODES_KEY, sicCodesList).flatMap { _ =>
                 if (data.sicCodes.lengthCompare(1) == 0) {
                   sicAndCompService.updateSicAndCompliance(MainBusinessActivityView(sicCodesList.head)) map { _ =>
                     if (sicAndCompService.needComplianceQuestions(sicCodesList)) {
-                      features.sicAndCompliance.controllers.routes.SicAndComplianceController.submitComplianceIntro()
+                      features.sicAndCompliance.controllers.routes.SicAndComplianceController.showComplianceIntro()
                     } else {
                       features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView()
                     }

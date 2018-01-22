@@ -22,6 +22,7 @@ import connectors.KeystoreConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import features.officer.models.view.LodgingOfficer
 import features.sicAndCompliance.models.SicAndCompliance
+import features.sicAndCompliance.models.test.SicStub
 import features.turnoverEstimates.TurnoverEstimatesService
 import forms.test.TestSetupForm
 import models.api._

@@ -16,7 +16,7 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
-import models.view.test.SicStub
+import features.sicAndCompliance.models.test.SicStub
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import support.AppAndStubs
