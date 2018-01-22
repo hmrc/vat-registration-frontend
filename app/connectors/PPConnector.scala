@@ -47,8 +47,7 @@ trait PPConnector {
       case Threshold.INTENDS_TO_SELL => CorporationTaxRegistration(
         Some(AccountingDetails("", Some(LocalDate.now.plusDays(7) format expectedFormat))))
     }) recover {
-      case e => Logger.error(s"[PPConnector][getCompanyRegistrationDetails] an error occured for regId: ${profile.registrationId} with message: ${e.getMessage}")
-        throw e
+      case e => throw logResponse(e, "getCompanyRegistrationDetails")
     }
   }
 }
