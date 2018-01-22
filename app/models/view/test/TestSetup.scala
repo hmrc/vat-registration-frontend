@@ -23,11 +23,9 @@ import models.BankAccount
 import play.api.libs.json.{Json, OFormat}
 
 case class TestSetup(
-                      vatChoice: VatChoiceTestSetup,
                       vatContact: VatContactTestSetup,
                       vatFinancials: VatFinancialsTestSetup,
                       sicAndCompliance: SicAndComplianceTestSetup,
-                      vatServiceEligibility: VatServiceEligibilityTestSetup,
                       officerHomeAddress: OfficerHomeAddressTestSetup,
                       officerPreviousAddress: OfficerPreviousAddressTestSetup,
                       lodgingOfficer: LodgingOfficerTestSetup,

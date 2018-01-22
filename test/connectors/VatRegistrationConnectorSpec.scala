@@ -177,25 +177,25 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  "Calling upsertVatEligibility" should {
+  "Calling getThreshold" should {
 
-    val vatEligibility = validServiceEligibility()
+    val vatThreshold = optVoluntaryRegistration
 
-    "return the correct VatResponse when the microservice completes and returns a VatServiceEligibility model" in new Setup {
-      mockHttpPATCH[VatServiceEligibility, VatServiceEligibility]("tst-url", vatEligibility)
-      connector.upsertVatEligibility("tstID", vatEligibility) returns vatEligibility
+    "return the correct VatResponse when the microservice completes and returns a Threshold model" in new Setup {
+      mockHttpGET[HttpResponse]("tst-url", HttpResponse(200, Some(Json.toJson(vatThreshold))))
+      connector.getThreshold("tstID") returns vatThreshold
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatServiceEligibility, VatServiceEligibility]("tst-url", forbidden)
-      connector.upsertVatEligibility("tstID", vatEligibility) failedWith forbidden
+      mockHttpFailedGET("tst-url", forbidden)
+      connector.getThreshold("tstID") failedWith forbidden
     }
     "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[VatServiceEligibility, VatServiceEligibility]("tst-url", notFound)
-      connector.upsertVatEligibility("tstID", vatEligibility) failedWith notFound
+      mockHttpFailedGET("tst-url", notFound)
+      connector.getThreshold("tstID") failedWith notFound
     }
     "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatServiceEligibility, VatServiceEligibility]("tst-url", internalServiceException)
-      connector.upsertVatEligibility("tstID", vatEligibility) failedWith internalServiceException
+      mockHttpFailedGET("tst-url", internalServiceException)
+      connector.getThreshold("tstID") failedWith internalServiceException
     }
   }
 

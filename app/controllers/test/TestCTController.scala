@@ -36,7 +36,8 @@ class TestCTController @Inject()(iis: PrePopService,
     implicit user =>
       implicit req =>
         withCurrentProfile { implicit profile =>
-          iis.getCTActiveDate.map(DateTimeFormatter.ISO_LOCAL_DATE.format).getOrElse("NONE").map(s => Ok(Html(s)))
+//          iis.getCTActiveDate.map(DateTimeFormatter.ISO_LOCAL_DATE.format).getOrElse("NONE").map(s => Ok(Html(s)))
+          iis.getCTActiveDate.map(_.fold("NONE")(x => DateTimeFormatter.ISO_LOCAL_DATE.format(x))).map(x => Ok(Html(x)))
         }
   }
 }

@@ -18,17 +18,16 @@ package fixtures
 
 import features.tradingDetails.{TradingDetails, TradingNameView}
 import models.api._
-import models.view.vatTradingDetails.vatChoice.TaxableTurnover
 
 trait TradingDetailsFixtures extends BaseFixture {
-  val validTaxableTurnover = TaxableTurnover("TAXABLE_YES")
+
+  //View models
+  val validTradingNameView = TradingNameView(true, Some("Test Trading Name"))
   val validEuTrading = VatEuTrading(selection = false, eoriApplication = None)
   val validTradingName = TradingName(selection = true, tradingName = Some(testTradingName))
 
-  val validEligibilityChoice = VatEligibilityChoice(
-    VatEligibilityChoice.NECESSITY_VOLUNTARY,
-    vatThresholdPostIncorp = Some(VatThresholdPostIncorp(overThresholdSelection = true, Some(testDate)))
-  )
+
+  val validThresholdWithExpectedThreshold = generateOptionalThreshold(expectedOverThreshold = Some(testDate))
 
   def generateTradingDetails(
                       tradingNameSelection: Boolean = true,

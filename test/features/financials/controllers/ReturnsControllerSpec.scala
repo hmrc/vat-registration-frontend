@@ -170,7 +170,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       when(mockReturnsService.saveStaggerStart(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(Stagger.jan))))
 
-      when(mockReturnsService.getEligibilityChoice()(any(), any(), any()))
+      when(mockReturnsService.getThreshold()(any(), any(), any()))
         .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -189,7 +189,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       when(mockReturnsService.saveStaggerStart(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(Stagger.jan))))
 
-      when(mockReturnsService.getEligibilityChoice()(any(), any(), any()))
+      when(mockReturnsService.getThreshold()(any(), any(), any()))
         .thenReturn(Future.successful(voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -208,7 +208,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       when(mockReturnsService.saveStaggerStart(any())(any(),any(),any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(Stagger.feb))))
 
-      when(mockReturnsService.getEligibilityChoice()(any(), any(), any()))
+      when(mockReturnsService.getThreshold()(any(), any(), any()))
         .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -227,7 +227,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       when(mockReturnsService.saveStaggerStart(any())(any(),any(),any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(Stagger.mar))))
 
-      when(mockReturnsService.getEligibilityChoice()(any(), any(), any()))
+      when(mockReturnsService.getThreshold()(any(), any(), any()))
         .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -298,7 +298,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       when(mockReturnsService.saveFrequency(any())(any(),any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(frequency = Some(Frequency.monthly))))
 
-      when(mockReturnsService.getEligibilityChoice()(any(), any(), any()))
+      when(mockReturnsService.getThreshold()(any(), any(), any()))
         .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -317,7 +317,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       when(mockReturnsService.saveFrequency(any())(any(),any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(frequency = Some(Frequency.monthly))))
 
-      when(mockReturnsService.getEligibilityChoice()(any(), any(), any()))
+      when(mockReturnsService.getThreshold()(any(), any(), any()))
         .thenReturn(Future.successful(voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -336,7 +336,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       when(mockReturnsService.saveFrequency(any())(any(),any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(frequency = Some(Frequency.quarterly))))
 
-      when(mockReturnsService.getEligibilityChoice()(any(), any(), any()))
+      when(mockReturnsService.getThreshold()(any(), any(), any()))
         .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -530,7 +530,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockPrePopService.getCTActiveDate(any(), any()))
-        .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
+        .thenReturn(Future.successful(currentProfile.incorporationDate))
 
       when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
         .thenReturn(Future.successful(voluntaryViewModel))
@@ -547,7 +547,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       mockWithCurrentProfile(Some(currentProfile.copy(incorporationDate = None)))
 
       when(mockPrePopService.getCTActiveDate(any(), any()))
-        .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
+        .thenReturn(Future.successful(currentProfile.incorporationDate))
 
       when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
         .thenReturn(Future.successful(voluntaryViewModel))
@@ -564,7 +564,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       mockWithCurrentProfile(Some(currentProfile.copy(incorporationDate = None)))
 
       when(mockPrePopService.getCTActiveDate(any(), any()))
-        .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
+        .thenReturn(Future.successful(currentProfile.incorporationDate))
 
       when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
         .thenReturn(Future.successful(voluntaryViewModel))
@@ -581,7 +581,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockPrePopService.getCTActiveDate(any(), any()))
-        .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
+        .thenReturn(Future.successful(currentProfile.incorporationDate))
 
       when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
         .thenReturn(Future.successful(voluntaryViewModel))
@@ -598,7 +598,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockPrePopService.getCTActiveDate(any(), any()))
-        .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
+        .thenReturn(Future.successful(currentProfile.incorporationDate))
 
       when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
         .thenReturn(Future.successful(voluntaryViewModel))
@@ -682,7 +682,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
     "redirect to the company bank account page, if they are incorped and select the incorp date" in new Setup {
       when(mockPrePopService.getCTActiveDate(any(), any()))
-        .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
+        .thenReturn(Future.successful(currentProfile.incorporationDate))
       when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
@@ -700,7 +700,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
     "redirect to the company bank account page, if they are incorped and select the start of business date" in new Setup {
       when(mockPrePopService.getCTActiveDate(any(), any()))
-        .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
+        .thenReturn(Future.successful(currentProfile.incorporationDate))
       when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
@@ -718,7 +718,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
     "redirect to the company bank account page, if they are incorped and select a custom date" in new Setup {
       when(mockPrePopService.getCTActiveDate(any(), any()))
-        .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
+        .thenReturn(Future.successful(currentProfile.incorporationDate))
       when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
@@ -739,7 +739,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
     "return a bad request, if they are incorped and select a custom date before the incorp date" in new Setup {
       when(mockPrePopService.getCTActiveDate(any(), any()))
-        .thenReturn(OptionT[Future, LocalDate](Future.successful(currentProfile.incorporationDate)))
+        .thenReturn(Future.successful(currentProfile.incorporationDate))
       when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 

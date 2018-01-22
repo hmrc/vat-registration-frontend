@@ -19,7 +19,6 @@ package models
 import java.time.LocalDate
 
 import fixtures.VatRegistrationFixture
-import models.api.VatEligibilityChoice.{NECESSITY_OBLIGATORY, NECESSITY_VOLUNTARY}
 import models.api._
 import models.view.sicAndCompliance.cultural.NotForProfit
 import models.view.sicAndCompliance.cultural.NotForProfit.NOT_PROFIT_YES
@@ -31,10 +30,6 @@ import models.view.vatContact.BusinessContactDetails
 import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.ZeroRatedSales.ZERO_RATED_SALES_YES
 import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
-import models.view.vatTradingDetails.vatChoice.TaxableTurnover.TAXABLE_NO
-import models.view.vatTradingDetails.vatChoice.VoluntaryRegistration.{REGISTER_NO, REGISTER_YES}
-import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason.INTENDS_TO_SELL
-import models.view.vatTradingDetails.vatChoice._
 import org.scalatest.Inspectors
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -198,18 +193,6 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
 
   }
 
-  "S4LVatEligibility.S4LModelTransformer.toApi" should {
-    "transform complete s4l container to API" in {
-      val s4l = S4LVatEligibility(Some(validServiceEligibility()))
-      S4LVatEligibility.apiT.toApi(s4l) shouldBe validServiceEligibility()
-    }
-
-    "transform s4l container with incomplete data error" in {
-      val s4l = S4LVatEligibility()
-      an[IllegalStateException] should be thrownBy S4LVatEligibility.apiT.toApi(s4l)
-    }
-  }
-
   "S4LVatContact.S4LModelTransformer.toApi" should {
 
     val s4l = S4LVatContact(
@@ -266,68 +249,4 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
       S4LVatContact.modelT.toS4LModel(vs) shouldBe expected
     }
   }
-
-  "S4LVatEligibilityChoice.S4LModelTransformer.toS4LModel" should {
-    "transform VatScheme to S4L container" in {
-      val vs = emptyVatScheme.copy(
-        vatServiceEligibility = Some(VatServiceEligibility(
-          haveNino = Some(true),
-          doingBusinessAbroad = Some(false),
-          doAnyApplyToYou = Some(false),
-          applyingForAnyOf = Some(false),
-          applyingForVatExemption = Some(false),
-          companyWillDoAnyOf = Some(false),
-          vatEligibilityChoice = Some(VatEligibilityChoice(
-            necessity = NECESSITY_VOLUNTARY,
-            reason = Some(INTENDS_TO_SELL),
-            vatThresholdPostIncorp = Some(validVatThresholdPostIncorp)))
-        ))
-      )
-
-      val expected = S4LVatEligibilityChoice(
-        taxableTurnover = Some(TaxableTurnover(TAXABLE_NO)),
-        voluntaryRegistration = Some(VoluntaryRegistration(REGISTER_YES)),
-        voluntaryRegistrationReason = Some(VoluntaryRegistrationReason(INTENDS_TO_SELL)),
-        overThreshold = Some(OverThresholdView(false, None))
-      )
-
-      S4LVatEligibilityChoice.modelT.toS4LModel(vs) shouldBe expected
-    }
-  }
-
-  "S4LVatEligibilityChoice.S4LModelTransformer.toApi" should {
-    val s4l = S4LVatEligibilityChoice(
-      taxableTurnover = Some(TaxableTurnover(TAXABLE_NO)),
-      voluntaryRegistration = Some(VoluntaryRegistration(REGISTER_YES)),
-      voluntaryRegistrationReason = Some(VoluntaryRegistrationReason(INTENDS_TO_SELL)),
-      overThreshold = Some(OverThresholdView(false, None))
-    )
-
-    "transform complete S4L with voluntary registration model to API" in {
-      val expected = VatEligibilityChoice(
-        necessity = NECESSITY_VOLUNTARY,
-        reason = Some(INTENDS_TO_SELL),
-        vatThresholdPostIncorp = Some(validVatThresholdPostIncorp)
-      )
-
-      S4LVatEligibilityChoice.apiT.toApi(s4l) shouldBe expected
-    }
-
-    "transform complete S4L with mandatory registration model to API" in {
-
-      val expected = VatEligibilityChoice(
-        necessity = NECESSITY_OBLIGATORY,
-        reason = None,
-        vatThresholdPostIncorp = Some(validVatThresholdPostIncorp)
-      )
-
-      val s4lMandatoryBydefault = s4l.copy(voluntaryRegistration = None, voluntaryRegistrationReason = None)
-      S4LVatEligibilityChoice.apiT.toApi(s4lMandatoryBydefault) shouldBe expected
-
-      val s4lMandatoryExplicit = s4l.copy(voluntaryRegistration = Some(VoluntaryRegistration(REGISTER_NO)), voluntaryRegistrationReason = None)
-      S4LVatEligibilityChoice.apiT.toApi(s4lMandatoryExplicit) shouldBe expected
-
-    }
-  }
-
 }

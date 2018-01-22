@@ -90,19 +90,20 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
     }
   }
 
+  //TODO: write test for function
+  def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Option[Threshold]] = {
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/threshold")
+      .map(result => if(result.status == NO_CONTENT) None else result.json.validateOpt[Threshold].get).recover {
+      case e => throw logResponse(e, "getThreshold")
+    }
+  }
+
   def patchLodgingOfficer(data: LodgingOfficer)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[JsValue] = {
     val json = Json.toJson(data)(LodgingOfficer.apiWrites)
     http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/officer", json) map {
       _ => json
     } recover {
       case e: Exception => throw logResponse(e, "patchLodgingOfficer")
-    }
-  }
-
-  def upsertVatEligibility(regId: String, vatServiceEligibility: VatServiceEligibility)
-                          (implicit hc: HeaderCarrier, rds: HttpReads[VatServiceEligibility]): Future[VatServiceEligibility] = {
-    http.PATCH[VatServiceEligibility, VatServiceEligibility](s"$vatRegUrl/vatreg/$regId/service-eligibility", vatServiceEligibility).recover{
-      case e: Exception => throw logResponse(e, "upsertVatEligibility")
     }
   }
 

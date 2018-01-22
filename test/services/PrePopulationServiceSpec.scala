@@ -17,6 +17,7 @@
 package services
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatter.ofPattern
 
 import cats.data.OptionT
@@ -50,18 +51,24 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
     }
   }
 
+  val expectedFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+  val optCtr = CorporationTaxRegistration(
+    Some(AccountingDetails("", Some(LocalDate.of(2017, 4, 24) format expectedFormat))))
+
   "CT Active Date" must {
 
     "be a LocalDate" in new Setup {
-      val expectedDate = LocalDate.of(2017, 4, 24)
-      when(mockPPConnector.getCompanyRegistrationDetails(any(), any(), any())).thenReturn(expectedDate)
-      service.getCTActiveDate returnsSome expectedDate
+      val expectedDate = Some(LocalDate.of(2017, 4, 24))
+      when(mockPPConnector.getCompanyRegistrationDetails(any(), any(), any()))
+        .thenReturn(Future.successful(Some(optCtr)))
+      service.getCTActiveDate returns expectedDate
     }
 
     "be None" in new Setup {
       when(mockPPConnector.getCompanyRegistrationDetails(any(), any(), any()))
-        .thenReturn(OptionT.none[Future, CorporationTaxRegistration])
-      service.getCTActiveDate.returnsNone
+        .thenReturn(Future.successful(None))
+      service.getCTActiveDate returns None
     }
 
   }

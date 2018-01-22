@@ -28,7 +28,6 @@ class TwirlViewControllerSpec extends VatRegSpec {
 
   object TestController extends TwirlViewController(
     ds,
-    mockVATFeatureSwitch,
     mockAuthConnector,
     mockKeystoreConnector
   )
@@ -36,33 +35,11 @@ class TwirlViewControllerSpec extends VatRegSpec {
   val redirectUrl = "http://localhost:9894/check-if-you-can-register-for-vat/national-insurance-number"
 
   "GET" should {
-    "return HTML when user is authorized to access" in {
-      val params = List(("use-this-service", "Can you use this service?"))
-
+    "redirect to eligibility front end" in {
       mockGetCurrentProfile()
 
-      when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(enabledFeatureSwitch)
-
-      forAll(params) {
-        case (input, expected) =>
-          callAuthorised(TestController.renderViewAuthorised(input)) {
-            _ includesText expected
-          }
-      }
-    }
-
-    "redirect to eligibility front end if feature switch is enabled" in {
-      val params = List(("use-this-service", "Can you use this service?"))
-
-      mockGetCurrentProfile()
-
-      when(mockVATFeatureSwitch.disableEligibilityFrontend).thenReturn(disabledFeatureSwitch)
-
-      forAll(params) {
-        case (input, expected) =>
-          callAuthorised(TestController.renderViewAuthorised(input)) {
-            _ redirectsTo redirectUrl
-          }
+      callAuthorised(TestController.renderViewAuthorised) {
+        _ redirectsTo redirectUrl
       }
     }
   }

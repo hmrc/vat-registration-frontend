@@ -21,73 +21,56 @@ import java.time.format.DateTimeFormatter
 
 import features.returns.Returns
 import features.tradingDetails.TradingDetails
-import models.api.VatEligibilityChoice
-import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
+import models.api.Threshold
 import models.view.{SummaryRow, SummarySection}
 import play.api.mvc.Call
 import uk.gov.hmrc.play.config.ServicesConfig
 
 
+
 case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetails] = None,
-                                            vatEligiblityChoice: Option[VatEligibilityChoice] = None,
+                                            threshold: Option[Threshold],
                                             returnsBlock : Option[Returns],
-                                            useEligibilityFrontend: Boolean = true,
                                             incorpDate: Option[LocalDate] = None)
+
   extends SummarySectionBuilder with ServicesConfig{
 
   override val sectionId: String = "vatDetails"
   val monthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
   val serviceName = "vat-registration-eligibility-frontend"
 
-  private val voluntaryRegistration = vatEligiblityChoice.exists(_.registeringVoluntarily)
+  private val thresholdBlock = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
+  private val voluntaryRegistration = !thresholdBlock.mandatoryRegistration
 
   val taxableTurnoverRow: SummaryRow = SummaryRow(
     s"$sectionId.taxableTurnover",
     s"app.common.${if (voluntaryRegistration) "no" else "yes"}",
-    if (useEligibilityFrontend) {
-      Some(getUrl(serviceName,"sales-over-threshold"))
-    } else {
-      Some(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show())
-    }
+    Some(getUrl(serviceName,"sales-over-threshold"))
   )
 
   val overThresholdSelectionRow: SummaryRow = SummaryRow(
     s"$sectionId.overThresholdSelection",
-    vatEligiblityChoice.flatMap(_.vatThresholdPostIncorp.map(_.overThresholdSelection)).collect {
-      case true => "app.common.yes"
-      case false => "app.common.no"
-    }.getOrElse(""),
-    if(useEligibilityFrontend){
-      Some(getUrl(serviceName,"turnover-over-threshold"))
-    } else {
-      Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show())
-    }
+    thresholdBlock.overThresholdDate.fold("app.common.no")(_ => "app.common.yes"),
+    Some(getUrl(serviceName,"turnover-over-threshold"))
   )
 
   val overThresholdDateRow: SummaryRow = SummaryRow(
     s"$sectionId.overThresholdDate",
-    vatEligiblityChoice.flatMap(_.vatThresholdPostIncorp.flatMap(_.overThresholdDate))
+    thresholdBlock.overThresholdDate
       .map(_.format(monthYearPresentationFormatter))
       .getOrElse(""),
-    if (useEligibilityFrontend) {
       Some(getUrl(serviceName,"turnover-over-threshold"))
-    } else {
-      Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show())
-    }
   )
 
   val expectedOverThresholdSelectionRow: SummaryRow = SummaryRow(
     s"$sectionId.expectedOverThresholdSelection",
-    vatEligiblityChoice.flatMap(_.vatExpectedThresholdPostIncorp.map(_.expectedOverThresholdSelection)).collect{
-      case true => "app.common.yes"
-      case false => "app.common.no"
-    }.getOrElse(""),
+    thresholdBlock.expectedOverThresholdDate.fold("app.common.no")(_ => "app.common.yes"),
     Some(getUrl(serviceName,"thought-over-threshold"))
   )
 
   val expectedOverThresholdDateRow: SummaryRow = SummaryRow(
     s"$sectionId.expectedOverThresholdDate",
-    vatEligiblityChoice.flatMap(_.vatExpectedThresholdPostIncorp.flatMap(_.expectedOverThresholdDate))
+    thresholdBlock.expectedOverThresholdDate
       .map(_.format(presentationFormatter))
       .getOrElse(""),
     Some(getUrl(serviceName,"thought-over-threshold"))
@@ -97,11 +80,7 @@ case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetail
     s"$sectionId.necessity",
     s"app.common.${if (voluntaryRegistration) "yes" else "no"}",
     if (voluntaryRegistration) {
-      if (useEligibilityFrontend) {
-        Some(getUrl(serviceName, "register-voluntary"))
-      } else {
-        Some(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show())
-      }
+      Some(getUrl(serviceName, "register-voluntary"))
     } else {
       None
     }
@@ -109,15 +88,11 @@ case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetail
 
   val voluntaryReasonRow: SummaryRow = SummaryRow(
     s"$sectionId.voluntaryRegistrationReason",
-    vatEligiblityChoice.flatMap(_.reason).collect {
-      case VoluntaryRegistrationReason.SELLS => "pages.summary.voluntaryReason.sells"
-      case VoluntaryRegistrationReason.INTENDS_TO_SELL => "pages.summary.voluntaryReason.intendsToSell"
-    }.getOrElse("app.common.no"),
-    if(useEligibilityFrontend){
-      Some(getUrl(serviceName,"registration-reason"))
-    } else {
-      Some(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationReasonController.show())
-    }
+    thresholdBlock.voluntaryReason.fold("app.common.no"){
+      case Threshold.SELLS => "pages.summary.voluntaryReason.sells"
+      case Threshold.INTENDS_TO_SELL => "pages.summary.voluntaryReason.intendsToSell"
+    },
+    Some(getUrl(serviceName,"registration-reason"))
   )
 
   def startDateRow: SummaryRow = SummaryRow(
@@ -142,11 +117,11 @@ case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetail
     SummarySection(
       sectionId,
       rows = Seq(
-        (taxableTurnoverRow, vatEligiblityChoice.flatMap(_.vatThresholdPostIncorp).isEmpty),
-        (overThresholdSelectionRow, vatEligiblityChoice.flatMap(_.vatThresholdPostIncorp).isDefined),
-        (overThresholdDateRow, vatEligiblityChoice.flatMap(_.vatThresholdPostIncorp).flatMap(_.overThresholdDate).isDefined),
-        (expectedOverThresholdSelectionRow, useEligibilityFrontend && vatEligiblityChoice.flatMap(_.vatExpectedThresholdPostIncorp).isDefined),
-        (expectedOverThresholdDateRow, useEligibilityFrontend && vatEligiblityChoice.flatMap(_.vatExpectedThresholdPostIncorp).flatMap(_.expectedOverThresholdDate).isDefined),
+        (taxableTurnoverRow, incorpDate.isEmpty),
+        (overThresholdSelectionRow, incorpDate.isDefined),
+        (overThresholdDateRow, incorpDate.isDefined && thresholdBlock.overThresholdDate.isDefined),
+        (expectedOverThresholdSelectionRow, incorpDate.isDefined ),
+        (expectedOverThresholdDateRow, incorpDate.isDefined && thresholdBlock.expectedOverThresholdDate.isDefined),
         (necessityRow, voluntaryRegistration),
         (voluntaryReasonRow, voluntaryRegistration),
         (startDateRow, true),

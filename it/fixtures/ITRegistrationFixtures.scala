@@ -24,11 +24,11 @@ import features.returns.{Frequency, Returns, Stagger}
 import features.tradingDetails.{TradingDetails, TradingNameView}
 import features.turnoverEstimates.TurnoverEstimates
 import models.api._
-import models.view.vatTradingDetails.vatChoice.VoluntaryRegistrationReason
 import models.{BankAccount, BankAccountDetails}
 
 trait ITRegistrationFixtures extends LodgingOfficerFixture {
   val address = ScrsAddress(line1 = "3 Test Building", line2 = "5 Test Road", postcode = Some("TE1 1ST"))
+
 
   val tradingDetails = TradingDetails(
     tradingNameView = Some(TradingNameView(yesNo = false, tradingName = None)),
@@ -40,73 +40,64 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
   )
 
   val sicAndCompliance = VatSicAndCompliance(
-    businessDescription = "test company desc",
-    culturalCompliance = None,
-    labourCompliance = None,
-    financialCompliance = None,
-    mainBusinessActivity = SicCode("AB123", "super business", "super business by super people")
+    businessDescription   = "test company desc",
+    culturalCompliance    = None,
+    labourCompliance      = None,
+    financialCompliance   = None,
+    mainBusinessActivity  = SicCode("AB123", "super business", "super business by super people")
   )
 
   val vatContact = VatContact(
-    digitalContact = VatDigitalContact("test@test.com", Some("1234567891")),
-    ppob = address
+    digitalContact  = VatDigitalContact("test@test.com", Some("1234567891")),
+    ppob            = address
   )
 
-  val eligibilityChoice = VatEligibilityChoice(
-    necessity = VatEligibilityChoice.NECESSITY_VOLUNTARY,
-    reason = Some(VoluntaryRegistrationReason.SELLS)
+  val voluntaryThreshold = Threshold(
+    mandatoryRegistration = false,
+    voluntaryReason       = Some(Threshold.SELLS)
   )
 
-  val eligibilityChoiceIncorporated = VatEligibilityChoice(
-    necessity = VatEligibilityChoice.NECESSITY_OBLIGATORY,
-    reason = None,
-    vatThresholdPostIncorp = Some(VatThresholdPostIncorp(true, Some(LocalDate.of(2016, 9, 30)))),
-    vatExpectedThresholdPostIncorp = Some(VatExpectedThresholdPostIncorp(true, Some(LocalDate.of(2016, 9, 30))))
+  val threshold = Threshold(
+    mandatoryRegistration     = true,
+    voluntaryReason           = None,
+    overThresholdDate         = Some(LocalDate.of(2016, 9, 30)),
+    expectedOverThresholdDate = Some(LocalDate.of(2016, 9, 30))
   )
 
-  val eligibility = VatServiceEligibility(
-    haveNino = Some(true),
-    doingBusinessAbroad = Some(false),
-    doAnyApplyToYou = Some(false),
-    applyingForAnyOf = Some(false),
-    applyingForVatExemption = Some(false),
-    companyWillDoAnyOf = Some(false),
-    vatEligibilityChoice = Some(eligibilityChoice)
-  )
-
-  val flatRateScheme = VatFlatRateScheme()
+  val flatRateScheme  = VatFlatRateScheme()
 
   val turnOverEstimates = TurnoverEstimates(vatTaxable = 30000)
-  val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
+  val bankAccount     = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
 
-  val returns = Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None)
+
+  val returns         = Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None)
 
   val vatReg = VatScheme(
-    id = "1",
-    status = VatRegStatus.draft,
-    tradingDetails = Some(tradingDetails),
-    lodgingOfficer = None,
-    financials = Some(financials),
+    id                  = "1",
+    status              = VatRegStatus.draft,
+    tradingDetails      = Some(tradingDetails),
+    lodgingOfficer      = None,
+    financials          = Some(financials),
     vatSicAndCompliance = Some(sicAndCompliance),
-    vatContact = Some(vatContact),
-    vatServiceEligibility = Some(eligibility),
-    vatFlatRateScheme = Some(flatRateScheme),
+    vatContact          = Some(vatContact),
+    threshold           = Some(voluntaryThreshold),
+    vatFlatRateScheme   = Some(flatRateScheme),
     turnOverEstimates = Some(turnOverEstimates),
-    bankAccount = Some(bankAccount),
-    returns = Some(returns)
+    bankAccount         = Some(bankAccount),
+    returns             = Some(returns)
   )
 
   val vatRegIncorporated = VatScheme(
-    id = "1",
-    status =VatRegStatus.draft,
-    tradingDetails = Some(tradingDetails),
-    lodgingOfficer = None,
-    financials = Some(financials),
+    id                  = "1",
+    status              = VatRegStatus.draft,
+    tradingDetails      = Some(tradingDetails),
+    lodgingOfficer      = None,
+    financials          = Some(financials),
     vatSicAndCompliance = Some(sicAndCompliance),
-    vatContact = Some(vatContact),
-    vatServiceEligibility = Some(eligibility.copy(vatEligibilityChoice = Some(eligibilityChoiceIncorporated))),
-    vatFlatRateScheme = Some(flatRateScheme),
-    bankAccount = Some(bankAccount)
+    vatContact          = Some(vatContact),
+    threshold           = Some(threshold),
+    vatFlatRateScheme   = Some(flatRateScheme),
+    bankAccount         = Some(bankAccount)
   )
 
 }
