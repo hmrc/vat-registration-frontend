@@ -78,18 +78,20 @@ trait SicAndComplianceService {
     }
   }
 
-  private def isModelComplete(view: SicAndCompliance): Completion[SicAndCompliance] = view match {
-    case SicAndCompliance(Some(_),Some(MainBusinessActivityView(_,Some(_))),Some(CompanyProvideWorkers(PROVIDE_WORKERS_NO)),_,_,_) =>
-      Complete(view)
-    case SicAndCompliance(Some(_),Some(MainBusinessActivityView(_,Some(_))),Some(_),Some(Workers(nb)),_,_) if nb < 8 =>
-      Complete(view)
-    case SicAndCompliance(Some(_),Some(MainBusinessActivityView(_,Some(_))),Some(_), Some(_), Some(TemporaryContracts(TEMP_CONTRACTS_NO)),_) =>
-      Complete(view)
-    case SicAndCompliance(Some(_),Some(MainBusinessActivityView(_,Some(_))),Some(_),Some(_),Some(_),Some(_)) =>
-      Complete(view)
-    case SicAndCompliance(Some(_),Some(MainBusinessActivityView(_,Some(_))),None,None,None,None) =>
-      Complete(view)
-    case _ => Incomplete(view)
+  private def isModelComplete(view: SicAndCompliance): Completion[SicAndCompliance] = {
+    view match {
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(CompanyProvideWorkers(PROVIDE_WORKERS_NO)), _, _, _) =>
+        Complete(view)
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(_), Some(Workers(nb)), _, _) if nb < 8 =>
+        Complete(view)
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(_), Some(_), Some(TemporaryContracts(TEMP_CONTRACTS_NO)), _) =>
+        Complete(view)
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(_), Some(_), Some(_), Some(_)) =>
+        Complete(view)
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), None, None, None, None) =>
+        Complete(view)
+      case _ => Incomplete(view)
+    }
   }
 
   private def updateVatRegAndClearS4l(completeModel: SicAndCompliance)(implicit hc:HeaderCarrier, cp:CurrentProfile): Future[SicAndCompliance] = {

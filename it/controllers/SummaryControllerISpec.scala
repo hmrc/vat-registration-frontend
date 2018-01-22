@@ -69,6 +69,9 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .currentProfile.withProfile()
           .vatScheme.contains(vatReg)
           .vatScheme.has("officer", officerJson)
+          .s4lContainer[SicAndCompliance].isEmpty
+          .s4lContainer[SicAndCompliance].isUpdatedWith(vatRegIncorporated.sicAndCompliance.get)
+          .vatScheme.has("sicAndComp",SicAndCompliance.toApiWrites.writes(vatRegIncorporated.sicAndCompliance.get))
           .s4lContainer[LodgingOfficer].isUpdatedWith(validFullLodgingOfficer)
           .s4lContainer[SicAndCompliance].cleared
           .s4lContainer[Returns].contains(Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None))
@@ -81,7 +84,6 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           val document = Jsoup.parse(res.body)
           document.title() mustBe "Summary"
 
-          a[NullPointerException] mustBe thrownBy(document.getElementById("threshold.overThresholdSelectionQuestion").text)
           document.getElementById("vatDetails.taxableTurnoverAnswer").text mustBe "No"
           document.getElementById("vatDetails.taxableTurnoverChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/vat-taxable-sales-over-threshold"
           document.getElementById("vatDetails.necessityAnswer").text mustBe "Yes"
@@ -100,6 +102,9 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .user.isAuthorised
           .currentProfile.withProfileAndIncorpDate()
           .vatScheme.contains(vatRegIncorporated)
+          .s4lContainer[SicAndCompliance].isEmpty
+          .s4lContainer[SicAndCompliance].isUpdatedWith(vatRegIncorporated.sicAndCompliance.get)
+          .vatScheme.has("sicAndComp",SicAndCompliance.toApiWrites.writes(vatRegIncorporated.sicAndCompliance.get))
           .vatScheme.has("officer", officerJson)
           .s4lContainer[LodgingOfficer].contains(validFullLodgingOfficer)
           .s4lContainer[SicAndCompliance].cleared

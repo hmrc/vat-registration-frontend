@@ -190,7 +190,7 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
   }
 
   def getSicAndCompliance(implicit hc:HeaderCarrier,profile:CurrentProfile) : Future[Option[JsValue]] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${profile.registrationId}/foo").map{ res =>
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${profile.registrationId}/sicAndComp").map{ res =>
       res.status match {
         case OK => Some(res.json)
         case NO_CONTENT => None
@@ -200,9 +200,11 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
     }
   }
 
+
   def updateSicAndCompliance(sac: SicAndCompliance)(implicit hc:HeaderCarrier,profile:CurrentProfile) :Future[JsValue] = {
     http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/sicAndComp", Json.toJson(sac)(SicAndCompliance.toApiWrites)).recover{
       case e: Exception => throw logResponse(e,"updateSicAndCompliance")
+
     }
   }
 }
