@@ -50,13 +50,11 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
       implicit request =>
         withCurrentProfile { implicit profile =>
           for {
-            eligibilityChoice <- s4LService.fetchAndGet[S4LVatEligibilityChoice]
             vatFinancials <- s4LService.fetchAndGet[S4LVatFinancials]
             sicStub <- s4LService.fetchAndGet[SicStub]
             vatSicAndCompliance <- s4LService.fetchAndGet[S4LVatSicAndCompliance]
             vatContact <- s4LService.fetchAndGet[S4LVatContact]
             lodgingOfficer <- s4LService.fetchAndGet[LodgingOfficer]
-            eligibility <- s4LService.fetchAndGet[S4LVatEligibility]
             frs <- s4LService.fetchAndGet[S4LFlatRateScheme]
 
             bankAccount       <- s4LService.fetchAndGetNoAux(S4LKey.bankAccountKey)
@@ -65,14 +63,6 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
             tradingDetails    <- s4LService.fetchAndGetNoAux(S4LKey.tradingDetails)
 
             testSetup = TestSetup(
-              VatChoiceTestSetup(
-                taxableTurnoverChoice =   eligibilityChoice.flatMap(_.taxableTurnover.map(_.yesNo)),
-                voluntaryChoice = eligibilityChoice.flatMap(_.voluntaryRegistration).map(_.yesNo),
-                voluntaryRegistrationReason = eligibilityChoice.flatMap(_.voluntaryRegistrationReason).map(_.reason),
-                overThresholdSelection = eligibilityChoice.flatMap(_.overThreshold).map(_.selection.toString),
-                overThresholdMonth = eligibilityChoice.flatMap(_.overThreshold).flatMap(_.date).map(_.getMonthValue.toString),
-                overThresholdYear = eligibilityChoice.flatMap(_.overThreshold).flatMap(_.date).map(_.getYear.toString)
-              ),
               VatContactTestSetup(
                 email = vatContact.flatMap(_.businessContactDetails).map(_.email),
                 daytimePhone = vatContact.flatMap(_.businessContactDetails).flatMap(_.daytimePhone),
@@ -111,14 +101,6 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                 mainBusinessActivityId = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.id),
                 mainBusinessActivityDescription = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.description),
                 mainBusinessActivityDisplayDetails = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.displayDetails)
-              ),
-              VatServiceEligibilityTestSetup(
-                haveNino = eligibility.flatMap(_.vatEligibility).map(_.haveNino.getOrElse("").toString),
-                doingBusinessAbroad = eligibility.flatMap(_.vatEligibility).map(_.doingBusinessAbroad.getOrElse("").toString),
-                doAnyApplyToYou = eligibility.flatMap(_.vatEligibility).map(_.doAnyApplyToYou.getOrElse("").toString),
-                applyingForAnyOf = eligibility.flatMap(_.vatEligibility).map(_.applyingForAnyOf.getOrElse("").toString),
-                applyingForVatExemption = eligibility.flatMap(_.vatEligibility).map(_.applyingForVatExemption.getOrElse("").toString),
-                companyWillDoAnyOf = eligibility.flatMap(_.vatEligibility).map(_.companyWillDoAnyOf.getOrElse("").toString)
               ),
               officerHomeAddress = OfficerHomeAddressTestSetup(
                 line1 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).map(_.line1),
@@ -196,16 +178,6 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                   })
 
                   _ <- s4LService.save(s4LBuilder.vatSicAndComplianceFromData(data))
-
-                  _ <- saveToS4Later(data.vatServiceEligibility.haveNino, data, { x =>
-                    S4LVatEligibility(Some(VatServiceEligibility(x.vatServiceEligibility.haveNino.map(_.toBoolean),
-                      x.vatServiceEligibility.doingBusinessAbroad.map(_.toBoolean),
-                      x.vatServiceEligibility.doAnyApplyToYou.map(_.toBoolean),
-                      x.vatServiceEligibility.applyingForAnyOf.map(_.toBoolean),
-                      x.vatServiceEligibility.applyingForVatExemption.map(_.toBoolean),
-                      x.vatServiceEligibility.companyWillDoAnyOf.map(_.toBoolean))))
-                  })
-
                   _ <- s4LService.save(s4LBuilder.vatFinancialsFromData(data))
                   _ <- s4LService.saveNoAux(s4LBuilder.tradingDetailsFromData(data), S4LKey.tradingDetails)
                   _ <- s4LService.save(s4LBuilder.vatContactFromData(data))

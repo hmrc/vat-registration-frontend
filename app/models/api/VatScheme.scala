@@ -33,7 +33,7 @@ case class VatScheme(
                       financials: Option[VatFinancials] = None,
                       vatSicAndCompliance: Option[VatSicAndCompliance] = None,
                       vatContact: Option[VatContact] = None,
-                      vatServiceEligibility: Option[VatServiceEligibility] = None,
+                      threshold: Option[Threshold] = None,
                       returns: Option[Returns] = None,
                       turnOverEstimates: Option[TurnoverEstimates] = None,
                       bankAccount : Option[BankAccount] = None,
@@ -50,13 +50,12 @@ object VatScheme {
       (__ \ "financials").formatNullable[VatFinancials] and
       (__ \ "vatSicAndCompliance").formatNullable[VatSicAndCompliance] and
       (__ \ "vatContact").formatNullable[VatContact] and
-      (__ \ "vatEligibility").formatNullable[VatServiceEligibility] and
+      (__ \ "threshold").formatNullable[Threshold] and
       (__ \ "returns").formatNullable[Returns] and
       (__ \ "turnoverEstimates").formatNullable[TurnoverEstimates] and
       (__ \ "bankAccount").formatNullable[BankAccount] and
       (__ \ "vatFlatRateScheme").formatNullable[VatFlatRateScheme] and
       (__ \ "status").format[VatRegStatus.Value]
-
     ) (VatScheme.apply, unlift(VatScheme.unapply))
 
 }

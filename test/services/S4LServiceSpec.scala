@@ -18,9 +18,9 @@ package services
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.VatServiceEligibility
+import models._
 import models.view.vatContact.BusinessContactDetails
-import models.{S4LKey, S4LVatContact, S4LVatEligibility, ViewModelFormat}
+import models.view.vatFinancials.EstimateZeroRatedSales
 import org.mockito.ArgumentMatchers.{any, eq => =~=}
 import org.mockito.Mockito._
 import play.api.libs.json.Json
@@ -55,21 +55,21 @@ class S4LServiceSpec extends VatRegSpec with VatRegistrationFixture {
     val key = TestGroup.s4lKey.key
   }
 
-  val testServiceEligibility = VatServiceEligibility()
+  val zeroRatedTurnoverEstimates = EstimateZeroRatedSales(10000)
 
   "S4L Service" should {
 
     "save a form with the correct key" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
       private val cacheMap = CacheMap("s-date", Map.empty)
-      mockS4LSaveForm[S4LVatEligibility](cacheMap)
-      service.save(S4LVatEligibility(vatEligibility = Some(testServiceEligibility))) returns cacheMap
+      mockS4LSaveForm[S4LVatFinancials](cacheMap)
+      service.save(S4LVatFinancials(zeroRatedTurnoverEstimate = Some(zeroRatedTurnoverEstimates))) returns cacheMap
     }
 
     "fetch a form with the correct key" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
-      mockS4LFetchAndGet(S4LKey[S4LVatEligibility].key, Some(S4LVatEligibility(vatEligibility = Some(testServiceEligibility))))
-      service.fetchAndGet[S4LVatEligibility] returns Some(S4LVatEligibility(vatEligibility = Some(testServiceEligibility)))
+      mockS4LFetchAndGet(S4LKey[S4LVatFinancials].key, Some(S4LVatFinancials(zeroRatedTurnoverEstimate = Some(zeroRatedTurnoverEstimates))))
+      service.fetchAndGet[S4LVatFinancials] returns Some(S4LVatFinancials(zeroRatedTurnoverEstimate = Some(zeroRatedTurnoverEstimates)))
     }
 
     "clear down S4L data" in new Setup {

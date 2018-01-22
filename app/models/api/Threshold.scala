@@ -18,10 +18,16 @@ package models.api
 
 import java.time.LocalDate
 
-import play.api.libs.json.Json
-case class VatExpectedThresholdPostIncorp(expectedOverThresholdSelection: Boolean,
-                                          expectedOverThresholdDate: Option[LocalDate])
+import play.api.libs.json.{Json, OFormat}
 
-object VatExpectedThresholdPostIncorp {
-  implicit val format = Json.format[VatExpectedThresholdPostIncorp]
+//using backend model because view models not needed as these questions don't leave in this service
+case class Threshold(mandatoryRegistration: Boolean,
+                     voluntaryReason: Option[String] = None,
+                     overThresholdDate: Option[LocalDate] = None,
+                     expectedOverThresholdDate: Option[LocalDate] = None)
+
+object Threshold {
+  implicit val format: OFormat[Threshold] = Json.format
+  val SELLS: String = "alreadySellsVATTaxableGoodsOrServices"
+  val INTENDS_TO_SELL: String = "intendsToSellVATTaxableGoodsOrServices"
 }

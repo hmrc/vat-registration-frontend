@@ -21,7 +21,7 @@ import java.time.LocalDate
 import features.returns.{Returns, Start}
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.VatEligibilityChoice
+import models.api.Threshold
 import models.view.SummaryRow
 
 class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
@@ -34,30 +34,10 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
     "with taxableTurnoverRow render" should {
 
-      "a 'No' if it's a voluntary registration" in {
-        val builder = SummaryVatDetailsSectionBuilder(
-          Some(generateTradingDetails()),
-            validServiceEligibility(VatEligibilityChoice.NECESSITY_VOLUNTARY).vatEligibilityChoice,
-            returnsBlock = returnsWithStartDate(),
-            useEligibilityFrontend = false)
-        builder.taxableTurnoverRow mustBe
-          SummaryRow("vatDetails.taxableTurnover", "app.common.no", Some(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()))
-      }
-
-      "a 'Yes' if it's a mandatory" in {
-        val builder = SummaryVatDetailsSectionBuilder(
-          Some(generateTradingDetails()),
-            validServiceEligibility(VatEligibilityChoice.NECESSITY_OBLIGATORY).vatEligibilityChoice,
-            returnsBlock = returnsWithStartDate(),
-            useEligibilityFrontend = false)
-        builder.taxableTurnoverRow mustBe
-          SummaryRow("vatDetails.taxableTurnover", "app.common.yes", Some(controllers.vatTradingDetails.vatChoice.routes.TaxableTurnoverController.show()))
-      }
-
       "a 'No' if it's a voluntary registration and point to eligibility frontend if switch is on" in {
         val builder = SummaryVatDetailsSectionBuilder(
           Some(generateTradingDetails()),
-          validServiceEligibility(VatEligibilityChoice.NECESSITY_VOLUNTARY).vatEligibilityChoice,
+          optVoluntaryRegistration,
           returnsBlock = returnsWithStartDate())
         builder.taxableTurnoverRow mustBe SummaryRow("vatDetails.taxableTurnover", "app.common.no", Some(builder.getUrl(serviceName,"sales-over-threshold")))
       }
@@ -65,7 +45,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
       "a 'Yes' if it's a mandatory registration and point to eligibility frontend if switch is on" in {
         val builder = SummaryVatDetailsSectionBuilder(
           Some(generateTradingDetails()),
-          validServiceEligibility(VatEligibilityChoice.NECESSITY_OBLIGATORY).vatEligibilityChoice,
+          optMandatoryRegistration,
           returnsBlock = returnsWithStartDate())
         builder.taxableTurnoverRow mustBe SummaryRow("vatDetails.taxableTurnover", "app.common.yes", Some(builder.getUrl(serviceName,"sales-over-threshold")))
       }
@@ -73,21 +53,10 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
     "with necessityRow render" should {
 
-      "a 'Yes' if it's a voluntary registration" in {
-        val builder = SummaryVatDetailsSectionBuilder(
-          Some(generateTradingDetails()),
-          validServiceEligibility(VatEligibilityChoice.NECESSITY_VOLUNTARY).vatEligibilityChoice,
-          useEligibilityFrontend = false,
-          returnsBlock = returnsWithStartDate())
-        builder.necessityRow mustBe
-          SummaryRow("vatDetails.necessity", "app.common.yes", Some(controllers.vatTradingDetails.vatChoice.routes.VoluntaryRegistrationController.show()))
-      }
-
       "a 'No' if it's a mandatory registration" in {
         val builder = SummaryVatDetailsSectionBuilder(
           Some(generateTradingDetails()),
-          validServiceEligibility(VatEligibilityChoice.NECESSITY_OBLIGATORY).vatEligibilityChoice,
-          useEligibilityFrontend = false,
+          optMandatoryRegistration,
           returnsBlock = returnsWithStartDate())
         builder.necessityRow mustBe SummaryRow("vatDetails.necessity", "app.common.no", None)
       }
@@ -95,7 +64,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
       "a 'Yes' if it's a voluntary registration registration and point to eligibility frontend if switch is on" in {
         val builder = SummaryVatDetailsSectionBuilder(
           Some(generateTradingDetails()),
-          validServiceEligibility(VatEligibilityChoice.NECESSITY_VOLUNTARY).vatEligibilityChoice,
+          optVoluntaryRegistration,
           returnsBlock = returnsWithStartDate())
         builder.necessityRow mustBe SummaryRow("vatDetails.necessity", "app.common.yes", Some(builder.getUrl(serviceName,"register-voluntary")))
       }
@@ -103,21 +72,10 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
     "with overThresholdDate render" should {
 
-      "a month and year displayed if a date is entered" in {
-        val builder = SummaryVatDetailsSectionBuilder(
-          tradingDetails = Some(generateTradingDetails()),
-          vatEligiblityChoice = Some(validEligibilityChoice),
-          useEligibilityFrontend = false,
-          returnsBlock = returnsWithStartDate()
-        )
-        builder.overThresholdDateRow mustBe
-          SummaryRow("vatDetails.overThresholdDate", testDate.format(testMonthYearPresentationFormatter), Some(controllers.vatTradingDetails.vatChoice.routes.OverThresholdController.show()))
-      }
-
       "a month and year displayed if a date is entered and point to eligibility frontend if switch is on" in {
         val builder = SummaryVatDetailsSectionBuilder(
           tradingDetails = Some(generateTradingDetails()),
-          vatEligiblityChoice = Some(validEligibilityChoice),
+          threshold = optMandatoryRegistration,
           returnsBlock = returnsWithStartDate()
         )
         builder.overThresholdDateRow mustBe SummaryRow("vatDetails.overThresholdDate", testDate.format(testMonthYearPresentationFormatter), Some(builder.getUrl(serviceName,"turnover-over-threshold")))
@@ -130,7 +88,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
       "a 'No' if the expectedOverThresholdSelection is false" in {
         val builder = SummaryVatDetailsSectionBuilder(
           Some(generateTradingDetails()),
-          validServiceEligibility(expectedThreshold = validExpectedOverFalse).vatEligibilityChoice,
+          optMandatoryRegistration,
           returnsBlock = returnsWithStartDate())
 
         builder.expectedOverThresholdSelectionRow mustBe
@@ -142,7 +100,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
       "a 'Yes' if the expectedOverThresholdSelection is true" in {
         val builder = SummaryVatDetailsSectionBuilder(
           Some(generateTradingDetails()),
-          validServiceEligibility(expectedThreshold = validExpectedOverTrue).vatEligibilityChoice,
+          generateOptionalThreshold(expectedOverThreshold = validExpectedOverTrue),
           returnsBlock = returnsWithStartDate())
 
         builder.expectedOverThresholdSelectionRow mustBe
@@ -157,24 +115,12 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
       "a 'date' if the expectedOverThresholdDate is present" in {
         val builder = SummaryVatDetailsSectionBuilder(
           Some(generateTradingDetails()),
-          validServiceEligibility(expectedThreshold = validExpectedOverTrue).vatEligibilityChoice,
+          generateOptionalThreshold(expectedOverThreshold = validExpectedOverTrue),
           returnsBlock = returnsWithStartDate())
 
         builder.expectedOverThresholdDateRow mustBe
           SummaryRow("vatDetails.expectedOverThresholdDate",
             testDate.format(testPresentationFormatter),
-            Some(builder.getUrl(serviceName,"thought-over-threshold")))
-      }
-
-      "date row with no 'date' if the expectedOverThresholdDate is present" in {
-        val builder = SummaryVatDetailsSectionBuilder(
-          Some(generateTradingDetails()),
-          validServiceEligibility(expectedThreshold = validExpectedOverTrueNoDate).vatEligibilityChoice,
-          returnsBlock = returnsWithStartDate())
-
-        builder.expectedOverThresholdDateRow mustBe
-          SummaryRow("vatDetails.expectedOverThresholdDate",
-            "",
             Some(builder.getUrl(serviceName,"thought-over-threshold")))
       }
     }
@@ -183,7 +129,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
       "a date with format 'd MMMM y' if it's a voluntary registration where they are not incorped" in {
         val builder = SummaryVatDetailsSectionBuilder(
-          vatEligiblityChoice = Some(validEligibilityChoice),
+          threshold = optVoluntaryRegistration,
           returnsBlock = returnsWithStartDate(Some(LocalDate.of(2017, 3, 21)))
         )
 
@@ -198,8 +144,8 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
       "a Companies House incorporation date message, if it's a voluntary registration and the date is a default date and they are not incorped" in {
         val builder = SummaryVatDetailsSectionBuilder(
-        Some(generateTradingDetails()),
-          validServiceEligibility(VatEligibilityChoice.NECESSITY_VOLUNTARY).vatEligibilityChoice,
+          Some(generateTradingDetails()),
+          optVoluntaryRegistration,
           returnsBlock = returnsWithStartDate(None)
         )
 
@@ -215,7 +161,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
       "a Companies House incorporation date message, if it's a mandatory registration and they are not incorped" in {
         val builder = SummaryVatDetailsSectionBuilder(
           Some(generateTradingDetails()),
-          validServiceEligibility(VatEligibilityChoice.NECESSITY_OBLIGATORY).vatEligibilityChoice,
+          optMandatoryRegistration,
           returnsBlock = returnsWithStartDate(None)
         )
         builder.startDateRow mustBe SummaryRow("vatDetails.startDate", "pages.summary.vatDetails.mandatoryStartDate", None)
@@ -223,7 +169,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
       "a date with format 'd MMMM y' if it's a voluntary registration where they are incorped" in {
         val builder = SummaryVatDetailsSectionBuilder(
-          vatEligiblityChoice = Some(validEligibilityChoice),
+          threshold = optVoluntaryRegistration,
           incorpDate = Some(LocalDate.of(2017, 1, 21)),
           returnsBlock = returnsWithStartDate(Some(LocalDate.of(2017, 3, 21)))
         )
@@ -239,7 +185,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
       "a date with format 'd MMMM y' if it's a mandatory registration where they are incorped and picked an earlier date" in {
         val builder = SummaryVatDetailsSectionBuilder(
-          vatEligiblityChoice = validServiceEligibility(VatEligibilityChoice.NECESSITY_OBLIGATORY).vatEligibilityChoice,
+          threshold = optMandatoryRegistration,
           incorpDate = Some(LocalDate.of(2017, 3, 21)),
           returnsBlock = returnsWithStartDate(Some(LocalDate.of(2017, 4, 26)))
         )
@@ -255,7 +201,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
       "a date with format 'd MMMM y' if it's a mandatory registration where they are incorped and picked the latest date possible" in {
         val builder = SummaryVatDetailsSectionBuilder(
-          vatEligiblityChoice = validServiceEligibility(VatEligibilityChoice.NECESSITY_OBLIGATORY).vatEligibilityChoice,
+          threshold = optMandatoryRegistration,
           incorpDate = Some(LocalDate.of(2017, 3, 21)),
           returnsBlock = returnsWithStartDate(None)
         )
@@ -272,6 +218,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
       "a trading name if there's one" in {
         val builder = SummaryVatDetailsSectionBuilder(
           tradingDetails = Some(generateTradingDetails()),
+          threshold = optVoluntaryRegistration,
           returnsBlock = returnsWithStartDate()
         )
         builder.tradingNameRow mustBe SummaryRow(
@@ -283,17 +230,27 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
       "a 'No' if there isn't a trading name" in {
         val builder = SummaryVatDetailsSectionBuilder(
+          threshold = optVoluntaryRegistration,
           returnsBlock = Some(Returns(None, None, None, None))
         )
 
         builder.tradingNameRow mustBe SummaryRow("vatDetails.tradingName", "app.common.no", Some(controllers.routes.TradingDetailsController.tradingNamePage()))
+      }
+
+      "an error should be thrown if no threshold is present" in {
+        def builder = SummaryVatDetailsSectionBuilder(
+          threshold = None,
+          returnsBlock = Some(Returns(None, None, None, None))
+        )
+
+        intercept[IllegalStateException](builder)
       }
     }
 
     "with section generate" should {
 
       "a valid summary section" in {
-        val builder = SummaryVatDetailsSectionBuilder(tradingDetails = Some(generateTradingDetails()), returnsBlock = returnsWithStartDate())
+        val builder = SummaryVatDetailsSectionBuilder(tradingDetails = Some(generateTradingDetails()), threshold = optVoluntaryRegistration, returnsBlock = returnsWithStartDate())
         builder.section.id mustBe "vatDetails"
         builder.section.rows.length mustEqual 9
       }

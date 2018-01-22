@@ -44,8 +44,6 @@ class SummaryController @Inject()(ds: CommonPlayDependencies,
                                   val lodgingOfficerService: LodgingOfficerService,
                                   implicit val s4LService: S4LService) extends VatRegistrationController(ds) with SessionProfile {
 
-  def useEligibilityFrontend: Boolean = !vatRegFeatureSwitch.disableEligibilityFrontend.enabled
-
   def show: Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request =>
@@ -62,8 +60,8 @@ class SummaryController @Inject()(ds: CommonPlayDependencies,
 
   def getRegistrationSummary()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = {
     for {
-      officer <- lodgingOfficerService.getLodgingOfficer
-      summary <- vrs.getVatScheme.map(scheme => registrationToSummary(scheme.copy(lodgingOfficer = Some(officer))))
+      officer     <- lodgingOfficerService.getLodgingOfficer
+      summary     <- vrs.getVatScheme.map(scheme => registrationToSummary(scheme.copy(lodgingOfficer = Some(officer))))
     } yield summary
   }
 
@@ -85,9 +83,8 @@ class SummaryController @Inject()(ds: CommonPlayDependencies,
     Summary(Seq(
       SummaryVatDetailsSectionBuilder(
         vs.tradingDetails,
-        vs.vatServiceEligibility.flatMap(_.vatEligibilityChoice),
+        vs.threshold,
         vs.returns,
-        useEligibilityFrontend,
         profile.incorporationDate
       ).section,
       SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer.getOrElse(throw new IllegalStateException("Missing Lodging Officer data to show summary"))).section,
