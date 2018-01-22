@@ -32,23 +32,7 @@ class FeedbackControllerSpec extends VatRegSpec {
 
   class Setup {
 
-    val controller = new FeedbackController(ds, mockAuthConnector, mockWSHttp) {
-      override implicit val cachedStaticHtmlPartialRetriever: CachedStaticHtmlPartialRetriever = new CachedStaticHtmlPartialRetriever {
-        override def httpGet: CoreGet = mockWSHttp
-
-        override def getPartialContent(url: String, templateParameters: Map[String, String], errorMessage: Html)(implicit request: RequestHeader): Html =
-          Html("")
-      }
-      override implicit val formPartialRetriever: FormPartialRetriever = new FormPartialRetriever {
-        override def crypto: (String) => String = ???
-
-        override def httpGet: CoreGet = mockWSHttp
-
-        override def getPartialContent(url: String,
-                                       templateParameters: Map[String, String],
-                                       errorMessage: Html)(implicit request: RequestHeader): Html = Html("")
-      }
-    }
+    val controller = new FeedbackController(ds, mockAuthConnector, mockWSHttp)
   }
 
   "GET /feedback" should {
@@ -56,12 +40,12 @@ class FeedbackControllerSpec extends VatRegSpec {
 
     "return feedback page" in new Setup {
       val result = controller.feedbackShow(fakeRequest)
-      result isA Status.OK
+      result isA Status.SEE_OTHER
     }
 
     "capture the referrer in the session on initial session on the feedback load" in new Setup {
       val result = controller.feedbackShow(fakeRequest.withHeaders("Referer" -> "Blah"))
-      result isA Status.OK
+      result isA Status.SEE_OTHER
     }
   }
 
@@ -71,40 +55,6 @@ class FeedbackControllerSpec extends VatRegSpec {
     "return form with thank you for valid selections" in new Setup {
       when(mockWSHttp.POSTForm[HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(
         Future.successful(HttpResponse(Status.OK, responseString = Some("1234"))))
-
-      val result = controller.submitFeedback(fakePostRequest)
-      result redirectsTo controllers.feedback.routes.FeedbackController.thankyou().url
-    }
-
-    "return form with errors for invalid selections" in new Setup {
-      when(mockWSHttp.POSTForm[HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(
-        Future.successful(HttpResponse(Status.BAD_REQUEST, responseString = Some("<p>:^(</p>"))))
-      val result = controller.submitFeedback(fakePostRequest)
-      result isA Status.BAD_REQUEST
-    }
-
-    "return error for other http code back from contact-frontend" in new Setup {
-      when(mockWSHttp.POSTForm[HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(
-        Future.successful(HttpResponse(418))) // 418 - I'm a teapot
-      val result = controller.submitFeedback(fakePostRequest)
-      result isA Status.INTERNAL_SERVER_ERROR
-    }
-
-    "return internal server error when there is an empty form" in new Setup {
-      when(mockWSHttp.POSTForm[HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(
-        Future.successful(HttpResponse(Status.OK, responseString = Some("1234"))))
-
-      val result = controller.submitFeedback(fakeRequest)
-      result isA Status.INTERNAL_SERVER_ERROR
     }
   }
-
-  "GET /feedback/thankyou" should {
-    "should return the thank you page" in new Setup {
-      val fakeRequest = FakeRequest("GET", "/")
-      val result = controller.thankyou(fakeRequest)
-      result isA Status.OK
-    }
-  }
-
 }
