@@ -12,8 +12,6 @@ GET /error                                                                      
 
 ## FEEDBACK
 GET         /feedback                                                                          controllers.feedback.FeedbackController.feedbackShow
-POST        /feedback                                                                          controllers.feedback.FeedbackController.submitFeedback
-GET         /thankyou                                                                          controllers.feedback.FeedbackController.thankyou
 
 ##IDENTITY VERIFICATION
 GET         /start-iv-journey                                                                  features.officer.controllers.IdentityVerificationController.redirectToIV
