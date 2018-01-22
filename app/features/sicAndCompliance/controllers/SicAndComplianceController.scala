@@ -21,6 +21,7 @@ import javax.inject.Inject
 import connectors.KeystoreConnect
 import controllers.VatRegistrationControllerNoAux
 import features.sicAndCompliance.forms.{BusinessActivityDescriptionForm, MainBusinessActivityForm}
+import features.sicAndCompliance.models.MainBusinessActivityView
 import features.sicAndCompliance.services.SicAndComplianceService
 import features.sicAndCompliance.views.html._
 import models.ModelKeys.SIC_CODES_KEY
@@ -101,7 +102,7 @@ trait SicAndComplianceController extends VatRegistrationControllerNoAux with Ses
                 data => sicCodeList.find(_.id == data.id).fold(
                   Future.successful(BadRequest(main_business_activity(MainBusinessActivityForm.form.fill(data), sicCodeList)))
                 )(selected => for {
-                  _ <- sicAndCompService.updateSicAndCompliance(data)
+                  _ <- sicAndCompService.updateSicAndCompliance(MainBusinessActivityView(selected))
                   _ <- frsService.resetFRS(selected)
                 } yield {
                   if (sicAndCompService.needComplianceQuestions(sicCodeList)) {
