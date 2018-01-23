@@ -18,8 +18,10 @@ package models.api
 
 import play.api.libs.json._
 
+@deprecated
 case class VatDigitalContact(email: String, tel: Option[String] = None, mobile: Option[String] = None)
 
+@deprecated
 object VatDigitalContact {
 
   implicit val format: OFormat[VatDigitalContact] = Json.format[VatDigitalContact]

@@ -201,12 +201,16 @@ object S4LVatSicAndCompliance {
   }
 }
 
+@deprecated
+//TODO: remove in clean up
 final case class S4LVatContact
 (
   businessContactDetails: Option[BusinessContactDetails] = None,
   ppob: Option[PpobView] = None
 )
 
+@deprecated
+//TODO: remove in clean up
 object S4LVatContact {
   implicit val format: OFormat[S4LVatContact] = Json.format[S4LVatContact]
 
