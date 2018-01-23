@@ -428,4 +428,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       connector.patchLodgingOfficer(partialLodgingOfficer) failedWith exception
     }
   }
+
+  ""
 }
