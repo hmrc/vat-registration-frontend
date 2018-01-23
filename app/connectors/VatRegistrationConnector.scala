@@ -68,7 +68,6 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
     }
   )
 
-
   def upsertSicAndCompliance(regId: String, sicAndCompliance: VatSicAndCompliance)
                             (implicit hc: HeaderCarrier, rds: HttpReads[VatSicAndCompliance]): Future[VatSicAndCompliance] = {
     http.PATCH[VatSicAndCompliance, VatSicAndCompliance](s"$vatRegUrl/vatreg/$regId/sic-and-compliance", sicAndCompliance).recover{
@@ -194,6 +193,24 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
                              (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] = {
     http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", vatFrs).recover{
       case e: Exception => throw logResponse(e, "upsertVatFrsAnswers")
+    }
+  }
+
+  def getBusinessContact(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[JsValue]] = {
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${cp.registrationId}/business-contact") map { resp =>
+      resp.status match {
+        case OK         => Some(resp.json)
+        case NO_CONTENT => None
+      }
+    } recover {
+      case e: Exception => throw logResponse(e, "getBusinessContact")
+    }
+  }
+
+  def upsertBusinessContact(businessContactJson: JsValue)
+                           (implicit cp: CurrentProfile, hc: HeaderCarrier, rds: HttpReads[JsValue]): Future[JsValue] = {
+    http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${cp.registrationId}/business-contact", businessContactJson) recover {
+      case e: Exception => throw logResponse(e, "upsertBusinessContact")
     }
   }
 }
