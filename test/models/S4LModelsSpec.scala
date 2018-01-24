@@ -26,8 +26,6 @@ import models.view.sicAndCompliance.financial._
 import models.view.sicAndCompliance.labour.TemporaryContracts.TEMP_CONTRACTS_NO
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
-import models.view.vatContact.BusinessContactDetails
-import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.ZeroRatedSales.ZERO_RATED_SALES_YES
 import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
 import org.scalatest.Inspectors
@@ -191,62 +189,5 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
       S4LFlatRateScheme.apiT.toApi(s4l) shouldBe expected
     }
 
-  }
-
-  "S4LVatContact.S4LModelTransformer.toApi" should {
-
-    val s4l = S4LVatContact(
-      businessContactDetails = Some(BusinessContactDetails(
-        email = "email",
-        daytimePhone = Some("tel"),
-        mobile = Some("mobile"),
-        website = Some("website"))),
-      ppob = Some(PpobView(scrsAddress.id, Some(scrsAddress)))
-    )
-
-    "transform complete s4l container to API" in {
-
-      val expected = VatContact(
-        digitalContact = VatDigitalContact(
-          email = "email",
-          tel = Some("tel"),
-          mobile = Some("mobile")),
-        website = Some("website"),
-        ppob = scrsAddress)
-
-      S4LVatContact.apiT.toApi(s4l) shouldBe expected
-
-    }
-
-    "transform s4l container with incomplete data error" in {
-      val s4lNoContactDetails = s4l.copy(businessContactDetails = None)
-      an[IllegalStateException] should be thrownBy S4LVatContact.apiT.toApi(s4lNoContactDetails)
-
-      val s4lPpob = s4l.copy(ppob = None)
-      an[IllegalStateException] should be thrownBy S4LVatContact.apiT.toApi(s4lPpob)
-    }
-  }
-
-  "S4LVatContact.S4LModelTransformer.toS4LModel" should {
-
-    "transform API to S4L model" in {
-      val vs = emptyVatScheme.copy(vatContact = Some(
-        VatContact(
-          digitalContact = VatDigitalContact(email = "email", tel = Some("tel"), mobile = Some("mobile")),
-          website = Some("website"),
-          ppob = scrsAddress)))
-
-      val expected = S4LVatContact(
-        businessContactDetails = Some(BusinessContactDetails(
-                                      email = "email",
-                                      daytimePhone = Some("tel"),
-                                      mobile = Some("mobile"),
-                                      website = Some("website"))),
-        ppob = Some(PpobView(scrsAddress.id, Some(scrsAddress)))
-      )
-
-
-      S4LVatContact.modelT.toS4LModel(vs) shouldBe expected
-    }
   }
 }

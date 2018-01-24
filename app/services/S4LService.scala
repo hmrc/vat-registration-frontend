@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 class PersistenceService @Inject()(val s4LConnector: S4LConnect, val keystoreConnector: KeystoreConnect) extends S4LService
 
-trait S4LService extends CommonService {
+trait S4LService {
 
   val s4LConnector: S4LConnect
 

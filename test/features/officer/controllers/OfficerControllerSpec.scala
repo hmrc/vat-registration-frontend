@@ -422,7 +422,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       submitAuthorised(controller.submitPreviousAddress(), fakeRequest.withFormUrlEncodedBody(
         "previousAddressQuestionRadio" -> "true"
       )) {
-        _ redirectsTo s"${controllers.vatContact.ppob.routes.PpobController.show.url}"
+        _ redirectsTo s"${features.businessContact.routes.BusinessContactDetailsController.showPPOB().url}"
       }
     }
 
@@ -441,7 +441,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       when(mockAddressService.getAddressById(any())(any())).thenReturn(Future.successful(address))
 
       callAuthorised(controller.acceptFromTxmPreviousAddress("addressId")) {
-        _ redirectsTo s"${controllers.vatContact.ppob.routes.PpobController.show.url}"
+        _ redirectsTo s"${features.businessContact.routes.BusinessContactDetailsController.showPPOB().url}"
       }
     }
   }

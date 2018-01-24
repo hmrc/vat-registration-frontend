@@ -47,7 +47,8 @@ class FinancialsServiceSpec extends VatRegSpec with VatRegistrationFixture with 
   override def beforeEach() {
     super.beforeEach()
     mockFetchRegId(testRegId)
-    when(mockIIService.getIncorporationInfo(any())(any())).thenReturn(OptionT.none[Future, IncorporationInfo])
+    when(mockIIService.getIncorporationInfo(any())(any()))
+      .thenReturn(Future.successful(None))
   }
 
   "When this is the first time the user starts a journey and we're persisting to the backend" should {

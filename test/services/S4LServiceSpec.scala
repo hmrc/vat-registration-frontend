@@ -19,7 +19,6 @@ package services
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models._
-import models.view.vatContact.BusinessContactDetails
 import models.view.vatFinancials.EstimateZeroRatedSales
 import org.mockito.ArgumentMatchers.{any, eq => =~=}
 import org.mockito.Mockito._
@@ -49,7 +48,6 @@ class S4LServiceSpec extends VatRegSpec with VatRegistrationFixture {
   trait Setup {
     val service = new S4LService {
       override val s4LConnector = mockS4LConnector
-      override val keystoreConnector = mockKeystoreConnector
     }
 
     val key = TestGroup.s4lKey.key
@@ -83,20 +81,6 @@ class S4LServiceSpec extends VatRegSpec with VatRegistrationFixture {
       private val cacheMap = CacheMap("allData", Map.empty)
       mockS4LFetchAll(Some(cacheMap))
       service.fetchAll returns Some(cacheMap)
-    }
-  }
-
-  "getting a View Model from Save 4 Later" should {
-    "yield a None given a unpopulated Container" in new Setup {
-      val container = S4LVatContact(None)
-      service.getViewModel[BusinessContactDetails, S4LVatContact](Future.successful(container)).returnsNone
-    }
-
-    "yield a ViewModel given a populated Container" in new Setup {
-      private val contactDetails = BusinessContactDetails(email = "email", daytimePhone = Some("123"), mobile = Some("345"))
-      val container = S4LVatContact(Some(contactDetails))
-
-      service.getViewModel[BusinessContactDetails, S4LVatContact](Future.successful(container)) returnsSome contactDetails
     }
   }
 

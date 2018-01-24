@@ -60,10 +60,12 @@ class CurrentProfileServiceSpec extends VatRegSpec {
           .thenReturn(Future.successful("testCompanyName"))
 
         when(mockIIService.getIncorporationInfo(Matchers.any())(Matchers.any()))
-          .thenReturn(OptionT.liftF(Future.successful(IncorporationInfo(
-            IncorpSubscription("","","",""),
-            IncorpStatusEvent("", None, Some(now), None)
-          ))))
+          .thenReturn(Future.successful(Some(
+            IncorporationInfo(
+              IncorpSubscription("","","",""),
+              IncorpStatusEvent("", None, Some(now), None)
+            )
+          )))
 
         when(mockVatRegistrationService.getStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful(VatRegStatus.draft))
@@ -85,10 +87,12 @@ class CurrentProfileServiceSpec extends VatRegSpec {
           .thenReturn(Future.successful("testCompanyName"))
 
         when(mockIIService.getIncorporationInfo(Matchers.any())(Matchers.any()))
-          .thenReturn(OptionT.liftF(Future.successful(IncorporationInfo(
-            IncorpSubscription("","","",""),
-            IncorpStatusEvent("", None, Some(now), None)
-          ))))
+          .thenReturn(Future.successful(Some(
+            IncorporationInfo(
+              IncorpSubscription("","","",""),
+              IncorpStatusEvent("", None, Some(now), None)
+            )
+          )))
 
         when(mockVatRegistrationService.getStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful(VatRegStatus.draft))

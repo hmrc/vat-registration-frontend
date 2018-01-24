@@ -49,9 +49,10 @@ trait RegistrationService extends FinancialsService with LegacyServiceToBeRefact
 }
 
 // TODO refactor in a similar way to FRS
-trait LegacyServiceToBeRefactored extends CommonService {
-
+trait LegacyServiceToBeRefactored {
   self : RegistrationService =>
+
+  val keystoreConnector: KeystoreConnect
 
   private[services] def s4l[T: Format : S4LKey](implicit hc: HeaderCarrier, profile: CurrentProfile) =
     s4LService.fetchAndGet[T]

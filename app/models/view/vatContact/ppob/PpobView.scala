@@ -23,18 +23,5 @@ import play.api.libs.json.Json
 case class PpobView(addressId: String, address: Option[ScrsAddress] = None)
 
 object PpobView {
-
   implicit val format = Json.format[PpobView]
-
-//  implicit val viewModelFormat = ViewModelFormat(
-//    readF = (group: S4LVatContact) => group.ppob,
-//    updateF = (c: PpobView, g: Option[S4LVatContact]) => g.getOrElse(S4LVatContact()).copy(ppob = Some(c))
-//  )
-//
-//  // return a view model from a VatScheme instance
-//  implicit val modelTransformer = ApiModelTransformer[PpobView] { vs: VatScheme =>
-//    vs.vatContact.map { vc => PpobView(vc.ppob.id, Some(vc.ppob))
-//    }
-//  }
-
 }
