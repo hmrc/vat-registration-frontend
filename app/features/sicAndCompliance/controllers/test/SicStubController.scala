@@ -69,21 +69,21 @@ trait SicStubController extends VatRegistrationControllerNoAux with SessionProfi
         withCurrentProfile { implicit profile =>
           SicStubForm.form.bindFromRequest().fold(
             badForm => Future.successful(BadRequest(sic_stub(badForm))),
-            data    => s4LService.save[SicStub](data).flatMap { _ =>
-              val sicCodesList = data.fullSicCodes.map(configConnect.getSicCodeDetails)
-              keystoreConnector.cache(SIC_CODES_KEY, sicCodesList).flatMap { _ =>
-                if (data.sicCodes.lengthCompare(1) == 0) {
-                  sicAndCompService.updateSicAndCompliance(MainBusinessActivityView(sicCodesList.head)) map { _ =>
-                    if (sicAndCompService.needComplianceQuestions(sicCodesList)) {
-                      features.sicAndCompliance.controllers.routes.SicAndComplianceController.showComplianceIntro()
-                    } else {
-                      controllers.routes.TradingDetailsController.tradingNamePage()
-                    }
-                  }
+            data    => for {
+              _ <- s4LService.save[SicStub](data)
+              sicCodesList = data.fullSicCodes.map(configConnect.getSicCodeDetails)
+              _ <- keystoreConnector.cache(SIC_CODES_KEY, sicCodesList)
+              _ <- sicAndCompService.submitSicCodes(sicCodesList)
+            } yield {
+              if (data.sicCodes.lengthCompare(1) == 0) {
+                if (sicAndCompService.needComplianceQuestions(sicCodesList)) {
+                  Redirect(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showComplianceIntro())
                 } else {
-                  Future.successful(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showMainBusinessActivity())
+                  Redirect(controllers.routes.TradingDetailsController.tradingNamePage())
                 }
-              } map Redirect
+              } else {
+                Redirect(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showMainBusinessActivity())
+              }
             }
           )
         }
