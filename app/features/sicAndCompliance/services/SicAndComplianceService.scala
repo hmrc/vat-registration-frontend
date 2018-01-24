@@ -58,6 +58,19 @@ trait SicAndComplianceService {
     ))
   }
 
+  def submitSicCodes(sicCodes: List[SicCode])(implicit cp:CurrentProfile, hc:HeaderCarrier): Future[SicAndCompliance] = {
+    getSicAndCompliance flatMap { sac =>
+      val newSac = if (sicCodes.lengthCompare(1) == 0) sac.copy(mainBusinessActivity = Some(MainBusinessActivityView(sicCodes.head))) else sac
+      val newView = if (!needComplianceQuestions(sicCodes)) {
+        newSac.copy(companyProvideWorkers = None, workers = None, temporaryContracts = None, skilledWorkers = None)
+      } else {
+        newSac
+      }
+
+      updateSicAndCompliance(newView)
+    }
+  }
+
   private def getFromApi(implicit cp:CurrentProfile, hc:HeaderCarrier): Future[SicAndCompliance] = {
     for {
       optView <- registrationConnector.getSicAndCompliance
@@ -66,7 +79,7 @@ trait SicAndComplianceService {
     } yield view
   }
 
-  private def updateModel[T](before: SicAndCompliance, newData: T):SicAndCompliance = {
+  private def updateModel[T](before: SicAndCompliance, newData: T): SicAndCompliance = {
     newData match {
       case a: BusinessActivityDescription => before.copy(description = Some(a))
       case b: MainBusinessActivityView    => before.copy(mainBusinessActivity = Some(b))
@@ -74,6 +87,7 @@ trait SicAndComplianceService {
       case d: Workers                     => before.copy(workers = Some(d))
       case e: TemporaryContracts          => before.copy(temporaryContracts = Some(e))
       case f: SkilledWorkers              => before.copy(skilledWorkers = Some(f))
+      case g: SicAndCompliance            => g
       case _                              => before
     }
   }
