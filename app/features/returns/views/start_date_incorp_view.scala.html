@@ -4,7 +4,7 @@
 @import features.returns.DateSelection._
 @(startDateForm: Form[(DateSelection.Value, Option[LocalDate])], registeredDate : LocalDate, ctActiveDate : Option[LocalDate])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.templates.{vatInputRadioGroup, vatInput, errorSummary}
+@import views.html.helpers.templates.{errorSummary, vatInput, vatInputRadioGroup}
 
 @main_template(title = messages("pages.startDate.title")) {
 

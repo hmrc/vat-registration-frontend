@@ -16,8 +16,6 @@
 
 package controllers.builders
 
-import cats.syntax.show._
-import models.api.ScrsAddress.htmlShow._
 import models.api._
 import models.view.{SummaryRow, SummarySection}
 

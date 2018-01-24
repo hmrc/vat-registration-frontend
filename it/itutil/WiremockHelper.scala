@@ -15,7 +15,7 @@
  */
 package itutil
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDateTime
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -24,9 +24,9 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.Application
-import play.api.libs.json.{JsObject, JsValue, Json}
-import uk.gov.hmrc.crypto.{CompositeSymmetricCrypto, CryptoWithKeysFromConfig, Protected}
+import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.crypto.json.JsonEncryptor
+import uk.gov.hmrc.crypto.{CryptoWithKeysFromConfig, Protected}
 
 object WiremockHelper {
   val wiremockPort = 11111

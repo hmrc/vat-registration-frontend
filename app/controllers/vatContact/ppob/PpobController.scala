@@ -19,8 +19,8 @@ package controllers.vatContact.ppob
 import javax.inject.{Inject, Singleton}
 
 import cats.data.OptionT
-import connectors.KeystoreConnect
 import common.enums.AddressLookupJourneyIdentifier.businessActivities
+import connectors.KeystoreConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import forms.ppob.PpobForm
 import models.api.ScrsAddress

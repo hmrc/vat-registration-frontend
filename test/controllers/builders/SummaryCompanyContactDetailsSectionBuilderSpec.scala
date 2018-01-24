@@ -76,7 +76,6 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
       val b@(x, y) = (1, "2")
 
       import ScrsAddress.htmlShow._
-      import cats.syntax.show._
       val builder = SummaryCompanyContactDetailsSectionBuilder(Some(vatContact))
       builder.ppobRow mustBe
         SummaryRow(

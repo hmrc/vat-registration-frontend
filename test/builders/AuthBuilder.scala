@@ -19,8 +19,8 @@ package builders
 import java.util.UUID
 
 import models.UserIDs
-import org.mockito.{ArgumentMatchers => Matchers}
 import org.mockito.Mockito._
+import org.mockito.{ArgumentMatchers => Matchers}
 import play.api.mvc._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.frontend.auth.AuthContext

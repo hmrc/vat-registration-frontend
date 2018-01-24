@@ -16,23 +16,19 @@
 
 package controllers.builders
 
-import models.api._
+import features.sicAndCompliance.models.SicAndCompliance
 import models.view.SummarySection
 
-case class SummaryComplianceSectionBuilder(vatSicAndCompliance: Option[VatSicAndCompliance] = None)
+case class SummaryComplianceSectionBuilder(vatSicAndCompliance: Option[SicAndCompliance] = None)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "compliance"
 
-  val section =
-    List(
-      vatSicAndCompliance.flatMap(_.culturalCompliance),
-      vatSicAndCompliance.flatMap(_.financialCompliance),
-      vatSicAndCompliance.flatMap(_.labourCompliance)
-    ).flatten.map {
-      case c: VatComplianceCultural => SummaryCulturalComplianceSectionBuilder(vatSicAndCompliance).section
-      case c: VatComplianceFinancial => SummaryFinancialComplianceSectionBuilder(vatSicAndCompliance).section
-      case c: VatComplianceLabour => SummaryLabourComplianceSectionBuilder(vatSicAndCompliance).section
-    }.headOption.getOrElse(SummarySection(id = "none", rows = Seq(), display = false))
-
+  val section = {
+    val default = SummarySection(id = "none", rows = Seq(), display = false)
+      vatSicAndCompliance.fold(default) { sic =>
+        sic.companyProvideWorkers.map(_ =>
+          SummaryLabourComplianceSectionBuilder(vatSicAndCompliance).section).getOrElse(default)
+      }
+  }
 }

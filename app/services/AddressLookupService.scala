@@ -23,9 +23,8 @@ import common.enums.AddressLookupJourneyIdentifier
 import connectors.AddressLookupConnector
 import models.api.ScrsAddress
 import models.external.addresslookup._
-import play.api.{Configuration, Logger}
+import play.api.Configuration
 import play.api.i18n.MessagesApi
-import play.api.libs.json.Json
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
 

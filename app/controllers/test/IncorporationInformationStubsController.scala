@@ -21,7 +21,7 @@ import javax.inject.{Inject, Singleton}
 import connectors.test.TestRegistrationConnector
 import connectors.{KeystoreConnect, RegistrationConnector}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, SessionProfile}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector

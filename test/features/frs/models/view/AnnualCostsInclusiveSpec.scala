@@ -17,6 +17,7 @@
 package models.view.frs
 
 import fixtures.VatRegistrationFixture
+import models.ApiModelTransformer
 import models.api.VatFlatRateScheme
 import models.{AnnualCostsInclusiveView, ApiModelTransformer}
 import org.scalatest.{Inspectors, Matchers}

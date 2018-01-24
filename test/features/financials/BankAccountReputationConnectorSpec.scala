@@ -16,16 +16,16 @@
 
 package connectors
 
+import config.WSHttp
 import helpers.VatRegSpec
+import models.BankAccountDetails
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.libs.json.JsValue
-import config.WSHttp
-import models.BankAccountDetails
+import uk.gov.hmrc.http.Upstream5xxResponse
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.Upstream5xxResponse
 
 class BankAccountReputationConnectorSpec extends VatRegSpec {
 

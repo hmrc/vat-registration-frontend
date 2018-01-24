@@ -4,7 +4,7 @@
 @fieldSetClasses = @{
     if(tradingNameForm.hasErrors && (tradingNameForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
-@import views.html.helpers.templates.{vatInputRadioGroup, vatInput, errorSummary}
+@import views.html.helpers.templates.{errorSummary, vatInput, vatInputRadioGroup}
 
 @main_template(title = messages("pages.tradingName.title")) {
 

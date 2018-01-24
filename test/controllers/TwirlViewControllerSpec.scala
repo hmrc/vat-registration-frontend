@@ -17,19 +17,14 @@
 package controllers
 
 import helpers.VatRegSpec
-import models.CurrentProfile
-import org.mockito.Matchers
 import org.mockito.Mockito.when
-import play.api.http.Status
-
-import scala.concurrent.Future
 
 class TwirlViewControllerSpec extends VatRegSpec {
 
   object TestController extends TwirlViewController(
     ds,
     mockAuthConnector,
-    mockKeystoreConnector
+    mockKeystoreConnect
   )
 
   val redirectUrl = "http://localhost:9894/check-if-you-can-register-for-vat/national-insurance-number"

@@ -35,29 +35,27 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
           SummaryRow(
             "businessActivities.businessDescription",
             "app.common.no",
-            Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+            Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
           )
       }
 
       "a business activity description in sic and compliance should be shown when one is entered by the user" in {
-        val compliance = VatSicAndCompliance("Business Described", None, mainBusinessActivity = sicCode)
-        val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(compliance))
+        val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(s4lVatSicAndComplianceWithLabour))
         builder.companyBusinessDescriptionRow mustBe
           SummaryRow(
             "businessActivities.businessDescription",
-            "Business Described",
-            Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show())
+            testBusinessActivityDescription,
+            Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
           )
       }
 
       "a main business activity in sic and compliance should be shown when one is entered by the user" in {
-        val compliance = VatSicAndCompliance("Business Described", None, mainBusinessActivity = sicCode)
-        val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(compliance))
+        val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(s4lVatSicAndComplianceWithLabour))
         builder.companyMainBusinessActivityRow mustBe
           SummaryRow(
             "businessActivities.mainBusinessActivity",
-            "description",
-            Some(controllers.sicAndCompliance.routes.MainBusinessActivityController.show())
+            sicCode.description,
+            Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showMainBusinessActivity())
           )
       }
     }
@@ -65,7 +63,7 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
     "with section generate" should {
 
       "a valid summary section" in {
-        val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(validSicAndCompliance))
+        val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(s4lVatSicAndComplianceWithLabour))
         builder.section.id mustBe "businessActivities"
         builder.section.rows.length mustEqual 2
       }

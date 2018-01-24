@@ -16,15 +16,15 @@
 
 package mocks
 
-import org.mockito.{ArgumentMatchers => Matchers}
+import config.WSHttp
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
+import org.mockito.{ArgumentMatchers => Matchers}
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Writes
-import config.WSHttp
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 
 trait WSHTTPMock {
   this: MockitoSugar =>

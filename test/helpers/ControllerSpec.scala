@@ -21,6 +21,7 @@ import java.time.LocalDate
 import builders.AuthBuilder
 import common.enums.VatRegStatus
 import connectors.{ConfigConnector, KeystoreConnector}
+import features.sicAndCompliance.services.SicAndComplianceService
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when

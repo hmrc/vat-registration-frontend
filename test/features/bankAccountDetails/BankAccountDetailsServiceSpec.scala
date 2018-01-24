@@ -17,9 +17,8 @@
 package services
 
 import connectors.VatRegistrationConnector
-import models.{BankAccount, BankAccountDetails}
 import helpers.VatSpec
-import models.S4LKey
+import models.{BankAccount, BankAccountDetails, S4LKey}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import uk.gov.hmrc.http.HttpResponse

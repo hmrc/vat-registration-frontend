@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import config.WSHttp
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.http.{CoreGet, HeaderCarrier}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 

@@ -16,13 +16,13 @@
 
 package controllers.test
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import utils._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import utils._
 
 import scala.concurrent.Future
 
