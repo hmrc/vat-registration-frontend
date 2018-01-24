@@ -18,14 +18,14 @@ package controllers.test
 
 import javax.inject.{Inject, Singleton}
 
-import connectors.KeystoreConnect
+import connectors.{KeystoreConnect, S4LConnect}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
+import features.businessContact.models.BusinessContact
 import features.officer.models.view.LodgingOfficer
 import features.turnoverEstimates.TurnoverEstimatesService
 import forms.test.TestSetupForm
-import models.api._
 import models.view.test._
-import models.{S4LKey, S4LVatContact, S4LVatFinancials, S4LVatSicAndCompliance, _}
+import models.{S4LKey, S4LVatFinancials, S4LVatSicAndCompliance, _}
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService, SessionProfile}
@@ -36,6 +36,7 @@ import scala.concurrent.Future
 
 @Singleton
 class TestSetupController @Inject()(implicit val s4LService: S4LService,
+                                    val s4lConnector: S4LConnect,
                                     vatRegistrationService: RegistrationService,
                                     s4LBuilder: TestS4LBuilder,
                                     ds: CommonPlayDependencies,
@@ -50,30 +51,28 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
       implicit request =>
         withCurrentProfile { implicit profile =>
           for {
-            vatFinancials <- s4LService.fetchAndGet[S4LVatFinancials]
-            sicStub <- s4LService.fetchAndGet[SicStub]
+            vatFinancials       <- s4LService.fetchAndGet[S4LVatFinancials]
+            sicStub             <- s4LService.fetchAndGet[SicStub]
             vatSicAndCompliance <- s4LService.fetchAndGet[S4LVatSicAndCompliance]
-            vatContact <- s4LService.fetchAndGet[S4LVatContact]
-            lodgingOfficer <- s4LService.fetchAndGet[LodgingOfficer]
-            frs <- s4LService.fetchAndGet[S4LFlatRateScheme]
-
-            bankAccount       <- s4LService.fetchAndGetNoAux(S4LKey.bankAccountKey)
-            returns           <- s4LService.fetchAndGetNoAux(S4LKey.returns)
-            turnoverEstimates <- turnoverService.fetchTurnoverEstimates
-            tradingDetails    <- s4LService.fetchAndGetNoAux(S4LKey.tradingDetails)
-
+            businessContact     <- s4lConnector.fetchAndGet[BusinessContact](profile.registrationId, "business-contact")
+            lodgingOfficer      <- s4LService.fetchAndGet[LodgingOfficer]
+            frs                 <- s4LService.fetchAndGet[S4LFlatRateScheme]
+            bankAccount         <- s4LService.fetchAndGetNoAux(S4LKey.bankAccountKey)
+            returns             <- s4LService.fetchAndGetNoAux(S4LKey.returns)
+            turnoverEstimates   <- turnoverService.fetchTurnoverEstimates
+            tradingDetails      <- s4LService.fetchAndGetNoAux(S4LKey.tradingDetails)
             testSetup = TestSetup(
               VatContactTestSetup(
-                email = vatContact.flatMap(_.businessContactDetails).map(_.email),
-                daytimePhone = vatContact.flatMap(_.businessContactDetails).flatMap(_.daytimePhone),
-                mobile = vatContact.flatMap(_.businessContactDetails).flatMap(_.mobile),
-                website = vatContact.flatMap(_.businessContactDetails).flatMap(_.website),
-                line1 = vatContact.flatMap(_.ppob).flatMap(_.address).map(_.line1),
-                line2 = vatContact.flatMap(_.ppob).flatMap(_.address).map(_.line2),
-                line3 = vatContact.flatMap(_.ppob).flatMap(_.address).flatMap(_.line3),
-                line4 = vatContact.flatMap(_.ppob).flatMap(_.address).flatMap(_.line4),
-                postcode = vatContact.flatMap(_.ppob).flatMap(_.address).flatMap(_.postcode),
-                country = vatContact.flatMap(_.ppob).flatMap(_.address).flatMap(_.country)
+                email        = businessContact.flatMap(_.companyContactDetails).map(_.email),
+                daytimePhone = businessContact.flatMap(_.companyContactDetails).flatMap(_.phoneNumber),
+                mobile       = businessContact.flatMap(_.companyContactDetails).flatMap(_.mobileNumber),
+                website      = businessContact.flatMap(_.companyContactDetails).flatMap(_.websiteAddress),
+                line1        = businessContact.flatMap(_.ppobAddress).map(_.line1),
+                line2        = businessContact.flatMap(_.ppobAddress).map(_.line2),
+                line3        = businessContact.flatMap(_.ppobAddress).flatMap(_.line3),
+                line4        = businessContact.flatMap(_.ppobAddress).flatMap(_.line4),
+                postcode     = businessContact.flatMap(_.ppobAddress).flatMap(_.postcode),
+                country      = businessContact.flatMap(_.ppobAddress).flatMap(_.country)
               ),
               VatFinancialsTestSetup(
                 vatFinancials.flatMap(_.zeroRatedTurnover).map(_.yesNo),
@@ -180,7 +179,7 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                   _ <- s4LService.save(s4LBuilder.vatSicAndComplianceFromData(data))
                   _ <- s4LService.save(s4LBuilder.vatFinancialsFromData(data))
                   _ <- s4LService.saveNoAux(s4LBuilder.tradingDetailsFromData(data), S4LKey.tradingDetails)
-                  _ <- s4LService.save(s4LBuilder.vatContactFromData(data))
+                  _ <- s4lConnector.save[BusinessContact](profile.registrationId, "business-contact", s4LBuilder.vatContactFromData(data))
 
                   lodgingOfficer = s4LBuilder.buildLodgingOfficerFromTestData(data)
                   _ <- s4LService.save(lodgingOfficer)

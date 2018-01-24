@@ -29,7 +29,7 @@ import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsCon
 import controllers.test.{FeatureSwitchController, FeatureSwitchCtrl}
 import controllers.{FlatRateController, FlatRateControllerImpl, TradingDetailsController, TradingDetailsControllerImpl}
 import features.bankAccountDetails.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
-import features.businessContact.{BusinessContactService, BusinessContactServiceImpl}
+import features.businessContact.{BusinessContactService, BusinessContactServiceImpl, BusinessContactDetailsController, BusinessContactDetailsControllerImpl}
 import features.officer.controllers._
 import features.officer.services.{IVService, IVServiceImpl, LodgingOfficerService, LodgingOfficerServiceImpl}
 import features.returns.{ReturnsController, ReturnsControllerImpl, ReturnsService, ReturnsServiceImpl}
@@ -86,6 +86,7 @@ class Module extends AbstractModule {
     bind(classOf[ReturnsController]).to(classOf[ReturnsControllerImpl]).asEagerSingleton()
     bind(classOf[OfficerController]).to(classOf[OfficerControllerImpl]).asEagerSingleton()
     bind(classOf[TradingDetailsController]).to(classOf[TradingDetailsControllerImpl]).asEagerSingleton()
+    bind(classOf[BusinessContactDetailsController]).to(classOf[BusinessContactDetailsControllerImpl]).asEagerSingleton()
   }
 
   private def bindServices(): Unit = {

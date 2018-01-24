@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package forms.vatContact
+package features.businessContact.forms
 
+import features.businessContact.models.CompanyContactDetails
 import forms.FormValidation
 import forms.FormValidation._
-import models.view.vatContact.BusinessContactDetails
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
-object BusinessContactDetailsForm {
+object CompanyContactDetailsForm {
 
-  val EMAIL_MAX_LENGTH = 70
-  val PHONE_NUMBER_PATTERN = """[\d]{1,20}""".r
+  val EMAIL_MAX_LENGTH      = 70
+  val PHONE_NUMBER_PATTERN  = """[\d]{1,20}""".r
 
-  private val FORM_NAME = "businessContactDetails"
+  private val FORM_NAME     = "businessContactDetails"
 
-  private val EMAIL = "email"
-  private val DAYTIME_PHONE = "daytimePhone"
-  private val MOBILE = "mobile"
-  private val WEBSITE = "website"
+  private val EMAIL         = "email"
+  private val DAYTIME_PHONE = "phoneNumber"
+  private val MOBILE        = "mobileNumber"
+  private val WEBSITE       = "websiteAddress"
 
   private def validationError(field: String) = ValidationError(s"validation.businessContactDetails.$field.missing", field)
 
@@ -42,17 +42,15 @@ object BusinessContactDetailsForm {
 
   val form = Form(
     mapping(
-      EMAIL -> textMapping()(s"$FORM_NAME.$EMAIL").verifying(StopOnFirstFail(mandatoryText()(s"$FORM_NAME.$EMAIL"),FormValidation.IsEmail(s"$FORM_NAME.$EMAIL"),maxLenText(EMAIL_MAX_LENGTH))),
+      EMAIL         -> textMapping()(s"$FORM_NAME.$EMAIL").verifying(StopOnFirstFail(mandatoryText()(s"$FORM_NAME.$EMAIL"),FormValidation.IsEmail(s"$FORM_NAME.$EMAIL"),maxLenText(EMAIL_MAX_LENGTH))),
       DAYTIME_PHONE -> optional(text.transform(removeSpaces, identity[String]).verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$DAYTIME_PHONE"))),
-      MOBILE -> optional(text.transform(removeSpaces, identity[String]).verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$MOBILE"))),
-      WEBSITE -> optional(text)
-    )(BusinessContactDetails.apply)(BusinessContactDetails.unapply).verifying(atLeastOnePhoneNumber)
+      MOBILE        -> optional(text.transform(removeSpaces, identity[String]).verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$MOBILE"))),
+      WEBSITE       -> optional(text)
+    )(CompanyContactDetails.apply)(CompanyContactDetails.unapply).verifying(atLeastOnePhoneNumber)
   )
 
-  def atLeastOnePhoneNumber: Constraint[BusinessContactDetails] = Constraint {
-    case BusinessContactDetails(_, None, None, _) =>
-      Invalid(Seq(DAYTIME_PHONE, MOBILE).map(validationError))
-    case _ => Valid
+  private def atLeastOnePhoneNumber: Constraint[CompanyContactDetails] = Constraint {
+    case CompanyContactDetails(_, None, None, _) => Invalid(Seq(DAYTIME_PHONE, MOBILE).map(validationError))
+    case _                                       => Valid
   }
-
 }

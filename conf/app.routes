@@ -144,14 +144,14 @@ POST        /provides-discretionary-investment-management-services              
 GET         /manages-funds-not-included-in-this-list                                           controllers.sicAndCompliance.financial.ManageAdditionalFundsController.show
 POST        /manages-funds-not-included-in-this-list                                           controllers.sicAndCompliance.financial.ManageAdditionalFundsController.submit
 
-## BUSINESS CONTACT DETAILS PAGE
-GET         /company-contact-details                                                           controllers.vatContact.BusinessContactDetailsController.show
-POST        /company-contact-details                                                           controllers.vatContact.BusinessContactDetailsController.submit
-
 ## PPOB ADDRESS
-GET         /where-will-company-carry-out-most-of-its-business-activities                      controllers.vatContact.ppob.PpobController.show
-POST        /where-will-company-carry-out-most-of-its-business-activities                      controllers.vatContact.ppob.PpobController.submit
-GET         /where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm        controllers.vatContact.ppob.PpobController.acceptFromTxm(id: String ?= "")
+GET         /where-will-company-carry-out-most-of-its-business-activities                      features.businessContact.BusinessContactDetailsController.showPPOB
+POST        /where-will-company-carry-out-most-of-its-business-activities                      features.businessContact.BusinessContactDetailsController.submitPPOB
+GET         /where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm        features.businessContact.BusinessContactDetailsController.returnFromTxm(id: String ?= "")
+
+## BUSINESS CONTACT DETAILS PAGE
+GET         /company-contact-details                                                           features.businessContact.BusinessContactDetailsController.showCompanyContactDetails
+POST        /company-contact-details                                                           features.businessContact.BusinessContactDetailsController.submitCompanyContactDetails
 
 ## OFFICER ADDRESS PAGE
 GET         /your-home-address                                                                 features.officer.controllers.OfficerController.showHomeAddress

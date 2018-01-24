@@ -1,0 +1,86 @@
+
+@import features.businessContact.models.CompanyContactDetails
+@(companyContactDetailsForm: Form[CompanyContactDetails])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.templates.{vatInput, errorSummary}
+
+@main_template(title = messages("pages.businessContactDetails.title")) {
+
+  @errorSummary(
+      messages("app.common.errorSummaryLabel"),
+      companyContactDetailsForm
+  )
+
+  <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.businessContactDetails.heading")</h1>
+
+  <p>@Html(messages("pages.businessContactDetails.para1"))</p>
+
+  @govHelpers.form(action = features.businessContact.routes.BusinessContactDetailsController.submitCompanyContactDetails()) {
+      <div class="form-group">
+          <fieldset>
+
+              <legend>@Html(messages("pages.businessContactDetails.para2"))</legend>
+
+              @companyContactDetailsForm.errors.find(_.args.contains("businessContactDetails")).map { error =>
+                  @govHelpers.errorInline("businessContactDetails", messages(error.message))
+              }
+
+              @vatInput(
+                  companyContactDetailsForm("email"),
+                  '_divClass    -> "form-group",
+                  '_inputClass  -> "form-control",
+                  '_labelClass  -> "cascading",
+                  '_maxlength   -> 70,
+                  '_label       -> messages("pages.businessContactDetails.emailAddress.label")
+              )
+
+              <div class="panel indent" id="details-content-0" aria-hidden="true">
+                  <p>@Html(messages("pages.businessContactDetails.para3"))</p>
+              </div>
+              <br />
+
+              @vatInput(
+                  companyContactDetailsForm("phoneNumber"),
+                  '_type        -> "text",
+                  '_divClass    -> "form-group",
+                  '_inputClass  -> "form-control",
+                  '_labelClass  -> "cascading",
+                  '_maxlength   -> 20,
+                  '_label       -> messages("pages.businessContactDetails.daytimePhone.label")
+              )
+
+              @vatInput(
+                  companyContactDetailsForm("mobileNumber"),
+                  '_type        -> "text",
+                  '_divClass    -> "form-group",
+                  '_inputClass  -> "form-control",
+                  '_labelClass  -> "cascading",
+                  '_maxlength   -> 20,
+                  '_label       -> messages("pages.businessContactDetails.mobile.label")
+              )
+
+
+              @vatInput(
+                  companyContactDetailsForm("websiteAddress"),
+                  '_type        -> "text",
+                  '_inputClass  -> "form-control",
+                  '_labelClass  -> "cascading",
+                  '_maxlength   -> 255,
+                  '_label       -> messages("pages.businessContactDetails.website.label")
+              )
+
+          </fieldset>
+
+      </div>
+
+      <div class="form-group">
+          <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+      </div>
+  }
+}
+
+<script type="text/javascript">
+        $(document).ready($(function () {
+            BusinessContactDetailsPage.init()
+        }));
+</script>

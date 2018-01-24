@@ -35,9 +35,9 @@ trait BusinessContactService {
 
   private val BUSINESS_CONTACT = "business-contact"
 
-  type Completion[T] = Either[T, T]
-  val Incomplete     = scala.util.Left
-  val Complete       = scala.util.Right
+  private type Completion[T] = Either[T, T]
+  private val Incomplete     = scala.util.Left
+  private val Complete       = scala.util.Right
 
   def getBusinessContact(implicit cp: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[BusinessContact] = {
     def getFromVatRegistration: Future[Option[BusinessContact]] = registrationConnector.getBusinessContact map {
@@ -59,7 +59,9 @@ trait BusinessContactService {
     getBusinessContact flatMap { businessContact =>
       isModelComplete(updateBusinessContactModel[T](data, businessContact)).fold(
         incomplete => s4lConnector.save[BusinessContact](cp.registrationId,BUSINESS_CONTACT, incomplete) map(_ => data),
-        complete   => registrationConnector.upsertBusinessContact(BusinessContact.toApi(complete)) map(_ => data)
+        complete   => registrationConnector.upsertBusinessContact(BusinessContact.toApi(complete)) flatMap { _ =>
+          s4lConnector.clear(cp.registrationId) map(_ => data)
+        }
       )
     }
   }

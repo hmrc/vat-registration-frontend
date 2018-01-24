@@ -69,9 +69,8 @@ trait LegacyServiceToBeRefactored extends CommonService {
     for {
       vatScheme <- vatRegConnector.createNewRegistration
       txId      <- compRegConnector.getTransactionId(vatScheme.id)
-      _         <- incorporationService.getIncorporationInfo(txId).map {
-        status => keystoreConnector.cache[IncorporationInfo](INCORPORATION_STATUS, status)
-      }.value
+      status    <- incorporationService.getIncorporationInfo(txId)
+      _         =   status map(x => keystoreConnector.cache[IncorporationInfo](INCORPORATION_STATUS, x))
     } yield (vatScheme.id, txId)
 
   def submitSicAndCompliance(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatSicAndCompliance] = {
@@ -84,19 +83,6 @@ trait LegacyServiceToBeRefactored extends CommonService {
       vs       <- getVatScheme
       vsc      <- s4l[S4LVatSicAndCompliance]
       response <- vatRegConnector.upsertSicAndCompliance(profile.registrationId, merge(vsc, vs))
-    } yield response
-  }
-
-  def submitVatContact(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatContact] = {
-    def merge(fresh: Option[S4LVatContact], vs: VatScheme): VatContact =
-      fresh.fold(
-        vs.vatContact.getOrElse(throw fail("VatContact"))
-      )(s4l => S4LVatContact.apiT.toApi(s4l))
-
-    for {
-      vs       <- getVatScheme
-      vlo      <- s4l[S4LVatContact]
-      response <- vatRegConnector.upsertVatContact(profile.registrationId, merge(vlo, vs))
     } yield response
   }
 

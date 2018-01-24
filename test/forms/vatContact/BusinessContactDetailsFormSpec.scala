@@ -16,6 +16,7 @@
 
 package forms.vatContact
 
+import features.businessContact.forms.BusinessContactDetailsForm
 import models.view.vatContact.BusinessContactDetails
 import uk.gov.hmrc.play.test.UnitSpec
 

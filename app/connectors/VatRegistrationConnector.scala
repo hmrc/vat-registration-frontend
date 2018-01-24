@@ -116,11 +116,11 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
     http.DELETE[HttpResponse](s"$vatRegUrl/vatreg/$regId/delete-scheme").map(_.status == OK)
   }
 
-  def getIncorporationInfo(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[IncorporationInfo] = OptionT(
+  def getIncorporationInfo(transactionId: String)(implicit hc: HeaderCarrier): Future[Option[IncorporationInfo]] = {
     http.GET[IncorporationInfo](s"$vatRegUrl/vatreg/incorporation-information/$transactionId").map(Some(_)).recover {
       case _ => Option.empty[IncorporationInfo]
     }
-  )
+  }
 
   def deleteVREFESession(regId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     http.DELETE[HttpResponse](s"$vatRegElUrl/internal/$regId/delete-session")

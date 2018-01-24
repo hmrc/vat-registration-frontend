@@ -16,6 +16,7 @@
 
 package features.businessContact.models
 
+import models.S4LKey
 import models.api.ScrsAddress
 import play.api.libs.json._
 
@@ -24,6 +25,7 @@ case class BusinessContact(ppobAddress: Option[ScrsAddress] = None,
 
 object BusinessContact {
   implicit val format: Format[BusinessContact] = Json.format[BusinessContact]
+  implicit val businessContactS4lkey: S4LKey[BusinessContact] = S4LKey("business-contact")
 
   def fromApi(json: JsValue): BusinessContact = {
     val ppob           = json.\("ppob").as[ScrsAddress]
@@ -39,5 +41,10 @@ object BusinessContact {
     val contactDetails  = Json.toJson(businessContact.companyContactDetails.get)(CompanyContactDetails.apiWrites).as[JsObject]
 
     ppob ++ contactDetails
+  }
+
+  val apiFormat: Format[BusinessContact] = new Format[BusinessContact] {
+    override def writes(o: BusinessContact) = toApi(o)
+    override def reads(json: JsValue)       = JsSuccess(fromApi(json))
   }
 }

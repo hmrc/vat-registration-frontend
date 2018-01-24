@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms.ppob
+package features.businessContact.forms
 
 import forms.FormValidation.textMapping
 import models.view.vatContact.ppob.PpobView

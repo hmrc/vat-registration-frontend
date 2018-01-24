@@ -20,16 +20,14 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
-import cats.data.OptionT
-import cats.data.OptionT.fromOption
 import cats.instances.{FutureInstances, ListInstances}
 import cats.syntax.TraverseSyntax
-import connectors.{OptionalResponse, PPConnector}
+import connectors.PPConnector
+import features.businessContact.models.BusinessContact
 import features.officer.models.view.LodgingOfficer
 import models._
 import models.api._
-import models.external.{AccountingDetails, Officer}
-import play.api.libs.json.Format
+import models.external.Officer
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -55,24 +53,19 @@ trait PrePopService extends TraverseSyntax with ListInstances with FutureInstanc
       optDate     = ctReg.flatMap(_.accountingDetails).flatMap(_.activeDate)
     } yield optDate.map(dateString => LocalDate.parse(dateString, formatter))
 
-  private def getAddresses[T: S4LKey : Format](save4laterExtractor: T => Option[ScrsAddress])
-                                              (implicit mt: ApiModelTransformer[ScrsAddress], hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
-    List(
-      incorpInfoService.getRegisteredOfficeAddress,
-      OptionT(vatRegService.getVatScheme map mt.toViewModel),
-      OptionT(save4later.fetchAndGet[T]).subflatMap(save4laterExtractor)
-    ).traverse(_.value).map(_.flatten.distinct)
+  def getPpobAddressList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
+    for {
+      roAddress       <- incorpInfoService.getRegisteredOfficeAddress
+      ppobAddress     <- vatRegService.getVatScheme map(_.businessContact flatMap(_.ppobAddress))
+      businessContact <- save4later.fetchAndGet[BusinessContact]
+      s4lAddress      =  businessContact.flatMap(_.ppobAddress)
+    } yield List(roAddress, ppobAddress, s4lAddress).flatten.distinct
   }
 
   def getOfficerAddressList(officer: LodgingOfficer)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
-    incorpInfoService.getRegisteredOfficeAddress.value map {
+    incorpInfoService.getRegisteredOfficeAddress map {
       address => Seq(address, officer.homeAddress.fold(Option.empty[ScrsAddress])(_.address)).flatten.distinct
     }
-  }
-
-  def getPpobAddressList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
-    import ScrsAddress.modelTransformerPpobView
-    getAddresses((_: S4LVatContact).ppob.flatMap(_.address))
   }
 
   def getOfficerList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[Officer]] = {

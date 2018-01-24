@@ -17,6 +17,7 @@
 package models.api
 
 import common.enums.VatRegStatus
+import features.businessContact.models.BusinessContact
 import features.officer.models.view.LodgingOfficer
 import features.returns.Returns
 import features.tradingDetails.TradingDetails
@@ -32,7 +33,7 @@ case class VatScheme(
                       tradingDetails: Option[TradingDetails] = None,
                       financials: Option[VatFinancials] = None,
                       vatSicAndCompliance: Option[VatSicAndCompliance] = None,
-                      vatContact: Option[VatContact] = None,
+                      businessContact: Option[BusinessContact] = None,
                       threshold: Option[Threshold] = None,
                       returns: Option[Returns] = None,
                       turnOverEstimates: Option[TurnoverEstimates] = None,
@@ -43,19 +44,19 @@ case class VatScheme(
 
 object VatScheme {
   implicit val frmt = TradingDetails.apiFormat
+
   implicit val format: OFormat[VatScheme] = (
     (__ \ "registrationId").format[String] and
-      (__ \ "lodgingOfficer").formatNullable[LodgingOfficer].inmap[Option[LodgingOfficer]](_ => Option.empty[LodgingOfficer], _ => Option.empty[LodgingOfficer]) and
-      (__ \ "tradingDetails").formatNullable[TradingDetails] and
-      (__ \ "financials").formatNullable[VatFinancials] and
-      (__ \ "vatSicAndCompliance").formatNullable[VatSicAndCompliance] and
-      (__ \ "vatContact").formatNullable[VatContact] and
-      (__ \ "threshold").formatNullable[Threshold] and
-      (__ \ "returns").formatNullable[Returns] and
-      (__ \ "turnoverEstimates").formatNullable[TurnoverEstimates] and
-      (__ \ "bankAccount").formatNullable[BankAccount] and
-      (__ \ "vatFlatRateScheme").formatNullable[VatFlatRateScheme] and
-      (__ \ "status").format[VatRegStatus.Value]
-    ) (VatScheme.apply, unlift(VatScheme.unapply))
-
+    (__ \ "lodgingOfficer").formatNullable[LodgingOfficer].inmap[Option[LodgingOfficer]](_ => Option.empty[LodgingOfficer], _ => Option.empty[LodgingOfficer]) and
+    (__ \ "tradingDetails").formatNullable[TradingDetails] and
+    (__ \ "financials").formatNullable[VatFinancials] and
+    (__ \ "vatSicAndCompliance").formatNullable[VatSicAndCompliance] and
+    (__ \ "businessContact").formatNullable[BusinessContact](BusinessContact.apiFormat) and
+    (__ \ "threshold").formatNullable[Threshold] and
+    (__ \ "returns").formatNullable[Returns] and
+    (__ \ "turnoverEstimates").formatNullable[TurnoverEstimates] and
+    (__ \ "bankAccount").formatNullable[BankAccount] and
+    (__ \ "vatFlatRateScheme").formatNullable[VatFlatRateScheme] and
+    (__ \ "status").format[VatRegStatus.Value]
+  )(VatScheme.apply, unlift(VatScheme.unapply))
 }

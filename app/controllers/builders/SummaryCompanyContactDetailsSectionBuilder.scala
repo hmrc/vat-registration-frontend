@@ -17,44 +17,45 @@
 package controllers.builders
 
 import cats.syntax.show._
+import features.businessContact.models.BusinessContact
 import models.api.ScrsAddress.htmlShow._
 import models.api._
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryCompanyContactDetailsSectionBuilder(vatContact: Option[VatContact] = None)
+case class SummaryCompanyContactDetailsSectionBuilder(businessContact: Option[BusinessContact] = None)
   extends SummarySectionBuilder {
 
   override val sectionId: String = "companyContactDetails"
 
   val businessEmailRow: SummaryRow = SummaryRow(
     s"$sectionId.email",
-    vatContact.fold("")(_.digitalContact.email),
-    Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
+    businessContact.fold("")(_.companyContactDetails.get.email),
+    Some(features.businessContact.routes.BusinessContactDetailsController.showCompanyContactDetails())
   )
 
   val businessDaytimePhoneNumberRow: SummaryRow = SummaryRow(
     s"$sectionId.daytimePhone",
-    vatContact.flatMap(_.digitalContact.tel).getOrElse(""),
-    Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
+    businessContact.fold("")(_.companyContactDetails.get.phoneNumber.getOrElse("")),
+    Some(features.businessContact.routes.BusinessContactDetailsController.showCompanyContactDetails())
   )
 
   val businessMobilePhoneNumberRow: SummaryRow = SummaryRow(
     s"$sectionId.mobile",
-    vatContact.flatMap(_.digitalContact.mobile).getOrElse(""),
-    Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
+    businessContact.fold("")(_.companyContactDetails.get.mobileNumber.getOrElse("")),
+    Some(features.businessContact.routes.BusinessContactDetailsController.showCompanyContactDetails())
   )
 
 
   val businessWebsiteRow: SummaryRow = SummaryRow(
     s"$sectionId.website",
-    vatContact.flatMap(_.website).getOrElse(""),
-    Some(controllers.vatContact.routes.BusinessContactDetailsController.show())
+    businessContact.fold("")(_.companyContactDetails.get.websiteAddress.getOrElse("")),
+    Some(features.businessContact.routes.BusinessContactDetailsController.showCompanyContactDetails())
   )
 
   val ppobRow: SummaryRow = SummaryRow(
     s"$sectionId.ppob",
-    vatContact.map(vc => ScrsAddress.normalisedSeq(vc.ppob)).getOrElse(Seq("")),
-    Some(controllers.vatContact.ppob.routes.PpobController.show())
+    businessContact.map(bc => ScrsAddress.normalisedSeq(bc.ppobAddress.get)).getOrElse(Seq()),
+    Some(features.businessContact.routes.BusinessContactDetailsController.showCompanyContactDetails())
   )
 
 
@@ -62,9 +63,9 @@ case class SummaryCompanyContactDetailsSectionBuilder(vatContact: Option[VatCont
     sectionId,
     Seq(
       (businessEmailRow, true),
-      (businessDaytimePhoneNumberRow, vatContact.exists(_.digitalContact.tel.isDefined)),
-      (businessMobilePhoneNumberRow, vatContact.exists(_.digitalContact.mobile.isDefined)),
-      (businessWebsiteRow, vatContact.exists(_.website.isDefined)),
+      (businessDaytimePhoneNumberRow, businessContact.exists(_.companyContactDetails.exists(_.phoneNumber.isDefined))),
+      (businessMobilePhoneNumberRow, businessContact.exists(_.companyContactDetails.exists(_.mobileNumber.isDefined))),
+      (businessWebsiteRow, businessContact.exists(_.companyContactDetails.exists(_.websiteAddress.isDefined))),
       (ppobRow, true)
     )
   )

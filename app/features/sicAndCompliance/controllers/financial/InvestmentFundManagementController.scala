@@ -25,7 +25,7 @@ package controllers.sicAndCompliance.financial {
   import models.S4LVatSicAndCompliance.dropFromInvFundManagement
   import models.view.sicAndCompliance.financial.InvestmentFundManagement
   import play.api.mvc.{Action, AnyContent}
-  import services.{CommonService, RegistrationService, S4LService, SessionProfile}
+  import services.{RegistrationService, S4LService, SessionProfile}
   import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
   @Singleton
@@ -33,7 +33,7 @@ package controllers.sicAndCompliance.financial {
                                                      val keystoreConnector: KeystoreConnect,
                                                      val authConnector: AuthConnector,
                                                      implicit val s4lService: S4LService,
-                                                     implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with CommonService with SessionProfile {
+                                                     implicit val vrs: RegistrationService) extends VatRegistrationController(ds) with SessionProfile {
 
     val form = InvestmentFundManagementForm.form
 

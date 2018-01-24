@@ -26,8 +26,6 @@ import models.view.sicAndCompliance.labour.SkilledWorkers.SKILLED_WORKERS_YES
 import models.view.sicAndCompliance.labour.TemporaryContracts.TEMP_CONTRACTS_YES
 import models.view.sicAndCompliance.labour.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
 import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
-import models.view.vatContact.BusinessContactDetails
-import models.view.vatContact.ppob.PpobView
 import play.api.libs.json.{Json, OFormat}
 
 
@@ -197,42 +195,6 @@ object S4LVatSicAndCompliance {
                                   manageFundsAdditional = c.manageAdditionalFunds.map(_.yesNo)
                                 ))
 
-      )
-  }
-}
-
-@deprecated
-//TODO: remove in clean up
-final case class S4LVatContact
-(
-  businessContactDetails: Option[BusinessContactDetails] = None,
-  ppob: Option[PpobView] = None
-)
-
-@deprecated
-//TODO: remove in clean up
-object S4LVatContact {
-  implicit val format: OFormat[S4LVatContact] = Json.format[S4LVatContact]
-
-  implicit val modelT = new S4LModelTransformer[S4LVatContact] {
-    override def toS4LModel(vs: VatScheme): S4LVatContact =
-      S4LVatContact(
-        businessContactDetails = ApiModelTransformer[BusinessContactDetails].toViewModel(vs),
-        ppob = ApiModelTransformer[PpobView].toViewModel(vs)
-      )
-  }
-
-  def error = throw fail("VatContact")
-
-  implicit val apiT = new S4LApiTransformer[S4LVatContact, VatContact] {
-    override def toApi(c: S4LVatContact): VatContact =
-      VatContact(
-        digitalContact = VatDigitalContact(
-                          email = c.businessContactDetails.map(_.email).getOrElse(error),
-                          tel = c.businessContactDetails.flatMap(_.daytimePhone),
-                          mobile = c.businessContactDetails.flatMap(_.mobile)),
-        website = c.businessContactDetails.flatMap(_.website),
-        ppob = c.ppob.flatMap(_.address).getOrElse(error)
       )
   }
 }
