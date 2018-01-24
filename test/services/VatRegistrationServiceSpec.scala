@@ -22,17 +22,16 @@ import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models._
 import models.external.IncorporationInfo
-import models.view.sicAndCompliance.{BusinessActivityDescription, MainBusinessActivityView}
 import models.view.vatContact.ppob.PpobView
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 import scala.language.postfixOps
-import uk.gov.hmrc.http.HeaderCarrier
 
 class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
@@ -42,7 +41,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       mockRegConnector,
       mockCompanyRegConnector,
       mockIIService,
-      mockKeystoreConnector,
+      mockKeystoreConnect,
       mockTurnoverEstimatesService
     )
   }
@@ -93,27 +92,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     }
   }
 
-  "Calling submitSicAndCompliance" should {
-    "return a success response when SicAndCompliance is submitted" in new Setup {
-      save4laterReturnsNothing[S4LVatSicAndCompliance]()
-      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(validVatScheme.pure)
-      when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any())).thenReturn(validSicAndCompliance.pure)
-
-      service.submitSicAndCompliance returns validSicAndCompliance
-    }
-
-    "return a success response when SicAndCompliance is submitted for the first time" in new Setup {
-      save4laterReturns(S4LVatSicAndCompliance(
-        description = Some(BusinessActivityDescription("bad")),
-        mainBusinessActivity = Some(MainBusinessActivityView(id = "mba", mainBusinessActivity = Some(sicCode)))))
-
-      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(validVatScheme.pure)
-      when(mockRegConnector.upsertSicAndCompliance(any(), any())(any(), any())).thenReturn(validSicAndCompliance.pure)
-
-      service.submitSicAndCompliance returns validSicAndCompliance
-    }
-  }
-
   "Calling deleteVatScheme" should {
     "return a success response when the delete VatScheme is successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
@@ -140,13 +118,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       save4laterReturnsNothing[S4LVatContact]()
 
       service.submitVatContact failedWith classOf[IllegalStateException]
-    }
-
-    "submitSicAndCompliance should fail if VatSicAndCompliance not in backend and S4L" in new Setup {
-      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-      save4laterReturnsNothing[S4LVatSicAndCompliance]()
-
-      service.submitSicAndCompliance failedWith classOf[IllegalStateException]
     }
   }
 

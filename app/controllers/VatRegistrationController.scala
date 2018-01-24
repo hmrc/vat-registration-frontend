@@ -22,20 +22,18 @@ import auth.VatTaxRegime
 import cats.data.OptionT
 import cats.instances.FutureInstances
 import cats.syntax.ApplicativeSyntax
-import config.FrontendAuthConnector
 import models._
 import play.api.Configuration
 import play.api.data.{Form, FormError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Format
 import services.{RegistrationService, S4LService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.Actions
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController
   with I18nSupport with Actions with ApplicativeSyntax with FutureInstances {

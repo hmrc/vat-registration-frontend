@@ -16,16 +16,16 @@
 
 package connectors
 
+import config.WSHttp
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api.ScrsAddress
+import models.external.addresslookup._
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.HttpVerbs.GET
 import play.api.http.Status.{OK, PERMANENT_REDIRECT}
 import play.api.libs.json.JsObject
 import play.api.mvc.Call
-import config.WSHttp
-import models.external.addresslookup._
 import uk.gov.hmrc.http.{HttpResponse, InternalServerException}
 
 class AddressLookupConnectorSpec extends VatRegSpec with VatRegistrationFixture {

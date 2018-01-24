@@ -18,7 +18,6 @@ package connectors.test
 
 import common.enums.IVResult
 import helpers.VatRegSpec
-import uk.gov.hmrc.play.http.ws.WSHttp
 
 class BusinessRegDynamicStubControllerSpec extends VatRegSpec {
   class Setup {

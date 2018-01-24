@@ -26,6 +26,8 @@ import controllers.CommonPlayDependencies
 import fixtures.{LoginFixture, VatRegistrationFixture}
 import mocks.VatMocks
 import models.CurrentProfile
+import org.mockito.Mockito.when
+import org.mockito.{ArgumentMatchers => Matchers}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.time.{Millis, Seconds, Span}
@@ -33,14 +35,12 @@ import org.scalatest.{Assertion, BeforeAndAfterEach, Inside, Inspectors}
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.mvc._
 import play.api.test.FakeRequest
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import org.mockito.Mockito.when
-import org.mockito.{ArgumentMatchers => Matchers}
 import utils.{BooleanFeatureSwitch, FeatureManager, VATRegFeatureSwitch}
 
-import scala.concurrent.{Await, Awaitable, Future}
 import scala.concurrent.duration._
-import uk.gov.hmrc.http.HeaderCarrier
+import scala.concurrent.{Await, Awaitable, Future}
 
 class VatRegSpec extends PlaySpec with OneAppPerSuite with AuthBuilder
   with MockitoSugar with VatMocks with LoginFixture with Inside with Inspectors
@@ -55,7 +55,7 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite with AuthBuilder
   val currentNonincorpProfile: CurrentProfile = currentProfile().copy(incorporationDate = None)
 
   def mockGetCurrentProfile(cp: Option[CurrentProfile] = Some(currentProfile())) =
-  when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+  when(mockKeystoreConnect.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
     .thenReturn(Future.successful(cp))
 
   override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Seconds), interval = Span(50, Millis))
@@ -86,5 +86,4 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite with AuthBuilder
   override protected def beforeEach(): Unit = {
     resetMocks()
   }
-
 }

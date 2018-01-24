@@ -16,11 +16,11 @@
 
 package forms
 
-import play.api.data.{Form, Mapping}
-import play.api.data.Forms._
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
-import FormValidation._
+import forms.FormValidation._
 import models.BankAccountDetails
+import play.api.data.Forms._
+import play.api.data.{Form, Mapping}
+import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 import scala.util.matching.Regex
 

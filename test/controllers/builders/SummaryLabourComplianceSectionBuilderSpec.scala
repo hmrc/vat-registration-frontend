@@ -18,45 +18,46 @@ package controllers.builders
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{VatComplianceLabour, VatSicAndCompliance}
 import models.view.SummaryRow
+import features.sicAndCompliance.models._
 
 class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val defaultCompliance = VatComplianceLabour(
-    labour = true,
-    workers = Some(12),
-    temporaryContracts = Some(true),
-    skilledWorkers = Some(true)
+
+  val defaultSicAndCompliance = SicAndCompliance(
+    description = Some(BusinessActivityDescription("TEST")),
+    mainBusinessActivity = Some(MainBusinessActivityView("TEST",Some(sicCode))),
+    companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
+    workers = Some(Workers(12)),
+    temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
+    skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
   )
 
-  val testVatSicAndCompliance = Some(VatSicAndCompliance(businessDescription = "TEST", mainBusinessActivity = sicCode))
+//  val testVatSicAndCompliance = Some(VatSicAndCompliance(businessDescription = "TEST", mainBusinessActivity = sicCode))
 
   "The section builder composing a labour details section" should {
-
 
     "providingWorkersRow render" should {
 
       " 'Yes' selected providingWorkersRow " in {
-        val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance.copy(labour = true)), mainBusinessActivity = sicCode)
-        val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
+        val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(defaultSicAndCompliance))
         builder.providingWorkersRow mustBe
           SummaryRow(
             "labourCompliance.providesWorkers",
             "app.common.yes",
-            Some(controllers.sicAndCompliance.labour.routes.CompanyProvideWorkersController.show())
+            Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showProvideWorkers())
           )
       }
 
 
       " 'No' selected for providingWorkersRow" in {
-        val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance.copy(labour = false)), mainBusinessActivity = sicCode)
-        val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
+   val complianceUpdatedForTest = defaultSicAndCompliance.copy(companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)))
+        val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(complianceUpdatedForTest))
         builder.providingWorkersRow mustBe
           SummaryRow(
             "labourCompliance.providesWorkers",
             "app.common.no",
-            Some(controllers.sicAndCompliance.labour.routes.CompanyProvideWorkersController.show())
+            Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showProvideWorkers())
           )
       }
     }
@@ -65,40 +66,39 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
     "numberOfWorkers render" should {
 
       "render a row" in {
-        val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance), mainBusinessActivity = sicCode)
-        val builder = SummaryLabourComplianceSectionBuilder(Some(compliance))
+        val builder = SummaryLabourComplianceSectionBuilder(Some(defaultSicAndCompliance))
         builder.numberOfWorkersRow mustBe
           SummaryRow(
             "labourCompliance.numberOfWorkers",
             "12",
-            Some(controllers.sicAndCompliance.labour.routes.WorkersController.show())
+            Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showWorkers())
           )
       }
-
     }
 
 
     "temporaryContractsRow render" should {
 
       " 'No' selected temporaryContractsRow " in {
-        val builder = SummaryLabourComplianceSectionBuilder()
+
+        val updatedModelFortest = defaultSicAndCompliance.copy(temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)))
+        val builder = SummaryLabourComplianceSectionBuilder(Some(updatedModelFortest))
         builder.temporaryContractsRow mustBe
           SummaryRow(
             "labourCompliance.workersOnTemporaryContracts",
             "app.common.no",
-            Some(controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show())
+            Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showTemporaryContracts())
           )
       }
 
 
       " 'YES' selected for temporaryContractsRow" in {
-        val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance), mainBusinessActivity = sicCode)
-        val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
+        val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(defaultSicAndCompliance))
         builder.temporaryContractsRow mustBe
           SummaryRow(
             "labourCompliance.workersOnTemporaryContracts",
             "app.common.yes",
-            Some(controllers.sicAndCompliance.labour.routes.TemporaryContractsController.show())
+            Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showTemporaryContracts())
           )
       }
     }
@@ -106,38 +106,45 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
     "skilledWorkersRow render" should {
 
       " 'No' selected skilledWorkersRow " in {
-        val builder = SummaryLabourComplianceSectionBuilder()
+        val updatedModelFortest = defaultSicAndCompliance.copy(skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO)))
+        val builder = SummaryLabourComplianceSectionBuilder(Some(updatedModelFortest))
         builder.skilledWorkersRow mustBe
           SummaryRow(
             "labourCompliance.providesSkilledWorkers",
             "app.common.no",
-            Some(controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show())
+            Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showSkilledWorkers())
           )
       }
 
 
       " 'YES' selected for skilledWorkersRow" in {
-        val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance), mainBusinessActivity = sicCode)
-        val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
+        val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(defaultSicAndCompliance))
         builder.skilledWorkersRow mustBe
           SummaryRow(
             "labourCompliance.providesSkilledWorkers",
             "app.common.yes",
-            Some(controllers.sicAndCompliance.labour.routes.SkilledWorkersController.show())
+            Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showSkilledWorkers())
           )
       }
     }
 
 
     "section generate" should {
-      val compliance = VatSicAndCompliance("Business Described", labourCompliance = Some(defaultCompliance), mainBusinessActivity = sicCode)
-      val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(compliance))
-
       "a valid summary section" in {
+        val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(defaultSicAndCompliance))
         builder.section.id mustBe "labourCompliance"
         builder.section.rows.length mustEqual 4
       }
+      "no valid summary section where user has not selected labour Compliance" in {
+        val builder = SummaryLabourComplianceSectionBuilder(vatSicAndCompliance = Some(defaultSicAndCompliance.copy(
+          companyProvideWorkers = None,
+          workers  = None,
+          temporaryContracts = None,
+          skilledWorkers = None
+        )))
+        builder.section.rows.length mustEqual 4
+        builder.section.display mustEqual false
+      }
     }
-
   }
 }

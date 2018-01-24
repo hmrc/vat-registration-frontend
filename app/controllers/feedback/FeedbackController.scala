@@ -21,8 +21,8 @@ import javax.inject.{Inject, Singleton}
 
 import config.{FrontendAppConfig, WSHttp}
 import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.http.{Status => HttpStatus}
 import play.api.Logger
+import play.api.http.{Status => HttpStatus}
 import play.api.mvc._
 import play.twirl.api.Html
 import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, HttpReads, HttpResponse}

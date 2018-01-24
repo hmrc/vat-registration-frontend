@@ -21,11 +21,13 @@ import javax.inject.{Inject, Singleton}
 import connectors.KeystoreConnect
 import controllers.{CommonPlayDependencies, VatRegistrationController}
 import features.officer.models.view.LodgingOfficer
+import features.sicAndCompliance.models.SicAndCompliance
+import features.sicAndCompliance.models.test.SicStub
 import features.turnoverEstimates.TurnoverEstimatesService
 import forms.test.TestSetupForm
 import models.api._
 import models.view.test._
-import models.{S4LKey, S4LVatContact, S4LVatFinancials, S4LVatSicAndCompliance, _}
+import models.{S4LKey, S4LVatContact, S4LVatFinancials, _}
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService, SessionProfile}
@@ -52,7 +54,7 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
           for {
             vatFinancials <- s4LService.fetchAndGet[S4LVatFinancials]
             sicStub <- s4LService.fetchAndGet[SicStub]
-            vatSicAndCompliance <- s4LService.fetchAndGet[S4LVatSicAndCompliance]
+            vatSicAndCompliance <- s4LService.fetchAndGet[SicAndCompliance]
             vatContact <- s4LService.fetchAndGet[S4LVatContact]
             lodgingOfficer <- s4LService.fetchAndGet[LodgingOfficer]
             frs <- s4LService.fetchAndGet[S4LFlatRateScheme]
@@ -85,19 +87,10 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                 sicCode2 = sicStub.map(_.sicCode2.getOrElse("")),
                 sicCode3 = sicStub.map(_.sicCode3.getOrElse("")),
                 sicCode4 = sicStub.map(_.sicCode4.getOrElse("")),
-                culturalNotForProfit = vatSicAndCompliance.flatMap(_.notForProfit.map(_.yesNo)),
                 labourCompanyProvideWorkers = vatSicAndCompliance.flatMap(_.companyProvideWorkers.map(_.yesNo)),
                 labourWorkers = vatSicAndCompliance.flatMap(_.workers.map(_.numberOfWorkers.toString)),
                 labourTemporaryContracts = vatSicAndCompliance.flatMap(_.temporaryContracts.map(_.yesNo)),
                 labourSkilledWorkers = vatSicAndCompliance.flatMap(_.skilledWorkers.map(_.yesNo)),
-                financialAdviceOrConsultancy = vatSicAndCompliance.flatMap(_.adviceOrConsultancy.map(_.yesNo.toString)),
-                financialActAsIntermediary = vatSicAndCompliance.flatMap(_.actAsIntermediary.map(_.yesNo.toString)),
-                financialChargeFees = vatSicAndCompliance.flatMap(_.chargeFees.map(_.yesNo.toString)),
-                financialAdditionalNonSecuritiesWork = vatSicAndCompliance.flatMap(_.additionalNonSecuritiesWork.map(_.yesNo.toString)),
-                financialDiscretionaryInvestment = vatSicAndCompliance.flatMap(_.discretionaryInvestmentManagementServices.map(_.yesNo.toString)),
-                financialLeaseVehiclesOrEquipment = vatSicAndCompliance.flatMap(_.leaseVehicles.map(_.yesNo.toString)),
-                financialInvestmentFundManagement = vatSicAndCompliance.flatMap(_.investmentFundManagement.map(_.yesNo.toString)),
-                financialManageAdditionalFunds = vatSicAndCompliance.flatMap(_.manageAdditionalFunds.map(_.yesNo.toString)),
                 mainBusinessActivityId = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.id),
                 mainBusinessActivityDescription = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.description),
                 mainBusinessActivityDisplayDetails = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.displayDetails)

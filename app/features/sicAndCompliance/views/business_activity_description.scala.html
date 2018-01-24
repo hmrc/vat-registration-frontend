@@ -1,7 +1,7 @@
-@import models.view.sicAndCompliance.BusinessActivityDescription
+@import features.sicAndCompliance.models.BusinessActivityDescription
 @(businessActivityDescriptionForm:  Form[BusinessActivityDescription])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.templates.{vatTextArea, errorSummary}
+@import views.html.helpers.templates.{errorSummary, vatTextArea}
 
 @main_template(title = messages("pages.business.activity.description.title")) {
 
@@ -13,7 +13,7 @@
 
   <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.business.activity.description.heading")</h1>
 
-  @govHelpers.form(action = controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.submit()) {
+  @govHelpers.form(action = features.sicAndCompliance.controllers.routes.SicAndComplianceController.submitBusinessActivityDescription()) {
       <div class="form-group">
 
           <fieldset>

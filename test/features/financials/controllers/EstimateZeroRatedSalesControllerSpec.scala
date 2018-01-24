@@ -29,7 +29,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
 
   object Controller extends EstimateZeroRatedSalesController(
     ds,
-    mockKeystoreConnector,
+    mockKeystoreConnect,
     mockAuthConnector,
     mockS4LService,
     mockVatRegistrationService

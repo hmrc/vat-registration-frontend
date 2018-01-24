@@ -22,7 +22,7 @@ import cats.data.OptionT
 import config.WSHttp
 import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 

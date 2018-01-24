@@ -30,7 +30,7 @@ class BusinessContactDetailsControllerSpec extends VatRegSpec with VatRegistrati
 
   object TestBusinessContactDetailsController extends BusinessContactDetailsController(
     ds,
-    mockKeystoreConnector,
+    mockKeystoreConnect,
     mockAuthConnector,
     mockVatRegistrationService,
     mockS4LService

@@ -23,7 +23,7 @@ class CommonServiceSpec extends VatRegSpec {
 
   trait Setup {
     val service = new CommonService {
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnect
     }
   }
 

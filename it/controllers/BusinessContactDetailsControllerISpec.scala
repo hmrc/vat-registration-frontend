@@ -58,7 +58,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
       val response = buildClient("/company-contact-details").post(Map("email" -> Seq(email), "mobile" -> Seq(mobile)))
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.sicAndCompliance.routes.BusinessActivityDescriptionController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/vat-contact")
         (json \ "digitalContact" \ "email").as[JsString].value mustBe email

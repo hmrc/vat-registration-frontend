@@ -1,10 +1,10 @@
-@import models.view.sicAndCompliance.labour.Workers
+@import features.sicAndCompliance.models.Workers
 @(workersForm: Form[Workers])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @fieldSetClasses = @{
     if(workersForm.hasErrors && (workersForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
-@import views.html.helpers.templates.{vatInput, errorSummary}
+@import views.html.helpers.templates.{errorSummary, vatInput}
 
 @main_template(title = messages("pages.labourCompliance.workers.title")) {
 
@@ -16,7 +16,7 @@
 
     <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.labourCompliance.workers.heading")</h1>
 
-    @govHelpers.form(action = controllers.sicAndCompliance.labour.routes.WorkersController.submit()) {
+    @govHelpers.form(action = features.sicAndCompliance.controllers.routes.LabourComplianceController.submitWorkers()) {
         <div class="form-group @fieldSetClasses">
             <fieldset>
 

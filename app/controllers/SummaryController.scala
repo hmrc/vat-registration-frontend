@@ -18,11 +18,12 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import connectors.{KeystoreConnect, Success}
 import common.enums.VatRegStatus
+import connectors.{KeystoreConnect, Success}
 import controllers.builders._
-import features.returns.{Returns, ReturnsService}
 import features.officer.services.LodgingOfficerService
+import features.returns.ReturnsService
+import features.sicAndCompliance.services.SicAndComplianceService
 import models.api._
 import models.view._
 import models.{CurrentProfile, MonthYearModel}
@@ -42,6 +43,7 @@ class SummaryController @Inject()(ds: CommonPlayDependencies,
                                   val keystoreConnector: KeystoreConnect,
                                   val authConnector: AuthConnector,
                                   val lodgingOfficerService: LodgingOfficerService,
+                                  val sicSrv: SicAndComplianceService,
                                   implicit val s4LService: S4LService) extends VatRegistrationController(ds) with SessionProfile {
 
   def show: Action[AnyContent] = authorised.async {
@@ -60,8 +62,9 @@ class SummaryController @Inject()(ds: CommonPlayDependencies,
 
   def getRegistrationSummary()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = {
     for {
-      officer     <- lodgingOfficerService.getLodgingOfficer
-      summary     <- vrs.getVatScheme.map(scheme => registrationToSummary(scheme.copy(lodgingOfficer = Some(officer))))
+      officer <- lodgingOfficerService.getLodgingOfficer
+      sac     <- sicSrv.getSicAndCompliance
+      summary <- vrs.getVatScheme.map(scheme => registrationToSummary(scheme.copy(lodgingOfficer = Some(officer), sicAndCompliance = Some(sac))))
     } yield summary
   }
 
@@ -91,8 +94,8 @@ class SummaryController @Inject()(ds: CommonPlayDependencies,
       SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer.getOrElse(throw new IllegalStateException("Missing Lodging Officer data to show summary"))).section,
       SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
       SummaryCompanyContactDetailsSectionBuilder(vs.vatContact).section,
-      SummaryBusinessActivitiesSectionBuilder(vs.vatSicAndCompliance).section,
-      SummaryComplianceSectionBuilder(vs.vatSicAndCompliance).section,
+      SummaryBusinessActivitiesSectionBuilder(vs.sicAndCompliance).section,
+      SummaryComplianceSectionBuilder(vs.sicAndCompliance).section,
       SummaryBusinessBankDetailsSectionBuilder(vs.bankAccount).section,
       SummaryAnnualAccountingSchemeSectionBuilder(vs.returns).section,
       SummaryTaxableSalesSectionBuilder(vs.financials,vs.turnOverEstimates).section,

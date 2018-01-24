@@ -18,8 +18,8 @@ package connectors
 
 import helpers.VatRegSpec
 import org.joda.time.LocalDate
-import org.mockito.Mockito.when
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
 import scala.concurrent.Future

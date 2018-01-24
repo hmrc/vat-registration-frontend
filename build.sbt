@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import TestPhases.oneForkedJvmPerTest
 import play.sbt.PlayImport.PlayKeys
 import sbt.Keys._
 import sbt._
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
-import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
 import scoverage.ScoverageKeys
-import TestPhases.oneForkedJvmPerTest
+import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
+import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
 
 val appName = "vat-registration-frontend"
 
