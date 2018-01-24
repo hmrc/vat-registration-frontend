@@ -66,11 +66,13 @@ class TestS4LBuilder {
 
     compliance.copy(
       description = base.businessActivityDescription.map(BusinessActivityDescription(_)),
-      mainBusinessActivity = Some(MainBusinessActivityView(SicCode(
-        id = base.mainBusinessActivityId.getOrElse(""),
-        description = base.mainBusinessActivityDescription.getOrElse(""),
-        displayDetails = base.mainBusinessActivityDisplayDetails.getOrElse("")
-      )))
+      mainBusinessActivity = base.mainBusinessActivityId map { id =>
+        MainBusinessActivityView(SicCode(
+          id = id,
+          description = base.mainBusinessActivityDescription.getOrElse(""),
+          displayDetails = base.mainBusinessActivityDisplayDetails.getOrElse("")
+        ))
+      }
     )
   }
 
