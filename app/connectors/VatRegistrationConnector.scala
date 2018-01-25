@@ -26,6 +26,7 @@ import features.officer.models.view.LodgingOfficer
 import features.sicAndCompliance.models.SicAndCompliance
 import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimates
+import frs.FlatRateScheme
 import models.CurrentProfile
 import models.api._
 import models.external.IncorporationInfo
@@ -179,14 +180,36 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
     implicit val frmt = TradingDetails.apiFormat
 
     http.PATCH[TradingDetails, HttpResponse](s"$vatRegUrl/vatreg/$regId/trading-details", tradingDetails) recover {
-      case e: Exception => throw logResponse(e, "upsertNEW")
+      case e: Exception => throw logResponse(e, "upsertTradingDetails")
     }
   }
 
-  def upsertVatFlatRateScheme(regId: String, vatFrs: VatFlatRateScheme)
-                             (implicit hc: HeaderCarrier, rds: HttpReads[VatFlatRateScheme]): Future[VatFlatRateScheme] = {
-    http.PATCH[VatFlatRateScheme, VatFlatRateScheme](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", vatFrs).recover{
-      case e: Exception => throw logResponse(e, "upsertVatFrsAnswers")
+  def getFlatRate(regId: String)
+                       (implicit hc: HeaderCarrier): Future[Option[FlatRateScheme]] = {
+    implicit val frmt = FlatRateScheme.apiFormat
+
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme") map { res =>
+      res.status match {
+        case OK         => Some(res.json.as[FlatRateScheme])
+        case NO_CONTENT => None
+      }
+    } recover {
+      case e: Exception => throw logResponse(e, "getFlatRate")
+    }
+  }
+
+  def upsertFlatRate(regId: String, flatRate: FlatRateScheme)
+                          (implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    implicit val frmt = FlatRateScheme.apiFormat
+
+    http.PATCH[FlatRateScheme, HttpResponse](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", flatRate) recover {
+      case e: Exception => throw logResponse(e, "upsertFlatRate")
+    }
+  }
+
+  def clearFlatRate(regId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    http.DELETE[HttpResponse](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme") recover {
+      case e: Exception => throw logResponse(e, "deleteFlatRate")
     }
   }
 

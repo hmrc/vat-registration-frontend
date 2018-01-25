@@ -16,8 +16,6 @@
 
 package models
 
-import java.time.LocalDate
-
 import fixtures.VatRegistrationFixture
 import models.api._
 import models.view.vatContact.BusinessContactDetails
@@ -53,45 +51,6 @@ class S4LModelsSpec  extends UnitSpec with Inspectors with VatRegistrationFixtur
 
       S4LVatFinancials.apiT.toApi(s4lWithoutAccountingPeriod) shouldBe expected
     }
-  }
-
-  "S4LFlatRateScheme.S4LApiTransformer.toApi" should {
-    val specificDate = LocalDate.of(2017, 11, 12)
-    val category = "category"
-    val percent = 16.5
-
-    "transform complete s4l container to API" in {
-
-      val s4l = S4LFlatRateScheme(
-        joinFrs = Some(JoinFrsView(true)),
-        annualCostsInclusive = Some(AnnualCostsInclusiveView(AnnualCostsInclusiveView.NO)),
-        annualCostsLimited = Some(AnnualCostsLimitedView(AnnualCostsLimitedView.NO)),
-        registerForFrs = Some(RegisterForFrsView(true)),
-        frsStartDate = Some(FrsStartDateView(FrsStartDateView.DIFFERENT_DATE, Some(specificDate))),
-        categoryOfBusiness = Some(BusinessSectorView(category, percent))
-      )
-
-      val expected = VatFlatRateScheme(
-        joinFrs = true,
-        annualCostsInclusive = Some(AnnualCostsInclusiveView.NO),
-        annualCostsLimited = Some(AnnualCostsLimitedView.NO),
-        doYouWantToUseThisRate = Some(true),
-        whenDoYouWantToJoinFrs = Some(FrsStartDateView.DIFFERENT_DATE),
-        startDate = Some(specificDate),
-        categoryOfBusiness = Some(category),
-        percentage = Some(percent)
-      )
-
-      S4LFlatRateScheme.apiT.toApi(s4l) shouldBe expected
-    }
-
-    "transform s4l container with defaults to API" in {
-      val s4l = S4LFlatRateScheme(joinFrs = None)
-      val expected = VatFlatRateScheme(joinFrs = false)
-
-      S4LFlatRateScheme.apiT.toApi(s4l) shouldBe expected
-    }
-
   }
 
   "S4LVatContact.S4LModelTransformer.toApi" should {

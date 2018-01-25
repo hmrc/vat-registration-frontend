@@ -18,7 +18,6 @@ package connectors
 
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.BusinessSectorView
 import models.api.SicCode
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
@@ -44,7 +43,7 @@ class ConfigConnectorSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockConfig.getString(ArgumentMatchers.any()))
         .thenReturn("Farming or agriculture that is not listed elsewhere", "6.5")
 
-      connector.getBusinessSectorDetails("01490025") mustBe BusinessSectorView("Farming or agriculture that is not listed elsewhere", 6.5)
+      connector.getBusinessSectorDetails("01490025") mustBe ("Farming or agriculture that is not listed elsewhere", 6.5)
     }
   }
 

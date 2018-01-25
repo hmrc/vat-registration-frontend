@@ -24,6 +24,7 @@ import features.returns.{Frequency, Returns, Stagger}
 import features.sicAndCompliance.models.{BusinessActivityDescription, MainBusinessActivityView, SicAndCompliance}
 import features.tradingDetails.{TradingDetails, TradingNameView}
 import features.turnoverEstimates.TurnoverEstimates
+import frs.FlatRateScheme
 import models.api._
 import models.{BankAccount, BankAccountDetails}
 
@@ -62,7 +63,7 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
     expectedOverThresholdDate = Some(LocalDate.of(2016, 9, 30))
   )
 
-  val flatRateScheme  = VatFlatRateScheme()
+  val flatRateScheme  = FlatRateScheme(joinFrs = Some(false))
 
   val turnOverEstimates = TurnoverEstimates(vatTaxable = 30000)
   val bankAccount     = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
@@ -79,8 +80,8 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
     sicAndCompliance    = Some(sicAndCompliance),
     vatContact          = Some(vatContact),
     threshold           = Some(voluntaryThreshold),
-    vatFlatRateScheme   = Some(flatRateScheme),
-    turnOverEstimates = Some(turnOverEstimates),
+    flatRateScheme      = Some(flatRateScheme),
+    turnOverEstimates   = Some(turnOverEstimates),
     bankAccount         = Some(bankAccount),
     returns             = Some(returns)
   )
@@ -94,7 +95,7 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
     sicAndCompliance    = Some(sicAndCompliance),
     vatContact          = Some(vatContact),
     threshold           = Some(threshold),
-    vatFlatRateScheme   = Some(flatRateScheme),
+    flatRateScheme      = Some(flatRateScheme),
     bankAccount         = Some(bankAccount)
   )
 

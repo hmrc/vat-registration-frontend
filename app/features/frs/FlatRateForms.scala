@@ -17,67 +17,104 @@
 package forms
 
 import java.time.LocalDate
-import javax.inject.Inject
 
-import common.Now
-import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
-import forms.FormValidation.{onOrAfter, textMapping, textMappingWithMessageArgs}
-import models.{AnnualCostsInclusiveView, AnnualCostsLimitedView, DateModel, FrsStartDateView}
-import play.api.data.Form
-import play.api.data.Forms.{mapping, _}
-import services.DateService
+import forms.FormValidation._
+import frs.{AnnualCosts, FRSDateChoice}
+import play.api.data.Forms._
+import play.api.data.format.Formatter
+import play.api.data.{Form, FormError, Forms}
+import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
-object AnnualCostsInclusiveForm {
-
+object OverBusinessGoodsForm {
   val RADIO_INCLUSIVE: String = "annualCostsInclusiveRadio"
 
+  implicit def formatter: Formatter[AnnualCosts.Value] = new Formatter[AnnualCosts.Value] {
+
+    override val format = Some(("format.string", Nil))
+
+    def bind(key: String, data: Map[String, String]) = {
+      Right(data.getOrElse(key,"")).right.flatMap {
+        case e if e == AnnualCosts.AlreadyDoesSpend.toString => Right(AnnualCosts.AlreadyDoesSpend)
+        case e if e == AnnualCosts.WillSpend.toString => Right(AnnualCosts.WillSpend)
+        case e if e == AnnualCosts.DoesNotSpend.toString => Right(AnnualCosts.DoesNotSpend)
+        case _ => Left(Seq(FormError(key, "validation.frs.costsInclusive.missing", Nil)))
+      }
+    }
+
+    def unbind(key: String, value: AnnualCosts.Value) = Map(key -> value.toString)
+  }
+
   val form = Form(
-    mapping(
-      RADIO_INCLUSIVE -> textMapping()("frs.costsInclusive")
-        .verifying(AnnualCostsInclusiveView.valid)
-    )(AnnualCostsInclusiveView.apply)(AnnualCostsInclusiveView.unapply)
+    single(RADIO_INCLUSIVE -> Forms.of[AnnualCosts.Value])
   )
 }
 
-object AnnualCostsLimitedFormFactory {
+trait OverBusinessGoodsPercentForm {
+  val RADIO_INCLUSIVE: String = "annualCostsLimitedRadio"
+  val pct : Long
 
-  val RADIO_COST_LIMITED: String = "annualCostsLimitedRadio"
+  implicit def formatter: Formatter[AnnualCosts.Value] = new Formatter[AnnualCosts.Value] {
 
-  def form(msgArgs: Seq[Any] = Seq()): Form[AnnualCostsLimitedView] = {
-    Form(mapping(
-      RADIO_COST_LIMITED -> textMappingWithMessageArgs()(msgArgs)("frs.costsLimited").verifying(AnnualCostsLimitedView.valid)
-    )(AnnualCostsLimitedView.apply)(AnnualCostsLimitedView.unapply))
+    override val format = Some(("format.string", Nil))
+
+    def bind(key: String, data: Map[String, String]) = {
+      Right(data.getOrElse(key,"")).right.flatMap {
+        case e if e == AnnualCosts.AlreadyDoesSpend.toString => Right(AnnualCosts.AlreadyDoesSpend)
+        case e if e == AnnualCosts.WillSpend.toString => Right(AnnualCosts.WillSpend)
+        case e if e == AnnualCosts.DoesNotSpend.toString => Right(AnnualCosts.DoesNotSpend)
+        case _ => Left(Seq(FormError(key, "validation.frs.costsLimited.missing", Seq(pct))))
+      }
+    }
+
+    def unbind(key: String, value: AnnualCosts.Value) = Map(key -> value.toString)
   }
+
+  val form = Form(
+    single(RADIO_INCLUSIVE -> Forms.of[AnnualCosts.Value])
+  )
 }
 
-class FrsStartDateFormFactory @Inject()(dateService: DateService, today: Now[LocalDate]) {
+object FRSStartDateForm {
 
-  implicit object LocalDateOrdering extends Ordering[LocalDate] {
-    override def compare(x: LocalDate, y: LocalDate): Int = x.compareTo(y)
+  val frsDateSelectionEmpty = "validation.frs.startDate.choice.missing"
+  val dateEmptyKey = "validation.frs.startDate.missing"
+  val dateInvalidKey = "validation.frs.startDate.invalid"
+  val dateAfter = "validation.frs.startDate.range.below"
+
+  val frsStartDateRadio: String = "frsStartDateRadio"
+  val frsStartDateInput: String = "frsStartDate"
+
+  implicit val specificErrorCode: String = "frs.startDate"
+
+  implicit def formatter: Formatter[FRSDateChoice.Value] = new Formatter[FRSDateChoice.Value] {
+    override val format = Some(("format.string", Nil))
+
+    def bind(key: String, data: Map[String, String]) = {
+      Right(data.getOrElse(key,"")).right.flatMap {
+        case e if e == FRSDateChoice.VATDate.toString => Right(FRSDateChoice.VATDate)
+        case e if e == FRSDateChoice.DifferentDate.toString => Right(FRSDateChoice.DifferentDate)
+        case _ => Left(Seq(FormError(key, frsDateSelectionEmpty, Nil)))
+      }
+    }
+
+    def unbind(key: String, value: FRSDateChoice.Value) = Map(key -> value.toString)
   }
 
-  val RADIO_INPUT_NAME = "frsStartDateRadio"
-
-  def form(): Form[FrsStartDateView] = {
-
-    val minDate: LocalDate = dateService.addWorkingDays(today(), 2)
-
-    implicit val specificErrorCode: String = "frs.startDate"
-
-    Form(
-      mapping(
-        RADIO_INPUT_NAME -> textMapping()("frs.startDate.choice").verifying(FrsStartDateView.validSelection),
-        "frsStartDate" -> mandatoryIf(
-          isEqual(RADIO_INPUT_NAME, FrsStartDateView.DIFFERENT_DATE),
-          mapping(
-            "day" -> text,
-            "month" -> text,
-            "year" -> text
-          )(DateModel.apply)(DateModel.unapply).verifying(
-            nonEmptyDateModel(validDateModel(onOrAfter(minDate))))
+  val form = Form(
+    tuple(
+      frsStartDateRadio -> Forms.of[FRSDateChoice.Value],
+      frsStartDateInput -> mandatoryIf(
+        isEqual(frsStartDateRadio, FRSDateChoice.DifferentDate),
+        tuple("day" -> text, "month" -> text, "year" -> text).verifying(StopOnFirstFail(
+          nonEmptyDate(dateEmptyKey),
+          validDate(dateInvalidKey),
+          dateAfterDate(LocalDate.now().plusDays(2), dateAfter)
+        )).transform[LocalDate](
+          date => LocalDate.of(date._3.toInt,date._2.toInt,date._1.toInt),
+          date => (date.getDayOfMonth.toString, date.getMonthValue.toString, date.getYear.toString)
         )
-      )(FrsStartDateView.bind)(FrsStartDateView.unbind)
+      )
     )
-  }
+  )
 }

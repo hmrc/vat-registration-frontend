@@ -146,7 +146,7 @@ $(document).ready($(function () {
 (function (FrsStartDatePage, $, undefined) {
     FrsStartDatePage.init = function() {
         UI.hideShowOnRadioButton("frsStartDateRadio",
-            { "#frsStartDateRadio-different_date": "#different_date_panel" });
+            { "#frsStartDateRadio-differentdate": "#different_date_panel" });
         var numericInputs = ["frsStartDate\\.day", "frsStartDate\\.month", "frsStartDate\\.year"];
         UI.preventNonNumericInput(numericInputs);
     }

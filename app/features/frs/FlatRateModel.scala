@@ -14,70 +14,113 @@
  * limitations under the License.
  */
 
-package models.api {
+package frs
 
-  import java.time.LocalDate
+import features.returns.Start
+import models.S4LKey
+import play.api.data.FormError
+import play.api.data.format.Formatter
+import play.api.libs.json._
 
-  import play.api.libs.json._
+import scala.util.control.NoStackTrace
 
-  case class VatFlatRateScheme(joinFrs: Boolean = false,
-                               annualCostsInclusive: Option[String] = None,
-                               annualCostsLimited: Option[String] = None,
-                               doYouWantToUseThisRate: Option[Boolean] = None, //mandatory if joinFrs yes
-                               whenDoYouWantToJoinFrs: Option[String] = None,
-                               startDate: Option[LocalDate] = None, // if doYouWantToUseThisRate is true this is mandatory
-                               categoryOfBusiness: Option[String] = None,
-                               percentage: Option[BigDecimal] = None)
+object AnnualCosts extends Enumeration {
+  type AnnualCosts = Value
+  val AlreadyDoesSpend = Value
+  val WillSpend = Value
+  val DoesNotSpend = Value
 
+  implicit def toString(f : AnnualCosts.Value) : String = f.toString
+  implicit val format = Format(Reads.enumNameReads(AnnualCosts), Writes.enumNameWrites)
+  implicit def boolTo(bool : Option[Boolean]) = bool.map(if (_) AnnualCosts.AlreadyDoesSpend else AnnualCosts.DoesNotSpend)
 
-  object VatFlatRateScheme {
-    implicit val format: OFormat[VatFlatRateScheme] = Json.format[VatFlatRateScheme]
+  def toBool(f : AnnualCosts.Value): Boolean = f match {
+    case AnnualCosts.DoesNotSpend => false
+    case _ => true
+  }
+  def toBool(f : Option[AnnualCosts.Value]): Option[Boolean] = f map {
+    case AnnualCosts.DoesNotSpend => false
+    case _ => true
+  }
+
+  implicit def formatter : Formatter[AnnualCosts] = new Formatter[AnnualCosts] {
+    def bind(key: String, data: Map[String, String]) = {
+      Right(data.getOrElse(key,"")).right.flatMap {
+        case "yes"                  => Right(AnnualCosts.AlreadyDoesSpend)
+        case "yesWithin12months"     => Right(AnnualCosts.WillSpend)
+        case "no"                   => Right(AnnualCosts.DoesNotSpend)
+        case _                      => Left(Seq(FormError(key, "error.required", Nil)))
+      }
+    }
+    def unbind(key: String, value: AnnualCosts) = Map(key -> value.toString)
   }
 }
 
-package models {
+object FRSDateChoice extends Enumeration {
+  type FRSDateChoice = Value
+  val VATDate = Value
+  val DifferentDate = Value
 
-  import models.api.{VatFlatRateScheme, VatScheme}
-  import play.api.libs.json.{Json, OFormat}
+  implicit def toString(f : FRSDateChoice.Value) : String = f.toString
+  implicit val format = Format(Reads.enumNameReads(FRSDateChoice), Writes.enumNameWrites)
+}
 
-  final case class S4LFlatRateScheme
-  (
-    joinFrs: Option[JoinFrsView] = None,
-    annualCostsInclusive: Option[AnnualCostsInclusiveView] = None,
-    annualCostsLimited: Option[AnnualCostsLimitedView] = None,
-    registerForFrs: Option[RegisterForFrsView] = None,
-    frsStartDate: Option[FrsStartDateView] = None,
-    categoryOfBusiness: Option[BusinessSectorView] = None
-  )
+case class FlatRateScheme(
+                           joinFrs : Option[Boolean] = None,
+                           overBusinessGoods : Option[AnnualCosts.Value] = None,
+                           vatTaxableTurnover : Option[Long] = None,
+                           overBusinessGoodsPercent : Option[AnnualCosts.Value] = None,
+                           useThisRate : Option[Boolean] = None,
+                           frsStart : Option[Start] = None,
+                           categoryOfBusiness : Option[String] = None,
+                           percent : Option[BigDecimal] = None
+                         )
 
-  object S4LFlatRateScheme {
-    implicit val format: OFormat[S4LFlatRateScheme] = Json.format[S4LFlatRateScheme]
-    implicit val vatFlatRateScheme: S4LKey[S4LFlatRateScheme] = S4LKey("VatFlatRateScheme")
+object FlatRateScheme {
+  val s4lkey: S4LKey[FlatRateScheme] = S4LKey("flatRateScheme")
 
-    implicit val modelT = new S4LModelTransformer[S4LFlatRateScheme] {
-      override def toS4LModel(vs: VatScheme): S4LFlatRateScheme =
-        S4LFlatRateScheme(
-          joinFrs = ApiModelTransformer[JoinFrsView].toViewModel(vs),
-          annualCostsInclusive = ApiModelTransformer[AnnualCostsInclusiveView].toViewModel(vs),
-          annualCostsLimited = ApiModelTransformer[AnnualCostsLimitedView].toViewModel(vs),
-          registerForFrs = ApiModelTransformer[RegisterForFrsView].toViewModel(vs),
-          frsStartDate = ApiModelTransformer[FrsStartDateView].toViewModel(vs),
-          categoryOfBusiness = ApiModelTransformer[BusinessSectorView].toViewModel(vs)
-        )
-    }
+  val reads: Reads[FlatRateScheme] = new Reads[FlatRateScheme] {
+    override def reads(json: JsValue): JsResult[FlatRateScheme] = {
+      val start = (json \ "frsDetails" \ "start").asOpt[Start]
+      val joinFrs = (json \ "joinFrs").asOpt[Boolean]
 
-    implicit val apiT = new S4LApiTransformer[S4LFlatRateScheme, VatFlatRateScheme] {
-      override def toApi(c: S4LFlatRateScheme): VatFlatRateScheme =
-        VatFlatRateScheme(
-          joinFrs = c.joinFrs.exists(_.selection),
-          annualCostsInclusive = c.annualCostsInclusive.map(_.selection),
-          annualCostsLimited = c.annualCostsLimited.map(_.selection),
-          doYouWantToUseThisRate = c.registerForFrs.map(_.selection),
-          whenDoYouWantToJoinFrs = c.frsStartDate.map(_.dateType),
-          startDate = c.frsStartDate.flatMap(_.date),
-          categoryOfBusiness = c.categoryOfBusiness.map(_.businessSector),
-          percentage = c.categoryOfBusiness.map(_.flatRatePercentage)
-        )
+      JsSuccess(FlatRateScheme(
+        joinFrs,
+        (json \ "frsDetails" \ "overBusinessGoods").asOpt[Boolean],
+        (json \ "frsDetails" \ "vatInclusiveTurnover").asOpt[Long],
+        (json \ "frsDetails" \ "overBusinessGoodsPercent").asOpt[Boolean],
+        if (joinFrs.get) Some(start.fold(false)(_ => true)) else None,
+        start,
+        (json \ "frsDetails" \ "categoryOfBusiness").asOpt[String],
+        (json \ "frsDetails" \ "percent").asOpt[BigDecimal]
+      ))
     }
   }
+
+  val writes: Writes[FlatRateScheme] = new Writes[FlatRateScheme] {
+    override def writes(s4l: FlatRateScheme): JsValue = {
+      def purgeNull(jsObj : JsObject) : JsObject =
+        JsObject(jsObj.value.filterNot {
+          case (_, value) => value == JsNull
+        })
+
+      s4l.joinFrs match {
+        case Some(false)    => Json.obj("joinFrs" -> false)
+        case Some(true)     => Json.obj("joinFrs" -> true, "frsDetails" -> purgeNull(Json.obj(
+          "overBusinessGoods" -> AnnualCosts.toBool(s4l.overBusinessGoods),
+          "categoryOfBusiness" -> s4l.categoryOfBusiness,
+          "percent" -> s4l.percent,
+          "overBusinessGoodsPercent" -> AnnualCosts.toBool(s4l.overBusinessGoodsPercent),
+          "vatInclusiveTurnover" -> s4l.vatTaxableTurnover,
+          "start" -> s4l.frsStart
+        )))
+        case None           => throw new Exception("[FlatRateModel] [Writes] No value for joinFrs when expected on submission")
+      }
+    }
+  }
+
+  val apiFormat = Format[FlatRateScheme](reads, writes)
+  implicit val format = Json.format[FlatRateScheme]
+
+  def empty = FlatRateScheme()
 }
