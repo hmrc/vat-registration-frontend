@@ -19,7 +19,7 @@ package controllers.builders
 import features.businessContact.models.{BusinessContact, CompanyContactDetails}
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.api.{ScrsAddress, VatContact, VatDigitalContact}
+import models.api.ScrsAddress
 import models.view.SummaryRow
 
 class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
@@ -76,7 +76,6 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
       val b@(x, y) = (1, "2")
 
       import ScrsAddress.htmlShow._
-      import cats.syntax.show._
       val builder = SummaryCompanyContactDetailsSectionBuilder(Some(businessContact))
       builder.ppobRow mustBe
         SummaryRow(

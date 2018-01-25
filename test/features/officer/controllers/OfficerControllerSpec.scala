@@ -36,9 +36,6 @@ import scala.concurrent.Future
 
 class OfficerControllerSpec extends ControllerSpec with FutureAwaits with DefaultAwaitTimeout
                             with VatRegistrationFixture with MockMessages with FutureAssertions {
-  val mockLodgingOfficerService: LodgingOfficerService = mock[LodgingOfficerService]
-  val mockPPService: PrePopService = mock[PrePopService]
-  val mockAddressService = mock[AddressLookupService]
 
   val officerSecu = SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA123456Z")
   val partialLodgingOfficer = LodgingOfficer(Some(CompletionCapacityView(officer.name.id, Some(officer))), Some(officerSecu), None, None, None, None, None)

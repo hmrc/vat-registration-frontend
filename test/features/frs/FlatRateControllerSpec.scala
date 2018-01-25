@@ -40,7 +40,6 @@ import scala.concurrent.Future
 class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages {
   val today: LocalDate = LocalDate.of(2017, 3, 21)
   val frsStartDateFormFactory = new FrsStartDateFormFactory(mockDateService, Now[LocalDate](today))
-  val mockFlatRateService: FlatRateService = mock[FlatRateService]
 
   implicit val localDateOrdering = frsStartDateFormFactory.LocalDateOrdering
   implicit val fixedToday: Now[LocalDate] = Now[LocalDate](today)

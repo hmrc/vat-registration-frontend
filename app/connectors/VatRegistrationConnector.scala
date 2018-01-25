@@ -75,12 +75,6 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
     }
   }
 
-  def upsertVatContact(regId: String, vatContact: VatContact)(implicit hc: HeaderCarrier, rds: HttpReads[VatContact]): Future[VatContact] = {
-    http.PATCH[VatContact, VatContact](s"$vatRegUrl/vatreg/$regId/vat-contact", vatContact).recover{
-      case e: Exception => throw logResponse(e, "upsertVatContact")
-    }
-  }
-
   def getLodgingOfficer(regId: String)(implicit hc: HeaderCarrier): Future[Option[JsValue]] = {
     http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/officer") map { response =>
       if(response.status == NO_CONTENT) None else Some(response.json)
@@ -89,7 +83,6 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
     }
   }
 
-  //TODO: write test for function
   def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Option[Threshold]] = {
     http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/threshold")
       .map(result => if(result.status == NO_CONTENT) None else result.json.validateOpt[Threshold].get).recover {

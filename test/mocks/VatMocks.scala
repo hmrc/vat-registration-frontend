@@ -17,6 +17,7 @@
 package mocks
 
 import connectors._
+import features.businessContact.BusinessContactService
 import features.officer.services.IVServiceImpl
 import features.officer.services.LodgingOfficerService
 import features.returns.ReturnsService
@@ -64,6 +65,11 @@ trait VatMocks
   implicit lazy val mockLodgingOfficerService = mock[LodgingOfficerService]
   implicit lazy val mockTurnoverEstimatesService = mock[TurnoverEstimatesService]
   implicit lazy val mockFlatRateService = mock[FlatRateService]
+  //TODO: Refactor
+  implicit lazy val mockMessagesAPI: MessagesApi = mock[MessagesApi]
+  implicit lazy val mockPrePopService: PrePopService = mock[PrePopService]
+  lazy val mockBusinessContactService = mock[BusinessContactService]
+
 
   def resetMocks() {
     reset(
@@ -92,7 +98,10 @@ trait VatMocks
       mockReturnsService,
       mockLodgingOfficerService,
       mockTurnoverEstimatesService,
-      mockFlatRateService
+      mockFlatRateService,
+      mockMessagesAPI,
+      mockPrePopService,
+      mockBusinessContactService
     )
   }
 }

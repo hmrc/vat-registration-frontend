@@ -36,7 +36,6 @@ import scala.concurrent.Future
 
 
 class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages {
-  val mockReturnsService: ReturnsServiceImpl = mock[ReturnsServiceImpl]
 
   trait Setup {
     val testController = new ReturnsController {

@@ -32,9 +32,9 @@ object CompanyContactDetailsForm {
   private val FORM_NAME     = "businessContactDetails"
 
   private val EMAIL         = "email"
-  private val DAYTIME_PHONE = "phoneNumber"
-  private val MOBILE        = "mobileNumber"
-  private val WEBSITE       = "websiteAddress"
+  private val DAYTIME_PHONE = "daytimePhone"
+  private val MOBILE        = "mobile"
+  private val WEBSITE       = "website"
 
   private def validationError(field: String) = ValidationError(s"validation.businessContactDetails.$field.missing", field)
 

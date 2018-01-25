@@ -23,6 +23,7 @@ import helpers.VatRegSpec
 import models.api._
 import models.external.{IncorporationInfo, Name, Officer}
 import config.WSHttp
+import features.businessContact.models.BusinessContact
 import features.turnoverEstimates.TurnoverEstimates
 import features.officer.models.view.LodgingOfficer
 import play.api.http.Status.{NO_CONTENT, OK}
@@ -152,28 +153,61 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  "Calling upsertVatContact" should {
+  "Calling updateBusinessContact" should {
 
-    val vatContact = VatContact(
-      digitalContact = VatDigitalContact(email = "test.com", tel = None, mobile = None),
-      website = None,
-      ppob = scrsAddress)
-
-    "return the correct VatResponse when the microservice completes and returns a VatContact model" in new Setup {
-      mockHttpPATCH[VatContact, VatContact]("tst-url", vatContact)
-      connector.upsertVatContact("tstID", vatContact) returns vatContact
+    "return the correct VatResponse when the microservice completes and returns a BusinessContact model" in new Setup {
+      mockHttpPATCH[BusinessContact, BusinessContact]("tst-url", validBusinessContactDetails)
+      connector.upsertBusinessContact(Json.toJson(validBusinessContactDetails)) returns validBusinessContactDetails
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatContact, VatContact]("tst-url", forbidden)
-      connector.upsertVatContact("tstID", vatContact) failedWith forbidden
+      mockHttpFailedPATCH("tst-url", forbidden)
+      connector.upsertBusinessContact(Json.toJson(validBusinessContactDetails)) failedWith forbidden
     }
     "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[VatContact, VatContact]("tst-url", notFound)
-      connector.upsertVatContact("tstID", vatContact) failedWith notFound
+      mockHttpFailedPATCH("tst-url", notFound)
+      connector.upsertBusinessContact(Json.toJson(validBusinessContactDetails)) failedWith notFound
     }
     "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatContact, VatContact]("tst-url", internalServiceException)
-      connector.upsertVatContact("tstID", vatContact) failedWith internalServiceException
+      mockHttpFailedPATCH("tst-url", internalServiceException)
+      connector.upsertBusinessContact(Json.toJson(validBusinessContactDetails)) failedWith internalServiceException
+    }
+  }
+
+  "Calling getBusinessContact" should {
+
+    val businessContactJson = Json.parse(
+      """
+        |{
+        | "digitalContact": {
+        |   "email": "me@you.com",
+        |   "tel": "123456738374",
+        |   "mobile": "123456789876"
+        | },
+        | "website": "www.wwwwwwwwwww.com",
+        | "ppob": {
+        |   "line1": "test",
+        |   "line2": "test",
+        |   "postcode": "XX1 1XX",
+        |   "country": "United Kingdom"
+        | }
+        |}
+      """.stripMargin)
+
+    "return the correct Http response when the microservice completes and returns a BusinessContact model" in new Setup {
+      mockHttpGET[HttpResponse]("tst-url", HttpResponse(200, Some(businessContactJson)))
+      connector.getBusinessContact returnsSome businessContactJson
+    }
+    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
+      mockHttpFailedGET("tst-url", forbidden)
+      connector.getBusinessContact failedWith forbidden
+    }
+    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
+      mockHttpFailedGET("tst-url", notFound)
+      connector.getBusinessContact failedWith notFound
+    }
+    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
+      mockHttpFailedGET("tst-url", internalServiceException)
+      connector.getBusinessContact failedWith internalServiceException
     }
   }
 
@@ -428,6 +462,4 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       connector.patchLodgingOfficer(partialLodgingOfficer) failedWith exception
     }
   }
-
-  ""
 }

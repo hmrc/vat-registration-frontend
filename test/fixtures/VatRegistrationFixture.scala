@@ -43,7 +43,6 @@ trait BaseFixture {
   val testSortCode = "12-34-56"
   val testAccountNumber = "12345678"
   val validExpectedOverTrue = Some(testDate)
-  val validVatThresholdPostIncorp = None
   def generateThreshold(reason: Option[String] = None, overThreshold: Option[LocalDate] = None, expectedOverThreshold: Option[LocalDate] = None) =
     (reason, overThreshold, expectedOverThreshold) match {
       case (r@Some(_), _, _)            => Threshold(false,r)
@@ -169,12 +168,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
 
   val emptyVatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
-
-  val validVatContact = VatContact(
-    digitalContact = VatDigitalContact(email = "asd@com", tel = Some("123"), mobile = None),
-    website = None,
-    ppob = scrsAddress
-  )
 
   val validReturns = Returns(
     Some(false), Some(Frequency.monthly), None, Some(Start(Some(LocalDate.of(2017, 10, 10))))
