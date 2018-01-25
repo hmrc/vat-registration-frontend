@@ -19,12 +19,15 @@ package it.fixtures
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
+import features.businessContact.models.{BusinessContact, CompanyContactDetails}
 import features.officer.fixtures.LodgingOfficerFixture
 import features.returns.{Frequency, Returns, Stagger}
 import features.tradingDetails.{TradingDetails, TradingNameView}
 import features.turnoverEstimates.TurnoverEstimates
 import models.api._
+import models.external.CoHoRegisteredOfficeAddress
 import models.{BankAccount, BankAccountDetails}
+import play.api.libs.json.Json
 
 trait ITRegistrationFixtures extends LodgingOfficerFixture {
   val address = ScrsAddress(line1 = "3 Test Building", line2 = "5 Test Road", postcode = Some("TE1 1ST"))
@@ -72,6 +75,49 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
 
   val returns         = Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None)
 
+  val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
+
+  val coHoRegisteredOfficeAddress =
+    CoHoRegisteredOfficeAddress("premises",
+      "line1",
+      Some("line2"),
+      "locality",
+      Some("UK"),
+      Some("po_box"),
+      Some("XX XX"),
+      Some("region"))
+
+  val validBusinessContactDetails = BusinessContact(
+    companyContactDetails = Some(CompanyContactDetails(
+      email          = "test@foo.com",
+      phoneNumber    = Some("123"),
+      mobileNumber   = Some("987654"),
+      websiteAddress = Some("/test/url")
+    )),
+    ppobAddress = Some(scrsAddress)
+  )
+
+  val validBusinessContactDetailsJson = Json.parse(
+    """
+      |{
+      |"ppob" : {
+      |   "line1"    : "line1",
+      |   "line2"    : "line2",
+      |   "postcode" : "XX XX",
+      |   "country"  : "UK"
+      | },
+      | "digitalContact" : {
+      |   "email"    : "test@foo.com",
+      |   "tel"      : "123",
+      |   "mobile"   : "987654"
+      | },
+      | "website"   :"/test/url"
+      |
+      |}
+    """.stripMargin
+  )
+
+
   val vatReg = VatScheme(
     id                  = "1",
     status              = VatRegStatus.draft,
@@ -79,10 +125,10 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
     lodgingOfficer      = None,
     financials          = Some(financials),
     vatSicAndCompliance = Some(sicAndCompliance),
-    vatContact          = Some(vatContact),
+    businessContact     = Some(validBusinessContactDetails),
     threshold           = Some(voluntaryThreshold),
     vatFlatRateScheme   = Some(flatRateScheme),
-    turnOverEstimates = Some(turnOverEstimates),
+    turnOverEstimates   = Some(turnOverEstimates),
     bankAccount         = Some(bankAccount),
     returns             = Some(returns)
   )
@@ -94,7 +140,7 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
     lodgingOfficer      = None,
     financials          = Some(financials),
     vatSicAndCompliance = Some(sicAndCompliance),
-    vatContact          = Some(vatContact),
+    businessContact     = Some(validBusinessContactDetails),
     threshold           = Some(threshold),
     vatFlatRateScheme   = Some(flatRateScheme),
     bankAccount         = Some(bankAccount)

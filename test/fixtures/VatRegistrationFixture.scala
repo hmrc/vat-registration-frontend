@@ -114,6 +114,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val invalidBankCheckJsonResponse = Json.parse(invalidBankCheckJsonResponseString)
 
 
+
   val validSicAndCompliance = VatSicAndCompliance(
     businessDescription = testBusinessActivityDescription,
     culturalCompliance = Some(VatComplianceCultural(notForProfit = false)),
@@ -151,15 +152,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validActAsIntermediary = ActAsIntermediary(true)
   val validBusinessActivityDescription = BusinessActivityDescription(testBusinessActivityDescription)
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
-  val validBusinessContactDetails = BusinessContact(
-      companyContactDetails = Some(CompanyContactDetails(
-      email          = "test@foo.com",
-      phoneNumber    = Some("123"),
-      mobileNumber   = None,
-      websiteAddress = None
-    )),
-    ppobAddress = Some(scrsAddress)
-  )
 
   //Api models
   val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", None, None)
@@ -181,6 +173,16 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   )
 
   val validBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
+
+  val validBusinessContactDetails = BusinessContact(
+    companyContactDetails = Some(CompanyContactDetails(
+      email          = "test@foo.com",
+      phoneNumber    = Some("123"),
+      mobileNumber   = Some("987654"),
+      websiteAddress = Some("/test/url")
+    )),
+    ppobAddress = Some(scrsAddress)
+  )
 
   val validVatScheme = VatScheme(
     id = testRegId,
