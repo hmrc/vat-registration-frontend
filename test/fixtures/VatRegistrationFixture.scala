@@ -24,6 +24,7 @@ import features.officer.fixtures.LodgingOfficerFixtures
 import features.officer.models.view._
 import features.returns.{Frequency, Returns, Start}
 import features.tradingDetails.TradingDetails
+import frs.FlatRateScheme
 import models.api._
 import models.external.{IncorporationInfo, _}
 import features.sicAndCompliance.models.SicAndCompliance
@@ -166,7 +167,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     vatContact = Some(validVatContact),
     lodgingOfficer = Some(validFullLodgingOfficer),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
-    vatFlatRateScheme = Some(validVatFlatRateScheme),
+    flatRateScheme = Some(validFlatRate),
     bankAccount = Some(validBankAccount),
     returns = Some(validReturns),
     status = VatRegStatus.draft
@@ -202,14 +203,14 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
                  tradingDetails: Option[TradingDetails] = None,
                  sicAndComp: Option[SicAndCompliance] = None,
                  contact: Option[VatContact] = None,
-                 vatFlatRateScheme: Option[VatFlatRateScheme] = None,
+                 flatRateScheme: Option[FlatRateScheme] = None,
                  threshold: Option[Threshold] = None
                ): VatScheme = VatScheme(
     id = id,
     tradingDetails = tradingDetails,
     sicAndCompliance = sicAndComp,
     vatContact = contact,
-    vatFlatRateScheme = vatFlatRateScheme,
+    flatRateScheme = flatRateScheme,
     threshold = threshold,
     status = VatRegStatus.draft
   )

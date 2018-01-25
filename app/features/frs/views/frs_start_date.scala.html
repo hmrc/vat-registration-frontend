@@ -1,7 +1,8 @@
 @import java.time.format.DateTimeFormatter
+@import java.time.LocalDate
+@import frs.FRSDateChoice
 
-@import models.FrsStartDateView
-@(frsStartDateForm: Form[FrsStartDateView])(implicit request: Request[_], messages: Messages)
+@(frsStartDateForm: Form[(FRSDateChoice.Value, Option[LocalDate])])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInput, vatInputRadioGroup}
 
@@ -24,8 +25,8 @@
                     @vatInputRadioGroup(
                         frsStartDateForm("frsStartDateRadio"),
                         Seq(
-                            Some(FrsStartDateView.VAT_REGISTRATION_DATE -> Messages("pages.frs.startDate.radio1")),
-                            Some(FrsStartDateView.DIFFERENT_DATE -> Messages("pages.frs.startDate.radio2"))
+                            Some(FRSDateChoice.VATDate.toString -> Messages("pages.frs.startDate.radio1")),
+                            Some(FRSDateChoice.DifferentDate.toString -> Messages("pages.frs.startDate.radio2"))
                         ).flatten,
                         '_labelAfter -> true,
                         '_labelClass -> "block-label",

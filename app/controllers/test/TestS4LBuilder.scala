@@ -167,32 +167,4 @@ class TestS4LBuilder {
     )
   }
 
-  def vatFrsFromData(data: TestSetup): S4LFlatRateScheme = {
-
-    val joinFrs: Option[String] = data.vatFlatRateScheme.joinFrs
-    val annualCostsInclusive: Option[String] = data.vatFlatRateScheme.annualCostsInclusive
-    val annualCostsLimited: Option[String] = data.vatFlatRateScheme.annualCostsLimited
-    val registerForFrs: Option[String] = data.vatFlatRateScheme.registerForFrs
-
-    val frsStartDate = data.vatFlatRateScheme.frsStartDateChoice match {
-      case None => FrsStartDateView()
-      case Some("DIFFERENT_DATE") => FrsStartDateView(dateType = "DIFFERENT_DATE", date = Some(LocalDate.of(
-        data.vatFlatRateScheme.frsStartDateYear.map(_.toInt).get,
-        data.vatFlatRateScheme.frsStartDateMonth.map(_.toInt).get,
-        data.vatFlatRateScheme.frsStartDateDay.map(_.toInt).get
-      )))
-
-      case Some(t) => FrsStartDateView(t, None)
-    }
-
-    S4LFlatRateScheme(
-      joinFrs = joinFrs.map(a => JoinFrsView(a.toBoolean)),
-      frsStartDate = Some(frsStartDate),
-      annualCostsInclusive = annualCostsInclusive.map(AnnualCostsInclusiveView(_)),
-      annualCostsLimited = annualCostsLimited.map(AnnualCostsLimitedView(_)),
-      registerForFrs = registerForFrs.map(a => RegisterForFrsView(a.toBoolean))
-    )
-
-  }
-
 }

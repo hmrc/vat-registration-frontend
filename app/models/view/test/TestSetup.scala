@@ -19,6 +19,7 @@ package models.view.test
 import features.returns.Returns
 import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimates
+import frs.FlatRateScheme
 import models.BankAccount
 import play.api.libs.json.{Json, OFormat}
 
@@ -29,7 +30,7 @@ case class TestSetup(
                       officerHomeAddress: OfficerHomeAddressTestSetup,
                       officerPreviousAddress: OfficerPreviousAddressTestSetup,
                       lodgingOfficer: LodgingOfficerTestSetup,
-                      vatFlatRateScheme: VatFlatRateSchemeTestSetup,
+                      flatRateSchemeBlock: Option[FlatRateScheme],
                       turnoverEstimatesBlock: Option[TurnoverEstimates],
                       bankAccountBlock: Option[BankAccount],
                       returnsBlock: Option[Returns],

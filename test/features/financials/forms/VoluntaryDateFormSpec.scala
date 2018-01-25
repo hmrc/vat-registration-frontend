@@ -117,7 +117,7 @@ class VoluntaryDateFormSpec extends VatRegSpec {
       val bound = form.bind(data)
       bound.errors.size mustBe 1
       bound.errors.head.key mustBe VOLUNTARY_SELECTION
-      bound.errors.head.message mustBe voluntarySelectionInvalidKey
+      bound.errors.head.message mustBe voluntarySelectionEmptyKey
     }
   }
 }
