@@ -250,6 +250,12 @@ object FormValidation {
       if(date.isAfter(LocalDate.now().minusYears(4).minusDays(1))) Valid else Invalid(errKey)
   }
 
+  def dateAfterDate(minDay : LocalDate, errKey: String): Constraint[(String, String, String)] = Constraint {
+    input: (String, String, String) =>
+      val date = LocalDate.parse(s"${input._1}-${input._2}-${input._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
+      if(date.isAfter(minDay)) Valid else Invalid(errKey)
+  }
+
   object Dates {
 
     def nonEmptyDateModel(constraint: => Constraint[DateModel] = unconstrained)(implicit e: ErrorCode): Constraint[DateModel] =

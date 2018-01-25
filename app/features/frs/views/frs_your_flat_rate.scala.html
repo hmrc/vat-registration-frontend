@@ -1,6 +1,5 @@
-@import models.BusinessSectorView
 @import forms.genericForms.YesOrNoAnswer
-@(businessSectorView: BusinessSectorView, registerForFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages)
+@(sector: String, percentFormat: String, registerForFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
 
@@ -17,11 +16,11 @@
         <tbody>
             <tr>
                 <td>@messages("pages.frs.registerForWithSector.table.row1.heading")</td>
-                <td>@Html(businessSectorView.businessSector)</td>
+                <td>@Html(sector)</td>
             </tr>
             <tr>
                 <td>@messages("pages.frs.registerForWithSector.table.row2.heading")</td>
-                <td>@Html(businessSectorView.flatRatePercentageFormatted)</td>
+                <td>@Html(percentFormat)</td>
             </tr>
         </tbody>
     </table>

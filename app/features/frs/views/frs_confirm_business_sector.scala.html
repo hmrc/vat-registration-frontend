@@ -1,5 +1,5 @@
-@import models.BusinessSectorView
-@(businessSectorView: BusinessSectorView)(implicit request: Request[_], messages: Messages)
+@import java.time.LocalDate
+@(sectorPct: (String, BigDecimal))(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 
 @main_template(title = messages("pages.frs.confirmBusinessSector.title")) {
@@ -24,7 +24,7 @@
         <tbody>
             <tr>
                 <td>@messages("pages.frs.confirmBusinessSector.table.row1.heading")</td>
-                <td id="businessTypeValue">@Html(businessSectorView.businessSector)</td>
+                <td id="businessTypeValue">@Html(sectorPct._1)</td>
             </tr>
         </tbody>
     </table>

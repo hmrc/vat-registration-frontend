@@ -21,6 +21,8 @@ import features.returns.Stagger.Stagger
 import features.returns.{Returns, Start}
 import features.tradingDetails.{TradingDetails, TradingNameView}
 import features.turnoverEstimates.TurnoverEstimates
+import frs.AnnualCosts.AnnualCosts
+import frs.{AnnualCosts, FlatRateScheme}
 import models.view.test._
 import models.{BankAccount, BankAccountDetails}
 import play.api.data.Forms._
@@ -100,15 +102,17 @@ object TestSetupForm {
   )(OfficerPreviousAddressTestSetup.apply)(OfficerPreviousAddressTestSetup.unapply)
 
   val flatRateSchemeMapping = mapping(
-    "joinFrs" -> optional(text),
-    "annualCostsInclusive" -> optional(text),
-    "annualCostsLimited" -> optional(text),
-    "registerForFrs" -> optional(text),
-    "frsStartDateChoice" -> optional(text),
-    "frsStartDateDay" -> optional(text),
-    "frsStartDateMonth" -> optional(text),
-    "frsStartDateYear" -> optional(text)
-  )(VatFlatRateSchemeTestSetup.apply)(VatFlatRateSchemeTestSetup.unapply)
+    "joinFrs" -> optional(boolean),
+    "annualCostsInclusive" -> optional(of[AnnualCosts.Value]),
+    "vatTaxableTurnover" -> optional(longNumber),
+    "annualCostsLimited" -> optional(of[AnnualCosts.Value]),
+    "registerForFrs" -> optional(boolean),
+    "start" -> optional(mapping(
+      "date" -> optional(localDate)
+    )(Start.apply)(Start.unapply)),
+    "categoryOfBusiness" -> optional(text),
+    "percent" -> optional(bigDecimal)
+  )(FlatRateScheme.apply)(FlatRateScheme.unapply)
 
   val bankAccountMapping: Mapping[BankAccount] = mapping(
     "isProvided" -> boolean,
@@ -148,7 +152,7 @@ object TestSetupForm {
     "officerHomeAddress" -> officeHomeAddressMapping,
     "officerPreviousAddress" -> officePreviousAddressMapping,
     "vatLodgingOfficer" -> vatLodgingOfficerTestSetup,
-    "vatFlatRateScheme" -> flatRateSchemeMapping,
+    "flatRateScheme" -> optional(flatRateSchemeMapping),
     "turnoverEstimates" -> optional(turnoverEstimatesMapping),
     "bankAccount" -> optional(bankAccountMapping),
     "returns" -> optional(returnsMapping),

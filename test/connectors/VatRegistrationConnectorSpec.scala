@@ -18,13 +18,13 @@ package connectors
 
 import java.time.LocalDate
 
+import config.WSHttp
+import features.officer.models.view.{LodgingOfficer, _}
+import features.turnoverEstimates.TurnoverEstimates
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api._
 import models.external.{IncorporationInfo, Name, Officer}
-import config.WSHttp
-import features.turnoverEstimates.TurnoverEstimates
-import features.officer.models.view.LodgingOfficer
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.{JsValue, Json}
 import features.officer.models.view._
@@ -197,27 +197,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       connector.upsertPpob("tstID", scrsAddress) failedWith internalServiceException
     }
   }
-
-  "Calling upsertVatFrsAnswers" should {
-
-    "return the correct VatResponse when the microservice completes and returns a VatFrsAnswers model" in new Setup {
-      mockHttpPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", validVatFlatRateScheme)
-      connector.upsertVatFlatRateScheme("tstID", validVatFlatRateScheme) returns validVatFlatRateScheme
-    }
-    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", forbidden)
-      connector.upsertVatFlatRateScheme("tstID", validVatFlatRateScheme) failedWith forbidden
-    }
-    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", notFound)
-      connector.upsertVatFlatRateScheme("tstID", validVatFlatRateScheme) failedWith notFound
-    }
-    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[VatFlatRateScheme, VatFlatRateScheme]("tst-url", internalServiceException)
-      connector.upsertVatFlatRateScheme("tstID", validVatFlatRateScheme) failedWith internalServiceException
-    }
-  }
-
 
   "Calling getIncorporationInfo" should {
 

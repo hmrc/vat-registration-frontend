@@ -25,9 +25,8 @@ import features.sicAndCompliance.models.SicAndCompliance
 import features.sicAndCompliance.models.test.SicStub
 import features.turnoverEstimates.TurnoverEstimatesService
 import forms.test.TestSetupForm
-import models.api._
 import models.view.test._
-import models.{S4LKey, S4LVatContact, S4LVatFinancials, _}
+import models.{S4LKey, S4LVatContact, S4LVatFinancials}
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, S4LService, SessionProfile}
@@ -57,9 +56,9 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
             vatSicAndCompliance <- s4LService.fetchAndGet[SicAndCompliance]
             vatContact <- s4LService.fetchAndGet[S4LVatContact]
             lodgingOfficer <- s4LService.fetchAndGet[LodgingOfficer]
-            frs <- s4LService.fetchAndGet[S4LFlatRateScheme]
 
             bankAccount       <- s4LService.fetchAndGetNoAux(S4LKey.bankAccountKey)
+            flatRateScheme    <- s4LService.fetchAndGetNoAux(S4LKey.flatRateScheme)
             returns           <- s4LService.fetchAndGetNoAux(S4LKey.returns)
             turnoverEstimates <- turnoverService.fetchTurnoverEstimates
             tradingDetails    <- s4LService.fetchAndGetNoAux(S4LKey.tradingDetails)
@@ -128,16 +127,7 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                 formernameChangeMonth = lodgingOfficer.flatMap(_.formerNameDate).map(_.date.getMonthValue.toString),
                 formernameChangeYear = lodgingOfficer.flatMap(_.formerNameDate).map(_.date.getYear.toString)
               ),
-              vatFlatRateScheme = VatFlatRateSchemeTestSetup(
-                joinFrs = frs.flatMap(_.joinFrs).map(_.selection.toString),
-                annualCostsInclusive = frs.flatMap(_.annualCostsInclusive).map(_.selection),
-                annualCostsLimited = frs.flatMap(_.annualCostsLimited).map(_.selection),
-                registerForFrs = frs.flatMap(_.registerForFrs).map(_.selection.toString),
-                frsStartDateChoice = frs.flatMap(_.frsStartDate).map(_.dateType),
-                frsStartDateDay = frs.flatMap(_.frsStartDate).flatMap(_.date).map(_.getDayOfMonth.toString),
-                frsStartDateMonth = frs.flatMap(_.frsStartDate).flatMap(_.date).map(_.getMonthValue.toString),
-                frsStartDateYear = frs.flatMap(_.frsStartDate).flatMap(_.date).map(_.getYear.toString)
-              ),
+              flatRateSchemeBlock = flatRateScheme,
               turnoverEstimatesBlock = turnoverEstimates,
               bankAccountBlock = bankAccount,
               returnsBlock = returns,
@@ -152,6 +142,8 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
+          implicit val flatRateKey = S4LKey.flatRateScheme
+
           def saveToS4Later[T: Format : S4LKey](userEntered: Option[String], data: TestSetup, f: TestSetup => T): Future[Unit] =
             userEntered.map(_ => s4LService.save(f(data)).map(_ => ())).getOrElse(Future.successful(()))
 
@@ -178,8 +170,7 @@ class TestSetupController @Inject()(implicit val s4LService: S4LService,
                   lodgingOfficer = s4LBuilder.buildLodgingOfficerFromTestData(data)
                   _ <- s4LService.save(lodgingOfficer)
 
-                  _ <- s4LService.save(s4LBuilder.vatFrsFromData(data))
-
+                  _ <- data.flatRateSchemeBlock.fold(empty)(saveToS4L)
                   _ <- data.bankAccountBlock.fold(empty)(saveToS4L)
                   _ <- data.turnoverEstimatesBlock.fold(empty)(t => turnoverService.saveTurnoverEstimates(t).flatMap(_ => empty))
                 } yield Ok("Test setup complete")

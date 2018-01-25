@@ -16,31 +16,92 @@
 
 package fixtures
 
-import models._
-import models.api.VatFlatRateScheme
+import java.time.LocalDate
+
+import features.returns.Start
+import frs.{AnnualCosts, FlatRateScheme}
 
 trait FlatRateFixtures {
 
   private val flatRatePercentage = BigDecimal(3.14)
+  val frsDate = Some(Start(Some(LocalDate.of(2017, 10, 10))))
 
-  val validBusinessSectorView = BusinessSectorView("test business sector", flatRatePercentage)
+  val validBusinessSectorView = ("test business sector", flatRatePercentage)
 
-  val validS4LFlatRateScheme = S4LFlatRateScheme(
-    joinFrs = Some(JoinFrsView(true)),
-    annualCostsInclusive = Some(AnnualCostsInclusiveView(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS)),
-    annualCostsLimited = Some(AnnualCostsLimitedView(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS)),
-    registerForFrs = Some(RegisterForFrsView(false)),
-    categoryOfBusiness = Some(validBusinessSectorView)
+  val validFlatRate = FlatRateScheme(
+    Some(true),
+    Some(AnnualCosts.AlreadyDoesSpend),
+    None,
+    None,
+    Some(true),
+    frsDate,
+    Some(""),
+    Some(flatRatePercentage)
   )
 
-  val validVatFlatRateScheme = VatFlatRateScheme(
-    joinFrs = true,
-    annualCostsInclusive = Some(AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS),
-    annualCostsLimited = Some(AnnualCostsLimitedView.YES_WITHIN_12_MONTHS),
-    doYouWantToUseThisRate = Some(false),
-    categoryOfBusiness = Some(validBusinessSectorView.businessSector),
-    percentage = Some(validBusinessSectorView.flatRatePercentage)
+  val defaultFlatRate: BigDecimal = 16.5
+
+  val frs1KReg = FlatRateScheme(
+    Some(true),
+    Some(AnnualCosts.AlreadyDoesSpend),
+    None,
+    None,
+    Some(true),
+    frsDate,
+    Some("test"),
+    Some(defaultFlatRate)
   )
 
-  val vatFlatRateSchemeNotJoiningFRS = VatFlatRateScheme()
+  val frs1KNreg = FlatRateScheme(
+    Some(true),
+    Some(AnnualCosts.AlreadyDoesSpend),
+    None,
+    None,
+    Some(false),
+    None,
+    Some(""),
+    Some(defaultFlatRate)
+  )
+
+  val frsPerReg = FlatRateScheme(
+    Some(true),
+    Some(AnnualCosts.DoesNotSpend),
+    Some(1000000L),
+    Some(AnnualCosts.AlreadyDoesSpend),
+    Some(true),
+    frsDate,
+    Some(""),
+    Some(defaultFlatRate)
+  )
+
+  val frsPerNconf = FlatRateScheme(
+    Some(true),
+    Some(AnnualCosts.DoesNotSpend),
+    Some(1000000L),
+    Some(AnnualCosts.DoesNotSpend),
+    Some(true),
+    frsDate,
+    Some(""),
+    Some(defaultFlatRate)
+  )
+
+  val frsPerNconfN = FlatRateScheme(
+    Some(true),
+    Some(AnnualCosts.DoesNotSpend),
+    Some(1000000L),
+    Some(AnnualCosts.DoesNotSpend),
+    Some(false),
+    None,
+    Some(""),
+    Some(defaultFlatRate)
+  )
+
+  val frsNoJoin = FlatRateScheme(
+    Some(false)
+  )
+
+  val incompleteS4l = FlatRateScheme(
+    Some(true),
+    Some(AnnualCosts.AlreadyDoesSpend)
+  )
 }
