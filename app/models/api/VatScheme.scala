@@ -22,6 +22,7 @@ import features.returns.Returns
 import features.sicAndCompliance.models.SicAndCompliance
 import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimates
+import frs.FlatRateScheme
 import models.BankAccount
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -38,16 +39,15 @@ case class VatScheme(
                       returns: Option[Returns] = None,
                       turnOverEstimates: Option[TurnoverEstimates] = None,
                       bankAccount : Option[BankAccount] = None,
-                      vatFlatRateScheme: Option[VatFlatRateScheme] = None,
+                      flatRateScheme: Option[FlatRateScheme] = None,
                       status: VatRegStatus.Value
                     )
 
 object VatScheme {
-  implicit val frmt = TradingDetails.apiFormat
   implicit val format: OFormat[VatScheme] = (
     (__ \ "registrationId").format[String] and
       (__ \ "lodgingOfficer").formatNullable[LodgingOfficer].inmap[Option[LodgingOfficer]](_ => Option.empty[LodgingOfficer], _ => Option.empty[LodgingOfficer]) and
-      (__ \ "tradingDetails").formatNullable[TradingDetails] and
+      (__ \ "tradingDetails").formatNullable[TradingDetails](TradingDetails.apiFormat) and
       (__ \ "financials").formatNullable[VatFinancials] and
       (__ \ "sicAndCompliance").formatNullable[SicAndCompliance].inmap[Option[SicAndCompliance]](_ => Option.empty[SicAndCompliance], _ => Option.empty[SicAndCompliance]) and
       (__ \ "vatContact").formatNullable[VatContact] and
@@ -55,7 +55,7 @@ object VatScheme {
       (__ \ "returns").formatNullable[Returns] and
       (__ \ "turnoverEstimates").formatNullable[TurnoverEstimates] and
       (__ \ "bankAccount").formatNullable[BankAccount] and
-      (__ \ "vatFlatRateScheme").formatNullable[VatFlatRateScheme] and
+      (__ \ "flatRateScheme").formatNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
       (__ \ "status").format[VatRegStatus.Value]
     )(VatScheme.apply, unlift(VatScheme.unapply))
 }

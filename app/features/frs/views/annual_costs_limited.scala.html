@@ -1,5 +1,5 @@
-@import models.AnnualCostsLimitedView
-@(annualCostsInclusiveForm:  Form[AnnualCostsLimitedView], estimateVatTurnover : Long)(implicit request: Request[_], messages: Messages)
+@import frs.AnnualCosts
+@(annualCostsInclusiveForm:  Form[AnnualCosts.Value], estimateVatTurnover : Long)(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
 
@@ -23,9 +23,9 @@
         @vatInputRadioGroup(
             field = annualCostsInclusiveForm("annualCostsLimitedRadio"),
             Seq(
-              AnnualCostsLimitedView.YES -> messages("app.common.yes"),
-              AnnualCostsLimitedView.YES_WITHIN_12_MONTHS -> messages("pages.frs.costsLimited.radio2"),
-              AnnualCostsLimitedView.NO -> messages("pages.frs.costsLimited.radio3")
+                AnnualCosts.AlreadyDoesSpend.toString() -> messages("app.common.yes"),
+                AnnualCosts.WillSpend.toString() -> messages("pages.frs.costsLimited.radio2"),
+                AnnualCosts.DoesNotSpend.toString() -> messages("pages.frs.costsLimited.radio3")
             ),
             '_labelAfter -> true,
             '_labelClass -> "block-label"

@@ -16,12 +16,13 @@
 
 package controllers
 
+import java.text.DecimalFormat
 import javax.inject.Inject
 
 import connectors.KeystoreConnect
+import forms._
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
-import forms.{AnnualCostsInclusiveForm, AnnualCostsLimitedFormFactory, FrsStartDateFormFactory}
-import models._
+import frs.AnnualCosts
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
@@ -33,30 +34,28 @@ import scala.concurrent.Future
 class FlatRateControllerImpl @Inject()(val messagesApi: MessagesApi,
                                        val flatRateService: FlatRateService,
                                        val authConnector: AuthConnector,
-                                       val keystoreConnector: KeystoreConnect,
-                                       val frsStartDateFormFactory: FrsStartDateFormFactory) extends FlatRateController {
-
-  override val startDateForm: Form[FrsStartDateView] = frsStartDateFormFactory.form()
-}
+                                       val keystoreConnector: KeystoreConnect) extends FlatRateController
 
 trait FlatRateController extends VatRegistrationControllerNoAux with SessionProfile {
 
   val flatRateService: FlatRateService
-  val startDateForm : Form[FrsStartDateView]
 
-  val joinFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("joinFrs")("frs.join")
   val registerForFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("registerForFrs")("frs.registerFor")
+  val joinFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("joinFrs")("frs.join")
   val yourFlatRateForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("registerForFrsWithSector")("frs.registerForWithSector")
-  val annualCostsInclusiveForm: Form[AnnualCostsInclusiveView] = AnnualCostsInclusiveForm.form
-  val annualCostsLimitedForm: Form[AnnualCostsLimitedView] = AnnualCostsLimitedFormFactory.form()
+  val overBusinessGoodsForm = OverBusinessGoodsForm.form
+  val startDateForm = FRSStartDateForm.form
+  def overBusinessGoodsPercentForm(formPct : Long = 0L) = new OverBusinessGoodsPercentForm {
+    override val pct: Long = formPct
+  }.form
 
   def joinFrsPage: Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          flatRateService.fetchFlatRateScheme map { flatRateScheme =>
+          flatRateService.getFlatRate map { flatRateScheme =>
             val form = flatRateScheme.joinFrs match {
-              case Some(joinFrs) => joinFrsForm.fill(YesOrNoAnswer(joinFrs.selection))
+              case Some(joinFrs) => joinFrsForm.fill(YesOrNoAnswer(joinFrs))
               case None => joinFrsForm
             }
             Ok(features.frs.views.html.frs_join(form))
@@ -70,7 +69,7 @@ trait FlatRateController extends VatRegistrationControllerNoAux with SessionProf
         withCurrentProfile { implicit profile =>
           joinFrsForm.bindFromRequest().fold(
             badForm => Future.successful(BadRequest(features.frs.views.html.frs_join(badForm))),
-            joiningFRS => flatRateService.saveJoinFRS(JoinFrsView(joiningFRS.answer)) map { _ =>
+            joiningFRS => flatRateService.saveJoiningFRS(joiningFRS.answer) map { _ =>
               if (joiningFRS.answer) {
                 Redirect(controllers.routes.FlatRateController.annualCostsInclusivePage())
               } else {
@@ -86,8 +85,8 @@ trait FlatRateController extends VatRegistrationControllerNoAux with SessionProf
       implicit request =>
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
-            flatRateService.fetchFlatRateScheme.map { flatRateScheme =>
-              val viewForm = flatRateScheme.annualCostsInclusive.fold(annualCostsInclusiveForm)(annualCostsInclusiveForm.fill)
+            flatRateService.getFlatRate map { flatRateScheme =>
+              val viewForm = flatRateScheme.overBusinessGoods.fold(overBusinessGoodsForm)(overBusinessGoodsForm.fill)
               Ok(features.frs.views.html.annual_costs_inclusive(viewForm))
             }
           }
@@ -99,15 +98,17 @@ trait FlatRateController extends VatRegistrationControllerNoAux with SessionProf
       implicit request =>
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
-            annualCostsInclusiveForm.bindFromRequest().fold(
+            overBusinessGoodsForm.bindFromRequest().fold(
               badForm => Future.successful(BadRequest(features.frs.views.html.annual_costs_inclusive(badForm))),
-              view => if (view.selection == AnnualCostsInclusiveView.NO) {
-                flatRateService.isOverLimitedCostTraderThreshold map {
-                  case true => Redirect(controllers.routes.FlatRateController.annualCostsLimitedPage())
-                  case false => Redirect(controllers.routes.FlatRateController.confirmSectorFrsPage())
+              view => if (view == AnnualCosts.DoesNotSpend) {
+                flatRateService.saveOverAnnualCosts(view) flatMap { _ =>
+                  flatRateService.isOverLimitedCostTraderThreshold map {
+                    case true => Redirect(controllers.routes.FlatRateController.annualCostsLimitedPage())
+                    case false => Redirect(controllers.routes.FlatRateController.confirmSectorFrsPage())
+                  }
                 }
               } else {
-                flatRateService.saveAnnualCostsInclusive(view) map { _ =>
+                flatRateService.saveOverAnnualCosts(view) map { _ =>
                   Redirect(controllers.routes.FlatRateController.registerForFrsPage())
                 }
               }
@@ -122,10 +123,10 @@ trait FlatRateController extends VatRegistrationControllerNoAux with SessionProf
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
             for {
-              flatRateScheme <- flatRateService.fetchFlatRateScheme
-              flatRateSchemeThreshold <- flatRateService.getFlatRateSchemeThreshold()
+              flatRateScheme <- flatRateService.getFlatRate
+              flatRateSchemeThreshold <- flatRateService.getFlatRateSchemeThreshold
             } yield {
-              val viewForm = flatRateScheme.annualCostsLimited.fold(annualCostsLimitedForm)(annualCostsLimitedForm.fill)
+              val viewForm = flatRateScheme.overBusinessGoodsPercent.fold(overBusinessGoodsPercentForm())(overBusinessGoodsPercentForm().fill)
               Ok(features.frs.views.html.annual_costs_limited(viewForm, flatRateSchemeThreshold))
             }
           }
@@ -137,11 +138,11 @@ trait FlatRateController extends VatRegistrationControllerNoAux with SessionProf
       implicit request =>
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
-            flatRateService.getFlatRateSchemeThreshold() flatMap { frsThreshold =>
-              AnnualCostsLimitedFormFactory.form(Seq(frsThreshold)).bindFromRequest().fold(
+            flatRateService.getFlatRateSchemeThreshold flatMap { frsThreshold =>
+              overBusinessGoodsPercentForm(frsThreshold).bindFromRequest().fold(
                 errors => Future.successful(BadRequest(features.frs.views.html.annual_costs_limited(errors, frsThreshold))),
-                view => flatRateService.saveAnnualCostsLimited(view) map { _ =>
-                  if (view.selection == AnnualCostsLimitedView.NO) {
+                view => flatRateService.saveOverAnnualCostsPercent(view) map { _ =>
+                  if (view == AnnualCosts.DoesNotSpend) {
                     Redirect(controllers.routes.FlatRateController.confirmSectorFrsPage())
                   } else {
                     Redirect(controllers.routes.FlatRateController.registerForFrsPage())
@@ -153,14 +154,12 @@ trait FlatRateController extends VatRegistrationControllerNoAux with SessionProf
         }
   }
 
-
-
   def confirmSectorFrsPage: Action[AnyContent] = authorised.async {
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
-            flatRateService.businessSectorView() map { view =>
+            flatRateService.retrieveSectorPercent map { view =>
               Ok(features.frs.views.html.frs_confirm_business_sector(view))
             }
           }
@@ -172,10 +171,8 @@ trait FlatRateController extends VatRegistrationControllerNoAux with SessionProf
       implicit request =>
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
-            flatRateService.businessSectorView() flatMap {
-              flatRateService.saveBusinessSector(_) map { _ =>
-                Redirect(controllers.routes.FlatRateController.yourFlatRatePage())
-              }
+            flatRateService.saveConfirmSector map { _ =>
+              Redirect(controllers.routes.FlatRateController.yourFlatRatePage())
             }
           }
         }
@@ -186,8 +183,9 @@ trait FlatRateController extends VatRegistrationControllerNoAux with SessionProf
       implicit request =>
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
-            flatRateService.fetchFlatRateScheme map { flatRateScheme =>
-              val viewForm = flatRateScheme.frsStartDate.fold(startDateForm)(startDateForm.fill)
+            flatRateService.getPrepopulatedStartDate map { prepop =>
+              val (choOpt, date) = prepop
+              val viewForm = choOpt.foldLeft(startDateForm)((form, choice) => form.fill((choice, date)))
               Ok(features.frs.views.html.frs_start_date(viewForm))
             }
           }
@@ -201,8 +199,11 @@ trait FlatRateController extends VatRegistrationControllerNoAux with SessionProf
           ivPassedCheck {
             startDateForm.bindFromRequest().fold(
               badForm => Future.successful(BadRequest(features.frs.views.html.frs_start_date(badForm))),
-              view => flatRateService.saveFRSStartDate(view) map { _ =>
-                Redirect(controllers.routes.SummaryController.show())
+              view => {
+                val (choice, date) = view
+                flatRateService.saveStartDate(choice, date) map { _ =>
+                  Redirect(controllers.routes.SummaryController.show())
+                }
               }
             )
           }
@@ -214,8 +215,13 @@ trait FlatRateController extends VatRegistrationControllerNoAux with SessionProf
       implicit request =>
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
-            // TODO no fetch from S4L / backend
-            Future.successful(Ok(features.frs.views.html.frs_register_for(registerForFrsForm)))
+            flatRateService.getFlatRate map { flatRateScheme =>
+              val form = flatRateScheme.useThisRate match {
+                case Some(useRate) => registerForFrsForm.fill(YesOrNoAnswer(useRate))
+                case None => registerForFrsForm
+              }
+              Ok(features.frs.views.html.frs_register_for(form))
+            }
           }
         }
   }
@@ -227,7 +233,7 @@ trait FlatRateController extends VatRegistrationControllerNoAux with SessionProf
           ivPassedCheck {
             registerForFrsForm.bindFromRequest().fold(
               badForm => Future.successful(BadRequest(features.frs.views.html.frs_register_for(badForm))),
-              view => flatRateService.saveRegisterForFRS(view.answer) map { _ =>
+              view => flatRateService.saveRegister(view.answer) map { _ =>
                 if (view.answer) {
                   Redirect(controllers.routes.FlatRateController.frsStartDatePage())
                 } else {
@@ -243,8 +249,16 @@ trait FlatRateController extends VatRegistrationControllerNoAux with SessionProf
     implicit user =>
       implicit request =>
         withCurrentProfile { implicit profile =>
-          flatRateService.businessSectorView().map {
-            sectorInfo => Ok(features.frs.views.html.frs_your_flat_rate(sectorInfo, yourFlatRateForm))
+          flatRateService.getFlatRate flatMap { flatRateScheme =>
+            val form = flatRateScheme.useThisRate match {
+              case Some(useRate) => yourFlatRateForm.fill(YesOrNoAnswer(useRate))
+              case None => yourFlatRateForm
+            }
+            flatRateService.retrieveSectorPercent map { sectorInfo =>
+              val decimalFormat = new DecimalFormat("#0.##")
+              val (sector, pct) = sectorInfo
+              Ok(features.frs.views.html.frs_your_flat_rate(sector, decimalFormat.format(pct), form))
+            }
           }
         }
   }
@@ -255,12 +269,13 @@ trait FlatRateController extends VatRegistrationControllerNoAux with SessionProf
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
             yourFlatRateForm.bindFromRequest().fold(
-              badForm => flatRateService.businessSectorView map { view =>
-                BadRequest(features.frs.views.html.frs_your_flat_rate(view, badForm))
+              badForm => flatRateService.retrieveSectorPercent map { view =>
+                val decimalFormat = new DecimalFormat("#0.##")
+                val (sector, pct) = view
+                BadRequest(features.frs.views.html.frs_your_flat_rate(sector, decimalFormat.format(pct), badForm))
               },
               view => for {
-                sector <- flatRateService.businessSectorView
-                _      <- flatRateService.saveRegisterForFRS(view.answer, Some(sector))
+                _   <- flatRateService.saveUseFlatRate(view.answer)
               } yield if(view.answer) {
                 Redirect(controllers.routes.FlatRateController.frsStartDatePage())
               } else {

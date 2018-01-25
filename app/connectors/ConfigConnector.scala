@@ -18,7 +18,6 @@ package connectors
 
 import javax.inject.{Inject, Singleton}
 
-import models.BusinessSectorView
 import models.api.SicCode
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 
@@ -32,8 +31,8 @@ class ConfigConnector @Inject()(config: ServicesConfig) {
     displayDetails = config.getString(s"$sicCodePrefix.$sicCode.displayDetails")
   )
 
-  def getBusinessSectorDetails(sicCode: String): BusinessSectorView = BusinessSectorView(
-    businessSector      = config.getString(s"$sicCodePrefix.$sicCode.frsCategory"),
-    flatRatePercentage  = BigDecimal(config.getString(s"$sicCodePrefix.$sicCode.currentFRSPercent"))
+  def getBusinessSectorDetails(sicCode: String): (String, BigDecimal) = (
+    config.getString(s"$sicCodePrefix.$sicCode.frsCategory"),
+    BigDecimal(config.getString(s"$sicCodePrefix.$sicCode.currentFRSPercent"))
   )
 }

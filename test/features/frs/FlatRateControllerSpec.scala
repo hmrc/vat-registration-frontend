@@ -22,13 +22,12 @@ import common.Now
 import connectors.KeystoreConnector
 import features.turnoverEstimates.TurnoverEstimates
 import fixtures.VatRegistrationFixture
-import forms.FrsStartDateFormFactory
+import frs.{AnnualCosts, FRSDateChoice, FlatRateScheme}
 import helpers.{ControllerSpec, MockMessages}
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
@@ -39,10 +38,8 @@ import scala.concurrent.Future
 
 class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages {
   val today: LocalDate = LocalDate.of(2017, 3, 21)
-  val frsStartDateFormFactory = new FrsStartDateFormFactory(mockDateService, Now[LocalDate](today))
   val mockFlatRateService: FlatRateService = mock[FlatRateService]
 
-  implicit val localDateOrdering = frsStartDateFormFactory.LocalDateOrdering
   implicit val fixedToday: Now[LocalDate] = Now[LocalDate](today)
 
   trait Setup {
@@ -51,7 +48,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
       override val messagesApi: MessagesApi = mockMessagesAPI
       override val flatRateService: FlatRateService = mockFlatRateService
-      override val startDateForm: Form[FrsStartDateView] = frsStartDateFormFactory.form()
     }
 
     mockAllMessages
@@ -62,8 +58,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return a 200 when a previously completed S4LFlatRateScheme is returned" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.fetchFlatRateScheme(any(), any()))
-        .thenReturn(Future.successful(validS4LFlatRateScheme))
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
 
       callAuthorised(controller.annualCostsInclusivePage()) { result =>
         status(result) mustBe 200
@@ -74,8 +70,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return a 200 when an empty S4LFlatRateScheme is returned from the service" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.fetchFlatRateScheme(any(), any()))
-        .thenReturn(Future.successful(S4LFlatRateScheme()))
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+        .thenReturn(Future.successful(FlatRateScheme.empty))
 
       callAuthorised(controller.annualCostsInclusivePage) { result =>
         status(result) mustBe 200
@@ -101,11 +97,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.saveAnnualCostsInclusive(any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.saveOverAnnualCosts(any())(any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES
+        "annualCostsInclusiveRadio" -> AnnualCosts.AlreadyDoesSpend
       )
 
       submitAuthorised(controller.submitAnnualInclusiveCosts(), request){ result =>
@@ -117,11 +113,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return 303 with Annual Costs Inclusive selected within 12 months" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.saveAnnualCostsInclusive(any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.saveOverAnnualCosts(any())(any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.YES_WITHIN_12_MONTHS
+        "annualCostsInclusiveRadio" -> AnnualCosts.WillSpend
       )
 
       submitAuthorised(controller.submitAnnualInclusiveCosts(), request){ result =>
@@ -137,7 +133,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(false))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.NO
+        "annualCostsInclusiveRadio" -> AnnualCosts.DoesNotSpend
       )
 
       submitAuthorised(controller.submitAnnualInclusiveCosts(), request){ result =>
@@ -153,7 +149,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(true))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "annualCostsInclusiveRadio" -> AnnualCostsInclusiveView.NO
+        "annualCostsInclusiveRadio" -> AnnualCosts.DoesNotSpend
       )
 
       submitAuthorised(controller.submitAnnualInclusiveCosts(), request){ result =>
@@ -165,18 +161,16 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
   val estimateVatTurnover = TurnoverEstimates(1000000L)
 
-  val s4LFlatRateSchemeNoAnnualCostsLimited: S4LFlatRateScheme = validS4LFlatRateScheme.copy(annualCostsLimited = None)
-
   s"GET ${routes.FlatRateController.annualCostsLimitedPage()}" should {
 
     "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is not found on the vat scheme" in new Setup {
 
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.fetchFlatRateScheme(any(), any()))
-        .thenReturn(Future.successful(s4LFlatRateSchemeNoAnnualCostsLimited))
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+        .thenReturn(Future.successful(validFlatRate.copy(overBusinessGoodsPercent = None)))
 
-      when(mockFlatRateService.getFlatRateSchemeThreshold()(any(), any()))
+      when(mockFlatRateService.getFlatRateSchemeThreshold(any(), any()))
         .thenReturn(Future.successful(1000L))
 
       callAuthorised(controller.annualCostsLimitedPage()) { result =>
@@ -188,10 +182,10 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is found on the vat scheme" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.fetchFlatRateScheme(any(), any()))
-        .thenReturn(Future.successful(validS4LFlatRateScheme))
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
 
-      when(mockFlatRateService.getFlatRateSchemeThreshold()(any(), any()))
+      when(mockFlatRateService.getFlatRateSchemeThreshold(any(), any()))
         .thenReturn(Future.successful(1000L))
 
       callAuthorised(controller.annualCostsLimitedPage()) { result =>
@@ -218,11 +212,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return a 303 when AnnualCostsLimitedView.selected is Yes" in new Setup{
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.saveAnnualCostsLimited(any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.saveOverAnnualCostsPercent(any())(any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "annualCostsLimitedRadio" -> AnnualCostsLimitedView.YES
+        "annualCostsLimitedRadio" -> AnnualCosts.AlreadyDoesSpend
       )
 
       submitAuthorised(controller.submitAnnualCostsLimited(), request){ result =>
@@ -234,11 +228,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return 303 when AnnualCostsLimitedView.selected is Yes within 12 months" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.saveAnnualCostsLimited(any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.saveOverAnnualCostsPercent(any())(any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "annualCostsLimitedRadio" -> AnnualCostsLimitedView.YES_WITHIN_12_MONTHS
+        "annualCostsLimitedRadio" -> AnnualCosts.WillSpend
       )
 
       submitAuthorised(controller.submitAnnualCostsLimited(), request){ result =>
@@ -250,11 +244,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return a 303 and redirect to confirm business sector with Annual Costs Limited selected No" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.saveAnnualCostsLimited(any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.saveOverAnnualCostsPercent(any())(any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
 
       private val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "annualCostsLimitedRadio" -> AnnualCostsLimitedView.NO
+        "annualCostsLimitedRadio" -> AnnualCosts.DoesNotSpend
       )
 
       submitAuthorised(controller.submitAnnualCostsLimited(), request){ result =>
@@ -267,8 +261,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
   s"GET ${routes.FlatRateController.confirmSectorFrsPage()}" should {
 
     "return a 200 and render the page" in new Setup {
-      when(mockFlatRateService.businessSectorView()(any(), any()))
-        .thenReturn(Future.successful(validBusinessSectorView))
+      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
+        .thenReturn(Future.successful(testsector))
 
       mockWithCurrentProfile(Some(currentProfile))
 
@@ -284,11 +278,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "works with Empty data" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.businessSectorView()(any(), any()))
-        .thenReturn(Future.successful(validBusinessSectorView))
+      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
+        .thenReturn(Future.successful(testsector))
 
-      when(mockFlatRateService.saveBusinessSector(any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.saveConfirmSector(any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
@@ -304,10 +298,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return HTML when there's a frs start date in S4L" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.businessSectorView()(any(), any()))
-        .thenReturn(Future.successful(validBusinessSectorView))
-
-      val frsStartDate = FrsStartDateView(FrsStartDateView.DIFFERENT_DATE, Some(LocalDate.now))
+      when(mockFlatRateService.getPrepopulatedStartDate(any(), any()))
+        .thenReturn(Future.successful( (Some(FRSDateChoice.VATDate), None) ))
 
       callAuthorised(controller.frsStartDatePage) { result =>
         status(result) mustBe 200
@@ -318,8 +310,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return HTML when there's nothing in S4L and vatScheme contains data" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.businessSectorView()(any(), any()))
-        .thenReturn(Future.successful(validBusinessSectorView))
+      when(mockFlatRateService.getPrepopulatedStartDate(any(), any()))
+        .thenReturn(Future.successful( (None, None) ))
 
       callAuthorised(controller.frsStartDatePage) { result =>
         status(result) mustBe 200
@@ -328,14 +320,16 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
   }
 
+  val testsector = ("test", BigDecimal(10))
+
   s"POST ${routes.FlatRateController.submitFrsStartDate()}" should {
     val fakeRequest = FakeRequest(routes.FlatRateController.submitFrsStartDate())
 
     "return 400 when no data posted" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.businessSectorView()(any(), any()))
-        .thenReturn(Future.successful(validBusinessSectorView))
+      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
+        .thenReturn(Future.successful(testsector))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
@@ -347,11 +341,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return 400 when partial data is posted" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.businessSectorView()(any(), any()))
-        .thenReturn(Future.successful(validBusinessSectorView))
+      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
+        .thenReturn(Future.successful(testsector))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
+        "frsStartDateRadio" -> FRSDateChoice.DifferentDate,
         "frsStartDate.day" -> "1",
         "frsStartDate.month" -> "",
         "frsStartDate.year" -> "2017"
@@ -365,11 +359,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return 400 with Different Date selected and date that is less than 2 working days in the future" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.businessSectorView()(any(), any()))
-        .thenReturn(Future.successful(validBusinessSectorView))
+      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
+        .thenReturn(Future.successful(testsector))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "frsStartDateRadio" -> FrsStartDateView.DIFFERENT_DATE,
+        "frsStartDateRadio" -> FRSDateChoice.DifferentDate,
         "frsStartDate.day" -> "20",
         "frsStartDate.month" -> "3",
         "frsStartDateDate.year" -> "2017"
@@ -383,11 +377,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return 303 with VAT Registration Date selected" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.saveFRSStartDate(any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.saveStartDate(any(), any())(any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "frsStartDateRadio" -> FrsStartDateView.VAT_REGISTRATION_DATE
+        "frsStartDateRadio" -> FRSDateChoice.VATDate
       )
 
       submitAuthorised(controller.submitFrsStartDate(), request) { result =>
@@ -406,8 +400,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Some(currentProfile)))
 
-        when(mockFlatRateService.fetchFlatRateScheme(any(), any()))
-          .thenReturn(Future.successful(S4LFlatRateScheme()))
+        when(mockFlatRateService.saveJoiningFRS(any())(any(), any()))
+          .thenReturn(Future.successful(FlatRateScheme.empty))
 
         callAuthorised(controller.joinFrsPage()) { result =>
           status(result) mustBe 200
@@ -422,8 +416,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Some(currentProfile)))
 
-        when(mockFlatRateService.fetchFlatRateScheme(any(), any()))
-          .thenReturn(Future.successful(validS4LFlatRateScheme))
+        when(mockFlatRateService.getFlatRate(any(), any(), any()))
+          .thenReturn(Future.successful(validFlatRate))
 
         callAuthorised(controller.joinFrsPage) { result =>
           status(result) mustBe 200
@@ -453,8 +447,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
-      when(mockFlatRateService.saveJoinFRS(any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.saveJoiningFRS(any())(any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "joinFrsRadio" -> "true"
@@ -470,8 +464,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
-      when(mockFlatRateService.saveJoinFRS(any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.saveJoiningFRS(any())(any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "joinFrsRadio" -> "false"
@@ -511,11 +505,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return 303 with RegisterFor Flat Rate Scheme selected Yes" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.saveRegisterForFRS(any(), any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.saveRegister(any())(any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
 
-      when(mockFlatRateService.saveBusinessSector(any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
+        .thenReturn(Future.successful(testsector))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "registerForFrsRadio" -> "true"
@@ -530,14 +524,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return 303 with RegisterFor Flat Rate Scheme selected No" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.saveRegisterForFRS(any(), any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.saveRegister(any())(any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
 
-      when(mockFlatRateService.saveBusinessSector(any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
-
-      when(mockFlatRateService.saveFRSStartDate(any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
+        .thenReturn(Future.successful(testsector))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "registerForFrsRadio" -> "false"
@@ -578,11 +569,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return 303 with RegisterFor Flat Rate Scheme selected Yes" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.saveBusinessSector(any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
+        .thenReturn(Future.successful(testsector))
 
-      when(mockFlatRateService.saveRegisterForFRS(any(), any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.saveUseFlatRate(any())(any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "registerForFrsWithSectorRadio" -> "true"
@@ -597,11 +588,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return 303 with RegisterFor Flat Rate Scheme selected No" in new Setup {
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockFlatRateService.saveBusinessSector(any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
+        .thenReturn(Future.successful(testsector))
 
-      when(mockFlatRateService.saveRegisterForFRS(any(), any())(any(), any()))
-        .thenReturn(Future.successful(Left(validS4LFlatRateScheme)))
+      when(mockFlatRateService.saveUseFlatRate(any())(any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "registerForFrsWithSectorRadio" -> "false"
