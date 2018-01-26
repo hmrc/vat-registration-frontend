@@ -641,6 +641,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
+      when(mockReturnsService.retrieveCTActiveDate(any(), any(), any()))
+        .thenReturn(Future.successful(Some(LocalDate.of(2017, 1, 1))))
+
       val nowPlusFive: LocalDate = LocalDate.now().plusDays(5)
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> DateSelection.specific_date,
@@ -672,6 +675,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         "startDate.day" -> nowMinusFive.getDayOfMonth.toString
       )
 
+      when(mockReturnsService.retrieveCTActiveDate(any(), any(), any()))
+        .thenReturn(Future.successful(Some(LocalDate.of(2017, 1, 1))))
+
       mockWithCurrentProfile(Some(currentProfile.copy(incorporationDate = None)))
 
       submitAuthorised(testController.submitVoluntaryStart, request) { result =>
@@ -684,6 +690,11 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         .thenReturn(Future.successful(currentProfile.incorporationDate))
       when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
+
+      when(mockReturnsService.retrieveCTActiveDate(any(), any(), any()))
+        .thenReturn(Future.successful(Some(LocalDate.of(2017, 1, 1))))
+      when(mockReturnsService.saveVoluntaryStartDate(any(), any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(returns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> "company_registration_date"
@@ -702,6 +713,10 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         .thenReturn(Future.successful(currentProfile.incorporationDate))
       when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
+      when(mockReturnsService.retrieveCTActiveDate(any(), any(), any()))
+        .thenReturn(Future.successful(Some(LocalDate.of(2017, 1, 1))))
+      when(mockReturnsService.saveVoluntaryStartDate(any(), any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(returns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> "business_start_date"
@@ -720,6 +735,10 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         .thenReturn(Future.successful(currentProfile.incorporationDate))
       when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
+      when(mockReturnsService.retrieveCTActiveDate(any(), any(), any()))
+        .thenReturn(Future.successful(Some(LocalDate.of(2017, 1, 1))))
+      when(mockReturnsService.saveVoluntaryStartDate(any(), any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(returns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> "specific_date",
@@ -741,6 +760,8 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         .thenReturn(Future.successful(currentProfile.incorporationDate))
       when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
+      when(mockReturnsService.retrieveCTActiveDate(any(), any(), any()))
+        .thenReturn(Future.successful(Some(LocalDate.of(2017, 1, 1))))
 
       val incorpDateMinusTwo: LocalDate = currentProfile.incorporationDate.get.minusDays(2)
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(

@@ -47,20 +47,12 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
     }
     mockAllMessages
     mockWithCurrentProfile(Some(currentProfile))
+
+    def mockGetPpopAddressList = when(mockPrePopService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future(Seq(scrsAddress)))
   }
 
-  class SubmitSetup {
-    val controller = new BusinessContactDetailsController {
-      override val addressLookupService: AddressLookupService = mockAddressService
-      override val businessContactService: BusinessContactService = mockBusinessContactService
-      override val prepopService: PrePopService = mockPrePopService
-      override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
-      val messagesApi: MessagesApi = mockMessagesAPI
-      val authConnector: AuthConnector = mockAuthConnector
-    }
-    mockAllMessages
-    mockWithCurrentProfile(Some(currentProfile))
-
+  class SubmissionSetup extends Setup {
     when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any()))
       .thenReturn(Future(validBusinessContactDetails))
 
@@ -81,7 +73,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
           _ isA 200
         }
       }
-      "everything is okay and no address exists ini prepop" in new Setup {
+      "everything is okay and no address exists in prepop" in new Setup {
         when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any()))
           .thenReturn(Future(validBusinessContactDetails))
 
@@ -140,7 +132,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
     val fakeRequest = FakeRequest(routes.BusinessContactDetailsController.showPPOB())
 
     "return a 400" when {
-      "form is empty" in new SubmitSetup {
+      "form is empty" in new SubmissionSetup {
         submitAuthorised(controller.submitPPOB, fakeRequest.withFormUrlEncodedBody()){
           _ isA 400
         }
@@ -148,14 +140,14 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
     }
 
     "return a 303" when {
-      "user selects other and redirects to alf address" in new SubmitSetup {
+      "user selects other and redirects to alf address" in new SubmissionSetup {
         when(mockAddressService.getJourneyUrl(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any()))
           .thenReturn(Future(Call("GET","my-redirect-url")))
         submitAuthorised(controller.submitPPOB, fakeRequest.withFormUrlEncodedBody("ppobRadio" -> "other")){
           _ redirectsTo "my-redirect-url"
         }
       }
-      "user selects other and redirect to alf address" in new SubmitSetup {
+      "user selects other and redirect to alf address" in new SubmissionSetup {
         when(mockBusinessContactService.updateBusinessContact[ScrsAddress](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(scrsAddress))
         submitAuthorised(controller.submitPPOB, fakeRequest.withFormUrlEncodedBody("ppobRadio" -> scrsAddress.id)){
@@ -165,7 +157,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
     }
 
     "return an exception" when {
-      "the address selected is not on the list" in new SubmitSetup {
+      "the address selected is not on the list" in new SubmissionSetup {
         submitAuthorised(controller.submitPPOB, fakeRequest.withFormUrlEncodedBody("ppobRadio" -> "fake address")){
           _ failedWith classOf[NoSuchElementException]
         }
@@ -218,7 +210,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
     val fakeRequest = FakeRequest(routes.BusinessContactDetailsController.showCompanyContactDetails())
 
     "return a 400" when {
-      "form is empty" in new SubmitSetup {
+      "form is empty" in new SubmissionSetup {
         submitAuthorised(controller.submitCompanyContactDetails, fakeRequest.withFormUrlEncodedBody()){
           _ isA 400
         }
@@ -226,7 +218,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
     }
 
     "return a 303" when {
-      "user selects other and redirect to the business activity discription" in new SubmitSetup {
+      "user selects other and redirect to the business activity discription" in new SubmissionSetup {
         when(mockBusinessContactService.updateBusinessContact[CompanyContactDetails](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(validBusinessContactDetails.companyContactDetails.get))
         submitAuthorised(controller.submitCompanyContactDetails, fakeRequest.withFormUrlEncodedBody("email" -> "test@email.com","mobile" -> "1224456378387")){
@@ -236,11 +228,42 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
     }
 
     "return an exception" when {
-      "updateBusinessContact fails" in new SubmitSetup {
+      "updateBusinessContact fails" in new SubmissionSetup {
         when(mockBusinessContactService.updateBusinessContact[CompanyContactDetails](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(throw exception))
 
         submitAuthorised(controller.submitCompanyContactDetails, fakeRequest.withFormUrlEncodedBody("email" -> "test@email.com","mobile" -> "1224456378387")){
+          _ failedWith exception
+        }
+      }
+    }
+  }
+
+  "return from TXM" should {
+    "return a 303" when {
+      "a valid id is passed" in new Setup {
+        when(mockAddressService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(scrsAddress))
+        when(mockBusinessContactService.updateBusinessContact[ScrsAddress](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any()))
+          .thenReturn(Future(scrsAddress))
+
+        callAuthorised(controller.returnFromTxm(scrsAddress.id)) {
+          _ redirectsTo routes.BusinessContactDetailsController.showCompanyContactDetails().url
+        }
+      }
+    }
+    "throw an exception" when {
+      "getAddressById fails" in new Setup {
+        when(mockAddressService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(throw exception))
+
+        callAuthorised(controller.returnFromTxm(scrsAddress.id)) {
+          _ failedWith exception
+        }
+      }
+      "updateBusinessContact fails" in new Setup {
+        when(mockAddressService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(scrsAddress))
+        when(mockBusinessContactService.updateBusinessContact[ScrsAddress](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future(throw exception))
+
+        callAuthorised(controller.returnFromTxm(scrsAddress.id)) {
           _ failedWith exception
         }
       }

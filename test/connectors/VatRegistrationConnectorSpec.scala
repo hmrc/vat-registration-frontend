@@ -197,6 +197,12 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       mockHttpGET[HttpResponse]("tst-url", HttpResponse(200, Some(businessContactJson)))
       connector.getBusinessContact returnsSome businessContactJson
     }
+
+    "returns None if a 204 is recieved" in new Setup {
+      mockHttpGET[HttpResponse]("tst-url", HttpResponse(204, Some(Json.obj())))
+      connector.getBusinessContact returnsNone
+    }
+
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
       mockHttpFailedGET("tst-url", forbidden)
       connector.getBusinessContact failedWith forbidden

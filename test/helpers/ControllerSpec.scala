@@ -66,8 +66,7 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite with
       .thenReturn(Future.successful(currentProfile))
   }
 
-  //TODO: Fix thissssss
-//  override protected def beforeEach(): Unit = resetMocks()
+  override protected def beforeEach(): Unit = resetMocks()
 }
 
 trait MockMessages {

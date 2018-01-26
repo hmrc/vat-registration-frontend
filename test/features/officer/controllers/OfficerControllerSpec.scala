@@ -248,7 +248,17 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
   s"POST ${routes.OfficerController.submitFormerNameDate()}" should {
     val fakeRequest = FakeRequest(routes.OfficerController.showFormerNameDate())
 
+    val partialIncompleteLodgingOfficerNoData = LodgingOfficer(
+      Some(CompletionCapacityView(officer.name.id, Some(officer))),
+      Some(officerSecu),
+      None,
+      None,
+      Some(FormerNameView(true, Some("Old Name"))),
+      None,
+      None)
+
     "return 400 with Empty data" in new Setup {
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialIncompleteLodgingOfficerNoData))
       submitAuthorised(controller.submitFormerNameDate(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
 
@@ -346,6 +356,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     val fakeRequest = FakeRequest(routes.OfficerController.showHomeAddress())
 
     "return 400 with Empty data" in new Setup {
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
       when(mockPPService.getOfficerAddressList(any())(any(), any())).thenReturn(Future.successful(Seq(address)))
 
       submitAuthorised(controller.submitHomeAddress(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
@@ -353,6 +364,8 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
 
     "return 303 with valid Home address entered" in new Setup {
       when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+      when(mockPPService.getOfficerAddressList(any())(any(), any())).thenReturn(Future.successful(Seq(address)))
 
       submitAuthorised(controller.submitHomeAddress(), fakeRequest.withFormUrlEncodedBody(
         "homeAddressRadio" -> address.id
@@ -363,6 +376,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
 
     "redirect the user to TxM address capture page with 'other address' selected" in new Setup {
       when(mockAddressService.getJourneyUrl(any(), any())(any(), any())).thenReturn(Future.successful(Call("GET", "TxM")))
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       submitAuthorised(controller.submitHomeAddress(),
         fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> "other")
@@ -416,6 +430,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     }
 
     "return 303 with Yes selected" in new Setup {
+      when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
       submitAuthorised(controller.submitPreviousAddress(), fakeRequest.withFormUrlEncodedBody(
         "previousAddressQuestionRadio" -> "true"
       )) {
