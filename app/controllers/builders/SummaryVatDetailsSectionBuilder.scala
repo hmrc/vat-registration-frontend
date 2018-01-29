@@ -31,15 +31,12 @@ import uk.gov.hmrc.play.config.ServicesConfig
 case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetails] = None,
                                             threshold: Option[Threshold],
                                             returnsBlock : Option[Returns],
-                                            incorpDate: Option[LocalDate] = None)
+                                            incorpDate: Option[LocalDate] = None) extends SummarySectionBuilder with ServicesConfig {
+  override val sectionId: String      = "vatDetails"
+  val monthYearPresentationFormatter  = DateTimeFormatter.ofPattern("MMMM y")
+  val serviceName                     = "vat-registration-eligibility-frontend"
 
-  extends SummarySectionBuilder with ServicesConfig{
-
-  override val sectionId: String = "vatDetails"
-  val monthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
-  val serviceName = "vat-registration-eligibility-frontend"
-
-  private val thresholdBlock = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
+  private val thresholdBlock        = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
   private val voluntaryRegistration = !thresholdBlock.mandatoryRegistration
 
   val taxableTurnoverRow: SummaryRow = SummaryRow(
@@ -135,6 +132,4 @@ case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetail
     val serviceUri = getConfString(s"$serviceName.uris.$uri",uri)
     Call("Get", s"$basePath$mainUri$serviceUri")
   }
-
-
 }

@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package models.api
+package features.businessContact.forms
 
-import play.api.libs.json._
+import forms.FormValidation.textMapping
+import models.view.vatContact.ppob.PpobView
+import play.api.data.Form
+import play.api.data.Forms.mapping
 
-case class VatContact(digitalContact: VatDigitalContact,
-                      website: Option[String] = None,
-                      ppob: ScrsAddress)
+object PpobForm {
 
-object VatContact {
+  val PPOB_ID: String = "ppobRadio"
 
-  implicit val format: OFormat[VatContact] = Json.format[VatContact]
-
+  val form = Form(
+    mapping(
+      PPOB_ID -> textMapping()("ppob")
+    )(PpobView(_))( view => Option(view.addressId))
+  )
 }

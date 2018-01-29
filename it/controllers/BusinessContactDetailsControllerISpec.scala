@@ -16,56 +16,215 @@
 
 package controllers
 
-import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
+import features.businessContact.models.BusinessContact
 import helpers.RequestsFinder
-import models.S4LVatContact
-import models.api.{ScrsAddress, VatContact}
-import models.view.vatContact.BusinessContactDetails
-import models.view.vatContact.ppob.PpobView
+import it.fixtures.ITRegistrationFixtures
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.libs.json.JsString
 import support.AppAndStubs
 
-class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder {
-  "POST Business Contact Details page" should {
-    "upsert Vat Contact in backend" in {
-      val email = "test@test.com"
-      val mobile = "07123456789"
+class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
 
-      val addrLine1 = "8 Case Dodo"
-      val addrLine2 = "seashore next to the pebble beach"
-      val postcode = "TE1 1ST"
-
-      val ppob = ScrsAddress(line1 = addrLine1, line2 = addrLine2, postcode = Some(postcode))
-      val s4lVatContact = S4LVatContact(
-        businessContactDetails = Some(BusinessContactDetails(email = email, mobile = Some(mobile))),
-        ppob = Some(PpobView("123456", Some(ppob)))
-      )
-
+  "show PPOB" should {
+    "return 200 when S4l returns view model" in {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
-        .s4lContainerInScenario[S4LVatContact].isEmpty(Some(STARTED))
-        .s4lContainerInScenario[S4LVatContact].isUpdatedWith(s4lVatContact, Some(STARTED), Some("Vat Contact updated"))
-        .vatScheme.isBlank
-        .s4lContainerInScenario[S4LVatContact].contains(s4lVatContact, Some("Vat Contact updated"))
-        .vatScheme.isUpdatedWith[VatContact](S4LVatContact.apiT.toApi(s4lVatContact))
+        .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
+        .vatScheme.contains(vatReg)
+        .company.hasROAddress(coHoRegisteredOfficeAddress)
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
-      val response = buildClient("/company-contact-details").post(Map("email" -> Seq(email), "mobile" -> Seq(mobile)))
+      val response = buildClient("/where-will-company-carry-out-most-of-its-business-activities").get()
+      whenReady(response) { res =>
+        res.status mustBe 200
+      }
+    }
+    "return 500 when not authorised" in {
+      given()
+        .user.isNotAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
+      val response = buildClient("/where-will-company-carry-out-most-of-its-business-activities").get()
+      whenReady(response) { res =>
+        res.status mustBe 500
+
+      }
+    }
+  }
+  "submit PPOB" should {
+    "return 303 to Address Lookup frontend" in {
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .company.hasROAddress(coHoRegisteredOfficeAddress)
+        .alfeJourney.initialisedSuccessfully()
+
+      val response = buildClient("/where-will-company-carry-out-most-of-its-business-activities").post(Map("ppobRadio" -> Seq("other")))
+      whenReady(response) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
+      }
+    }
+    "return 303 to company contact details page (full model)" in {
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
+        .vatScheme.contains(vatReg)
+        .company.hasROAddress(coHoRegisteredOfficeAddress)
+        .vatScheme.isUpdatedWith(validBusinessContactDetails)
+        .s4lContainer[BusinessContact].cleared
+
+      val response = buildClient("/where-will-company-carry-out-most-of-its-business-activities").post(Map("ppobRadio" -> Seq("line1XXXX")))
+      whenReady(response) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
+
+        val json = getPATCHRequestJsonBody(s"/vatreg/1/business-contact")
+      json mustBe validBusinessContactDetailsJson
+
+      }
+    }
+    "return 500 when model is complete and vat reg returns 500 (s4l is not cleared)" in {
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.contains(vatReg)
+        .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
+        .vatScheme.isNotUpdatedWith[BusinessContact](validBusinessContactDetails)
+
+      val response = buildClient("/where-will-company-carry-out-most-of-its-business-activities").post(Map("ppobRadio" -> Seq("line1XXXX")))
+      whenReady(response) { res =>
+        res.status mustBe 500
+      }
+    }
+  }
+
+"returnFromTxm GET" should {
+    "return 303 save to vat as model is complete" in {
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .address("fudgesicle", scrsAddress.line1, scrsAddress.line2, "UK", "XX XX").isFound
+        .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
+        .vatScheme.isUpdatedWith(validBusinessContactDetails)
+        .s4lContainer[BusinessContact].cleared
+      val response = buildClient("/where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm?id=fudgesicle").get()
+      whenReady(response) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
+
+        val json = getPATCHRequestJsonBody(s"/vatreg/1/business-contact")
+        json mustBe validBusinessContactDetailsJson
+      }
+
+    }
+    "returnFromTxm should return 303 save to s4l as model is incomplete" in {
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .address("fudgesicle", scrsAddress.line1, scrsAddress.line2, "UK", "XX XX").isFound
+        .s4lContainer[BusinessContact].isEmpty
+        .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())
+        .vatScheme.doesNotHave("business-contact")
+        .s4lContainer[BusinessContact].isUpdatedWith(validBusinessContactDetails.copy(companyContactDetails = None))
+
+      val response = buildClient("/where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm?id=fudgesicle").get()
+      whenReady(response) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
+      }
+    }
+  }
+  "showCompanyContactDetails" should {
+    "return 200" in {
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
+
+      val response = buildClient("/company-contact-details").get()
+      whenReady(response) { res =>
+        res.status mustBe 200
+      }
+    }
+
+  }
+  "submitCompanyContactDetails" should {
+    "return 303 and submit to s4l because the model is incomplete" in {
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .s4lContainer[BusinessContact].isEmpty
+        .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())
+        .vatScheme.doesNotHave("business-contact")
+
+      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("foo@foo.com"), "daytimePhone" -> Seq("0121401")))
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription().url)
 
-        val json = getPATCHRequestJsonBody(s"/vatreg/1/vat-contact")
-        (json \ "digitalContact" \ "email").as[JsString].value mustBe email
-        (json \ "digitalContact" \ "mobile").as[JsString].value mustBe mobile
-        (json \ "ppob" \ "line1").as[JsString].value mustBe addrLine1
-        (json \ "ppob" \ "line2").as[JsString].value mustBe addrLine2
-        (json \ "ppob" \ "postcode").as[JsString].value mustBe postcode
+      }
+    }
+    "return 303 and submit to vat reg because the model is complete" in {
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .s4lContainer[BusinessContact].contains(validBusinessContactDetails.copy(companyContactDetails = None))
+        .vatScheme.isUpdatedWith(validBusinessContactDetails)
+        .s4lContainer[BusinessContact].cleared
+
+      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("123"), "mobile" -> Seq("987654"), "website" -> Seq("/test/url")))
+      whenReady(response) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription().url)
+      }
+    }
+    "return 404 when vat returns a 404" in {
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .s4lContainer[BusinessContact].isEmpty
+        .vatScheme.doesNotExistForKey("business-contact")
+      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("123"), "mobile" -> Seq("987654"), "website" -> Seq("/test/url")))
+      whenReady(response) { res =>
+        res.status mustBe 404
+      }
+    }
+    "return 500 when update to vat reg returns an error (s4l is not cleared)" in {
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
+        .vatScheme.isNotUpdatedWith[BusinessContact](validBusinessContactDetails)
+      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("123"), "mobile" -> Seq("987654"), "website" -> Seq("/test/url")))
+      whenReady(response) { res =>
+        res.status mustBe 500
       }
     }
   }

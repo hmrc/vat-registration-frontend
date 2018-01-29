@@ -55,7 +55,7 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite with AuthBuilder
   val currentNonincorpProfile: CurrentProfile = currentProfile().copy(incorporationDate = None)
 
   def mockGetCurrentProfile(cp: Option[CurrentProfile] = Some(currentProfile())) =
-  when(mockKeystoreConnect.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
+  when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
     .thenReturn(Future.successful(cp))
 
   override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Seconds), interval = Span(50, Millis))

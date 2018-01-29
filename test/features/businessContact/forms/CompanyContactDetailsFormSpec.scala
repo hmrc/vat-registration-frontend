@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package forms.vatContact
+package features.businessContact.forms
 
-import models.view.vatContact.BusinessContactDetails
+import features.businessContact.models.CompanyContactDetails
 import uk.gov.hmrc.play.test.UnitSpec
+import helpers.FormInspectors._
 
-class BusinessContactDetailsFormSpec extends UnitSpec {
+class CompanyContactDetailsFormSpec extends UnitSpec {
 
-  import testHelpers.FormInspectors._
-
-  val testForm = BusinessContactDetailsForm.form
+  val testForm = CompanyContactDetailsForm.form
 
 
   "A business contact details form" must {
@@ -37,18 +36,22 @@ class BusinessContactDetailsFormSpec extends UnitSpec {
 
       "email and mobile number is provided" in {
         val data = Map("email" -> Seq(EMAIL), "mobile" -> Seq(MOBILE))
-        testForm.bindFromRequest(data) shouldContainValue BusinessContactDetails(EMAIL, None, Some(MOBILE), None)
+        testForm.bindFromRequest(data) shouldContainValue CompanyContactDetails(EMAIL, None, Some(MOBILE), None)
       }
 
       "email and phone number is provided" in {
         val data = Map("email" -> Seq(EMAIL), "daytimePhone" -> Seq(DAYTIME_PHONE))
-        testForm.bindFromRequest(data) shouldContainValue BusinessContactDetails(EMAIL, Some(DAYTIME_PHONE), None, None)
+        testForm.bindFromRequest(data) shouldContainValue CompanyContactDetails(EMAIL, Some(DAYTIME_PHONE), None, None)
       }
 
       "email and both phone numbers are provided" in {
         val data = Map("email" -> Seq(EMAIL), "mobile" -> Seq(MOBILE), "daytimePhone" -> Seq(DAYTIME_PHONE))
-        testForm.bindFromRequest(data) shouldContainValue BusinessContactDetails(
-          email = EMAIL, daytimePhone = Some(DAYTIME_PHONE), mobile = Some(MOBILE), website = None)
+        testForm.bindFromRequest(data) shouldContainValue CompanyContactDetails(
+          email          = EMAIL,
+          phoneNumber    = Some(DAYTIME_PHONE),
+          mobileNumber   = Some(MOBILE),
+          websiteAddress = None
+        )
       }
 
       "all fields filled in" in {
@@ -61,7 +64,7 @@ class BusinessContactDetailsFormSpec extends UnitSpec {
 
         val form = testForm.bindFromRequest(data)
 
-        form shouldContainValue BusinessContactDetails(EMAIL, Some(DAYTIME_PHONE), Some(MOBILE), Some(WEBSITE))
+        form shouldContainValue CompanyContactDetails(EMAIL, Some(DAYTIME_PHONE), Some(MOBILE), Some(WEBSITE))
       }
 
       "any additional values are submitted" in {
@@ -72,7 +75,7 @@ class BusinessContactDetailsFormSpec extends UnitSpec {
 
         val form = testForm.bindFromRequest(data)
 
-        form shouldContainValue BusinessContactDetails(EMAIL, Some(DAYTIME_PHONE), None, None)
+        form shouldContainValue CompanyContactDetails(EMAIL, Some(DAYTIME_PHONE), None, None)
       }
 
     }
@@ -82,10 +85,7 @@ class BusinessContactDetailsFormSpec extends UnitSpec {
       "no phone number is provided, just email" in {
         val data = Map("email" -> Seq(EMAIL))
         val form = testForm.bindFromRequest(data)
-        form.shouldHaveGlobalErrors(
-          "validation.businessContactDetails.mobile.missing",
-          "validation.businessContactDetails.daytimePhone.missing"
-        )
+        form shouldHaveGlobalErrors "validation.businessContactDetails.atLeastOneNumber.missing"
       }
 
       "invalid mobile phone number is provided and email" in {
@@ -117,10 +117,6 @@ class BusinessContactDetailsFormSpec extends UnitSpec {
         val form = testForm.bindFromRequest(data)
         form shouldHaveErrors Seq("email" -> "validation.businessContactDetails.email.invalid")
       }
-
     }
-
   }
-
-
 }

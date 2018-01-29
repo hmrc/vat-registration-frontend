@@ -67,7 +67,7 @@ class AddressLookupConnectorISpec extends UnitSpec with AppAndStubs {
     "return a URL for redirecting the user off to ALF" when {
       "Location header is present" in {
         given()
-          .journey.initialisedSuccessfully()
+          .alfeJourney.initialisedSuccessfully()
 
         val journeyModel = addressLookupService.buildJourneyJson(Call("GET", "continueUrl"), homeAddress)
 
@@ -78,7 +78,7 @@ class AddressLookupConnectorISpec extends UnitSpec with AppAndStubs {
     "throw ALFLocationHeaderNotSetException" when {
       "no Location header received from ALF" in {
         given()
-          .journey.notInitialisedAsExpected()
+          .alfeJourney.notInitialisedAsExpected()
 
         val journeyModel = addressLookupService.buildJourneyJson(Call("GET", "continueUrl"), homeAddress)
 
@@ -91,7 +91,7 @@ class AddressLookupConnectorISpec extends UnitSpec with AppAndStubs {
     "throw Upstream5xxResponse exception" when {
       "ALF fails to handle the request" in {
         given()
-          .journey.failedToInitialise()
+          .alfeJourney.failedToInitialise()
 
         val journeyModel = addressLookupService.buildJourneyJson(Call("GET", "continueUrl"), homeAddress)
 

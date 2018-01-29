@@ -18,36 +18,39 @@ package controllers
 
 import controllers.callbacks.SignInOutController
 import helpers.VatRegSpec
+import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
 class SignInOutControllerSpec extends VatRegSpec {
 
-  object TestController extends SignInOutController(
-    ds,
-    mockConfig,
-    mockAuthConnector
-  )
+  val testController = new SignInOutController {
+    override val compRegFEURI                      = "/test/uri"
+    override val compRegFEURL                      = "/test/uri"
+    override implicit val messagesApi: MessagesApi = app.injector.instanceOf(classOf[MessagesApi])
+    override protected val authConnector           = mockAuthConnector
+    override val keystoreConnector                 = mockKeystoreConnector
+  }
 
   "Post-sign-in" should {
     "redirect to CT post sign in" in {
-      callAuthorised(TestController.postSignIn) {
-        _ redirectsTo s"${TestController.compRegFEURL}${TestController.compRegFEURI}/post-sign-in"
+      callAuthorised(testController.postSignIn) {
+        _ redirectsTo s"${testController.compRegFEURL}${testController.compRegFEURI}/post-sign-in"
       }
     }
   }
 
   "signOut" should {
     "redirect to the exit questionnaire and clear the session" in {
-      callAuthorised(TestController.signOut) {
-        _ redirectsTo s"${TestController.compRegFEURL}${TestController.compRegFEURI}/questionnaire"
+      callAuthorised(testController.signOut) {
+        _ redirectsTo s"${testController.compRegFEURL}${testController.compRegFEURI}/questionnaire"
       }
     }
   }
 
   "renewSession" should {
     "return 200 when hit with Authorised User" in {
-      callAuthorised(TestController.renewSession()){ a =>
+      callAuthorised(testController.renewSession()){ a =>
         status(a) mustBe 200
         contentType(a) mustBe Some("image/jpeg")
         await(a).body.dataStream.toString.contains("""renewSession.jpg""")  mustBe true
@@ -59,7 +62,7 @@ class SignInOutControllerSpec extends VatRegSpec {
     "return redirect to timeout show and get rid of headers" in {
       val fr = FakeRequest().withHeaders(("playFoo","no more"))
 
-      val res = TestController.destroySession()(fr)
+      val res = testController.destroySession()(fr)
       status(res) mustBe 303
       headers(res).contains("playFoo") mustBe false
 
@@ -69,13 +72,13 @@ class SignInOutControllerSpec extends VatRegSpec {
 
   "timeoutShow" should {
     "return 200" in {
-      val res = TestController.timeoutShow()(FakeRequest())
+      val res = testController.timeoutShow()(FakeRequest())
       status(res) mustBe 200
     }
   }
   "errorShow" should {
     "return 500" in {
-      val res = TestController.errorShow()(FakeRequest())
+      val res = testController.errorShow()(FakeRequest())
       status(res) mustBe 500
     }
   }

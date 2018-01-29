@@ -43,15 +43,13 @@ trait DeleteSessionItemsController extends VatRegistrationControllerNoAux with S
   val save4LaterConnector: S4LConnect
   val cancellationService: CancellationService
 
-  private val logger: Logger = LoggerFactory.getLogger(getClass)
-
   def deleteVatRegistration(regId: String): Action[AnyContent] = Action.async {
     implicit request =>
       implicit val hc = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
       authConnector.currentAuthority flatMap {
         _.fold(unauthorisedResult) { _ =>
           cancellationService.deleteVatRegistration(regId) map {
-            case RegistrationDeletion.deleted => Ok
+            case RegistrationDeletion.deleted   => Ok
             case RegistrationDeletion.forbidden =>
               logger.warn(s"[deleteVatRegistration] - Requested document regId $regId to be deleted is not corresponding to the CurrentProfile regId")
               BadRequest

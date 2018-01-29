@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-package services
+package connectors.test
 
-import connectors.KeystoreConnector
+import common.enums.IVResult
 import helpers.VatRegSpec
 
-class CommonServiceSpec extends VatRegSpec {
-
-  trait Setup {
-    val service = new CommonService {
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnect
+class BusinessRegDynamicStubControllerSpec extends VatRegSpec {
+  class Setup {
+    val testConnector = new BusinessRegDynamicStubConnector {
+      override val http            = mockWSHttp
+      override val brdsUrl: String = "tst-url"
+      override val brdsUri: String = "test-url"
     }
   }
 
-  "Calling fetchDateOfIncorporation" should {
-    "throw an IllegalStateException when no Incorporation Date is found in keystore" in new Setup {
-      mockKeystoreFetchAndGet[String]("incorporationStatus", None)
-      service.fetchDateOfIncorporation failedWith classOf[IllegalStateException]
+  "Calling setupIVOutcome" should {
+    "return a 200 response if the post to set journeyId and IVResult is successful" in new Setup {
+      mockHttpPOST(s"/setup-iv-outcome/123/Success", "")
+
+      testConnector.setupIVOutcome("123", IVResult.Success) returns ""
     }
   }
 }

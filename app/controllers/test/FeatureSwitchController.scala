@@ -26,12 +26,11 @@ import utils._
 
 import scala.concurrent.Future
 
-class FeatureSwitchController @Inject()(val featureManager: FeatureManager,
-                                        val vatRegFeatureSwitch: VATRegFeatureSwitches,
-                                        val authConnector: AuthConnector,
-                                        ds: CommonPlayDependencies) extends VatRegistrationController(ds) with FeatureSwitchCtrl
+class FeatureSwitchControllerImpl @Inject()(val featureManager: FeatureManager,
+                                            val vatRegFeatureSwitch: VATRegFeatureSwitches,
+                                            val authConnector: AuthConnector) extends FeatureSwitchController
 
-trait FeatureSwitchCtrl extends FrontendController{
+trait FeatureSwitchController extends FrontendController {
   val featureManager: FeatureManager
   val vatRegFeatureSwitch: VATRegFeatureSwitches
 

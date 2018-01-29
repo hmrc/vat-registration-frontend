@@ -19,8 +19,7 @@ package controllers.builders
 import features.officer.models.view.LodgingOfficer
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: LodgingOfficer)
-  extends SummarySectionBuilder {
+case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: LodgingOfficer) extends SummarySectionBuilder {
 
   override val sectionId: String = "directorDetails"
 

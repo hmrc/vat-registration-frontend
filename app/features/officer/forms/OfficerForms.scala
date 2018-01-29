@@ -115,10 +115,11 @@ object ContactDetailsForm {
   private val EMAIL         = "email"
   private val DAYTIME_PHONE = "daytimePhone"
   private val MOBILE        = "mobile"
+  private val PROVIDE_ONE_CONTACT = "atLeastOneContact"
 
   implicit val errorCode: ErrorCode = "officerContactDetails.email"
 
-  private def validationError(field: String) = ValidationError(s"validation.officerContact.missing", field)
+  private def validationError(field: String) = ValidationError(s"validation.officerContact.$field.missing", field)
 
   val form = Form(
     mapping(
@@ -129,7 +130,7 @@ object ContactDetailsForm {
   )
 
   def atLeastOneContactDetail: Constraint[ContactDetailsView] = Constraint {
-    case ContactDetailsView(None, None, None) => Invalid(Seq(EMAIL, MOBILE, DAYTIME_PHONE).map(validationError))
+    case ContactDetailsView(None, None, None) => Invalid(validationError(PROVIDE_ONE_CONTACT))
     case _                                           => Valid
   }
 }

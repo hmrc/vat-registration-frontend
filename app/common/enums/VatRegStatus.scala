@@ -19,12 +19,12 @@ package common.enums
 import play.api.libs.json.{Format, Reads, Writes}
 
 object VatRegStatus extends Enumeration {
-  val draft = Value
-  val held = Value
-  val submitted = Value
-  val acknowledged = Value
-  val rejected = Value
-  val cancelled = Value
+  val draft         = Value
+  val held          = Value
+  val submitted     = Value
+  val acknowledged  = Value
+  val rejected      = Value
+  val cancelled     = Value
 
   implicit val format: Format[VatRegStatus.Value] = Format(Reads.enumNameReads(VatRegStatus), Writes.enumNameWrites)
 }

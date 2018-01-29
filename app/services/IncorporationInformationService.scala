@@ -22,7 +22,7 @@ import cats.instances.future._
 import connectors._
 import models.CurrentProfile
 import models.api.ScrsAddress
-import models.external.{IncorporationInfo, Officer}
+import models.external.{CoHoRegisteredOfficeAddress, IncorporationInfo, Officer}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -35,19 +35,23 @@ trait IncorporationInfoSrv {
   val iiConnector: IncorporationInformationConnect
   val vatRegConnector: RegistrationConnector
 
-  def getRegisteredOfficeAddress(implicit hc: HeaderCarrier, profile: CurrentProfile): OptionalResponse[ScrsAddress] = for {
-    address <- iiConnector.getRegisteredOfficeAddress(profile.transactionId)
-  } yield address: ScrsAddress // implicit conversion
+  def getRegisteredOfficeAddress(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[ScrsAddress]] = {
+    iiConnector.getRegisteredOfficeAddress(profile.transactionId) map {
+      _.map(CoHoRegisteredOfficeAddress.convertToAddress)
+    }
+  }
 
-  def getOfficerList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[Officer]] = (for {
-    officerList <- iiConnector.getOfficerList(profile.transactionId)
-  } yield officerList.items).getOrElse(Seq.empty[Officer])
+  def getOfficerList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[Officer]] = {
+    iiConnector.getOfficerList(profile.transactionId) map {
+      _.fold[Seq[Officer]](Seq())(_.items)
+    }
+  }
 
   def getCompanyName(regId: String, txId: String)(implicit hc: HeaderCarrier): Future[String] = {
     iiConnector.getCompanyName(regId, txId) map(_.\("company_name").as[String])
   }
 
-  def getIncorporationInfo(txId: String)(implicit headerCarrier: HeaderCarrier): OptionalResponse[IncorporationInfo] = {
+  def getIncorporationInfo(txId: String)(implicit headerCarrier: HeaderCarrier): Future[Option[IncorporationInfo]] = {
     vatRegConnector.getIncorporationInfo(txId)
   }
 }

@@ -17,6 +17,7 @@
 package models
 
 import features.returns.Returns
+import features.sicAndCompliance.models.test.SicStub
 import features.tradingDetails.TradingDetails
 import frs.FlatRateScheme
 
@@ -34,10 +35,8 @@ object S4LKey {
     override val key = k
   }
 
-  implicit val vatContact: S4LKey[S4LVatContact] = S4LKey("VatContact")
-  implicit val returns: S4LKey[Returns] = S4LKey("returns")
+  implicit val returns: S4LKey[Returns]               = S4LKey("returns")
   implicit val tradingDetails: S4LKey[TradingDetails] = S4LKey("tradingDetails")
-  implicit val bankAccountKey: S4LKey[BankAccount] = S4LKey[BankAccount]("bankAccount")
-
-  val flatRateScheme: S4LKey[FlatRateScheme] = S4LKey[FlatRateScheme]("flatRateScheme")
+  implicit val bankAccountKey: S4LKey[BankAccount]    = S4LKey[BankAccount]("bankAccount")
+  val flatRateScheme: S4LKey[FlatRateScheme]          = S4LKey[FlatRateScheme]("flatRateScheme")
 }
