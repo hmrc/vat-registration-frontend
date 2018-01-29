@@ -41,7 +41,7 @@ trait CurrentProfileSrv {
   def buildCurrentProfile(regId: String, txId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
     for {
       companyName           <- incorpInfoService.getCompanyName(regId, txId)
-      incorpInfo            <- incorpInfoService.getIncorporationInfo(txId).value
+      incorpInfo            <- incorpInfoService.getIncorporationInfo(txId)
       status                <- vatRegistrationService.getStatus(regId)
       ivStatus              <- ivService.getIVStatus(regId)
       incorpDate            =  if(incorpInfo.isDefined) incorpInfo.get.statusEvent.incorporationDate else None

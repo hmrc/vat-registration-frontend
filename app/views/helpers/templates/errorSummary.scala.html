@@ -11,6 +11,15 @@
      tabindex="-1">
     <h2 id="error-summary-heading" class="h3-heading">@heading</h2>
     <ul class="error-summary-list">
+        @if(form.hasGlobalErrors) {
+            @form.globalErrors.map { error =>
+                <li role="listitem">
+                    <a href="#@error.args" id="@error.message-error-summary" data-focuses="@error.args">
+                        @messages(error.message, error.args: _*)
+                    </a>
+                </li>
+            }
+        }
     @if(form.hasErrors) {
         @form.errors.map { error =>
             @if(error.key != "") {

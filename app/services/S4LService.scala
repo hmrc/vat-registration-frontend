@@ -28,10 +28,9 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-class PersistenceService @Inject()(val s4LConnector: S4LConnect, val keystoreConnector: KeystoreConnect) extends S4LService
+class S4LServiceImpl @Inject()(val s4LConnector: S4LConnect) extends S4LService
 
-trait S4LService extends CommonService {
-
+trait S4LService {
   val s4LConnector: S4LConnect
 
   def save[T: S4LKey](data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
@@ -64,9 +63,6 @@ trait S4LService extends CommonService {
 
   def clear(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[HttpResponse] =
     s4LConnector.clear(profile.registrationId)
-
-  def fetchAll(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[CacheMap]] =
-    s4LConnector.fetchAll(profile.registrationId)
 
   def save[T](key: String, data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[CacheMap] =
     s4LConnector.save[T](profile.registrationId, key, data)

@@ -29,8 +29,6 @@ import scala.concurrent.Future
 
 class TurnoverEstimatesControllerSpec extends ControllerSpec with MockMessages {
 
-  val mockTurnoverEstimatesService: TurnoverEstimatesService = mock[TurnoverEstimatesService]
-
   trait Setup {
     val controller: TurnoverEstimatesController = new TurnoverEstimatesController {
       override val service: TurnoverEstimatesService = mockTurnoverEstimatesService

@@ -112,14 +112,14 @@ class BankAccountDetailsServiceSpec extends VatSpec {
     "return a complete bank account when the supplied bank account has an account and has supplied account details" in new Setup {
       val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")))
 
-      val result: CompletedBlock[BankAccount] = service.bankAccountBlockCompleted(bankAccount)
+      val result: Completion[BankAccount] = service.bankAccountBlockCompleted(bankAccount)
       result mustBe Complete(bankAccount)
     }
 
     "return a complete bank account when the supplied bank account case class does not have a bank account" in new Setup {
       val bankAccount = BankAccount(isProvided = false, None)
 
-      val result: CompletedBlock[BankAccount] = service.bankAccountBlockCompleted(bankAccount)
+      val result: Completion[BankAccount] = service.bankAccountBlockCompleted(bankAccount)
       result mustBe Complete(bankAccount)
     }
 
@@ -127,7 +127,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
       "does not have a bank account but has account details" in new Setup {
       val bankAccount = BankAccount(isProvided = false, Some(BankAccountDetails("testName", "testCode", "testAccNumber")))
 
-      val result: CompletedBlock[BankAccount] = service.bankAccountBlockCompleted(bankAccount)
+      val result: Completion[BankAccount] = service.bankAccountBlockCompleted(bankAccount)
 
       val expectedBankAccount = BankAccount(isProvided = false, None)
       result mustBe Complete(expectedBankAccount)
@@ -136,7 +136,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
     "return an incomplete bank account when the supplied bank account has an account but no account details" in new Setup {
       val bankAccount = BankAccount(isProvided = true, None)
 
-      val result: CompletedBlock[BankAccount] = service.bankAccountBlockCompleted(bankAccount)
+      val result: Completion[BankAccount] = service.bankAccountBlockCompleted(bankAccount)
 
       result mustBe Incomplete(bankAccount)
     }

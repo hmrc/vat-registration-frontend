@@ -20,8 +20,7 @@ import features.officer.models.view.LodgingOfficer
 import models.api.ScrsAddress
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryDirectorAddressesSectionBuilder(vatLodgingOfficer: LodgingOfficer)
-  extends SummarySectionBuilder {
+case class SummaryDirectorAddressesSectionBuilder(vatLodgingOfficer: LodgingOfficer) extends SummarySectionBuilder {
 
   override val sectionId: String = "directorAddresses"
 

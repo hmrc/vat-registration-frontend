@@ -17,21 +17,27 @@
 package controllers.test
 
 import java.time.LocalDate
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
+import connectors.KeystoreConnect
+import controllers.VatRegistrationControllerNoAux
 import play.api.i18n.MessagesApi
-import play.api.mvc.Results._
 import play.api.mvc.{Action, AnyContent, Request}
 import play.twirl.api.Html
-import services.DateService
+import services.{DateService, SessionProfile}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-@Singleton
-class TestWorkingDaysValidationController @Inject()(dateService: DateService)
-                                                   (implicit val messagesApi: MessagesApi) {
+class TestWorkingDaysValidationControllerImpl @Inject()(val dateService: DateService,
+                                                        val authConnector: AuthConnector,
+                                                        val keystoreConnector: KeystoreConnect,
+                                                        implicit val messagesApi: MessagesApi) extends TestWorkingDaysValidationController
 
-  implicit def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+trait TestWorkingDaysValidationController extends VatRegistrationControllerNoAux with SessionProfile {
+  val dateService: DateService
+
+  override implicit def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
   def show(): Action[AnyContent] = Action { implicit req =>
     Ok(Html((1 to 100).map(n =>

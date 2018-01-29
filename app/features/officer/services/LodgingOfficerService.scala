@@ -22,7 +22,7 @@ import config.Logging
 import connectors.RegistrationConnector
 import features.officer.models.view.{LodgingOfficer, _}
 import models.{CurrentProfile, S4LKey}
-import services.{IncorporationInfoSrv, S4LService}
+import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -36,10 +36,6 @@ trait LodgingOfficerService extends Logging {
   val incorpInfoService: IncorporationInfoSrv
   val vatRegistrationConnector: RegistrationConnector
   val s4LService: S4LService
-
-  type Completion[T] = Either[T, T]
-  val Incomplete   = scala.util.Left
-  val Complete     = scala.util.Right
 
   private val N               = None
 

@@ -16,40 +16,42 @@
 
 package controllers
 
-import cats.data.OptionT
 import features.returns.Returns
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
 
 import scala.concurrent.Future
 
-class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistrationFixture{
+class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  object Controller extends ApplicationSubmissionController(
-    ds,
-    mockVatRegistrationService,
-    mockReturnsService,
-    mockAuthConnector,
-    mockKeystoreConnect,
-    mockS4LService
-  )
+  val testController = new ApplicationSubmissionController {
+    override val vatRegService                     = mockVatRegistrationService
+    override val returnsService                    = mockReturnsService
+    override implicit val messagesApi: MessagesApi = app.injector.instanceOf(classOf[MessagesApi])
+    override val authConnector                     = mockAuthConnector
+    override val keystoreConnector                 = mockKeystoreConnector
+  }
 
   val fakeRequest = FakeRequest(routes.ApplicationSubmissionController.show())
 
   s"GET ${routes.ApplicationSubmissionController.show()}" should {
     "display the submission confirmation page to the user" in {
       mockGetCurrentProfile()
-      when(mockVatRegistrationService.getVatScheme(any(),any())).thenReturn(validVatScheme.pure)
-      when(mockVatRegistrationService.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any())).thenReturn(OptionT.some("testAckRef"))
+      when(mockVatRegistrationService.getVatScheme(any(),any()))
+        .thenReturn(validVatScheme.pure)
+
+      when(mockVatRegistrationService.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+        .thenReturn(Future.successful("testAckRef"))
 
       when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(Returns(None, None, None, None)))
 
-      callAuthorised(Controller.show) {
+      callAuthorised(testController.show) {
         _ includesText "Application submitted"
       }
     }

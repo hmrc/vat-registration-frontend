@@ -36,15 +36,16 @@ trait SessionProfile {
 
   def withCurrentProfile(f: CurrentProfile => Future[Result])(implicit request: Request[_], hc: HeaderCarrier): Future[Result] = {
     keystoreConnector.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) flatMap {
-      case Some(profile) => f(profile)
-      case None          => Future.successful(Redirect(routes.WelcomeController.show()))
+      _.fold(Future.successful(Redirect(routes.WelcomeController.show())))(profile => f(profile))
     }
   }
 
   def ivPassedCheck(f: => Future[Result])(implicit cp: CurrentProfile, request: Request[_], messages: Messages): Future[Result] = {
     if(!cp.ivPassed.getOrElse(false)) {
-      Logger.warn(s"[ivPassedCheck] IV has not been passed so showing error page - regId: ${cp.registrationId}, ivpassed: ${cp.ivPassed}")
+      logger.warn(s"[ivPassedCheck] IV has not been passed so showing error page - regId: ${cp.registrationId}, ivpassed: ${cp.ivPassed}")
       Future.successful(InternalServerError(views.html.pages.error.restart()))
-    } else f
+    } else {
+      f
+    }
   }
 }

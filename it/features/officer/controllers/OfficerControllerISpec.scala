@@ -498,7 +498,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
       val response = buildClient("/current-address-three-years-or-more").post(Map("previousAddressQuestionRadio" -> Seq("true")))
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatContact.ppob.routes.PpobController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showPPOB().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
         (json \ "details" \ "currentAddress" \ "line1").as[JsString].value mustBe currentAddress.line1
@@ -582,7 +582,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
       val response = buildClient(s"/current-address-three-years-or-more/acceptFromTxm?id=$addressId").get()
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatContact.ppob.routes.PpobController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showPPOB().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
         (json \ "details" \ "previousAddress" \ "line1").as[JsString].value mustBe addressLine1

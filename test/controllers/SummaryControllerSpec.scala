@@ -28,6 +28,7 @@ import models.external.IncorporationInfo
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
+import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 
@@ -35,17 +36,16 @@ import scala.concurrent.Future
 
 class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
-  object TestSummaryController extends SummaryController(
-    ds,
-    mockVATFeatureSwitch,
-    mockVatRegistrationService,
-    mockReturnsService,
-    mockKeystoreConnect,
-    mockAuthConnector,
-    mockLodgingOfficerService,
-    mockSicAndComplianceService,
-    mockS4LService
-  )
+  val testSummaryController = new SummaryController {
+    override val vrs                               = mockVatRegistrationService
+    override val lodgingOfficerService             = mockLodgingOfficerService
+    override val sicSrv                            = mockSicAndComplianceService
+    override val s4LService                        = mockS4LService
+    override implicit val messagesApi: MessagesApi = app.injector.instanceOf(classOf[MessagesApi])
+    override protected val authConnector           = mockAuthConnector
+    override val keystoreConnector                 = mockKeystoreConnector
+
+  }
 
   val mockVatRegistrationConnector: VatRegistrationConnector = mock[VatRegistrationConnector]
 
@@ -56,16 +56,23 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
   "Calling summary to show the summary page" should {
 
     "return HTML with a valid summary view pre-incorp" in {
-      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockS4LService.clear(any(), any()))
+        .thenReturn(Future.successful(validHttpResponse))
+
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
+
       when(mockVatRegistrationService.getVatScheme(any(),any()))
         .thenReturn(Future.successful(validVatScheme.copy(threshold = optMandatoryRegistration)))
+
       mockGetCurrentProfile()
+
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
+
       when(mockSicAndComplianceService.getSicAndCompliance(any(),any()))
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
-      callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
+
+      callAuthorised(testSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
     "return HTML with a valid summary view post-incorp" in {
@@ -78,7 +85,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
         .thenReturn(Future.successful(validFullLodgingOfficer))
       when(mockSicAndComplianceService.getSicAndCompliance(any(),any()))
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
-      callAuthorised(TestSummaryController.show)(_ includesText "Check and confirm your answers")
+      callAuthorised(testSummaryController.show)(_ includesText "Check and confirm your answers")
     }
 
     "getRegistrationSummary maps a valid VatScheme object to a Summary object" in {
@@ -87,17 +94,17 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       implicit val cp = currentProfile()
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
-      TestSummaryController.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)
+      testSummaryController.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)
     }
 
     "registrationToSummary maps a valid VatScheme object to a Summary object" in {
-      TestSummaryController.registrationToSummary(validVatScheme.copy(threshold = optMandatoryRegistration)).sections.length mustEqual 11
+      testSummaryController.registrationToSummary(validVatScheme.copy(threshold = optMandatoryRegistration)).sections.length mustEqual 11
     }
 
     "registrationToSummary maps a valid empty VatScheme object to a Summary object" in {
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
-      TestSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency.copy(threshold = optMandatoryRegistration)).sections.length mustEqual 11
+      testSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency.copy(threshold = optMandatoryRegistration)).sections.length mustEqual 11
     }
   }
 
@@ -111,7 +118,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.submitRegistration()(any(), any()))
         .thenReturn(Future.successful(Success))
 
-      submitAuthorised(TestSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
       }
@@ -126,7 +133,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.submitRegistration()(any(), any()))
         .thenReturn(Future.successful(Success))
 
-      submitAuthorised(TestSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.INTERNAL_SERVER_ERROR
       }

@@ -19,8 +19,7 @@ package controllers.builders
 import features.sicAndCompliance.models.{CompanyProvideWorkers, SicAndCompliance, SkilledWorkers, TemporaryContracts}
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryLabourComplianceSectionBuilder(vatSicAndCompliance: Option[SicAndCompliance] = None)
-  extends SummarySectionBuilder {
+case class SummaryLabourComplianceSectionBuilder(vatSicAndCompliance: Option[SicAndCompliance] = None) extends SummarySectionBuilder {
 
   val sectionId = "labourCompliance"
 
@@ -47,7 +46,6 @@ case class SummaryLabourComplianceSectionBuilder(vatSicAndCompliance: Option[Sic
     vatSicAndCompliance.flatMap(_.skilledWorkers).flatMap(v => SkilledWorkers.toBool(v.yesNo)),
     features.sicAndCompliance.controllers.routes.LabourComplianceController.showSkilledWorkers()
   )
-
 
   val section: SummarySection = SummarySection(
     sectionId,

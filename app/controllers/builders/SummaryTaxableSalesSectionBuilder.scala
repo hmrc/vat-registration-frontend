@@ -20,9 +20,7 @@ import features.turnoverEstimates.TurnoverEstimates
 import models.api._
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryTaxableSalesSectionBuilder(vatFinancials: Option[VatFinancials] = None,turnoverEstimates: Option[TurnoverEstimates] = None)
-  extends SummarySectionBuilder {
-
+case class SummaryTaxableSalesSectionBuilder(vatFinancials: Option[VatFinancials] = None,turnoverEstimates: Option[TurnoverEstimates] = None) extends SummarySectionBuilder {
   override val sectionId: String = "taxableSales"
 
   val estimatedSalesValueRow: SummaryRow = SummaryRow(

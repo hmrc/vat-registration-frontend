@@ -38,5 +38,4 @@ trait SummarySectionBuilder {
 
   protected[controllers] def appliedRow(rowId: String, yesNo: Option[Boolean], changeLinkUrl: Call) =
     yesNoRow(rowId, yesNo, changeLinkUrl, "app.common.applied", "app.common.not.applied")
-
 }

@@ -20,16 +20,15 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import common.enums.VatRegStatus
+import features.businessContact.models.{BusinessContact, CompanyContactDetails}
 import features.officer.fixtures.LodgingOfficerFixtures
 import features.officer.models.view._
 import features.returns.{Frequency, Returns, Start}
+import features.sicAndCompliance.models.{SicAndCompliance, _}
 import features.tradingDetails.TradingDetails
 import frs.FlatRateScheme
 import models.api._
 import models.external.{IncorporationInfo, _}
-import features.sicAndCompliance.models.SicAndCompliance
-import features.sicAndCompliance.models._
-import models.view.vatContact.BusinessContactDetails
 import models.{BankAccount, BankAccountDetails}
 import play.api.http.Status._
 import play.api.libs.json.Json
@@ -43,7 +42,6 @@ trait BaseFixture {
   val testSortCode = "12-34-56"
   val testAccountNumber = "12345678"
   val validExpectedOverTrue = Some(testDate)
-  val validVatThresholdPostIncorp = None
   def generateThreshold(reason: Option[String] = None, overThreshold: Option[LocalDate] = None, expectedOverThreshold: Option[LocalDate] = None) =
     (reason, overThreshold, expectedOverThreshold) match {
       case (r@Some(_), _, _)            => Threshold(false,r)
@@ -116,6 +114,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val invalidBankCheckJsonResponse = Json.parse(invalidBankCheckJsonResponseString)
 
+
   val s4lVatSicAndComplianceWithoutLabour = SicAndCompliance(
     description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
     mainBusinessActivity = Some(MainBusinessActivityView(sicCode.id, Some(sicCode))),
@@ -132,6 +131,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
     skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES)))
 
+
   //View models
   val validOfficerContactDetailsView = ContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
   val validCompanyProvideWorkers = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
@@ -139,20 +139,15 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validTemporaryContracts = TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)
   val validSkilledWorkers = SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO)
   val validBusinessActivityDescription = BusinessActivityDescription(testBusinessActivityDescription)
-  val validBusinessContactDetails = BusinessContactDetails(email = "test@foo.com", daytimePhone = Some("123"), mobile = None, website = None)
 
   //Api models
   val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", None, None)
+
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
+
   val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
 
   val emptyVatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
-
-  val validVatContact = VatContact(
-    digitalContact = VatDigitalContact(email = "asd@com", tel = Some("123"), mobile = None),
-    website = None,
-    ppob = scrsAddress
-  )
 
   val validReturns = Returns(
     Some(false), Some(Frequency.monthly), None, Some(Start(Some(LocalDate.of(2017, 10, 10))))
@@ -160,11 +155,21 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val validBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
 
+  val validBusinessContactDetails = BusinessContact(
+    companyContactDetails = Some(CompanyContactDetails(
+      email          = "test@foo.com",
+      phoneNumber    = Some("123"),
+      mobileNumber   = Some("987654"),
+      websiteAddress = Some("/test/url")
+    )),
+    ppobAddress = Some(scrsAddress)
+  )
+
   val validVatScheme = VatScheme(
     id = testRegId,
     tradingDetails = Some(generateTradingDetails()),
     financials = Some(validVatFinancials),
-    vatContact = Some(validVatContact),
+    businessContact = Some(validBusinessContactDetails),
     lodgingOfficer = Some(validFullLodgingOfficer),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     flatRateScheme = Some(validFlatRate),
@@ -202,17 +207,16 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
                  id: String = testRegId,
                  tradingDetails: Option[TradingDetails] = None,
                  sicAndComp: Option[SicAndCompliance] = None,
-                 contact: Option[VatContact] = None,
+                 businessContact: Option[BusinessContact] = None,
                  flatRateScheme: Option[FlatRateScheme] = None,
                  threshold: Option[Threshold] = None
                ): VatScheme = VatScheme(
     id = id,
     tradingDetails = tradingDetails,
     sicAndCompliance = sicAndComp,
-    vatContact = contact,
+    businessContact = businessContact,
     flatRateScheme = flatRateScheme,
     threshold = threshold,
     status = VatRegStatus.draft
   )
-
 }

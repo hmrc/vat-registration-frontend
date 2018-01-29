@@ -19,9 +19,7 @@ package controllers.builders
 import features.sicAndCompliance.models.SicAndCompliance
 import models.view.SummarySection
 
-case class SummaryComplianceSectionBuilder(vatSicAndCompliance: Option[SicAndCompliance] = None)
-  extends SummarySectionBuilder {
-
+case class SummaryComplianceSectionBuilder(vatSicAndCompliance: Option[SicAndCompliance] = None) extends SummarySectionBuilder {
   override val sectionId: String = "compliance"
 
   val section = {

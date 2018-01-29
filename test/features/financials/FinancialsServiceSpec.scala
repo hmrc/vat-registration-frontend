@@ -39,7 +39,7 @@ class FinancialsServiceSpec extends VatRegSpec with VatRegistrationFixture with 
       override val vatRegConnector = mockRegConnector
       override val compRegConnector = mockCompanyRegConnector
       override val incorporationService = mockIIService
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnect
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
       override val turnoverEstimatesService = mockTurnoverEstimatesService
     }
   }
@@ -47,7 +47,8 @@ class FinancialsServiceSpec extends VatRegSpec with VatRegistrationFixture with 
   override def beforeEach() {
     super.beforeEach()
     mockFetchRegId(testRegId)
-    when(mockIIService.getIncorporationInfo(any())(any())).thenReturn(OptionT.none[Future, IncorporationInfo])
+    when(mockIIService.getIncorporationInfo(any())(any()))
+      .thenReturn(Future.successful(None))
   }
 
   "When this is the first time the user starts a journey and we're persisting to the backend" should {

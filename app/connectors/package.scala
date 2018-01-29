@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-import cats.data.OptionT
-import org.slf4j.{Logger, LoggerFactory}
+import config.Logging
 import play.api.http.Status
 import uk.gov.hmrc.http.{BadRequestException, NotFoundException, Upstream4xxResponse, Upstream5xxResponse}
 
-import scala.concurrent.Future
-
-package object connectors {
-
-  type OptionalResponse[T] = OptionT[Future, T]
-
-  val logger: Logger = LoggerFactory.getLogger(getClass)
-
+package object connectors extends Logging {
   def logResponse(e: Throwable, func: String): Throwable = {
     e match {
       case e: NotFoundException   => logger.warn(s"[$func] received NOT FOUND")

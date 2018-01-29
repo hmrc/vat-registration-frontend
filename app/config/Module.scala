@@ -16,61 +16,37 @@
 
 package config
 
-/*
- * Copyright 2017 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import java.time.LocalDate
-import javax.inject.Singleton
-
+import com.google.inject.AbstractModule
 import com.google.inject.name.Names
-import com.google.inject.{AbstractModule, TypeLiteral}
-import common.Now
 import config.startup.{VerifyCrypto, VerifyCryptoConfig}
 import connectors._
-import connectors.test.{TestRegistrationConnector, TestVatRegistrationConnector}
+import connectors.test.{BusinessRegDynamicStubConnector, BusinessRegDynamicStubConnectorImpl, TestRegistrationConnector, TestVatRegistrationConnector}
+import controllers.callbacks.{SignInOutController, SignInOutControllerImpl}
+import controllers.feedback.{FeedbackController, FeedbackControllerImpl}
 import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsControllerImpl}
-import controllers.test.{FeatureSwitchController, FeatureSwitchCtrl}
-import controllers.{FlatRateController, FlatRateControllerImpl, TradingDetailsController, TradingDetailsControllerImpl}
+import controllers.test._
+import controllers._
 import features.bankAccountDetails.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
+import features.businessContact.controllers.{BusinessContactDetailsController, BusinessContactDetailsControllerImpl}
+import features.businessContact.{BusinessContactService, BusinessContactServiceImpl}
 import features.officer.controllers._
 import features.officer.services.{IVService, IVServiceImpl, LodgingOfficerService, LodgingOfficerServiceImpl}
 import features.returns.{ReturnsController, ReturnsControllerImpl, ReturnsService, ReturnsServiceImpl}
-import features.tradingDetails.{TradingDetailsService, TradingDetailsServiceImpl}
-import features.sicAndCompliance.services.{SicAndComplianceService, SicAndComplianceServiceImpl}
-import features.turnoverEstimates._
-import services._
-import features.officer.controllers._
-import features.officer.services.{IVService, IVServiceImpl, LodgingOfficerService, LodgingOfficerServiceImpl}
 import features.sicAndCompliance.controllers._
 import features.sicAndCompliance.controllers.test.{SicStubController, SicStubControllerImpl}
+import features.sicAndCompliance.services.{SicAndComplianceService, SicAndComplianceServiceImpl}
+import features.tradingDetails.{TradingDetailsService, TradingDetailsServiceImpl}
+import features.turnoverEstimates._
+import services._
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import utils.{FeatureManager, FeatureSwitchManager, VATRegFeatureSwitch, VATRegFeatureSwitches}
 
-@Singleton
-class LocalDateNow extends Now[LocalDate] {
-  override def apply(): LocalDate = LocalDate.now()
-}
-
 class Module extends AbstractModule {
 
   override def configure(): Unit = {
     startupBindings()
-    bind(new TypeLiteral[Now[LocalDate]] {}).to(classOf[LocalDateNow]).asEagerSingleton()
     hmrcDependencyBindings()
     bindControllers()
     bindTestControllers()
@@ -94,13 +70,11 @@ class Module extends AbstractModule {
   }
 
   private def bindInternalRoutes(): Unit = {
-
+    bind(classOf[DeleteSessionItemsController]).to(classOf[DeleteSessionItemsControllerImpl])
   }
 
   private def bindControllers(): Unit = {
-    bind(classOf[DeleteSessionItemsController]).to(classOf[DeleteSessionItemsControllerImpl]).asEagerSingleton()
     bind(classOf[FlatRateController]).to(classOf[FlatRateControllerImpl]).asEagerSingleton()
-    bind(classOf[FeatureSwitchCtrl]).to(classOf[FeatureSwitchController]).asEagerSingleton()
     bind(classOf[BankAccountDetailsController]).to(classOf[BankAccountDetailsControllerImpl])
     bind(classOf[TurnoverEstimatesController]).to(classOf[TurnoverEstimatesControllerImpl]).asEagerSingleton()
     bind(classOf[ReturnsController]).to(classOf[ReturnsControllerImpl]).asEagerSingleton()
@@ -108,10 +82,22 @@ class Module extends AbstractModule {
     bind(classOf[TradingDetailsController]).to(classOf[TradingDetailsControllerImpl]).asEagerSingleton()
     bind(classOf[SicAndComplianceController]).to(classOf[SicAndComplianceControllerImpl]).asEagerSingleton()
     bind(classOf[LabourComplianceController]).to(classOf[LabourComplianceControllerImpl]).asEagerSingleton()
+    bind(classOf[SignInOutController]).to(classOf[SignInOutControllerImpl]).asEagerSingleton()
+    bind(classOf[FeedbackController]).to(classOf[FeedbackControllerImpl]).asEagerSingleton()
+    bind(classOf[ApplicationSubmissionController]).to(classOf[ApplicationSubmissionControllerImpl]).asEagerSingleton()
+    bind(classOf[SummaryController]).to(classOf[SummaryControllerImpl]).asEagerSingleton()
+    bind(classOf[WelcomeController]).to(classOf[WelcomeControllerImpl]).asEagerSingleton()
   }
 
   private def bindTestControllers(): Unit = {
     bind(classOf[SicStubController]).to(classOf[SicStubControllerImpl]).asEagerSingleton()
+    bind(classOf[BusinessContactDetailsController]).to(classOf[BusinessContactDetailsControllerImpl]).asEagerSingleton()
+    bind(classOf[IncorporationInformationStubsController]).to(classOf[IncorporationInformationStubsControllerImpl]).asEagerSingleton()
+    bind(classOf[TestCacheController]).to(classOf[TestCacheControllerImpl]).asEagerSingleton()
+    bind(classOf[TestCTController]).to(classOf[TestCTControllerImpl]).asEagerSingleton()
+    bind(classOf[TestSetupController]).to(classOf[TestSetupControllerImpl]).asEagerSingleton()
+    bind(classOf[FeatureSwitchController]).to(classOf[FeatureSwitchControllerImpl]).asEagerSingleton()
+    bind(classOf[TestWorkingDaysValidationController]).to(classOf[TestWorkingDaysValidationControllerImpl]).asEagerSingleton()
   }
 
   private def bindServices(): Unit = {
@@ -119,7 +105,7 @@ class Module extends AbstractModule {
     bind(classOf[AddressLookupService]).to(classOf[AddressLookupServiceImpl]).asEagerSingleton()
     bind(classOf[IncorporationInfoSrv]).to(classOf[IncorporationInformationService]).asEagerSingleton()
     bind(classOf[DateService]).to(classOf[WorkingDaysService]).asEagerSingleton()
-    bind(classOf[S4LService]).to(classOf[PersistenceService]).asEagerSingleton()
+    bind(classOf[S4LService]).to(classOf[S4LServiceImpl]).asEagerSingleton()
     bind(classOf[RegistrationService]).to(classOf[VatRegistrationService]).asEagerSingleton()
     bind(classOf[PrePopService]).to(classOf[PrePopulationService]).asEagerSingleton()
     bind(classOf[IVService]).to(classOf[IVServiceImpl]).asEagerSingleton()
@@ -132,6 +118,7 @@ class Module extends AbstractModule {
     bind(classOf[TradingDetailsService]).to(classOf[TradingDetailsServiceImpl]).asEagerSingleton()
     bind(classOf[FlatRateService]).to(classOf[FlatRateServiceImpl]).asEagerSingleton()
     bind(classOf[SicAndComplianceService]).to(classOf[SicAndComplianceServiceImpl]).asEagerSingleton()
+    bind(classOf[BusinessContactService]).to(classOf[BusinessContactServiceImpl]).asEagerSingleton()
   }
 
   private def bindConnectors(): Unit = {
@@ -147,18 +134,11 @@ class Module extends AbstractModule {
     bind(classOf[KeystoreConnect]).to(classOf[KeystoreConnector]).asEagerSingleton()
     bind(classOf[RegistrationConnector]).to(classOf[VatRegistrationConnector]).asEagerSingleton()
     bind(classOf[IncorporationInformationConnect]).to(classOf[IncorporationInformationConnector]).asEagerSingleton()
+    bind(classOf[BusinessRegDynamicStubConnector]).to(classOf[BusinessRegDynamicStubConnectorImpl]).asEagerSingleton()
   }
 
   private def featureSwitches(): Unit = {
     bind(classOf[FeatureManager]).to(classOf[FeatureSwitchManager]).asEagerSingleton()
     bind(classOf[VATRegFeatureSwitches]).to(classOf[VATRegFeatureSwitch]).asEagerSingleton()
   }
-
-  //TODO: Investigate way of making bindings easier to read
-//  private def traitOf[A: ClassTag] = new TraitOf[A]
-//
-//  private class TraitOf[A: ClassTag] {
-//    import scala.reflect._
-//    def bindsToClassOf[B <: A](implicit tagA: ClassTag[A], tagB: ClassTag[B]): Unit = bind(tagA.runtimeClass).to(tagB.runtimeClass).asEagerSingleton()
-//  }
 }

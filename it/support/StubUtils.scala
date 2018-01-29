@@ -48,7 +48,7 @@ trait StubUtils {
 
     def user = UserStub()
 
-    def journey = JourneyStub()
+    def alfeJourney = JourneyStub()
 
     def vatRegistrationFootprint = VatRegistrationFootprintStub()
 
@@ -497,6 +497,12 @@ trait StubUtils {
           )))
       builder
     }
+    def doesNotExistForKey(blockKey:String): PreconditionBuilder = {
+      stubFor(
+        get(urlPathEqualTo(s"/vatreg/1/$blockKey"))
+          .willReturn(notFound()))
+      builder
+    }
 
     def isNotUpdatedWith[T](t:T,statusCode:Int = 500)(implicit tFmt: Format[T]) = {
       stubFor(
@@ -517,8 +523,13 @@ trait StubUtils {
       builder
     }
 
+
     def has(key: String, data: JsValue): PreconditionBuilder = {
       stubFor(get(urlPathEqualTo(s"/vatreg/1/$key")).willReturn(ok(data.toString())))
+      builder
+    }
+    def doesNotHave(blockKey: String): PreconditionBuilder = {
+      stubFor(get(urlPathEqualTo(s"/vatreg/1/$blockKey")).willReturn(noContent()))
       builder
     }
 
