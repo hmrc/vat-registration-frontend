@@ -529,10 +529,10 @@ pages.businessContactDetails.website.label                   = Website address (
 validation.businessContactDetails.email.missing              = Enter an email address
 validation.businessContactDetails.email.invalid              = Enter a valid email address
 validation.businessContactDetails.email.maxlen               = Email address must not exceed 70 characters
-validation.businessContactDetails.mobile.missing             = Enter at least one contact number
 validation.businessContactDetails.mobile.invalid             = Enter a valid contact number
-validation.businessContactDetails.daytimePhone.missing       = Enter at least one contact number
 validation.businessContactDetails.daytimePhone.invalid       = Enter a valid contact number
+validation.businessContactDetails.atLeastOneNumber.missing   = Enter at least one contact number
+
 
 ## Officer Home Address Page
 pages.officerHomeAddress.title                           = Director residential address
@@ -581,6 +581,7 @@ pages.officerContact.emailAddress.label                  = Email address
 pages.officerContact.mobile.label                        = Mobile number
 pages.officerContact.daytimePhone.label                  = Phone number
 validation.officerContact.missing                        = Enter your contact details
+validation.officerContact.atLeastOneContact.missing                        = Enter your contact details
 validation.officerContactDetails.mobile.invalid          = Enter a valid contact number
 validation.officerContactDetails.daytimePhone.invalid    = Enter a valid contact number
 validation.officerContactDetails.email.invalid           = Enter a valid email address

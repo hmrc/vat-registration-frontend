@@ -48,8 +48,6 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  def mockKeystoreFetchAndGet[T](key: String, model: Option[T]): OngoingStubbing[Future[Option[T]]] =
-    when(mockKeystoreConnector.fetchAndGet[T](ArgumentMatchers.contains(key))(any(), any())).thenReturn(Future.successful(model))
 
   s"GET ${routes.LabourComplianceController.showProvideWorkers()}" should {
     "return HTML where getSicAndCompliance returns the view models wih labour already entered" in new Setup {

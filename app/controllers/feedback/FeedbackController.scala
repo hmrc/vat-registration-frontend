@@ -17,39 +17,37 @@
 package controllers.feedback
 
 import java.net.URLEncoder
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
-import config.{FrontendAppConfig, WSHttp}
-import controllers.{CommonPlayDependencies, VatRegistrationController}
-import play.api.Logger
-import play.api.http.{Status => HttpStatus}
+import config.FrontendAppConfig
+import connectors.KeystoreConnect
+import controllers.VatRegistrationControllerNoAux
+import play.api.i18n.MessagesApi
 import play.api.mvc._
-import play.twirl.api.Html
-import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, HttpReads, HttpResponse}
+import services.SessionProfile
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.UnauthorisedAction
-import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
-import uk.gov.hmrc.play.partials.{CachedStaticHtmlPartialRetriever, FormPartialRetriever, HeaderCarrierForPartialsConverter, HtmlPartial}
 
-import scala.concurrent.Future
+class FeedbackControllerImpl @Inject()(val authConnector: AuthConnector,
+                                       val keystoreConnector: KeystoreConnect,
+                                       implicit val messagesApi: MessagesApi) extends FeedbackController {
+  override lazy val contactFrontendPartialBaseUrl = FrontendAppConfig.contactFrontendPartialBaseUrl
+  override lazy val contactFormServiceIdentifier  = FrontendAppConfig.contactFormServiceIdentifier
+}
 
-@Singleton
-class FeedbackController @Inject()(ds: CommonPlayDependencies,
-                                   val authConnector: AuthConnector,
-                                   val http: WSHttp) extends VatRegistrationController(ds) {
-
-  val applicationConfig = FrontendAppConfig
+trait FeedbackController extends VatRegistrationControllerNoAux with SessionProfile {
+  val contactFrontendPartialBaseUrl: String
+  val contactFormServiceIdentifier: String
 
   def contactFormReferrer(implicit request: Request[AnyContent]): String = request.headers.get(REFERER).getOrElse("")
 
   private def feedbackFormPartialUrl(implicit request: Request[AnyContent]) =
-    s"${applicationConfig.contactFrontendPartialBaseUrl}/contact/beta-feedback?backUrl=${urlEncode(contactFormReferrer)}" +
-      s"&service=${urlEncode(applicationConfig.contactFormServiceIdentifier)}"
+    s"$contactFrontendPartialBaseUrl/contact/beta-feedback?backUrl=${urlEncode(contactFormReferrer)}" +
+      s"&service=$contactFormServiceIdentifier}"
 
   def feedbackShow: Action[AnyContent] = UnauthorisedAction {
     implicit request => Redirect(feedbackFormPartialUrl)
   }
-
 
   private def urlEncode(value: String) = URLEncoder.encode(value, "UTF-8")
 }

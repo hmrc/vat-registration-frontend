@@ -18,17 +18,24 @@ package controllers
 
 import javax.inject.Inject
 
+import connectors.KeystoreConnect
+import play.api.i18n.MessagesApi
 import play.api.mvc._
-import services.{CurrentProfileSrv, RegistrationService}
+import services.{CurrentProfileSrv, RegistrationService, SessionProfile}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import views.html.pages.welcome
 
-class WelcomeController @Inject()(vatRegistrationService: RegistrationService,
-                                  currentProfileService: CurrentProfileSrv,
-                                  val authConnector: AuthConnector,
-                                  ds: CommonPlayDependencies) extends VatRegistrationController(ds) {
+class WelcomeControllerImpl @Inject()(val vatRegistrationService: RegistrationService,
+                                      val currentProfileService: CurrentProfileSrv,
+                                      val authConnector: AuthConnector,
+                                      val keystoreConnector: KeystoreConnect,
+                                      implicit val messagesApi: MessagesApi) extends WelcomeController
 
-  //access to root of application should by default direct the user to the proper URL for start of VAT registration
+trait WelcomeController extends VatRegistrationControllerNoAux with SessionProfile {
+  val vatRegistrationService: RegistrationService
+  val currentProfileService: CurrentProfileSrv
+  val authConnector: AuthConnector
+
   def show: Action[AnyContent] = Action(implicit request => Redirect(routes.WelcomeController.start()))
 
   def start: Action[AnyContent] = authorised.async {

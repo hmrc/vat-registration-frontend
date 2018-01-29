@@ -263,7 +263,7 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
                 addressLookupService.getJourneyUrl(addressThreeYearsOrLess, routes.OfficerController.acceptFromTxmPreviousAddress()) map Redirect
               } else {
                 lodgingOfficerService.saveLodgingOfficer(data) map {
-                 _ => Redirect(controllers.vatContact.ppob.routes.PpobController.show())
+                 _ => Redirect(features.businessContact.controllers.routes.BusinessContactDetailsController.showPPOB())
                 }
               }
             )
@@ -279,7 +279,7 @@ trait OfficerController extends VatRegistrationControllerNoAux with SessionProfi
             for {
               address <- addressLookupService.getAddressById(id)
               _       <- lodgingOfficerService.saveLodgingOfficer(PreviousAddressView(false, Some(address)))
-            } yield Redirect(controllers.vatContact.ppob.routes.PpobController.show())
+            } yield Redirect(features.businessContact.controllers.routes.BusinessContactDetailsController.showPPOB())
           }
         }
   }

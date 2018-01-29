@@ -35,7 +35,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
 
   val testService = new CurrentProfileSrv {
     override val vatRegistrationService = mockVatRegistrationService
-    override val keystoreConnector = mockKeystoreConnect
+    override val keystoreConnector = mockKeystoreConnector
     override val incorpInfoService = mockIIService
     override val ivService: IVService = mockIVService
   }
@@ -60,10 +60,12 @@ class CurrentProfileServiceSpec extends VatRegSpec {
           .thenReturn(Future.successful("testCompanyName"))
 
         when(mockIIService.getIncorporationInfo(Matchers.any())(Matchers.any()))
-          .thenReturn(OptionT.liftF(Future.successful(IncorporationInfo(
-            IncorpSubscription("","","",""),
-            IncorpStatusEvent("", None, Some(now), None)
-          ))))
+          .thenReturn(Future.successful(Some(
+            IncorporationInfo(
+              IncorpSubscription("","","",""),
+              IncorpStatusEvent("", None, Some(now), None)
+            )
+          )))
 
         when(mockVatRegistrationService.getStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful(VatRegStatus.draft))
@@ -71,7 +73,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
         when(mockIVService.getIVStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
             .thenReturn(Future.successful(None))
 
-        when(mockKeystoreConnect.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
         val result = await(testService.buildCurrentProfile("testRegId", "testTxId"))
@@ -85,10 +87,12 @@ class CurrentProfileServiceSpec extends VatRegSpec {
           .thenReturn(Future.successful("testCompanyName"))
 
         when(mockIIService.getIncorporationInfo(Matchers.any())(Matchers.any()))
-          .thenReturn(OptionT.liftF(Future.successful(IncorporationInfo(
-            IncorpSubscription("","","",""),
-            IncorpStatusEvent("", None, Some(now), None)
-          ))))
+          .thenReturn(Future.successful(Some(
+            IncorporationInfo(
+              IncorpSubscription("","","",""),
+              IncorpStatusEvent("", None, Some(now), None)
+            )
+          )))
 
         when(mockVatRegistrationService.getStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful(VatRegStatus.draft))
@@ -96,7 +100,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
         when(mockIVService.getIVStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful(Some(true)))
 
-        when(mockKeystoreConnect.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
         val result = await(testService.buildCurrentProfile("testRegId", "testTxId"))

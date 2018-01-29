@@ -16,19 +16,16 @@
 
 package services
 
-import cats.data.OptionT
 import connectors._
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models._
 import models.external.IncorporationInfo
-import models.view.vatContact.ppob.PpobView
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -41,7 +38,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       mockRegConnector,
       mockCompanyRegConnector,
       mockIIService,
-      mockKeystoreConnect,
+      mockKeystoreConnector,
       mockTurnoverEstimatesService
     )
   }
@@ -49,7 +46,8 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   override def beforeEach() {
     super.beforeEach()
     mockFetchRegId(testRegId)
-    when(mockIIService.getIncorporationInfo(any())(any())).thenReturn(OptionT.none[Future, IncorporationInfo])
+    when(mockIIService.getIncorporationInfo(any())(any()))
+      .thenReturn(Future.successful(None))
   }
   val json = Json.parse(
     s"""
@@ -71,11 +69,17 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   "Calling createNewRegistration" should {
     "return a success response when the Registration is successfully created" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockIIService.getIncorporationInfo(any())(any[HeaderCarrier]())).thenReturn(OptionT.liftF(Future.successful(testIncorporationInfo)))
+
+      when(mockIIService.getIncorporationInfo(any())(any[HeaderCarrier]()))
+        .thenReturn(Future.successful(Some(testIncorporationInfo)))
       when(mockRegConnector.createNewRegistration(any(), any())).thenReturn(validVatScheme.pure)
+
       mockKeystoreCache[IncorporationInfo]("INCORPORATION_STATUS", CacheMap("INCORPORATION_STATUS", Map("INCORPORATION_STATUS" -> json)))
+
       mockKeystoreCache[String]("CompanyProfile", CacheMap("", Map.empty))
-      when(mockCompanyRegConnector.getTransactionId(any())(any())).thenReturn(Future.successful(validCoHoProfile.transactionId))
+
+      when(mockCompanyRegConnector.getTransactionId(any())(any()))
+        .thenReturn(Future.successful(validCoHoProfile.transactionId))
 
       await(service.createRegistrationFootprint) mustBe (validVatScheme.id, "transactionId")
     }
@@ -83,12 +87,16 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
   "Calling getAckRef" should {
     "retrieve Acknowledgement Reference (id) from the backend" in new Setup {
-      when(mockRegConnector.getAckRef(ArgumentMatchers.eq(testRegId))(any())).thenReturn(OptionT.some("testRefNo"))
-      service.getAckRef(testRegId) returnsSome "testRefNo"
+      when(mockRegConnector.getAckRef(ArgumentMatchers.eq(testRegId))(any()))
+        .thenReturn(Future.successful("testRefNo"))
+
+      await(service.getAckRef(testRegId)) mustBe "testRefNo"
     }
     "retrieve no Acknowledgement Reference if there's none in the backend" in new Setup {
-      when(mockRegConnector.getAckRef(ArgumentMatchers.eq(testRegId))(any())).thenReturn(OptionT.none[Future, String])
-      service.getAckRef(testRegId) returnsNone
+      when(mockRegConnector.getAckRef(ArgumentMatchers.eq(testRegId))(any()))
+        .thenReturn(Future.failed(new InternalServerException("")))
+
+      intercept[InternalServerException](await(service.getAckRef(testRegId)))
     }
   }
 
@@ -98,26 +106,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.deleteVatScheme(any())(any(), any())).thenReturn(Future.successful(true))
 
       await(service.deleteVatScheme) mustBe true
-    }
-  }
-
-  "When this is the first time the user starts a journey and we're persisting to the backend" should {
-
-    "submitVatContact should process the submission even if VatScheme does not contain a VatContact object" in new Setup {
-      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-      when(mockRegConnector.upsertVatContact(any(), any())(any(), any())).thenReturn(validVatContact.pure)
-      save4laterReturns(S4LVatContact(
-        businessContactDetails = Some(validBusinessContactDetails),
-        ppob = Some(PpobView(addressId = "id", address = Some(scrsAddress)))))
-
-      service.submitVatContact returns validVatContact
-    }
-
-    "submitVatContact should fail if there's not trace of VatContact in neither backend nor S4L" in new Setup {
-      when(mockRegConnector.getRegistration(ArgumentMatchers.eq(testRegId))(any(), any())).thenReturn(emptyVatScheme.pure)
-      save4laterReturnsNothing[S4LVatContact]()
-
-      service.submitVatContact failedWith classOf[IllegalStateException]
     }
   }
 

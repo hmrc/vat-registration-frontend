@@ -23,9 +23,7 @@ import frs.{AnnualCosts, FlatRateScheme}
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 
-case class SummaryFrsSectionBuilder(vatFrs: Option[FlatRateScheme] = None)
-  extends SummarySectionBuilder {
-
+case class SummaryFrsSectionBuilder(vatFrs: Option[FlatRateScheme] = None) extends SummarySectionBuilder {
   override val sectionId: String = "frs"
 
   private val decimalFormat = new DecimalFormat("#0.##")

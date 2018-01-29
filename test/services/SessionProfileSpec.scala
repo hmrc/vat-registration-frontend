@@ -32,7 +32,7 @@ class SessionProfileSpec extends VatRegSpec with VatRegistrationFixture {
 val mockMessages = mock[Messages]
   class Setup {
     val sp = new SessionProfile {
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnect
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
   "hasIvStatus" should {

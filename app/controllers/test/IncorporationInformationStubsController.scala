@@ -16,23 +16,26 @@
 
 package controllers.test
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
+import connectors.KeystoreConnect
 import connectors.test.TestRegistrationConnector
-import connectors.{KeystoreConnect, RegistrationConnector}
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.VatRegistrationControllerNoAux
+import play.api.i18n.MessagesApi
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, SessionProfile}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-@Singleton
-class IncorporationInformationStubsController @Inject()(vatRegistrationService: RegistrationService,
-                                                        vatRegConnector: TestRegistrationConnector,
-                                                        vr: RegistrationConnector,
-                                                        ds: CommonPlayDependencies,
-                                                        val authConnector: AuthConnector,
-                                                        val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
+class IncorporationInformationStubsControllerImpl @Inject()(val vatRegService: RegistrationService,
+                                                            val vatRegConnector: TestRegistrationConnector,
+                                                            implicit val messagesApi: MessagesApi,
+                                                            val authConnector: AuthConnector,
+                                                            val keystoreConnector: KeystoreConnect) extends IncorporationInformationStubsController
+
+trait IncorporationInformationStubsController extends VatRegistrationControllerNoAux with SessionProfile {
+  val vatRegConnector: TestRegistrationConnector
+  val vatRegService: RegistrationService
 
   def postTestData(): Action[AnyContent] = authorised.async {
     implicit user =>
@@ -40,7 +43,7 @@ class IncorporationInformationStubsController @Inject()(vatRegistrationService: 
         System.setProperty("feature.ivStubbed","true")
         for {
           _          <- vatRegConnector.setupCurrentProfile
-          (regId, _) <- vatRegistrationService.createRegistrationFootprint
+          (regId, _) <- vatRegService.createRegistrationFootprint
           _          <- vatRegConnector.wipeTestData
           _          <- vatRegConnector.postTestData(defaultTestData(regId))
         } yield Ok("Data inserted")
@@ -148,5 +151,4 @@ class IncorporationInformationStubsController @Inject()(vatRegistrationService: 
          |  }
         """.stripMargin
     )
-
 }

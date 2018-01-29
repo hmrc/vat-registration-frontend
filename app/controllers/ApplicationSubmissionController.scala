@@ -16,22 +16,25 @@
 
 package controllers
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
 import connectors.KeystoreConnect
 import features.returns.ReturnsService
+import play.api.i18n.MessagesApi
 import play.api.mvc._
-import services.{RegistrationService, S4LService, SessionProfile}
+import services.{RegistrationService, SessionProfile}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import views.html.pages.application_submission_confirmation
 
-@Singleton
-class ApplicationSubmissionController @Inject()(ds: CommonPlayDependencies,
-                                                vrs: RegistrationService,
-                                                val returnsService:  ReturnsService,
-                                                val authConnector: AuthConnector,
-                                                val keystoreConnector: KeystoreConnect,
-                                                implicit val s4LService: S4LService) extends VatRegistrationController(ds) with SessionProfile {
+class ApplicationSubmissionControllerImpl @Inject()(val vatRegService: RegistrationService,
+                                                    val returnsService:  ReturnsService,
+                                                    val authConnector: AuthConnector,
+                                                    val keystoreConnector: KeystoreConnect,
+                                                    implicit val messagesApi: MessagesApi) extends ApplicationSubmissionController
+
+trait ApplicationSubmissionController extends VatRegistrationControllerNoAux with SessionProfile {
+  val vatRegService: RegistrationService
+  val returnsService: ReturnsService
 
   def show: Action[AnyContent] = authorised.async {
     implicit user =>
@@ -39,7 +42,7 @@ class ApplicationSubmissionController @Inject()(ds: CommonPlayDependencies,
         withCurrentProfile { implicit profile =>
           ivPassedCheck {
             for {
-              Some(ackRef) <- vrs.getAckRef(profile.registrationId).value
+              ackRef  <- vatRegService.getAckRef(profile.registrationId)
               returns <- returnsService.getReturns
             } yield Ok(application_submission_confirmation(ackRef, returns.staggerStart))
           }

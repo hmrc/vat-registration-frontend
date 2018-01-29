@@ -24,7 +24,7 @@ import features.sicAndCompliance.models.TemporaryContracts.TEMP_CONTRACTS_NO
 import features.sicAndCompliance.models._
 import models.CurrentProfile
 import models.api.SicCode
-import services.{S4LService, VatRegistrationService}
+import services.{S4LService, VatRegistrationService, Completion, Complete, Incomplete}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -39,11 +39,6 @@ trait SicAndComplianceService {
   val s4lService: S4LService
   val vrs: VatRegistrationService
   val registrationConnector: RegistrationConnector
-
-  type Completion[T] = Either[T, T]
-  val Incomplete   = scala.util.Left
-  val Complete     = scala.util.Right
-
 
   def getSicAndCompliance(implicit hc:HeaderCarrier, cp:CurrentProfile):Future[SicAndCompliance] = {
     s4lService.fetchAndGetNoAux[SicAndCompliance](SicAndCompliance.sicAndCompliance).flatMap{

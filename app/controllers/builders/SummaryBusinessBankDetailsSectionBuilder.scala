@@ -20,8 +20,7 @@ import common.StringMasking.MaskedStringConverter
 import models.BankAccount
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryBusinessBankDetailsSectionBuilder(bankAccount: Option[BankAccount])
-  extends SummarySectionBuilder {
+case class SummaryBusinessBankDetailsSectionBuilder(bankAccount: Option[BankAccount]) extends SummarySectionBuilder {
 
   override val sectionId: String = "bankDetails"
 

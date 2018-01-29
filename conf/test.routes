@@ -1,8 +1,6 @@
 
 GET         /s4l-teardown                      controllers.test.TestCacheController.tearDownS4L
 
-GET         /db-teardown                       controllers.test.TestVatRegistrationAdminController.dropCollection()
-
 GET         /test-setup                        controllers.test.TestSetupController.show()
 POST        /test-setup                        controllers.test.TestSetupController.submit()
 

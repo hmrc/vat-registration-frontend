@@ -18,19 +18,19 @@ package services
 
 import javax.inject.Inject
 
-import connectors.VatRegistrationConnector
+import connectors.RegistrationConnector
 import models.{BankAccount, BankAccountDetails, CurrentProfile, S4LKey}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class BankAccountDetailsServiceImpl @Inject()(val vatRegConnector: VatRegistrationConnector,
+class BankAccountDetailsServiceImpl @Inject()(val vatRegConnector: RegistrationConnector,
                                               val s4LService: S4LService,
                                               val bankAccountRepService: BankAccountReputationService) extends BankAccountDetailsService
 
 trait BankAccountDetailsService {
 
-  val vatRegConnector: VatRegistrationConnector
+  val vatRegConnector: RegistrationConnector
   val s4LService: S4LService
   val bankAccountRepService: BankAccountReputationService
 
@@ -39,7 +39,7 @@ trait BankAccountDetailsService {
   def fetchBankAccountDetails(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Option[BankAccount]] = {
     s4LService.fetchAndGetNoAux(bankAccountS4LKey) flatMap {
       case Some(bankAccount) => Future.successful(Some(bankAccount))
-      case None => vatRegConnector.getBankAccount(profile.registrationId)
+      case None              => vatRegConnector.getBankAccount(profile.registrationId)
     }
   }
 
@@ -69,7 +69,7 @@ trait BankAccountDetailsService {
     }
   }
 
-  private[services] def bankAccountBlockCompleted(bankAccount: BankAccount): CompletedBlock[BankAccount] = {
+  private[services] def bankAccountBlockCompleted(bankAccount: BankAccount): Completion[BankAccount] = {
     bankAccount match {
       case BankAccount(true, Some(_)) => Complete(bankAccount)
       case BankAccount(false, _)      => Complete(bankAccount.copy(details = None))
@@ -87,6 +87,4 @@ trait BankAccountDetailsService {
       } yield complete
     )
   }
-
-
 }

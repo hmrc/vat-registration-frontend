@@ -17,27 +17,31 @@
 package controllers.test
 
 import java.time.format.DateTimeFormatter
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
 import connectors.KeystoreConnect
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.VatRegistrationControllerNoAux
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import play.twirl.api.Html
 import services.{PrePopService, SessionProfile}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-@Singleton
-class TestCTController @Inject()(iis: PrePopService,
-                                 ds: CommonPlayDependencies,
-                                 val authConnector: AuthConnector,
-                                 val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
+class TestCTControllerImpl @Inject()(val prePopService: PrePopService,
+                                     val authConnector: AuthConnector,
+                                     val keystoreConnector: KeystoreConnect,
+                                     implicit val messagesApi: MessagesApi) extends TestCTController
+
+trait TestCTController extends VatRegistrationControllerNoAux with SessionProfile {
+  val prePopService: PrePopService
 
   def show(): Action[AnyContent] = authorised.async {
     implicit user =>
       implicit req =>
         withCurrentProfile { implicit profile =>
-//          iis.getCTActiveDate.map(DateTimeFormatter.ISO_LOCAL_DATE.format).getOrElse("NONE").map(s => Ok(Html(s)))
-          iis.getCTActiveDate.map(_.fold("NONE")(x => DateTimeFormatter.ISO_LOCAL_DATE.format(x))).map(x => Ok(Html(x)))
+          prePopService.getCTActiveDate.map(_.fold("NONE")(x => DateTimeFormatter.ISO_LOCAL_DATE.format(x))).map(x => Ok(Html(x)))
         }
   }
 }
+
+

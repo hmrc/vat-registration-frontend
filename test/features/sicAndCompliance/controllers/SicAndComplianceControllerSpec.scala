@@ -38,8 +38,6 @@ import scala.concurrent.Future
 class SicAndComplianceControllerSpec extends ControllerSpec with FutureAwaits with FutureAssertions with DefaultAwaitTimeout
                                      with VatRegistrationFixture with MockMessages with SicAndComplianceServiceMock {
 
-  val mockFlatRateService = mock[FlatRateService]
-
   trait Setup {
     val controller: SicAndComplianceController = new SicAndComplianceController {
       override val messagesApi: MessagesApi = mockMessagesAPI
@@ -53,8 +51,6 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  def mockKeystoreFetchAndGet[T](key: String, model: Option[T]): OngoingStubbing[Future[Option[T]]] =
-    when(mockKeystoreConnector.fetchAndGet[T](ArgumentMatchers.contains(key))(any(), any())).thenReturn(Future.successful(model))
 
   val validLabourSicCode = SicCode("81221001", "BarFoo", "BarFoo")
   val validNoCompliance = SicCode("12345678", "fooBar", "FooBar")
@@ -155,8 +151,16 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
 
     "return 303 with selected sicCode" in new Setup {
       mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(List(validLabourSicCode)))
-      when(mockFlatRateService.resetFRS(any())(any(), any())).thenReturn(Future.successful(sicCode))
-      when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(true)
+
+      when(mockSicAndComplianceService.updateSicAndCompliance(any())(any(), any()))
+        .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
+
+
+      when(mockFlatRateService.resetFRS(any())(any(), any()))
+        .thenReturn(Future.successful(sicCode))
+
+      when(mockSicAndComplianceService.needComplianceQuestions(any()))
+        .thenReturn(true)
 
       submitAuthorised(controller.submitMainBusinessActivity(),
         fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> validLabourSicCode.id)
@@ -164,9 +168,18 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
 
     }
     "return 303 with selected sicCode (noCompliance) and sicCode list in keystore" in new Setup {
+
       mockKeystoreFetchAndGet(SIC_CODES_KEY, Some(List(validNoCompliance)))
-      when(mockFlatRateService.resetFRS(any())(any(), any())).thenReturn(Future.successful(sicCode))
-      when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(false)
+
+      when(mockSicAndComplianceService.updateSicAndCompliance(any())(any(), any()))
+        .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
+
+
+      when(mockFlatRateService.resetFRS(any())(any(), any()))
+        .thenReturn(Future.successful(sicCode))
+
+      when(mockSicAndComplianceService.needComplianceQuestions(any()))
+        .thenReturn(false)
 
       submitAuthorised(controller.submitMainBusinessActivity(),
 

@@ -16,19 +16,23 @@
 
 package controllers.test
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
 import connectors.KeystoreConnect
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.VatRegistrationControllerNoAux
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, SessionProfile}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-@Singleton
-class TestCacheController @Inject()(s4LService: S4LService,
-                                    ds: CommonPlayDependencies,
-                                    val authConnector: AuthConnector,
-                                    val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
+class TestCacheControllerImpl @Inject()(val s4LService: S4LService,
+                                        val authConnector: AuthConnector,
+                                        val keystoreConnector: KeystoreConnect,
+                                        implicit val messagesApi: MessagesApi) extends TestCacheController
+
+
+trait TestCacheController extends VatRegistrationControllerNoAux with SessionProfile {
+  val s4LService: S4LService
 
   def tearDownS4L: Action[AnyContent] = authorised.async {
     implicit user =>

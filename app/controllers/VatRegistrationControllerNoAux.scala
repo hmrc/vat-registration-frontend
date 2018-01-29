@@ -17,8 +17,9 @@
 package controllers
 
 import auth.VatTaxRegime
+import config.Logging
 import models.CurrentProfile
-import play.api.i18n.I18nSupport
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.SessionProfile
 import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext}
@@ -26,8 +27,10 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
-trait VatRegistrationControllerNoAux extends FrontendController with I18nSupport with Actions {
+trait VatRegistrationControllerNoAux extends FrontendController with I18nSupport with Actions with Logging {
   self: SessionProfile =>
+
+  implicit val messagesApi: MessagesApi
 
   type AuthorisedRequest = (AuthContext) => (Request[AnyContent]) => Future[Result]
   type AuthorisedRequestWithCurrentProfile = (AuthContext) => (Request[AnyContent]) => (CurrentProfile) => Future[Result]

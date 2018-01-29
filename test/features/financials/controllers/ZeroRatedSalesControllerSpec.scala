@@ -31,7 +31,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
   object Controller extends ZeroRatedSalesController(
     ds,
     mockS4LService,
-    mockKeystoreConnect,
+    mockKeystoreConnector,
     mockAuthConnector,
     mockVatRegistrationService
   )
