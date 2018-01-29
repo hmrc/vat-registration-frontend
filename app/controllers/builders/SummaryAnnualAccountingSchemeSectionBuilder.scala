@@ -19,9 +19,7 @@ package controllers.builders
 import features.returns.{Frequency, Returns}
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryAnnualAccountingSchemeSectionBuilder(returns: Option[Returns])
-  extends SummarySectionBuilder {
-
+case class SummaryAnnualAccountingSchemeSectionBuilder(returns: Option[Returns]) extends SummarySectionBuilder {
   override val sectionId: String = "annualAccountingScheme"
 
   val vatChargeExpectancyRow: SummaryRow = SummaryRow(

@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package models.api
+package utils
 
-import play.api.libs.json._
+import play.api.data.{Form, FormError}
 
-case class VatDigitalContact(email: String, tel: Option[String] = None, mobile: Option[String] = None)
-
-object VatDigitalContact {
-
-  implicit val format: OFormat[VatDigitalContact] = Json.format[VatDigitalContact]
-
+object ViewErrorHelpers {
+  def getErrorsForArgument(form: Form[_], argName: String): Seq[FormError] = form.globalErrors.filter(_.args.contains(argName))
+  def doesFormHaveErrors(form: Form[_], argName: String): Boolean = form.globalErrors.exists(_.args.contains(argName))
 }

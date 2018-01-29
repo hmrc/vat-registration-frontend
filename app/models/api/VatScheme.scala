@@ -17,6 +17,7 @@
 package models.api
 
 import common.enums.VatRegStatus
+import features.businessContact.models.BusinessContact
 import features.officer.models.view.LodgingOfficer
 import features.returns.Returns
 import features.sicAndCompliance.models.SicAndCompliance
@@ -34,7 +35,7 @@ case class VatScheme(
                       tradingDetails: Option[TradingDetails] = None,
                       financials: Option[VatFinancials] = None,
                       sicAndCompliance: Option[SicAndCompliance] = None,
-                      vatContact: Option[VatContact] = None,
+                      businessContact: Option[BusinessContact] = None,
                       threshold: Option[Threshold] = None,
                       returns: Option[Returns] = None,
                       turnOverEstimates: Option[TurnoverEstimates] = None,
@@ -45,12 +46,12 @@ case class VatScheme(
 
 object VatScheme {
   implicit val format: OFormat[VatScheme] = (
-    (__ \ "registrationId").format[String] and
+      (__ \ "registrationId").format[String] and
       (__ \ "lodgingOfficer").formatNullable[LodgingOfficer].inmap[Option[LodgingOfficer]](_ => Option.empty[LodgingOfficer], _ => Option.empty[LodgingOfficer]) and
       (__ \ "tradingDetails").formatNullable[TradingDetails](TradingDetails.apiFormat) and
       (__ \ "financials").formatNullable[VatFinancials] and
       (__ \ "sicAndCompliance").formatNullable[SicAndCompliance].inmap[Option[SicAndCompliance]](_ => Option.empty[SicAndCompliance], _ => Option.empty[SicAndCompliance]) and
-      (__ \ "vatContact").formatNullable[VatContact] and
+      (__ \ "businessContact").formatNullable[BusinessContact](BusinessContact.apiFormat) and
       (__ \ "threshold").formatNullable[Threshold] and
       (__ \ "returns").formatNullable[Returns] and
       (__ \ "turnoverEstimates").formatNullable[TurnoverEstimates] and

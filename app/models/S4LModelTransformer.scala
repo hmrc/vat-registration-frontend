@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package forms.ppob
+package models
 
-import forms.FormValidation.textMapping
-import models.view.vatContact.ppob.PpobView
-import play.api.data.Form
-import play.api.data.Forms.mapping
 
-object PpobForm {
+import models.api._
 
-  val PPOB_ID: String = "ppobRadio"
+trait S4LModelTransformer[C] {
+  // Returns an S4L container for a logical group given a VatScheme
+  def toS4LModel(vatScheme: VatScheme): C
+}
 
-  val form = Form(
-    mapping(
-      PPOB_ID -> textMapping()("ppob")
-    )(PpobView(_))( view => Option(view.addressId))
-  )
+trait S4LApiTransformer[C, API] {
+  // Returns logical group API model given an S4L container
+  def toApi(container: C): API
 }

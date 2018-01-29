@@ -88,18 +88,15 @@ object ScrsAddress {
   }
 
   def normalisedSeq(address: ScrsAddress): Seq[String] = {
-    import cats.instances.option._
-    import cats.syntax.applicative._
-
     Seq[Option[AddressLineOrPostcode]](
-      address.line1.pure.map(AddressLine),
-      address.line2.pure.map(AddressLine),
+      Option(AddressLine(address.line1)),
+      Option(AddressLine(address.line2)),
       address.line3.map(AddressLine),
       address.line4.map(AddressLine),
       address.postcode.map(Postcode),
       address.country.map(AddressLine)
     ).collect {
-      case Some(AddressLine(line)) => WordUtils.capitalizeFully(line)
+      case Some(AddressLine(line))  => WordUtils.capitalizeFully(line)
       case Some(Postcode(postcode)) => postcode.toUpperCase()
     }
   }

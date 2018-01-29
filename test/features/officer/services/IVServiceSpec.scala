@@ -43,7 +43,7 @@ class IVServiceSpec extends VatRegSpec with Inspectors with LodgingOfficerFixtur
         override val ivConnector = mockIdentityVerificationConnector
         override val vatRegFeatureSwitch = mockVATFeatureSwitch
         override val vatRegistrationConnector = mockRegConnector
-        override val keystoreConnector = mockKeystoreConnect
+        override val keystoreConnector = mockKeystoreConnector
       }
   }
 
@@ -116,7 +116,7 @@ class IVServiceSpec extends VatRegSpec with Inspectors with LodgingOfficerFixtur
       when(mockRegConnector.updateIVStatus(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(200)))
 
-      when(mockKeystoreConnect.cache(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any()))
+      when(mockKeystoreConnector.cache(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
       service.fetchAndSaveIVStatus returns IVResult.Success
@@ -132,7 +132,7 @@ class IVServiceSpec extends VatRegSpec with Inspectors with LodgingOfficerFixtur
       when(mockRegConnector.updateIVStatus(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(200)))
 
-      when(mockKeystoreConnect.cache(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any()))
+      when(mockKeystoreConnector.cache(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
       service.fetchAndSaveIVStatus returns IVResult.FailedIV

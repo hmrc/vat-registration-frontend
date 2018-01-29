@@ -18,8 +18,6 @@ package connectors
 
 import javax.inject.Inject
 
-import cats.data.OptionT
-import cats.instances.FutureInstances
 import common.enums.VatRegStatus
 import config.WSHttp
 import features.officer.models.view.LodgingOfficer
@@ -46,7 +44,7 @@ class VatRegistrationConnector @Inject()(val http: WSHttp, config: ServicesConfi
   lazy val vatRegElUrl = config.baseUrl("vat-registration-eligibility-frontend")
 }
 
-trait RegistrationConnector extends FinancialsConnector with FutureInstances {
+trait RegistrationConnector extends FinancialsConnector {
 
   val vatRegUrl: String
   val vatRegElUrl: String
@@ -64,15 +62,9 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
     }
   }
 
-  def getAckRef(regId: String)(implicit hc: HeaderCarrier): OptionalResponse[String] = OptionT(
-    http.GET[Option[String]](s"$vatRegUrl/vatreg/$regId/acknowledgement-reference").recover{
+  def getAckRef(regId: String)(implicit hc: HeaderCarrier): Future[String] = {
+    http.GET[String](s"$vatRegUrl/vatreg/$regId/acknowledgement-reference").recover{
       case e: Exception => throw logResponse(e, "getAckRef")
-    }
-  )
-
-  def upsertVatContact(regId: String, vatContact: VatContact)(implicit hc: HeaderCarrier, rds: HttpReads[VatContact]): Future[VatContact] = {
-    http.PATCH[VatContact, VatContact](s"$vatRegUrl/vatreg/$regId/vat-contact", vatContact).recover{
-      case e: Exception => throw logResponse(e, "upsertVatContact")
     }
   }
 
@@ -84,10 +76,10 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
     }
   }
 
-  //TODO: write test for function
   def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Option[Threshold]] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/threshold")
-      .map(result => if(result.status == NO_CONTENT) None else result.json.validateOpt[Threshold].get).recover {
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/threshold").map {
+      result => if(result.status == NO_CONTENT) None else result.json.validateOpt[Threshold].get
+    }.recover {
       case e => throw logResponse(e, "getThreshold")
     }
   }
@@ -111,11 +103,11 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
     http.DELETE[HttpResponse](s"$vatRegUrl/vatreg/$regId/delete-scheme").map(_.status == OK)
   }
 
-  def getIncorporationInfo(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[IncorporationInfo] = OptionT(
+  def getIncorporationInfo(transactionId: String)(implicit hc: HeaderCarrier): Future[Option[IncorporationInfo]] = {
     http.GET[IncorporationInfo](s"$vatRegUrl/vatreg/incorporation-information/$transactionId").map(Some(_)).recover {
       case _ => Option.empty[IncorporationInfo]
     }
-  )
+  }
 
   def deleteVREFESession(regId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     http.DELETE[HttpResponse](s"$vatRegElUrl/internal/$regId/delete-session")
@@ -137,17 +129,13 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
 
   def getTurnoverEstimates(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[TurnoverEstimates]] = {
     http.GET[HttpResponse](s"$vatRegUrl/vatreg/${profile.registrationId}/turnover-estimates") map { res =>
-      res.status match {
-        case OK         => Some(res.json.as[TurnoverEstimates])
-        case NO_CONTENT => None
-      }
+      if(res.status.equals(OK)) Some(res.json.as[TurnoverEstimates]) else None
     } recover {
       case e: Exception => throw logResponse(e, "getTurnoverEstimates")
     }
   }
 
-  def patchTurnoverEstimates(turnoverEstimates: TurnoverEstimates)
-                            (implicit hc: HeaderCarrier, profile: CurrentProfile): Future[HttpResponse] = {
+  def patchTurnoverEstimates(turnoverEstimates: TurnoverEstimates)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[HttpResponse] = {
     http.PATCH[TurnoverEstimates, HttpResponse](s"$vatRegUrl/vatreg/${profile.registrationId}/turnover-estimates", turnoverEstimates) recover {
       case e: Exception => throw logResponse(e, "patchTurnoverEstimates")
     }
@@ -161,47 +149,33 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
     }
   }
 
-  def getTradingDetails(regId: String)
-                       (implicit hc: HeaderCarrier): Future[Option[TradingDetails]] = {
+  def getTradingDetails(regId: String)(implicit hc: HeaderCarrier): Future[Option[TradingDetails]] = {
     implicit val frmt = TradingDetails.apiFormat
-
     http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/trading-details") map { res =>
-      res.status match {
-        case OK         => Some(res.json.as[TradingDetails])
-        case NO_CONTENT => None
-      }
+      if(res.status.equals(OK)) Some(res.json.as[TradingDetails]) else None
     } recover {
       case e: Exception => throw logResponse(e, "getTradingDetails")
     }
   }
 
-  def upsertTradingDetails(regId: String, tradingDetails: TradingDetails)
-                          (implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  def upsertTradingDetails(regId: String, tradingDetails: TradingDetails)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     implicit val frmt = TradingDetails.apiFormat
-
     http.PATCH[TradingDetails, HttpResponse](s"$vatRegUrl/vatreg/$regId/trading-details", tradingDetails) recover {
       case e: Exception => throw logResponse(e, "upsertTradingDetails")
     }
   }
 
-  def getFlatRate(regId: String)
-                       (implicit hc: HeaderCarrier): Future[Option[FlatRateScheme]] = {
+  def getFlatRate(regId: String)(implicit hc: HeaderCarrier): Future[Option[FlatRateScheme]] = {
     implicit val frmt = FlatRateScheme.apiFormat
-
     http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme") map { res =>
-      res.status match {
-        case OK         => Some(res.json.as[FlatRateScheme])
-        case NO_CONTENT => None
-      }
+      if(res.status.equals(OK)) Some(res.json.as[FlatRateScheme]) else None
     } recover {
       case e: Exception => throw logResponse(e, "getFlatRate")
     }
   }
 
-  def upsertFlatRate(regId: String, flatRate: FlatRateScheme)
-                          (implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  def upsertFlatRate(regId: String, flatRate: FlatRateScheme)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     implicit val frmt = FlatRateScheme.apiFormat
-
     http.PATCH[FlatRateScheme, HttpResponse](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", flatRate) recover {
       case e: Exception => throw logResponse(e, "upsertFlatRate")
     }
@@ -213,21 +187,31 @@ trait RegistrationConnector extends FinancialsConnector with FutureInstances {
     }
   }
 
-  def getSicAndCompliance(implicit hc:HeaderCarrier,profile:CurrentProfile) : Future[Option[JsValue]] = {
+  def getSicAndCompliance(implicit hc:HeaderCarrier,profile:CurrentProfile): Future[Option[JsValue]] = {
     http.GET[HttpResponse](s"$vatRegUrl/vatreg/${profile.registrationId}/sicAndComp").map{ res =>
-      res.status match {
-        case OK => Some(res.json)
-        case NO_CONTENT => None
-      }
+      if(res.status.equals(OK)) Some(res.json) else None
     }.recover{
           case e: Exception => throw logResponse(e, "getSicAndCompliance")
     }
   }
 
-  def updateSicAndCompliance(sac: SicAndCompliance)(implicit hc:HeaderCarrier,profile:CurrentProfile) :Future[JsValue] = {
+  def updateSicAndCompliance(sac: SicAndCompliance)(implicit hc:HeaderCarrier,profile:CurrentProfile): Future[JsValue] = {
     http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/sicAndComp", Json.toJson(sac)(SicAndCompliance.toApiWrites)).recover{
       case e: Exception => throw logResponse(e,"updateSicAndCompliance")
+    }
+  }
 
+  def getBusinessContact(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[JsValue]] = {
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${cp.registrationId}/business-contact") map { resp =>
+      if(resp.status.equals(OK)) Some(resp.json) else None
+    } recover {
+      case e: Exception => throw logResponse(e, "getBusinessContact")
+    }
+  }
+
+  def upsertBusinessContact(businessContactJson: JsValue)(implicit cp: CurrentProfile, hc: HeaderCarrier, rds: HttpReads[JsValue]): Future[JsValue] = {
+    http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${cp.registrationId}/business-contact", businessContactJson) recover {
+      case e: Exception => throw logResponse(e, "upsertBusinessContact")
     }
   }
 }

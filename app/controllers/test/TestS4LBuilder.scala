@@ -17,27 +17,23 @@
 package controllers.test
 
 import java.time.LocalDate
-import javax.inject.Singleton
 
+import features.businessContact.models.{BusinessContact, CompanyContactDetails}
 import features.officer.models.view._
+import features.sicAndCompliance.models._
 import features.tradingDetails.TradingDetails
 import models._
 import models.api._
 import models.external.{Name, Officer}
-import features.sicAndCompliance.models._
 import models.view.test.TestSetup
-import models.view.vatContact.BusinessContactDetails
-import models.view.vatContact.ppob.PpobView
 import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
 
-
-@Singleton
-class TestS4LBuilder {
+object TestS4LBuilder {
 
   def tradingDetailsFromData(data: TestSetup): TradingDetails = {
     data.tradingDetailsBlock match {
       case Some(tdb) => TradingDetails(tdb.tradingNameView, tdb.euGoods, tdb.applyEori)
-      case None => TradingDetails()
+      case None      => TradingDetails()
     }
   }
 
@@ -76,13 +72,7 @@ class TestS4LBuilder {
     )
   }
 
-  def vatContactFromData(data: TestSetup): S4LVatContact = {
-    val businessContactDetails = data.vatContact.email.map(_ =>
-      BusinessContactDetails(data.vatContact.email.get,
-        data.vatContact.daytimePhone,
-        data.vatContact.mobile,
-        data.vatContact.website))
-
+  def vatContactFromData(data: TestSetup): BusinessContact = {
     val address: Option[ScrsAddress] = data.vatContact.line1.map(_ =>
       ScrsAddress(
         line1 = data.vatContact.line1.getOrElse(""),
@@ -90,36 +80,41 @@ class TestS4LBuilder {
         line3 = data.vatContact.line3,
         line4 = data.vatContact.line4,
         postcode = data.vatContact.postcode,
-        country = data.vatContact.country))
+        country = data.vatContact.country
+      )
+    )
 
-    val ppob: Option[PpobView] = address.map(a =>
-    PpobView(addressId = a.id, address = Some(a)))
-
-    S4LVatContact(
-      businessContactDetails = businessContactDetails,
-      ppob = ppob)
+    data.vatContact.email.map(_ => BusinessContact(
+      companyContactDetails = Some(CompanyContactDetails(
+        data.vatContact.email.get,
+        data.vatContact.daytimePhone,
+        data.vatContact.mobile,
+        data.vatContact.website
+      )),
+      ppobAddress = address
+    )).getOrElse(BusinessContact())
   }
 
   def buildLodgingOfficerFromTestData(data: TestSetup): LodgingOfficer = {
-    val homeAddress: Option[ScrsAddress] = data.officerHomeAddress.line1.map(_ =>
-      ScrsAddress(
-        line1 = data.officerHomeAddress.line1.getOrElse(""),
-        line2 = data.officerHomeAddress.line2.getOrElse(""),
-        line3 = data.officerHomeAddress.line3,
-        line4 = data.officerHomeAddress.line4,
-        postcode = data.officerHomeAddress.postcode,
-        country = data.officerHomeAddress.country))
+    val homeAddress: Option[ScrsAddress] = data.officerHomeAddress.line1.map(_ => ScrsAddress(
+      line1    = data.officerHomeAddress.line1.getOrElse(""),
+      line2    = data.officerHomeAddress.line2.getOrElse(""),
+      line3    = data.officerHomeAddress.line3,
+      line4    = data.officerHomeAddress.line4,
+      postcode = data.officerHomeAddress.postcode,
+      country  = data.officerHomeAddress.country)
+    )
 
     val threeYears: Option[String] = data.officerPreviousAddress.threeYears
 
-    val previousAddress: Option[ScrsAddress] = data.officerPreviousAddress.line1.map(_ =>
-      ScrsAddress(
-        line1 = data.officerPreviousAddress.line1.getOrElse(""),
-        line2 = data.officerPreviousAddress.line2.getOrElse(""),
-        line3 = data.officerPreviousAddress.line3,
-        line4 = data.officerPreviousAddress.line4,
-        postcode = data.officerPreviousAddress.postcode,
-        country = data.officerPreviousAddress.country))
+    val previousAddress: Option[ScrsAddress] = data.officerPreviousAddress.line1.map(_ => ScrsAddress(
+      line1    = data.officerPreviousAddress.line1.getOrElse(""),
+      line2    = data.officerPreviousAddress.line2.getOrElse(""),
+      line3    = data.officerPreviousAddress.line3,
+      line4    = data.officerPreviousAddress.line4,
+      postcode = data.officerPreviousAddress.postcode,
+      country  = data.officerPreviousAddress.country)
+    )
 
     val dob: Option[LocalDate] = data.lodgingOfficer.dobDay.map(_ =>
       LocalDate.of(
@@ -138,14 +133,14 @@ class TestS4LBuilder {
       CompletionCapacityView(officer)
     })
 
-    val contactDetails: Option[ContactDetailsView] = data.lodgingOfficer.email.map(_ =>
-      ContactDetailsView(
-        email = data.lodgingOfficer.email,
-        mobile = data.lodgingOfficer.mobile,
-        daytimePhone = data.lodgingOfficer.phone))
+    val contactDetails: Option[ContactDetailsView] = data.lodgingOfficer.email.map(_ => ContactDetailsView(
+      email         = data.lodgingOfficer.email,
+      mobile        = data.lodgingOfficer.mobile,
+      daytimePhone  = data.lodgingOfficer.phone)
+    )
 
     val formerName: Option[FormerNameView] = data.lodgingOfficer.formernameChoice.collect {
-      case "true" => FormerNameView(true, data.lodgingOfficer.formername)
+      case "true"  => FormerNameView(true, data.lodgingOfficer.formername)
       case "false" => FormerNameView(false, None)
     }
 
@@ -157,14 +152,13 @@ class TestS4LBuilder {
     })
 
     LodgingOfficer(
-      previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
-      homeAddress = homeAddress.map(a => HomeAddressView(a.id, Some(a))),
-      securityQuestions = dob.map(SecurityQuestionsView(_, nino.getOrElse(""))),
-      completionCapacity = completionCapacity,
-      contactDetails = contactDetails,
-      formerName = formerName,
-      formerNameDate = formerNameDate
+      previousAddress     = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
+      homeAddress         = homeAddress.map(a => HomeAddressView(a.id, Some(a))),
+      securityQuestions   = dob.map(SecurityQuestionsView(_, nino.getOrElse(""))),
+      completionCapacity  = completionCapacity,
+      contactDetails      = contactDetails,
+      formerName          = formerName,
+      formerNameDate      = formerNameDate
     )
   }
-
 }

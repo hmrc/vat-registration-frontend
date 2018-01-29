@@ -37,7 +37,7 @@ class TestVatRegistrationConnector @Inject()(val http: WSHttp, config: ServicesC
 }
 
 trait TestRegistrationConnector {
-  val http: CoreGet with CorePost with CorePut
+  val http: WSHttp
 
   val vatRegUrl: String
   val incorporationFrontendStubsUrl: String
@@ -45,10 +45,6 @@ trait TestRegistrationConnector {
 
   def setupCurrentProfile(implicit hc: HeaderCarrier): Future[Result] = {
     http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/current-profile-setup").map(_ => Results.Ok)
-  }
-
-  def dropCollection(implicit hc: HeaderCarrier): Future[Result] = {
-    http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/clear").map(_ => Results.Ok)
   }
 
   def incorpCompany(implicit currentProfile: CurrentProfile, hc: HeaderCarrier): Future[HttpResponse] = {

@@ -49,9 +49,10 @@ trait RegistrationService extends FinancialsService with LegacyServiceToBeRefact
 }
 
 // TODO refactor in a similar way to FRS
-trait LegacyServiceToBeRefactored extends CommonService {
-
+trait LegacyServiceToBeRefactored {
   self : RegistrationService =>
+
+  val keystoreConnector: KeystoreConnect
 
   private[services] def s4l[T: Format : S4LKey](implicit hc: HeaderCarrier, profile: CurrentProfile) =
     s4LService.fetchAndGet[T]
@@ -59,8 +60,7 @@ trait LegacyServiceToBeRefactored extends CommonService {
   def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
     vatRegConnector.getRegistration(profile.registrationId)
 
-  def getAckRef(regId: String)(implicit hc: HeaderCarrier): OptionalResponse[String] =
-    vatRegConnector.getAckRef(regId)
+  def getAckRef(regId: String)(implicit hc: HeaderCarrier): Future[String] = vatRegConnector.getAckRef(regId)
 
   def deleteVatScheme(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Boolean] =
     vatRegConnector.deleteVatScheme(profile.registrationId)
@@ -69,23 +69,9 @@ trait LegacyServiceToBeRefactored extends CommonService {
     for {
       vatScheme <- vatRegConnector.createNewRegistration
       txId      <- compRegConnector.getTransactionId(vatScheme.id)
-      _         <- incorporationService.getIncorporationInfo(txId).map {
-        status => keystoreConnector.cache[IncorporationInfo](INCORPORATION_STATUS, status)
-      }.value
+      status    <- incorporationService.getIncorporationInfo(txId)
+      _         =  status map(x => keystoreConnector.cache[IncorporationInfo](INCORPORATION_STATUS, x))
     } yield (vatScheme.id, txId)
-
-  def submitVatContact(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatContact] = {
-    def merge(fresh: Option[S4LVatContact], vs: VatScheme): VatContact =
-      fresh.fold(
-        vs.vatContact.getOrElse(throw fail("VatContact"))
-      )(s4l => S4LVatContact.apiT.toApi(s4l))
-
-    for {
-      vs       <- getVatScheme
-      vlo      <- s4l[S4LVatContact]
-      response <- vatRegConnector.upsertVatContact(profile.registrationId, merge(vlo, vs))
-    } yield response
-  }
 
   def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = vatRegConnector.getStatus(regId)
 

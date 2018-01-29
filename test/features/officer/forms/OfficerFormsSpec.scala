@@ -293,11 +293,7 @@ class OfficerFormsSpec extends UnitSpec {
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq(
-        "" -> "validation.officerContact.missing",
-        "" -> "validation.officerContact.missing",
-        "" -> "validation.officerContact.missing"
-      )
+      boundForm shouldHaveGlobalErrors "validation.officerContact.atLeastOneContact.missing"
     }
 
     "have the correct error if invalid email is provided" in {

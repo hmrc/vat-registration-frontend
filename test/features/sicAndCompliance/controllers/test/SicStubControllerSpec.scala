@@ -34,9 +34,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import scala.concurrent.Future
 
 class SicStubControllerSpec extends ControllerSpec with FutureAwaits with FutureAssertions with DefaultAwaitTimeout
-  with VatRegistrationFixture with MockMessages with SicAndComplianceServiceMock {
-
-  val mockS4LService = mock[S4LService]
+  with VatRegistrationFixture with MockMessages {
 
   trait Setup {
     val controller: SicStubController = new SicStubController {

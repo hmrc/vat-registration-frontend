@@ -17,23 +17,30 @@
 package controllers.callbacks
 
 import java.io.File
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import connectors.KeystoreConnect
+import controllers.VatRegistrationControllerNoAux
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
+import services.SessionProfile
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import views.html.pages.error.TimeoutView
 
 import scala.concurrent.Future
 
-@Singleton
-class SignInOutController @Inject()(ds: CommonPlayDependencies,
-                                    config: ServicesConfig,
-                                    val authConnector: AuthConnector) extends VatRegistrationController(ds) {
-
+class SignInOutControllerImpl @Inject()(config: ServicesConfig,
+                                        val authConnector: AuthConnector,
+                                        val keystoreConnector: KeystoreConnect,
+                                        implicit val messagesApi: MessagesApi) extends SignInOutController {
   lazy val compRegFEURL = config.getConfString("company-registration-frontend.www.url", "")
   lazy val compRegFEURI = config.getConfString("company-registration-frontend.www.uri", "")
+}
+
+trait SignInOutController extends VatRegistrationControllerNoAux with SessionProfile {
+  val compRegFEURI: String
+  val compRegFEURL: String
 
   def postSignIn: Action[AnyContent] = authorised(implicit user => implicit request =>
     Redirect(s"$compRegFEURL$compRegFEURI/post-sign-in")
@@ -58,6 +65,7 @@ class SignInOutController @Inject()(ds: CommonPlayDependencies,
     implicit request =>
       Future.successful(Ok(TimeoutView()))
   }
+  
   def errorShow = Action.async{
     implicit request =>
       Future.successful(InternalServerError(views.html.pages.error.restart()))

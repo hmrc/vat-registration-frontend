@@ -20,11 +20,9 @@ import helpers.VatRegSpec
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.http.Status
-import play.api.mvc.RequestHeader
+import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
-import play.twirl.api.Html
-import uk.gov.hmrc.http.{CoreGet, HttpResponse}
-import uk.gov.hmrc.play.partials.{CachedStaticHtmlPartialRetriever, FormPartialRetriever}
+import uk.gov.hmrc.http.HttpResponse
 
 import scala.concurrent.Future
 
@@ -32,7 +30,13 @@ class FeedbackControllerSpec extends VatRegSpec {
 
   class Setup {
 
-    val controller = new FeedbackController(ds, mockAuthConnector, mockWSHttp)
+    val controller = new FeedbackController {
+      override val contactFrontendPartialBaseUrl      = "/test/uri"
+      override val contactFormServiceIdentifier       = "testId"
+      override implicit val messagesApi: MessagesApi  = mockMessagesApi
+      override protected def authConnector            = mockAuthConnector
+      override val keystoreConnector                  = mockKeystoreConnector
+    }
   }
 
   "GET /feedback" should {

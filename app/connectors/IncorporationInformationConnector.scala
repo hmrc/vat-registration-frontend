@@ -18,7 +18,6 @@ package connectors
 
 import javax.inject.Inject
 
-import cats.data.OptionT
 import config.WSHttp
 import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
 import play.api.libs.json.JsValue
@@ -38,22 +37,22 @@ trait IncorporationInformationConnect {
   val incorpInfoUri: String
   val http: WSHttp
 
-  def getRegisteredOfficeAddress(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[CoHoRegisteredOfficeAddress] = OptionT(
+  def getRegisteredOfficeAddress(transactionId: String)(implicit hc: HeaderCarrier): Future[Option[CoHoRegisteredOfficeAddress]] = {
     http.GET[CoHoRegisteredOfficeAddress](s"$incorpInfoUrl$incorpInfoUri/$transactionId/company-profile").map(Some(_)).recover {
       case e: Exception =>
         logResponse(e, "getRegisteredOfficeAddress")
-        Option.empty[CoHoRegisteredOfficeAddress]
+        None
     }
-  )
+  }
 
-  def getOfficerList(transactionId: String)(implicit hc: HeaderCarrier): OptionalResponse[OfficerList] = OptionT(
+  def getOfficerList(transactionId: String)(implicit hc: HeaderCarrier): Future[Option[OfficerList]] = {
     http.GET[OfficerList](s"$incorpInfoUrl$incorpInfoUri/$transactionId/officer-list").map( res =>
       Some(filterRelevantOfficers(res))
     ).recover{
       case _: NotFoundException => Some(OfficerList(items = Nil))
       case ex                   => throw logResponse(ex, "getOfficerList")
     }
-  )
+  }
 
   private def filterRelevantOfficers(ol: OfficerList): OfficerList = {
     OfficerList(ol.items filter(o => (o.role.toLowerCase.equals("director") || o.role.toLowerCase.equals("secretary")) && o.resignedOn.isEmpty))

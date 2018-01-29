@@ -21,7 +21,6 @@ import javax.inject.{Inject, Named}
 
 import common.DateConversions._
 import connectors.BankHolidaysConnector
-import play.api.Logger
 import play.api.cache.CacheApi
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays._
@@ -46,11 +45,11 @@ trait DateService {
 
   def addWorkingDays(date: LocalDate, days: Int): LocalDate = {
     implicit val hols: BankHolidaySet = cache.getOrElse[BankHolidaySet](BANK_HOLIDAYS_CACHE_KEY, 1 day) {
-      Logger.info(s"Reloading cache entry for $BANK_HOLIDAYS_CACHE_KEY")
+      logger.info(s"Reloading cache entry for $BANK_HOLIDAYS_CACHE_KEY")
       Try {
         Await.result(bankHolidaysConnector.bankHolidays()(HeaderCarrier()), 5 seconds)
       }.getOrElse {
-        Logger.error("Failed to load bank holidays schedule from BankHolidaysConnector, using default bank holiday set")
+        logger.error("Failed to load bank holidays schedule from BankHolidaysConnector, using default bank holiday set")
         defaultHolidaySet
       }
     }

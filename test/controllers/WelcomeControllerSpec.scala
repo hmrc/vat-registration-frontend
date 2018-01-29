@@ -21,6 +21,7 @@ import helpers.VatRegSpec
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import play.api.i18n.MessagesApi
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -29,12 +30,13 @@ import scala.concurrent.Future
 
 class WelcomeControllerSpec extends VatRegSpec {
 
-  object TestController extends WelcomeController(
-    mockVatRegistrationService,
-    mockCurrentProfile,
-    mockAuthConnector,
-    ds
-  )
+  val testController = new WelcomeController {
+    override val currentProfileService             = mockCurrentProfile
+    override val authConnector                     = mockAuthConnector
+    override implicit val messagesApi: MessagesApi = app.injector.instanceOf(classOf[MessagesApi])
+    override val keystoreConnector                 = mockKeystoreConnector
+    override val vatRegistrationService            = mockVatRegistrationService
+  }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.show())
 
@@ -48,7 +50,7 @@ class WelcomeControllerSpec extends VatRegSpec {
       when(mockCurrentProfile.buildCurrentProfile(any(),any())(any()))
         .thenReturn(Future.successful(testCurrentProfile))
 
-      callAuthorised(TestController.start) {
+      callAuthorised(testController.start) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -61,7 +63,7 @@ class WelcomeControllerSpec extends VatRegSpec {
   "GET /" should {
 
     "redirect the user to start page" in {
-      TestController.show(fakeRequest) redirectsTo routes.WelcomeController.start().url
+      testController.show(fakeRequest) redirectsTo routes.WelcomeController.start().url
     }
   }
 

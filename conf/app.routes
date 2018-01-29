@@ -114,14 +114,15 @@ POST        /provides-workers-on-temporary-contracts                            
 GET         /provides-skilled-workers                                                          features.sicAndCompliance.controllers.LabourComplianceController.showSkilledWorkers
 POST        /provides-skilled-workers                                                          features.sicAndCompliance.controllers.LabourComplianceController.submitSkilledWorkers
 
-## BUSINESS CONTACT DETAILS PAGE
-GET         /company-contact-details                                                           controllers.vatContact.BusinessContactDetailsController.show
-POST        /company-contact-details                                                           controllers.vatContact.BusinessContactDetailsController.submit
-
 ## PPOB ADDRESS
-GET         /where-will-company-carry-out-most-of-its-business-activities                      controllers.vatContact.ppob.PpobController.show
-POST        /where-will-company-carry-out-most-of-its-business-activities                      controllers.vatContact.ppob.PpobController.submit
-GET         /where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm        controllers.vatContact.ppob.PpobController.acceptFromTxm(id: String ?= "")
+GET         /where-will-company-carry-out-most-of-its-business-activities                      features.businessContact.controllers.BusinessContactDetailsController.showPPOB
+POST        /where-will-company-carry-out-most-of-its-business-activities                      features.businessContact.controllers.BusinessContactDetailsController.submitPPOB
+GET         /where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm        features.businessContact.controllers.BusinessContactDetailsController.returnFromTxm(id: String ?= "")
+
+## BUSINESS CONTACT DETAILS PAGE
+GET         /company-contact-details                                                           features.businessContact.controllers.BusinessContactDetailsController.showCompanyContactDetails
+POST        /company-contact-details                                                           features.businessContact.controllers.BusinessContactDetailsController.submitCompanyContactDetails
+
 
 ## OFFICER ADDRESS PAGE
 GET         /your-home-address                                                                 features.officer.controllers.OfficerController.showHomeAddress

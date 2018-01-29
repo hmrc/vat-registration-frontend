@@ -26,7 +26,7 @@ class FeatureSwitchControllerSpec extends VatRegSpec {
 
 
   class Setup {
-    val controller = new FeatureSwitchCtrl {
+    val controller = new FeatureSwitchController {
       val vatRegFeatureSwitch = mockVATFeatureSwitch
       override val featureManager = mockFeatureManager
     }
