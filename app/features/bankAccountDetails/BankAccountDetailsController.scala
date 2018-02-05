@@ -18,9 +18,9 @@ package features.bankAccountDetails
 
 import javax.inject.Inject
 
-import config.FrontendAuthConnector
+import config.AuthClientConnector
 import connectors.KeystoreConnect
-import controllers.VatRegistrationControllerNoAux
+import controllers.BaseController
 import forms.{EnterBankAccountDetailsForm, HasCompanyBankAccountForm}
 import models.{BankAccount, BankAccountDetails}
 import play.api.data.Form
@@ -31,36 +31,33 @@ import services.{BankAccountDetailsService, SessionProfile}
 import scala.concurrent.Future
 
 class BankAccountDetailsControllerImpl @Inject()(val messagesApi: MessagesApi,
-                                                 val authConnector: FrontendAuthConnector,
+                                                 val authConnector: AuthClientConnector,
                                                  val bankAccountDetailsService: BankAccountDetailsService,
-                                                 val keystoreConnector: KeystoreConnect
-                                                ) extends BankAccountDetailsController {
+                                                 val keystoreConnector: KeystoreConnect) extends BankAccountDetailsController {
 }
 
-trait BankAccountDetailsController extends VatRegistrationControllerNoAux with SessionProfile {
+trait BankAccountDetailsController extends BaseController with SessionProfile {
 
   val bankAccountDetailsService: BankAccountDetailsService
 
   private val hasCompanyBankAccountForm: Form[Boolean] = HasCompanyBankAccountForm.form
   private val enterBankAccountDetailsForm: Form[BankAccountDetails] = EnterBankAccountDetailsForm.form
 
-  val showHasCompanyBankAccountView: Action[AnyContent] = authorisedWithCurrentProfile {
-    implicit user =>
-      implicit request =>
-        implicit profile =>
-          ivPassedCheck {
-            bankAccountDetailsService.fetchBankAccountDetails map { details =>
-              val form: Form[Boolean] = details match {
-                case Some(BankAccount(hasBankAccount, _)) => hasCompanyBankAccountForm.fill(hasBankAccount)
-                case None                                 => hasCompanyBankAccountForm
-              }
-              Ok(views.html.has_company_bank_account(form))
-            }
+  val showHasCompanyBankAccountView: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        bankAccountDetailsService.fetchBankAccountDetails map { details =>
+          val form: Form[Boolean] = details match {
+            case Some(BankAccount(hasBankAccount, _)) => hasCompanyBankAccountForm.fill(hasBankAccount)
+            case None                                 => hasCompanyBankAccountForm
           }
+          Ok(views.html.has_company_bank_account(form))
+        }
+      }
   }
 
-  val submitHasCompanyBankAccount: Action[AnyContent] = authorisedWithCurrentProfile {
-    implicit user => implicit request => implicit profile =>
+  val submitHasCompanyBankAccount: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
       ivPassedCheck {
         hasCompanyBankAccountForm.bindFromRequest.fold(
           errors => Future.successful(BadRequest(views.html.has_company_bank_account(errors))),
@@ -75,8 +72,8 @@ trait BankAccountDetailsController extends VatRegistrationControllerNoAux with S
       }
   }
 
-  val showEnterCompanyBankAccountDetails: Action[AnyContent] = authorisedWithCurrentProfile {
-    implicit user => implicit request => implicit profile =>
+  val showEnterCompanyBankAccountDetails: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
       ivPassedCheck{
         bankAccountDetailsService.fetchBankAccountDetails map { account =>
           val form: Form[BankAccountDetails] = account match {
@@ -88,8 +85,8 @@ trait BankAccountDetailsController extends VatRegistrationControllerNoAux with S
       }
   }
 
-  val submitEnterCompanyBankAccountDetails: Action[AnyContent] = authorisedWithCurrentProfile {
-    implicit user => implicit request => implicit profile =>
+  val submitEnterCompanyBankAccountDetails: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
       ivPassedCheck{
         enterBankAccountDetailsForm.bindFromRequest.fold(
           errors => Future.successful(BadRequest(views.html.enter_company_bank_account_details(errors))),

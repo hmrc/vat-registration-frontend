@@ -18,27 +18,24 @@ package controllers.test
 
 import javax.inject.Inject
 
+import config.AuthClientConnector
 import connectors.KeystoreConnect
-import controllers.VatRegistrationControllerNoAux
+import controllers.BaseController
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, SessionProfile}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 class TestCacheControllerImpl @Inject()(val s4LService: S4LService,
-                                        val authConnector: AuthConnector,
+                                        val authConnector: AuthClientConnector,
                                         val keystoreConnector: KeystoreConnect,
-                                        implicit val messagesApi: MessagesApi) extends TestCacheController
+                                        val messagesApi: MessagesApi) extends TestCacheController
 
 
-trait TestCacheController extends VatRegistrationControllerNoAux with SessionProfile {
+trait TestCacheController extends BaseController with SessionProfile {
   val s4LService: S4LService
 
-  def tearDownS4L: Action[AnyContent] = authorised.async {
-    implicit user =>
-      implicit request =>
-        withCurrentProfile { implicit profile =>
-          s4LService.clear.map(_ => Ok("Save4Later cleared"))
-        }
+  def tearDownS4L: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      s4LService.clear.map(_ => Ok("Save4Later cleared"))
   }
 }

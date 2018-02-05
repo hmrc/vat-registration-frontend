@@ -59,35 +59,9 @@ trait AuthHelper extends SessionCookieBaker {
           .withHeader(HeaderNames.LOCATION, continueUrl)))
     }
 
-    stubFor(get(urlEqualTo("/auth/authority"))
-      .willReturn(
-        aResponse()
-          .withStatus(200)
-          .withBody(
-            s"""
-               |{
-               |    "uri": "${userId}",
-               |    "loggedInAt": "2014-06-09T14:57:09.522Z",
-               |    "previouslyLoggedInAt": "2014-06-09T14:48:24.841Z",
-               |    "accounts": {
-               |    },
-               |    "levelOfAssurance": "2",
-               |    "confidenceLevel" : 50,
-               |    "credentialStrength": "strong",
-               |    "ids": "/auth/oid/1234567890/ids",
-               |    "userDetailsLink":"/user-details/id/$userId",
-               |    "legacyOid":"1234567890"
-               |}
-            """.stripMargin
-          )))
-
-    stubFor(get(urlMatching(s"/auth/oid/1234567890/ids"))
-      .willReturn(
-        aResponse().
-          withStatus(200).
-          withBody("""{"internalId":"Int-xxx","externalId":"Ext-xxx"}""")
-      )
-    )
+    stubFor(
+      post(urlPathEqualTo("/auth/authorise"))
+        .willReturn(ok("""{}""")))
   }
 
   def setupSimpleAuthMocks(userId: String = defaultUser) = {
@@ -99,22 +73,9 @@ trait AuthHelper extends SessionCookieBaker {
       )
     )
 
-    stubFor(get(urlMatching("/auth/authority"))
-      .willReturn(
-        aResponse().
-          withStatus(200).
-          withBody(s"""
-                      |{
-                      |"uri":"$userId",
-                      |"accounts":{},
-                      |"levelOfAssurance": "2",
-                      |"confidenceLevel" : 50,
-                      |"credentialStrength": "strong",
-                      |"userDetailsUri" : "/user-details/id$userId",
-                      |"legacyOid":"1234567890"
-                      |}""".stripMargin)
-      )
-    )
+    stubFor(
+      post(urlPathEqualTo("/auth/authorise"))
+        .willReturn(ok("""{}""")))
   }
 }
 

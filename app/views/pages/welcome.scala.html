@@ -35,7 +35,7 @@
     <p>@messages("pages.welcome.p3")</p>
 
     <div class="form-group">
-    @form(action = controllers.routes.TwirlViewController.renderViewAuthorised()) {
+    @form(action = controllers.routes.WelcomeController.redirectToEligibility()) {
         <div class="form-group">
             <button class="button-get-started" role="button" id="start">@messages("pages.welcome.button.start")
             </button>

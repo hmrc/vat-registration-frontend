@@ -19,6 +19,7 @@ package controllers
 import javax.inject.Inject
 
 import common.enums.VatRegStatus
+import config.AuthClientConnector
 import connectors.{KeystoreConnect, Success}
 import controllers.builders._
 import features.officer.services.LodgingOfficerService
@@ -30,36 +31,32 @@ import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
 class SummaryControllerImpl @Inject()(val keystoreConnector: KeystoreConnect,
-                                      val authConnector: AuthConnector,
+                                      val authConnector: AuthClientConnector,
                                       val vrs: RegistrationService,
                                       val lodgingOfficerService: LodgingOfficerService,
                                       val sicSrv: SicAndComplianceService,
                                       val s4LService: S4LService,
                                       val messagesApi: MessagesApi) extends SummaryController
 
-trait SummaryController extends VatRegistrationControllerNoAux with SessionProfile {
+trait SummaryController extends BaseController with SessionProfile {
   val vrs: RegistrationService
   val lodgingOfficerService: LodgingOfficerService
   val sicSrv: SicAndComplianceService
   val s4LService: S4LService
 
-  def show: Action[AnyContent] = authorised.async {
-    implicit user =>
-      implicit request =>
-        withCurrentProfile { implicit profile =>
-          ivPassedCheck {
-            for {
-              summary <- getRegistrationSummary()
-              _       <- s4LService.clear
-              dateOfIncorporation = profile.incorporationDate.fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y))
-            } yield Ok(views.html.pages.summary(summary, dateOfIncorporation))
-          }
-        }
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        for {
+          summary <- getRegistrationSummary()
+          _       <- s4LService.clear
+          dateOfIncorporation = profile.incorporationDate.fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y))
+        } yield Ok(views.html.pages.summary(summary, dateOfIncorporation))
+      }
   }
 
   def getRegistrationSummary()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = {
@@ -70,18 +67,15 @@ trait SummaryController extends VatRegistrationControllerNoAux with SessionProfi
     } yield summary
   }
 
-  def submitRegistration: Action[AnyContent] = authorised.async {
-    implicit user =>
-      implicit request =>
-        withCurrentProfile { implicit profile =>
-          ivPassedCheck {
-            invalidSubmissionGuard() {
-              vrs.submitRegistration() map {
-                case Success => Redirect(controllers.routes.ApplicationSubmissionController.show())
-              }
-            }
+  def submitRegistration: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        invalidSubmissionGuard() {
+          vrs.submitRegistration() map {
+            case Success => Redirect(controllers.routes.ApplicationSubmissionController.show())
           }
         }
+      }
   }
 
   def registrationToSummary(vs: VatScheme)(implicit profile : CurrentProfile): Summary = {

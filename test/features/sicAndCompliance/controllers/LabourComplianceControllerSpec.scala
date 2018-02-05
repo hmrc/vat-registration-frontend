@@ -17,19 +17,15 @@
 package features.sicAndCompliance.controllers
 
 import connectors.KeystoreConnect
+import features.sicAndCompliance.models.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts}
 import features.sicAndCompliance.services.SicAndComplianceService
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
-import mocks.SicAndComplianceServiceMock
-import features.sicAndCompliance.models.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts}
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import org.mockito.stubbing.OngoingStubbing
+import mocks.{AuthMock, SicAndComplianceServiceMock}
 import play.api.http.Status
 import play.api.i18n.MessagesApi
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
 
@@ -38,13 +34,14 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
 
   trait Setup {
     val controller: LabourComplianceController = new LabourComplianceController {
-      override val messagesApi: MessagesApi = mockMessagesAPI
-      override val authConnector: AuthConnector = mockAuthConnector
       override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
       override val sicAndCompService: SicAndComplianceService = mockSicAndComplianceService
+      val authConnector: AuthConnector = mockAuthClientConnector
+      val messagesApi: MessagesApi = mockMessagesAPI
     }
 
     mockAllMessages
+    mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
 

@@ -74,6 +74,8 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .keystoreInScenario.hasKeyStoreValue(SIC_CODES_KEY, jsonListSicCode, Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
+      .audit.writesAudit()
+      .audit.writesAuditMerged()
 
     val response = buildClient("/main-source-of-income").get()
     whenReady(response) { res =>
@@ -231,6 +233,8 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       .user.isAuthorised
       .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
+      .audit.writesAudit()
+      .audit.writesAuditMerged()
 
     val response = buildClient("/provides-workers-on-temporary-contracts").get()
     whenReady(response) { res =>

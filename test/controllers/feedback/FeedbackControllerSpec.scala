@@ -16,7 +16,8 @@
 
 package controllers.feedback
 
-import helpers.VatRegSpec
+import helpers.{ControllerSpec, FutureAssertions}
+import mocks.AuthMock
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.http.Status
@@ -26,16 +27,16 @@ import uk.gov.hmrc.http.HttpResponse
 
 import scala.concurrent.Future
 
-class FeedbackControllerSpec extends VatRegSpec {
+class FeedbackControllerSpec extends ControllerSpec with FutureAssertions {
 
   class Setup {
 
     val controller = new FeedbackController {
-      override val contactFrontendPartialBaseUrl      = "/test/uri"
-      override val contactFormServiceIdentifier       = "testId"
-      override implicit val messagesApi: MessagesApi  = mockMessagesApi
-      override protected def authConnector            = mockAuthConnector
-      override val keystoreConnector                  = mockKeystoreConnector
+      override val contactFrontendPartialBaseUrl = "/test/uri"
+      override val contactFormServiceIdentifier  = "testId"
+      override val keystoreConnector             = mockKeystoreConnector
+      val authConnector                          = mockAuthClientConnector
+      val messagesApi: MessagesApi               = mockMessagesAPI
     }
   }
 

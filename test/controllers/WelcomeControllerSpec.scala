@@ -17,25 +17,26 @@
 package controllers
 
 import common.enums.VatRegStatus
-import helpers.VatRegSpec
+import helpers.{ControllerSpec, FutureAssertions, MockMessages}
+import mocks.AuthMock
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.i18n.MessagesApi
-import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class WelcomeControllerSpec extends VatRegSpec {
+class WelcomeControllerSpec extends ControllerSpec with MockMessages with FutureAssertions {
 
   val testController = new WelcomeController {
-    override val currentProfileService             = mockCurrentProfile
-    override val authConnector                     = mockAuthConnector
-    override implicit val messagesApi: MessagesApi = app.injector.instanceOf(classOf[MessagesApi])
-    override val keystoreConnector                 = mockKeystoreConnector
-    override val vatRegistrationService            = mockVatRegistrationService
+    override val currentProfileService  = mockCurrentProfile
+    override val keystoreConnector      = mockKeystoreConnector
+    override val vatRegistrationService = mockVatRegistrationService
+    override val eligibilityFE: Call    = Call("GET", "/test-url")
+    val authConnector                   = mockAuthClientConnector
+    val messagesApi: MessagesApi        = mockMessagesAPI
   }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.show())
@@ -44,6 +45,9 @@ class WelcomeControllerSpec extends VatRegSpec {
 
   "GET /before-you-register-for-vat" should {
     "return HTML when user is authorized to access" in {
+      mockAllMessages
+      mockAuthenticated()
+
       when(mockVatRegistrationService.createRegistrationFootprint(any()))
         .thenReturn(Future.successful(("schemeId","txId")))
 
@@ -61,11 +65,19 @@ class WelcomeControllerSpec extends VatRegSpec {
   }
 
   "GET /" should {
-
     "redirect the user to start page" in {
       testController.show(fakeRequest) redirectsTo routes.WelcomeController.start().url
     }
   }
 
+  "GET /redirect-to-eligibility" should {
+    "redirect to eligibility front end" in {
+      mockAuthenticated()
+      mockWithCurrentProfile(Some(currentProfile))
 
+      callAuthorised(testController.redirectToEligibility) {
+        _ redirectsTo testController.eligibilityFE.url
+      }
+    }
+  }
 }

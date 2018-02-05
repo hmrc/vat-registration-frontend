@@ -19,28 +19,25 @@ package controllers.test
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
+import config.AuthClientConnector
 import connectors.KeystoreConnect
-import controllers.VatRegistrationControllerNoAux
+import controllers.BaseController
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import play.twirl.api.Html
 import services.{PrePopService, SessionProfile}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 class TestCTControllerImpl @Inject()(val prePopService: PrePopService,
-                                     val authConnector: AuthConnector,
+                                     val authConnector: AuthClientConnector,
                                      val keystoreConnector: KeystoreConnect,
-                                     implicit val messagesApi: MessagesApi) extends TestCTController
+                                     val messagesApi: MessagesApi) extends TestCTController
 
-trait TestCTController extends VatRegistrationControllerNoAux with SessionProfile {
+trait TestCTController extends BaseController with SessionProfile {
   val prePopService: PrePopService
 
-  def show(): Action[AnyContent] = authorised.async {
-    implicit user =>
-      implicit req =>
-        withCurrentProfile { implicit profile =>
-          prePopService.getCTActiveDate.map(_.fold("NONE")(x => DateTimeFormatter.ISO_LOCAL_DATE.format(x))).map(x => Ok(Html(x)))
-        }
+  def show(): Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit req => implicit profile =>
+      prePopService.getCTActiveDate.map(_.fold("NONE")(x => DateTimeFormatter.ISO_LOCAL_DATE.format(x))).map(x => Ok(Html(x)))
   }
 }
 
