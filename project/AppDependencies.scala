@@ -49,7 +49,7 @@ private trait TestDependencies {
   val scalaTestPlusPlayVersion = "2.0.1"
   val scoverageVersion         = "1.3.1"
   val jsoupVersion             = "1.11.2"
-  val mockitoVersion           = "2.12.0"
+  val mockitoVersion           = "2.13.0"
   val scalaMockVersion         = "3.6.0"
   val wireMockVersion          = "2.6.0"
   val hmrcTestVersion          = "3.0.0"

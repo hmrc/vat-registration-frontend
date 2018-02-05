@@ -613,12 +613,12 @@ pages.previousAddressQuestion.heading                    = Have you lived at you
 validation.previousAddressQuestion.missing               = Tell us if you''ve lived at your current address for 3 years or more
 
 ## PPOB
-pages.ppob.title                                        = Where will the company carry out most of its business activities?
-pages.ppob.heading                                      = Where will the company carry out most of its business activities?
-pages.ppob.p1                                           = This can be your home, a commercial office, a studio or workshop. You or the company don''t need to own the property.
-pages.ppob.p2                                           = For mobile businesses, it''s usually where the company keeps its stock or equipment.
-pages.ppob.different.address                            = A different address
-validation.ppob.missing                                 = Tell us where you''ll carry out most of your business activities
+pages.ppob.title                                        = What is the company''s ''principal place of business''?
+pages.ppob.heading                                      = What is the company''s ''principal place of business''?
+pages.ppob.p1                                           = This is where the company carries out most of its business activities.
+pages.ppob.p2                                           = If the company does business in different places or contract work on client premises, it''s where the company keeps its financial and business records.
+pages.ppob.different.address                            = A different UK address
+validation.ppob.missing                                 = Tell us where the company will carry out most of its business activities
 
 ## Are you interested in FRS Page
 pages.frs.join.heading                          = Do you want to join the Flat Rate Scheme?
