@@ -115,9 +115,9 @@ GET         /provides-skilled-workers                                           
 POST        /provides-skilled-workers                                                          features.sicAndCompliance.controllers.LabourComplianceController.submitSkilledWorkers
 
 ## PPOB ADDRESS
-GET         /where-will-company-carry-out-most-of-its-business-activities                      features.businessContact.controllers.BusinessContactDetailsController.showPPOB
-POST        /where-will-company-carry-out-most-of-its-business-activities                      features.businessContact.controllers.BusinessContactDetailsController.submitPPOB
-GET         /where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm        features.businessContact.controllers.BusinessContactDetailsController.returnFromTxm(id: String ?= "")
+GET         /carry-out-business-activities                                                     features.businessContact.controllers.BusinessContactDetailsController.showPPOB
+POST        /carry-out-business-activities                                                     features.businessContact.controllers.BusinessContactDetailsController.submitPPOB
+GET         /carry-out-business-activities/acceptFromTxm                                        features.businessContact.controllers.BusinessContactDetailsController.returnFromTxm(id: String ?= "")
 
 ## BUSINESS CONTACT DETAILS PAGE
 GET         /company-contact-details                                                           features.businessContact.controllers.BusinessContactDetailsController.showCompanyContactDetails

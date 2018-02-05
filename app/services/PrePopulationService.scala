@@ -45,7 +45,8 @@ trait PrePopService extends TraverseSyntax with ListInstances with FutureInstanc
   val vatRegService: RegistrationService
   val save4later: S4LService
 
-  private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+  private val formatter             = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+  private val seqAllowedCountries   = Seq("United Kingdom","UK").map(a => a.toLowerCase.replace(" ", ""))
 
   def getCTActiveDate(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[LocalDate]] =
     for {
@@ -59,8 +60,15 @@ trait PrePopService extends TraverseSyntax with ListInstances with FutureInstanc
       ppobAddress     <- vatRegService.getVatScheme map(_.businessContact flatMap(_.ppobAddress))
       businessContact <- save4later.fetchAndGet[BusinessContact]
       s4lAddress      =  businessContact.flatMap(_.ppobAddress)
-    } yield List(roAddress, ppobAddress, s4lAddress).flatten.distinct
+    } yield filterAddressListByCountry(List(roAddress, ppobAddress, s4lAddress).flatten.distinct)
   }
+
+  private[services] def filterAddressListByCountry(seqAddress:Seq[ScrsAddress]): Seq[ScrsAddress] = seqAddress.filter(addr =>
+    addr.country.fold(true)(
+      count => seqAllowedCountries.contains(count.toLowerCase.replace(" ","")
+      )
+    )
+  )
 
   def getOfficerAddressList(officer: LodgingOfficer)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
     incorpInfoService.getRegisteredOfficeAddress map {

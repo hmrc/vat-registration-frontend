@@ -16,13 +16,16 @@
 
 package controllers
 
+import common.enums.VatRegStatus
 import features.businessContact.models.BusinessContact
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
+import models.api.VatScheme
+import org.jsoup.Jsoup
+
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
-import play.api.libs.json.JsString
 import support.AppAndStubs
 
 class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
@@ -38,9 +41,36 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
-      val response = buildClient("/where-will-company-carry-out-most-of-its-business-activities").get()
+      val response = buildClient("/carry-out-business-activities").get()
       whenReady(response) { res =>
         res.status mustBe 200
+
+        val document = Jsoup.parse(res.body)
+        val elems = document.getElementsByAttributeValue("name","ppobRadio")
+        elems.size() mustBe 3
+
+
+      }
+    }
+    "return 200 when s4l returns None and II returns a company that has an address not in the UK" in {
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile()
+        .s4lContainer[BusinessContact].isEmpty
+        .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())
+        .vatScheme.doesNotHave("business-contact")
+        .vatScheme.contains(VatScheme("foo", status = VatRegStatus.draft))
+        .company.hasROAddress(coHoRegisteredOfficeAddress.copy(country = Some("foo BAR land")))
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+      val response = buildClient("/carry-out-business-activities").get()
+      whenReady(response) { res =>
+        res.status mustBe 200
+        val document = Jsoup.parse(res.body)
+
+        val elems = document.getElementsByAttributeValue("name","ppobRadio")
+        elems.first().attr("value") mustBe "other"
+        elems.size() mustBe 1
       }
     }
     "return 500 when not authorised" in {
@@ -49,7 +79,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
-      val response = buildClient("/where-will-company-carry-out-most-of-its-business-activities").get()
+      val response = buildClient("/carry-out-business-activities").get()
       whenReady(response) { res =>
         res.status mustBe 500
 
@@ -66,7 +96,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .company.hasROAddress(coHoRegisteredOfficeAddress)
         .alfeJourney.initialisedSuccessfully()
 
-      val response = buildClient("/where-will-company-carry-out-most-of-its-business-activities").post(Map("ppobRadio" -> Seq("other")))
+      val response = buildClient("/carry-out-business-activities").post(Map("ppobRadio" -> Seq("other")))
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
@@ -84,7 +114,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .vatScheme.isUpdatedWith(validBusinessContactDetails)
         .s4lContainer[BusinessContact].cleared
 
-      val response = buildClient("/where-will-company-carry-out-most-of-its-business-activities").post(Map("ppobRadio" -> Seq("line1XXXX")))
+      val response = buildClient("/carry-out-business-activities").post(Map("ppobRadio" -> Seq("line1XXXX")))
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
@@ -104,7 +134,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
         .vatScheme.isNotUpdatedWith[BusinessContact](validBusinessContactDetails)
 
-      val response = buildClient("/where-will-company-carry-out-most-of-its-business-activities").post(Map("ppobRadio" -> Seq("line1XXXX")))
+      val response = buildClient("/carry-out-business-activities").post(Map("ppobRadio" -> Seq("line1XXXX")))
       whenReady(response) { res =>
         res.status mustBe 500
       }
@@ -122,7 +152,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
         .vatScheme.isUpdatedWith(validBusinessContactDetails)
         .s4lContainer[BusinessContact].cleared
-      val response = buildClient("/where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm?id=fudgesicle").get()
+      val response = buildClient("/carry-out-business-activities/acceptFromTxm?id=fudgesicle").get()
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
@@ -144,7 +174,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .vatScheme.doesNotHave("business-contact")
         .s4lContainer[BusinessContact].isUpdatedWith(validBusinessContactDetails.copy(companyContactDetails = None))
 
-      val response = buildClient("/where-will-company-carry-out-most-of-its-business-activities/acceptFromTxm?id=fudgesicle").get()
+      val response = buildClient("/carry-out-business-activities/acceptFromTxm?id=fudgesicle").get()
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
